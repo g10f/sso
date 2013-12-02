@@ -1,0 +1,11 @@
+/.hg
+/secret
+/temp
+/logs
+/data
+/apps/sso/settings/local_*.py
+.project
+.pydevproject
+.settings
+*.pyc
+

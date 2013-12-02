@@ -1,0 +1,150 @@
+{% extends 'base_site.html' %}
+{% load i18n list static tz %}
+
+{% block title %}{% trans 'users' %}{% endblock %}
+
+{% block nav_registration_user_list_class %}active{% endblock %}
+
+{% block breadcrumb %}
+<ul class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+    <li class="active">{% trans 'User Registration List' %}</li>
+</ul> 
+{% endblock breadcrumb %}
+
+{% block content %}   
+<div class="row">
+	<div class="col-sm-12">		
+		{% block messages %}
+		{% if messages %}
+			{% for message in messages %}
+				<div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">
+				  {{ message }}
+				</div>
+			{% endfor %}
+		{% endif %}
+		{% endblock messages %}
+	</div>
+</div>
+
+<div class="row dw-filter-row">	
+	{% block search_form %}
+    <div class="col-sm-3">
+        <form class="" action="" method="get">
+            {% for key, value in cl.params.items %}
+                {% if key != search_var and key != page_var %}
+                   <input type="hidden" name="{{ key }}" value="{{ value }}">          
+                {% endif %}
+            {% endfor %}
+            <div class="input-group">
+                <input type="text" class="form-control" name="{{ search_var }}" value="{{ query }}" placeholder="{% trans 'search text' %}">
+                <span class="input-group-btn">
+                  <button type="submit" class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
+                </span>
+            </div>
+        </form>
+    </div>
+	{% endblock search_form %}
+    
+    <div class="col-sm-9">
+		{% block country_filter %}
+		{% if countries %}
+        <div class="btn-group" >
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                    {% if country %}{{ country }}{% else %}{% trans 'Select country' %}{% endif %}
+                    <span class="caret"></span>
+            </button>
+                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                    {% if country %}<li><a tabindex="-1" href="{% query_string cl 'country' '' %}"">{% trans 'All countries' %}</a></li>{% endif %}
+                    {% for country in countries %}
+                        <li><a tabindex="-1" href="{% query_string cl 'country' country.iso2_code 'region,center,app_role,p' %}">{{ country }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            {% endblock country_filter %}
+
+            {% block region_filter %}
+            {% if regions %}
+            <div class="btn-group" >
+	            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+		            {% if region %}{{ region }}{% else %}{% trans 'Select region' %}{% endif %}
+		            <span class="caret"></span>
+	            </button>
+	            <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+	                {% if region %}<li><a tabindex="-1" href="{% query_string cl 'region' '' %}"">{% trans 'All regions' %}</a></li>{% endif %}
+	                {% for region in regions %}
+	                    <li><a tabindex="-1" href="{% query_string cl 'region' region.pk 'center,app_role,p' %}">{{ region }}</a></li>
+	                {% endfor %}
+	            </ul>
+            </div>
+            {% endif %}
+            {% endblock region_filter %}
+
+			{% block center_filter %}
+			{% if centers %}
+			<div class="btn-group" >
+	            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+					    {% if center %}{{ center }}{% else %}{% trans 'Select center' %}{% endif %}
+					    <span class="caret"></span>
+	            </button>
+			    <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+			        {% if center %}<li><a tabindex="-1" href="{% query_string cl 'center' '' %}"">{% trans 'All centers' %}</a></li>{% endif %}
+			        {% for center in centers %}
+			            <li><a tabindex="-1" href="{% query_string cl 'center' center.pk 'app_role,p' %}">{{ center }}</a></li>
+			        {% endfor %}
+			    </ul>
+			</div>
+			{% endif %}
+			{% endblock center_filter %}
+			
+            {% block is_verified_filter %}
+            <div class="btn-group" >
+	            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+		            {% if is_verified == 'True' %}{% trans 'verified users' %}
+		            {% elif is_verified == 'False' %}{% trans 'not verified users' %}
+		            {% else %}{% trans 'Select verified filter' %}
+		            {% endif %}
+	                <span class="caret"></span>
+	            </button>
+                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                    {% if is_verified %}<li><a tabindex="-1" href="{% query_string cl 'is_verified' '' %}"">{% trans 'All' %}</a></li>{% endif %}
+                    <li><a tabindex="-1" href="{% query_string cl 'is_verified' 'True' 'p' %}">{% trans 'verified users' %}</a></li>
+                    <li><a tabindex="-1" href="{% query_string cl 'is_verified' 'False' 'p' %}">{% trans 'not verified users' %}</a></li>
+                </ul>
+            </div>
+			{% endblock is_verified_filter %}
+	</div>
+</div><!-- /.row -->
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="table-responsive">
+			<table class="table-bordered table-striped table">
+			  {% include "include/table_header.html" %}
+			  <tbody>
+			  {% for registration in object_list %}
+			    <tr> 
+			      <td data-title="{% trans 'user' %}">
+			          <a class="" href="{% url 'registration:update_user_registration' registration.pk %}{{ cl.get_query_string }}">{{ registration.user }}</a>
+			      </td>
+	              <td data-title="{% trans 'center' %}">{{ registration.user.organisations.all|join:", " }}</td>
+	              <td data-title="{% trans 'country' %}">{{ registration.country }}</td>
+	              <td data-title="{% trans 'city' %}">{{ registration.city }}</td>
+	              <td data-title="{% trans 'verified by user' %}">
+	              {% if registration.verified_by_user %}
+	                <a class="" href="{% url 'accounts:update_user' registration.verified_by_user.uuid %}{{ cl.get_query_string }}">{{ registration.verified_by_user }}</a>
+	              {% endif %}
+	              </td>
+	              <td data-title="{% trans 'email' %}">{{ registration.user.email }}</td>
+	              <td data-title="{% trans 'phone' %}">{{ registration.phone }}</td>
+			      <td data-title="{% trans 'date registered' %}">{{ registration.date_registered|utc|date:"Y-m-d H:i" }}</td>
+			    </tr>
+			  {% endfor %}
+			  </tbody>
+			</table>
+	       {% block pagination %}{% if is_paginated %}{% pagination page_obj cl %}{% endif %}{% endblock %}
+	    </div>
+	</div>
+</div>
+{% endblock %}

@@ -1,0 +1,163 @@
+{% extends 'base_site.html' %}
+{% load i18n list tz static %}
+
+{% block title %}{% trans 'users' %}{% endblock %}
+
+{% block nav_accounts_user_list_class %}active{% endblock %}
+
+{% block breadcrumb %}
+<ul class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+    <li class="active">{% trans 'User List' %}</li>
+</ul> 
+{% endblock breadcrumb %}
+    
+    
+{% block content %}
+<div class="row">
+	<div class="col-sm-12">
+		{% block messages %}
+		{% if messages %}
+			{% for message in messages %}
+				<div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">
+				  {{ message }}
+				</div>
+			{% endfor %}
+		{% endif %}
+		{% endblock messages %}
+	</div>
+</div><!-- /.row -->
+
+
+<div class="row dw-filter-row">
+	{% block search_form %}
+	<div class="col-sm-3">
+		<form class="" action="" method="get">
+            {% for key, value in cl.params.items %}
+	            {% if key != search_var and key != page_var %}
+	               <input type="hidden" name="{{ key }}" value="{{ value }}">          
+                {% endif %}
+            {% endfor %}
+            <div class="input-group">
+				<input type="text" class="form-control" name="{{ search_var }}" value="{{ query }}" placeholder="{% trans 'search text' %}">
+				<span class="input-group-btn">
+				  <button type="submit" class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
+				</span>
+		    </div>
+		</form>
+    </div>
+	{% endblock search_form %}
+	
+	
+	<div class="col-sm-9">
+		{% block country_filter %}
+		{% if countries %}
+	    <div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                {% if country %}{{ country }}{% else %}{% trans 'Select country' %}{% endif %}
+                 <span class="caret"></span>
+            </button>
+	       <ul class="dropdown-menu" role="menu">
+	           {% if country %}<li><a tabindex="-1" href="{% query_string cl 'country' '' 'region,center' %}"">{% trans 'All countries' %}</a></li>{% endif %}
+	           {% for country in countries %}
+	               <li><a href="{% query_string cl 'country' country.iso2_code 'region,center,app_role,p' %}">{{ country }}</a></li>
+	           {% endfor %}
+	       </ul>
+        </div>
+		{% endif %}
+		{% endblock country_filter %}
+    
+	    {% block region_filter %}
+	    {% if regions %}
+	    <div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                {% if region %}{{ region }}{% else %}{% trans 'Select region' %}{% endif %}
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                {% if region %}<li><a tabindex="-1" href="{% query_string cl 'region' 'center' %}"">{% trans 'All regions' %}</a></li>{% endif %}
+                {% for region in regions %}
+                    <li><a tabindex="-1" href="{% query_string cl 'region' region.pk 'center,app_role,p' %}">{{ region }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+		{% endif %}
+		{% endblock region_filter %}
+
+		{% block center_filter %}
+		{% if centers %}
+		<div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+			    {% if center %}{{ center }}{% else %}{% trans 'Select center' %}{% endif %}
+			    <span class="caret"></span>
+            </button>
+           <ul class="dropdown-menu" role="menu">
+		        {% if center %}<li><a tabindex="-1" href="{% query_string cl 'center' '' %}"">{% trans 'All centers' %}</a></li>{% endif %}
+		        {% for center in centers %}
+		            <li><a tabindex="-1" href="{% query_string cl 'center' center.pk 'app_role,p' %}">{{ center }}</a></li>
+		        {% endfor %}
+		    </ul>
+	    </div>
+		{% endif %}
+		{% endblock center_filter %}
+		
+		{% block app_roles_filter %}
+		{% if app_roles %}
+	    <div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                {% if app_role %}{{ app_role }}{% else %}{% trans 'Select application role' %}{% endif %}
+                <span class="caret"></span>
+            </button>
+           <ul class="dropdown-menu" role="menu">
+                {% if app_role %}<li><a tabindex="-1" href="{% query_string cl 'app_role' '' %}"">{% trans 'All application roles' %}</a></li>{% endif %}
+                {% for app_role in app_roles %}
+                    <li><a tabindex="-1" href="{% query_string cl 'app_role' app_role.pk 'p' %}">{{ app_role }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+		{% endif %}
+		{% endblock app_roles_filter %}
+		      
+		{# is_active filter #}
+	    <div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                 {% if is_active == 'True' %}{% trans 'active users' %}
+                 {% elif is_active == 'False' %}{% trans 'inactive users' %}
+                 {% else %}{% trans 'Select active/inactive' %}
+                 {% endif %}
+                 <span class="caret"></span>
+            </button>
+           <ul class="dropdown-menu" role="menu">
+                 {% if is_active %}<li><a tabindex="-1" href="{% query_string cl 'is_active' '' %}"">{% trans 'All' %}</a></li>{% endif %}
+                 <li><a tabindex="-1" href="{% query_string cl 'is_active' 'False' 'p' %}">{% trans 'inactive users' %}</a></li>
+                 <li><a tabindex="-1" href="{% query_string cl 'is_active' 'True' 'p' %}">{% trans 'active users' %}</a></li>
+            </ul>
+        </div>
+    </div><!-- /.col-sm-9 -->
+</div>
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="table-responsive">
+		<table class="table table-bordered table-striped">
+		  {% include "include/table_header.html" %}
+		  <tbody>
+		  {% for user in object_list %}
+		    <tr> 
+		      <td data-title="{% trans 'username' %}">
+		          <a class="" href="{% url 'accounts:update_user' user.uuid %}{{ cl.get_query_string }}">{{ user.username }}</a>
+		      </td>
+		      <td data-title="{% trans 'first name' %}">{{ user.first_name }}</td>
+		      <td data-title="{% trans 'last name' %}">{{ user.last_name }}</td>
+		      <td data-title="{% trans 'email' %}">{{ user.email }}</td>
+		      <td data-title="{% trans 'last login' %} (UTC)">{{ user.last_login|utc|date:"Y-m-d H:i" }}</td>
+		      <td data-title="{% trans 'date joined' %} (UTC)">{{ user.date_joined|utc|date:"Y-m-d H:i" }}</td>
+		    </tr>
+		  {% endfor %}
+		  </tbody>
+		</table>
+		</div>
+	{% block pagination %}{% if is_paginated %}{% pagination page_obj cl %}{% endif %}{% endblock %}
+	</div>
+</div>
+{% endblock content %}

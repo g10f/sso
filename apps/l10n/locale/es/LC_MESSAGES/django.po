@@ -1,0 +1,445 @@
+# Spanish translation for the Satchmo project.
+# Satchmo Translation Package
+# Copyright (C) 2008 Satchmo Project
+# This file is distributed under the same license as the Satchmo package.
+# Christian Hoeppner <hoeppner@gmail.com>, 2007.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Satchmo 0.5-pre\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-02-28 19:55-0600\n"
+"PO-Revision-Date: 2007-08-06 00:00+0000\n"
+"Last-Translator: Christian Hoeppner <hoeppner@gmail.com>\n"
+"Language-Team: Spanish <satchmo-users@googlegroups.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: admin.py:15 admin.py:24
+#, fuzzy
+msgid "1 country was"
+msgstr "nombre del país"
+
+#: admin.py:17 admin.py:26
+#, fuzzy, python-format
+msgid "%s countries were"
+msgstr "paises"
+
+#: admin.py:18
+#, python-format
+msgid "%s successfully marked as active"
+msgstr ""
+
+#: admin.py:19
+msgid "Mark selected countries as active"
+msgstr ""
+
+#: admin.py:27
+#, python-format
+msgid "%s successfully marked as inactive"
+msgstr ""
+
+#: admin.py:28
+msgid "Mark selected countries as inactive"
+msgstr ""
+
+#: models.py:6
+msgid "Africa"
+msgstr "África"
+
+#: models.py:7
+#, fuzzy
+msgid "North America"
+msgstr "América del Norte"
+
+#: models.py:8
+msgid "Europe"
+msgstr "Europa"
+
+#: models.py:9
+msgid "Asia"
+msgstr "Asia"
+
+#: models.py:10
+msgid "Oceania"
+msgstr "Oceanía"
+
+#: models.py:11
+msgid "South America"
+msgstr "América del Sur"
+
+#: models.py:12
+#, fuzzy
+msgid "Antarctica"
+msgstr "África"
+
+#: models.py:16
+msgid "Another"
+msgstr "Otro"
+
+#: models.py:17
+msgid "Island"
+msgstr "Isla"
+
+#: models.py:18
+msgid "Arrondissement"
+msgstr "Asentamiento"
+
+#: models.py:19
+msgid "Atoll"
+msgstr "Arrecife"
+
+#: models.py:20
+msgid "Autonomous island"
+msgstr "Isla Autónoma"
+
+#: models.py:21
+msgid "Canton"
+msgstr "Cantón"
+
+#: models.py:22
+msgid "Commune"
+msgstr "Comunidad"
+
+#: models.py:23
+msgid "County"
+msgstr "País"
+
+#: models.py:24
+msgid "Department"
+msgstr "Departamento"
+
+#: models.py:25
+msgid "Dependency"
+msgstr "Dependencia"
+
+#: models.py:26
+msgid "District"
+msgstr "Distrito"
+
+#: models.py:27
+msgid "Division"
+msgstr "División"
+
+#: models.py:28
+msgid "Emirate"
+msgstr "Emirato"
+
+#: models.py:29
+msgid "Governorate"
+msgstr ""
+
+#: models.py:30
+msgid "Island council"
+msgstr ""
+
+#: models.py:31
+msgid "Island group"
+msgstr "Archipiélago"
+
+#: models.py:32
+msgid "Island region"
+msgstr "Región Insular"
+
+#: models.py:33
+msgid "Kingdom"
+msgstr "Reino"
+
+#: models.py:34
+msgid "Municipality"
+msgstr "Municipio"
+
+#: models.py:35
+msgid "Parish"
+msgstr "Parroquia"
+
+#: models.py:36
+msgid "Prefecture"
+msgstr "Prefectura"
+
+#: models.py:37
+msgid "Province"
+msgstr "Provincia"
+
+#: models.py:38
+msgid "Region"
+msgstr "Región"
+
+#: models.py:39
+msgid "Republic"
+msgstr "República"
+
+#: models.py:40
+msgid "Sheading"
+msgstr ""
+
+#: models.py:41
+msgid "State"
+msgstr "Estado"
+
+#: models.py:42
+msgid "Subdivision"
+msgstr ""
+
+#: models.py:43
+msgid "Subject"
+msgstr "Sujeto"
+
+#: models.py:44
+msgid "Territory"
+msgstr "Territorio"
+
+#: models.py:53
+msgid "ISO alpha-2"
+msgstr ""
+
+#: models.py:54
+msgid "Official name (CAPS)"
+msgstr ""
+
+#: models.py:55
+#, fuzzy
+msgid "Country name"
+msgstr "nombre del país"
+
+#: models.py:56
+msgid "ISO alpha-3"
+msgstr ""
+
+#: models.py:57
+msgid "ISO numeric"
+msgstr ""
+
+#: models.py:58
+#, fuzzy
+msgid "Country is active"
+msgstr "nombre del país"
+
+#: models.py:59
+msgid "Continent"
+msgstr ""
+
+#: models.py:60 models.py:81
+#, fuzzy
+msgid "Administrative Area"
+msgstr "zona administrativa"
+
+#: models.py:63
+#, fuzzy
+msgid "Country"
+msgstr "País"
+
+#: models.py:64
+#, fuzzy
+msgid "Countries"
+msgstr "paises"
+
+#: models.py:76
+#, fuzzy
+msgid "Admin Area name"
+msgstr "nombre de la zona"
+
+#: models.py:77
+#, fuzzy
+msgid "Postal Abbreviation"
+msgstr "abreviación postal"
+
+#: models.py:78
+#, fuzzy
+msgid "Area is active"
+msgstr "legislativo"
+
+#: models.py:82
+#, fuzzy
+msgid "Administrative Areas"
+msgstr "zona administrativa"
+
+#: templates/l10n/_language_selection_form.html:5
+#, fuzzy
+msgid "Change language"
+msgstr "lengua"
+
+#: templates/l10n/_language_selection_form.html:11
+msgid "Change"
+msgstr ""
+
+#: validators/aupostcode.py:13
+msgid "Invalid Australian postal code"
+msgstr ""
+
+#: validators/capostcode.py:18
+msgid "Invalid postal code for Canada"
+msgstr ""
+
+#: validators/uspostcode.py:10
+msgid "Invalid ZIP code"
+msgstr ""
+
+#~ msgid "America"
+#~ msgstr "América"
+
+#~ msgid "Eastern Africa"
+#~ msgstr "África del Este"
+
+#~ msgid "Middle Africa"
+#~ msgstr "África Central"
+
+#~ msgid "Northern Africa"
+#~ msgstr "África del Norte"
+
+#~ msgid "Southern Africa"
+#~ msgstr "África del Sur"
+
+#~ msgid "Western Africa"
+#~ msgstr "África del Oeste"
+
+#~ msgid "Caribbean"
+#~ msgstr "Caribe"
+
+#~ msgid "Central America"
+#~ msgstr "Centroamérica"
+
+#~ msgid "Central Asia"
+#~ msgstr "Asia Central"
+
+#~ msgid "Eastern Asia"
+#~ msgstr "Asia del Este"
+
+#~ msgid "Southern Asia"
+#~ msgstr "Asia del Sur"
+
+#~ msgid "South-Eastern Asia"
+#~ msgstr "Asia del Sur-Este"
+
+#~ msgid "Western Asia"
+#~ msgstr "Asia del Oeste"
+
+#~ msgid "Eastern Europe"
+#~ msgstr "Europa del Este"
+
+#~ msgid "Northern Europe"
+#~ msgstr "Europa del Norte"
+
+#~ msgid "Southern Europe"
+#~ msgstr "Europa del Sur"
+
+#~ msgid "Western Europe"
+#~ msgstr "Europa del Oeste"
+
+#~ msgid "Australia and New Zealand"
+#~ msgstr "Australia y Nueva-Zelanda"
+
+#~ msgid "Melanesia"
+#~ msgstr "Melanesia"
+
+#~ msgid "Micronesia"
+#~ msgstr "Micronesia"
+
+#~ msgid "Polynesia"
+#~ msgstr "Polinesia"
+
+#~ msgid "official"
+#~ msgstr "oficial"
+
+#~ msgid "national"
+#~ msgstr "nacional"
+
+#~ msgid "regional"
+#~ msgstr "regional"
+
+#~ msgid "de facto"
+#~ msgstr "de facto"
+
+#~ msgid "business"
+#~ msgstr "negocio"
+
+#~ msgid "language name"
+#~ msgstr "Nombre de la lengua"
+
+#~ msgid "alpha-3 ISO code"
+#~ msgstr "Código ISO alfa-3"
+
+#~ msgid "alpha-2 ISO code"
+#~ msgstr "Código ISO alfa-2"
+
+#~ msgid "display"
+#~ msgstr "Mostrar"
+
+#~ msgid "Designates whether the language is shown."
+#~ msgstr "Determina si la lengua será mostrada"
+
+#~ msgid "languages"
+#~ msgstr "lenguas"
+
+#~ msgid "geographical region"
+#~ msgstr "región geográfica"
+
+#~ msgid "territory of"
+#~ msgstr "territorio de"
+
+#~ msgid "Designates whether the country is shown."
+#~ msgstr "Determina si el país será mostrado."
+
+#~ msgid "country"
+#~ msgstr "país"
+
+#~ msgid "language type"
+#~ msgstr "tipo de idioma"
+
+#~ msgid "identifier"
+#~ msgstr "identificador"
+
+#~ msgid "country & language"
+#~ msgstr "país e idioma"
+
+#~ msgid "countries & languages"
+#~ msgstr "paises e idiomas"
+
+#~ msgid "name identifier"
+#~ msgstr "nombre del identificador"
+
+#~ msgid "area alternate name"
+#~ msgstr "nombre alternativo de la zona"
+
+#~ msgid "regional administrative area"
+#~ msgstr "zona administrativa regional"
+
+#~ msgid "area"
+#~ msgstr "zona"
+
+#~ msgid "areas"
+#~ msgstr "zonas"
+
+#~ msgid "time zone"
+#~ msgstr "zona horaria"
+
+#~ msgid "comment"
+#~ msgstr "comentario"
+
+#~ msgid "time zones"
+#~ msgstr "zonas horarias"
+
+#~ msgid "country code"
+#~ msgstr "identificativo del país"
+
+#~ msgid "length of area code"
+#~ msgstr "longitud del código de área"
+
+#~ msgid "length of subscriber number (SN)"
+#~ msgstr "longitud del número de abonado"
+
+#~ msgid "length of area code and SN"
+#~ msgstr "longitud del código de área y número de abonado"
+
+#~ msgid "national prefix"
+#~ msgstr "prefijo nacional"
+
+#~ msgid "international prefix"
+#~ msgstr "prefijo internacional"
+
+#~ msgid "phone"
+#~ msgstr "teléfono"
+
+#~ msgid "phones"
+#~ msgstr "teléfonos"

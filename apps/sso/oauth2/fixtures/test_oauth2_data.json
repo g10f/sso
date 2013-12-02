@@ -1,0 +1,25 @@
+[ {
+	"pk" : 1,
+	"model" : "oauth2.client",
+	"fields" : {
+		"uuid" : "ec1e39cbe3e746c787b770ace4165d13",
+		"name" : "Test Client",
+		"application" : 1,
+		"redirect_uris" : "http://localhost",
+		"client_secret" : "geheim",
+		"user" : null,
+		"type" : "web"
+	}
+}, {
+	"pk" : 2,
+	"model" : "oauth2.client",
+	"fields" : {
+		"uuid" : "68bfae12a58541548def243e223053fb",
+		"name" : "Client with special access rights (put userinfo)",
+		"application" : 1,
+		"redirect_uris" : "http://localhost",
+		"client_secret" : "geheim",
+		"user" : null,
+		"type" : "web"
+	}
+} ]

@@ -1,0 +1,3 @@
+# Keine Indexierung
+User-agent: *
+Disallow: /

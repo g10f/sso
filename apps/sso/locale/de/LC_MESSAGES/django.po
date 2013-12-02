@@ -1,0 +1,1469 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-11-24 22:28+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
+#: accounts/admin.py:62
+msgid "(None)"
+msgstr ""
+
+#: accounts/admin.py:82 accounts/forms.py:202 accounts/forms.py:374
+#: registration/forms.py:47
+msgid "Organisation"
+msgstr "Zentrum"
+
+#: accounts/admin.py:91 accounts/admin.py:264 accounts/models.py:130
+#: registration/forms.py:44 registration/models.py:100
+msgid "last modified by"
+msgstr ""
+
+#: accounts/admin.py:102 accounts/admin.py:273 accounts/models.py:132
+msgid "created by"
+msgstr ""
+
+#: accounts/admin.py:113
+msgid "associated system"
+msgstr ""
+
+#: accounts/admin.py:132
+msgid "Region"
+msgstr ""
+
+#: accounts/admin.py:143
+msgid "Application Roles"
+msgstr "Anwendungsrollen"
+
+#: accounts/admin.py:152
+msgid "superuser status"
+msgstr ""
+
+#: accounts/admin.py:158 registration/admin.py:18 registration/admin.py:35
+msgid "Yes"
+msgstr ""
+
+#: accounts/admin.py:158 registration/admin.py:18 registration/admin.py:35
+msgid "No"
+msgstr ""
+
+#: accounts/admin.py:203 accounts/admin.py:210
+msgid "Personal info"
+msgstr ""
+
+#: accounts/admin.py:204 accounts/admin.py:211
+msgid "AppRoles"
+msgstr "Anwendungsrollen"
+
+#: accounts/admin.py:205
+msgid "Permissions"
+msgstr ""
+
+#: accounts/admin.py:206 accounts/admin.py:212
+msgid "Important dates"
+msgstr ""
+
+#: accounts/admin.py:360
+#, python-format
+msgid "%s SSO Information"
+msgstr "%s SSO Information"
+
+#: accounts/admin.py:370
+#, python-format
+msgid "Successfully send Information Email to  %(count)d %(items)s."
+msgstr ""
+
+#: accounts/admin.py:384
+#: templates/admin/accounts/send_mail_selected_confirmation.html:13
+msgid "Send information mail to selected users"
+msgstr ""
+
+#: accounts/admin.py:393
+msgid "Send info email"
+msgstr ""
+
+#: accounts/forms.py:30 templates/accounts/application/add_user_done.html:25
+msgid "Name"
+msgstr ""
+
+#: accounts/forms.py:31 accounts/forms.py:246 accounts/forms.py:372
+#: accounts/models.py:109 registration/forms.py:34
+msgid "e-mail address"
+msgstr "E-Mail Adresse"
+
+#: accounts/forms.py:32
+msgid "Subject"
+msgstr ""
+
+#: accounts/forms.py:33
+msgid "Message"
+msgstr ""
+
+#: accounts/forms.py:37
+msgid "New password"
+msgstr ""
+
+#: accounts/forms.py:38
+msgid "New password confirmation"
+msgstr ""
+
+#: accounts/forms.py:47
+msgid "Your old password was entered incorrectly. Please enter it again."
+msgstr "Dein altes Passwort war verkehrt, bitte gib es erneut ein."
+
+#: accounts/forms.py:49
+msgid "Old password"
+msgstr ""
+
+#: accounts/forms.py:69
+msgid "That email address doesn't have an associated "
+msgstr ""
+
+#: accounts/forms.py:71
+msgid "The user account associated with this email "
+msgstr ""
+
+#: accounts/forms.py:74 accounts/forms.py:154 registration/forms.py:131
+#: templates/accounts/application/add_user_done.html:34
+msgid "Email"
+msgstr ""
+
+#: accounts/forms.py:146 auth/forms.py:14 auth/forms.py:16
+msgid "Password"
+msgstr ""
+
+#: accounts/forms.py:147
+msgid "Password confirmation"
+msgstr ""
+
+#: accounts/forms.py:148
+msgid "Enter the same password as above, for verification."
+msgstr ""
+
+#: accounts/forms.py:150 accounts/forms.py:239 accounts/forms.py:365
+#: registration/forms.py:128
+msgid "A user with that username already exists."
+msgstr ""
+
+#: accounts/forms.py:151
+msgid "The two password fields didn't match."
+msgstr ""
+
+#: accounts/forms.py:152 accounts/forms.py:240 accounts/forms.py:366
+#: registration/forms.py:27 registration/forms.py:129
+msgid "A user with that email address already exists."
+msgstr "Die E-mail Adresse wird schon verwendet"
+
+#: accounts/forms.py:155 accounts/forms.py:244 accounts/forms.py:370
+#: registration/forms.py:32 registration/forms.py:132
+#: templates/accounts/application/add_user_done.html:28
+#: templates/accounts/application/user_list.html:150
+msgid "first name"
+msgstr ""
+
+#: accounts/forms.py:156 accounts/forms.py:245 accounts/forms.py:371
+#: registration/forms.py:33 registration/forms.py:133
+#: templates/accounts/application/add_user_done.html:31
+#: templates/accounts/application/user_list.html:151
+msgid "last name"
+msgstr ""
+
+#: accounts/forms.py:203 accounts/forms.py:375 registration/forms.py:48
+#: templates/accounts/application/add_user_done.html:41
+msgid "Application roles"
+msgstr "Anwendungsrollen"
+
+#: accounts/forms.py:230 accounts/forms.py:233 accounts/forms.py:345
+msgid "Center"
+msgstr "Zentrum"
+
+#: accounts/forms.py:231
+msgid "Please use the contact form for a request to change this value."
+msgstr "Bitte verwende das Kontaktformular um diesen Wert ändern zu lassen."
+
+#: accounts/forms.py:234
+msgid "You can set this value only once."
+msgstr "Dieser Wert kann nur einmal festgelegt werden."
+
+#: accounts/forms.py:242 accounts/forms.py:322
+msgid "Username"
+msgstr ""
+
+#: accounts/forms.py:247 accounts/models.py:135
+#: templates/accounts/application/change_user_form.html:50
+msgid "picture"
+msgstr "Bild"
+
+#: accounts/forms.py:271
+#, python-format
+msgid ""
+"Please keep filesize under %(filesize)s. Current filesize "
+"%(current_filesize)s"
+msgstr ""
+"Bitte Dateien mit einer Größe unter %(filesize)s hochladen. Aktuelle "
+"Dateigröße %(current_filesize)s."
+
+#: accounts/forms.py:274
+msgid "File type is not supported"
+msgstr "Dateitype wird nicht unterstützt"
+
+#: accounts/forms.py:304
+msgid "That email address is already in use."
+msgstr "Diese E-mail Adresse wird schon benutzt."
+
+#: accounts/forms.py:323
+msgid "Required. 30 characters or fewer. Letters, digits and "
+msgstr ""
+
+#: accounts/forms.py:326
+msgid "This value may contain only letters, numbers and "
+msgstr ""
+
+#: accounts/forms.py:373 registration/admin.py:32 registration/admin.py:65
+msgid "active"
+msgstr "aktiv"
+
+#: accounts/forms.py:373
+msgid ""
+"Designates whether this user should be treated as active. Unselect this "
+"instead of deleting accounts."
+msgstr ""
+"Legt fest, ob dieser Benutzer aktiv ist. Kann deaktiviert werden, anstatt "
+"den Benutzer zu löschen."
+
+#: accounts/models.py:39 accounts/models.py:131 registration/models.py:99
+msgid "last modified"
+msgstr ""
+
+#: accounts/models.py:40 accounts/models.py:76
+msgid "name"
+msgstr ""
+
+#: accounts/models.py:52 accounts/models.py:77
+msgid "Overwrites the alphabetic order."
+msgstr "Überschreibt die alphabethische Sortierung"
+
+#: accounts/models.py:56
+msgid "enable url"
+msgstr ""
+
+#: accounts/models.py:56
+msgid ""
+"Designates whether this application should be shown in the global navigation "
+"bar."
+msgstr ""
+
+#: accounts/models.py:71
+msgid "application"
+msgstr "Anwendung"
+
+#: accounts/models.py:72
+msgid "applications"
+msgstr "Anwendungen"
+
+#: accounts/models.py:89
+msgid "inheritable by organisation admin"
+msgstr ""
+
+#: accounts/models.py:90
+msgid "Designates that role can inherited by a organisation admin."
+msgstr ""
+
+#: accounts/models.py:91
+msgid "inheritable by global admin"
+msgstr ""
+
+#: accounts/models.py:92
+msgid "Designates that role can inherited by a global admin."
+msgstr ""
+
+#: accounts/models.py:107
+msgid "ISO alpha-2"
+msgstr ""
+
+#: accounts/models.py:116 accounts/models.py:133
+#: templates/registration/user_registration_list.html:131
+msgid "center"
+msgstr "Zentrum"
+
+#: accounts/models.py:117
+msgid "centers"
+msgstr "Zentren"
+
+#: accounts/models.py:133
+msgid ""
+"Designates that this user is representing a center and not a private person."
+msgstr ""
+"Gibt an, dass der Anwender ein Zentrum präsentiert und keine private Person."
+
+#: accounts/models.py:134
+msgid "subscriber"
+msgstr ""
+
+#: accounts/models.py:134
+msgid "Designates whether this user is a DWBN News subscriber."
+msgstr "Gibt an, ob dieser Benutzer ein DWBN News Emfänger ist."
+
+#: accounts/views/__init__.py:112
+msgid "Logged out"
+msgstr ""
+
+#: accounts/views/__init__.py:219
+msgid "Thank you. Your settings were safed."
+msgstr "Vielen Dank, Deine Eingaben wurden gespeichert."
+
+#: accounts/views/application.py:188 accounts/views/application.py:195
+msgid "Add user"
+msgstr "Benutzer hinzufügen"
+
+#: accounts/views/application.py:210
+#, python-format
+msgid ""
+"The user \"%(obj)s\" was changed successfully. You may add another user "
+"below."
+msgstr ""
+
+#: accounts/views/application.py:214 registration/views.py:136
+#, python-format
+msgid ""
+"The user \"%(obj)s\" was changed successfully. You may edit it again below."
+msgstr ""
+
+#: accounts/views/application.py:218
+#, python-format
+msgid "The user \"%(obj)s\" was changed successfully."
+msgstr "Der Benutzer \"%(obj)s\" wurde erfolgreich geändert."
+
+#: accounts/views/application.py:224
+msgid "Change user"
+msgstr ""
+
+#: api/views.py:40
+msgid "The request requires user authentication"
+msgstr ""
+
+#: api/views.py:103
+msgid "API base uri"
+msgstr ""
+
+#: api/views.py:104
+msgid "oauth2 token"
+msgstr ""
+
+#: api/views.py:105
+msgid "paginated list of all users"
+msgstr ""
+
+#: api/views.py:106
+msgid "logged in user"
+msgstr "Angemeldeter Anwender"
+
+#: api/views.py:107
+msgid "user identified by uuid"
+msgstr ""
+
+#: api/views.py:108
+msgid "apps for user identified by uuid"
+msgstr ""
+
+#: api/views.py:109
+msgid "apps for logged in user"
+msgstr ""
+
+#: auth/forms.py:11 auth/forms.py:12
+msgid "Email address or Username"
+msgstr "E-Mail Adresse oder Benutzername"
+
+#: auth/hashers.py:35 auth/hashers.py:74
+msgid "algorithm"
+msgstr ""
+
+#: auth/hashers.py:36 auth/hashers.py:75
+msgid "salt"
+msgstr ""
+
+#: auth/hashers.py:37 auth/hashers.py:76
+msgid "hash"
+msgstr ""
+
+#: oauth2/models.py:64
+msgid "Web Application"
+msgstr "Web Anwendung"
+
+#: oauth2/models.py:65
+msgid "Javascript Application"
+msgstr "Javascript Anwendung"
+
+#: oauth2/models.py:66
+msgid "Native Application"
+msgstr "Native Anwendung"
+
+#: oauth2/models.py:67
+msgid "Service Account"
+msgstr "Service Konto"
+
+#: oauth2/models.py:68
+msgid "Trusted Client"
+msgstr ""
+
+#: oauth2/models.py:73
+msgid "redirect uris"
+msgstr ""
+
+#: oauth2/models.py:74
+msgid "default redirect uri"
+msgstr ""
+
+#: oauth2/models.py:75
+msgid "client secret"
+msgstr ""
+
+#: oauth2/models.py:95
+msgid "redirect uri"
+msgstr ""
+
+#: oauth2/models.py:96
+msgid "is valid"
+msgstr ""
+
+#: oauth2/models.py:97
+msgid "client state"
+msgstr ""
+
+#: oauth2/models.py:98
+msgid "scopes"
+msgstr ""
+
+#: oauth2/templates/oauth2/approval.html:4
+#: oauth2/templates/oauth2/error.html:4 templates/500.html:4
+#: templates/base.html:63 templates/home.html:13
+#: templates/accounts/contact_form.html:10
+#: templates/accounts/contact_thanks.html:10
+#: templates/accounts/password_change_done.html:11
+#: templates/accounts/password_change_form.html:10
+#: templates/accounts/profile_form.html:11
+#: templates/accounts/application/add_user_done.html:8
+#: templates/accounts/application/add_user_form.html:8
+#: templates/accounts/application/change_user_form.html:9
+#: templates/accounts/application/user_list.html:10
+#: templates/admin/base_site.html:16
+#: templates/admin/accounts/send_mail_selected_confirmation.html:10
+#: templates/registration/change_user_registration_form.html:6
+#: templates/registration/user_registration_list.html:10 views/__init__.py:17
+msgid "Home"
+msgstr ""
+
+#: oauth2/templates/oauth2/approval.html:4
+#: oauth2/templates/oauth2/error.html:4 oauth2/templates/oauth2/error.html:6
+msgid "OAuth2 error"
+msgstr ""
+
+#: oauth2/templates/oauth2/approval.html:9
+msgid "OAuth 2 success code"
+msgstr ""
+
+#: oauth2/templates/oauth2/approval.html:10
+msgid "Please copy the code and enter it in to your application: "
+msgstr ""
+
+#: oauth2/templates/oauth2/error.html:9
+msgid "OAuth2 Error"
+msgstr ""
+
+#: oauth2/templates/oauth2/error.html:10
+#, python-format
+msgid "There's been an OAuth 2 error: %(error)s"
+msgstr ""
+
+#: registration/admin.py:15
+msgid "expired"
+msgstr "abgelaufen"
+
+#: registration/admin.py:74 registration/models.py:98
+#: templates/registration/user_registration_list.html:128
+msgid "user"
+msgstr ""
+
+#: registration/admin.py:76
+msgid "changed successfully"
+msgstr "erfolgreich geändert"
+
+#: registration/admin.py:84
+#, python-format
+msgid "%(count)s %(name)s was %(action_result_text)s."
+msgid_plural "%(count)s %(name)s were %(action_result_text)s."
+msgstr[0] "%(count)s %(name)s wurde %(action_result_text)s."
+msgstr[1] "%(count)s %(name)s wurden %(action_result_text)s."
+
+#: registration/admin.py:100
+msgid "activated"
+msgstr "aktiviert"
+
+#: registration/admin.py:101
+msgid "Activate users"
+msgstr "Aktiviere Benutzer"
+
+#: registration/admin.py:107
+msgid "deleted"
+msgstr "gelöscht"
+
+#: registration/admin.py:108
+msgid "Delete inactive, expired and not validated users"
+msgstr "Lösche inaktive, abgelaufene unbestätigte Benutzer"
+
+#: registration/admin.py:122
+msgid "Mark profiles as validated"
+msgstr "Profile als bestätigt markieren"
+
+#: registration/admin.py:131
+msgid "an email sent"
+msgstr "ein E-mail gesendet"
+
+#: registration/admin.py:132
+msgid "Re-send validation emails"
+msgstr "Bestätigungs E-mails erneut senden"
+
+#: registration/forms.py:31 registration/models.py:106
+msgid "Notes"
+msgstr "Notizen"
+
+#: registration/forms.py:35 registration/forms.py:143
+#: registration/models.py:110
+msgid "phone Number"
+msgstr "Telefonnummer"
+
+#: registration/forms.py:36 registration/models.py:102
+#: templates/registration/user_registration_list.html:141
+msgid "date registered"
+msgstr ""
+
+#: registration/forms.py:37 registration/forms.py:142
+#: registration/models.py:109
+#: templates/registration/user_registration_list.html:132
+msgid "country"
+msgstr "Land"
+
+#: registration/forms.py:38 registration/forms.py:136
+#: registration/models.py:107
+#: templates/registration/user_registration_list.html:133
+msgid "city"
+msgstr "Stadt"
+
+#: registration/forms.py:39 registration/forms.py:137
+#: registration/models.py:108
+msgid "zip code"
+msgstr "Postleitzahl"
+
+#: registration/forms.py:40 registration/forms.py:135
+#: registration/models.py:105
+msgid "street"
+msgstr "Strasse"
+
+#: registration/forms.py:41 registration/forms.py:134
+#: registration/models.py:104
+msgid "purpose"
+msgstr "Verwendung"
+
+#: registration/forms.py:42 registration/models.py:111
+msgid "person who can recommend you"
+msgstr "Person die Dich empfehlen kann"
+
+#: registration/forms.py:43 registration/models.py:112
+msgid "another person who can recommend you"
+msgstr "Weitere Person die Dich empfehlen kann"
+
+#: registration/forms.py:45 registration/models.py:101
+msgid "verified by"
+msgstr ""
+
+#: registration/forms.py:46
+msgid "is verified"
+msgstr ""
+
+#: registration/forms.py:134
+msgid "Which application and information do you like to use?"
+msgstr "Welche Anwendungen möchtest Du nutzen?"
+
+#: registration/forms.py:138
+msgid "known person"
+msgstr "Bekannte Person"
+
+#: registration/forms.py:139
+msgid "Please name a person who already has an account and can recommend you."
+msgstr ""
+"Gib bitte eine Person an, die schon ein Konto hat und Dich empfehlen kann"
+
+#: registration/forms.py:140
+msgid "known person #2"
+msgstr "Bekannte Person #2"
+
+#: registration/forms.py:141
+msgid ""
+"Please name another person who already has an account and can recommend you."
+msgstr ""
+"Gib bitte eine weitere Person an, die schon ein Konto hat und Dich empfehlen "
+"kann"
+
+#: registration/models.py:103
+msgid "validated"
+msgstr ""
+
+#: registration/models.py:103
+msgid "Designates whether this profile was already validated by the user."
+msgstr "Gibt an, ob das Profile von einem Benutzer bestätigt wurde"
+
+#: registration/models.py:120
+msgid "registration profile"
+msgstr "Registrierungsprofil"
+
+#: registration/models.py:121
+msgid "registration profiles"
+msgstr "Registrierungsprofile"
+
+#: registration/views.py:141
+#, python-format
+msgid "The user \"%(obj)s\" was activated successfully."
+msgstr "Der Benutzer \"%(obj)s\" wurde erfolgreich aktiviert."
+
+#: registration/views.py:147
+msgid "Edit registration"
+msgstr "Registrierung bearbeiten"
+
+#: registration/views.py:198
+msgid "User registration"
+msgstr "Anwender Registrierung"
+
+#: templates/403.html:5 templates/404.html:5
+msgid "Page not found"
+msgstr "Seite nicht gefunden"
+
+#: templates/500.html:4
+msgid "Server error"
+msgstr ""
+
+#: templates/500.html:6
+msgid "Server error (500)"
+msgstr ""
+
+#: templates/500.html:9
+msgid "Server Error <em>(500)</em>"
+msgstr ""
+
+#: templates/500.html:10
+msgid ""
+"There's been an error. It's been reported to the site administrators via e-"
+"mail and should be fixed shortly. Thanks for your patience."
+msgstr ""
+
+#: templates/base.html:42
+msgid "administration"
+msgstr "Administration"
+
+#: templates/base.html:46
+#: templates/registration/change_user_registration_form.html:7
+#: templates/registration/user_registration_list.html:11
+msgid "User Registration List"
+msgstr "Registrierungs Liste"
+
+#: templates/base.html:50 templates/accounts/application/add_user_done.html:9
+#: templates/accounts/application/add_user_form.html:9
+#: templates/accounts/application/change_user_form.html:10
+#: templates/accounts/application/user_list.html:11
+msgid "User List"
+msgstr "Benutzer Liste"
+
+#: templates/base.html:51 templates/accounts/application/add_user_done.html:10
+#: templates/accounts/application/add_user_form.html:10
+#: templates/accounts/application/add_user_form.html:21
+msgid "Add User"
+msgstr "Benutzer hinzufügen"
+
+#: templates/base.html:56 templates/accounts/profile_form.html:12
+msgid "User profile"
+msgstr "Benutzer Profil"
+
+#: templates/base.html:57 templates/accounts/password_change_done.html:12
+#: templates/accounts/password_change_form.html:4
+#: templates/accounts/password_change_form.html:11
+#: templates/accounts/password_change_form.html:17
+msgid "Password change"
+msgstr ""
+
+#: templates/base.html:72
+msgid "About us"
+msgstr ""
+
+#: templates/base.html:74 templates/accounts/contact_form.html:11
+#: templates/accounts/contact_thanks.html:11
+msgid "Contact"
+msgstr "Kontakt"
+
+#: templates/base_site.html:4 templates/base_site.html.py:5
+#: templates/accounts/contact_form.html:4
+#: templates/accounts/contact_thanks.html:4
+#, python-format
+msgid "%(brand)s"
+msgstr ""
+
+#: templates/global_navigation.html:20
+msgid "Change your profile settings or passwort"
+msgstr "Ändere Dein Profil oder Passwort"
+
+#: templates/global_navigation.html:22 templates/admin/base_site.html:22
+msgid "Log out"
+msgstr ""
+
+#: templates/global_navigation.html:24 templates/accounts/login.html:14
+#: templates/accounts/login.html.py:53
+#: templates/accounts/login_profile_form.html:4
+#: templates/accounts/password_reset_complete.html:12
+msgid "Log in"
+msgstr ""
+
+#: templates/global_navigation.html:32
+#, python-format
+msgid ""
+"Please validate JavaScript to enable all features. <a href=\"%(url)s\" "
+"target=\"_blank\">Read this page for more help</a>"
+msgstr ""
+
+#: templates/home.html:20
+msgid "Welcome,"
+msgstr ""
+
+#: templates/home.html:23
+msgid "Applications"
+msgstr "Anwendungen"
+
+#: templates/home.html:31
+#, python-format
+msgid "Welcome, at the %(brand)s Single Sign-On home page."
+msgstr "Willkommen auf der %(brand)s Single Sign-On Startseite"
+
+#: templates/home.html:34
+#, python-format
+msgid "Would you like <a href=\"%(login_url)s\">to log yourself</a> in?"
+msgstr "Möchtest Du Dich <a href=\"%(login_url)s\">Anmelden</a>?"
+
+#: templates/accounts/account_created_email.txt:2
+#, python-format
+msgid ""
+"You're receiving this e-mail because a user account at %(site_name)s was "
+"created for you."
+msgstr ""
+"Du hast diese E-mail bekommen, da ein Konto auf %(site_name)s für Dich "
+"angelegt wurde."
+
+#: templates/accounts/account_created_email.txt:4
+#: templates/accounts/password_reset_email.html:4
+#: templates/registration/set_password_email.txt:4
+msgid "Please go to the following page and choose a new password:"
+msgstr "Bitte gehe zur folgenden Seite und wähle ein neues Passwort: "
+
+#: templates/accounts/account_created_email.txt:8
+#: templates/registration/set_password_email.txt:8
+#, python-format
+msgid ""
+"You can login with your username %(username)s or e-mail address %(email)s"
+msgstr ""
+"Du kannst Dich mit Deinem Benutzernamen %(username)s oder Deiner E-mail "
+"Adresse %(email)s anmelden"
+
+#: templates/accounts/account_created_email.txt:11
+#: templates/accounts/password_reset_email.html:12
+#: templates/registration/set_password_email.txt:11
+#: templates/streaming/password_resend_email.html:7
+#, python-format
+msgid "The %(site_name)s team"
+msgstr ""
+
+#: templates/accounts/account_created_email_subject.txt:2
+#, python-format
+msgid "A user account at %(site_name)s was created for you"
+msgstr "Ein Benutzer Konto auf %(site_name)s wurde für Dich angelegt"
+
+#: templates/accounts/contact_form.html:4
+#: templates/accounts/contact_form.html:17
+#: templates/accounts/contact_thanks.html:4
+#: templates/accounts/contact_thanks.html:17
+msgid "Contact Information"
+msgstr "Kontakt Information"
+
+#: templates/accounts/contact_form.html:31
+#: templates/accounts/login_profile_form.html:18
+#: templates/accounts/password_change_form.html:22
+#: templates/accounts/password_reset_confirm.html:17
+#: templates/accounts/profile_form.html:36
+#: templates/accounts/application/add_user_form.html:39
+#: templates/accounts/application/change_user_form.html:36
+#: templates/registration/change_user_registration_form.html:33
+#: templates/registration/registration_form.html:11
+#: templates/registration/validation_confirm.html:18
+msgid "Please correct the error below."
+msgid_plural "Please correct the errors below."
+msgstr[0] "Bitte korrigiere den Fehler unten."
+msgstr[1] "Bitte korrigiere die Fehler unten."
+
+#: templates/accounts/contact_form.html:38
+msgid "Send"
+msgstr "Senden"
+
+#: templates/accounts/contact_thanks.html:18
+msgid ""
+"Thank you for your message. We will answer you, this may take a few days."
+msgstr ""
+"Danke für Deine Nachricht. Wir werden Dir eine Antwort senden, dies kann "
+"einige Tage dauern."
+
+#: templates/accounts/logged_out.html:6
+msgid "Thanks for spending some quality time with the Web site today."
+msgstr "Vielen Dank, dass Du hier ein paar nette Minuten verbracht hast."
+
+#: templates/accounts/logged_out.html:9
+msgid ""
+"To protect your privacy:<br>If you are using a shared/public computer, "
+"please close all open browser windows and start a new session by opening a "
+"new browser window."
+msgstr ""
+"Zum Schutz Deiner Daten:<br>Wenn Du einen öffentlichen Computer verwendest, "
+"schließe bitte alle geöffneten Browser-Fenster und starte eine neue Sitzung "
+"durch das Öffnen eines neuen Browser-Fenster."
+
+#: templates/accounts/logged_out.html:12
+msgid "Log in again"
+msgstr ""
+
+#: templates/accounts/login.html:30
+#, python-format
+msgid "Log in with your %(brand)s account"
+msgstr "Mit Deinem %(brand)s-Konto anmelden"
+
+#: templates/accounts/login.html:60
+msgid "Forgotten your password?"
+msgstr "Passwort vergessen?"
+
+#: templates/accounts/login.html:68
+#, python-format
+msgid ""
+"New at %(site_name)s? <a href=\"%(registration_register_url)s\">Sign up</a>"
+msgstr ""
+"Neu bei %(site_name)s? <a href=\"%(registration_register_url)s"
+"\">Registrieren</a>"
+
+#: templates/accounts/login.html:75
+#: templates/accounts/login_profile_form.html:43
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: templates/accounts/login_profile_form.html:10
+#: templates/accounts/profile_form.html:21
+msgid "Profile Update"
+msgstr "Profil aktualisieren"
+
+#: templates/accounts/login_profile_form.html:12
+#: templates/accounts/profile_form.html:22
+msgid "Please update your Userprofile."
+msgstr "Aktualisiere Dein Benutzer Profil"
+
+#: templates/accounts/login_profile_form.html:41
+#: templates/accounts/profile_form.html:50
+#: templates/accounts/application/add_user_form.html:73
+#: templates/accounts/application/change_user_form.html:96
+#: templates/admin/registration/registrationprofile/change_form.html:8
+msgid "Save"
+msgstr ""
+
+#: templates/accounts/login_profile_form.html:43
+msgid "or"
+msgstr "oder"
+
+#: templates/accounts/password_change_done.html:4
+#: templates/accounts/password_change_done.html:13
+#: templates/accounts/password_change_done.html:19
+msgid "Password change successful"
+msgstr ""
+
+#: templates/accounts/password_change_done.html:20
+msgid "Your password was changed."
+msgstr "Dein Passwort wurde geändert."
+
+#: templates/accounts/password_change_form.html:18
+msgid ""
+"Please enter your old password, for security's sake, and then enter your new "
+"password twice so we can verify you typed it in correctly."
+msgstr ""
+"Bitte gib aus Sicherheitsgründen erst Dein altes Passwort und darunter dann "
+"zweimal (um sicherzustellen, dass Du es korrekt eingegeben hast) das neue "
+"Passwort ein."
+
+#: templates/accounts/password_change_form.html:31
+#: templates/accounts/password_reset_confirm.html:25
+msgid "Change my password"
+msgstr ""
+
+#: templates/accounts/password_resend_done.html:4
+#: templates/accounts/password_resend_done.html:8
+msgid "Password resend successful"
+msgstr "Passwort wurde erfolgreich zugesendet"
+
+#: templates/accounts/password_resend_done.html:10
+msgid ""
+"We've e-mailed you your password to the e-mail address you submitted. You "
+"should be receiving it shortly."
+msgstr ""
+"Wir haben Dir eine E-Mail mit Deinem Passwort an die von Dir angegebene E-"
+"Mail-Adresse geschickt. Du solltest diese in Kürze erhalten."
+
+#: templates/accounts/password_reset_complete.html:4
+#: templates/accounts/password_reset_complete.html:8
+msgid "Password reset complete"
+msgstr ""
+
+#: templates/accounts/password_reset_complete.html:10
+msgid "Your password has been set.  You may go ahead and log in now."
+msgstr "Dein Passwort wurde zurückgesetzt. Du kannst Dich nun anmelden."
+
+#: templates/accounts/password_reset_confirm.html:4
+#: templates/accounts/password_reset_form.html:4
+#: templates/accounts/password_reset_form.html:8
+msgid "Password reset"
+msgstr ""
+
+#: templates/accounts/password_reset_confirm.html:10
+msgid "Enter new password"
+msgstr ""
+
+#: templates/accounts/password_reset_confirm.html:12
+msgid ""
+"Please enter your new password twice so we can verify you typed it in "
+"correctly."
+msgstr ""
+"Bitte gib Dein neues Passwort zweimal ein, damit wir überprüfen können, ob "
+"es richtig eingetippt wurde."
+
+#: templates/accounts/password_reset_confirm.html:30
+msgid "Password reset unsuccessful"
+msgstr ""
+
+#: templates/accounts/password_reset_confirm.html:31
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used.  Please request a new password reset."
+msgstr ""
+"Der Link zum Zurücksetzen Deines Passworts ist ungültig, wahrscheinlich weil "
+"er schon einmal benutzt wurde. Bitte setze Dein Passwort erneut zurück."
+
+#: templates/accounts/password_reset_confirm.html:35
+msgid "Forgotten your password or username?"
+msgstr ""
+
+#: templates/accounts/password_reset_done.html:4
+#: templates/accounts/password_reset_done.html:7
+msgid "Password reset successful"
+msgstr ""
+
+#: templates/accounts/password_reset_done.html:8
+msgid ""
+"We've e-mailed you instructions for setting your password to the e-mail "
+"address you submitted. You should be receiving it shortly."
+msgstr ""
+"Wir haben Dir eine E-Mail mit Anweisungen zum Zurücksetzen Deines Passwort "
+"an die von Dir angegebene E-Mail-Adresse geschickt. Du solltest diese in "
+"Kürze erhalten."
+
+#: templates/accounts/password_reset_email.html:2
+#, python-format
+msgid ""
+"You're receiving this e-mail because you requested a password reset for your "
+"user account at %(site_name)s."
+msgstr ""
+"Du erhältst diese E-Mail, da Du das Passwort für Deinen %(site_name)s "
+"Account zurücksetzen lassen möchtest."
+
+#: templates/accounts/password_reset_email.html:8
+msgid "Your username, in case you've forgotten:"
+msgstr "Dein Benutzername, falls Du ihn vergessen hast:"
+
+#: templates/accounts/password_reset_email.html:10
+msgid "Thanks for using our site!"
+msgstr "Vielen Dank, dass Du unsere Website benutzt!"
+
+#: templates/accounts/password_reset_form.html:9
+msgid ""
+"Forgotten your password? Enter your e-mail address below, and we'll e-mail "
+"instructions for setting a new one."
+msgstr ""
+"Passwort vergessen? Einfach Deine E-Mail-Adresse eingeben und wir senden Dir "
+"Anweisungen zum Zurücksetzen Deines Passworts."
+
+#: templates/accounts/password_reset_form.html:15
+msgid "Reset my password"
+msgstr ""
+
+#: templates/accounts/password_reset_subject.txt:2
+#, python-format
+msgid "Password reset on %(site_name)s"
+msgstr "Wähle Dein Passwort auf %(site_name)s"
+
+#: templates/accounts/profile_form.html:5
+msgid "Profile"
+msgstr ""
+
+#: templates/accounts/application/add_user_done.html:16
+msgid "User added successfully"
+msgstr "Der Benutzer wurde erfolgeich hinzugefügt"
+
+#: templates/accounts/application/add_user_done.html:18
+msgid "A new User was created."
+msgstr "Ein neuer Benutzer wurde angelegt."
+
+#: templates/accounts/application/add_user_done.html:19
+msgid "The new user got an email with instructions for setting a password."
+msgstr ""
+"Der neue Benutzer hat eine E-mail mit Anweisungen zum Erstellen eines "
+"Passworts erhalten."
+
+#: templates/accounts/application/add_user_done.html:37
+msgid "Organisations"
+msgstr "Zentren"
+
+#: templates/accounts/application/add_user_done.html:47
+msgid "Add another user"
+msgstr "Weiteren Benutzer hinzufügen"
+
+#: templates/accounts/application/add_user_form.html:23
+msgid "Please enter the user data for the new account."
+msgstr "Trage bitte die Daten für den neuen Benutzer ein."
+
+#: templates/accounts/application/add_user_form.html:24
+msgid ""
+"After the account was created, the new user will receive an email with "
+"instructions for setting a password."
+msgstr ""
+"Nachdem das Konto erstellt wurde, erhält der neue Benutzer eine E-mail mit "
+"Anweisungen zum Festlegen seines Passworts."
+
+#: templates/accounts/application/add_user_form.html:45
+#: templates/accounts/application/change_user_form.html:42
+msgid "User data"
+msgstr "Benutzer Daten"
+
+#: templates/accounts/application/change_user_form.html:11
+msgid "Change User"
+msgstr ""
+
+#: templates/accounts/application/change_user_form.html:68
+msgid "Registration"
+msgstr "Registrierung"
+
+#: templates/accounts/application/change_user_form.html:94
+msgid "Save and add another"
+msgstr "Speichern und einen neuen Hinzufügen"
+
+#: templates/accounts/application/change_user_form.html:95
+#: templates/admin/registration/registrationprofile/change_form.html:11
+#: templates/registration/change_user_registration_form.html:100
+msgid "Save and continue editing"
+msgstr ""
+
+#: templates/accounts/application/user_list.html:4
+#: templates/registration/user_registration_list.html:4
+msgid "users"
+msgstr "Benutzer"
+
+#: templates/accounts/application/user_list.html:42
+#: templates/registration/user_registration_list.html:40
+msgid "search text"
+msgstr "Suchtext"
+
+#: templates/accounts/application/user_list.html:57
+#: templates/registration/user_registration_list.html:54
+msgid "Select country"
+msgstr "Nach Land filtern"
+
+#: templates/accounts/application/user_list.html:61
+#: templates/registration/user_registration_list.html:58
+msgid "All countries"
+msgstr "Alle Länder"
+
+#: templates/accounts/application/user_list.html:74
+#: templates/registration/user_registration_list.html:71
+msgid "Select region"
+msgstr "Nach Region filtern"
+
+#: templates/accounts/application/user_list.html:78
+#: templates/registration/user_registration_list.html:75
+msgid "All regions"
+msgstr "Alle Regionen"
+
+#: templates/accounts/application/user_list.html:91
+#: templates/registration/user_registration_list.html:88
+msgid "Select center"
+msgstr "Nach Zentrum filtern"
+
+#: templates/accounts/application/user_list.html:95
+#: templates/registration/user_registration_list.html:92
+msgid "All centers"
+msgstr "Alle Zentren"
+
+#: templates/accounts/application/user_list.html:108
+msgid "Select application role"
+msgstr "Nach Anwendungsrolle filtern"
+
+#: templates/accounts/application/user_list.html:112
+msgid "All application roles"
+msgstr "Alle Anwendungsrollen"
+
+#: templates/accounts/application/user_list.html:124
+#: templates/accounts/application/user_list.html:133
+msgid "active users"
+msgstr "aktive Benutzer"
+
+#: templates/accounts/application/user_list.html:125
+#: templates/accounts/application/user_list.html:132
+msgid "inactive users"
+msgstr "inaktive Benutzer"
+
+#: templates/accounts/application/user_list.html:126
+msgid "Select active/inactive"
+msgstr "Nach aktiv/inaktiv filtern"
+
+#: templates/accounts/application/user_list.html:131
+#: templates/registration/user_registration_list.html:111
+msgid "All"
+msgstr ""
+
+#: templates/accounts/application/user_list.html:147
+msgid "username"
+msgstr ""
+
+#
+#: templates/accounts/application/user_list.html:152
+#: templates/registration/user_registration_list.html:139
+msgid "email"
+msgstr ""
+
+#: templates/accounts/application/user_list.html:153
+msgid "last login"
+msgstr ""
+
+#: templates/accounts/application/user_list.html:154
+msgid "date joined"
+msgstr ""
+
+#: templates/accounts/email/change_email.html:5
+#, python-format
+msgid "model %(change.content_type)s has been changed %(change.user)s "
+msgstr ""
+
+#: templates/accounts/email/change_email.html:11
+msgid "Date/time"
+msgstr ""
+
+#: templates/accounts/email/change_email.html:15
+msgid "User"
+msgstr ""
+
+#: templates/accounts/email/change_email.html:19
+msgid "Object id"
+msgstr ""
+
+#: templates/accounts/email/change_email.html:23
+msgid "Object repr"
+msgstr ""
+
+#: templates/accounts/email/change_email.html:27
+msgid "Action"
+msgstr ""
+
+#: templates/accounts/includes/password_requirements.html:2
+msgid "Your password must fulfill the following requirements:"
+msgstr "Dein Passwort muss die folgenden Anforderungen erfüllen:"
+
+#: templates/accounts/includes/password_requirements.html:4
+#, python-format
+msgid "Must be %(MIN_LENGTH)s characters or more"
+msgstr "Muss %(MIN_LENGTH)s oder mehr Zeichen enthalten"
+
+#: templates/accounts/includes/password_requirements.html:10
+#, python-format
+msgid "Must contain %(DIGITS)s or more digits"
+msgstr ""
+
+#: templates/admin/base_site.html:9
+#, python-format
+msgid "%(brand)s SSO"
+msgstr ""
+
+#: templates/admin/base_site.html:12
+#, python-format
+msgid "%(brand)s Single Sign-On"
+msgstr ""
+
+#: templates/admin/base_site.html:12
+msgid "Site administration"
+msgstr ""
+
+#: templates/admin/base_site.html:19
+msgid "Documentation"
+msgstr ""
+
+#: templates/admin/base_site.html:21
+msgid "Change password"
+msgstr ""
+
+#: templates/admin/accounts/send_mail_selected_confirmation.html:29
+msgid "from email"
+msgstr ""
+
+#: templates/admin/accounts/send_mail_selected_confirmation.html:35
+msgid "subject"
+msgstr ""
+
+#: templates/admin/accounts/send_mail_selected_confirmation.html:41
+msgid "body"
+msgstr ""
+
+#
+#: templates/admin/accounts/send_mail_selected_confirmation.html:46
+msgid "Send mail"
+msgstr "E-mail Senden"
+
+#: templates/admin/registration/registrationprofile/change_form.html:9
+msgid "Delete"
+msgstr ""
+
+#: templates/admin/registration/registrationprofile/change_form.html:10
+msgid "Save and activate account"
+msgstr "Speichern und Konto aktivieren"
+
+#
+#: templates/include/_email_field.html:10
+#: templates/include/_user_field.html:10
+msgid "Send email"
+msgstr "E-mail Senden"
+
+#: templates/include/filter.html:2
+#, python-format
+msgid " By %(filter_title)s "
+msgstr ""
+
+#: templates/include/table_header.html:10
+msgid "Remove from sorting"
+msgstr ""
+
+#: templates/include/table_header.html:11
+#, python-format
+msgid "Sorting priority: %(priority_number)s"
+msgstr ""
+
+#: templates/include/table_header.html:12
+msgid "Toggle sorting"
+msgstr ""
+
+#: templates/registration/change_user_registration_form.html:8
+msgid "Edit User Registration"
+msgstr "Anwender Registrierung bearbeiten"
+
+#: templates/registration/change_user_registration_form.html:20
+#: templates/registration/change_user_registration_form.html:43
+msgid "User Registration"
+msgstr "Anwender Registrierung"
+
+#: templates/registration/change_user_registration_form.html:38
+msgid "The user was already activated"
+msgstr "Der Anwender wurde schon aktiviert"
+
+#: templates/registration/change_user_registration_form.html:101
+msgid "Save and activate"
+msgstr "Speichern und Konto aktivieren"
+
+#: templates/registration/registration_closed.html:4
+#: templates/registration/registration_closed.html:7
+msgid "Registration closed"
+msgstr "Registrierung geschlossen"
+
+#: templates/registration/registration_closed.html:12
+#, python-format
+msgid ""
+"Please try <a href=\"%(registration_register_url)s\">registering again</a> "
+"later."
+msgstr ""
+"Bitte versuche Dich später zu <a href=\"%(registration_register_url)s"
+"\">Registrieren</a>."
+
+#: templates/registration/registration_done.html:4
+#: templates/registration/registration_done.html:7
+msgid "Registration done"
+msgstr "Registrierung durchgeführt"
+
+#: templates/registration/registration_done.html:8
+msgid ""
+"We will send you an e-mail with an validation link which you'll need to "
+"click to verify this account."
+msgstr "Du bekommst eine E-mail mit einem Link zum Bestätigen Deines Kontos."
+
+#: templates/registration/registration_done.html:9
+msgid "Check your email."
+msgstr "Bitte prüfe Deine E-mails."
+
+#: templates/registration/registration_form.html:4
+msgid "Register for an account"
+msgstr "Registriere Dich für ein Konto"
+
+#: templates/registration/registration_form.html:8
+#, python-format
+msgid "Sign up for %(site_name)s"
+msgstr "Registriere Dich bei %(site_name)s"
+
+#: templates/registration/registration_form.html:19
+msgid "Register"
+msgstr "Registrieren"
+
+#: templates/registration/set_password_email.txt:2
+#, python-format
+msgid ""
+"You're receiving this e-mail because you created a user account at "
+"%(site_name)s."
+msgstr ""
+"Du hast diese E-mail bekommen, da Du ein Konto auf %(site_name)s angelegt "
+"hast."
+
+#: templates/registration/set_password_subject.txt:2
+#, python-format
+msgid "Set your password on %(site_name)s"
+msgstr "Wähle Dein Passwort auf %(site_name)s"
+
+#: templates/registration/user_registration_list.html:104
+#: templates/registration/user_registration_list.html:112
+msgid "verified users"
+msgstr "Verifizierte Benutzer"
+
+#: templates/registration/user_registration_list.html:105
+#: templates/registration/user_registration_list.html:113
+msgid "not verified users"
+msgstr "Nicht verifizierte Benutzer"
+
+#: templates/registration/user_registration_list.html:106
+msgid "Select verified filter"
+msgstr "Nach verifiziert filtern"
+
+#: templates/registration/user_registration_list.html:134
+msgid "verified by user"
+msgstr ""
+
+#: templates/registration/user_registration_list.html:140
+msgid "phone"
+msgstr ""
+
+#: templates/registration/validation_complete.html:4
+#: templates/registration/validation_complete.html:8
+msgid "Registration complete"
+msgstr "Registrierung abgeschlossen"
+
+#: templates/registration/validation_complete.html:10
+msgid ""
+"Your registration and e-mail address has been validated. You will receive an "
+"e-mail when your account is activated. This may take a few days."
+msgstr ""
+"Deine Registrierung und E-mail Adresse wurde bestätigt. Du erhältst eine E-"
+"mail, wenn Dein Konto aktiviert wurde. Dies kann einige Tage dauern."
+
+#: templates/registration/validation_confirm.html:4
+#: templates/registration/validation_confirm.html:12
+msgid "Confirm Registration"
+msgstr "Registrierung bestätigen"
+
+#: templates/registration/validation_confirm.html:14
+#, python-format
+msgid ""
+"Please confirm registration and validate your e-mail address <b>%(email)s</"
+"b>."
+msgstr ""
+"Bitte bestätige Deine Registrierung und Deine E-mail Adresse <b>%(email)s</"
+"b>."
+
+#: templates/registration/validation_confirm.html:25
+msgid "Confirm"
+msgstr "Bestätigen"
+
+#: templates/registration/validation_confirm.html:33
+msgid "Confirm Registration failed"
+msgstr ""
+
+#: templates/registration/validation_confirm.html:35
+msgid ""
+"The validation link was invalid, possibly because it has already been used."
+msgstr ""
+
+#: templates/registration/validation_email.txt:1
+#, python-format
+msgid "Thank you for registering an account at %(site_name)s."
+msgstr "Danke für die Registrierung eines Kontos auf %(site_name)s."
+
+#: templates/registration/validation_email.txt:2
+msgid ""
+"To validate your email and registration, please visit the following page:"
+msgstr ""
+"Bitte gehe zu folgender Seite um Dein Konto und Deine E-mail zu bestätigen:"
+
+#: templates/registration/validation_email.txt:6
+#, python-format
+msgid ""
+"This page will expire in %(expiration_days)s day"
+"%(expiration_days|pluralize)s.\n"
+"\n"
+"***\n"
+"\n"
+"If you didn't register this account you can delete this email."
+msgstr ""
+"Diese Seite ist %(expiration_days)s Tag%(expiration_days|pluralize)s "
+"gültig.\n"
+"\n"
+"***\n"
+"\n"
+"Wenn Du Dieses Konto nicht registriert hast, kannst Du diese E-Mail löschen."
+
+#: templates/registration/validation_email_subject.txt:2
+#, python-format
+msgid "Validate your e-mail on %(site_name)s"
+msgstr "Bestätige Deine E-mail Adresse auf %(site_name)s"
+
+#: templates/registration/include/_user_search_field.html:11
+msgid "Find user"
+msgstr "Benutzer finden"
+
+#: templates/streaming/password_resend_email.html:2
+#, python-format
+msgid ""
+"You're receiving this e-mail because you requested to resend your password "
+"for your user account at %(site_name)s."
+msgstr ""
+"Du erhältst diese E-Mail, da Du Dein Passwort für Deinen %(site_name)s "
+"Account zugesendet haben möchtest."
+
+#: templates/streaming/password_resend_email.html:4
+msgid "Username:"
+msgstr ""
+
+#: templates/streaming/password_resend_email.html:5
+msgid "Password:"
+msgstr ""
+
+#: templates/streaming/password_resend_subject.txt:2
+#, python-format
+msgid "Password resend on %(site_name)s"
+msgstr "Passwort von %(site_name)s zusenden"

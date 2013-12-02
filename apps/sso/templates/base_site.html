@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block brand %}{% blocktrans %}{{ brand }}{% endblocktrans %}{% endblock %}
+{% block title %}{% blocktrans %}{{ brand }}{% endblocktrans %} | {{ title }}{% endblock %}

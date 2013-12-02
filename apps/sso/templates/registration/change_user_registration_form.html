@@ -1,0 +1,107 @@
+{% extends "base_form.html" %}
+{% load i18n admin_static %}
+
+{% block breadcrumb %}
+<ul class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+    <li><a href="{% url 'registration:user_registration_list' %}">{% trans 'User Registration List' %}</a></li>
+    <li class="active">{% trans 'Edit User Registration' %}</li>
+</ul> 
+{% endblock breadcrumb %}
+
+{% block form %}
+<form class="form-horizontal" action="" method="post">{% csrf_token %} 
+    {# Include the hidden fields in the form #}
+    {% for hidden in form.hidden_fields %}
+    {{ hidden }}
+    {% endfor %}    
+
+    <div class="">
+	    <legend>{% trans 'User Registration' %} - {{ form.user }}</legend>
+	    {% block messages %}
+	      {% if messages %}
+	      {% for message in messages %}
+	      <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">
+	        {{ message }}
+	      </div>
+	      {% endfor %}
+	      {% endif %}
+	    {% endblock messages %}
+	    
+	    {% if form.errors %}
+	        <div class="alert alert-danger">
+	        {% blocktrans count counter=form.errors.items|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
+	        </div>
+	    {% endif %}
+	
+	    {% if form.user.is_active %}
+	        <div class="alert">{% trans 'The user was already activated' %}</div>            
+	    {% endif %}
+    </div>
+        
+    <ul class="nav nav-tabs" id="myTab">
+        <li class="active"><a data-toggle="tab" href="#user">{% trans 'User Registration' %}</a></li>
+        <li><a data-toggle="tab" href="#app_roles">{{ form.application_roles.label }}</a></li>
+        <li><a data-toggle="tab" href="#notes">{{ form.notes.label }}</a></li>
+    </ul>
+    
+    <div class="tab-content">
+        <div class="tab-pane active" id="user">
+            <div>        
+				{% include 'include/_field.html' with field=form.first_name %}
+				{% include 'include/_field.html' with field=form.last_name %}
+				{% include 'include/_field.html' with field=form.organisations %}
+				{% include 'include/_email_field.html' with field=form.email %}          
+				{% include 'include/_field.html' with field=form.phone %}            
+				{% include 'registration/include/_user_search_field.html' with field=form.known_person1 %}
+				{% include 'registration/include/_user_search_field.html' with field=form.known_person2 %}
+				{% include 'include/_field.html' with field=form.date_registered %}
+				{% include 'include/_field.html' with field=form.country %}
+				{% include 'include/_field.html' with field=form.city %}
+				{% include 'include/_field.html' with field=form.postal_code %}
+				{% include 'include/_field.html' with field=form.street %}
+				{% include 'include/_field.html' with field=form.purpose %}
+				{% include 'include/_user_field.html' with field=form.last_modified_by_user %}
+				{% include 'include/_field.html' with field=form.is_verified %}
+				{% include 'include/_user_field.html' with field=form.verified_by_user %}          
+                      
+            </div>
+        </div>        
+   
+      <div class="tab-pane" id="app_roles">
+           <div>
+             {% with field=form.application_roles %}
+             <div class="row form-group {% if field.errors %}has-error{% endif %}">
+                <div class="col-sm-12">
+                 {{ field }}{% if field.help_text or field.errors %}<span class="help-block">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
+                </div>
+             </div>
+             {% endwith %}
+          </div>
+      </div>
+        
+      <div class="tab-pane" id="notes">
+            <div>
+                {% with field=form.notes %}
+		          <div class="row form-group {% if field.errors %}has-error{% endif %}">
+		            <div class="col-sm-12">
+			           {{ field }}{% if field.help_text or field.errors %}<span class="help-inline">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
+			         </div>
+		          </div>
+                {% endwith %}
+            </div>
+       </div>
+  </div>
+  
+  
+    {% if not form.user.is_active %}
+     <div class="form-group">
+      <div class="col-sm-12">
+            <button type="submit" class="btn btn-default" name="_continue" {{ onclick_attrib }}>{% trans 'Save and continue editing' %}</button>
+            <button type="submit" class="btn btn-primary">{% trans 'Save and activate' %}</button>
+      </div>
+     </div>
+    {% endif %}
+			
+</form>
+{% endblock %}

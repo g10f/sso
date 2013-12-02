@@ -1,0 +1,24 @@
+{% extends "centered_form.html" %}
+{% load i18n static %}
+
+{% block title %}{% trans 'Register for an account' %}{% endblock %}
+
+{% block form %}
+<form class="form-horizontal" action="" method="post">{% csrf_token %}
+    <legend>{% blocktrans %}Sign up for {{ site_name }}{% endblocktrans %}</legend>
+    {% if form.errors %}
+        <div class="alert alert-danger">
+        {% blocktrans count counter=form.errors.items|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
+        </div>
+    {% endif %}
+
+    {% include 'include/_form_snippet.html' %}
+    
+     <div class="form-group">
+         <div class="col-sm-offset-3 col-sm-9">
+             <button type="submit" class="btn btn-primary">{% trans 'Register' %}</button>
+         </div>
+     </div>
+    
+</form>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+{% load admin_static %}
+
+{% block extrahead %}<link rel="shortcut icon" id="favicon" href="{{ STATIC_URL }}ico/favicon.ico" />{% endblock %}
+
+{% block extrastyle %}<link rel="stylesheet" type="text/css" href="{% static "admin/css/mybase.css" %}" />{% endblock %}
+
+{% block title %}{% blocktrans %}{{ brand }} SSO{% endblocktrans %} | {{ title }}{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">{% blocktrans %}{{ brand }} Single Sign-On{% endblocktrans %} {% trans 'Site administration' %}</h1>
+{% endblock %}
+
+{% block userlinks %}
+    <strong><a href="{% url 'home' %}">{% trans 'Home' %}</a></strong> /
+    {% url 'django-admindocs-docroot' as docsroot %}
+    {% if docsroot %}
+        <a href="{{ docsroot }}">{% trans 'Documentation' %}</a> /
+    {% endif %}
+    <a href="{% url 'accounts:password_change' %}">{% trans 'Change password' %}</a> /
+    <a href="{% url 'accounts:logout' %}">{% trans 'Log out' %}</a>
+{% endblock %}
+
+    
+{% block nav-global %}{% endblock %}
+

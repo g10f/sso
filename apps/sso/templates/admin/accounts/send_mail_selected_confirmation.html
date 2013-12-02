@@ -1,0 +1,49 @@
+{% extends "admin/base_site.html" %}
+{% load i18n l10n admin_static admin_modify %}
+
+{% load admin_urls %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}" />{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:app_list' app_label=app_label %}">{{ app_label|capfirst|escape }}</a>
+&rsaquo; <a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+&rsaquo; {% trans 'Send information mail to selected users' %}
+</div>
+{% endblock %}
+
+{% block content %}
+<ul>{{ queryset|unordered_list }}</ul>
+<form action="" method="post">{% csrf_token %}
+<div>
+{% for obj in queryset %}
+<input type="hidden" name="{{ action_checkbox_name }}" value="{{ obj.pk|unlocalize }}" />
+{% endfor %}
+<input type="hidden" name="action" value="mark_info_mail" />
+<input type="hidden" name="post" value="yes" />
+<fieldset class="module aligned wide">
+<div class="form-row">
+    <div>
+        <label for="id_from_email">{% trans 'from email' %}</label>
+        <input type="text" class="vTextField" name="from_email" id="id_from_email"/>
+    </div>
+</div>
+<div class="form-row">
+    <div>
+        <label for="id_subject">{% trans 'subject' %}</label>
+        <input class="vTextField" type="text" name="subject" id="id_subject"/>
+    </div>
+</div>
+<div class="form-row">
+    <div>
+        <label for="id_body">{% trans 'body' %}</label>
+        <textarea class="vLargeTextField" rows="30" cols="80" name="body" id="id_body"></textarea>
+   </div>
+</div>
+</fieldset>
+<button type="submit">{% trans "Send mail" %}</button>
+</div>
+</form>
+{% endblock %}

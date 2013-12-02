@@ -1,0 +1,42 @@
+{% extends "centered_form.html" %}
+{% load i18n %}
+
+{% block title %}{% blocktrans %}{{ brand }}{% endblocktrans %} | {% trans 'Contact Information' %}{% endblock %}
+
+{% block nav_home_class %}active{% endblock %}
+
+{% block breadcrumb %}
+<ul class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+    <li class="active">{% trans 'Contact' %}</li>
+</ul> 
+{% endblock breadcrumb %}
+
+{% block form %}
+<form role="form" class="form-horizontal" action="" method="post">{% csrf_token %} 
+    <legend>{% trans 'Contact Information' %}</legend>
+    
+    {% block messages %}
+      {% if messages %}
+      {% for message in messages %}
+      <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">
+        {{ message }}
+      </div>
+      {% endfor %}
+      {% endif %}
+    {% endblock messages %}
+    
+    {% if form.errors %}
+        <div class="alert alert-danger">
+        {% blocktrans count counter=form.errors.items|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
+        </div>
+    {% endif %}
+
+    {% include 'include/_form_snippet.html' %}
+     <div class="form-group">
+         <div class="col-sm-offset-3 col-sm-9">
+             <button type="submit" class="btn btn-primary">{% trans 'Send' %}</button>
+         </div>
+     </div>
+</form>
+{% endblock %}

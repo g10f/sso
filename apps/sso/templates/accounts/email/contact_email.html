@@ -1,0 +1,10 @@
+{% load i18n %}{% autoescape off %}
+<html>
+<body>
+<h1>Contact message</h1>
+<p>subject: {{ subject }}  <p>
+from <a href="mailto:{{ email }}">{{ name }}</a> 
+<p>{{ message }}</p>
+</body>
+</html>
+{% endautoescape %}

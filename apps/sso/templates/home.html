@@ -1,0 +1,47 @@
+{% extends "base_site.html" %}
+{% load i18n %}
+
+{% block nav_home_class %}active{% endblock %}
+
+
+{% block left_content %}
+    {% if user.is_authenticated %}{{ block.super }}{% endif %}
+{% endblock %}
+
+{% block breadcrumb %}
+    {% if user.is_authenticated %}
+        <ol class="breadcrumb"><li class="active"><a href="{% url 'home' %}">{% trans 'Home' %}</a></li></ol>
+    {% endif %}
+{% endblock breadcrumb %}
+
+{% block right_content %}
+
+	{% if user.is_authenticated %}
+	    {% trans 'Welcome,' %}
+	    <strong>{% filter force_escape %}{% firstof user.first_name user.username %}{% endfilter %}</strong>. 
+	    {% if apps %}
+	    <h3>{% trans 'Applications' %}</h3>
+		    <ul>
+		    {% for app in user.get_apps %}
+			  <li><a href="{{ app.url }}">{{ app.title }}</a></li>
+			{% endfor %}
+			</ul>        
+        {% endif %}
+	{% else %}
+	    {% blocktrans %}Welcome, at the {{ brand }} Single Sign-On home page.{% endblocktrans %} 
+	    <br/><br/>
+	    <p>
+	    {% blocktrans %}Would you like <a href="{{ login_url }}">to log yourself</a> in?{% endblocktrans %}
+	    </p> 
+        
+        {% comment %}
+        {% url 'registration:registration_register' as registration_register_url %}
+        {% if registration_register_url %}
+        <p>        
+        {% blocktrans %}New at {{ site_name }}? <a href="{{ registration_register_url }}">Sign up</a>{% endblocktrans %}.
+        </p>
+        {% endif %}
+        {% endcomment %}
+	{% endif %}
+
+{% endblock right_content %}

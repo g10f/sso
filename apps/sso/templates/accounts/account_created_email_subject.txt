@@ -1,0 +1,3 @@
+{% load i18n %}{% autoescape off %}
+{% blocktrans %}A user account at {{ site_name }} was created for you{% endblocktrans %}
+{% endautoescape %}

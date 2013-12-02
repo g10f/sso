@@ -1,0 +1,21 @@
+{% extends "base_form.html" %}
+{% load i18n %}
+
+{% block title %}{% blocktrans %}{{ brand }}{% endblocktrans %} | {% trans 'Contact Information' %}{% endblock %}
+
+{% block nav_home_class %}active{% endblock %}
+
+{% block breadcrumb %}
+<ul class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+    <li class="active">{% trans 'Contact' %}</li>
+</ul> 
+{% endblock breadcrumb %}
+
+
+{% block form %}
+<h1>{% trans 'Contact Information' %}</h1>
+<p>{% trans "Thank you for your message. We will answer you, this may take a few days." %}</p>
+
+
+{% endblock %}

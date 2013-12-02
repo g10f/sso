@@ -1,0 +1,10 @@
+{% load i18n %}{% blocktrans %}Thank you for registering an account at {{ site_name }}.{% endblocktrans %}
+{% trans 'To validate your email and registration, please visit the following page:' %}
+
+{{ protocol }}://{{ domain }}{% url 'registration:validation_confirm' uidb64=uid token=token %}
+
+{% blocktrans %}This page will expire in {{ expiration_days }} day{{ expiration_days|pluralize }}.
+
+***
+
+If you didn't register this account you can delete this email.{% endblocktrans %}

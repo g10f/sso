@@ -1,0 +1,37 @@
+[ {
+	"pk" : "1",
+	"model" : "streaming.streaminguser",
+	"fields" : {
+		"email" : "user07@example.com",
+		"password" : "Z2VoZWltMDc=",
+		"center" : "N",
+		"admin" : "N",
+		"mailsent" : "J",
+		"created" : "2013-02-27T08:58:59.757824+01:00",
+		"subscriber" : "N"
+	}
+}, {
+	"pk" : "2",
+	"model" : "streaming.streaminguser",
+	"fields" : {
+		"email" : "admin@example.com",
+		"password" : "Z2VoZWltMDg=",
+		"center" : "J",
+		"admin" : "N",
+		"mailsent" : "J",
+		"created" : "2013-02-27T08:58:59.757824+01:00",
+		"subscriber" : "N"
+	}
+}, {
+	"pk" : "3",
+	"model" : "streaming.streaminguser",
+	"fields" : {
+		"email" : "testcenter1@example.com",
+		"password" : "Z2VoZWltMDg=",
+		"center" : "J",
+		"admin" : "N",
+		"mailsent" : "J",
+		"created" : "2013-02-27T08:58:59.757824+01:00",
+		"subscriber" : "N"
+	}
+} ]

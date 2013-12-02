@@ -1,0 +1,17 @@
+{% load i18n %}
+<div class="row form-group {% if field.errors %}error{% endif %}">
+  <label class="col-sm-3 control-label" for="id_{{ field.html_name }}">
+    {{ field.label }} 
+  </label>    
+  <div class="col-sm-9">
+    <div class="input-group">
+        {{ field }}
+        {% if field.value %}
+            <span class="input-group-btn">
+                <a href="{% url 'accounts:user_list' %}?q={{ field.value }}" class="btn btn-default" type="button"> <i class="glyphicon glyphicon-search" title="{% trans 'Find user' %}"></i></a>
+            </span>
+        {% endif %}
+    </div>    
+    {% if field.help_text or field.errors %}<span class="help-inline">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
+  </div>
+</div>

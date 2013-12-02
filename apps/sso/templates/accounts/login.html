@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}
+{% if brand == "DWBN" %}
+<style type="text/css">
+body {
+	padding-top: 0px;
+}
+</style>
+{% endif %}
+{% endblock extrastyle %}
+
+{% block title %}{% trans 'Log in' %}{% endblock %}
+
+{% block bodyclass %}{{ display }}{% endblock %}
+
+{% block navbar %}
+{% if brand == "DWBN" %}
+<div id="logo-header">
+    <div id="diamondway-logo">&nbsp;</div>               
+</div>
+{% endif %}
+{% endblock navbar %}
+
+
+{% block content %}
+<form class="form-signin" action="" method="post" id="login-form">{% csrf_token %}
+
+    <h3 class="form-signin-heading">{% blocktrans %}Log in with your {{ brand }} account{% endblocktrans %}</h3>
+    
+    {% block login_message %}{% endblock %}
+	
+    <div class="{% if form.username.errors %}has-error{% endif %}">{{ form.username }}</div>
+    <div class="{% if form.password.errors %}has-error{% endif %}">{{ form.password }}</div>
+           
+	<input type="hidden" name="this_is_the_login_form" value="1" /> {# used by the admin login #}
+	<input type="hidden" name="login_form_key" value="login_form" />
+	<input type="hidden" name="next" value="{{ next }}" />	  
+	  
+	{% block extra_fields %}{% endblock %}
+  
+    {% if form.errors %}
+    <div class="alert alert-danger">
+		{% for key, errors in form.errors.items %} 
+		  {% for error in errors %}{{ error }}<br>{% endfor %}
+		{% endfor %}
+    </div>
+    {% endif %}
+
+
+    <div class="form-group">
+       <button class="btn btn-lg btn-primary btn-block" type="submit">{% trans 'Log in' %}</button>
+    </div>
+   
+    <div class="form-group">
+       {% url 'accounts:password_reset' as password_reset_url %}
+       {% if password_reset_url %}
+       <div class="password-reset-link">
+         <a target="_blank" href="{{ password_reset_url }}">{% trans 'Forgotten your password?' %}</a>
+       </div>
+       {% endif %}
+       
+       {% if registration_open %}
+       {% url 'registration:registration_register' as registration_register_url %}
+       {% if registration_register_url and registration_open %}
+       <div class="registration_link">
+           {% blocktrans %}New at {{ site_name }}? <a href="{{ registration_register_url }}">Sign up</a>{% endblocktrans %}.
+       </div>
+       {% endif %}
+       {% endif %}
+
+       {% if cancel_url %}
+       <div class="cancel">
+       <a class="" href="{{ cancel_url }}">{% trans 'Cancel' %}</a>
+       </div>
+       {% endif %}
+   </div>
+
+</form>
+{% endblock %}

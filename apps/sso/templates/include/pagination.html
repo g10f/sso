@@ -1,0 +1,16 @@
+
+{% load list %}
+{% load i18n %}
+<div>
+  <ul class="pagination">
+  {% for i in page_range %}
+     {% paginator_number page i cl%}
+  {% endfor %}
+  </ul>
+</div>
+<div>
+   {% paginator_info page %}
+   &nbsp; / &nbsp;
+   {{ page.paginator.count }}
+</div>
+ 

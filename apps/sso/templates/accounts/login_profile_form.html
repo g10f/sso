@@ -1,0 +1,50 @@
+{% extends "centered_form.html" %}
+{% load i18n admin_static %}
+
+{% block title %}{% trans 'Log in' %}{% endblock %}
+
+{% block accounts_login_class %}active{% endblock %}
+
+{% block form %}
+<form class="form-horizontal" action="" method="post" id="login-form">{% csrf_token %}
+    <legend>{% trans 'Profile Update' %}</legend>
+    
+    <p>{% trans "Please update your Userprofile." %}</p>
+
+    {% block login_message %}{% endblock %}
+
+    {% if form.errors and not form.non_field_errors %}
+    <div class="alert alert-danger">
+    {% blocktrans count counter=form.errors.items|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
+    </div>
+    {% endif %}
+    
+    {% if form.non_field_errors %}
+    {% for error in form.non_field_errors %}
+    <div class="alert alert-danger">
+        {{ error }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    
+    {% include 'include/_field.html' with field=form.username %}
+    {% include 'include/_field.html' with field=form.organisation %}
+    {% include 'include/_field.html' with field=form.first_name %}
+    {% include 'include/_field.html' with field=form.last_name %}
+    {% include 'include/_field.html' with field=form.email %} 
+        
+    <input type="hidden" name="login_form_key" value="login_profile_form" />
+    <input type="hidden" name="next" value="{{ next }}" />      
+    
+    {% block extra_fields %}{% endblock %}
+  
+   <button class="btn btn-primary" type="submit">{% trans 'Save' %}</button>
+   {% if cancel_url %}
+   &nbsp;{% trans 'or' %}&nbsp; <a class="btn btn-danger" href="{{ cancel_url }}">{% trans 'Cancel' %}</a>
+   {% endif %}
+</form>
+
+<script type="text/javascript">
+document.getElementById('id_username').focus()
+</script>
+{% endblock %}

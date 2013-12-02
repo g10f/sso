@@ -1,0 +1,34 @@
+{% load  i18n thumbnail %}
+<div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{% url 'home' %}">{% block brand %}{{ brand }}{% endblock %}</a>
+        </div>
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav" id="user_apps">
+            {% for app in user.get_app_urls %}
+                <li><a href="{{ app.url }}">{{ app.title }}</a></li>
+            {% endfor %}
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+            {% if user.is_authenticated %}
+                <li class="tool {% block accounts_settings_class %}{% endblock %}"><a href="{% url 'accounts:profile' %}" rel="tooltip" title="{% trans 'Change your profile settings or passwort' %}">
+                {% if user.picture %}{% thumbnail user.picture "30x30" as im %}<img class="icon-user" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">{% endthumbnail %}{% else %}<i class="glyphicon glyphicon-user"></i>{% endif %} {{ user.get_full_name }}</a></li>
+                <li><a href="{% url 'accounts:logout' %}">{% trans 'Log out' %}</a></li>
+                {% else %}
+                <li class="{% block accounts_login_class %}{% endblock %}"><a  href="{% url 'accounts:login' %}"><i class="glyphicon glyphicon-user"></i> {% trans 'Log in' %}</a></li>
+                {% endif %}
+            </ul><!-- /.navbar-right -->
+        </div><!--/.navbar-collapse -->
+    </div>
+</div>
+<noscript>
+    <div class="alert">
+        {% blocktrans with "http://enable-javascript.com/" as url %}Please validate JavaScript to enable all features. <a href="{{ url }}" target="_blank">Read this page for more help</a>{% endblocktrans %}
+	</div>
+</noscript>

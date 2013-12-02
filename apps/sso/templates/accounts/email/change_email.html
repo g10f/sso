@@ -1,0 +1,33 @@
+{% load i18n %}{% autoescape off %}
+<html><body>
+<h1>Change message</h1>
+<p>
+{% blocktrans %}model {{ change.content_type }} has been changed {{ change.user }} {% endblocktrans %}
+</p>
+
+<table>
+    <tbody>
+    <tr>
+        <th>{% trans 'Date/time' %}</th>
+        <td>{{ change.action_time|date:"DATETIME_FORMAT" }}</td>
+    </tr>
+    <tr>
+        <th>{% trans 'User' %}</th>
+        <td>{{ change.user.username }}{% if change.user.get_full_name %} ({{ change.user.get_full_name }}){% endif %}</td>
+    </tr>
+    <tr>
+        <th>{% trans 'Object id' %}</th>
+        <td>{{ change.object_id }}</td>
+    </tr>
+    <tr>
+        <th>{% trans 'Object repr' %}</th>
+        <td>{{ change.object_repr }}</td>
+    </tr>
+    <tr>
+        <th>{% trans 'Action' %}</th>
+        <td>{{ change.change_message }}</td>
+    </tr>
+    </tbody>
+</table>
+</body></html>
+{% endautoescape %}

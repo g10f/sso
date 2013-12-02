@@ -1,0 +1,90 @@
+{% load static i18n googleanalytics thumbnail %}
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}{% endblock %}</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="viewport" content="width=device-width">
+    <link rel="shortcut icon" href="{% static "ico/favicon.ico" %}" type="image/ico"/>
+    {% if debug and 0 %}<link rel="stylesheet/less" href="{% static "less/style.less" %}">{% endif %}
+    {% if debug and 0 %}<script src="{% static "js/vendor/less-1.5.0.min.js" %}"></script>{% endif %}
+    {% if debug and 1 %}<link rel="stylesheet" href="{% static "less/style-1.7.css" %}">{% endif %}
+    {% block style %}
+    {% if not debug and 1 %}<link rel="stylesheet" href="{% static "less/style-1.7.css" %}">{% endif %}
+    {% endblock style %}
+    {% block extrastyle %}{% endblock %}
+    <script src="{% static "js/vendor/modernizr-2.6.2-respond-1.1.0.min.js" %}"></script>
+    <script type="text/javascript">window.__media_prefix__ = "{% filter escapejs %}{% static "" %}{% endfilter %}";</script>
+    {% block extrahead %}{% endblock %}
+</head>
+<body class="{% block bodyclass %}{% endblock %}">
+    {% block body %}
+<!--[if lt IE 7]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
+    
+    {% block navbar %}
+    {% include "global_navigation.html" %}
+    {% endblock navbar %}
+    
+    <div class="{% block containerclass %}container{% endblock %}">      
+	    {% block breadcrumb %}{% endblock %}
+        
+        {% block content %}
+		<div class="row">
+		    <div class="col-md-3">
+		        {% block left_content %}
+				<div class="list-group">              
+				    {% if user.is_staff %}
+				    <a class="list-group-item" href="{% url 'admin:index' %}">SSO {% trans 'administration' %}</a>
+				    {% endif %}
+				    
+                    {% if perms.registration.change_registrationprofile %}
+                    <a class="list-group-item {% block nav_registration_user_list_class %}{% endblock %}" href="{% url 'registration:user_registration_list' %}">{% trans 'User Registration List' %}</a>
+                    {% endif %}
+                       
+				    {% if user.can_add_users %}
+                    <a class="list-group-item {% block nav_accounts_user_list_class %}{% endblock %}" href="{% url 'accounts:user_list' %}">{% trans 'User List' %}</a>
+				    <a class="list-group-item {% block nav_accounts_add_user_class %}{% endblock %}" href="{% url 'accounts:add_user' %}">{% trans 'Add User' %}</a>
+				    {% endif %}
+				    
+				    {% if user.is_authenticated %}
+				    
+				    <a class="list-group-item {% block nav_accounts_profile_class %}{% endblock %}" href="{% url 'accounts:profile' %}">{% trans 'User profile' %}</a>
+				    <a class="list-group-item {% block nav_accounts_password_change_class %}{% endblock %}" href="{% url 'accounts:password_change' %}">{% trans 'Password change' %}</a>
+				    {% endif %}
+				</div>
+				{% endblock left_content %}
+		      </div>
+		    <div class="col-md-9">
+		        <div class="">{% block right_content %}<h2>{% trans 'Home' %}</h2>{% endblock %}</div>
+		    </div>
+	  </div>
+      {% endblock content %}      
+
+      <hr>
+      {% block footer %}
+      <footer>
+        <ul class="footer-links">
+            <li><a href="{% url 'about' %}">{% trans 'About us' %}</a></li>
+            <li class="text-muted">·</li>
+            <li><a href="{% url 'accounts:contact' %}">{% trans 'Contact' %}</a></li>
+        </ul>
+      </footer>
+      {% endblock footer %}
+
+    </div> <!-- /container -->
+    
+    {% endblock body %}
+     
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="{% static "js/vendor/jquery-2.0.3.min.js" %}"><\/script>')</script>
+<script src="{% static "js/vendor/bootstrap.min.js" %}"></script>
+<script src="{% static "js/plugins.js" %}"></script>
+<script src="{% static "js/script.js" %}"></script>
+{% show_tracker %}
+</body>
+</html>

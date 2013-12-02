@@ -1,0 +1,39 @@
+{% extends "base_form.html" %}
+{% load i18n %}
+
+{% block title %}{% trans 'Confirm Registration' %}{% endblock %}
+
+{% block form %}
+
+{% if validlink %}
+
+<form class="form-horizontal"  action="" method="post">{% csrf_token %}
+
+    <legend>{% trans 'Confirm Registration' %}</legend>
+    
+    <p> {% blocktrans %}Please confirm registration and validate your e-mail address <b>{{ email }}</b>.{% endblocktrans %}</p>
+    
+    {% if form.errors %}
+        <div class="alert alert-danger">
+        {% blocktrans count counter=form.errors.items|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
+        </div>
+    {% endif %}
+
+	{% include 'include/_form_snippet.html' %}
+     <div class="form-group">
+         <div class="col-sm-12">
+             <button type="submit" class="btn btn-primary">{% trans 'Confirm' %}</button>
+         </div>
+     </div>
+
+</form>
+
+{% else %}
+
+<h1>{% trans 'Confirm Registration failed' %}</h1>
+
+<p>{% trans "The validation link was invalid, possibly because it has already been used." %}</p>
+
+{% endif %}
+
+{% endblock %}
