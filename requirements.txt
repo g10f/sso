@@ -8,5 +8,5 @@ south
 pycrypto==2.6.1
 oauthlib==0.6.0
 sorl-thumbnail
-pillow=2.2.1
+pillow==2.2.1
 selenium
