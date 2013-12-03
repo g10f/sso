@@ -141,7 +141,7 @@ username_placeholder = lazy(_username_placeholder, unicode)
 class UserCreationForm(forms.ModelForm):
     """
     UserCreationForm where no password is required
-    If the password is empty, an unusable password is automatically created
+    If the password is empty, an empty password is created
     """
     password1 = PasswordField(label=_("Password"), required=False, widget=bootstrap.PasswordInput())
     password2 = forms.CharField(label=_("Password confirmation"), required=False, widget=bootstrap.PasswordInput(),
