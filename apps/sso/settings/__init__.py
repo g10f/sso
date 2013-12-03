@@ -209,8 +209,8 @@ LOGGING_HANDLERS = ['mail_admins', 'error', ]
 if DEBUG:
     LOGGING_HANDLERS += ['debug', 'console']
 
-ERROR_LOGFILE = "../../logs/sso-django-error.log"
-INFO_LOGFILE = "../../logs/sso-django-info.log"
+ERROR_LOGFILE = "../../../logs/sso-django-error.log"
+INFO_LOGFILE = "../../../logs/sso-django-info.log"
 
 LOGGING = {
     'version': 1,
