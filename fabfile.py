@@ -1,4 +1,5 @@
 from __future__ import with_statement
+import posixpath
 from fabric.api import *
 from fabric.api import local, settings, abort, run, cd
 from fabric.contrib.console import confirm
@@ -6,15 +7,13 @@ from fabric.contrib import files
 from fabric.colors import red
 from fabtools import require
 import fabtools
-#from termcolor import colored
 
-#env.hosts = ['217.64.168.38']
 env.use_ssh_config = True
 env.apps = ['sso']
 # map valid  server names to enviroments, to ensure we deploy accurately
 valid_server_names = {
     'g10f': ['dwbn-sso.g10f.de', 'sso.g10f.de', 'sso2.g10f.de'],
-    '54.246.101.129': ['sso.elsapro.com'],
+    'elsapro': ['sso.elsapro.com'],
     'dwbn001': ['sso.dwbn.org'],
 }
     
@@ -86,18 +85,55 @@ server {
 }
 """
 
+NGINX_SSL_TEMPLATE = """\
+#ssl                       on;
+ssl_certificate           %(certroot)s/certificate.crt;
+ssl_certificate_key       %(certroot)s/certificate.key;
+ssl_ciphers               RC4:HIGH:!aNULL:!MD5;
+ssl_prefer_server_ciphers on;
+ssl_session_cache         shared:SSL:10m;
+"""
+
+STATIC_SITE_TEMPLATE = """\
+server {
+    listen 80;
+    server_name %(server_name)s;
+    # path for static files
+    root %(docroot)s;
+    return 301 https://$server_name$request_uri;
+}
+server {
+    listen 443 default_server ssl;
+    server_name %(server_name)s;
+    root %(docroot)s;
+    
+    # Media: images, video, audio, HTC, WebFonts
+    location ~* \.(?:jpg|jpeg|gif|png|ico|gz|svg|svgz|ttf|otf|woff|eot|mp4|ogg|ogv|webm)$ {
+      expires 1M;
+      access_log off;
+      add_header Cache-Control "public";
+      add_header Access-Control-Allow-Origin *;
+    }
+    
+    # CSS and Javascript
+    location ~* \.(?:css|js)$ {
+      expires 1y;
+      access_log off;
+      add_header Cache-Control "public";
+    }
+}
+"""
+
 GUNICORN_TEMPLATE = """\
 import multiprocessing
 import os
 
 bind = "unix:/tmp/%(server_name)s.gunicorn.sock"
 workers = multiprocessing.cpu_count() + 2
-pythonpath = '%(code_dir)s/apps'
+pythonpath = '%(code_dir)s/src/apps'
 errorlog = '%(code_dir)s/logs/gunicorn-error.log'
 os.environ['DEBUG'] = ""
 """
-
-    
 
 @task
 def compilemessages():
@@ -116,111 +152,133 @@ def test():
     with lcd('apps'):	
         local("~/envs/sso/bin/python ./manage.py test streaming accounts oauth2")
 
-def commit():
-    local("hg commit")
-
-def push():
-    local("hg push ssh://hg@bitbucket.org/GunnarScherf/sso")
-
 @task 
 def prepare_deploy():
     compilemessages()
     #test()
-    commit()
-    push()
+    local("git commit -a")
+    local("git push -u origin master")
 
-def working_copy(code_dir):
-    if not files.exists(code_dir):
-        run("hg clone ssh://hg@bitbucket.org/GunnarScherf/sso %(code_dir)s" % {'code_dir': code_dir})
-    else:
-        with cd(code_dir):
-            run("hg pull")
-            run("hg update")
-            sudo("chown www-data:www-data -R  ./apps")  
+@task
+def perms():
+    django.manage.run(command="update_permissions")
 
+def migrate_data(python):
+    run("%s ./src/apps/manage.py syncdb --noinput" % python)
+    run("%s ./src/apps/manage.py migrate accounts" % python)
 
-def migrate_data(python, new_db):
-    run("%s ./apps/manage.py syncdb --noinput" % python)
+@task
+def createsuperuser(server_name='', virtualenv='sso'): 
+    server_name = check_server_name(server_name)
+    code_dir = '/proj/%s' % server_name
+    python = '/envs/%(virtualenv)s/bin/python' % {'virtualenv': virtualenv}
+    with cd(code_dir):
+        run("%s ./src/apps/manage.py createsuperuser --username=admin --email=admin@g10f.de" % python)
     
-    #run("%s ./apps/manage.py migrate accounts 0001 --fake" % python)
-    run("%s ./apps/manage.py migrate accounts" % python)
-    # after migrate accounts
-    if new_db:
-        run("%s ./apps/manage.py createsuperuser --username=admin --email=admin@g10f.de --noinput" % python)
-    #run("%s ./apps/manage.py migrate oauth2" % python)
+@task
+def update_debian():
+    fabtools.deb.update_index()
+    fabtools.deb.upgrade(safe=False)
+    sudo('reboot')
     
-    #run("%s ./apps/manage.py migrate registration 0001 --fake" % python)
-    #run("%s ./apps/manage.py migrate registration" % python)
-        
+def deploy_debian():    
+    require.deb.package('libpq-dev')
+    require.deb.package('libmysqlclient-dev')
+    require.deb.package('libjpeg62')
+    require.deb.package('libjpeg62-dev')
+    
+def deploy_database(db_name):
+    # Require a PostgreSQL server
+    require.postgres.server()
+    require.postgres.user(db_name, db_name)
+    require.postgres.database(db_name, db_name)
+
+def deploy_webserver(code_dir, server_name, static_site):
+    # Require an nginx server proxying to our app
+    docroot = '/proj/static/htdocs/%(server_name)s' % {'server_name': server_name}
+    require.directory('%(code_dir)s/logs' % {'code_dir': code_dir}, use_sudo=True, owner="www-data", mode='770')
+    require.directory(docroot, use_sudo=True, owner="www-data", mode='770')
+    require.nginx.server()
+    
+    context = {'certroot': '/proj/g10f/certs'}
+    require.files.directory(context['certroot'], use_sudo=True, owner='www-data', group='www-data')
+    require.files.template_file('/etc/nginx/conf.d/ssl.nginx.conf', template_contents=NGINX_SSL_TEMPLATE, context=context, use_sudo=True)
+    require.file('%(certroot)s/certificate.crt' % context, source='certs/certificate.crt', use_sudo=True, owner='www-data', group='www-data')
+    require.file('%(certroot)s/certificate.key' % context, source='certs/certificate.key', use_sudo=True, owner='www-data', group='www-data')
+    
+    require.nginx.site(server_name, template_contents=PROXIED_SITE_TEMPLATE, docroot=docroot)
+    require.nginx.site(static_site, template_contents=STATIC_SITE_TEMPLATE, docroot='/proj/static/htdocs/')
+
+def deploy_app():
+    pass
+    
+def setup_user(user):
+    ssh_dir = posixpath.join(fabtools.user.home_directory(user), '.ssh')
+    require.files.directory(ssh_dir, mode='700', owner=user, use_sudo=True)
+    id_rsa = posixpath.join(ssh_dir, 'id_rsa')
+    id_rsa_pub = posixpath.join(ssh_dir, 'id_rsa.pub')
+    require.file(id_rsa, source='secret/id_rsa_ubuntu', mode='0600', owner=user, use_sudo=True)
+    require.file(id_rsa_pub, source='secret/id_rsa_ubuntu.pub',  mode='0644', owner=user, use_sudo=True)
+    
+    require.files.directory('/proj', use_sudo=True, owner=user)
+    require.files.directory('/envs', use_sudo=True, owner=user)    
     
 @task 
 def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
     server_name = check_server_name(server_name)
-    
     code_dir = '/proj/%s' % server_name
-
-    working_copy(code_dir)
-
-    # local settings 
-    require.file('%(code_dir)s/apps/%(app)s/settings/local_settings.py' % {'code_dir': code_dir, 'app': app}, 
-                 source='apps/%(app)s/settings/local_%(server_name)s.py' % {'server_name': server_name, 'app': app})
+    user = 'ubuntu'
+    static_site = 'static.elsapro.com'
     
-    require.python.virtualenv('/envs/sso')
-    return
+    setup_user(user)
+
+    require.files.directory(code_dir)
+    
+    deploy_debian()
+    deploy_webserver(code_dir, server_name, static_site)
+    fabtools.user.modify(name=user, extra_groups=['www-data'])
+    deploy_database(db_name)
+    
+    with cd(code_dir):
+        require.git.working_copy('git@bitbucket.org:dwbn/sso.git', path='src')
+    
+    # local settings 
+    require.file('%(code_dir)s/src/apps/%(app)s/settings/local_settings.py' % {'code_dir': code_dir, 'app': app}, 
+                 source='apps/%(app)s/settings/local_%(server_name)s.py' % {'server_name': server_name, 'app': app})
 
     # python enviroment 
+    require.python.virtualenv('/envs/sso')
     with fabtools.python.virtualenv('/envs/sso'):
-        require.python.package('sorl-thumbnail')
+        with cd(code_dir):
+            require.python.requirements('src/requirements.txt')
+    
     require.file('/envs/%(virtualenv)s/lib/python2.7/sitecustomize.py' % {'virtualenv': virtualenv}, source='apps/sitecustomize.py')
-
-    # Require a PostgreSQL server
-    #require.postgres.server()
-    new_db = False  # for createsueruser 
-    new_db = not fabtools.postgres.database_exists(db_name)
-    require.postgres.user(db_name, db_name)
-    require.postgres.database(db_name, db_name)
+    
     
     # configure gunicorn
     require.directory('%(code_dir)s/config' % {'code_dir': code_dir}, use_sudo=True, owner="www-data", mode='770')
     config_filename = '%(code_dir)s/config/gunicorn_%(server_name)s.conf' % {'code_dir': code_dir, 'server_name': server_name}
-    context = {
-        'server_name': server_name,
-        'code_dir': code_dir,
-    }
+    context = {'server_name': server_name, 'code_dir': code_dir}
     require.files.template_file(config_filename, template_contents=GUNICORN_TEMPLATE, context=context, use_sudo=True)
     
     # Require a supervisor process for our app
     require.supervisor.process(
         server_name,
         command='/envs/%(virtualenv)s/bin/gunicorn -c %(config_filename)s %(app)s.wsgi:application' % {'virtualenv': virtualenv, 'config_filename': config_filename, 'app': app},
-        directory=code_dir + '/apps',
+        directory=code_dir + '/src/apps',
         user='www-data'
-        )
-    
-    # Require an nginx server proxying to our app
-    """
-    require.directory('%(code_dir)s/logs' % {'code_dir': code_dir}, use_sudo=True, owner="www-data", mode='770')
-    require.nginx.site(
-        server_name,
-        template_contents=PROXIED_SITE_TEMPLATE,
-        docroot='/proj/static/htdocs/%(server_name)s' % {'server_name': server_name},
         )
     
     # configure logrotate 
     config_filename = '/etc/logrotate.d/%(server_name)s' % {'server_name': server_name}
     context = {'code_dir': code_dir}
     require.files.template_file(config_filename, template_contents=LOGROTATE_TEMPLATE, context=context, use_sudo=True)
-    """
     python = '/envs/%(virtualenv)s/bin/python' % {'virtualenv': virtualenv}
     
     with cd(code_dir):
-        #migrate_data(python, new_db)
-        run("%s ./apps/manage.py collectstatic --noinput" % python)
         sudo("chown www-data:www-data -R  ./logs")  
         sudo("chmod 770 -R  ./logs")  
-        run("sudo supervisorctl restart %(server_name)s" % {'server_name': server_name})
-
-@task
-def perms():
-    django.manage.run(command="update_permissions")
+        migrate_data(python)
+        sudo("%s ./src/apps/manage.py collectstatic --noinput" % python)
+        sudo("supervisorctl restart %(server_name)s" % {'server_name': server_name})
     
