@@ -10,7 +10,7 @@
 
 {% block breadcrumb %}
     {% if user.is_authenticated %}
-        <ol class="breadcrumb"><li class="active"><a href="{% url 'home' %}">{% trans 'Home' %}</a></li></ol>
+        <ol class="breadcrumb"><li class="active">{% trans 'Home' %}</li></ol>
     {% endif %}
 {% endblock breadcrumb %}
 
