@@ -137,9 +137,7 @@ def _check_redirect_url(request, redirect_to):
     return redirect_to
     
     
-@never_cache
 @sensitive_post_parameters()
-@csrf_protect
 @never_cache
 @throttle(duration=30, max_calls=10)
 def login(request):
@@ -152,7 +150,7 @@ def login(request):
     # hidden field in the template to check from which form the post request comes
     login_form_key = request.REQUEST.get(LOGIN_FORM_KEY)  
     display = request.REQUEST.get('display', 'page')  # popup or page
-    template_name = 'accounts/openid_login.html'
+    template_name = 'accounts/login.html'
     cancel_url = get_oauth2_cancel_url(redirect_to)
     form = None
 
@@ -172,7 +170,7 @@ def login(request):
                 if (not user.is_complete) and (display == 'page'):
                     # Display user profile form to complete user data
                     form = UserUserProfileForm(instance=user)
-                    template_name = 'accounts/openid_login_profile_form.html'
+                    template_name = 'accounts/login_profile_form.html'
                     cancel_url = reverse('accounts:logout')
                 else:              
                     return HttpResponseRedirect(redirect_to)
@@ -181,15 +179,13 @@ def login(request):
             # if the browser back button is used the user may be not authenticated
             if user.is_authenticated():
                 form = UserUserProfileForm(request.POST, instance=user)
-                template_name = 'accounts/openid_login_profile_form.html'
+                template_name = 'accounts/login_profile_form.html'
                 cancel_url = reverse('accounts:logout')
                 if form.is_valid():
                     form.save()
                         
                     redirect_to = _check_redirect_url(request, redirect_to)
                     return HttpResponseRedirect(redirect_to)
-#    else:
-#        form = EmailAuthenticationForm(request)
 
     request.session.set_test_cookie()
 

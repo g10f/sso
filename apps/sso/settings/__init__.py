@@ -20,7 +20,6 @@ else:
 TEMPLATE_DEBUG = DEBUG
 
 BRAND = 'G10F'
-DEV_MASCHINE_NAME = 'G10F-1'
 ABOUT = 'http://g10f.de/'
 APP_UUID = 'fa467234b81e4838a009e38d9e655d18'
 STREAMING_UUID = 'c362bea58c67457fa32234e3178285c4'
@@ -31,10 +30,11 @@ hostname = socket.gethostname().upper()
 TEST = 'test' in sys.argv
 
 ADMINS = (
-    ('Gunnar Scherf', 'gunnar.scherf@gmail.com'),
+    ('Gunnar Scherf', 'webmaster@g10f.de'),
 )
 MANAGERS = ADMINS
-USER_CHANGE_EMAIL_RECIPIENT_LIST = ['gunnar.scherf@gmail.com']
+USER_CHANGE_EMAIL_RECIPIENT_LIST = ['webmaster@g10f.de']
+DEFAULT_FROM_EMAIL = 'webmaster@g10f.de'
 
 DATABASES = {
     'default': {
@@ -184,10 +184,13 @@ REGISTRATION = {
 SESSION_COOKIE_AGE = 60 * 20  # seconds * Minutes
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = False
-SESSION_ENGINE = 'sso.sessions.backends'  # 'django.contrib.sessions.backends.signed_cookies'
-#SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies' 
-if not LOCAL_DEV:
+SESSION_ENGINE = 'sso.sessions.backends'
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies' 
+CSRF_COOKIE_HTTPONLY = True
+
+if not(LOCAL_DEV or TEST):
     SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
 PASSWORD_COMPLEXITY = {  # You can ommit any or all of these for no limit for that particular set
     "UPPER": 0,       # Uppercase
@@ -202,7 +205,6 @@ PASSWORD_COMPLEXITY = {  # You can ommit any or all of these for no limit for th
 if DEBUG:
     LOGGING_LEVEL = 'DEBUG'
 else:
-    DEFAULT_FROM_EMAIL = 'webmaster@dwbn.org'
     LOGGING_LEVEL = 'INFO'
 
 LOGGING_HANDLERS = ['mail_admins', 'error', ]
