@@ -2,7 +2,6 @@
 from django.conf import settings
 from django.contrib import admin
 from sso.auth.forms import EmailAuthenticationForm
-from django.contrib.sites.admin import *
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth.models import Permission
 
@@ -18,8 +17,6 @@ class SSOAdminSite(admin.AdminSite):
 
 
 sso_admin_site = SSOAdminSite()
-
-sso_admin_site.register(Site, SiteAdmin)
 
 sso_admin_site.register(Group, GroupAdmin)
 sso_admin_site.register(get_user_model(), UserAdmin)

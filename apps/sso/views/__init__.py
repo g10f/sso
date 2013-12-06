@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from django.conf import settings
 from django.shortcuts import render
 from django.core.urlresolvers import reverse
 from django.contrib.sites.models import get_current_site
@@ -7,8 +7,7 @@ from django.utils.translation import ugettext as _
 
 
 def home(request, template="home.html"):
-    current_site = get_current_site(request)
-    site_name = current_site.name
+    site_name = settings.SITE_NAME
     
     apps = None
     if request.user.is_authenticated():

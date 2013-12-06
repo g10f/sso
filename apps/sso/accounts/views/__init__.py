@@ -106,9 +106,10 @@ def logout(request, next_page=None,
 
     if next_page is None:
         current_site = get_current_site(request)
+        site_name = settings.SITE_NAME
         context = {
             'site': current_site,
-            'site_name': current_site.name,
+            'site_name': site_name,
             'title': _('Logged out')
         }
         if extra_context is not None:
@@ -145,7 +146,7 @@ def login(request):
     Displays the login form for the given HttpRequest.
     """
     current_site = get_current_site(request)
-    site_name = current_site.name
+    site_name = settings.SITE_NAME
     redirect_to = request.REQUEST.get(REDIRECT_FIELD_NAME, '')
     # hidden field in the template to check from which form the post request comes
     login_form_key = request.REQUEST.get(LOGIN_FORM_KEY)  
@@ -189,18 +190,15 @@ def login(request):
 
     request.session.set_test_cookie()
 
-    current_site = get_current_site(request)
-
     context = {
         'form': form or EmailAuthenticationForm(request),
         'display': display,
         REDIRECT_FIELD_NAME: redirect_to,
         'cancel_url': cancel_url,
         'site': current_site,
-        'site_name': current_site.name,
+        'site_name': site_name,
         'registration_open': settings.REGISTRATION.get('OPEN', True)
     }
-    context.update({'site_name': site_name})
     return TemplateResponse(request, template_name, context)
 
 

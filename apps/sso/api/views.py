@@ -313,7 +313,7 @@ class UserDetailView(View):
             user.organisations = organisations
             user.add_standard_roles()
             
-            send_account_created_email(user, use_https=request.is_secure())
+            send_account_created_email(user, request)
                           
         return self.json_response(user)          
 

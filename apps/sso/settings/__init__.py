@@ -20,6 +20,7 @@ else:
 TEMPLATE_DEBUG = DEBUG
 
 BRAND = 'G10F'
+SITE_NAME = 'G10F'
 ABOUT = 'http://g10f.de/'
 APP_UUID = 'fa467234b81e4838a009e38d9e655d18'
 STREAMING_UUID = 'c362bea58c67457fa32234e3178285c4'
@@ -55,7 +56,7 @@ ABSOLUTE_URL_OVERRIDES = {
     'accounts.user': lambda u: "/api/v1/users/%s/" % u.uuid,
 }
 
-SITE_ID = 1
+#SITE_ID = 1
 
 USE_I18N = True
 USE_L10N = True
@@ -126,7 +127,6 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.sites',  # needed for send_account_created_email in accounts
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
