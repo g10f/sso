@@ -135,6 +135,9 @@ errorlog = '%(code_dir)s/logs/gunicorn-error.log'
 os.environ['DEBUG'] = ""
 """
 
+SITE_IMPORT_TEMPLATE = """\
+[{"pk": 1, "model": "sites.site", "fields": {"domain": "%(server_name)s", "name": "%(server_name)s"}}]"""
+
 @task
 def compilemessages():
     for app in env.apps:
@@ -163,9 +166,15 @@ def prepare_deploy():
 def perms():
     django.manage.run(command="update_permissions")
 
-def migrate_data(python):
-    run("%s ./src/apps/manage.py syncdb --noinput" % python)
-    run("%s ./src/apps/manage.py migrate accounts" % python)
+def migrate_data(python, server_name, code_dir, app):
+    sudo("%s ./src/apps/manage.py syncdb --noinput" % python, user='www-data', group='www-data')
+    sudo("%s ./src/apps/manage.py migrate accounts" % python, user='www-data', group='www-data')
+
+    context = {'server_name': server_name}
+    fixture_filename = "%(code_dir)s/src/apps/%(app)s/accounts/fixtures/site.json" % {'code_dir': code_dir, 'app': app}
+    require.files.template_file(fixture_filename, template_contents=SITE_IMPORT_TEMPLATE, context=context)
+    sudo("%s ./src/apps/manage.py loaddata site.json" % python, user='www-data')
+
 
 @task
 def createsuperuser(server_name='', virtualenv='sso'): 
@@ -213,6 +222,7 @@ def deploy_app():
     pass
     
 def setup_user(user):
+    # add the id_rsa files for accessing the bitbucket repository 
     ssh_dir = posixpath.join(fabtools.user.home_directory(user), '.ssh')
     require.files.directory(ssh_dir, mode='700', owner=user, use_sudo=True)
     id_rsa = posixpath.join(ssh_dir, 'id_rsa')
@@ -230,21 +240,25 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
     user = 'ubuntu'
     static_site = 'static.elsapro.com'
     
-    #setup_user(user)
+    """
+    setup_user(user)
 
     require.files.directory(code_dir)
     
-    #deploy_debian()
-    #deploy_webserver(code_dir, server_name, static_site)
-    #fabtools.user.modify(name=user, extra_groups=['www-data'])
-    #deploy_database(db_name)
+    deploy_debian()
+    deploy_webserver(code_dir, server_name, static_site)
+    fabtools.user.modify(name=user, extra_groups=['www-data'])
+    deploy_database(db_name)
+    """
     
     with cd(code_dir):
         require.git.working_copy('git@bitbucket.org:dwbn/sso.git', path='src')
+        sudo("chown www-data:www-data -R  ./src")
     
     # local settings 
     require.file('%(code_dir)s/src/apps/%(app)s/settings/local_settings.py' % {'code_dir': code_dir, 'app': app}, 
-                 source='apps/%(app)s/settings/local_%(server_name)s.py' % {'server_name': server_name, 'app': app})
+                 source='apps/%(app)s/settings/local_%(server_name)s.py' % {'server_name': server_name, 'app': app},
+                 use_sudo=True, owner='www-data', group='www-data')
 
     # python enviroment 
     require.python.virtualenv('/envs/sso')
@@ -274,11 +288,12 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
     context = {'code_dir': code_dir}
     require.files.template_file(config_filename, template_contents=LOGROTATE_TEMPLATE, context=context, use_sudo=True)
     python = '/envs/%(virtualenv)s/bin/python' % {'virtualenv': virtualenv}
-    
+        
     with cd(code_dir):
         sudo("chown www-data:www-data -R  ./logs")  
-        sudo("chmod 770 -R  ./logs")  
-        migrate_data(python)
+        sudo("chmod 0660 -R  ./logs")
+        sudo("chmod +X logs")
+        #migrate_data(python, server_name, code_dir, app)
         sudo("%s ./src/apps/manage.py collectstatic --noinput" % python)
         sudo("supervisorctl restart %(server_name)s" % {'server_name': server_name})
     
