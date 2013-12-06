@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 import time
 import json
+import urlparse
 from django.contrib.auth import authenticate, get_user_model
 from django.core import signing
 from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.sites.models import Site
 from django.utils.crypto import get_random_string
 
 from oauthlib import oauth2
 from oauthlib.oauth2.rfc6749.tokens import random_token_generator
-#from sso.accounts.models import UserProfile
 from .models import BearerToken, RefreshToken, AuthorizationCode, Client, check_redirect_uri
 from .crypt import loads_jwt, make_jwt
 
@@ -20,14 +19,19 @@ SUPPORTED_SCOPES = ['openid', 'profile', 'email', 'offline_access', '']
 DEFAULT_SCOPES = ['profile']
 MAX_AGE = 3600
 
+def get_domain_from_absolute_uri(abs_uri):
+    (scheme, netloc, path, query, fragment) = urlparse.urlsplit(abs_uri)  # @UnusedVariable
+    return netloc
+
+    
 def default_token_generator(request, max_age=MAX_AGE, refresh_token=False):
     if refresh_token:
         return random_token_generator(request, refresh_token=True)
     else:
-        current_site = Site.objects.get_current()
+        domain = get_domain_from_absolute_uri(request.uri)
         claim_set = {
             'jti': get_random_string(), 
-            'iss': current_site.domain,
+            'iss': domain,
             'sub': request.user.uuid,  # required
             'aud': request.client.client_id,  # required
             'exp': int(time.time()) + max_age,  # required
@@ -45,10 +49,10 @@ def default_idtoken_generator(request, max_age=MAX_AGE, refresh_token=False):
     if refresh_token:
         return random_token_generator(request, refresh_token=True)
     else:
-        current_site = Site.objects.get_current()
+        domain = get_domain_from_absolute_uri(request.uri)
         user = request.user
         claim_set = {
-            'iss': current_site.domain,
+            'iss': domain,
             'sub': user.uuid,
             'aud': request.client.client_id,
             'exp': int(time.time()) + max_age,

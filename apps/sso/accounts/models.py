@@ -10,7 +10,7 @@ from django.template import loader
 from django.contrib.admin.models import LogEntry
 from django.contrib.auth.models import AbstractUser
 from django.contrib.auth.tokens import default_token_generator as default_pwd_reset_token_generator
-from django.contrib.sites.models import Site
+from django.contrib.sites.models import get_current_site
 from django.core.mail import send_mail
 from django.core.mail.message import EmailMessage
 from django.utils.encoding import force_bytes
@@ -276,7 +276,7 @@ add_introspection_rules([
 ], ["^current_user\.models\.CurrentUserField"])    
 
 
-def send_account_created_email(user, use_https=True, token_generator=default_pwd_reset_token_generator,
+def send_account_created_email(user, request, token_generator=default_pwd_reset_token_generator,
                               from_email=None,
                               email_template_name='accounts/account_created_email.txt',
                               subject_template_name='accounts/account_created_email_subject.txt'
@@ -286,8 +286,9 @@ def send_account_created_email(user, use_https=True, token_generator=default_pwd
         language = 'de'
     else:
         language = 'en'
-    current_site = Site.objects.get_current()
-    site_name = current_site.name
+    use_https = request.is_secure()
+    current_site = get_current_site(request)
+    site_name = settings.SITE_NAME
     domain = current_site.domain
     c = {
         'email': user.email,

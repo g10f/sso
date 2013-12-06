@@ -178,7 +178,7 @@ def add_user(request, template='accounts/application/add_user_form.html'):
             organisation = form.cleaned_data["organisation"]
             user.organisations.add(organisation)            
                 
-            send_account_created_email(user, use_https=request.is_secure())
+            send_account_created_email(user, request)
             
             return HttpResponseRedirect(reverse('accounts:add_user_done', args=[user.uuid]))
     else:

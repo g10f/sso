@@ -254,6 +254,7 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
     with cd(code_dir):
         require.git.working_copy('git@bitbucket.org:dwbn/sso.git', path='src')
         sudo("chown www-data:www-data -R  ./src")
+        sudo("chmod g+w -R  ./src")
     
     # local settings 
     require.file('%(code_dir)s/src/apps/%(app)s/settings/local_settings.py' % {'code_dir': code_dir, 'app': app}, 

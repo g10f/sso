@@ -191,9 +191,9 @@ def register(request, username_generator=default_username_generator, form_cls=Us
     else:
         form = form_cls()
     
-    current_site = get_current_site(request)
+    site_name = settings.SITE_NAME
     data = {
-            'site_name': current_site.name,
+            'site_name': site_name,
             'form': form, 
             'title': _('User registration')}
     return render(request, template, data)
