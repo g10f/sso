@@ -17,8 +17,7 @@
             </ul>
             <ul class="nav navbar-nav navbar-right">
             {% if user.is_authenticated %}
-                <li class="tool {% block accounts_settings_class %}{% endblock %}"><a href="{% url 'accounts:profile' %}" rel="tooltip" title="{% trans 'Change your profile settings or passwort' %}">
-                {% if user.picture %}{% thumbnail user.picture "30x30" as im %}<img class="icon-user" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">{% endthumbnail %}{% else %}<i class="glyphicon glyphicon-user"></i>{% endif %} {{ user.get_full_name }}</a></li>
+                <li class="tool {% block accounts_settings_class %}{% endblock %}"><a href="{% url 'accounts:profile' %}">{% if user.picture %}{% thumbnail user.picture "30x30" as im %}<img class="icon-user" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">{% endthumbnail %}{% else %}<i class="glyphicon glyphicon-user"></i>{% endif %} {{ user.get_full_name }}</a></li>
                 <li><a href="{% url 'accounts:logout' %}">{% trans 'Log out' %}</a></li>
                 {% else %}
                 <li class="{% block accounts_login_class %}{% endblock %}"><a  href="{% url 'accounts:login' %}"><i class="glyphicon glyphicon-user"></i> {% trans 'Log in' %}</a></li>
