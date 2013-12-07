@@ -1,12 +1,11 @@
-{% load static i18n googleanalytics thumbnail %}
-<!DOCTYPE html>
-<html class="no-js" lang="en">
+<!DOCTYPE html>{% load static i18n googleanalytics thumbnail %}
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <title>{% block title %}{% endblock %}</title>
     <meta name="description" content="">
     <meta name="author" content="">
-    <meta name="viewport" content="width=device-width">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="{% static "ico/favicon.ico" %}" type="image/ico"/>
     {% if debug and 0 %}<link rel="stylesheet/less" href="{% static "less/style.less" %}">{% endif %}
     {% if debug and 0 %}<script src="{% static "js/vendor/less-1.5.0.min.js" %}"></script>{% endif %}
