@@ -249,6 +249,7 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
         sudo("chown www-data:www-data -R  ./src")
         sudo("chmod g+w -R  ./src")
     
+    """
     # local settings 
     require.file('%(code_dir)s/src/apps/%(app)s/settings/local_settings.py' % {'code_dir': code_dir, 'app': app}, 
                  source='apps/%(app)s/settings/local_%(server_name)s.py' % {'server_name': server_name, 'app': app},
@@ -282,7 +283,7 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
     context = {'code_dir': code_dir}
     require.files.template_file(config_filename, template_contents=LOGROTATE_TEMPLATE, context=context, use_sudo=True)
     python = '/envs/%(virtualenv)s/bin/python' % {'virtualenv': virtualenv}
-        
+    """
     with cd(code_dir):
         sudo("chown www-data:www-data -R  ./logs")  
         sudo("chmod 0660 -R  ./logs")
