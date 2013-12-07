@@ -10,9 +10,9 @@
     <link rel="shortcut icon" href="{% static "ico/favicon.ico" %}" type="image/ico"/>
     {% if debug and 0 %}<link rel="stylesheet/less" href="{% static "less/style.less" %}">{% endif %}
     {% if debug and 0 %}<script src="{% static "js/vendor/less-1.5.0.min.js" %}"></script>{% endif %}
-    {% if debug and 1 %}<link rel="stylesheet" href="{% static "less/style-1.7.css" %}">{% endif %}
+    {% if debug and 1 %}<link rel="stylesheet" href="{% static "less/style-1.8.css" %}">{% endif %}
     {% block style %}
-    {% if not debug and 1 %}<link rel="stylesheet" href="{% static "less/style-1.7.css" %}">{% endif %}
+    {% if not debug and 1 %}<link rel="stylesheet" href="{% static "less/style-1.8.css" %}">{% endif %}
     {% endblock style %}
     {% block extrastyle %}{% endblock %}
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
