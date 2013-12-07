@@ -170,11 +170,6 @@ def migrate_data(python, server_name, code_dir, app):
     sudo("%s ./src/apps/manage.py syncdb --noinput" % python, user='www-data', group='www-data')
     sudo("%s ./src/apps/manage.py migrate accounts" % python, user='www-data', group='www-data')
 
-    context = {'server_name': server_name}
-    fixture_filename = "%(code_dir)s/src/apps/%(app)s/accounts/fixtures/site.json" % {'code_dir': code_dir, 'app': app}
-    require.files.template_file(fixture_filename, template_contents=SITE_IMPORT_TEMPLATE, context=context)
-    sudo("%s ./src/apps/manage.py loaddata site.json" % python, user='www-data')
-
 
 @task
 def createsuperuser(server_name='', virtualenv='sso'): 
@@ -237,14 +232,12 @@ def setup_user(user):
 def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
     server_name = check_server_name(server_name)
     code_dir = '/proj/%s' % server_name
-    user = 'ubuntu'
-    static_site = 'static.elsapro.com'
     
     """
+    user = 'ubuntu'
+    static_site = 'static.elsapro.com'
     setup_user(user)
-
     require.files.directory(code_dir)
-    
     deploy_debian()
     deploy_webserver(code_dir, server_name, static_site)
     fabtools.user.modify(name=user, extra_groups=['www-data'])
@@ -294,7 +287,7 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
         sudo("chown www-data:www-data -R  ./logs")  
         sudo("chmod 0660 -R  ./logs")
         sudo("chmod +X logs")
-        #migrate_data(python, server_name, code_dir, app)
+        migrate_data(python, server_name, code_dir, app)
         sudo("%s ./src/apps/manage.py collectstatic --noinput" % python)
         sudo("supervisorctl restart %(server_name)s" % {'server_name': server_name})
     
