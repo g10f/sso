@@ -233,16 +233,16 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
     server_name = check_server_name(server_name)
     code_dir = '/proj/%s' % server_name
     
-    """
+    
     user = 'ubuntu'
-    static_site = 'static.elsapro.com'
-    setup_user(user)
-    require.files.directory(code_dir)
-    deploy_debian()
+    #static_site = 'static.elsapro.com'
+    #setup_user(user)
+    #require.files.directory(code_dir)
+    #deploy_debian()
     deploy_webserver(code_dir, server_name, static_site)
-    fabtools.user.modify(name=user, extra_groups=['www-data'])
-    deploy_database(db_name)
-    """
+    #fabtools.user.modify(name=user, extra_groups=['www-data'])
+    #deploy_database(db_name)
+    
     
     with cd(code_dir):
         require.git.working_copy('git@bitbucket.org:dwbn/sso.git', path='src')
