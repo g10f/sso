@@ -282,8 +282,8 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
     config_filename = '/etc/logrotate.d/%(server_name)s' % {'server_name': server_name}
     context = {'code_dir': code_dir}
     require.files.template_file(config_filename, template_contents=LOGROTATE_TEMPLATE, context=context, use_sudo=True)
-    python = '/envs/%(virtualenv)s/bin/python' % {'virtualenv': virtualenv}
     """
+    python = '/envs/%(virtualenv)s/bin/python' % {'virtualenv': virtualenv}
     with cd(code_dir):
         sudo("chown www-data:www-data -R  ./logs")  
         sudo("chmod 0660 -R  ./logs")
