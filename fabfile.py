@@ -52,6 +52,30 @@ LOGROTATE_TEMPLATE = """\
 }
 """
 
+NGINX_WEBFONTS_TEMPLATE = """\
+location ~* \.(?:ttf|ttc|otf|eot|woff)$ {
+    add_header "Access-Control-Allow-Origin" "*";
+    expires 1M;
+    access_log off;
+    add_header Cache-Control "public";
+}
+"""
+
+NGINX_EXPIRED_TEMPLATE = """\
+# Media: images, icons, video, audio, HTC
+location ~* \.(?:jpg|jpeg|gif|png|ico|cur|gz|svg|svgz|mp4|ogg|ogv|webm|htc)$ {
+  expires 1M;
+  access_log off;
+  add_header Cache-Control "public";
+}
+# CSS and Javascript
+location ~* \.(?:css|js)$ {
+  expires 1y;
+  access_log off;
+  add_header Cache-Control "public";
+}
+"""
+
 PROXIED_SITE_TEMPLATE = """\
 upstream %(server_name)s.backend {
     server unix:/tmp/%(server_name)s.gunicorn.sock;
@@ -71,6 +95,15 @@ server {
     root %(docroot)s;
 
     try_files $uri @proxied;
+
+    # Media: images, video, audio, HTC, WebFonts
+    location /static {
+        include /proj/%(server_name)s/config/nginx.expired.conf;
+        include /proj/%(server_name)s/config/nginx.webfonts.conf;
+    }
+    location /media {
+        include /proj/%(server_name)s/config/nginx.expired.conf;
+    }
 
     location @proxied {
         proxy_set_header Host $host;
@@ -94,49 +127,15 @@ ssl_prefer_server_ciphers on;
 ssl_session_cache         shared:SSL:10m;
 """
 
-STATIC_SITE_TEMPLATE = """\
-server {
-    listen 80;
-    server_name %(server_name)s;
-    # path for static files
-    root %(docroot)s;
-    return 301 https://$server_name$request_uri;
-}
-server {
-    listen 443 default_server ssl;
-    server_name %(server_name)s;
-    root %(docroot)s;
-    
-    # Media: images, video, audio, HTC, WebFonts
-    location ~* \.(?:jpg|jpeg|gif|png|ico|gz|svg|svgz|ttf|otf|woff|eot|mp4|ogg|ogv|webm)$ {
-      expires 1M;
-      access_log off;
-      add_header Cache-Control "public";
-      add_header Access-Control-Allow-Origin *;
-    }
-    
-    # CSS and Javascript
-    location ~* \.(?:css|js)$ {
-      expires 1y;
-      access_log off;
-      add_header Cache-Control "public";
-    }
-}
-"""
-
 GUNICORN_TEMPLATE = """\
 import multiprocessing
 import os
-
 bind = "unix:/tmp/%(server_name)s.gunicorn.sock"
 workers = multiprocessing.cpu_count() + 2
 pythonpath = '%(code_dir)s/src/apps'
 errorlog = '%(code_dir)s/logs/gunicorn-error.log'
 os.environ['DEBUG'] = ""
 """
-
-SITE_IMPORT_TEMPLATE = """\
-[{"pk": 1, "model": "sites.site", "fields": {"domain": "%(server_name)s", "name": "%(server_name)s"}}]"""
 
 @task
 def compilemessages():
@@ -170,7 +169,6 @@ def migrate_data(python, server_name, code_dir, app):
     sudo("%s ./src/apps/manage.py syncdb --noinput" % python, user='www-data', group='www-data')
     sudo("%s ./src/apps/manage.py migrate accounts" % python, user='www-data', group='www-data')
 
-
 @task
 def createsuperuser(server_name='', virtualenv='sso'): 
     server_name = check_server_name(server_name)
@@ -197,21 +195,22 @@ def deploy_database(db_name):
     require.postgres.user(db_name, db_name)
     require.postgres.database(db_name, db_name)
 
-def deploy_webserver(code_dir, server_name, static_site):
+def deploy_webserver(code_dir, server_name):
     # Require an nginx server proxying to our app
     docroot = '/proj/static/htdocs/%(server_name)s' % {'server_name': server_name}
     require.directory('%(code_dir)s/logs' % {'code_dir': code_dir}, use_sudo=True, owner="www-data", mode='770')
     require.directory(docroot, use_sudo=True, owner="www-data", mode='770')
     require.nginx.server()
     
-    context = {'certroot': '/proj/g10f/certs'}
+    context = {'certroot': '/proj/g10f/certs', 'server_name': server_name}
     require.files.directory(context['certroot'], use_sudo=True, owner='www-data', group='www-data')
     require.files.template_file('/etc/nginx/conf.d/ssl.nginx.conf', template_contents=NGINX_SSL_TEMPLATE, context=context, use_sudo=True)
-    require.file('%(certroot)s/certificate.crt' % context, source='certs/certificate.crt', use_sudo=True, owner='www-data', group='www-data')
-    require.file('%(certroot)s/certificate.key' % context, source='certs/certificate.key', use_sudo=True, owner='www-data', group='www-data')
+    require.file('%(certroot)s/certificate.crt' % context, source='certs/%(server_name)s.certificate.crt' % context, use_sudo=True, owner='www-data', group='www-data')
+    require.file('%(certroot)s/certificate.key' % context, source='certs/%(server_name)s.certificate.key' % context, use_sudo=True, owner='www-data', group='www-data')
+    require.files.template_file('%s/config/nginx.expired.conf' % code_dir, template_contents=NGINX_EXPIRED_TEMPLATE)
+    require.files.template_file('%s/config/nginx.webfonts.conf' % code_dir, template_contents=NGINX_WEBFONTS_TEMPLATE)
     
     require.nginx.site(server_name, template_contents=PROXIED_SITE_TEMPLATE, docroot=docroot)
-    require.nginx.site(static_site, template_contents=STATIC_SITE_TEMPLATE, docroot='/proj/static/htdocs/')
 
 def deploy_app():
     pass
@@ -233,28 +232,25 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
     server_name = check_server_name(server_name)
     code_dir = '/proj/%s' % server_name
     
-    
-    user = 'ubuntu'
-    #static_site = 'static.elsapro.com'
+    #user = 'ubuntu'
     #setup_user(user)
     #require.files.directory(code_dir)
     #deploy_debian()
-    deploy_webserver(code_dir, server_name, static_site)
+    deploy_webserver(code_dir, server_name)
     #fabtools.user.modify(name=user, extra_groups=['www-data'])
     #deploy_database(db_name)
-    
     
     with cd(code_dir):
         require.git.working_copy('git@bitbucket.org:dwbn/sso.git', path='src')
         sudo("chown www-data:www-data -R  ./src")
         sudo("chmod g+w -R  ./src")
     
-    """
     # local settings 
     require.file('%(code_dir)s/src/apps/%(app)s/settings/local_settings.py' % {'code_dir': code_dir, 'app': app}, 
                  source='apps/%(app)s/settings/local_%(server_name)s.py' % {'server_name': server_name, 'app': app},
                  use_sudo=True, owner='www-data', group='www-data')
 
+    """
     # python enviroment 
     require.python.virtualenv('/envs/sso')
     with fabtools.python.virtualenv('/envs/sso'):
@@ -288,7 +284,7 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
         sudo("chown www-data:www-data -R  ./logs")  
         sudo("chmod 0660 -R  ./logs")
         sudo("chmod +X logs")
-        migrate_data(python, server_name, code_dir, app)
+        #migrate_data(python, server_name, code_dir, app)
         sudo("%s ./src/apps/manage.py collectstatic --noinput" % python)
         sudo("supervisorctl restart %(server_name)s" % {'server_name': server_name})
     
