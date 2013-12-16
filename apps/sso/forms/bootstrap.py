@@ -40,10 +40,12 @@ def add_to_css_class(classes, new_class):
         classes = u" ".join(classes)
     return classes
 
+
 class StaticInput(forms.TextInput):
     def render(self, name, value, attrs=None):
         if attrs is None:
             attrs = {}
+        
         attrs['type'] = 'hidden'
         klass = add_to_css_class(self.attrs.pop('class', ''), 'form-control-static')
         klass = add_to_css_class(klass, attrs.pop('class', ''))
@@ -71,7 +73,7 @@ class ImageWidget(forms.ClearableFileInput):
             else:
                 output = (
                     u'<div><a href="%s">'
-                    u'<img src="%s"></a></div>%s'
+                    u'<img src="%s" alt=""></a></div>%s'  # TODO: add alt text
                     ) % (value.url, mini.url, output)
         return mark_safe(output)
 

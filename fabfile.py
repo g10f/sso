@@ -199,6 +199,7 @@ def deploy_database(db_name):
 def deploy_webserver(code_dir, server_name):
     # Require an nginx server proxying to our app
     docroot = '/proj/static/htdocs/%(server_name)s' % {'server_name': server_name}
+    """
     require.directory('%(code_dir)s/logs' % {'code_dir': code_dir}, use_sudo=True, owner="www-data", mode='770')
     require.directory(docroot, use_sudo=True, owner="www-data", mode='770')
     require.nginx.server()
@@ -210,7 +211,7 @@ def deploy_webserver(code_dir, server_name):
     require.file('%(certroot)s/certificate.key' % context, source='certs/%(server_name)s.certificate.key' % context, use_sudo=True, owner='www-data', group='www-data')
     require.files.template_file('%s/config/nginx.expired.conf' % code_dir, template_contents=NGINX_EXPIRED_TEMPLATE)
     require.files.template_file('%s/config/nginx.webfonts.conf' % code_dir, template_contents=NGINX_WEBFONTS_TEMPLATE)
-    
+    """
     require.nginx.site(server_name, template_contents=PROXIED_SITE_TEMPLATE, docroot=docroot)
 
 def deploy_app():
@@ -237,7 +238,8 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
     #setup_user(user)
     #require.files.directory(code_dir)
     #deploy_debian()
-    #deploy_webserver(code_dir, server_name)
+    deploy_webserver(code_dir, server_name)
+    
     #fabtools.user.modify(name=user, extra_groups=['www-data'])
     #deploy_database(db_name)
     

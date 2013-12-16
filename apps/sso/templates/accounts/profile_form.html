@@ -18,7 +18,7 @@
 
 <form enctype="multipart/form-data" class="form-horizontal" method="post">{% csrf_token %}	
     <div class="">
-	    <legend>{% trans 'Profile Update' %}</legend>
+	    <h3>{% trans 'Profile Update' %}</h3>
 		<p>{% trans "Please update your Userprofile." %}</p>
 		
 	    {% block messages %}

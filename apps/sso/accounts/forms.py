@@ -257,7 +257,7 @@ class UserUserProfileForm(forms.Form):
         'duplicate_username': _("A user with that username already exists."),
         'duplicate_email': _("A user with that email address already exists."),
     }
-    username = forms.CharField(label=_("Username"), max_length=30, required=False, widget=bootstrap.StaticInput())
+    username = forms.CharField(label=_("Username"), required=False, widget=bootstrap.StaticInput())
     organisation = forms.Field()  # place holder for field order when dynamically inserting organisation in __init__
     first_name = forms.CharField(label=_('first name'), max_length=30, widget=bootstrap.TextInput())
     last_name = forms.CharField(label=_('last name'), max_length=30, widget=bootstrap.TextInput())
