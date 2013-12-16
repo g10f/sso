@@ -5,7 +5,7 @@
 
 {% block form %}
 <form class="form-horizontal" method="post">{% csrf_token %}
-    <legend>{% blocktrans %}Sign up for {{ site_name }}{% endblocktrans %}</legend>
+    <h3>{% blocktrans %}Sign up for {{ site_name }}{% endblocktrans %}</h3>
     {% if form.errors %}
         <div class="alert alert-danger">
         {% blocktrans count counter=form.errors.items|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}

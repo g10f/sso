@@ -9,7 +9,7 @@
 
 <form class="form-horizontal"  method="post">{% csrf_token %}
 
-    <legend>{% trans 'Confirm Registration' %}</legend>
+    <h3>{% trans 'Confirm Registration' %}</h3>
     
     <p> {% blocktrans %}Please confirm registration and validate your e-mail address <b>{{ email }}</b>.{% endblocktrans %}</p>
     
