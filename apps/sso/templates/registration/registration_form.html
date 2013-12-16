@@ -4,7 +4,7 @@
 {% block title %}{% trans 'Register for an account' %}{% endblock %}
 
 {% block form %}
-<form class="form-horizontal" action="" method="post">{% csrf_token %}
+<form class="form-horizontal" method="post">{% csrf_token %}
     <legend>{% blocktrans %}Sign up for {{ site_name }}{% endblocktrans %}</legend>
     {% if form.errors %}
         <div class="alert alert-danger">

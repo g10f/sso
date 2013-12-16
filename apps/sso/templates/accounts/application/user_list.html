@@ -32,7 +32,7 @@
 <div class="row dw-filter-row">
 	{% block search_form %}
 	<div class="col-sm-3">
-		<form class="" action="" method="get">
+		<form class="" method="get">
             {% for key, value in cl.params.items %}
 	            {% if key != search_var and key != page_var %}
 	               <input type="hidden" name="{{ key }}" value="{{ value }}">          

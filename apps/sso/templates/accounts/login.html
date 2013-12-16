@@ -25,7 +25,7 @@ body {
 
 
 {% block content %}
-<form class="form-signin" action="" method="post" id="login-form">{% csrf_token %}
+<form class="form-signin" method="post" id="login-form">{% csrf_token %}
 
     <h3 class="form-signin-heading">{% blocktrans %}Log in with your {{ brand }} account{% endblocktrans %}</h3>
     
