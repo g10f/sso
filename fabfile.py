@@ -106,6 +106,7 @@ server {
     }
 
     location @proxied {
+        add_header X-UA-Compatible IE=edge;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -236,7 +237,7 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
     #setup_user(user)
     #require.files.directory(code_dir)
     #deploy_debian()
-    deploy_webserver(code_dir, server_name)
+    #deploy_webserver(code_dir, server_name)
     #fabtools.user.modify(name=user, extra_groups=['www-data'])
     #deploy_database(db_name)
     
