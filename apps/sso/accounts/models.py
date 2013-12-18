@@ -8,7 +8,7 @@ from django.db.models import signals
 from django.utils.timezone import now
 from django.template import loader
 from django.contrib.admin.models import LogEntry
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, Group
 from django.contrib.auth.tokens import default_token_generator as default_pwd_reset_token_generator
 from django.contrib.sites.models import get_current_site
 from django.core.mail import send_mail
@@ -34,11 +34,20 @@ SUPERUSER_ROLE = 'Superuser'
 #STAFF_ROLE = 'Staff'
 #USER_ROLE = 'User'
 
+class AbstractBaseModelManager(models.Manager):
+    def get_by_natural_key(self, uuid):
+        return self.get(uuid=uuid)
+
+
 class AbstractBaseModel(models.Model):
     uuid = UUIDField(version=4, unique=True, editable=True)
     last_modified = models.DateTimeField(_('last modified'), auto_now=True, default=now)
     name = models.CharField(_("name"), max_length=255)
+    objects = AbstractBaseModelManager()
     
+    def natural_key(self):
+        return (self.uuid, )
+
     def __unicode__(self):
         return u"%s" % (self.name)
     
@@ -48,6 +57,11 @@ class AbstractBaseModel(models.Model):
         get_latest_by = 'last_modified'
         
 
+class ApplicationManager(models.Manager):
+    def get_by_natural_key(self, uuid):
+        return self.get(uuid=uuid)
+
+
 class Application(models.Model):
     order = models.IntegerField(default=0, help_text=_('Overwrites the alphabetic order.'))
     title = models.CharField(max_length=255)
@@ -55,13 +69,17 @@ class Application(models.Model):
     uuid = UUIDField(version=4, unique=True, editable=True)
     enable_url = models.BooleanField(_('enable url'), help_text=_('Designates whether this application should be shown in '
                     'the global navigation bar.'), default=True)
-
+    objects = ApplicationManager()
+    
     def link(self):
         if self.url:
             return u'<a href="%s">%s</a>' % (self.url, self.title)
         else:
             return ''
     link.allow_tags = True
+
+    def natural_key(self):
+        return (self.uuid, )
 
     def __unicode__(self):
         return u"%s" % (self.title)
@@ -72,15 +90,30 @@ class Application(models.Model):
         verbose_name_plural = _("applications")
         
 
+class RoleManager(models.Manager):
+    def get_by_natural_key(self, name):
+        return self.get(name=name)
+
+
 class Role(models.Model):
-    name = models.CharField(_("name"), max_length=255)
+    name = models.CharField(_("name"), unique=True, max_length=255)
     order = models.IntegerField(default=0, help_text=_('Overwrites the alphabetic order.'))
+    group = models.ForeignKey(Group, blank=True, null=True, help_text=_('Associated group for SSO internal permission management.'))
+    objects = RoleManager()
     
+    def natural_key(self):
+        return (self.name, )
+
     def __unicode__(self):
         return u"%s" % (self.name)
     
     class Meta:
         ordering = ['order', 'name']
+
+
+class ApplicationRoleManager(models.Manager):
+    def get_by_natural_key(self, uuid, name):
+        return self.get(application__uuid=uuid, role__name=name)
 
 
 class ApplicationRole(models.Model):
@@ -90,7 +123,11 @@ class ApplicationRole(models.Model):
         help_text=_('Designates that role can inherited by a organisation admin.'))
     is_inheritable_by_global_admin = models.BooleanField(_('inheritable by global admin'), default=True,
         help_text=_('Designates that role can inherited by a global admin.'))
-    
+    objects = ApplicationRoleManager()
+     
+    def natural_key(self):
+        return (self.application.natural_key(), self.role.natural_key())
+
     class Meta:
         ordering = ['application', 'role']
         unique_together = (("application", "role"),)
@@ -98,6 +135,11 @@ class ApplicationRole(models.Model):
     def __unicode__(self):
         return u"%s - %s" % (self.application, self.role)
 
+
+"""
+class RoleProfile(AbstractBaseModel):
+    application_roles = models.ManyToManyField(ApplicationRole)
+"""
 
 class Region(AbstractBaseModel):
     pass
@@ -119,6 +161,7 @@ class Organisation(AbstractBaseModel):
 
 def get_filename(filename):
     return os.path.normpath(get_valid_filename(os.path.basename(filename)))
+
 
 class User(AbstractUser):
     def generate_filename(self, filename):
@@ -145,7 +188,7 @@ class User(AbstractUser):
     
     def get_applicationroles(self):
         return ApplicationRole.objects.filter(user__uuid=self.uuid).select_related()
-
+    
     def get_inheritable_application_roles(self):
         if self.is_superuser:
             return ApplicationRole.objects.all().select_related()
@@ -191,7 +234,8 @@ class User(AbstractUser):
 
     @property
     def can_add_users(self):
-        return self.is_staff and self.is_active and self.get_administrable_organisations().exists()
+        #return (self.is_staff or self.is_center) and self.is_active and self.get_administrable_organisations().exists()
+        return self.is_active and self.get_administrable_organisations().exists()
     
     @property
     def is_complete(self):
@@ -321,19 +365,6 @@ def update_user(sender, instance, created, **kwargs):
         instance.created_by_user = instance.last_modified_by_user
         instance.save()
 
-"""
-@receiver(signals.pre_save, sender=User)
-@disable_for_loaddata
-def update_user2(sender, instance, **kwargs):
-    # TODO: update the last_modified_by_user of the UserProfile if the
-    # User was changed 
-    if instance.pk is not None:
-        orig = get_user_model().objects.get(pk=instance.pk)
-        
-        for field in instance._meta.fields:
-            if getattr(orig, field.attname) != getattr(instance, field.attname):
-                logger.debug('%s changed' % field.attname)
-"""                
 
 @receiver(signals.post_save, sender=LogEntry)
 def send_notification_email(sender, instance, **kwargs):

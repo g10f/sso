@@ -4,7 +4,7 @@
 	"fields" : {
 		"uuid" : "ec1e39cbe3e746c787b770ace4165d13",
 		"name" : "Test Client",
-		"application" : 1,
+		"application" : ["bc0ee635a536491eb8e7fbe5749e8111"],
 		"redirect_uris" : "http://localhost",
 		"client_secret" : "geheim",
 		"user" : null,
@@ -16,7 +16,7 @@
 	"fields" : {
 		"uuid" : "68bfae12a58541548def243e223053fb",
 		"name" : "Client with special access rights (put userinfo)",
-		"application" : 1,
+		"application" : ["bc0ee635a536491eb8e7fbe5749e8111"],
 		"redirect_uris" : "http://localhost",
 		"client_secret" : "geheim",
 		"user" : null,

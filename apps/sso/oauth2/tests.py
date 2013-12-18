@@ -49,7 +49,7 @@ def load_jwt(jwt, audience=None):
     return parsed
 
 class OAuth2BaseTestCase(TestCase):
-    fixtures = ['initial_data.json', 'test_user_data.json', 'test_oauth2_data.json']
+    fixtures = ['initial_data.json', 'app_roles.json', 'test_user_data.json', 'test_oauth2_data.json']
     _client_id = "ec1e39cbe3e746c787b770ace4165d13"
     _state = 'eyJub25jZSI6Ik1sSllaUlc3VWdGdyIsInByb3ZpZGVyIjoyLCJuZXh0IjoiLyJ9'
 
@@ -162,7 +162,7 @@ class OAuth2Tests(OAuth2BaseTestCase):
         self.assertDictContainsSubset(expected, id_token)
         
         roles = id_token['roles'].split()
-        self.assertIn('Superuser', roles)
+        self.assertIn('Admin', roles)
         self.assertIn('Staff', roles)
                 
         authorization = 'Bearer %s' % token['access_token']

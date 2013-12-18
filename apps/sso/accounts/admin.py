@@ -16,7 +16,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext as _
 from sorl.thumbnail.admin import AdminImageMixin
 
-from models import Application, Organisation, Region, ApplicationRole, Role, UserAssociatedSystem
+from models import Application, Organisation, Region, ApplicationRole, Role, UserAssociatedSystem  # , RoleProfile
 from .forms import UserCreationForm, BasicUserChangeForm, AdminUserChangeForm
 import logging
 
@@ -32,12 +32,21 @@ class ApplicationAdmin(admin.ModelAdmin):
 
 class RoleAdmin(admin.ModelAdmin):
     list_display = ('name', 'order')
+    list_filter = ('group', )
 
 
 class ApplicationRoleAdmin(admin.ModelAdmin):
     list_filter = ('application', 'role',)
     list_display = ('__unicode__', 'is_inheritable_by_org_admin', 'is_inheritable_by_global_admin')
 
+
+"""
+class RoleProfileAdmin(admin.ModelAdmin):
+    list_display = ('name', 'uuid', 'last_modified')
+    date_hierarchy = 'last_modified'
+    search_fields = ('name', 'uuid')
+    list_filter = ('application_roles', )
+"""    
 
 class RegionAdmin(admin.ModelAdmin):
     list_display = ('name', 'uuid', 'last_modified')
@@ -185,6 +194,7 @@ class GroupAdmin(DjangoGroupAdmin):
     fieldsets = (
         (None, {'fields': ('name', 'permissions'), 'classes': ['wide', 'wide_ex']}),
     )
+    list_filter = ('role', )
 
 
 class UserAdmin(AdminImageMixin, DjangoUserAdmin):
@@ -192,7 +202,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
     add_form = UserCreationForm
     list_display = ('id',) + DjangoUserAdmin.list_display + ('last_login', 'date_joined', 'get_last_modified_by_user', 'get_created_by_user')
     search_fields = ('username', 'first_name', 'last_name', 'email', 'uuid')
-    list_filter = (SuperuserFilter, ) + ('is_staff', 'is_active', 'groups', UserAssociatedSystemFilter, UserRegionListFilter,
+    list_filter = (SuperuserFilter, ) + ('is_staff', 'is_center', 'is_active', 'groups', UserAssociatedSystemFilter, UserRegionListFilter,
                     ApplicationRolesFilter, LastModifiedUserFilter, CreatedByUserFilter, UserOrganisationsListFilter)
     filter_horizontal = DjangoUserAdmin.filter_horizontal + ('groups', 'application_roles', 'organisations')
     ordering = ['-last_login', '-first_name', '-last_name']
@@ -396,6 +406,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
 admin.site.register(Group, GroupAdmin)
 admin.site.register(get_user_model(), UserAdmin)
 admin.site.register(ApplicationRole, ApplicationRoleAdmin)
+#admin.site.register(RoleProfile, RoleProfileAdmin)
 admin.site.register(Role, RoleAdmin)
 admin.site.register(Application, ApplicationAdmin)
 admin.site.register(Organisation, OrganisationAdmin)
