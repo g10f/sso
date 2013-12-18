@@ -9,7 +9,7 @@ from django.core.urlresolvers import reverse
 
 
 class RegistrationTest(TestCase):
-    fixtures = ['initial_data.json', 'test_user_data.json', 'test_l10n_data.xml']
+    fixtures = ['initial_data.json', 'app_roles.json', 'test_user_data.json', 'test_l10n_data.xml']
 
     def setUp(self):
         self.client = Client()

@@ -2,17 +2,17 @@
 import urlparse
 import re
 
+from django.conf import settings
 from django.core import mail
 from django.core.urlresolvers import reverse
-from django.contrib.auth.models import Permission
-from django.contrib.contenttypes.models import ContentType
 from django.contrib.auth import get_user_model
 from selenium.webdriver.support.ui import Select
+from selenium.common.exceptions import NoSuchElementException
 from sso.tests import SSOSeleniumTests 
 from sso.accounts.models import ApplicationRole
 
 class AccountsSeleniumTests(SSOSeleniumTests):
-    fixtures = ['initial_data.json', 'test_user_data.json']
+    fixtures = ['initial_data.json', 'app_roles.json', 'test_user_data.json']
     
     def login_test(self, username, password):
         self.login(username=username, password=password)
@@ -123,28 +123,31 @@ class AccountsSeleniumTests(SSOSeleniumTests):
 
         self.assertEqual(len(self.selenium.find_elements_by_class_name("alert-danger")), 1)
 
-    def test_add_user(self):
-        new_first_name = 'Test'
-        new_last_name = 'User'
-        new_email = 'mail@g10f.de'
+    def test_add_user_as_admin(self):
+        applicationrole = ApplicationRole.objects.get(application__uuid=settings.APP_UUID, role__name="Admin")
+        self.add_user(applicationrole=applicationrole, allowed_orgs=["1", "2"])
+    
+    def test_add_user_as_region(self):
+        applicationrole = ApplicationRole.objects.get(application__uuid=settings.APP_UUID, role__name="Region")
+        self.add_user(applicationrole=applicationrole, allowed_orgs=["1", "2"])
+
+    def test_add_user_as_center(self):
+        applicationrole = ApplicationRole.objects.get(application__uuid=settings.APP_UUID, role__name="Center")
+        self.add_user(applicationrole=applicationrole, allowed_orgs=["1"], denied_orgs=["2"])
+    
+    def add_user(self, applicationrole, allowed_orgs, denied_orgs=[]):
         
-        # Give the user admin rights to add a new user
-        content_type = ContentType.objects.get_for_model(get_user_model())
-        permission = Permission.objects.get(content_type=content_type, codename='change_org_users')
-
-        model = get_user_model()
-        user = model.objects.get(username='GunnarScherf')
-        user.user_permissions.add(permission)
-
-        applicationrole = ApplicationRole.objects.get(pk=1)
+        user = get_user_model().objects.get(username='GunnarScherf')
         user.application_roles.add(applicationrole)
-        
-        user.is_staff = True
         user.save()
         
         # login as admin and add new user
         self.login(username='GunnarScherf', password='gsf')
         self.selenium.get('%s%s' % (self.live_server_url, reverse('accounts:add_user')))
+
+        new_first_name = 'Test'
+        new_last_name = 'User'
+        new_email = 'mail@g10f.de'
 
         first_name = self.selenium.find_element_by_name("first_name")
         first_name.send_keys(new_first_name)
@@ -156,10 +159,20 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         email.send_keys(new_email)
 
         organisation = Select(self.selenium.find_element_by_name("organisation"))
-        organisation.select_by_value("1")
+        
+        # test error case
+        for org in denied_orgs:
+            try:
+                organisation.select_by_value(org)
+                raise Exception("Organisation with pk=%s should not be a possible option" % org)
+            except NoSuchElementException:
+                pass                
+        
+        for org in allowed_orgs:
+            organisation.select_by_value(org)            
 
         self.selenium.find_element_by_xpath('//a[@href="#app_roles"]').click()
-        self.selenium.find_element_by_id("id_application_roles_0").click()
+        self.selenium.find_element_by_id("id_application_roles_1").click()
 
         self.selenium.find_element_by_xpath('//button[@type="submit"]').click()
         self.wait_page_loaded()

@@ -1,29 +1,34 @@
-[ {
-	"pk" : 1,
-	"model" : "accounts.role",
-	"fields" : {
-		"name" : "Superuser",
-		"order" : 10
-	}
-}, {
-	"pk" : 2,
-	"model" : "accounts.role",
-	"fields" : {
-		"name" : "Staff",
-		"order" : 20
-	}
-}, {
-	"pk" : 3,
-	"model" : "accounts.role",
-	"fields" : {
-		"name" : "User",
-		"order" : 30
-	}
-}, {
-	"pk" : 4,
-	"model" : "accounts.role",
-	"fields" : {
-		"name" : "Guest",
-		"order" : 40
-	}
-} ]
+[
+ {
+	 "pk" : 1,
+	 "model" : "accounts.role",
+	 "fields" : {
+		 "name" : "Superuser",
+		 "order" : 10
+	 }
+ },
+ {
+	 "pk" : 2,
+	 "model" : "accounts.role",
+	 "fields" : {
+		 "name" : "Staff",
+		 "order" : 20
+	 }
+ },
+ {
+	 "pk" : 3,
+	 "model" : "accounts.role",
+	 "fields" : {
+		 "name" : "User",
+		 "order" : 30
+	 }
+ },
+ {
+	 "pk" : 4,
+	 "model" : "accounts.role",
+	 "fields" : {
+		 "name" : "Guest",
+		 "order" : 40
+	 }
+ }
+]

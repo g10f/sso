@@ -1,6 +1,64 @@
 [
  {
 	 "pk" : 1,
+	 "model" : "accounts.region",
+	 "fields" : {
+		 "last_modified" : "2013-04-28T16:56:13.807Z",
+		 "uuid" : "0ebf2537fc664b7db285ea773c981404",
+		 "name" : "Region 1"
+	 }
+}, {
+	 "pk" : 2,
+	 "model" : "accounts.region",
+	 "fields" : {
+		 "last_modified" : "2013-04-28T16:56:23.067Z",
+		 "uuid" : "1a5985f6a9fc4ead975de1291f8a65a9",
+		 "name" : "Region 2"
+	 }
+}, {
+	 "pk" : 1,
+	 "model" : "accounts.organisation",
+	 "fields" : {
+		 "uuid" : "31664dd38ca4454e916e55fe8b1f0745",
+		 "region": ["0ebf2537fc664b7db285ea773c981404"],
+		 "name" : "Test Center 1",
+		 "iso2_code" : "DE",
+		 "email" : "testcenter1@example.com"
+	 }
+}, {
+	 "pk" : 2,
+	 "model" : "accounts.organisation",
+	 "fields" : {
+		 "uuid" : "31664dd38ca4454e916e55fe8b1f0746",
+		 "region": ["0ebf2537fc664b7db285ea773c981404"],
+		 "name" : "Test Center 2",
+		 "iso2_code" : "DE",
+		 "email" : "testcenter2@example.com"
+	 }
+}, {
+	 "pk" : 2,
+	 "model" : "accounts.application",
+	 "fields" : {
+		 "uuid": "bc0ee635a536491eb8e7fbe5749e8111",
+		 "title" : "Test App",
+		 "url" : "http://test.example.com"
+	 }
+}, {
+	 "pk" : 4,
+	 "model" : "accounts.applicationrole",
+	 "fields" : {
+		 "application" : ["bc0ee635a536491eb8e7fbe5749e8111"],
+		 "role" : ["Admin"]
+	 }
+}, {
+	 "pk" : 5,
+	 "model" : "accounts.applicationrole",
+	 "fields" : {
+		 "application" : ["bc0ee635a536491eb8e7fbe5749e8111"],
+		 "role" : ["Staff"]
+	 }
+}, {
+	 "pk" : 1,
 	 "model" : "accounts.user",
 	 "fields" : {
 		 "username" : "GlobalAdmin",
@@ -16,7 +74,7 @@
 		 "email" : "admin@g10f.de",
 		 "date_joined" : "2012-03-23T07:00:46.076Z",
 		 "uuid" : "cf904d34c00447689d163a62730a5b99",
-		 "organisations" : [ 1 ],
+		 "organisations" : [ ["31664dd38ca4454e916e55fe8b1f0745"] ],
 		 "is_subscriber" : false,
 		 "is_center" : false,
 		 "last_modified" : "2012-03-23T07:00:46.076Z"
@@ -39,49 +97,10 @@
 		 "email" : "gunnar@g10f.de",
 		 "date_joined" : "2012-03-23T07:02:04Z",
 		 "uuid" : "a8992f0348634f76b0dac2de4e4c83ee",
-		 "organisations" : [ 1 ],
-		 "application_roles" : [ 1, 2 ],
+		 "organisations" : [ ["31664dd38ca4454e916e55fe8b1f0745"] ],
+		 "application_roles" : [ ["bc0ee635a536491eb8e7fbe5749e8111", "Staff"], ["bc0ee635a536491eb8e7fbe5749e8111", "Admin"] ],
 		 "is_subscriber" : false,
 		 "is_center" : false,
 		 "last_modified" : "2012-03-23T07:00:46.076Z"
-	 }
- }, {
-	 "pk" : 1,
-	 "model" : "accounts.organisation",
-	 "fields" : {
-		 "uuid" : "31664dd38ca4454e916e55fe8b1f0745",
-		 "name" : "Test Center 1",
-		 "iso2_code" : "DE",
-		 "email" : "testcenter1@example.com"
-	 }
- }, {
-	 "pk" : 2,
-	 "model" : "accounts.organisation",
-	 "fields" : {
-		 "uuid" : "31664dd38ca4454e916e55fe8b1f0746",
-		 "name" : "Test Center 2",
-		 "iso2_code" : "DE",
-		 "email" : "testcenter2@example.com"
-	 }
- }, {
-	 "pk" : 1,
-	 "model" : "accounts.application",
-	 "fields" : {
-		 "title" : "Test App",
-		 "url" : "http://test.example.com"
-	 }
- }, {
-	 "pk" : 1,
-	 "model" : "accounts.applicationrole",
-	 "fields" : {
-		 "application" : 1,
-		 "role" : 1
-	 }
- }, {
-	 "pk" : 2,
-	 "model" : "accounts.applicationrole",
-	 "fields" : {
-		 "application" : 1,
-		 "role" : 2
 	 }
  } ]

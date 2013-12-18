@@ -140,7 +140,7 @@ def _check_redirect_url(request, redirect_to):
     
 @sensitive_post_parameters()
 @never_cache
-@throttle(duration=30, max_calls=10)
+@throttle(duration=30, max_calls=12)
 def login(request):
     """
     Displays the login form for the given HttpRequest.

@@ -56,8 +56,6 @@ ABSOLUTE_URL_OVERRIDES = {
     'accounts.user': lambda u: "/api/v1/users/%s/" % u.uuid,
 }
 
-#SITE_ID = 1
-
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True

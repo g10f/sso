@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from django.contrib.auth.backends import ModelBackend
+from sso.auth.backends import SSOBackend
 
-class OAuth2Backend(ModelBackend):
+class OAuth2Backend(SSOBackend):
     def authenticate(self, token=None, **kwargs):
         if token:
             return token.user
