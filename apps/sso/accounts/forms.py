@@ -311,7 +311,7 @@ class UserUserProfileForm(forms.Form):
             # no organisation (see clean_organisation).
             # This can be with streaming accounts. We add automatically standard Roles  
             self.user.organisations.add(cd['organisation'])
-            self.user.add_standard_roles()  
+            self.user.add_default_roles()  
         
         
 class BasicUserChangeForm(forms.ModelForm):

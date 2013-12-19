@@ -11,6 +11,7 @@ from django.contrib.admin.models import LogEntry
 from django.contrib.auth.models import AbstractUser, Group
 from django.contrib.auth.tokens import default_token_generator as default_pwd_reset_token_generator
 from django.contrib.sites.models import get_current_site
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.core.mail.message import EmailMessage
 from django.utils.encoding import force_bytes
@@ -19,7 +20,7 @@ from django.utils.translation import get_language, activate, ugettext_lazy as _
 from django.utils.text import get_valid_filename
 
 from south.modelsinspector import add_introspection_rules
-from sorl.thumbnail import ImageField
+from sorl import thumbnail
 from l10n.models import Country
 
 from sso.fields import UUIDField
@@ -175,7 +176,7 @@ class User(AbstractUser):
     created_by_user = models.ForeignKey('self', verbose_name=_('created by'), related_name='+', null=True)
     is_center = models.BooleanField(_('center'), default=False, help_text=_('Designates that this user is representing a center and not a private person.'))
     is_subscriber = models.BooleanField(_('subscriber'), default=False, help_text=_('Designates whether this user is a DWBN News subscriber.'))
-    picture = ImageField(_('picture'), upload_to=generate_filename, blank=True)
+    picture = thumbnail.ImageField(_('picture'), upload_to=generate_filename, blank=True)
 
     def get_apps(self):
         return Application.objects.distinct().filter(applicationrole__user__uuid=self.uuid).order_by('order').prefetch_related('applicationrole_set', 'applicationrole_set__role')
@@ -243,34 +244,52 @@ class User(AbstractUser):
             return True
         else:
             return False
-        
-    def add_standard_roles(self):
-        roles = []
-        # Dharma Shop 108 - Home
-        application = Application.objects.get_or_create(uuid='e4a281ef13e1484b93fe4b7cc66374c8', defaults={'title': 'Dharma Shop 108 - Home'})[0]
-        user_role = Role.objects.get_or_create(name='User')[0]
-        roles += [ApplicationRole.objects.get_or_create(application=application, role=user_role)[0]]
-        
-        if self.is_center:
-            wiki = Application.objects.get_or_create(uuid='b8c38af479e54f4c94faf9d8184528fe', defaults={'title': 'Wiki'})[0]
-            roles += [ApplicationRole.objects.get_or_create(application=wiki, role=user_role)[0]]
+    
+    @property
+    def default_dharmashop_roles(self):
+        ds_roles = [{'uuid': 'e4a281ef13e1484b93fe4b7cc66374c8', 'roles': ['User']}]  # Dharma Shop 108 Home]
+        roles = ['Guest', 'User'] if self.is_center else ['Guest']
         
         if self.organisations.filter(iso2_code__in=['CZ', 'SK', 'PL', 'RU', 'UA', 'RO', 'RS', 'HR', 'GR', 'BG', 'EE', 'LV']).exists():
             # Dharma Shop 108 - Central and East Europe
-            application = Application.objects.get_or_create(uuid='2139dc55af8b42ec84a1ce9fd25fdf18', defaults={'title': 'Dharma Shop 108 - Central and East Europe'})[0]    
-            guest_role = Role.objects.get_or_create(name='Guest')[0]
-            roles += [ApplicationRole.objects.get_or_create(application=application, role=guest_role)[0]]
-            if self.is_center:
-                roles += [ApplicationRole.objects.get_or_create(application=application, role=user_role)[0]]
+            ds_roles += [{'uuid': '2139dc55af8b42ec84a1ce9fd25fdf18', 'roles': roles}]
         else:
             # Dharma Shop 108 - West Europe
-            application = Application.objects.get_or_create(uuid='35efc492b8f54f1f86df9918e8cc2b3d', defaults={'title': 'Dharma Shop 108 - West Europe'})[0]    
-            guest_role = Role.objects.get_or_create(name='Guest')[0]
-            roles += [ApplicationRole.objects.get_or_create(application=application, role=guest_role)[0]]
-            if self.is_center:
-                roles += [ApplicationRole.objects.get_or_create(application=application, role=user_role)[0]]
-       
-        self.application_roles.add(*roles)
+            ds_roles += [{'uuid': '35efc492b8f54f1f86df9918e8cc2b3d', 'roles': roles}]
+        return ds_roles
+    
+    @property
+    def default_streaming_roles(self):        
+        roles = ['Center'] if self.is_center else ['User']
+        return [{'uuid': 'c362bea58c67457fa32234e3178285c4', 'roles': roles}] 
+    
+    @property
+    def default_sso_roles(self):
+        return [{'uuid': settings.APP_UUID, 'roles': ['Center']}] if self.is_center else []
+
+    @property
+    def default_wiki_roles(self):
+        return [{'uuid': 'b8c38af479e54f4c94faf9d8184528fe', 'roles': ['User']}] 
+
+    def add_default_roles(self):
+        app_roles_dict = self.default_dharmashop_roles + self.default_streaming_roles + self.default_wiki_roles \
+                       + self.default_sso_roles
+        # get or create Roles
+        for app_roles_dict_item in app_roles_dict:
+            roles = []
+            for roles_name in app_roles_dict_item['roles']:
+                roles += [Role.objects.get_or_create(name=roles_name)[0]]
+            app_roles_dict_item['roles'] = roles
+        
+        for app_roles_dict_item in app_roles_dict:
+            try:
+                application = Application.objects.get(uuid=app_roles_dict_item['uuid'])
+                app_roles = []
+                for role in app_roles_dict_item['roles']:
+                    app_roles += [ApplicationRole.objects.get_or_create(application=application, role=role)[0]]
+                self.application_roles.add(*app_roles)
+            except ObjectDoesNotExist:
+                logger.warning("Application %s does not exist" % app_roles_dict_item['uuid'])
 
     class Meta:
         permissions = (

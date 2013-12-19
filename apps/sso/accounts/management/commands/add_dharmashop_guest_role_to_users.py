@@ -44,4 +44,4 @@ class Command(NoArgsCommand):
         
         for user in users:
             print user.get_full_name()
-            user.add_standard_roles()
+            user.add_default_roles()

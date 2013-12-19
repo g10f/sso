@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
-from models import StreamingUser  # , Logging
+from models import StreamingUser, Logging
 
 
 class StreamingUserAdmin(admin.ModelAdmin):
@@ -20,9 +20,9 @@ class StreamingUserAdmin(admin.ModelAdmin):
     def queryset(self, request):
         return super(StreamingUserAdmin, self).queryset(request).select_related('registrar')
 
-"""
+
 class LoggingAdmin(admin.ModelAdmin):
-    date_hierarchy = 'date'
+    #date_hierarchy = 'date'
     list_display = ('id', 'user', 'action', 'date', 'ip',)
     search_fields = ('user__email',)
     list_filter = ('date', 'action')
@@ -34,7 +34,7 @@ class LoggingAdmin(admin.ModelAdmin):
 
     def queryset(self, request):
         return super(LoggingAdmin, self).queryset(request).select_related('user')
-"""    
+    
     
 admin.site.register(StreamingUser, StreamingUserAdmin)
-#admin.site.register(Logging, LoggingAdmin)
+admin.site.register(Logging, LoggingAdmin)

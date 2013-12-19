@@ -29,7 +29,7 @@ class StreamingRouter(object):
            obj2._meta.app_label == 'streaming':
             return True
         return None
-
+    
     def allow_syncdb(self, db, model):
         """
         syncdb is not used with streaming.
