@@ -2,7 +2,6 @@ import logging
 import re
 
 from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.db import transaction
@@ -36,7 +35,7 @@ def create_user(username, email, password):
                 raise
 
 
-def add_streaming_user(username, email, password, is_center, is_subscriber, application):
+def add_streaming_user(username, email, password, is_center, is_subscriber, is_admin, application):
     try:
         user = get_user_model().objects.get(email__iexact=email)            
     except ObjectDoesNotExist:
@@ -49,16 +48,11 @@ def add_streaming_user(username, email, password, is_center, is_subscriber, appl
     if is_center:
         try:
             organisation = Organisation.objects.get(email__iexact=email)
-            # if a center with the email address exist, the account is updated to 
-            # organsation admin account
-            org_admin_group = Group.objects.get_or_create(name='OrganisationUserAdmin')[0]
             user.organisations.add(organisation)
-            user.groups.add(org_admin_group)
             user.first_name = 'BuddhistCenter'
             user.last_name = email.split('@')[0]
-            user.is_staff = True
             user.save()
-            user.add_standard_roles()
+            user.add_default_roles()
         except ObjectDoesNotExist:
             pass
     
@@ -96,8 +90,9 @@ class StreamingBackend(object):
                 
                 is_center = True if (streaming_user.center == 'J') else False
                 is_subscriber = True if (streaming_user.subscriber == 'J') else False
+                is_admin = True if (streaming_user.admin == 'J') else False
                 
-                return add_streaming_user(username, email, password, is_center, is_subscriber, application)
+                return add_streaming_user(username, email, password, is_center, is_subscriber, is_admin, application)
                     
             return None
         except StreamingUser.DoesNotExist:

@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
 from django.test import TestCase
 from django.test.client import Client
 from .backends import StreamingBackend
-from sso.accounts.models import ApplicationRole, Application, Role
-from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 
 class StreamingMethodTests(TestCase):
 
-    fixtures = ['initial_data.json', 'test_streaming_user.json', 'test_user_data.json']
+    fixtures = ['initial_data.json', 'app_roles.json', 'test_streaming_user.json', 'test_user_data.json', 'test_app_roles.json']
     
     def setUp(self):
         self.client = Client()
@@ -46,21 +45,17 @@ class StreamingMethodTests(TestCase):
         user = backend.authenticate("testcenter1@example.com", "geheim08")
         self.assertIsNotNone(user)        
         
-        self.assertEqual(user.is_staff, True)
         self.assertEqual(user.first_name, 'BuddhistCenter')
         self.assertEqual(user.last_name, 'testcenter1')
-        self.assertEqual(len(user.groups.all()), 1)
-        self.assertEqual(user.groups.all()[0], Group.objects.get(name='OrganisationUserAdmin'))
-        
-        dharma_shop_west_europe = Application.objects.get(uuid='35efc492b8f54f1f86df9918e8cc2b3d')
-        wiki = Application.objects.get(uuid='b8c38af479e54f4c94faf9d8184528fe')
-        user_role = Role.objects.get(name='User')
-        guest_role = Role.objects.get(name='Guest')
-        dharma_shop_west_europe_user = ApplicationRole.objects.get(application=dharma_shop_west_europe, role=user_role)
-        dharma_shop_west_europe_guest = ApplicationRole.objects.get(application=dharma_shop_west_europe, role=guest_role)
-        wiki_user = ApplicationRole.objects.get(application=wiki, role=user_role)
-        
-        applicationroles = user.get_applicationroles()
-        self.assertIn(dharma_shop_west_europe_user, applicationroles)
-        self.assertIn(dharma_shop_west_europe_guest, applicationroles)
-        self.assertIn(wiki_user, applicationroles)
+        self.assertGreater(len(user.application_roles.all()), 1)
+        app_roles = user.application_roles.all().values('application__uuid', 'role__name')
+        # SSO
+        self.assertIn({'application__uuid': settings.APP_UUID, 'role__name': 'Center'}, app_roles)  
+        # Streaming
+        self.assertIn({'application__uuid': 'c362bea58c67457fa32234e3178285c4', 'role__name': 'Center'}, app_roles)  
+        # Dharmashop Home
+        self.assertIn({'application__uuid': 'e4a281ef13e1484b93fe4b7cc66374c8', 'role__name': 'User'}, app_roles)  
+        # Dharma Shop 108 - West Europe
+        self.assertIn({'application__uuid': '35efc492b8f54f1f86df9918e8cc2b3d', 'role__name': 'User'}, app_roles)
+        # Wiki 
+        self.assertIn({'application__uuid': 'b8c38af479e54f4c94faf9d8184528fe', 'role__name': 'User'}, app_roles) 

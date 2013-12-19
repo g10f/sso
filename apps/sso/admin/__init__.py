@@ -35,7 +35,7 @@ sso_admin_site.register(Country, CountryOptions)
 
 if 'streaming' in settings.DATABASES:
     sso_admin_site.register(StreamingUser, StreamingUserAdmin)
-    #sso_admin_site.register(Logging, LoggingAdmin)
+    sso_admin_site.register(Logging, LoggingAdmin)
 
 sso_admin_site.register(RegistrationProfile, RegistrationAdmin)
 

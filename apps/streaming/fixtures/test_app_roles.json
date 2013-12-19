@@ -1,0 +1,79 @@
+[
+ {
+	 "pk" : 5,
+	 "model" : "accounts.role",
+	 "fields" : {
+		 "name" : "Admin",
+		 "group" : [ "Admin" ],
+		 "order" : 11
+	 }
+ }, {
+	 "pk" : 6,
+	 "model" : "accounts.role", 
+	 "fields" : {
+		 "name" : "Region",
+		 "group" : [ "Region" ],
+		 "order" : 12
+	 }
+ }, {
+	 "pk" : 7,
+	 "model" : "accounts.role",
+	 "fields" : {
+		 "name" : "Center",
+		 "group" : [ "Center" ],
+		 "order" : 13
+	 }
+ }, {
+	 "pk" : 1,
+	 "model" : "accounts.application",
+	 "fields" : {
+		 "uuid" : "fa467234b81e4838a009e38d9e655d18",
+		 "title" : "SSO",
+		 "url" : "http://sso.example.com"
+	 }
+ }, {
+	 "pk" : 2,
+	 "model" : "accounts.application",
+	 "fields" : {
+		 "uuid" : "e4a281ef13e1484b93fe4b7cc66374c8",
+		 "title" : "Dharma Shop 108 Home",
+		 "url" : "http://ds108.example.com"
+	 }
+ }, {
+	 "pk" : 3,
+	 "model" : "accounts.application",
+	 "fields" : {
+		 "uuid" : "35efc492b8f54f1f86df9918e8cc2b3d",
+		 "title" : "Dharma Shop 108 - West Europe",
+		 "url" : "http://ds108eu.example.com"
+	 }
+ }, {
+	 "pk" : 4,
+	 "model" : "accounts.application",
+	 "fields" : {
+		 "uuid" : "b8c38af479e54f4c94faf9d8184528fe",
+		 "title" : "Wiki",
+		 "url" : "http://wiki.example.com"
+	 }
+ }, {
+	 "pk" : 1,
+	 "model" : "accounts.applicationrole",
+	 "fields" : {
+		 "application" : [ "fa467234b81e4838a009e38d9e655d18" ],
+		 "role" : [ "Admin" ]
+	 }
+ }, {
+	 "pk" : 2,
+	 "model" : "accounts.applicationrole",
+	 "fields" : {
+		 "application" : [ "fa467234b81e4838a009e38d9e655d18" ],
+		 "role" : [ "Region" ]
+	 }
+ }, {
+	 "pk" : 3,
+	 "model" : "accounts.applicationrole",
+	 "fields" : {
+		 "application" : [ "fa467234b81e4838a009e38d9e655d18" ],
+		 "role" : [ "Center" ]
+	 }
+ } ]

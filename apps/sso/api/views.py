@@ -311,7 +311,7 @@ class UserDetailView(View):
 
             user.application_roles = application_roles
             user.organisations = organisations
-            user.add_standard_roles()
+            user.add_default_roles()
             
             send_account_created_email(user, request)
                           
