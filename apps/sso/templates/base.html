@@ -27,7 +27,7 @@
     <!--[if lt IE 8]><p class=alert alert-warning>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
     
     {% block navbar %}
-    {% include "global_navigation.html" %}
+    {% include "include/global_navigation.html" %}
     {% endblock navbar %}
     
     <div class="{% block containerclass %}container{% endblock %}">      
@@ -74,11 +74,10 @@
         </ul>
       </footer>
       {% endblock footer %}
-
-    </div> <!-- /container -->
-    
-    {% endblock body %}
-     
+      
+    </div> <!-- /container -->    
+    {% endblock body %}  
+       
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="{% static "js/vendor/jquery-1.10.2.min.js" %}"><\/script>')</script>
 <script src="{% static "js/vendor/bootstrap-3.0.3.min.js" %}"></script>
