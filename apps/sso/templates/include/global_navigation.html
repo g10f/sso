@@ -11,7 +11,7 @@
         </div>
         <div class="collapse navbar-collapse">
             <ul class="nav navbar-nav" id="user_apps">
-            {% for app in user.get_app_urls %}
+            {% for app in user.get_global_navigation_urls %}
                 <li><a href="{{ app.url }}">{{ app.title }}</a></li>
             {% endfor %}
             </ul>

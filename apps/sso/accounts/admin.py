@@ -26,8 +26,8 @@ admin.site.unregister(Group)
 
 
 class ApplicationAdmin(admin.ModelAdmin):
-    list_display = ('order', 'link', 'url', 'enable_url', 'uuid')
-    list_filter = ('enable_url', )
+    list_display = ('order', 'link', 'url', 'is_active', 'global_navigation', 'uuid')
+    list_filter = ('global_navigation', 'is_active')
 
 
 class RoleAdmin(admin.ModelAdmin):

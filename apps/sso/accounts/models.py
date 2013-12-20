@@ -7,13 +7,11 @@ from django.dispatch import receiver
 from django.db.models import signals
 from django.utils.timezone import now
 from django.template import loader
-from django.contrib.admin.models import LogEntry
 from django.contrib.auth.models import AbstractUser, Group
 from django.contrib.auth.tokens import default_token_generator as default_pwd_reset_token_generator
 from django.contrib.sites.models import get_current_site
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
-from django.core.mail.message import EmailMessage
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.utils.translation import get_language, activate, ugettext_lazy as _
@@ -68,8 +66,9 @@ class Application(models.Model):
     title = models.CharField(max_length=255)
     url = models.URLField(max_length=2047, blank=True)
     uuid = UUIDField(version=4, unique=True, editable=True)
-    enable_url = models.BooleanField(_('enable url'), help_text=_('Designates whether this application should be shown in '
+    global_navigation = models.BooleanField(_('global navigation'), help_text=_('Designates whether this application should be shown in '
                     'the global navigation bar.'), default=True)
+    is_active = models.BooleanField(_('active'), default=True, help_text=_('Designates whether this application should be provided.'))
     objects = ApplicationManager()
     
     def link(self):
@@ -179,10 +178,10 @@ class User(AbstractUser):
     picture = thumbnail.ImageField(_('picture'), upload_to=generate_filename, blank=True)
 
     def get_apps(self):
-        return Application.objects.distinct().filter(applicationrole__user__uuid=self.uuid).order_by('order').prefetch_related('applicationrole_set', 'applicationrole_set__role')
+        return Application.objects.distinct().filter(applicationrole__user__uuid=self.uuid, is_active=True).order_by('order').prefetch_related('applicationrole_set', 'applicationrole_set__role')
 
-    def get_app_urls(self):
-        return Application.objects.distinct().filter(applicationrole__user__uuid=self.uuid, enable_url=True).order_by('order')
+    def get_global_navigation_urls(self):
+        return Application.objects.distinct().filter(applicationrole__user__uuid=self.uuid, global_navigation=True, is_active=True).order_by('order')
     
     def get_roles_by_app(self, app_uuid):
         return Role.objects.filter(applicationrole__user__uuid=self.uuid, applicationrole__application__uuid=app_uuid)
@@ -260,7 +259,7 @@ class User(AbstractUser):
     
     @property
     def default_streaming_roles(self):        
-        roles = ['Center'] if self.is_center else ['User']
+        roles = ['Center', 'User'] if self.is_center else ['User']
         return [{'uuid': 'c362bea58c67457fa32234e3178285c4', 'roles': roles}] 
     
     @property
@@ -384,9 +383,11 @@ def update_user(sender, instance, created, **kwargs):
         instance.created_by_user = instance.last_modified_by_user
         instance.save()
 
-
+"""
+from django.contrib.admin.models import LogEntry
 @receiver(signals.post_save, sender=LogEntry)
 def send_notification_email(sender, instance, **kwargs):
+    from django.core.mail.message import EmailMessage
     if settings.LOCAL_DEV:
         return
     change = instance
@@ -396,7 +397,7 @@ def send_notification_email(sender, instance, **kwargs):
     msg = EmailMessage(subject, body, to=settings.USER_CHANGE_EMAIL_RECIPIENT_LIST)
     msg.content_subtype = "html"  # Main content is now text/html
     msg.send(fail_silently=settings.DEBUG)
-
+"""
 
 #@receiver(user_logged_in)
 #def add_cache_key(request, user, **kwargs):

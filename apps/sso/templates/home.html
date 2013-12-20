@@ -23,7 +23,7 @@
 	    <h3>{% trans 'Applications' %}</h3>
 		    <ul>
 		    {% for app in user.get_apps %}
-			  <li><a href="{{ app.url }}">{{ app.title }}</a></li>
+		      {% if app.url %}<li><a href="{{ app.url }}">{{ app.title }}</a></li>{% endif %}
 			{% endfor %}
 			</ul>        
         {% endif %}
