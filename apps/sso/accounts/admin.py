@@ -57,7 +57,7 @@ class RegionAdmin(admin.ModelAdmin):
 class OrganisationAdmin(admin.ModelAdmin):
     list_display = ('name', 'region', 'iso2_code', 'uuid', 'last_modified')
     date_hierarchy = 'last_modified'
-    search_fields = ('name', 'uuid')
+    search_fields = ('name', 'uuid', 'email')
     list_filter = ('region', 'iso2_code')
 
 
