@@ -269,18 +269,21 @@ class User(AbstractUser):
     @property
     def default_wiki_roles(self):
         return [{'uuid': 'b8c38af479e54f4c94faf9d8184528fe', 'roles': ['User']}] 
-
+    
     def add_default_roles(self):
-        app_roles_dict = self.default_dharmashop_roles + self.default_streaming_roles + self.default_wiki_roles \
+        app_roles_dict_array = self.default_dharmashop_roles + self.default_streaming_roles + self.default_wiki_roles \
                        + self.default_sso_roles
+        self.add_roles(app_roles_dict_array)
+        
+    def add_roles(self, app_roles_dict_array):
         # get or create Roles
-        for app_roles_dict_item in app_roles_dict:
+        for app_roles_dict_item in app_roles_dict_array:
             roles = []
             for roles_name in app_roles_dict_item['roles']:
                 roles += [Role.objects.get_or_create(name=roles_name)[0]]
             app_roles_dict_item['roles'] = roles
         
-        for app_roles_dict_item in app_roles_dict:
+        for app_roles_dict_item in app_roles_dict_array:
             try:
                 application = Application.objects.get(uuid=app_roles_dict_item['uuid'])
                 app_roles = []
@@ -290,7 +293,7 @@ class User(AbstractUser):
             except ObjectDoesNotExist:
                 logger.warning("Application %s does not exist" % app_roles_dict_item['uuid'])
 
-    class Meta:
+    class Meta(AbstractUser.Meta):
         permissions = (
             ("change_reg_users", "Can manage region users"),
             ("change_org_users", "Can manage organisation users"),
