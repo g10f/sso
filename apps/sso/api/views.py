@@ -173,7 +173,7 @@ class UserDetailView(View):
             application_data = {
                 'uuid': application.uuid,
                 'order': application.order, 
-                'enable_url': application.global_navigation,  # TODO: Remove after migration                
+                #'enable_url': application.global_navigation,  # TODO: Remove after migration                
                 'links': {'app': {'href': application.url, 'title': application.title, 'global_navigation': application.global_navigation}}
             }
             applications.append(application_data)
@@ -198,7 +198,7 @@ class UserDetailView(View):
         for application in user.get_apps():
             application_data = {
                 'order': application.order, 
-                'enable_url': application.global_navigation,  # TODO: Remove after migration
+                #'enable_url': application.global_navigation,  # TODO: Remove after migration
                 'links': {'app': {'href': application.url, 'title': application.title, 'global_navigation': application.global_navigation}}
             }
             application_data['roles'] = []
