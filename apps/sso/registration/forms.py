@@ -75,7 +75,8 @@ class RegistrationProfileForm(forms.Form):
             # after registration, the user should have exactly 1 center 
             user_data['organisations'] = self.user.organisations.all()[0]
         except IndexError:
-            logger.error("User without center?", exc_info=1)
+            # center is optional
+            #logger.error("User without center?", exc_info=1)
             pass
             
         initial = kwargs.get('initial', {})
