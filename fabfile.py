@@ -169,7 +169,7 @@ def perms():
 def migrate_data(python, server_name, code_dir, app):
     #sudo("%s ./src/apps/manage.py syncdb --noinput" % python, user='www-data', group='www-data')
     sudo("%s ./src/apps/manage.py migrate accounts" % python, user='www-data', group='www-data')
-    sudo("%s ./src/apps/manage.py migrate registration 0001 --fake" % python, user='www-data', group='www-data')
+    #sudo("%s ./src/apps/manage.py migrate registration 0001 --fake" % python, user='www-data', group='www-data')
     sudo("%s ./src/apps/manage.py migrate registration" % python, user='www-data', group='www-data')
 
 @task
@@ -254,6 +254,7 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
     require.file('%(code_dir)s/src/apps/%(app)s/settings/local_settings.py' % {'code_dir': code_dir, 'app': app}, 
                  source='apps/%(app)s/settings/local_%(server_name)s.py' % {'server_name': server_name, 'app': app},
                  use_sudo=True, owner='www-data', group='www-data')
+
     """
     # python enviroment 
     require.python.virtualenv('/envs/sso')
@@ -261,9 +262,7 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
         with cd(code_dir):
             require.python.requirements('src/requirements.txt')
     
-    
     require.file('/envs/%(virtualenv)s/lib/python2.7/sitecustomize.py' % {'virtualenv': virtualenv}, source='apps/sitecustomize.py')
-    
     
     # configure gunicorn
     require.directory('%(code_dir)s/config' % {'code_dir': code_dir}, use_sudo=True, owner="www-data", mode='770')

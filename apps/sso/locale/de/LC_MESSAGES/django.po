@@ -1526,12 +1526,12 @@ msgstr "Nach \"überprüft\" filtern"
 #: templates/registration/user_registration_list.html:121
 #: templates/registration/user_registration_list.html:129
 msgid "check back required"
-msgstr ""
+msgstr "Rücksprache erforderlich"
 
 #: templates/registration/user_registration_list.html:122
 #: templates/registration/user_registration_list.html:130
 msgid "no check back required"
-msgstr ""
+msgstr "keine Rücksprache erforderlich"
 
 #: templates/registration/user_registration_list.html:123
 msgid "Select check back filter"
