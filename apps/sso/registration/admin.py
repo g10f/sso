@@ -43,8 +43,8 @@ class IsActiveFilter(SimpleListFilter):
 
 class RegistrationAdmin(admin.ModelAdmin):
     actions = ['activate', 'validate_users', 'resend_validation_email', 'delete_expired']
-    list_display = ('user', 'email', 'date_registered', 'about_me', 'is_validated', 'token_valid', 'activation_valid', 'is_active')
-    raw_id_fields = ['user']
+    list_display = ('user', 'email', 'date_registered', 'about_me', 'is_validated', 'token_valid', 'activation_valid', 'is_access_denied', 'is_active')
+    raw_id_fields = ['user', 'verified_by_user']
     search_fields = ('user__username', 'user__email', 'user__first_name', 'user__last_name')
     date_hierarchy = 'date_registered'
     list_filter = ['is_validated', ExpiredFilter, IsActiveFilter, 'check_back']
@@ -54,7 +54,9 @@ class RegistrationAdmin(admin.ModelAdmin):
         (None,
          {'fields':
           ['user', 'user_link', 'last_modified', 'date_registered', 'is_validated', 'is_active', 'about_me',
-           'country', 'postal_code', 'city', 'street', 'phone', 'known_person1_first_name', 'known_person2_first_name', 'known_person1_last_name', 'known_person2_last_name'],
+           'country', 'postal_code', 'city', 'street', 'phone', 
+           'known_person1_first_name', 'known_person2_first_name', 'known_person1_last_name', 'known_person2_last_name',
+           'check_back', 'is_access_denied', 'verified_by_user'],
           'classes': ['wide']}), ]
 
     def is_active(self, obj):
