@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, url
 from django.views.generic import TemplateView
 from .views import application
-from .views import password_change, password_change_done, login, logout, profile, contact
+from .views import password_change, password_change_done, login, logout, profile, contact, delete_profile
 from .views import password_reset, password_reset_confirm, password_reset_done, password_reset_complete
  
 urlpatterns = patterns('',
@@ -10,6 +10,7 @@ urlpatterns = patterns('',
     url(r'^contact/$', contact, name='contact'),
     url(r'^contact_thanks/$', TemplateView.as_view(template_name="accounts/contact_thanks.html"), name='contact_thanks'),
     url(r'^profile/$', profile, name='profile'),
+    url(r'^profile/delete/$', delete_profile, name='delete_profile'),
     url(r'^password_change/$', password_change, name='password_change'),
     url(r'^password_change/done/$', password_change_done, name='password_change_done'),
     url(r'^password_reset/$', password_reset, name='password_reset'),
@@ -22,4 +23,5 @@ urlpatterns = patterns('',
     url(r'^application/users/add/$', application.add_user, name='add_user'),
     url(r'^application/users/add/done/(?P<uuid>[^/]+)/$', application.add_user_done, name="add_user_done"),
     url(r'^application/users/(?P<uuid>[^/]+)/$', application.update_user, name="update_user"), 
+    url(r'^application/users/delete/(?P<pk>\d+)/$', application.UserDeleteView.as_view(), name="delete_user"),
 )

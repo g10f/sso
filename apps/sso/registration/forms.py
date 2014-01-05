@@ -2,17 +2,20 @@
 Forms and validation code for user registration.
 """
 from django import forms
+from django.db import transaction
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import get_user_model
+from django.contrib.formtools.preview import FormPreview
 from django.utils.translation import ugettext_lazy as _
 from django.utils.text import capfirst
 from django.forms.models import model_to_dict
+from django.shortcuts import redirect
 
 from l10n.models import Country
-from .models import RegistrationProfile, send_set_password_email
-#from sso.registration import default_username_generator
+from .models import RegistrationProfile, send_set_password_email, send_validation_email
+from . import default_username_generator
 
-#from sso.forms.bootstrap import StaticInput, CheckboxSelectMultiple
 from sso.forms import bootstrap
 
 import logging
@@ -23,12 +26,12 @@ class RegistrationProfileForm(forms.Form):
     Form for organisation and region admins
     """
     error_messages = {
-        #'duplicate_username': _("A user with that username already exists."),
+        'duplicate_username': _("A user with that username already exists."),
         'duplicate_email': _("A user with that email address already exists."),
     }
     
-    #username = forms.CharField(label=_("Username"), max_length=30, widget=StaticInput())
-    notes = forms.CharField(label=_("Notes"), required=False, max_length=255, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
+    username = forms.CharField(label=_("Username"), max_length=30, widget=bootstrap.TextInput())
+    notes = forms.CharField(label=_("Notes"), required=False, max_length=1024, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
     first_name = forms.CharField(label=_('first name'), max_length=30, widget=bootstrap.TextInput())
     last_name = forms.CharField(label=_('last name'), max_length=30, widget=bootstrap.TextInput())
     email = forms.EmailField(label=_('e-mail address'), required=False, widget=bootstrap.TextInput(attrs={'disabled': ''}))
@@ -38,14 +41,26 @@ class RegistrationProfileForm(forms.Form):
     city = forms.CharField(label=_("city"), required=False, max_length=100, widget=bootstrap.StaticInput())
     postal_code = forms.CharField(label=_("zip code"), required=False, max_length=30, widget=bootstrap.StaticInput())
     street = forms.CharField(label=_('street'), required=False, max_length=255, widget=bootstrap.StaticInput())
-    purpose = forms.CharField(label=_('purpose'), required=False, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 5, 'readonly': 'readonly'}))
-    known_person1 = forms.CharField(label=_("person who can recommend you"), max_length=100, required=False, widget=bootstrap.TextInput())
-    known_person2 = forms.CharField(label=_("another person who can recommend you"), max_length=100, required=False, widget=bootstrap.TextInput())
+    about_me = forms.CharField(label=_('about me'), required=False, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 5, 'readonly': 'readonly'}))
+    known_person1_first_name = forms.CharField(label=_("first name"), max_length=100, required=False, widget=bootstrap.TextInput())
+    known_person1_last_name = forms.CharField(label=_("last name"), max_length=100, required=False, widget=bootstrap.TextInput())
+    known_person2_first_name = forms.CharField(label=_("first name #2"), max_length=100, required=False, widget=bootstrap.TextInput())
+    known_person2_last_name = forms.CharField(label=_("last name #2"), max_length=100, required=False, widget=bootstrap.TextInput())
     last_modified_by_user = forms.CharField(label=_("last modified by"), required=False, widget=bootstrap.TextInput(attrs={'disabled': ''}))
-    verified_by_user = forms.CharField(label=_("verified by"), required=False, widget=bootstrap.TextInput(attrs={'disabled': ''}))
-    is_verified = forms.BooleanField(label=_("is verified"), required=False)    
-    organisations = forms.ModelChoiceField(queryset=None, label=_("Organisation"), widget=bootstrap.Select())
+    verified_by_user = forms.CharField(label=_("verified by"), help_text=_('administrator who verified the user'), required=False, widget=bootstrap.TextInput(attrs={'disabled': ''}))
+    is_verified = forms.BooleanField(label=_("is verified"), help_text=_('Designates if the user was verified by another administrator'), required=False)    
+    organisations = forms.ModelChoiceField(queryset=None, label=_("Organisation"), widget=bootstrap.Select(), required=False)
     application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple, label=_("Application roles"))
+    check_back = forms.BooleanField(label=_("check back"), help_text=_('Designates if there are open questions to check.'), required=False)    
+    is_access_denied = forms.BooleanField(label=_("access denied"), help_text=_('Designates if access is denied to the user.'), required=False)    
+
+    def clean_username(self):
+        username = self.cleaned_data["username"]
+        try:
+            get_user_model().objects.exclude(pk=self.user.pk).get(username=username)
+        except ObjectDoesNotExist:
+            return username
+        raise forms.ValidationError(self.error_messages['duplicate_username'])
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request')
@@ -85,17 +100,22 @@ class RegistrationProfileForm(forms.Form):
         cd = self.cleaned_data
         
         # registrationprofile data
-        self.registrationprofile.notes = cd['notes']
-        self.registrationprofile.known_person1 = cd['known_person1']
-        self.registrationprofile.known_person2 = cd['known_person2']
+        self.registrationprofile.known_person1_first_name = cd['known_person1_first_name']
+        self.registrationprofile.known_person1_last_name = cd['known_person1_last_name']
+        self.registrationprofile.known_person2_first_name = cd['known_person2_first_name']
+        self.registrationprofile.known_person2_last_name = cd['known_person2_last_name']
         self.registrationprofile.phone = cd['phone']
+        self.registrationprofile.check_back = cd['check_back']
+        self.registrationprofile.is_access_denied = cd['is_access_denied']
         if self.request.user.has_perm('registrationprofile.verify_users'):
             self.registrationprofile.verified_by_user = self.request.user if (cd['is_verified'] == True) else None
         
         self.registrationprofile.save()
                 
         # userprofile data
-        self.user.organisations = [cd.get('organisations')]        
+        if cd.get('organisations'):
+            self.user.organisations = [cd.get('organisations')]
+                    
         # update application roles
         new_values = set(cd.get('application_roles').values_list('id', flat=True))
         administrable_values = set(self.request.user.get_inheritable_application_roles().values_list('id', flat=True))
@@ -110,8 +130,11 @@ class RegistrationProfileForm(forms.Form):
             self.user.application_roles.add(*add_values)
         
         # user data
+        self.user.username = cd['username']
         self.user.first_name = cd['first_name']
-        self.user.last_name = cd['last_name']        
+        self.user.last_name = cd['last_name']
+        self.user.notes = cd['notes']
+        
         if activate:
             self.user.is_active = True
             send_set_password_email(self.user, self.request)
@@ -128,25 +151,16 @@ class UserRegistrationCreationForm(forms.Form):
         'duplicate_username': _("A user with that username already exists."),
         'duplicate_email': _("A user with that email address already exists."),
     }
-    email = forms.EmailField(label=_('Email'), required=True, widget=bootstrap.EmailInput())
     first_name = forms.CharField(label=_('first name'), required=True, widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('first name'))}))
     last_name = forms.CharField(label=_('last name'), required=True, widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('last name'))}))
-    purpose = forms.CharField(label=_('purpose'), help_text=_('Which application and information do you like to use?'), widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 5}))
-    street = forms.CharField(label=_('street'), max_length=255, required=False, widget=bootstrap.TextInput())
-    city = forms.CharField(label=_("city"), max_length=100, required=False, widget=bootstrap.TextInput())
-    postal_code = forms.CharField(label=_("zip code"), max_length=30, required=False, widget=bootstrap.TextInput())
-    known_person1 = forms.CharField(label=_("known person"), max_length=100, widget=bootstrap.TextInput(), 
-                                    help_text=_('Please name a person who already has an account and can recommend you.'))
-    known_person2 = forms.CharField(label=_("known person #2"), max_length=100, widget=bootstrap.TextInput(), 
-                                    help_text=_('Please name another person who already has an account and can recommend you.'))
+    email = forms.EmailField(label=_('Email'), required=True, widget=bootstrap.EmailInput())
+    known_person1_first_name = forms.CharField(label=_("first name"), max_length=100, widget=bootstrap.TextInput())
+    known_person1_last_name = forms.CharField(label=_("last name"), max_length=100, widget=bootstrap.TextInput())
+    known_person2_first_name = forms.CharField(label=_("first name #2"), max_length=100, widget=bootstrap.TextInput())
+    known_person2_last_name = forms.CharField(label=_("last name #2"), max_length=100, widget=bootstrap.TextInput())
+    about_me = forms.CharField(label=_('about me'), required=False, help_text=_('If you would like to tell us something about yourself or your involvement with buddhism please do so in this box.'), widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 5}))
     country = forms.ModelChoiceField(queryset=Country.objects.all(), label=_("country"), widget=bootstrap.Select())
-    phone = forms.CharField(label=_("phone Number"), max_length=30, widget=bootstrap.TextInput())
-    
-    def __init__(self, *args, **kwargs):
-        super(UserRegistrationCreationForm, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['first_name', 'last_name', 'email', 'phone', 
-                                'known_person1', 'known_person2',
-                                'country', 'postal_code', 'city', 'street', 'purpose']
+    city = forms.CharField(label=_("city"), max_length=100, widget=bootstrap.TextInput())
 
     def clean_email(self):
         # Check if email is unique,
@@ -156,10 +170,21 @@ class UserRegistrationCreationForm(forms.Form):
         except ObjectDoesNotExist:
             return email
         raise forms.ValidationError(self.error_messages['duplicate_email'])
-
-    def save(self, username_generator):
-        data = self.cleaned_data
+    
+    def clean(self):
+        """
+        if the user clicks the edit_again button a ValidationError is raised, to
+        display the form again. (see post_post method in FormPreview)
+        """
+        edit_again = self.data.get("_edit_again")
+        if edit_again:
+            raise forms.ValidationError('_edit_again', '_edit_again')
         
+        return super(UserRegistrationCreationForm, self).clean()
+        
+    @staticmethod
+    def save_data(data, username_generator=default_username_generator):
+
         new_user = get_user_model()()
         new_user.username = username_generator(data.get('first_name'), data.get('last_name'))
         new_user.email = data.get('email')
@@ -170,13 +195,30 @@ class UserRegistrationCreationForm(forms.Form):
         new_user.save()
                 
         registration_profile = RegistrationProfile.objects.create(user=new_user)
-        registration_profile.purpose = data['purpose']
-        registration_profile.phone = data['phone']
+        registration_profile.about_me = data['about_me']
         registration_profile.city = data['city']
-        registration_profile.known_person1 = data['known_person1']
-        registration_profile.known_person2 = data['known_person2']
+        registration_profile.known_person1_first_name = data['known_person1_first_name']
+        registration_profile.known_person1_last_name = data['known_person1_last_name']
+        registration_profile.known_person2_first_name = data['known_person2_first_name']
+        registration_profile.known_person2_last_name = data['known_person2_last_name']
         registration_profile.country = data['country']
-        registration_profile.postal_code = data['postal_code']
-        registration_profile.street = data['street']            
         registration_profile.save()
         return registration_profile
+
+
+class UserRegistrationCreationFormPreview(FormPreview):
+    form_template = 'registration/registration_form.html'
+    preview_template = 'registration/registration_preview.html'
+
+    def get_context(self, request, form):
+        "Context for template rendering."
+        context = super(UserRegistrationCreationFormPreview, self).get_context(request, form)
+        context.update({'site_name': settings.SITE_NAME, 'title': _('User registration')})
+        return context
+    
+    @transaction.atomic
+    def done(self, request, cleaned_data):
+        registration_profile = self.form.save_data(cleaned_data)
+        send_validation_email(registration_profile, request)
+
+        return redirect('registration:registration_done')

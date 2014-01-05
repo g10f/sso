@@ -99,13 +99,19 @@ class CheckboxFieldRenderer(forms.widgets.ChoiceFieldRenderer):
 class CheckboxSelectMultiple(forms.widgets.CheckboxSelectMultiple):
     renderer = CheckboxFieldRenderer
     
+class HiddenInput(Widget, forms.TextInput):
+    """
+    Hidden field as honey pot for bots. 
+    The field is hidden with a css class and not with type="hidden" 
+    """
+    is_hidden = True
+        
 
 class TextInput(Widget, forms.TextInput):
     
     def render(self, name, value, attrs=None):
         self.add_required()
         return super(TextInput, self).render(name, value, attrs)
-
 
 class EmailInput(Widget, forms.EmailInput):
     def render(self, name, value, attrs=None):

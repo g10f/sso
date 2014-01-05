@@ -50,7 +50,7 @@ DATABASES = {
 }
 
 TIME_ZONE = 'Europe/Berlin'
-LANGUAGE_CODE = 'de-de'
+LANGUAGE_CODE = 'en-us'
 
 ABSOLUTE_URL_OVERRIDES = {
     'accounts.user': lambda u: "/api/v1/users/%s/" % u.uuid,
@@ -127,8 +127,10 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.formtools',
     'django.contrib.admin',
     'sorl.thumbnail',
+    'captcha',
     'passwords',
     'l10n',
     'south',
@@ -173,11 +175,13 @@ LOGIN_URL = '/accounts/login/'
 LOGOUT_URL = '/accounts/logout/'
 AUTH_USER_MODEL = 'accounts.User'
 
-ACCOUNT_ACTIVATION_DAYS = 1
-
 REGISTRATION = {
     'OPEN': False,
+    'TOKEN_EXPIRATION_DAYS': 7,
+    'ACTIVATION_EXPIRATION_DAYS': 60,
 }
+RECAPTCHA_PUBLIC_KEY = '6LccjewSAAAAAPcFZmUtuzRVkU6hhOona0orqgKh'
+RECAPTCHA_PRIVATE_KEY = '6LccjewSAAAAAAhJzHuEyVV40AYApL6CpmjqlmX8'
 
 SESSION_COOKIE_AGE = 60 * 20  # seconds * Minutes
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True

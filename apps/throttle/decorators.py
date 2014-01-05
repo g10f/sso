@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from functools import wraps
 import hashlib
-
+import os
 from django.core.cache import cache
 from django.utils.decorators import available_attrs
 from django.http import HttpResponseForbidden, HttpResponse
@@ -38,7 +38,7 @@ def throttle(method='POST', duration=15, max_calls=1, response=None):
         
         @wraps(func, assigned=available_attrs(func))
         def inner(request, *args, **kwargs):
-            if request.method == method:
+            if request.method == method and (os.environ.get('THROTTELING_DISABLED', None) != 'True'):
                 remote_addr = request.META.get('HTTP_X_FORWARDED_FOR') or \
                               request.META.get('REMOTE_ADDR')
                 path = request.get_full_path()
@@ -54,7 +54,7 @@ def throttle(method='POST', duration=15, max_calls=1, response=None):
                     else:
                         logger.warning('throttling client: %s:%s', remote_addr, path)
                         return HttpResponseForbidden('Try slowing down a little.')
-                
+            
                 cache.set(key, called, duration)
             return func(request, *args, **kwargs)
         return inner

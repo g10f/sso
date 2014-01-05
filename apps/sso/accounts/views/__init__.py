@@ -26,7 +26,8 @@ from sso.auth.forms import EmailAuthenticationForm
 from sso.oauth2.models import get_oauth2_cancel_url
 
 from ..models import Application
-from ..forms import UserUserProfileForm, PasswordResetForm, SetPasswordForm, PasswordChangeForm, ContactForm
+from ..forms import PasswordResetForm, SetPasswordForm, PasswordChangeForm, ContactForm
+from ..forms import UserSelfProfileForm, UserSelfProfileDeleteForm
 
 LOGIN_FORM_KEY = 'login_form_key'
 
@@ -170,7 +171,7 @@ def login(request):
     
                 if (not user.is_complete) and (display == 'page'):
                     # Display user profile form to complete user data
-                    form = UserUserProfileForm(instance=user)
+                    form = UserSelfProfileForm(instance=user)
                     template_name = 'accounts/login_profile_form.html'
                     cancel_url = reverse('accounts:logout')
                 else:              
@@ -179,7 +180,7 @@ def login(request):
             user = request.user
             # if the browser back button is used the user may be not authenticated
             if user.is_authenticated():
-                form = UserUserProfileForm(request.POST, instance=user)
+                form = UserSelfProfileForm(request.POST, instance=user)
                 template_name = 'accounts/login_profile_form.html'
                 cancel_url = reverse('accounts:logout')
                 if form.is_valid():
@@ -206,16 +207,30 @@ def login(request):
 def profile(request):
     user = request.user
     if request.method == 'POST':
-        form = UserUserProfileForm(request.POST, instance=user, files=request.FILES)
+        form = UserSelfProfileForm(request.POST, instance=user, files=request.FILES)
         if form.is_valid():
             form.save()
-
             messages.success(request, _('Thank you. Your settings were safed.'))
             return redirect('accounts:profile')
     else:
-        form = UserUserProfileForm(instance=user)
-    dictionary = {'form': form, }
+        form = UserSelfProfileForm(instance=user)
+    dictionary = {'form': form}
     return render(request, 'accounts/profile_form.html', dictionary)
+
+
+@login_required
+def delete_profile(request):
+    user = request.user
+    if request.method == 'POST':
+        form = UserSelfProfileDeleteForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            auth_logout(request)
+            return redirect('home')
+    else:
+        form = UserSelfProfileDeleteForm(instance=user)
+    dictionary = {'form': form, }
+    return render(request, 'accounts/delete_profile_form.html', dictionary)
 
 
 @csrf_protect

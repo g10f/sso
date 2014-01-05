@@ -9,9 +9,9 @@
     <link rel="shortcut icon" href="{% static "ico/favicon.ico" %}" type="image/ico"/>
     {% if debug and 0 %}<link rel="stylesheet/less" href="{% static "less/style.less" %}">{% endif %}
     {% if debug and 0 %}<script src="{% static "js/vendor/less-1.5.0.min.js" %}"></script>{% endif %}
-    {% if debug and 1 %}<link rel="stylesheet" href="{% static "less/style-1.8.css" %}">{% endif %}
+    {% if debug and 1 %}<link rel="stylesheet" href="{% static "less/style-1.9.css" %}">{% endif %}
     {% block style %}
-    {% if not debug and 1 %}<link rel="stylesheet" href="{% static "less/style-1.8.css" %}">{% endif %}
+    {% if not debug and 1 %}<link rel="stylesheet" href="{% static "less/style-1.9.css" %}">{% endif %}
     {% endblock style %}
     {% block extrastyle %}{% endblock %}
     <script type="text/javascript">window.__media_prefix__ = "{% filter escapejs %}{% static "" %}{% endfilter %}";</script>
@@ -52,8 +52,8 @@
 				    {% endif %}
 				    
 				    {% if user.is_authenticated %}				    
-				    <a class="list-group-item {% block nav_accounts_profile_class %}{% endblock %}" href="{% url 'accounts:profile' %}">{% trans 'User profile' %}</a>
-				    <a class="list-group-item {% block nav_accounts_password_change_class %}{% endblock %}" href="{% url 'accounts:password_change' %}">{% trans 'Password change' %}</a>
+				    <a class="list-group-item {% block nav_accounts_profile_class %}{% endblock %}" href="{% url 'accounts:profile' %}">{% trans 'My account' %}</a>
+				    <a class="list-group-item {% block nav_accounts_password_change_class %}{% endblock %}" href="{% url 'accounts:password_change' %}">{% trans 'Change my password ' %}</a>
 				    {% endif %}
 				</div>
 				{% endblock left_content %}

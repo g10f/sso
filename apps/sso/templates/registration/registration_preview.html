@@ -1,0 +1,38 @@
+{% extends "centered_form.html" %}
+
+{% load i18n static %}
+
+{% block title %}{% trans 'Registration preview' %}{% endblock %}
+
+{% block form %}
+<h3>{% trans 'Preview your registration' %}</h3>
+
+<form class="form-horizontal" method="post">{% csrf_token %}
+
+    {% include 'include/_static_field.html' with field=form.first_name %}
+    {% include 'include/_static_field.html' with field=form.last_name %}
+    {% include 'include/_static_field.html' with field=form.email %}
+    {% include 'include/_static_model_choice_field.html' with field=form.organisation %}
+    {% include 'include/_static_model_choice_field.html' with field=form.country %}
+    {% include 'include/_static_field.html' with field=form.city %}
+    {% include 'include/_static_field.html' with field=form.about_me %}
+    <span class="help-block">{% trans 'A person who already has an account and can recommend you.' %}</span>
+    {% include 'include/_static_field.html' with field=form.known_person1_first_name %}
+    {% include 'include/_static_field.html' with field=form.known_person1_last_name %}
+    <span class="help-block">{% trans 'A second person who already has an account and can recommend you.' %}</span>
+    {% include 'include/_static_field.html' with field=form.known_person2_first_name %}
+    {% include 'include/_static_field.html' with field=form.known_person2_last_name %}
+	
+	{% for field in form %}{{ field.as_hidden }}{% endfor %}
+	
+	<input type="hidden" name="{{ stage_field }}" value="2" />
+	<input type="hidden" name="{{ hash_field }}" value="{{ hash_value }}" />
+
+     <div class="form-group">
+         <div class="col-sm-offset-3 col-sm-9">
+             <button type="submit" class="btn btn-default" name="_edit_again" value="1">{% trans 'Edit it again' %}</button>
+             <button type="submit" class="btn btn-primary">{% trans 'Submit' %}</button>
+         </div>
+     </div>
+</form>
+{% endblock form %}

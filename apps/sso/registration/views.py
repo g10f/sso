@@ -1,38 +1,57 @@
 
-from django.conf import settings
+#from django.conf import settings
 from django.shortcuts import redirect, render, get_object_or_404
 from django.utils.translation import ugettext_lazy as _
-from django.db import transaction
+#from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.contrib import messages
-
-from django.contrib.sites.models import get_current_site
+from django.contrib.auth import get_user_model
+#from django.contrib.sites.models import get_current_site
 from django.template.response import TemplateResponse
-from django.views.generic import ListView
+from django.views.generic import DeleteView  # , ListView
 from django.db.models import Q
-#from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import user_passes_test
 from django.utils.decorators import method_decorator
 from l10n.models import Country
 from django.utils.encoding import force_text
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 
 from sso.views import main
-from .models import RegistrationProfile, send_validation_email, send_user_validated_email
-from .forms import UserRegistrationCreationForm, RegistrationProfileForm
+from .models import RegistrationProfile, RegistrationManager, send_user_validated_email  # , send_validation_email
+from .forms import RegistrationProfileForm  # ,UserRegistrationCreationForm
 from .tokens import default_token_generator
-from . import default_username_generator
+#from . import default_username_generator
 
 def has_permission(user):
-    return user.is_authenticated() and  user.has_perm('registration.change_registrationprofile')
+    return user.is_authenticated() and user.has_perm('registration.change_registrationprofile')
 
+
+class UserRegistrationDeleteView(DeleteView):
+    model = get_user_model()
+    success_url = reverse_lazy('registration:user_registration_list')
+
+    def get_queryset(self):
+        # filter the users for who the authenticated user has admin rights
+        qs = super(UserRegistrationDeleteView, self).get_queryset()
+        user = self.request.user
+        return user.filter_administrable_users(qs)
     
-class UserRegistrationList(ListView):
+    @method_decorator(user_passes_test(has_permission))
+    def dispatch(self, request, *args, **kwargs):
+        return super(UserRegistrationDeleteView, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(UserRegistrationDeleteView, self).get_context_data(**kwargs)
+        context['cancel_url'] = reverse('registration:update_user_registration', args=[self.object.registrationprofile.pk])
+        return context
+    
+    
+class UserRegistrationList(main.ListView):
     template_name = 'registration/user_registration_list.html'
     model = RegistrationProfile
     paginate_by = 20
     page_kwarg = main.PAGE_VAR
-    list_display = ['user', 'center', 'country', 'city', 'verified_by_user', 'email', 'phone', 'date_registered']
+    list_display = ['user', 'email', 'center', 'country', 'city', 'date_registered', 'verified_by_user', 'check_back']
     
     @method_decorator(user_passes_test(has_permission))
     def dispatch(self, request, *args, **kwargs):
@@ -50,14 +69,7 @@ class UserRegistrationList(ListView):
         
         # display only users from centers where the logged in user has admin rights
         user = self.request.user
-        if not user.is_superuser:
-            if user.has_perm("accounts.change_all_users"):
-                qs = qs.filter(user__is_superuser=False)
-            else:
-                organisations = user.get_administrable_organisations()
-                q = Q(user__is_superuser=False) & (
-                    Q(user__organisations__in=organisations))
-                qs = qs.filter(q).distinct()
+        qs = RegistrationManager.filter_administrable_registrationprofiles(user, qs)
                 
         # Set ordering.
         self.cl = main.ChangeList(self.request, self.model, self.list_display, default_ordering=['-date_registered'])
@@ -79,15 +91,21 @@ class UserRegistrationList(ListView):
         else:
             self.country = None
            
-        # apply is_verified filter        
+        # apply is_verified filter
         is_verified = self.request.GET.get('is_verified', '')
         if is_verified:
             self.is_verified = is_verified
             is_verified_filter = True if (is_verified == "True") else False
-            qs = qs.filter(verified_by_user__isnull=is_verified_filter)
+            qs = qs.filter(verified_by_user__isnull=not is_verified_filter)
         else:
             self.is_verified = None
                
+        # apply check_back filter
+        qs = self.apply_binary_filter(qs, 'check_back')
+
+        # apply is_access_denied filter
+        qs = self.apply_binary_filter(qs, 'is_access_denied', 'False')
+        
         ordering = self.cl.get_ordering(self.request, qs)
         qs = qs.order_by(*ordering)
         return qs
@@ -118,7 +136,9 @@ class UserRegistrationList(ListView):
             'cl': self.cl,
             'countries': countries,
             'country': self.country,
-            'is_verified': self.is_verified      
+            'is_verified': self.is_verified,   
+            'check_back': self.check_back, 
+            'is_access_denied': self.is_access_denied      
         }
         context.update(kwargs)
         return super(UserRegistrationList, self).get_context_data(**context)
@@ -136,6 +156,11 @@ def update_user_registration(request, pk, template='registration/change_user_reg
                 message = _('The user "%(obj)s" was changed successfully. You may edit it again below.') % {'obj': force_text(registrationprofile.user)}
                 messages.add_message(request, level=messages.INFO, message=message, fail_silently=True)
                 return HttpResponseRedirect(reverse('registration:update_user_registration', args=[registrationprofile.pk]))
+            elif "_save" in request.POST:
+                registrationprofile = registrationprofile_form.save()
+                message = _('The user "%(obj)s" was changed successfully.') % {'obj': force_text(registrationprofile.user)}
+                messages.add_message(request, level=messages.INFO, message=message, fail_silently=True)
+                return HttpResponseRedirect(reverse('registration:user_registration_list') + "?" + request.GET.urlencode())
             else:
                 registrationprofile = registrationprofile_form.save(activate=True)
                 message = _('The user "%(obj)s" was activated successfully.') % {'obj': force_text(registrationprofile.user)}
@@ -174,6 +199,7 @@ def validation_confirm(request, uidb64=None, token=None, token_generator=default
     return TemplateResponse(request, template, context)
 
 
+"""
 @transaction.atomic
 def register(request, username_generator=default_username_generator, form_cls=UserRegistrationCreationForm, template='registration/registration_form.html'):
     
@@ -197,3 +223,4 @@ def register(request, username_generator=default_username_generator, form_cls=Us
             'form': form, 
             'title': _('User registration')}
     return render(request, template, data)
+"""

@@ -40,6 +40,19 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         password = 'secret007'
         self.login_test(username, password)
         
+    def test_delete_user(self):
+        self.login(username='GunnarScherf', password='gsf')
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('accounts:delete_profile')))
+        self.selenium.find_element_by_xpath('//button[@type="submit"]').click()
+        self.wait_page_loaded()
+        self.selenium.find_element_by_xpath('//a[@href="%s"]' % reverse('accounts:login'))
+        
+        # check if login is denied
+        self.login(username='GunnarScherf', password='gsf')
+        self.selenium.find_element_by_xpath('//form/div[@class="alert alert-danger"]')  # there should be a form error
+        # there should be no logout link, because user is not logged in
+        self.assertEqual(len(self.selenium.find_elements_by_xpath('//a[@href="%s"]' % reverse('accounts:logout'))), 0)  
+
     def test_change_password(self):
         username = 'GlobalAdmin'
         old_password = 'secret007'

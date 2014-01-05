@@ -10,6 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.forms.models import model_to_dict
 from django.template import loader
 from django.core.exceptions import ObjectDoesNotExist
+from django.core import signing
 
 from django.contrib.sites.models import get_current_site
 from django.contrib.auth import get_user_model
@@ -18,6 +19,7 @@ from django.contrib.auth.forms import PasswordResetForm as DjangoPasswordResetFo
 from django.contrib.auth.forms import SetPasswordForm as DjangoSetPasswordForm
 from django.contrib.auth.tokens import default_token_generator
 
+from captcha.fields import ReCaptchaField
 from passwords.fields import PasswordField
 from .models import Organisation
 from sso.registration import default_username_generator
@@ -147,18 +149,10 @@ class PasswordResetForm(DjangoPasswordResetForm):
             message = loader.render_to_string('streaming/password_resend_email.html', c)
             send_mail(subject, message, from_email, [email])
 
-"""
-def _username_placeholder():
-    first_name = capfirst(_('first name').replace(' ', ''))
-    last_name = capfirst(_('last name').replace(' ', ''))
-    return u''.join([first_name, last_name])
-username_placeholder = lazy(_username_placeholder, unicode)
-"""
 
-
-class UserCreationForm(forms.ModelForm):
+class UserAddForm(forms.ModelForm):
     """
-    UserCreationForm where no password is required
+    UserAddForm where no password is required
     If the password is empty, an empty password is created
     """
     password1 = PasswordField(label=_("Password"), required=False, widget=bootstrap.PasswordInput())
@@ -172,10 +166,11 @@ class UserCreationForm(forms.ModelForm):
     email = forms.EmailField(label=_('Email'), required=True, widget=bootstrap.EmailInput())
     first_name = forms.CharField(label=_('first name'), required=True, widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('first name'))}))
     last_name = forms.CharField(label=_('last name'), required=True, widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('last name'))}))
+    notes = forms.CharField(label=_("Notes"), required=False, max_length=1024, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
 
     class Meta:
         model = get_user_model()
-        fields = ("first_name", "last_name", "email")
+        fields = ("first_name", "last_name", "email", 'notes')
 
     def clean_username(self):
         # Since User.username is unique, this check is redundant,
@@ -205,7 +200,7 @@ class UserCreationForm(forms.ModelForm):
         return password2
 
     def save(self, commit=True):
-        user = super(UserCreationForm, self).save(commit=False)
+        user = super(UserAddForm, self).save(commit=False)
         user.set_password(self.cleaned_data.get("password1", ""))
         user.username = default_username_generator(capfirst(self.cleaned_data.get('first_name')), capfirst(self.cleaned_data.get('last_name')))
         if commit:
@@ -213,21 +208,29 @@ class UserCreationForm(forms.ModelForm):
         return user
 
 
-class UserCreationForm2(UserCreationForm):
+class UserAddFormExt(UserAddForm):
     """
-    UserCreationForm with organisations select element
+    UserAddForm with organisations, roles and notes element
     """
-    organisation = forms.ModelChoiceField(queryset=None, label=_("Organisation"), widget=bootstrap.Select())
+    organisation = forms.ModelChoiceField(queryset=None, required=False, label=_("Organisation"), widget=bootstrap.Select())
     application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
-
+    
     def __init__(self, user, *args, **kwargs):
-        super(UserCreationForm2, self).__init__(*args, **kwargs)
+        super(UserAddFormExt, self).__init__(*args, **kwargs)
         self.fields['application_roles'].queryset = user.get_inheritable_application_roles()
         self.fields['organisation'].queryset = user.get_administrable_organisations()
         self.fields.keyOrder = ['first_name', 'last_name', 'email', 'organisation', 'application_roles']  # , 'password1', 'password2']
     
+    def save(self):
+        user = super(UserAddFormExt, self).save()
+        user.application_roles = self.cleaned_data["application_roles"]
+        organisation = self.cleaned_data["organisation"]
+        if organisation:
+            user.organisations.add(organisation)
+        return user
+    
 
-class UserUserProfileForm(forms.Form):
+class UserSelfProfileForm(forms.Form):
     """
     Form for the user himself to change editable values
     """
@@ -237,7 +240,7 @@ class UserUserProfileForm(forms.Form):
         initial = kwargs.get('initial', {})
         object_data.update(initial)   
         kwargs['initial'] = object_data
-        super(UserUserProfileForm, self).__init__(*args, **kwargs)
+        super(UserSelfProfileForm, self).__init__(*args, **kwargs)
 
         # if the user is already in at least 1 organisation, 
         # the organisation field is readonly
@@ -309,11 +312,20 @@ class UserUserProfileForm(forms.Form):
         if organisation:
             # user selected an organisation, this can only happen if the user before had
             # no organisation (see clean_organisation).
-            # This can be with streaming accounts. We add automatically standard Roles  
-            self.user.organisations.add(cd['organisation'])
-            self.user.add_default_roles()  
+            self.user.organisations.add(cd['organisation']) 
         
+
+class UserSelfProfileDeleteForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('instance')
+        super(UserSelfProfileDeleteForm, self).__init__(*args, **kwargs)
         
+    def save(self):
+        self.user.is_active = False
+        self.user.save()
+            
+    
 class BasicUserChangeForm(forms.ModelForm):
     class Meta:
         model = get_user_model()
@@ -360,18 +372,72 @@ class UserRegistrationCreationForm2(UserRegistrationCreationForm):
     """
     Overwritten UserRegistrationCreationForm Form with additional  organisation field
     """
-    organisation = forms.ModelChoiceField(queryset=Organisation.objects.all(), label=_("Center"), widget=bootstrap.Select())
+    UserRegistrationCreationForm.error_messages.update({
+        'email_mismatch': _("The two email fields didn't match."),
+    })
+    organisation = forms.ModelChoiceField(queryset=Organisation.objects.all(), required=False, label=_("Center"), widget=bootstrap.Select())
+    email2 = forms.EmailField(label=_('repeat your Email'), required=True, widget=bootstrap.EmailInput())
+    # for Bots. If you enter anything in this field you will be treated as a robot
+    state = forms.CharField(label=_('State'), required=False, widget=bootstrap.HiddenInput())
     
-    def __init__(self, *args, **kwargs):
-        super(UserRegistrationCreationForm2, self).__init__(*args, **kwargs)
-        self.fields.keyOrder = ['first_name', 'last_name', 'email', 'phone', 'organisation', 
-                                'known_person1', 'known_person2',
-                                'country', 'postal_code', 'city', 'street', 'purpose']
+    signer = signing.TimestampSigner()
 
-    def save(self, username_generator):
-        registration_profile = super(UserRegistrationCreationForm2, self).save(username_generator)
-        user = registration_profile.user
-        user.organisations.add(self.cleaned_data["organisation"])
+    def __init__(self, data=None, *args, **kwargs):
+        super(UserRegistrationCreationForm2, self).__init__(data, *args, **kwargs)
+        
+        if self.is_captcha_needed():
+            self.fields['captcha'] = ReCaptchaField(label=_('Prove you are human'), error_messages={'captcha_invalid': _('Incorrect, please try again.')}, attrs={'theme': 'clean'})
+
+    def is_captcha_needed(self):
+        max_age = 300
+        if self.data and ('state' in self.data):
+            try:
+                value = self.signer.unsign(self.data['state'], max_age)
+                if value == 'True':
+                    return False
+            except (signing.BadSignature, signing.SignatureExpired):
+                pass
+        return True
+
+    def clean(self):
+        """
+        Delete the captcha field if already one time solved
+        """
+        if 'captcha' in self.cleaned_data:
+            data = self.data.copy()
+            data['state'] = self.signer.sign('True')
+            self.data = data
+            del self.fields['captcha']
+        return super(UserRegistrationCreationForm2, self).clean()
+
+    def clean_email2(self):
+        email = self.cleaned_data.get('email')
+        email2 = self.cleaned_data.get('email2')
+        if email and email2:
+            if email != email2:
+                raise forms.ValidationError(
+                    self.error_messages['email_mismatch'],
+                    code='email_mismatch',
+                )
+        return email2
+    
+    """
+    def clean_state(self):
+        # Honey pot field for bots, can be used instead of a captcha
+        state = self.cleaned_data.get('state')
+        if state:
+            # is invisible, if it is filled, this must be a bot
+            raise forms.ValidationError('wrong value')
+        return state
+    """
+    
+    @staticmethod
+    def save_data(data, username_generator=default_username_generator):
+        registration_profile = UserRegistrationCreationForm.save_data(data, username_generator)
+        organisation = data["organisation"]
+        if organisation:
+            user = registration_profile.user
+            user.organisations.add(data["organisation"])
         return registration_profile
 
 
@@ -383,14 +449,14 @@ class UserProfileForm(forms.Form):
         'duplicate_username': _("A user with that username already exists."),
         'duplicate_email': _("A user with that email address already exists."),
     }
-    
-    #username = forms.CharField(label=_("Username"), max_length=30, required=False, widget=bootstrap.StaticInput())
+    username = forms.CharField(label=_("Username"), max_length=30, widget=bootstrap.TextInput())
     first_name = forms.CharField(label=_('first name'), max_length=30, widget=bootstrap.TextInput())
     last_name = forms.CharField(label=_('last name'), max_length=30, widget=bootstrap.TextInput())
     email = forms.EmailField(label=_('e-mail address'), widget=bootstrap.EmailInput())
     is_active = forms.BooleanField(label=_('active'), help_text=_('Designates whether this user should be treated as active. Unselect this instead of deleting accounts.'), required=False)
-    organisations = forms.ModelChoiceField(queryset=None, label=_("Organisation"), widget=bootstrap.Select())
+    organisations = forms.ModelChoiceField(queryset=None, required=False, label=_("Organisation"), widget=bootstrap.Select())
     application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
+    notes = forms.CharField(label=_("Notes"), required=False, max_length=1024, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request')
@@ -411,6 +477,14 @@ class UserProfileForm(forms.Form):
         self.fields['application_roles'].queryset = self.request.user.get_inheritable_application_roles()
         self.fields['organisations'].queryset = self.request.user.get_administrable_organisations()
 
+    def clean_username(self):
+        username = self.cleaned_data["username"]
+        try:
+            get_user_model().objects.exclude(pk=self.user.pk).get(username=username)
+        except ObjectDoesNotExist:
+            return username
+        raise forms.ValidationError(self.error_messages['duplicate_username'])
+
     def clean_email(self):
         email = self.cleaned_data["email"]
         qs = get_user_model().objects.filter(email__iexact=email).exclude(pk=self.user.pk)
@@ -429,13 +503,16 @@ class UserProfileForm(forms.Form):
         self.user.first_name = cd['first_name']
         self.user.last_name = cd['last_name']
         self.user.is_active = cd['is_active']
+        self.user.notes = cd['notes']
         
         self.user.save()
         
         # update organisations
-        #self.userprofile.organisations = [cd.get('organisations')]        
-
-        new_values = set([cd.get('organisations').id])  # set(cd.get('organisations').values_list('id', flat=True))
+        if cd.get('organisations'):
+            new_values = set([cd.get('organisations').id])  # set(cd.get('organisations').values_list('id', flat=True))
+        else:
+            new_values = set()
+        
         administrable_values = set(self.request.user.get_administrable_organisations().values_list('id', flat=True))
         existing_values = set(self.user.organisations.all().values_list('id', flat=True))
         

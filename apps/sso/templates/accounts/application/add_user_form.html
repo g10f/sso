@@ -24,15 +24,9 @@
 	    {% trans "After the account was created, the new user will receive an email with instructions for setting a password." %}
 	    </p>
 	    
-	    {% block messages %}
-	      {% if messages %}
-		      {% for message in messages %}
-		      <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">
-		        {{ message }}
-		      </div>
-		      {% endfor %}
-	      {% endif %}
-	    {% endblock messages %}
+	    {% if messages %}{% for message in messages %}
+	       <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
+	    {% endif %}
 	
 	    {% if form.errors %}
 	        <div class="alert alert-danger">
@@ -42,21 +36,22 @@
     </div>    
 
 	<ul class="nav nav-tabs">
-	  <li class="active"><a href="#user" data-toggle="tab">{% trans 'User data' %}</a></li>
-	  <li><a href="#app_roles" data-toggle="tab">{{ form.application_roles.label }}</a></li>
+	   <li class="active"><a href="#user" data-toggle="tab">{% trans 'User data' %}</a></li>
+	   <li><a href="#app_roles" data-toggle="tab">{{ form.application_roles.label }}</a></li>
+       <li><a href="#notes" data-toggle="tab">{{ form.notes.label }}</a></li>
 	</ul>
 	
 	<!-- Tab panes -->
 	<div class="tab-content">
-	  <div class="tab-pane active" id="user">
+	   <div class="tab-pane active" id="user">
 	       <div>
              {% include 'include/_field.html' with field=form.first_name %}
              {% include 'include/_field.html' with field=form.last_name %}
              {% include 'include/_field.html' with field=form.organisation %}
              {% include 'include/_email_field.html' with field=form.email %}
           </div>
-      </div> 
-	  <div class="tab-pane" id="app_roles">
+       </div> 
+	   <div class="tab-pane" id="app_roles">
 	       <div>
              {% with field=form.application_roles %}
              <div class="row form-group {% if field.errors %}has-error{% endif %}">
@@ -66,7 +61,18 @@
              </div>
              {% endwith %}
           </div>
-	</div>
+	   </div>
+       <div class="tab-pane" id="notes">
+            <div>
+                {% with field=form.notes %}
+                  <div class="row form-group {% if field.errors %}has-error{% endif %}">
+                    <div class="col-sm-12">
+                       {{ field }}{% if field.help_text or field.errors %}<span class="help-inline">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
+                     </div>
+                  </div>
+                {% endwith %}
+            </div>
+       </div>
    </div>
     
     <div class="form-group">
