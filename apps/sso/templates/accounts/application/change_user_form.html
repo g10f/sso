@@ -20,16 +20,11 @@
     {% endfor %}    
     
     <div class="">
-	    <h3>{{ title }} - {{ form.user }}</h3>
-	    {% block messages %}
-	      {% if messages %}
-	      {% for message in messages %}
-	      <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">
-	        {{ message }}
-	      </div>
-	      {% endfor %}
-	      {% endif %}
-	    {% endblock messages %}
+	    <h3>{{ title }} - {{ form.user.first_name }} {{ form.user.last_name }}</h3>
+
+	    {% if messages %}{% for message in messages %}
+	       <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
+	    {% endif %}
 	    
 	    {% if form.errors %}
 	        <div class="alert alert-danger">
@@ -41,56 +36,70 @@
      <ul class="nav nav-tabs" id="myTab">
        <li class="active"><a data-toggle="tab" href="#user">{% trans 'User data' %}</a></li>
        <li><a data-toggle="tab" href="#app_roles">{{ form.application_roles.label }}</a></li>
+       <li><a data-toggle="tab" href="#notes" >{{ form.notes.label }}</a></li>
      </ul>
     
      <div class="tab-content">
-       <div class="tab-pane active" id="user"> 
-        <div>      
-         <div class="row form-group">
-           <label class="col-sm-3 control-label">{% trans 'picture' %}</label>    
-           <div class="col-sm-9 dw-form-control">
-            {% thumbnail form.user.picture "108x108" as im %}<img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">{% endthumbnail %}          
-           </div>
-         </div>
-       
-         {% include 'include/_field.html' with field=form.first_name %}
-         {% include 'include/_field.html' with field=form.last_name %}
-         {% include 'include/_field.html' with field=form.organisations %}
-         {% include 'include/_field.html' with field=form.is_active %}            
-         {% include 'include/_email_field.html' with field=form.email %} 
-
-         {% if perms.registration.change_registrationprofile %}
-         {% with registrationprofile=form.user.registrationprofile %}
-         {% if registrationprofile %}        
-         <div class="row form-group">
-           <label class="col-sm-3 control-label"></label>    
-           <div class="col-sm-9 dw-form-control">
-              <a href="{% url 'registration:update_user_registration' registrationprofile.pk %}" >{% trans 'Registration' %}</a>
-           </div>
-         </div>
-         {% endif %}
-         {% endwith %}
-         {% endif %}
-         
-       </div>
-      </div>
-       
-      <div class="tab-pane" id="app_roles">
-        <div>
-         {% with field=form.application_roles %}
-         <div class="row form-group {% if field.errors %}has-error{% endif %}">
-           <div class="col-sm-12">
-             {{ field }}{% if field.help_text or field.errors %}<span class="help-inline">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
-           </div>
-         </div>
-         {% endwith %}
-       </div>
-     </div>
+		<div class="tab-pane active" id="user"> 
+		  <div>      
+		   <div class="row form-group">
+		     <label class="col-sm-3 control-label">{% trans 'picture' %}</label>    
+		     <div class="col-sm-9 dw-form-control">
+		      {% thumbnail form.user.picture "108x108" as im %}<img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">{% endthumbnail %}          
+		     </div>
+		   </div>
+		 
+           {% include 'include/_field.html' with field=form.username %}
+		   {% include 'include/_field.html' with field=form.first_name %}
+		   {% include 'include/_field.html' with field=form.last_name %}
+		   {% include 'include/_field.html' with field=form.organisations %}
+		   {% include 'include/_field.html' with field=form.is_active %}            
+		   {% include 'include/_email_field.html' with field=form.email %} 
+		
+		   {% if perms.registration.change_registrationprofile %}
+		   {% with registrationprofile=form.user.registrationprofile %}
+		   {% if registrationprofile %}        
+		   <div class="row form-group">
+		     <label class="col-sm-3 control-label"></label>    
+		     <div class="col-sm-9 dw-form-control">
+		        <a href="{% url 'registration:update_user_registration' registrationprofile.pk %}" >{% trans 'Registration' %}</a>
+		     </div>
+		   </div>
+		   {% endif %}
+		   {% endwith %}
+		   {% endif %}
+		   
+		  </div>
+		</div>
+	    <div class="tab-pane" id="app_roles">
+	       <div>
+	        {% with field=form.application_roles %}
+	        <div class="row form-group {% if field.errors %}has-error{% endif %}">
+	          <div class="col-sm-12">
+	            {{ field }}{% if field.help_text or field.errors %}<span class="help-inline">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
+	          </div>
+	        </div>
+	        {% endwith %}
+	      </div>
+	    </div>
+		<div class="tab-pane" id="notes">
+		     <div>
+		         {% with field=form.notes %}
+		           <div class="row form-group {% if field.errors %}has-error{% endif %}">
+		             <div class="col-sm-12">
+		                {{ field }}{% if field.help_text or field.errors %}<span class="help-inline">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
+		              </div>
+		           </div>
+		         {% endwith %}
+		     </div>
+		</div>
+     
  
     </div><!-- /.tab-content -->
 
      <div class="form-group">
       <div class="col-sm-12">
+          <a class="btn btn-default" href="{% url 'accounts:delete_user' form.user.pk %}">{% trans 'Delete' %}</a>
          <button type="submit" class="btn btn-default" name="_addanother" {{ onclick_attrib }}>{% trans 'Save and add another' %}</button>
          <button type="submit" class="btn btn-default" name="_continue" {{ onclick_attrib }}>{% trans 'Save and continue editing' %}</button>
          <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>

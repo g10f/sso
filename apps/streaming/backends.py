@@ -51,11 +51,12 @@ def add_streaming_user(username, email, password, is_center, is_subscriber, is_a
             user.organisations.add(organisation)
             user.first_name = 'BuddhistCenter'
             user.last_name = email.split('@')[0]
-            user.save()
-            user.add_default_roles()
+            user.save()            
         except ObjectDoesNotExist:
             pass
-    
+
+    user.add_default_roles()
+
     # create UserAssociatedSystem
     UserAssociatedSystem.objects.create(userid=email, user=user, application=application)
     return user

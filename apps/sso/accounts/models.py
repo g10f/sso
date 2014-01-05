@@ -176,6 +176,7 @@ class User(AbstractUser):
     is_center = models.BooleanField(_('center'), default=False, help_text=_('Designates that this user is representing a center and not a private person.'))
     is_subscriber = models.BooleanField(_('subscriber'), default=False, help_text=_('Designates whether this user is a DWBN News subscriber.'))
     picture = thumbnail.ImageField(_('picture'), upload_to=generate_filename, blank=True)
+    notes = models.TextField(_("Notes"), blank=True, max_length=1024)
 
     def get_apps(self):
         return Application.objects.distinct().filter(applicationrole__user__uuid=self.uuid, is_active=True).order_by('order').prefetch_related('applicationrole_set', 'applicationrole_set__role')
@@ -239,7 +240,7 @@ class User(AbstractUser):
     
     @property
     def is_complete(self):
-        if self.organisations.all().exists() and self.first_name and self.last_name:  # or self.has_perm("accounts.change_org_users")) \
+        if self.first_name and self.last_name:  # or self.has_perm("accounts.change_org_users")) \
             return True
         else:
             return False
@@ -270,6 +271,17 @@ class User(AbstractUser):
     def default_wiki_roles(self):
         return [{'uuid': 'b8c38af479e54f4c94faf9d8184528fe', 'roles': ['User']}] 
     
+    def filter_administrable_users(self, qs):
+        # filter the users for who the authenticated user has admin rights
+        if not self.is_superuser:
+            if self.has_perm("accounts.change_all_users"):
+                qs = qs.filter(is_superuser=False)
+            else:
+                organisations = self.get_administrable_organisations()
+                q = Q(is_superuser=False) & Q(organisations__in=organisations)
+                qs = qs.filter(q).distinct()
+        return qs
+        
     def add_default_roles(self):
         app_roles_dict_array = self.default_dharmashop_roles + self.default_streaming_roles + self.default_wiki_roles \
                        + self.default_sso_roles

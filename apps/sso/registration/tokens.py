@@ -36,7 +36,7 @@ class RegistrationTokenGenerator(object):
             return False
 
         # Check the timestamp is within limit
-        if (self._num_days(self._today()) - ts) > settings.ACCOUNT_ACTIVATION_DAYS:
+        if (self._num_days(self._today()) - ts) > settings.REGISTRATION.get('TOKEN_EXPIRATION_DAYS', 7):
             return False
 
         return True

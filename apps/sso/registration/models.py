@@ -1,7 +1,7 @@
 import datetime 
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.db import models
+from django.db.models import Q
 from django.contrib.sites.models import get_current_site
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
@@ -66,7 +66,7 @@ def send_validation_email(registration_profile, request, token_generator=default
         'protocol': use_https and 'https' or 'http',
         'token': token_generator.make_token(registration_profile),
         'uid': urlsafe_base64_encode(force_bytes(registration_profile.pk)),
-        'expiration_days': settings.ACCOUNT_ACTIVATION_DAYS
+        'expiration_days': settings.REGISTRATION.get('TOKEN_EXPIRATION_DAYS', 7)
     }
     subject = render_to_string('registration/validation_email_subject.txt', c)
     # Email subject *must not* contain newlines
@@ -76,22 +76,43 @@ def send_validation_email(registration_profile, request, token_generator=default
 
 
 class RegistrationManager(models.Manager):
-   
     @classmethod
-    def expiration_date(cls):
-        return timezone.now() - datetime.timedelta(days=settings.ACCOUNT_ACTIVATION_DAYS)
+    def token_expiration_date(cls):
+        return timezone.now() - datetime.timedelta(days=settings.REGISTRATION.get('TOKEN_EXPIRATION_DAYS', 7))
     
     @classmethod
-    def get_expired_users(cls):
-        expiration_date = cls.expiration_date()
-        return get_user_model().objects.filter(is_active=False,
-                                   registrationprofile__is_validated=False, 
-                                   registrationprofile__date_registered__lte=expiration_date)
+    def activation_expiration_date(cls):
+        # The activation of a new user should take no longer then 2 month
+        return timezone.now() - datetime.timedelta(days=settings.REGISTRATION.get('ACTIVATION_EXPIRATION_DAYS', 60))
+
+    def get_expired(self):
+        q = Q(user__is_active=False) & Q(is_validated=False) & Q(date_registered__lte=self.token_expiration_date())
+        q = q | (Q(user__is_active=False) & Q(date_registered__lte=self.activation_expiration_date()))
+        return super(RegistrationManager, self).filter(q)
     
+    def get_not_expired(self):
+        q = Q(user__is_active=False) & Q(is_validated=False) & Q(date_registered__lte=self.token_expiration_date())
+        q = q | (Q(user__is_active=False) & Q(date_registered__lte=self.activation_expiration_date()))
+        return super(RegistrationManager, self).exclude(q)
+        
+    @classmethod
+    def filter_administrable_registrationprofiles(cls, user, qs):
+        if not user.is_superuser:
+            if user.has_perm("accounts.change_all_users"):
+                qs = qs.filter(user__is_superuser=False)
+            else:
+                organisations = user.get_administrable_organisations()
+                q = Q(user__is_superuser=False) & Q(user__organisations__in=organisations)
+                qs = qs.filter(q).distinct()
+        return qs
+
     @classmethod
     def delete_expired_users(cls):
-        expired_users = cls.get_expired_users()
-        return expired_users.delete()
+        num_deleted = 0
+        for profile in RegistrationProfile.objects.get_expired():
+            profile.user.delete()
+            num_deleted += 1
+        return num_deleted
 
 
 class RegistrationProfile(models.Model):
@@ -101,15 +122,19 @@ class RegistrationProfile(models.Model):
     verified_by_user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, verbose_name=_('verified by'), related_name='registrationprofile_verified_by')
     date_registered = models.DateTimeField(_('date registered'), default=timezone.now)
     is_validated = models.BooleanField(_('validated'), default=False, help_text=_('Designates whether this profile was already validated by the user.'))
-    purpose = models.TextField(_('purpose'), max_length=255)
+    about_me = models.TextField(_('about_me'), blank=True, max_length=1024)
     street = models.CharField(_('street'), blank=True, max_length=255)
-    notes = models.TextField(_("Notes"), blank=True, max_length=255)
+    #notes = models.TextField(_("Notes"), blank=True, max_length=1024)
     city = models.CharField(_("city"), max_length=100, blank=True)
     postal_code = models.CharField(_("zip code"), max_length=30, blank=True)
     country = models.ForeignKey(Country, verbose_name=_("country"), default=81, blank=True, null=True)
-    phone = models.CharField(_("phone Number"), max_length=30)
-    known_person1 = models.CharField(_("person who can recommend you"), max_length=100, blank=True)
-    known_person2 = models.CharField(_("another person who can recommend you"), max_length=100, blank=True)
+    phone = models.CharField(_("phone Number"), max_length=30, blank=True)
+    known_person1_first_name = models.CharField(_("first name of a known person"), max_length=100, blank=True)
+    known_person1_last_name = models.CharField(_("last name of a known person"), max_length=100, blank=True)
+    known_person2_first_name = models.CharField(_("first name of a another known person"), max_length=100, blank=True)
+    known_person2_last_name = models.CharField(_("last name of a another known person"), max_length=100, blank=True)
+    check_back = models.BooleanField(_('check back'), default=False, help_text=_('Designates if there are open questions to check.'))
+    is_access_denied = models.BooleanField(_('access denied'), default=False, help_text=_('Designates if access is denied to the user.'))
     
     objects = RegistrationManager()
     
@@ -123,7 +148,12 @@ class RegistrationProfile(models.Model):
     def __unicode__(self):
         return u"%s" % (self.user)
     
-    def expired(self):
-        expiration_date = RegistrationManager.expiration_date()
-        return bool(self.date_registered < expiration_date)
-    expired.boolean = True
+    def token_valid(self):
+        token_expiration_date = RegistrationManager.token_expiration_date()
+        return bool(self.date_registered > token_expiration_date)
+    token_valid.boolean = True
+
+    def activation_valid(self):
+        activation_expiration_date = RegistrationManager.activation_expiration_date() 
+        return bool((self.user.is_active == True) or (self.date_registered > activation_expiration_date))
+    activation_valid.boolean = True

@@ -17,11 +17,10 @@ class ExpiredFilter(SimpleListFilter):
         return [('1', _('Yes')), ('0', _('No'))]
     
     def queryset(self, request, queryset):
-        expiration_date = RegistrationProfile.objects.expiration_date()
         if self.value() == '1':            
-            return queryset.filter(date_registered__lte=expiration_date)
+            return RegistrationProfile.objects.get_expired()
         elif self.value() == '0':            
-            return queryset.filter(date_registered__gt=expiration_date)
+            return RegistrationProfile.objects.get_not_expired()
         else:
             return queryset.all()
 
@@ -44,18 +43,18 @@ class IsActiveFilter(SimpleListFilter):
 
 class RegistrationAdmin(admin.ModelAdmin):
     actions = ['activate', 'validate_users', 'resend_validation_email', 'delete_expired']
-    list_display = ('user', 'email', 'date_registered', 'purpose', 'notes', 'is_validated', 'expired', 'is_active')
+    list_display = ('user', 'email', 'date_registered', 'about_me', 'is_validated', 'token_valid', 'activation_valid', 'is_active')
     raw_id_fields = ['user']
     search_fields = ('user__username', 'user__email', 'user__first_name', 'user__last_name')
     date_hierarchy = 'date_registered'
-    list_filter = ['is_validated', ExpiredFilter, IsActiveFilter]
+    list_filter = ['is_validated', ExpiredFilter, IsActiveFilter, 'check_back']
     list_select_related = True    
     readonly_fields = ['last_modified', 'is_active', 'user_link']
     fieldsets = [
         (None,
          {'fields':
-          ['user', 'user_link', 'last_modified', 'date_registered', 'is_validated', 'is_active', 'purpose', 'notes',
-           'country', 'postal_code', 'city', 'street', 'phone', 'known_person1', 'known_person2'],
+          ['user', 'user_link', 'last_modified', 'date_registered', 'is_validated', 'is_active', 'about_me',
+           'country', 'postal_code', 'city', 'street', 'phone', 'known_person1_first_name', 'known_person2_first_name', 'known_person1_last_name', 'known_person2_last_name'],
           'classes': ['wide']}), ]
 
     def is_active(self, obj):
@@ -101,9 +100,10 @@ class RegistrationAdmin(admin.ModelAdmin):
     activate.short_description = _('Activate users')
 
     def delete_expired(self, request, queryset):
-        expired_users = RegistrationProfile.objects.get_expired_users().filter(registrationprofile__in=queryset)
-        changecount = expired_users.count()
-        expired_users.delete()
+        expired_profiles = queryset.filter(id__in=RegistrationProfile.objects.get_expired().values_list('id', flat=True))
+        changecount = expired_profiles.count()
+        for profile in expired_profiles:
+            profile.user.delete()
         self.user_message(request, changecount, _('deleted'))
     delete_expired.short_description = _('Delete inactive, expired and not validated users')
         

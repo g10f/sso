@@ -17,7 +17,7 @@ from django.utils.translation import ugettext as _
 from sorl.thumbnail.admin import AdminImageMixin
 
 from models import Application, Organisation, Region, ApplicationRole, Role, UserAssociatedSystem  # , RoleProfile
-from .forms import UserCreationForm, BasicUserChangeForm, AdminUserChangeForm
+from .forms import UserAddForm, BasicUserChangeForm, AdminUserChangeForm
 import logging
 
 logger = logging.getLogger(__name__)
@@ -199,7 +199,7 @@ class GroupAdmin(DjangoGroupAdmin):
 
 class UserAdmin(AdminImageMixin, DjangoUserAdmin):
     form = AdminUserChangeForm
-    add_form = UserCreationForm
+    add_form = UserAddForm
     list_display = ('id',) + DjangoUserAdmin.list_display + ('last_login', 'date_joined', 'get_last_modified_by_user', 'get_created_by_user')
     search_fields = ('username', 'first_name', 'last_name', 'email', 'uuid')
     list_filter = (SuperuserFilter, ) + ('is_staff', 'is_center', 'is_active', 'groups', UserAssociatedSystemFilter, UserRegionListFilter,

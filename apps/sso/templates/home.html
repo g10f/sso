@@ -15,6 +15,9 @@
 {% endblock breadcrumb %}
 
 {% block right_content %}
+    {% if messages %}{% for message in messages %}
+	   <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
+	{% endif %}
 
 	{% if user.is_authenticated %}
 	    {% trans 'Welcome,' %}

@@ -2,6 +2,7 @@
 from django.utils.http import urlencode
 from django.utils.html import format_html
 from django.db import models
+from django.views import generic
 
 #from django.utils.translation import ugettext_lazy
 from django.utils.datastructures import SortedDict
@@ -208,3 +209,15 @@ class ChangeList(object):
                 "url_toggle": self.get_query_string({ORDER_VAR: '.'.join(o_list_toggle)}),
                 "class_attrib": format_html(' class="{0}"', ' '.join(th_classes)) if th_classes else '',
             }
+
+class ListView(generic.ListView):
+    def apply_binary_filter(self, qs, field_name, default=''):
+        field_value = self.request.GET.get(field_name, default)
+        if field_value:
+            setattr(self, field_name, field_value)
+            filter_value = True if (field_value == "True") else False
+            kwargs = {field_name: filter_value}
+            qs = qs.filter(**kwargs)
+        else:
+            setattr(self, field_name, None)
+        return qs

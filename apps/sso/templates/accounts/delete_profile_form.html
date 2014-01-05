@@ -15,15 +15,15 @@
 
 
 {% block form %}
-
-<form enctype="multipart/form-data" class="form-horizontal" method="post">{% csrf_token %}	
+<form class="form-horizontal" method="post">{% csrf_token %}	
     <div class="">
-	    <h3>{% trans 'My account' %}</h3>
-		<p>{% trans "Update your user account." %}</p>
+	    <h3>{% trans 'Delete Profile' %}</h3>
+		<p>{% trans "Do you want to delete your account?" %}</p>
 		
 	    {% if messages %}{% for message in messages %}
 	       <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
 	    {% endif %}
+		
 		
 	    {% if form.errors %}
 	        <div class="alert alert-danger">
@@ -31,29 +31,14 @@
 	        </div>
 	    {% endif %}
     </div>
-    
-    {% include 'include/_field.html' with field=form.username %}
-    {% include 'include/_field.html' with field=form.organisation %}
-    {% include 'include/_field.html' with field=form.first_name %}
-    {% include 'include/_field.html' with field=form.last_name %}
-    {% include 'include/_field.html' with field=form.email %} 
-    {% include 'include/_picture_field.html' with field=form.picture %} 
-    
     <div class="row form-group">
-	    <div class="col-sm-offset-3 col-sm-9">
-            <a class="btn btn-default" href="{% url 'accounts:delete_profile' %}">{% trans 'Delete' %}</a>
-	        <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
+        <div class="col-sm-12">
+	        <button type="submit" class="btn btn-danger">{% trans 'Delete' %}</button>
+            &nbsp;{% trans 'or' %}&nbsp; <a class="btn btn-default" href="{% url 'accounts:profile' %}">{% trans 'Cancel' %}</a>            
 	    </div>
     </div>
 	
 	<script type="text/javascript">document.getElementById("id_first_name").focus();</script>
 	
-	{% block extra_fields %}
-	  {# Include the open_id fields #}
-	  {% for key, value in openid_args.items  %}
-	  <input type="hidden" name="{{ key }}" value="{{ value }}" />
-	  {% endfor %}
-	{% endblock %}
 </form>
-
 {% endblock %}

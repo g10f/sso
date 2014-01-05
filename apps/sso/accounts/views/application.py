@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import user_passes_test
-from django.views.generic import ListView
+from django.views.generic import ListView, DeleteView
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.shortcuts import get_object_or_404
@@ -14,13 +14,33 @@ from django.utils.encoding import force_text
 from l10n.models import Country
 from sso.views import main
 from sso.accounts.models import Region, Organisation, ApplicationRole, send_account_created_email
-from sso.accounts.forms import UserCreationForm2, UserProfileForm
+from sso.accounts.forms import UserAddFormExt, UserProfileForm
 
 
 def has_permission(user):
     return user.is_authenticated() and user.can_add_users
     
-   
+
+class UserDeleteView(DeleteView):
+    model = get_user_model()
+    success_url = reverse_lazy('accounts:user_list')
+
+    def get_queryset(self):
+        # filter the users for who the authenticated user has admin rights
+        user = self.request.user
+        qs = super(UserDeleteView, self).get_queryset()
+        return user.filter_administrable_users(qs)
+    
+    @method_decorator(user_passes_test(has_permission))
+    def dispatch(self, request, *args, **kwargs):
+        return super(UserDeleteView, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super(UserDeleteView, self).get_context_data(**kwargs)
+        context['cancel_url'] = reverse('accounts:update_user', args=[self.object.uuid])
+        return context
+
+
 class UserList(ListView):
     template_name = 'accounts/application/user_list.html'
     model = get_user_model()
@@ -43,16 +63,9 @@ class UserList(ListView):
         Get the list of items for this view. This must be an iterable, and may
         be a queryset (in which qs-specific behavior will be enabled).
         """
-        qs = super(UserList, self).get_queryset()
         user = self.request.user
-        if not user.is_superuser:
-            if user.has_perm("accounts.change_all_users"):
-                qs = qs.filter(is_superuser=False)
-            else:
-                organisations = user.get_administrable_organisations()
-                q = Q(is_superuser=False) & (
-                    Q(organisations__in=organisations))
-                qs = qs.filter(q).distinct()
+        qs = super(UserList, self).get_queryset()
+        qs = user.filter_administrable_users(qs)
             
         self.cl = main.ChangeList(self.request, self.model, self.list_display, default_ordering=['-last_login'])
         # apply search filter
@@ -171,18 +184,14 @@ class UserList(ListView):
 @user_passes_test(has_permission)
 def add_user(request, template='accounts/application/add_user_form.html'):
     if request.method == 'POST':
-        form = UserCreationForm2(request.user, request.POST)
+        form = UserAddFormExt(request.user, request.POST)
         if form.is_valid():
-            user = form.save()
-            user.application_roles = form.cleaned_data["application_roles"]
-            organisation = form.cleaned_data["organisation"]
-            user.organisations.add(organisation)            
-                
+            user = form.save()                
             send_account_created_email(user, request)
             
             return HttpResponseRedirect(reverse('accounts:add_user_done', args=[user.uuid]))
     else:
-        form = UserCreationForm2(request.user)
+        form = UserAddFormExt(request.user)
 
     data = {'form': form,
              'title': _('Add user')}

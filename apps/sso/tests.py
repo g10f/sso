@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 from django.core.urlresolvers import reverse
 
 from django.test import LiveServerTestCase 
@@ -9,11 +10,13 @@ class SSOSeleniumTests(LiveServerTestCase):
 
     @classmethod
     def setUpClass(cls):
+        os.environ['THROTTELING_DISABLED'] = 'True'
         cls.selenium = WebDriver()
         super(SSOSeleniumTests, cls).setUpClass()
 
     @classmethod
     def tearDownClass(cls):
+        del os.environ['THROTTELING_DISABLED']
         cls.selenium.quit()
         super(SSOSeleniumTests, cls).tearDownClass()
 

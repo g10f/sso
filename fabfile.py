@@ -253,13 +253,13 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
                  source='apps/%(app)s/settings/local_%(server_name)s.py' % {'server_name': server_name, 'app': app},
                  use_sudo=True, owner='www-data', group='www-data')
 
-    """
     # python enviroment 
     require.python.virtualenv('/envs/sso')
     with fabtools.python.virtualenv('/envs/sso'):
         with cd(code_dir):
             require.python.requirements('src/requirements.txt')
     
+    """
     require.file('/envs/%(virtualenv)s/lib/python2.7/sitecustomize.py' % {'virtualenv': virtualenv}, source='apps/sitecustomize.py')
     
     

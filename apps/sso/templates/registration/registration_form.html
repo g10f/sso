@@ -6,14 +6,34 @@
 {% block form %}
 <form class="form-horizontal" method="post">{% csrf_token %}
     <h3>{% blocktrans %}Sign up for {{ site_name }}{% endblocktrans %}</h3>
-    {% if form.errors %}
+    
+    {% if "_edit_again" in form.errors.values.0 %}
+        <div class="alert alert-info">
+        {% trans "You can edit your data here again." %}
+        </div>    
+    {% elif form.errors %}
         <div class="alert alert-danger">
         {% blocktrans count counter=form.errors.items|length %}Please correct the error below.{% plural %}Please correct the errors below.{% endblocktrans %}
         </div>
     {% endif %}
 
-    {% include 'include/_form_snippet.html' %}
-    
+    {% include 'include/_field.html' with field=form.first_name %}
+    {% include 'include/_field.html' with field=form.last_name %}
+    {% include 'include/_field.html' with field=form.email %}
+    {% include 'include/_field.html' with field=form.email2 %}
+    {% include 'include/_field.html' with field=form.organisation %}
+    {% include 'include/_field.html' with field=form.country %}
+    {% include 'include/_field.html' with field=form.city %}
+    {% include 'include/_field.html' with field=form.about_me %}    
+    <span class="help-block">{% trans 'Please name a person who already has an account and can recommend you.' %}</span>
+    {% include 'include/_field.html' with field=form.known_person1_first_name %}
+    {% include 'include/_field.html' with field=form.known_person1_last_name %}
+    <span class="help-block">{% trans 'Please name a second person who already has an account and can recommend you.' %}</span>
+    {% include 'include/_field.html' with field=form.known_person2_first_name %}
+    {% include 'include/_field.html' with field=form.known_person2_last_name %}
+    {% include 'include/_field.html' with field=form.captcha %}
+    {% include 'include/_field.html' with field=form.state %}
+        
      <div class="form-group">
          <div class="col-sm-offset-3 col-sm-9">
              <button type="submit" class="btn btn-primary">{% trans 'Register' %}</button>
