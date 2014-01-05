@@ -84,16 +84,18 @@ class RegistrationManager(models.Manager):
     def activation_expiration_date(cls):
         # The activation of a new user should take no longer then 2 month
         return timezone.now() - datetime.timedelta(days=settings.REGISTRATION.get('ACTIVATION_EXPIRATION_DAYS', 60))
-
+    
+    @classmethod
+    def expired_q(cls):
+        q = Q(user__is_active=False) & Q(is_validated=False) & Q(date_registered__lte=cls.token_expiration_date()) & Q(is_access_denied=False)
+        q = q | (Q(user__is_active=False) & Q(date_registered__lte=cls.activation_expiration_date())) & Q(is_access_denied=False)
+        return q
+        
     def get_expired(self):
-        q = Q(user__is_active=False) & Q(is_validated=False) & Q(date_registered__lte=self.token_expiration_date())
-        q = q | (Q(user__is_active=False) & Q(date_registered__lte=self.activation_expiration_date()))
-        return super(RegistrationManager, self).filter(q)
+        return super(RegistrationManager, self).filter(self.expired_q())
     
     def get_not_expired(self):
-        q = Q(user__is_active=False) & Q(is_validated=False) & Q(date_registered__lte=self.token_expiration_date())
-        q = q | (Q(user__is_active=False) & Q(date_registered__lte=self.activation_expiration_date()))
-        return super(RegistrationManager, self).exclude(q)
+        return super(RegistrationManager, self).exclude(self.expired_q())
         
     @classmethod
     def filter_administrable_registrationprofiles(cls, user, qs):
