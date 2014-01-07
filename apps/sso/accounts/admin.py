@@ -13,7 +13,7 @@ from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 from django.utils.safestring import mark_safe
 from django.core.exceptions import ObjectDoesNotExist
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from sorl.thumbnail.admin import AdminImageMixin
 
 from models import Application, Organisation, Region, UserAssociatedSystem
@@ -158,6 +158,18 @@ class ApplicationRolesFilter(BaseFilter):
         return request.user.get_administrable_application_roles()
 
 
+class RoleProfilesFilter(BaseFilter):
+    """
+    Fiter for user admin
+    """
+    title = _('Role profiles')
+    parameter_name = 'role_profiles'
+    field_path = 'role_profiles'
+
+    def get_lookup_qs(self, request, model_admin):
+        return request.user.get_administrable_role_profiles()
+
+
 class SuperuserFilter(SimpleListFilter):
     title = _('superuser status')
     parameter_name = 'is_superuser__exact'
@@ -205,7 +217,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
     list_display = ('id',) + DjangoUserAdmin.list_display + ('last_login', 'date_joined', 'get_last_modified_by_user', 'get_created_by_user')
     search_fields = ('username', 'first_name', 'last_name', 'email', 'uuid')
     list_filter = (SuperuserFilter, ) + ('is_staff', 'is_center', 'is_active', 'groups', UserAssociatedSystemFilter, UserRegionListFilter,
-                    ApplicationRolesFilter, LastModifiedUserFilter, CreatedByUserFilter, UserOrganisationsListFilter)
+                    RoleProfilesFilter, ApplicationRolesFilter, LastModifiedUserFilter, CreatedByUserFilter, UserOrganisationsListFilter)
     filter_horizontal = DjangoUserAdmin.filter_horizontal + ('groups', 'application_roles', 'role_profiles', 'organisations')
     ordering = ['-last_login', '-first_name', '-last_name']
     actions = ['mark_info_mail']

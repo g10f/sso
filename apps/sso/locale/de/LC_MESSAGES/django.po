@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-07 19:17+0100\n"
+"POT-Creation-Date: 2014-01-07 23:20+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,16 +27,16 @@ msgstr ""
 msgid "Organisation"
 msgstr "Zentrum"
 
-#: accounts/admin.py:101 accounts/admin.py:276 accounts/models.py:185
+#: accounts/admin.py:101 accounts/admin.py:288 accounts/models.py:185
 #: registration/forms.py:49 registration/models.py:123
 msgid "last modified by"
 msgstr "letzte Änderung durch"
 
-#: accounts/admin.py:112 accounts/admin.py:285 accounts/models.py:187
+#: accounts/admin.py:112 accounts/admin.py:297 accounts/models.py:187
 msgid "created by"
-msgstr ""
+msgstr "angelegt von"
 
-#: accounts/admin.py:123
+#: accounts/admin.py:123 accounts/models.py:357
 msgid "associated system"
 msgstr "Assoziertes System"
 
@@ -48,50 +48,55 @@ msgstr ""
 msgid "Application Roles"
 msgstr "Anwendungsrollen"
 
-#: accounts/admin.py:162
+#: accounts/admin.py:165 accounts/forms.py:217 accounts/forms.py:464
+#: templates/accounts/application/add_user_done.html:41
+msgid "Role profiles"
+msgstr "Rollenprofile"
+
+#: accounts/admin.py:174
 msgid "superuser status"
 msgstr ""
 
-#: accounts/admin.py:168 registration/admin.py:17 registration/admin.py:33
+#: accounts/admin.py:180 registration/admin.py:17 registration/admin.py:33
 msgid "Yes"
 msgstr ""
 
-#: accounts/admin.py:168 registration/admin.py:17 registration/admin.py:33
+#: accounts/admin.py:180 registration/admin.py:17 registration/admin.py:33
 msgid "No"
 msgstr ""
 
-#: accounts/admin.py:215 accounts/admin.py:222
+#: accounts/admin.py:227 accounts/admin.py:234
 msgid "Personal info"
 msgstr ""
 
-#: accounts/admin.py:216 accounts/admin.py:223
+#: accounts/admin.py:228 accounts/admin.py:235
 msgid "AppRoles"
 msgstr "Anwendungsrollen"
 
-#: accounts/admin.py:217
+#: accounts/admin.py:229
 msgid "Permissions"
 msgstr ""
 
-#: accounts/admin.py:218 accounts/admin.py:224
+#: accounts/admin.py:230 accounts/admin.py:236
 msgid "Important dates"
 msgstr ""
 
-#: accounts/admin.py:372
+#: accounts/admin.py:384
 #, python-format
 msgid "%s SSO Information"
 msgstr "%s SSO Information"
 
-#: accounts/admin.py:382
+#: accounts/admin.py:394
 #, python-format
 msgid "Successfully send Information Email to  %(count)d %(items)s."
 msgstr ""
 
-#: accounts/admin.py:396
+#: accounts/admin.py:408
 #: templates/admin/accounts/send_mail_selected_confirmation.html:13
 msgid "Send information mail to selected users"
 msgstr ""
 
-#: accounts/admin.py:405
+#: accounts/admin.py:417
 msgid "Send info email"
 msgstr ""
 
@@ -194,11 +199,6 @@ msgstr "Notizen"
 #: templates/accounts/application/add_user_done.html:47
 msgid "Application roles"
 msgstr "Anwendungsrollen"
-
-#: accounts/forms.py:217 accounts/forms.py:464
-#: templates/accounts/application/add_user_done.html:41
-msgid "Role profiles"
-msgstr "Rollenprofile"
 
 #: accounts/forms.py:218 accounts/forms.py:465 accounts/models.py:184
 msgid ""
@@ -313,7 +313,7 @@ msgstr ""
 msgid "Designates whether this application should be provided."
 msgstr "Gibt an, ob diese Anwendung aktiv ist."
 
-#: accounts/models.py:89
+#: accounts/models.py:89 oauth2/models.py:72
 msgid "application"
 msgstr "Anwendung"
 
@@ -349,7 +349,7 @@ msgstr ""
 msgid "application role"
 msgstr "Anwendungsrolle"
 
-#: accounts/models.py:135
+#: accounts/models.py:135 accounts/models.py:183
 msgid "application roles"
 msgstr "Anwendungsrollen"
 
@@ -376,7 +376,7 @@ msgstr ""
 msgid "role profile"
 msgstr "Rollenprofile"
 
-#: accounts/models.py:152
+#: accounts/models.py:152 accounts/models.py:184
 msgid "role profiles"
 msgstr "Rollenprofile"
 
@@ -394,6 +394,10 @@ msgstr "Zentrum"
 msgid "centers"
 msgstr "Zentren"
 
+#: accounts/models.py:182
+msgid "organisations"
+msgstr "Zentren"
+
 #: accounts/models.py:188
 msgid ""
 "Designates that this user is representing a center and not a private person."
@@ -407,6 +411,10 @@ msgstr ""
 #: accounts/models.py:189
 msgid "Designates whether this user is a DWBN News subscriber."
 msgstr "Gibt an, ob dieser Benutzer ein DWBN News Emfänger ist."
+
+#: accounts/models.py:358
+msgid "associated systems"
+msgstr "Assoziertes System"
 
 #: accounts/views/__init__.py:114
 msgid "Logged out"
@@ -522,13 +530,35 @@ msgstr ""
 msgid "client secret"
 msgstr ""
 
+#: oauth2/models.py:77 oauth2/models.py:92 oauth2/models.py:113
+#: registration/admin.py:75 registration/models.py:121
+#: templates/registration/user_registration_list.html:162
+msgid "user"
+msgstr ""
+
+#: oauth2/models.py:78
+msgid "type"
+msgstr ""
+
+#: oauth2/models.py:91 oauth2/models.py:112
+msgid "client"
+msgstr "Client"
+
+#: oauth2/models.py:93
+msgid "code"
+msgstr "Code"
+
+#: oauth2/models.py:94 oauth2/models.py:115 oauth2/models.py:131
+msgid "created at"
+msgstr "angelegt am"
+
 #: oauth2/models.py:95
 msgid "redirect uri"
 msgstr ""
 
 #: oauth2/models.py:96
 msgid "is valid"
-msgstr ""
+msgstr "ist gültig"
 
 #: oauth2/models.py:97
 msgid "client state"
@@ -536,6 +566,18 @@ msgstr ""
 
 #: oauth2/models.py:98
 msgid "scopes"
+msgstr ""
+
+#: oauth2/models.py:114
+msgid "access token"
+msgstr "Zugriffstoken"
+
+#: oauth2/models.py:129
+msgid "bearer token"
+msgstr "Bearer Token"
+
+#: oauth2/models.py:130
+msgid "token"
 msgstr ""
 
 #: oauth2/templates/oauth2/approval.html:4
@@ -584,11 +626,6 @@ msgstr ""
 #: registration/admin.py:14
 msgid "expired"
 msgstr "abgelaufen"
-
-#: registration/admin.py:75 registration/models.py:121
-#: templates/registration/user_registration_list.html:162
-msgid "user"
-msgstr ""
 
 #: registration/admin.py:77
 msgid "changed successfully"
@@ -1708,3 +1745,7 @@ msgstr ""
 #, python-format
 msgid "Password resend on %(site_name)s"
 msgstr "Passwort von %(site_name)s zusenden"
+
+#, fuzzy
+#~ msgid "Role profile"
+#~ msgstr "Rollenprofile"

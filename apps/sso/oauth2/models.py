@@ -69,13 +69,13 @@ CLIENT_TYPES = [
 ]
 
 class Client(AbstractBaseModel):
-    application = models.ForeignKey(Application, blank=True, null=True)
+    application = models.ForeignKey(Application, verbose_name=_('application'), blank=True, null=True)
     redirect_uris = models.TextField(_('redirect uris'), blank=True)
     default_redirect_uri = models.CharField(_('default redirect uri'), max_length=2047, blank=True)
     client_secret = models.CharField(_('client secret'), max_length=2047, blank=True, default=get_random_string)
     #response_type = models.CharField(max_length=255, choices=OAUTH2_RESPONSE_TYPES, help_text="Supported OAuth 2 response type in Authorization Requests")
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, help_text="Associated user, required for Client Credentials Grant")
-    type = models.CharField(max_length=255, choices=CLIENT_TYPES, default='web')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'), null=True, blank=True, help_text="Associated user, required for Client Credentials Grant")
+    type = models.CharField(_('type'), max_length=255, choices=CLIENT_TYPES, default='web')
     
     @property
     def client_id(self):
@@ -88,10 +88,10 @@ class AuthorizationCode(models.Model):
     """
     OAuth2 Authorization Code
     """
-    client = models.ForeignKey(Client)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
-    code = models.CharField(max_length=100, unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    client = models.ForeignKey(Client, verbose_name=_('client'))
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'))
+    code = models.CharField(_('code'), max_length=100, unique=True)
+    created_at = models.DateTimeField(_('created at'), auto_now_add=True)
     redirect_uri = models.CharField(_('redirect uri'), max_length=2047, blank=True)
     is_valid = models.BooleanField(_('is valid'), default=True)
     state = models.CharField(_('client state'), max_length=2047, blank=True)
@@ -109,10 +109,10 @@ class BearerToken(models.Model):
     """
     OAuth2 Bearer Token
     """
-    client = models.ForeignKey(Client)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
-    access_token = models.CharField(max_length=2048, unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    client = models.ForeignKey(Client, verbose_name=_('client'))
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'))
+    access_token = models.CharField(_('access token'), max_length=2048, unique=True)
+    created_at = models.DateTimeField(_('created at'), auto_now_add=True)
     
     class Meta:
         ordering = ['-created_at']
@@ -126,9 +126,9 @@ class RefreshToken(models.Model):
     """
     A RefreshToken instance represents a token that can be swapped for a new access token when it expires.
     """
-    bearer_token = models.OneToOneField(BearerToken, related_name='refresh_token')
-    token = models.CharField(max_length=2048, unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    bearer_token = models.OneToOneField(BearerToken, verbose_name=_('bearer token'), related_name='refresh_token')
+    token = models.CharField(_('token'), max_length=2048, unique=True)
+    created_at = models.DateTimeField(_('created at'), auto_now_add=True)
     
     @property
     def user(self):
