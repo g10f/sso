@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-07 18:51+0100\n"
+"POT-Creation-Date: 2014-01-07 19:17+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,12 +26,12 @@ msgstr ""
 msgid "Organisation"
 msgstr "Center"
 
-#: accounts/admin.py:101 accounts/admin.py:276 accounts/models.py:181
+#: accounts/admin.py:101 accounts/admin.py:276 accounts/models.py:185
 #: registration/forms.py:49 registration/models.py:123
 msgid "last modified by"
 msgstr ""
 
-#: accounts/admin.py:112 accounts/admin.py:285 accounts/models.py:183
+#: accounts/admin.py:112 accounts/admin.py:285 accounts/models.py:187
 msgid "created by"
 msgstr ""
 
@@ -99,7 +99,7 @@ msgid "Name"
 msgstr ""
 
 #: accounts/forms.py:35 accounts/forms.py:271 accounts/forms.py:459
-#: accounts/models.py:158 registration/forms.py:37
+#: accounts/models.py:162 registration/forms.py:37
 #: templates/accounts/user_confirm_delete.html:30
 msgid "e-mail address"
 msgstr ""
@@ -183,7 +183,7 @@ msgstr ""
 msgid "last name"
 msgstr ""
 
-#: accounts/forms.py:169 accounts/forms.py:463 accounts/models.py:187
+#: accounts/forms.py:169 accounts/forms.py:463 accounts/models.py:191
 #: registration/forms.py:34 templates/accounts/user_confirm_delete.html:35
 #: templates/accounts/application/add_user_done.html:52
 msgid "Notes"
@@ -199,7 +199,7 @@ msgstr ""
 msgid "Role profiles"
 msgstr ""
 
-#: accounts/forms.py:218 accounts/forms.py:465 accounts/models.py:180
+#: accounts/forms.py:218 accounts/forms.py:465 accounts/models.py:184
 msgid ""
 "Organises a group of application roles that are usually assigned together."
 msgstr ""
@@ -221,7 +221,7 @@ msgstr ""
 msgid "Username"
 msgstr ""
 
-#: accounts/forms.py:272 accounts/models.py:186
+#: accounts/forms.py:272 accounts/models.py:190
 #: templates/accounts/application/change_user_form.html:46
 msgid "picture"
 msgstr ""
@@ -280,7 +280,7 @@ msgid ""
 "instead of deleting accounts."
 msgstr ""
 
-#: accounts/models.py:43 accounts/models.py:182 registration/models.py:122
+#: accounts/models.py:43 accounts/models.py:186 registration/models.py:122
 msgid "last modified"
 msgstr ""
 
@@ -288,7 +288,7 @@ msgstr ""
 msgid "name"
 msgstr ""
 
-#: accounts/models.py:65 accounts/models.py:100 accounts/models.py:141
+#: accounts/models.py:65 accounts/models.py:100 accounts/models.py:143
 msgid "Overwrites the alphabetic order."
 msgstr ""
 
@@ -319,7 +319,7 @@ msgstr ""
 msgid "Associated group for SSO internal permission management."
 msgstr ""
 
-#: accounts/models.py:122 accounts/models.py:142
+#: accounts/models.py:122 accounts/models.py:144
 msgid "inheritable by organisation admin"
 msgstr "inheritable by center admin"
 
@@ -328,7 +328,7 @@ msgstr "inheritable by center admin"
 msgid "Designates that the role can inherited by a organisation admin."
 msgstr "Designates that role can inherited by a center admin."
 
-#: accounts/models.py:124 accounts/models.py:144
+#: accounts/models.py:124 accounts/models.py:146
 msgid "inheritable by global admin"
 msgstr ""
 
@@ -337,45 +337,61 @@ msgstr ""
 msgid "Designates that the role can inherited by a global admin."
 msgstr "Designates that role can inherited by a center admin."
 
-#: accounts/models.py:140
+#: accounts/models.py:134
+msgid "application role"
+msgstr ""
+
+#: accounts/models.py:135
+msgid "application roles"
+msgstr ""
+
+#: accounts/models.py:142
 msgid ""
 "Associates a group of application roles that are usually assigned together."
 msgstr ""
 
-#: accounts/models.py:143
+#: accounts/models.py:145
 #, fuzzy
 msgid "Designates that the role profile can inherited by a organisation admin."
 msgstr "Designates that role can inherited by a center admin."
 
-#: accounts/models.py:145
+#: accounts/models.py:147
 #, fuzzy
 msgid "Designates that the role profile can inherited by a global admin."
 msgstr "Designates that role can inherited by a center admin."
 
-#: accounts/models.py:156
+#: accounts/models.py:151
+msgid "role profile"
+msgstr ""
+
+#: accounts/models.py:152
+msgid "role profiles"
+msgstr ""
+
+#: accounts/models.py:160
 msgid "ISO alpha-2"
 msgstr ""
 
-#: accounts/models.py:165 accounts/models.py:184
+#: accounts/models.py:169 accounts/models.py:188
 #: templates/accounts/user_confirm_delete.html:41
 #: templates/registration/user_registration_list.html:166
 msgid "center"
 msgstr ""
 
-#: accounts/models.py:166
+#: accounts/models.py:170
 msgid "centers"
 msgstr ""
 
-#: accounts/models.py:184
+#: accounts/models.py:188
 msgid ""
 "Designates that this user is representing a center and not a private person."
 msgstr ""
 
-#: accounts/models.py:185
+#: accounts/models.py:189
 msgid "subscriber"
 msgstr ""
 
-#: accounts/models.py:185
+#: accounts/models.py:189
 msgid "Designates whether this user is a DWBN News subscriber."
 msgstr ""
 

@@ -131,6 +131,8 @@ class ApplicationRole(models.Model):
     class Meta:
         ordering = ['application', 'role']
         unique_together = (("application", "role"),)
+        verbose_name = _('application role')
+        verbose_name_plural = _('application roles')
     
     def __unicode__(self):
         return u"%s - %s" % (self.application, self.role)
@@ -146,6 +148,8 @@ class RoleProfile(AbstractBaseModel):
 
     class Meta(AbstractBaseModel.Meta):
         ordering = ['order', 'name']
+        verbose_name = _('role profile')
+        verbose_name_plural = _('role profiles')
 
 
 class Region(AbstractBaseModel):
