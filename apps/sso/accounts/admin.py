@@ -8,7 +8,7 @@ from django.contrib.admin.util import model_ngettext
 from django.db.models import Q
 from django.contrib.admin import SimpleListFilter
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin, GroupAdmin as DjangoGroupAdmin
-from django.contrib.auth.models import Group
+#from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 from django.utils.safestring import mark_safe
@@ -16,13 +16,14 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext as _
 from sorl.thumbnail.admin import AdminImageMixin
 
-from models import Application, Organisation, Region, ApplicationRole, Role, UserAssociatedSystem  # , RoleProfile
+from models import Application, Organisation, Region, UserAssociatedSystem
+#from models import ApplicationRole, Role, ApplicationRoleProfile
 from .forms import UserAddForm, BasicUserChangeForm, AdminUserChangeForm
 import logging
 
 logger = logging.getLogger(__name__)
 
-admin.site.unregister(Group)
+#admin.site.unregister(Group)
 
 
 class ApplicationAdmin(admin.ModelAdmin):
@@ -36,17 +37,17 @@ class RoleAdmin(admin.ModelAdmin):
 
 
 class ApplicationRoleAdmin(admin.ModelAdmin):
-    list_filter = ('application', 'role',)
+    list_filter = ('roleprofile', 'application', 'role')
     list_display = ('__unicode__', 'is_inheritable_by_org_admin', 'is_inheritable_by_global_admin')
 
 
-"""
 class RoleProfileAdmin(admin.ModelAdmin):
-    list_display = ('name', 'uuid', 'last_modified')
+    list_display = ('name', 'uuid', 'is_inheritable_by_org_admin', 'is_inheritable_by_global_admin', 'last_modified')
     date_hierarchy = 'last_modified'
     search_fields = ('name', 'uuid')
     list_filter = ('application_roles', )
-"""    
+    filter_horizontal = ('application_roles', )
+    
 
 class RegionAdmin(admin.ModelAdmin):
     list_display = ('name', 'uuid', 'last_modified')
@@ -154,7 +155,7 @@ class ApplicationRolesFilter(BaseFilter):
     field_path = 'application_roles'
 
     def get_lookup_qs(self, request, model_admin):
-        return request.user.get_inheritable_application_roles()
+        return request.user.get_administrable_application_roles()
 
 
 class SuperuserFilter(SimpleListFilter):
@@ -200,25 +201,26 @@ class GroupAdmin(DjangoGroupAdmin):
 class UserAdmin(AdminImageMixin, DjangoUserAdmin):
     form = AdminUserChangeForm
     add_form = UserAddForm
+    save_on_top = True
     list_display = ('id',) + DjangoUserAdmin.list_display + ('last_login', 'date_joined', 'get_last_modified_by_user', 'get_created_by_user')
     search_fields = ('username', 'first_name', 'last_name', 'email', 'uuid')
     list_filter = (SuperuserFilter, ) + ('is_staff', 'is_center', 'is_active', 'groups', UserAssociatedSystemFilter, UserRegionListFilter,
                     ApplicationRolesFilter, LastModifiedUserFilter, CreatedByUserFilter, UserOrganisationsListFilter)
-    filter_horizontal = DjangoUserAdmin.filter_horizontal + ('groups', 'application_roles', 'organisations')
+    filter_horizontal = DjangoUserAdmin.filter_horizontal + ('groups', 'application_roles', 'role_profiles', 'organisations')
     ordering = ['-last_login', '-first_name', '-last_name']
     actions = ['mark_info_mail']
     
     fieldsets = (
         (None, {'fields': ('username', 'password'), 'classes': ['wide']}),
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'email', 'uuid', 'is_center', 'is_subscriber', 'picture'), 'classes': ['wide']}),
-        (_('AppRoles'), {'fields': ('assigned_organisations', 'organisations', 'application_roles'), 'classes': ['wide', 'wide_ex']}),
+        (_('AppRoles'), {'fields': ('assigned_organisations', 'organisations', 'application_roles', 'role_profiles'), 'classes': ['wide', 'wide_ex']}),
         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'), 'classes': ['wide', 'wide_ex']}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined', 'get_last_modified_by_user', 'get_created_by_user'), 'classes': ['wide']}),
     )
     non_su_fieldsets = (
         (None, {'fields': ('username', ), 'classes': ['wide']}),
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'email', 'uuid', 'is_center', 'is_subscriber'), 'classes': ['wide']}),
-        (_('AppRoles'), {'fields': ('is_active', 'assigned_organisations', 'organisations', 'application_roles'), 'classes': ['wide', 'wide_ex']}),
+        (_('AppRoles'), {'fields': ('is_active', 'assigned_organisations', 'organisations', 'application_roles', 'role_profiles'), 'classes': ['wide', 'wide_ex']}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined', 'get_last_modified_by_user', 'get_created_by_user'), 'classes': ['wide']}),
     )
     readonly_fields = ['assigned_organisations', 'is_subscriber', 'get_last_modified_by_user', 'get_created_by_user']
@@ -258,7 +260,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         
         # use the application_roles from application_roles of the authenticated user        
         if db_field.name == "application_roles":
-            kwargs["queryset"] = user.get_inheritable_application_roles()
+            kwargs["queryset"] = user.get_administrable_application_roles()
 
         if db_field.name == "organisations":
             kwargs["queryset"] = user.get_administrable_organisations()
@@ -312,7 +314,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
             user_profile_form = formset.forms[0]
             user = request.user
             self.merge_allowed_values(user_profile_form, 'application_roles',
-                                                  user.get_inheritable_application_roles())
+                                                  user.get_administrable_application_roles())
             self.merge_allowed_values(user_profile_form, 'organisations',
                                                   user.get_administrable_organisations())
         return super(UserAdmin, self).save_formset(request, form, formset, change)
@@ -402,12 +404,13 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         return TemplateResponse(request, "admin/accounts/send_mail_selected_confirmation.html", context, current_app=self.admin_site.name)
     mark_info_mail.short_description = _('Send info email')
    
-
+"""
 admin.site.register(Group, GroupAdmin)
 admin.site.register(get_user_model(), UserAdmin)
 admin.site.register(ApplicationRole, ApplicationRoleAdmin)
-#admin.site.register(RoleProfile, RoleProfileAdmin)
+admin.site.register(ApplicationRoleProfile, ApplicationRoleProfileAdmin)
 admin.site.register(Role, RoleAdmin)
 admin.site.register(Application, ApplicationAdmin)
 admin.site.register(Organisation, OrganisationAdmin)
 admin.site.register(Region, RegionAdmin)
+"""

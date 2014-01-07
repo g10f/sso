@@ -108,7 +108,7 @@ class Role(models.Model):
         return u"%s" % (self.name)
     
     class Meta:
-        ordering = ['order', 'name']
+        ordering = ['order', 'name']    
 
 
 class ApplicationRoleManager(models.Manager):
@@ -120,9 +120,9 @@ class ApplicationRole(models.Model):
     application = models.ForeignKey(Application)
     role = models.ForeignKey(Role)
     is_inheritable_by_org_admin = models.BooleanField(_('inheritable by organisation admin'), default=True,
-        help_text=_('Designates that role can inherited by a organisation admin.'))
+        help_text=_('Designates that the role can inherited by a organisation admin.'))
     is_inheritable_by_global_admin = models.BooleanField(_('inheritable by global admin'), default=True,
-        help_text=_('Designates that role can inherited by a global admin.'))
+        help_text=_('Designates that the role can inherited by a global admin.'))
     objects = ApplicationRoleManager()
      
     def natural_key(self):
@@ -136,10 +136,17 @@ class ApplicationRole(models.Model):
         return u"%s - %s" % (self.application, self.role)
 
 
-"""
 class RoleProfile(AbstractBaseModel):
-    application_roles = models.ManyToManyField(ApplicationRole)
-"""
+    application_roles = models.ManyToManyField(ApplicationRole, help_text=_('Associates a group of application roles that are usually assigned together.'))
+    order = models.IntegerField(default=0, help_text=_('Overwrites the alphabetic order.'))
+    is_inheritable_by_org_admin = models.BooleanField(_('inheritable by organisation admin'), default=True,
+        help_text=_('Designates that the role profile can inherited by a organisation admin.'))
+    is_inheritable_by_global_admin = models.BooleanField(_('inheritable by global admin'), default=True,
+        help_text=_('Designates that the role profile can inherited by a global admin.'))
+
+    class Meta(AbstractBaseModel.Meta):
+        ordering = ['order', 'name']
+
 
 class Region(AbstractBaseModel):
     pass
@@ -170,6 +177,7 @@ class User(AbstractUser):
     uuid = UUIDField(version=4, editable=True, unique=True)
     organisations = models.ManyToManyField(Organisation, blank=True, null=True)
     application_roles = models.ManyToManyField(ApplicationRole, blank=True, null=True)
+    role_profiles = models.ManyToManyField(RoleProfile, blank=True, null=True, help_text=_('Organises a group of application roles that are usually assigned together.'))
     last_modified_by_user = CurrentUserField(verbose_name=_('last modified by'), related_name='+')
     last_modified = models.DateTimeField(_('last modified'), auto_now=True)
     created_by_user = models.ForeignKey('self', verbose_name=_('created by'), related_name='+', null=True)
@@ -179,30 +187,36 @@ class User(AbstractUser):
     notes = models.TextField(_("Notes"), blank=True, max_length=1024)
 
     def get_apps(self):
-        return Application.objects.distinct().filter(applicationrole__user__uuid=self.uuid, is_active=True).order_by('order').prefetch_related('applicationrole_set', 'applicationrole_set__role')
+        q = Q(applicationrole__user__uuid=self.uuid) & Q(is_active=True) 
+        q |= Q(applicationrole__roleprofile__user__uuid=self.uuid) & Q(is_active=True)
+        return Application.objects.distinct().filter(q).order_by('order').prefetch_related('applicationrole_set', 'applicationrole_set__role')
 
     def get_global_navigation_urls(self):
-        return Application.objects.distinct().filter(applicationrole__user__uuid=self.uuid, global_navigation=True, is_active=True).order_by('order')
+        q = Q(applicationrole__user__uuid=self.uuid) & Q(is_active=True) & Q(global_navigation=True) 
+        q |= Q(applicationrole__roleprofile__user__uuid=self.uuid) & Q(is_active=True) & Q(global_navigation=True)
+        return Application.objects.distinct().filter(q).order_by('order')
     
     def get_roles_by_app(self, app_uuid):
-        return Role.objects.filter(applicationrole__user__uuid=self.uuid, applicationrole__application__uuid=app_uuid)
+        q = Q(applicationrole__user__uuid=self.uuid) & Q(applicationrole__application__uuid=app_uuid) 
+        q |= Q(applicationrole__roleprofile__user__uuid=self.uuid) & Q(applicationrole__application__uuid=app_uuid)
+        return Role.objects.filter(q)
     
     def get_applicationroles(self):
-        return ApplicationRole.objects.filter(user__uuid=self.uuid).select_related()
+        q = Q(user__uuid=self.uuid) | Q(roleprofile__user__uuid=self.uuid)
+        return ApplicationRole.objects.filter(q).distinct().select_related()
     
-    def get_inheritable_application_roles(self):
+    def get_administrable_application_roles(self):
         if self.is_superuser:
             return ApplicationRole.objects.all().select_related()
         
-        # all roles the user has with flag adequate inheritable flag
+        # all roles the user has, with adequate inheritable flag
         if self.has_perm("accounts.change_all_users"):
-            application_roles = self.application_roles.filter(is_inheritable_by_global_admin=True)
+            application_roles = self.get_applicationroles().filter(is_inheritable_by_global_admin=True)
         elif self.has_perm("accounts.change_org_users") or self.has_perm("accounts.change_reg_users"):
-            application_roles = self.application_roles.filter(is_inheritable_by_org_admin=True)
+            application_roles = self.get_applicationroles().filter(is_inheritable_by_org_admin=True)
         else:
             application_roles = self.application_roles.none()
                     
-        application_roles.select_related()
         q = Q(id__in=application_roles.values_list('id', flat=True))
         
         # additionaly all roles of application where the user is a superuser
@@ -212,6 +226,20 @@ class User(AbstractUser):
          
         app_roles = ApplicationRole.objects.filter(q).select_related()
         return app_roles
+
+    def get_administrable_role_profiles(self):
+        if self.is_superuser:
+            return RoleProfile.objects.all().prefetch_related('application_roles', 'application_roles__role', 'application_roles__application')
+
+        # all role profiles the user has, with adequate inheritable flag
+        if self.has_perm("accounts.change_all_users"):
+            role_profiles = self.role_profiles.filter(is_inheritable_by_global_admin=True)
+        elif self.has_perm("accounts.change_org_users") or self.has_perm("accounts.change_reg_users"):
+            role_profiles = self.role_profiles.filter(is_inheritable_by_org_admin=True)
+        else:
+            role_profiles = self.role_profiles.none()
+                    
+        return role_profiles.prefetch_related('application_roles', 'application_roles__role', 'application_roles__application')    
     
     def get_administrable_organisations(self):
         """

@@ -1,0 +1,22 @@
+{% load i18n form %}
+<div class="row form-group {% if field.errors %}has-error{% endif %}">
+  <label class="col-sm-3 control-label" for="id_{{ field.html_name }}">{{ field.label }}{% if field.field.required %}*{% endif %}</label> 
+  <div class="col-sm-9">   
+       {% for item in field %}
+       <div class="checkbox">
+           {{ item }}
+           <div class="btn btn-default btn-xs" data-toggle="collapse" data-target="#collapse_{{ item.name }}_{{ item.index }}"><span class="caret"></span></div>      
+           <div id="collapse_{{ item.name }}_{{ item.index }}" class="row help-block collapse">
+              {% with profile=field.field.queryset|by_pk:item.choice_value %}
+              <ul>
+                  {% for app_role in profile.application_roles.all %}
+                  <li>{{ app_role }}</li>
+                  {% endfor %}
+              </ul>
+              {% endwith %}
+           </div>
+       </div>
+       {% endfor %}                 
+       {% if field.help_text or field.errors %}<span class="help-block">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
+   </div>
+</div>

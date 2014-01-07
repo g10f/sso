@@ -36,6 +36,12 @@
 	     <tr>
 	         <th>{% trans 'Organisations' %}: </th><td>{% for organisation in new_user.organisations.all %}{{ organisation }}{%if not forloop.last %}, {% endif %}{% endfor %}</td>
 	     </tr>
+         {% for role_profile in new_user.role_profiles.all %}
+         <tr>
+             <th>{%if forloop.first %}{% trans 'Role profiles' %}: {% endif %}</th>
+             <td>{{ role_profile }}</td>
+         </tr>
+         {% endfor %}
 	     {% for application_role in new_user.application_roles.all %}
 	     <tr>
 	         <th>{%if forloop.first %}{% trans 'Application roles' %}: {% endif %}</th>

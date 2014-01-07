@@ -95,6 +95,23 @@
 		{% endif %}
 		{% endblock center_filter %}
 		
+        {% block role_profiles_filter %}
+        {% if role_profiles %}
+        <div class="btn-group">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                {% if role_profile %}{{ role_profile }}{% else %}{% trans 'Select role profile' %}{% endif %}
+                <span class="caret"></span>
+            </button>
+           <ul class="dropdown-menu" role="menu">
+                {% if role_profile %}<li><a tabindex="-1" href="{% query_string cl 'role_profile' '' %}"">{% trans 'All role profiles' %}</a></li>{% endif %}
+                {% for role_profile in role_profiles %}
+                    <li><a tabindex="-1" href="{% query_string cl 'role_profile' role_profile.pk 'p' %}">{{ role_profile }}</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        {% endblock role_profiles_filter %}
+
 		{% block app_roles_filter %}
 		{% if app_roles %}
 	    <div class="btn-group">
