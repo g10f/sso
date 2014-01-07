@@ -327,7 +327,7 @@ msgstr ""
 
 #: accounts/models.py:122 accounts/models.py:142
 msgid "inheritable by organisation admin"
-msgstr ""
+msgstr "vererbar durch einen Organisations Administrator"
 
 #: accounts/models.py:123
 msgid "Designates that the role can inherited by a organisation admin."
