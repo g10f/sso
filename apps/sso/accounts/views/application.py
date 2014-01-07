@@ -13,7 +13,7 @@ from django.db.models import Q
 from django.utils.encoding import force_text
 from l10n.models import Country
 from sso.views import main
-from sso.accounts.models import Region, Organisation, ApplicationRole, send_account_created_email
+from sso.accounts.models import Region, Organisation, ApplicationRole, RoleProfile, send_account_created_email
 from sso.accounts.forms import UserAddFormExt, UserProfileForm
 
 
@@ -105,9 +105,20 @@ class UserList(ListView):
         app_role = self.request.GET.get('app_role', '')
         if app_role:
             self.app_role = ApplicationRole.objects.get(pk=app_role)
-            qs = qs.filter(application_roles__in=[self.app_role])
+            q = Q(application_roles__in=[self.app_role])
+            q |= Q(role_profiles__application_roles__in=[self.app_role])
+            qs = qs.filter(q)
         else:
             self.app_role = None
+
+        # apply role_profile filter
+        role_profile = self.request.GET.get('role_profile', '')
+        if role_profile:
+            self.role_profile = RoleProfile.objects.get(pk=role_profile)
+            q = Q(role_profiles__in=[self.role_profile])
+            qs = qs.filter(q)
+        else:
+            self.role_profile = None
 
         # apply is_active filter
         is_active = self.request.GET.get('is_active', '')
@@ -121,7 +132,7 @@ class UserList(ListView):
         # Set ordering.
         ordering = self.cl.get_ordering(self.request, qs)
         qs = qs.order_by(*ordering)
-        return qs
+        return qs.distinct()
 
     def get_context_data(self, **kwargs):
         """
@@ -136,7 +147,8 @@ class UserList(ListView):
         
         regions = Region.objects.none()
         centers = Organisation.objects.none()
-        application_roles = user.get_inheritable_application_roles()
+        application_roles = user.get_administrable_application_roles()
+        role_profiles = user.get_administrable_role_profiles()
         countries = user.get_countries_of_administrable_organisations()
         if len(countries) == 1:
             self.country = countries[0]
@@ -150,8 +162,10 @@ class UserList(ListView):
             
             if self.center:
                 application_roles = application_roles.filter(user__organisations__in=[self.center]).distinct()
+                role_profiles = role_profiles.filter(user__organisations__in=[self.center]).distinct()
             else:
                 application_roles = application_roles.filter(user__organisations__in=centers).distinct()
+                role_profiles = role_profiles.filter(user__organisations__in=centers).distinct()
 
         if len(countries) == 1:
             countries = None
@@ -175,6 +189,8 @@ class UserList(ListView):
             'center': self.center,
             'app_roles': application_roles,
             'app_role': self.app_role,
+            'role_profiles': role_profiles,
+            'role_profile': self.role_profile,
             'is_active': self.is_active       
         }
         context.update(kwargs)

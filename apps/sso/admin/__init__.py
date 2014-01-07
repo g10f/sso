@@ -8,6 +8,8 @@ from django.contrib.auth.models import Permission
 from sso.accounts.admin import *
 from sso.oauth2.admin import *
 from sso.registration.admin import *
+from sso.accounts.models import *
+
 from l10n.admin import *
 from streaming.admin import *
 
@@ -21,6 +23,7 @@ sso_admin_site = SSOAdminSite()
 sso_admin_site.register(Group, GroupAdmin)
 sso_admin_site.register(get_user_model(), UserAdmin)
 sso_admin_site.register(ApplicationRole, ApplicationRoleAdmin)
+sso_admin_site.register(RoleProfile, RoleProfileAdmin)
 sso_admin_site.register(Role, RoleAdmin)
 sso_admin_site.register(Application, ApplicationAdmin)
 sso_admin_site.register(Organisation, OrganisationAdmin)

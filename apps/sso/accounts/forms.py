@@ -214,16 +214,20 @@ class UserAddFormExt(UserAddForm):
     """
     organisation = forms.ModelChoiceField(queryset=None, required=False, label=_("Organisation"), widget=bootstrap.Select())
     application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
+    role_profiles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
+                                                   help_text=_('Organises a group of application roles that are usually assigned together.'))
     
     def __init__(self, user, *args, **kwargs):
         super(UserAddFormExt, self).__init__(*args, **kwargs)
-        self.fields['application_roles'].queryset = user.get_inheritable_application_roles()
+        self.fields['application_roles'].queryset = user.get_administrable_application_roles()
+        self.fields['role_profiles'].queryset = user.get_administrable_role_profiles()
         self.fields['organisation'].queryset = user.get_administrable_organisations()
-        self.fields.keyOrder = ['first_name', 'last_name', 'email', 'organisation', 'application_roles']  # , 'password1', 'password2']
+        #self.fields.keyOrder = ['first_name', 'last_name', 'email', 'organisation', 'application_roles']  # , 'password1', 'password2']
     
     def save(self):
         user = super(UserAddFormExt, self).save()
         user.application_roles = self.cleaned_data["application_roles"]
+        user.role_profiles = self.cleaned_data["role_profiles"]
         organisation = self.cleaned_data["organisation"]
         if organisation:
             user.organisations.add(organisation)
@@ -457,6 +461,8 @@ class UserProfileForm(forms.Form):
     organisations = forms.ModelChoiceField(queryset=None, required=False, label=_("Organisation"), widget=bootstrap.Select())
     application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
     notes = forms.CharField(label=_("Notes"), required=False, max_length=1024, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
+    role_profiles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
+                                                   help_text=_('Organises a group of application roles that are usually assigned together.'))
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request')
@@ -475,7 +481,8 @@ class UserProfileForm(forms.Form):
         kwargs['initial'] = initial
         super(UserProfileForm, self).__init__(*args, **kwargs)
 
-        self.fields['application_roles'].queryset = self.request.user.get_inheritable_application_roles()
+        self.fields['application_roles'].queryset = self.request.user.get_administrable_application_roles()
+        self.fields['role_profiles'].queryset = self.request.user.get_administrable_role_profiles()
         self.fields['organisations'].queryset = self.request.user.get_administrable_organisations()
 
     def clean_username(self):
@@ -492,9 +499,35 @@ class UserProfileForm(forms.Form):
         if qs.exists():
             raise forms.ValidationError(self.error_messages['duplicate_email'])
         return email
+    
+    def update_user_m2m_fields(self, attribute_name, current_user):
+        """
+        get the new data from the form and then update or remove values from many2many fields.
+        Adding and removing is done with respect to the permissions of the current user.
+        Only administrable values of the current user are changed at the user
+        """
+        # first get the new values. This can be a queryset or a single object
+        cd = self.cleaned_data.get(attribute_name)
+        try:
+            new_value_set = set(cd.values_list('id', flat=True))
+        except AttributeError:
+            # should be a single object instead of queryset
+            new_value_set = set([cd.id]) if cd else set()
+                                
+        administrable_values = set(getattr(current_user, 'get_administrable_%s' % attribute_name)().values_list('id', flat=True)) 
+        existing_values = set(getattr(self.user, '%s' % attribute_name).all().values_list('id', flat=True))
+        remove_values = ((existing_values & administrable_values) - new_value_set)
+        new_value_set = (new_value_set - existing_values)            
+
+        user_attribute = getattr(self.user, '%s' % attribute_name)
+        if remove_values:
+            user_attribute.remove(*remove_values)
+        if new_value_set:
+            user_attribute.add(*new_value_set)
 
     def save(self):
         cd = self.cleaned_data
+        curent_user = self.request.user
         if (not self.initial['first_name'] and not self.initial['last_name']) and cd.get('first_name') and cd.get('last_name'):            
             # should be a streaming user, which has no initial first_name and last_name
             # we create the new username because the streaming user has his email as username
@@ -505,37 +538,10 @@ class UserProfileForm(forms.Form):
         self.user.last_name = cd['last_name']
         self.user.is_active = cd['is_active']
         self.user.notes = cd['notes']
-        
         self.user.save()
         
-        # update organisations
-        if cd.get('organisations'):
-            new_values = set([cd.get('organisations').id])  # set(cd.get('organisations').values_list('id', flat=True))
-        else:
-            new_values = set()
-        
-        administrable_values = set(self.request.user.get_administrable_organisations().values_list('id', flat=True))
-        existing_values = set(self.user.organisations.all().values_list('id', flat=True))
-        
-        remove_values = ((existing_values & administrable_values) - new_values)
-        add_values = (new_values - existing_values)
-        
-        if remove_values:
-            self.user.organisations.remove(*remove_values)
-        if add_values:
-            self.user.organisations.add(*add_values)
-        
-        # update application roles
-        new_values = set(cd.get('application_roles').values_list('id', flat=True))
-        administrable_values = set(self.request.user.get_inheritable_application_roles().values_list('id', flat=True))
-        existing_values = set(self.user.application_roles.all().values_list('id', flat=True))
-        
-        remove_values = ((existing_values & administrable_values) - new_values)
-        add_values = (new_values - existing_values)
-        
-        if remove_values:
-            self.user.application_roles.remove(*remove_values)
-        if add_values:
-            self.user.application_roles.add(*add_values)
+        self.update_user_m2m_fields('application_roles', curent_user)
+        self.update_user_m2m_fields('role_profiles', curent_user)
+        self.update_user_m2m_fields('organisations', curent_user)
 
         return self.user

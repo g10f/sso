@@ -94,7 +94,7 @@ class RegistrationProfileForm(forms.Form):
 
         if not self.request.user.has_perm('registration.verify_users'):
             self.fields['is_verified'].widget.attrs['disabled'] = True 
-        self.fields['application_roles'].queryset = self.request.user.get_inheritable_application_roles()
+        self.fields['application_roles'].queryset = self.request.user.get_administrable_application_roles()
         self.fields['organisations'].queryset = self.request.user.get_administrable_organisations()
 
     def save(self, activate=False):
@@ -119,7 +119,7 @@ class RegistrationProfileForm(forms.Form):
                     
         # update application roles
         new_values = set(cd.get('application_roles').values_list('id', flat=True))
-        administrable_values = set(self.request.user.get_inheritable_application_roles().values_list('id', flat=True))
+        administrable_values = set(self.request.user.get_administrable_application_roles().values_list('id', flat=True))
         existing_values = set(self.user.application_roles.all().values_list('id', flat=True))
         
         remove_values = ((existing_values & administrable_values) - new_values)
