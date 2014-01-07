@@ -179,9 +179,9 @@ class User(AbstractUser):
         return u'image/%s/%s' % (self.uuid, get_filename(filename.encode('ascii', 'replace'))) 
 
     uuid = UUIDField(version=4, editable=True, unique=True)
-    organisations = models.ManyToManyField(Organisation, blank=True, null=True)
-    application_roles = models.ManyToManyField(ApplicationRole, blank=True, null=True)
-    role_profiles = models.ManyToManyField(RoleProfile, blank=True, null=True, help_text=_('Organises a group of application roles that are usually assigned together.'))
+    organisations = models.ManyToManyField(Organisation, verbose_name=_('organisations'), blank=True, null=True)
+    application_roles = models.ManyToManyField(ApplicationRole, verbose_name=_('application roles'), blank=True, null=True)
+    role_profiles = models.ManyToManyField(RoleProfile, verbose_name=_('role profiles'), blank=True, null=True, help_text=_('Organises a group of application roles that are usually assigned together.'))
     last_modified_by_user = CurrentUserField(verbose_name=_('last modified by'), related_name='+')
     last_modified = models.DateTimeField(_('last modified'), auto_now=True)
     created_by_user = models.ForeignKey('self', verbose_name=_('created by'), related_name='+', null=True)
@@ -354,6 +354,8 @@ class UserAssociatedSystem(models.Model):
     userid = models.CharField(max_length=255)
 
     class Meta:
+        verbose_name = _('associated system')
+        verbose_name_plural = _('associated systems')
         unique_together = (("application", "userid"),)
 
     def __unicode__(self):
