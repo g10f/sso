@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-07 23:20+0100\n"
+"POT-Creation-Date: 2014-01-08 10:33+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1460,9 +1460,11 @@ msgstr ""
 #: templates/include/global_navigation.html:31
 #, python-format
 msgid ""
-"Please validate JavaScript to enable all features. <a href=\"%(url)s\" "
+"Please activate JavaScript to enable all features. <a href=\"%(url)s\" "
 "target=\"_blank\">Read this page for more help</a>"
 msgstr ""
+"Bitte aktiviere JavaScript, damit alle Funktionen zur Verfügung stehen. <a href=\"%(url)s\" "
+"target=\"_blank\">Lese diese Seite für Hilfe zum Aktivieren von JavaScript</a>"
 
 #: templates/include/table_header.html:10
 msgid "Remove from sorting"
