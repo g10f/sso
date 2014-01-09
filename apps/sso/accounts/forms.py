@@ -24,7 +24,7 @@ from passwords.fields import PasswordField
 from .models import Organisation
 from sso.registration import default_username_generator
 from sso.registration.forms import UserRegistrationCreationForm
-from sso.forms import bootstrap
+from sso.forms import bootstrap, mixins
 
 import logging
 logger = logging.getLogger(__name__)
@@ -215,8 +215,8 @@ class UserAddFormExt(UserAddForm):
     organisation = forms.ModelChoiceField(queryset=None, required=False, label=_("Organisation"), widget=bootstrap.Select())
     application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
     role_profiles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
-                                                   help_text=_('Organises a group of application roles that are usually assigned together.'))
-    
+                                                   help_text=_('Groups of application roles that are assigned together.'))
+   
     def __init__(self, user, *args, **kwargs):
         super(UserAddFormExt, self).__init__(*args, **kwargs)
         self.fields['application_roles'].queryset = user.get_administrable_application_roles()
@@ -445,7 +445,7 @@ class UserRegistrationCreationForm2(UserRegistrationCreationForm):
         return registration_profile
 
 
-class UserProfileForm(forms.Form):
+class UserProfileForm(mixins.UserRolesMixin, forms.Form):
     """
     Form for organisation and region admins
     """
@@ -462,7 +462,7 @@ class UserProfileForm(forms.Form):
     application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
     notes = forms.CharField(label=_("Notes"), required=False, max_length=1024, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
     role_profiles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
-                                                   help_text=_('Organises a group of application roles that are usually assigned together.'))
+                                                   help_text=_('Groups of application roles that are assigned together.'))
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request')
@@ -500,34 +500,9 @@ class UserProfileForm(forms.Form):
             raise forms.ValidationError(self.error_messages['duplicate_email'])
         return email
     
-    def update_user_m2m_fields(self, attribute_name, current_user):
-        """
-        get the new data from the form and then update or remove values from many2many fields.
-        Adding and removing is done with respect to the permissions of the current user.
-        Only administrable values of the current user are changed at the user
-        """
-        # first get the new values. This can be a queryset or a single object
-        cd = self.cleaned_data.get(attribute_name)
-        try:
-            new_value_set = set(cd.values_list('id', flat=True))
-        except AttributeError:
-            # should be a single object instead of queryset
-            new_value_set = set([cd.id]) if cd else set()
-                                
-        administrable_values = set(getattr(current_user, 'get_administrable_%s' % attribute_name)().values_list('id', flat=True)) 
-        existing_values = set(getattr(self.user, '%s' % attribute_name).all().values_list('id', flat=True))
-        remove_values = ((existing_values & administrable_values) - new_value_set)
-        new_value_set = (new_value_set - existing_values)            
-
-        user_attribute = getattr(self.user, '%s' % attribute_name)
-        if remove_values:
-            user_attribute.remove(*remove_values)
-        if new_value_set:
-            user_attribute.add(*new_value_set)
-
     def save(self):
         cd = self.cleaned_data
-        curent_user = self.request.user
+        current_user = self.request.user
         if (not self.initial['first_name'] and not self.initial['last_name']) and cd.get('first_name') and cd.get('last_name'):            
             # should be a streaming user, which has no initial first_name and last_name
             # we create the new username because the streaming user has his email as username
@@ -540,8 +515,8 @@ class UserProfileForm(forms.Form):
         self.user.notes = cd['notes']
         self.user.save()
         
-        self.update_user_m2m_fields('application_roles', curent_user)
-        self.update_user_m2m_fields('role_profiles', curent_user)
-        self.update_user_m2m_fields('organisations', curent_user)
+        self.update_user_m2m_fields('application_roles', current_user)
+        self.update_user_m2m_fields('role_profiles', current_user)
+        self.update_user_m2m_fields('organisations', current_user)
 
         return self.user

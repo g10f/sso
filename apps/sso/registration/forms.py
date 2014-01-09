@@ -16,12 +16,12 @@ from l10n.models import Country
 from .models import RegistrationProfile, send_set_password_email, send_validation_email
 from . import default_username_generator
 
-from sso.forms import bootstrap
+from sso.forms import bootstrap, mixins
 
 import logging
 logger = logging.getLogger(__name__)
 
-class RegistrationProfileForm(forms.Form):
+class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
     """
     Form for organisation and region admins
     """
@@ -53,6 +53,8 @@ class RegistrationProfileForm(forms.Form):
     application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple, label=_("Application roles"))
     check_back = forms.BooleanField(label=_("check back"), help_text=_('Designates if there are open questions to check.'), required=False)    
     is_access_denied = forms.BooleanField(label=_("access denied"), help_text=_('Designates if access is denied to the user.'), required=False)    
+    role_profiles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
+                                                   help_text=_('Groups of application roles that are assigned together.'))
 
     def clean_username(self):
         username = self.cleaned_data["username"]
@@ -91,15 +93,16 @@ class RegistrationProfileForm(forms.Form):
         kwargs['initial'] = initial
 
         super(RegistrationProfileForm, self).__init__(*args, **kwargs)
-
-        if not self.request.user.has_perm('registration.verify_users'):
+        current_user = self.request.user
+        if not current_user.has_perm('registration.verify_users'):
             self.fields['is_verified'].widget.attrs['disabled'] = True 
-        self.fields['application_roles'].queryset = self.request.user.get_administrable_application_roles()
-        self.fields['organisations'].queryset = self.request.user.get_administrable_organisations()
+        self.fields['application_roles'].queryset = current_user.get_administrable_application_roles()
+        self.fields['role_profiles'].queryset = current_user.get_administrable_role_profiles()
+        self.fields['organisations'].queryset = current_user.get_administrable_organisations()
 
     def save(self, activate=False):
         cd = self.cleaned_data
-        
+        current_user = self.request.user
         # registrationprofile data
         self.registrationprofile.known_person1_first_name = cd['known_person1_first_name']
         self.registrationprofile.known_person1_last_name = cd['known_person1_last_name']
@@ -108,33 +111,21 @@ class RegistrationProfileForm(forms.Form):
         self.registrationprofile.phone = cd['phone']
         self.registrationprofile.check_back = cd['check_back']
         self.registrationprofile.is_access_denied = cd['is_access_denied']
-        if self.request.user.has_perm('registrationprofile.verify_users'):
-            self.registrationprofile.verified_by_user = self.request.user if (cd['is_verified'] == True) else None
+        if current_user.has_perm('registrationprofile.verify_users'):
+            self.registrationprofile.verified_by_user = current_user if (cd['is_verified'] == True) else None
         
-        self.registrationprofile.save()
-                
-        # userprofile data
-        if cd.get('organisations'):
-            self.user.organisations = [cd.get('organisations')]
-                    
-        # update application roles
-        new_values = set(cd.get('application_roles').values_list('id', flat=True))
-        administrable_values = set(self.request.user.get_administrable_application_roles().values_list('id', flat=True))
-        existing_values = set(self.user.application_roles.all().values_list('id', flat=True))
-        
-        remove_values = ((existing_values & administrable_values) - new_values)
-        add_values = (new_values - existing_values)
-        
-        if remove_values:
-            self.user.application_roles.remove(*remove_values)
-        if add_values:
-            self.user.application_roles.add(*add_values)
+        self.registrationprofile.save()        
         
         # user data
         self.user.username = cd['username']
         self.user.first_name = cd['first_name']
         self.user.last_name = cd['last_name']
         self.user.notes = cd['notes']
+        
+        # userprofile data
+        self.update_user_m2m_fields('application_roles', current_user)
+        self.update_user_m2m_fields('role_profiles', current_user)
+        self.update_user_m2m_fields('organisations', current_user)
         
         if activate:
             self.user.is_active = True
