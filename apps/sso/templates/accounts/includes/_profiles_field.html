@@ -1,4 +1,5 @@
 {% load i18n form %}
+{% if field|length %}
 <div class="row form-group {% if field.errors %}has-error{% endif %}">
   <label class="col-sm-3 control-label">{{ field.label }}{% if field.field.required %}*{% endif %}</label> 
   <div class="col-sm-9">   
@@ -20,3 +21,4 @@
        {% if field.help_text or field.errors %}<span class="help-block">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
    </div>
 </div>
+{% endif %}
