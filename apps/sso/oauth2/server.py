@@ -179,6 +179,8 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
         elif client_type == 'trusted' and  grant_type == 'password':
             return True
         else:
+            logger.warning("client_type and grant_type combination is invalid (%s, %s)", client_type, grant_type)
+            
             return False            
 
     def save_bearer_token(self, token, request, *args, **kwargs):
