@@ -203,7 +203,7 @@ class User(AbstractUser):
     def get_roles_by_app(self, app_uuid):
         q = Q(applicationrole__user__uuid=self.uuid) & Q(applicationrole__application__uuid=app_uuid) 
         q |= Q(applicationrole__roleprofile__user__uuid=self.uuid) & Q(applicationrole__application__uuid=app_uuid)
-        return Role.objects.filter(q)
+        return Role.objects.distinct().filter(q)
     
     def get_applicationroles(self):
         q = Q(user__uuid=self.uuid) | Q(roleprofile__user__uuid=self.uuid)
