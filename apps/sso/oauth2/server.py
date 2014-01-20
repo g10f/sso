@@ -41,7 +41,7 @@ def default_token_generator(request, max_age=MAX_AGE, refresh_token=False):
         return make_jwt(claim_set)
 
 
-# http://openid.net/specs/openid-connect-basic-1_0.html#id_token
+# http://openid.net/specs/openid-connect-basic-1_0.html#IDToken
 def default_idtoken_generator(request, max_age=MAX_AGE, refresh_token=False):
     """
     The generated id_token contains additionally email, name and roles 
