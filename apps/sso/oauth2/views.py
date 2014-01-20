@@ -13,7 +13,7 @@ from oauthlib.common import urlencode
 
 from sso.http_status import *  # @UnusedWildImport
 from sso.oauth2.decorators import login_required
-from .crypt import key 
+from .crypt import key, loads_jwt, BadSignature
 from .server import server
 from .models import Client
 
@@ -85,6 +85,31 @@ def token(request):
         response[k] = v
     return response
 
+
+@never_cache
+def tokeninfo(request):    
+    try:
+        if 'access_token' in request.GET:
+            token = request.GET.get('access_token')
+        elif 'id_token' in request.GET:
+            token = request.GET.get('id_token')
+        else:
+            raise oauth2.InvalidRequestError("either access_token or id_token required")
+        
+        parsed = loads_jwt(token)
+        content = json.dumps(parsed) 
+        return  HttpResponse(content=content, content_type='application/json')
+
+    except oauth2.OAuth2Error as e:
+        return HttpResponse(content=e.json, status=e.status_code, content_type='application/json')
+    except BadSignature as e:
+        error = oauth2.InvalidRequestError(description=str(e))
+        return HttpResponse(content=error.json, status=error.status_code, content_type='application/json')
+    except Exception as e:
+        error = oauth2.ServerError(description=str(e))
+        logger.warning('Exception caught while processing request, %s.' % e)
+        return HttpResponse(content=error.json, status=error.status_code)
+        
 
 @never_cache
 @login_required
