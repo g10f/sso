@@ -5,7 +5,10 @@ class UserRolesMixin(object):
         """
         get the new data from the form and then update or remove values from many2many fields.
         Adding and removing is done with respect to the permissions of the current user.
-        Only administrable values of the current user are changed at the user
+        Only administrable values of the current user are changed at the user. The user object must have 
+        
+        a function: get_administrable_{{ attribute_name }}
+        and an attribute: {{ attribute_name }}        
         """
         # first get the new values. This can be a queryset or a single object
         cd = self.cleaned_data.get(attribute_name)
