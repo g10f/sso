@@ -127,14 +127,17 @@ def loads_jwt(jwt):
         raise BadSignature('Wrong number of segments in token: %s' % jwt)
     signed = '%s.%s' % (segments[0], segments[1])
 
-    signature = _urlsafe_b64decode(segments[2])
+    try:
+        signature = _urlsafe_b64decode(segments[2])
+    except Exception as e:
+        raise BadSignature('%s. Can\'t b64decode signature: %s' % (str(e), segments[2]))
 
     # Parse token.
     json_body = _urlsafe_b64decode(segments[1])
     try:
         parsed = json.loads(json_body)
-    except:
-        raise BadSignature('Can\'t parse token: %s' % json_body)
+    except Exception as e:
+        raise BadSignature('%s. Can\'t parse token: %s' % (str(e), json_body))
     
     # Check signature.
     if not key.verify(signed, signature):

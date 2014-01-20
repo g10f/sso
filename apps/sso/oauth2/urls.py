@@ -6,6 +6,7 @@ urlpatterns = patterns('',
     url(r'^authorize/$', views.authorize, name='authorize'),
     url(r'^certs/$', views.certs, name='certs'),
     url(r'^token/$', views.token, name='token'),
+    url(r'^tokeninfo/$', views.tokeninfo, name='tokeninfo'),
     url(r'^approval/$', views.approval, name='approval'),
     url(r'^error/$', views.ErrorView.as_view(), name='oauth2_error'),
 )
