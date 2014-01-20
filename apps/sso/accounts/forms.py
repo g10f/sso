@@ -256,7 +256,7 @@ class UserSelfProfileForm(forms.Form):
                                                 help_text=_('Please use the contact form for a request to change this value.'), widget=bootstrap.StaticInput())
         else:
             organisation_field = forms.ModelChoiceField(queryset=Organisation.objects.all(), label=_("Center"), widget=bootstrap.Select(), 
-                                                help_text=_('You can set this value only once.'))
+                                                help_text=_('You can set this value only once.'), required=False)
         if organisation_field:
             self.fields['organisation'] = organisation_field
         
