@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 
-from django.views.decorators.cache import never_cache
+from django.views.decorators.cache import never_cache, cache_page
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 from django.core.urlresolvers import reverse
@@ -87,7 +87,8 @@ def token(request):
 
 
 @never_cache
-def tokeninfo(request):    
+def tokeninfo(request):
+    max_length = 2048
     try:
         if 'access_token' in request.GET:
             token = request.GET.get('access_token')
@@ -95,7 +96,9 @@ def tokeninfo(request):
             token = request.GET.get('id_token')
         else:
             raise oauth2.InvalidRequestError("either access_token or id_token required")
-        
+        if len(token) > max_length:
+            raise oauth2.InvalidRequestError("token length excceded %d" % max_length)
+            
         parsed = loads_jwt(token)
         content = json.dumps(parsed) 
         return  HttpResponse(content=content, content_type='application/json')
@@ -119,6 +122,7 @@ def approval(request):
     return render(request, 'oauth2/approval.html', dictionary={'state': state, 'code': code})
 
 
+@cache_page(60 * 60)
 def certs(request):
     content = json.dumps({key.id: key.cert}) 
     return  HttpResponse(content=content, content_type='application/json')
