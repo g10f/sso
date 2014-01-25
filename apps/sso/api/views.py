@@ -102,6 +102,8 @@ def get_index(request, find_expression=FIND_EXPRESSION):
         'links': {
             'self': {'href': self_url, 'title': _('API base uri')},
             'token': {'href': '%s%s' % (base_uri, reverse('oauth2:token')), 'templated': False, 'title': _('oauth2 token')},
+            'tokeninfo': {'href': '%s%s%s' % (base_uri, reverse('oauth2:tokeninfo'), '{?access_token,id_token}'), 'templated': True, 'title': _('get tokeninfo')},
+            'certs': {'href': '%s%s%s' % (base_uri, reverse('oauth2:certs')), 'templated': False, 'title': _('signature certificates')},
             'users': {'href': '%s%s%s' % (base_uri, reverse('api:v1_users'), find_expression), 'templated': True, 'title': _('paginated list of all users')},
             'me': {'href': '%s%s%s' % (base_uri, reverse('api:v1_users'), 'me/'), 'templated': False, 'title': _('logged in user')},
             'user': {'href': '%s%s%s' % (base_uri, reverse('api:v1_users'), '{uuid}/'), 'templated': True, 'title': _('user identified by uuid')},
