@@ -6,7 +6,6 @@ import functools
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse
 from django.contrib.sites.models import get_current_site
-from django.conf import settings
 from oauthlib import oauth2
 
 import logging
@@ -55,8 +54,8 @@ def base_url(request):
     return '%s://%s' % ('https' if request.is_secure() else 'http', get_current_site(request).domain)
 
 
-def absolute_media_url(request):
-    (scheme, netloc, path, query, fragment) = urlparse.urlsplit(settings.MEDIA_URL)
+def absolute_url(request, url):
+    (scheme, netloc, path, query, fragment) = urlparse.urlsplit(url)
     if not scheme:
         scheme = 'https' if request.is_secure() else 'http'
     if not netloc:
