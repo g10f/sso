@@ -18,11 +18,13 @@ from django.utils.translation import ugettext as _
 from django.utils.decorators import available_attrs
 from django.contrib.auth import get_user_model
 
+from sorl.thumbnail import get_thumbnail
+
 from sso.accounts.models import Organisation, ApplicationRole, send_account_created_email
 from sso.registration import default_username_generator
 from sso.http_status import *  # @UnusedWildImport
 from sso.oauth2.decorators import client_required  # scopes_required
-from sso.utils import base_url, build_url, catch_errors, absolute_media_url
+from sso.utils import base_url, build_url, catch_errors, absolute_url
 
 import logging
 
@@ -183,7 +185,7 @@ class UserDetailView(View):
             'applications': applications
         }
         if user.picture:
-            userinfo['picture'] = "%s%s" % (absolute_media_url(self.request), user.picture.name)                    
+            userinfo['picture_30x30'] = absolute_url(self.request, get_thumbnail(user.picture, "30x30").url)
             
         callback = self.request.GET.get('callback', None)
         if callback:
@@ -222,7 +224,7 @@ class UserDetailView(View):
                       'apps': {'href': "%s%s" % (base, reverse('api:v1_users_apps', kwargs={'uuid': user.uuid}))}}
         } 
         if user.picture:
-            userinfo['picture'] = "%s%s" % (absolute_media_url(self.request), user.picture.name)                    
+            userinfo['picture'] = absolute_url(self.request, user.picture.url)                    
             
         callback = self.request.GET.get('callback', None)
         if callback:
