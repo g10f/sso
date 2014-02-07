@@ -2,7 +2,7 @@ from __future__ import division
 import string
 
 from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import smart_unicode
 from django.conf import settings
 
