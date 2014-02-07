@@ -175,7 +175,6 @@ class UserDetailView(View):
             application_data = {
                 'uuid': application.uuid,
                 'order': application.order, 
-                #'enable_url': application.global_navigation,  # TODO: Remove after migration                
                 'links': {'app': {'href': application.url, 'title': application.title, 'global_navigation': application.global_navigation}}
             }
             applications.append(application_data)
@@ -183,6 +182,8 @@ class UserDetailView(View):
         userinfo = {
             'applications': applications
         }
+        if user.picture:
+            userinfo['picture'] = "%s%s" % (absolute_media_url(self.request), user.picture.name)                    
             
         callback = self.request.GET.get('callback', None)
         if callback:
@@ -200,7 +201,6 @@ class UserDetailView(View):
         for application in user.get_apps():
             application_data = {
                 'order': application.order, 
-                #'enable_url': application.global_navigation,  # TODO: Remove after migration
                 'links': {'app': {'href': application.url, 'title': application.title, 'global_navigation': application.global_navigation}}
             }
             application_data['roles'] = []
