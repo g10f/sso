@@ -123,7 +123,7 @@ NGINX_SSL_TEMPLATE = """\
 #ssl                       on;
 ssl_certificate           %(certroot)s/certificate.crt;
 ssl_certificate_key       %(certroot)s/certificate.key;
-ssl_ciphers               RC4:HIGH:!aNULL:!MD5;
+#ssl_ciphers               RC4:HIGH:!aNULL:!MD5;
 ssl_prefer_server_ciphers on;
 ssl_session_cache         shared:SSL:10m;
 """

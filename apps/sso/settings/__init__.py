@@ -24,6 +24,7 @@ SITE_NAME = 'G10F'
 ABOUT = 'http://g10f.de/'
 APP_UUID = 'fa467234b81e4838a009e38d9e655d18'
 STREAMING_UUID = 'c362bea58c67457fa32234e3178285c4'
+EMAIL_SUBJECT_PREFIX = '[%s SSO] ' % BRAND
 
 DIRNAME = os.path.join(os.path.dirname(__file__), '..')
 
