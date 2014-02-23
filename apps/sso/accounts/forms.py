@@ -507,7 +507,8 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
             # should be a streaming user, which has no initial first_name and last_name
             # we create the new username because the streaming user has his email as username
             self.user.username = default_username_generator(capfirst(cd.get('first_name')), capfirst(cd.get('last_name')))
-            
+        
+        self.user.username = cd['username']
         self.user.email = cd['email']
         self.user.first_name = cd['first_name']
         self.user.last_name = cd['last_name']
