@@ -503,10 +503,6 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
     def save(self):
         cd = self.cleaned_data
         current_user = self.request.user
-        if (not self.initial['first_name'] and not self.initial['last_name']) and cd.get('first_name') and cd.get('last_name'):            
-            # should be a streaming user, which has no initial first_name and last_name
-            # we create the new username because the streaming user has his email as username
-            self.user.username = default_username_generator(capfirst(cd.get('first_name')), capfirst(cd.get('last_name')))
         
         self.user.username = cd['username']
         self.user.email = cd['email']
