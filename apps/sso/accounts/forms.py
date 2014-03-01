@@ -101,7 +101,12 @@ class PasswordResetForm(DjangoPasswordResetForm):
                     logger.exception(e)
                 
             raise forms.ValidationError(self.error_messages['unknown'])
-        return email
+        else:
+            for user in self.users_cache:
+                if user.has_usable_password():
+                    return email
+            # no user with this email and a usable password found
+        raise forms.ValidationError(self.error_messages['unusable'])
     
     def save(self, subject_template_name='registration/password_reset_subject.txt',
              email_template_name='registration/password_reset_email.html',
