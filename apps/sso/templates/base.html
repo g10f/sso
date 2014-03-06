@@ -9,9 +9,9 @@
     <link rel="shortcut icon" href="{% static "ico/favicon.ico" %}" type="image/ico"/>
     {% if debug and 0 %}<link rel="stylesheet/less" href="{% static "less/style.less" %}">{% endif %}
     {% if debug and 0 %}<script src="{% static "js/vendor/less-1.6.1.min.js" %}"></script>{% endif %}
-    {% if debug and 1 %}<link rel="stylesheet" href="{% static "less/style-1.1.1.css" %}">{% endif %}
+    {% if debug and 1 %}<link rel="stylesheet" href="{% static "less/style-1.1.2.css" %}">{% endif %}
     {% block style %}
-    {% if not debug and 1 %}<link rel="stylesheet" href="{% static "less/style-1.1.1.css" %}">{% endif %}
+    {% if not debug and 1 %}<link rel="stylesheet" href="{% static "less/style-1.1.2.css" %}">{% endif %}
     {% endblock style %}
     {% block extrastyle %}{% endblock %}
     <script type="text/javascript">window.__media_prefix__ = "{% filter escapejs %}{% static "" %}{% endfilter %}";</script>
@@ -80,7 +80,7 @@
        
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 <script>window.jQuery || document.write('<script src="{% static "js/vendor/jquery-1.11.0.min.js" %}"><\/script>')</script>
-<script src="{% static "js/vendor/bootstrap-3.1.0.min.js" %}"></script>
+<script src="{% static "js/vendor/bootstrap-3.1.1.min.js" %}"></script>
 {% show_tracker %}
 </body>
 </html>
