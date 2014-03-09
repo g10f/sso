@@ -11,9 +11,29 @@
         </div>
         <div class="collapse navbar-collapse">
             <ul class="nav navbar-nav" id="user_apps">
-            {% for app in user.get_global_navigation_urls %}
+            {% with user_apps=user.get_global_navigation_urls %}
+            {% if user_apps|length < 5 %}
+            {% for app in user_apps %}
                 <li><a href="{{ app.url }}">{{ app.title }}</a></li>
             {% endfor %}
+            {% else %}
+            {% for app in user_apps|slice:":3" %}
+                <li><a href="{{ app.url }}">{{ app.title }}</a></li>
+            {% endfor %}
+            {% for app in user_apps|slice:"3:" %}
+                {% if forloop.first %}
+	            <li class="dropdown">
+	               <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans 'More' %} <b class="caret"></b></a>
+	               <ul class="dropdown-menu">
+	            {% endif %}
+                       <li><a href="{{ app.url }}">{{ app.title }}</a></li>
+                {% if forloop.last %}
+	              </ul>
+	            </li>
+	            {% endif %}
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
             </ul>
             <ul class="nav navbar-nav navbar-right">
             {% if user.is_authenticated %}
