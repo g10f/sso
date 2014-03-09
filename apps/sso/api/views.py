@@ -182,7 +182,8 @@ class UserDetailView(View):
             applications.append(application_data)
         
         userinfo = {
-            'applications': applications
+            'applications': applications,
+            'text': {'More': _('More')}
         }
         if user.picture:
             userinfo['picture_30x30'] = absolute_url(self.request, get_thumbnail(user.picture, "30x30").url)
