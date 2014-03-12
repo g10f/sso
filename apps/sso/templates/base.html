@@ -39,21 +39,21 @@
 		        {% block left_content %}
 				<div class="list-group">              
 				    {% if user.is_staff %}
-				    <a class="list-group-item" href="{% url 'admin:index' %}">SSO {% trans 'administration' %}</a>
+				    <a class="list-group-item" href="{% url 'admin:index' %}"><i class="glyphicon glyphicon-wrench"></i> {% trans 'administration' %}</a>
 				    {% endif %}
 				    
                     {% if perms.registration.change_registrationprofile %}
-                    <a class="list-group-item {% block nav_registration_user_list_class %}{% endblock %}" href="{% url 'registration:user_registration_list' %}">{% trans 'User Registration List' %}</a>
+                    <a class="list-group-item {% block nav_registration_user_list_class %}{% endblock %}" href="{% url 'registration:user_registration_list' %}"><i class="glyphicon glyphicon-list"></i> {% trans 'User Registration List' %}</a>
                     {% endif %}
                        
 				    {% if user.can_add_users %}
-                    <a class="list-group-item {% block nav_accounts_user_list_class %}{% endblock %}" href="{% url 'accounts:user_list' %}">{% trans 'User List' %}</a>
-				    <a class="list-group-item {% block nav_accounts_add_user_class %}{% endblock %}" href="{% url 'accounts:add_user' %}">{% trans 'Add User' %}</a>
+                    <a class="list-group-item {% block nav_accounts_user_list_class %}{% endblock %}" href="{% url 'accounts:user_list' %}"><i class="glyphicon glyphicon-list"></i> {% trans 'User List' %}</a>
+				    <a class="list-group-item {% block nav_accounts_add_user_class %}{% endblock %}" href="{% url 'accounts:add_user' %}"><i class="glyphicon glyphicon-plus-sign"></i> {% trans 'Add User' %}</a>
 				    {% endif %}
 				    
 				    {% if user.is_authenticated %}				    
-				    <a class="list-group-item {% block nav_accounts_profile_class %}{% endblock %}" href="{% url 'accounts:profile' %}">{% trans 'My account' %}</a>
-				    <a class="list-group-item {% block nav_accounts_password_change_class %}{% endblock %}" href="{% url 'accounts:password_change' %}">{% trans 'Change my password ' %}</a>
+				    <a class="list-group-item {% block nav_accounts_profile_class %}{% endblock %}" href="{% url 'accounts:profile' %}"><i class="glyphicon glyphicon-user"></i> {% trans 'My account' %}</a>
+				    <a class="list-group-item {% block nav_accounts_password_change_class %}{% endblock %}" href="{% url 'accounts:password_change' %}"><i class="glyphicon glyphicon-edit"></i> {% trans 'Change my password ' %}</a>
 				    {% endif %}
 				</div>
 				{% endblock left_content %}
