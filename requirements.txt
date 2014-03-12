@@ -11,3 +11,4 @@ sorl-thumbnail
 pillow==2.2.1
 django-recaptcha
 selenium
+pytz
