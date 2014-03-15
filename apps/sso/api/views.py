@@ -183,7 +183,11 @@ class UserDetailView(View):
         
         userinfo = {
             'applications': applications,
-            'text': {'More': _('More')}
+            'full_name': user.get_full_name(),
+            'text': {'More': _('More'), 'Logout': _('Log out')},
+            'links': {'picture_30x30': {'href': absolute_url(self.request, get_thumbnail(user.picture, "30x30").url)},
+                      'profile': {'href': absolute_url(self.request, reverse('accounts:profile'))},
+                      'logout': {'href': reverse('accounts:logout')}}
         }
         if user.picture:
             userinfo['picture_30x30'] = absolute_url(self.request, get_thumbnail(user.picture, "30x30").url)

@@ -10,37 +10,39 @@
             <a class="navbar-brand" href="{% url 'home' %}">{% block brand %}{{ brand }}{% endblock %}</a>
         </div>
         <div class="collapse navbar-collapse">
-            <ul class="nav navbar-nav" id="user_apps">
-            {% with user_apps=user.get_global_navigation_urls %}
-            {% if user_apps|length < 5 %}
-            {% for app in user_apps %}
-                <li><a href="{{ app.url }}">{{ app.title }}</a></li>
-            {% endfor %}
-            {% else %}
-            {% for app in user_apps|slice:":3" %}
-                <li><a href="{{ app.url }}">{{ app.title }}</a></li>
-            {% endfor %}
-            {% for app in user_apps|slice:"3:" %}
-                {% if forloop.first %}
-	            <li class="dropdown">
-	               <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans 'More' %} <b class="caret"></b></a>
-	               <ul class="dropdown-menu">
-	            {% endif %}
-                       <li><a href="{{ app.url }}">{{ app.title }}</a></li>
-                {% if forloop.last %}
-	              </ul>
-	            </li>
-	            {% endif %}
-            {% endfor %}
+            {% if user.is_authenticated %}
+	            <ul class="nav navbar-nav">
+	            {% with user_apps=user.get_global_navigation_urls %}
+		            {% if user_apps|length < 5 %}
+			            {% for app in user_apps %}
+			                <li><a href="{{ app.url }}">{{ app.title }}</a></li>
+			            {% endfor %}
+		            {% else %}
+			            {% for app in user_apps|slice:":3" %}
+			                <li><a href="{{ app.url }}">{{ app.title }}</a></li>
+			            {% endfor %}
+			            {% for app in user_apps|slice:"3:" %}
+			                {% if forloop.first %}
+			                <li class="dropdown">
+			                   <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans 'More' %} <b class="caret"></b></a>
+			                   <ul class="dropdown-menu">
+			                {% endif %}
+			                       <li><a href="{{ app.url }}">{{ app.title }}</a></li>
+			                {% if forloop.last %}
+			                  </ul>
+			                </li>
+			                {% endif %}
+			            {% endfor %}
+		            {% endif %}
+	            {% endwith %}
+	            </ul>
             {% endif %}
-            {% endwith %}
-            </ul>
             <ul class="nav navbar-nav navbar-right">
             {% if user.is_authenticated %}
-                <li class="tool {% block accounts_settings_class %}{% endblock %}"><a href="{% url 'accounts:profile' %}">{% if user.picture %}{% thumbnail user.picture "30x30" as im %}<img class="icon-user" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="">{% endthumbnail %}{% else %}<i class="glyphicon glyphicon-user"></i>{% endif %} {{ user.get_full_name }}</a></li>
+                <li><a href="{% url 'accounts:profile' %}">{% if user.picture %}{% thumbnail user.picture "30x30" as im %}<img class="icon-user" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="">{% endthumbnail %}{% else %}<i class="glyphicon glyphicon-user"></i>{% endif %} {{ user.get_full_name }}</a></li>
                 <li><a href="{% url 'accounts:logout' %}">{% trans 'Log out' %}</a></li>
                 {% else %}
-                <li class="{% block accounts_login_class %}{% endblock %}"><a  href="{% url 'accounts:login' %}"><i class="glyphicon glyphicon-user"></i> {% trans 'Log in' %}</a></li>
+                <li><a  href="{% url 'accounts:login' %}"><i class="glyphicon glyphicon-user"></i> {% trans 'Log in' %}</a></li>
                 {% endif %}
             </ul><!-- /.navbar-right -->
         </div><!--/.navbar-collapse -->

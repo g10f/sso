@@ -5,11 +5,11 @@
 {% block nav_accounts_user_list_class %}active{% endblock %}
 
 {% block breadcrumb %}
-<ul class="breadcrumb">
+<ol class="breadcrumb">
     <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></span></li>
     <li><a href="{% url 'accounts:user_list' %}">{% trans 'User List' %}</a></li>
     <li class="active">{% trans 'Change User' %}</li>
-</ul> 
+</ol> 
 {% endblock breadcrumb %}
 
 {% block form %}
