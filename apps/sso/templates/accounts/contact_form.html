@@ -6,15 +6,15 @@
 {% block nav_home_class %}active{% endblock %}
 
 {% block breadcrumb %}
-<ul class="breadcrumb">
+<ol class="breadcrumb">
     <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li class="active">{% trans 'Contact' %}</li>
-</ul> 
+    <li class="active">{% trans 'Feedback' %}</li>
+</ol> 
 {% endblock breadcrumb %}
 
 {% block form %}
 <form role="form" class="form-horizontal" method="post">{% csrf_token %} 
-    <h3>{% trans 'Contact Information' %}</h3>
+    <h3>{% trans 'Feedback' %}</h3>
     
     {% block messages %}
       {% if messages %}

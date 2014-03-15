@@ -1,5 +1,5 @@
 <!DOCTYPE html>{% load static i18n googleanalytics thumbnail %}
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
     <meta charset="utf-8">
     <title>{% block title %}{% endblock %}</title>
@@ -14,8 +14,11 @@
     {% if not debug and 1 %}<link rel="stylesheet" href="{% static "less/style-1.1.2.css" %}">{% endif %}
     {% endblock style %}
     {% block extrastyle %}{% endblock %}
-    <script type="text/javascript">window.__media_prefix__ = "{% filter escapejs %}{% static "" %}{% endfilter %}";</script>
     {% block extrahead %}{% endblock %}
+    <script type="text/javascript">window.__media_prefix__ = "{% filter escapejs %}{% static "" %}{% endfilter %}";</script>
+    <script>(function(H){H.className=H.className.replace(/\bno-js\b/,'js')})(document.documentElement)</script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="{% static "js/vendor/jquery-1.11.0.min.js" %}"><\/script>')</script>
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
       <script src="{% static "js/vendor/html5shiv-3.7.0.js" %}"></script>
@@ -70,17 +73,14 @@
         <ul class="footer-links">
             <li><a href="{% url 'about' %}">{% trans 'About us' %}</a></li>
             <li class="text-muted">·</li>
-            <li><a href="{% url 'accounts:contact' %}">{% trans 'Contact' %}</a></li>
+            <li><a href="{% url 'accounts:contact' %}">{% trans 'Feedback' %}</a></li>
         </ul>
       </footer>
       {% endblock footer %}
       
     </div> <!-- /container -->    
     {% endblock body %}  
-       
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-<script>window.jQuery || document.write('<script src="{% static "js/vendor/jquery-1.11.0.min.js" %}"><\/script>')</script>
-<script src="{% static "js/vendor/bootstrap-3.1.1.min.js" %}"></script>
+    <script src="{% static "js/vendor/bootstrap-3.1.1.min.js" %}"></script>
 {% show_tracker %}
 </body>
 </html>
