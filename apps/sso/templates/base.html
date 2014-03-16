@@ -9,11 +9,11 @@
     <link rel="shortcut icon" href="{% static "ico/favicon.ico" %}" type="image/ico"/>
     {% block style %}{% with less=False %}
 	    {% if debug and less %}
-		    <link rel="stylesheet/less" href="{% static "less/style.less" %}">
+		    <link rel="stylesheet/less" href="{% static "less/default.less" %}">
 		    <script src="{% static "js/vendor/less-1.7.0.min.js" %}"></script>
 		    <script>less.modifyVars({'@icon-font-path': '"/static/fonts/"'});</script>
 	    {% else %}
-            <link rel="stylesheet" href="{% static "css/style-1.1.3.css" %}">{% endif %}{% endwith %}{% endblock style %}
+            <link rel="stylesheet" href="{% static stylesheet %}">{% endif %}{% endwith %}{% endblock style %}
     {% block extrastyle %}{% endblock %}
     {% block extrahead %}{% endblock %}
     <script type="text/javascript">window.__media_prefix__ = "{% filter escapejs %}{% static "" %}{% endfilter %}";</script>
@@ -71,7 +71,7 @@
       <hr>
       {% block footer %}
       <footer>
-        <ul class="footer-links">
+        <ul class="dwbn-footer-links">
             <li><a href="{% url 'about' %}">{% trans 'About us' %}</a></li>
             <li class="text-muted">·</li>
             <li><a href="{% url 'accounts:contact' %}">{% trans 'Feedback' %}</a></li>

@@ -14,5 +14,6 @@ def settings(request):
     
     return {'brand': site_settings.BRAND,
             'app_uuid': site_settings.APP_UUID,
-            'base_url': get_base_url(request)
+            'base_url': get_base_url(request),
+            'stylesheet': site_settings.STYLESHEET
             }

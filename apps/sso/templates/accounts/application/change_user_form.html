@@ -33,7 +33,7 @@
 	    {% endif %}
     </div>
 
-     <ul class="nav nav-tabs" id="myTab">
+     <ul class="nav nav-tabs dwbn-nav-tabs" id="myTab">
        <li class="active"><a data-toggle="tab" href="#user">{% trans 'User data' %}</a></li>
        <li><a data-toggle="tab" href="#app_roles">{{ form.application_roles.label }}</a></li>
        <li><a data-toggle="tab" href="#notes" >{{ form.notes.label }}</a></li>
@@ -44,7 +44,7 @@
 		  <div>      
 		   <div class="row form-group">
 		     <label class="col-sm-3 control-label">{% trans 'picture' %}</label>    
-		     <div class="col-sm-9 dw-form-control">
+		     <div class="col-sm-9 dwbn-form-control">
 		      {% thumbnail form.user.picture "108x108" as im %}<img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">{% endthumbnail %}          
 		     </div>
 		   </div>
@@ -62,7 +62,7 @@
 		   {% if registrationprofile %}        
 		   <div class="row form-group">
 		     <label class="col-sm-3 control-label"></label>    
-		     <div class="col-sm-9 dw-form-control">
+		     <div class="col-sm-9 dwbn-form-control">
 		        <a href="{% url 'registration:update_user_registration' registrationprofile.pk %}" >{% trans 'Registration' %}</a>
 		     </div>
 		   </div>
