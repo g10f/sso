@@ -1,7 +1,7 @@
 {% load i18n %}
 <div class="row form-group {% if field.errors %}has-error{% endif %}">
     <label class="col-sm-3 control-label" for="id_{{ field.html_name }}">{{ field.label }}{% if field.field.required %}*{% endif %}</label>
-    <div class="col-sm-9 dw-form-control">
+    <div class="col-sm-9 dwbn-form-control">
         {% if field.value %}
 	    <div class="input-group">
 	       {{ field }}

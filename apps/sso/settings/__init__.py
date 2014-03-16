@@ -175,6 +175,7 @@ LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/accounts/login/'
 LOGOUT_URL = '/accounts/logout/'
 AUTH_USER_MODEL = 'accounts.User'
+STYLESHEET = 'css/default-1.0.0.css'
 
 REGISTRATION = {
     'OPEN': False,
