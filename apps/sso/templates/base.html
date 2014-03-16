@@ -7,12 +7,13 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="shortcut icon" href="{% static "ico/favicon.ico" %}" type="image/ico"/>
-    {% if debug and 0 %}<link rel="stylesheet/less" href="{% static "less/style.less" %}">{% endif %}
-    {% if debug and 0 %}<script src="{% static "js/vendor/less-1.6.1.min.js" %}"></script>{% endif %}
-    {% if debug and 1 %}<link rel="stylesheet" href="{% static "less/style-1.1.2.css" %}">{% endif %}
-    {% block style %}
-    {% if not debug and 1 %}<link rel="stylesheet" href="{% static "less/style-1.1.2.css" %}">{% endif %}
-    {% endblock style %}
+    {% block style %}{% with less=False %}
+	    {% if debug and less %}
+		    <link rel="stylesheet/less" href="{% static "less/style.less" %}">
+		    <script src="{% static "js/vendor/less-1.7.0.min.js" %}"></script>
+		    <script>less.modifyVars({'@icon-font-path': '"/static/fonts/"'});</script>
+	    {% else %}
+            <link rel="stylesheet" href="{% static "css/style-1.1.3.css" %}">{% endif %}{% endwith %}{% endblock style %}
     {% block extrastyle %}{% endblock %}
     {% block extrahead %}{% endblock %}
     <script type="text/javascript">window.__media_prefix__ = "{% filter escapejs %}{% static "" %}{% endfilter %}";</script>
@@ -38,7 +39,7 @@
         
         {% block content %}
 		<div class="row">
-		    <div class="col-md-3">
+		    <div class="col-md-3 col-sm-4">
 		        {% block left_content %}
 				<div class="list-group">              
 				    {% if user.is_staff %}
@@ -60,8 +61,8 @@
 				    {% endif %}
 				</div>
 				{% endblock left_content %}
-		      </div>
-		    <div class="col-md-9">
+		    </div>
+		    <div class="col-md-9 col-sm-8">
 		        <div class="">{% block right_content %}<h2>{% trans 'Home' %}</h2>{% endblock %}</div>
 		    </div>
 	  </div>
