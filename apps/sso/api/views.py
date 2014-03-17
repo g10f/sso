@@ -182,6 +182,7 @@ class UserDetailView(View):
             applications.append(application_data)
         
         userinfo = {
+            'uuid': user.uuid,
             'applications': applications,
             'full_name': user.get_full_name(),
             'text': {'More': _('More'), 'Logout': _('Log out')},
