@@ -291,7 +291,7 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
         sudo("chown www-data:www-data -R  ./logs")  
         sudo("chmod 0660 -R  ./logs")
         sudo("chmod +X logs")
-        migrate_data(python, server_name, code_dir, app)
+        #migrate_data(python, server_name, code_dir, app)
         sudo("%s ./src/apps/manage.py collectstatic --noinput" % python)
         sudo("supervisorctl restart %(server_name)s" % {'server_name': server_name})
     
