@@ -205,7 +205,7 @@ class UserRegistrationCreationFormPreview(FormPreview):
     def get_context(self, request, form):
         "Context for template rendering."
         context = super(UserRegistrationCreationFormPreview, self).get_context(request, form)
-        context.update({'site_name': settings.SITE_NAME, 'title': _('User registration')})
+        context.update({'site_name': settings.SSO_CUSTOM['SITE_NAME'], 'title': _('User registration')})
         return context
     
     @transaction.atomic

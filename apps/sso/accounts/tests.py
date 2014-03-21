@@ -137,15 +137,15 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.assertEqual(len(self.selenium.find_elements_by_class_name("alert-danger")), 1)
 
     def test_add_user_as_admin(self):
-        applicationrole = ApplicationRole.objects.get(application__uuid=settings.APP_UUID, role__name="Admin")
+        applicationrole = ApplicationRole.objects.get(application__uuid=settings.SSO_CUSTOM['APP_UUID'], role__name="Admin")
         self.add_user(applicationrole=applicationrole, allowed_orgs=["1", "2"])
     
     def test_add_user_as_region(self):
-        applicationrole = ApplicationRole.objects.get(application__uuid=settings.APP_UUID, role__name="Region")
+        applicationrole = ApplicationRole.objects.get(application__uuid=settings.SSO_CUSTOM['APP_UUID'], role__name="Region")
         self.add_user(applicationrole=applicationrole, allowed_orgs=["1", "2"])
 
     def test_add_user_as_center(self):
-        applicationrole = ApplicationRole.objects.get(application__uuid=settings.APP_UUID, role__name="Center")
+        applicationrole = ApplicationRole.objects.get(application__uuid=settings.SSO_CUSTOM['APP_UUID'], role__name="Center")
         self.add_user(applicationrole=applicationrole, allowed_orgs=["1"], denied_orgs=["2"])
     
     def add_user(self, applicationrole, allowed_orgs, denied_orgs=[]):

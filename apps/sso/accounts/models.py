@@ -297,7 +297,7 @@ class User(AbstractUser):
     
     @property
     def default_sso_roles(self):
-        return [{'uuid': settings.APP_UUID, 'roles': ['Center']}] if self.is_center else []
+        return [{'uuid': settings.SSO_CUSTOM['APP_UUID'], 'roles': ['Center']}] if self.is_center else []
 
     @property
     def default_wiki_roles(self):
@@ -399,7 +399,7 @@ def send_account_created_email(user, request, token_generator=default_pwd_reset_
         language = 'en'
     use_https = request.is_secure()
     current_site = get_current_site(request)
-    site_name = settings.SITE_NAME
+    site_name = settings.SSO_CUSTOM['SITE_NAME']
     domain = current_site.domain
     c = {
         'email': user.email,

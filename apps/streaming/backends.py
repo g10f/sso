@@ -80,7 +80,7 @@ class StreamingBackend(object):
             
             if streaming_user.check_password(password):
                 # the streaming app is not yet under control of the sso!
-                application = Application.objects.get_or_create(uuid=settings.STREAMING_UUID, defaults={'title': 'Streaming', })[0]
+                application = Application.objects.get_or_create(uuid=settings.SSO_CUSTOM['STREAMING_UUID'], defaults={'title': 'Streaming', })[0]
                 #role = Role.objects.get_or_create(name='User')[0]
                 #user_app_roles = [ApplicationRole.objects.get_or_create(application=application, role=role)[0]]
                 

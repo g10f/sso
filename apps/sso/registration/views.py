@@ -217,7 +217,7 @@ def register(request, username_generator=default_username_generator, form_cls=Us
     else:
         form = form_cls()
     
-    site_name = settings.SITE_NAME
+    site_name = settings.SSO_CUSTOM['SITE_NAME']
     data = {
             'site_name': site_name,
             'form': form, 

@@ -50,7 +50,7 @@ class StreamingMethodTests(TestCase):
         self.assertGreater(len(user.application_roles.all()), 1)
         app_roles = user.application_roles.all().values('application__uuid', 'role__name')
         # SSO
-        self.assertIn({'application__uuid': settings.APP_UUID, 'role__name': 'Center'}, app_roles)  
+        self.assertIn({'application__uuid': settings.SSO_CUSTOM['APP_UUID'], 'role__name': 'Center'}, app_roles)  
         # Streaming
         self.assertIn({'application__uuid': 'c362bea58c67457fa32234e3178285c4', 'role__name': 'Center'}, app_roles)  
         # Dharmashop Home

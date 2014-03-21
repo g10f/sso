@@ -115,7 +115,7 @@ class PasswordResetForm(DjangoPasswordResetForm):
         from django.core.mail import send_mail
         email = self.cleaned_data["email"]
         current_site = get_current_site(request)
-        site_name = settings.SITE_NAME
+        site_name = settings.SSO_CUSTOM['SITE_NAME']
         domain = current_site.domain
 
         if (not self.password):

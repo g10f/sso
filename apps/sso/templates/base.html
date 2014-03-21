@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="shortcut icon" href="{% static favicon %}" type="image/ico"/>
+    <link rel="shortcut icon" href="{% static favicon  %}" type="image/ico"/>
     {% block style %}{% with less=False %}
 	    {% if debug and less %}
-		    <link rel="stylesheet/less" href="{% static "less/default.less" %}">
+		    <link rel="stylesheet/less" href="{% static stylesheet_less %}">
 		    <script src="{% static "js/vendor/less-1.7.0.min.js" %}"></script>
 		    <script>less.modifyVars({'@icon-font-path': '"/static/fonts/"'});</script>
 	    {% else %}
