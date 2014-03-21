@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
 import time
-import os
 import base64
 
 from Crypto.Signature import PKCS1_v1_5
@@ -22,43 +21,28 @@ AUTH_TOKEN_LIFETIME_SECS = 300    # 5 minutes in seconds
 MAX_TOKEN_LIFETIME_SECS = 86400    # 1 day in seconds
 
 class PrivateKey(object):
-    def __init__(self):  
-        if not hasattr(settings, 'PRIVATE_KEY_FILE_ID'):
-            self.key_id = 'f1aafae7b7764055926078b32fe81e5b'
-            private_key_file = os.path.join(settings.DIRNAME, 'cert', '%s.key' % self.key_id)
-            if not os.path.exists(private_key_file):
-                raise Exception("private_key_file %s does not exist" % private_key_file)
-        
-        self.private_key_file = private_key_file        
     
     @property
     def rsa(self):
         if not hasattr(self, '_rsa'):
-            with open(self.private_key_file, 'r') as f:
-                self._rsa = RSA.importKey(f.read())            
+            self._rsa = RSA.importKey(settings.CERTS['default']['private_key'])            
         return self._rsa
     
     @property
     def cert(self):
-        cert_file = os.path.join(settings.DIRNAME, 'cert', '%s.crt' % self.key_id)
-        with open(cert_file, 'r') as f:
-            return f.read()
+        return settings.CERTS['default']['certificate']
         
     @property
     def pub_key(self):
-        cert_file = os.path.join(settings.DIRNAME, 'cert', '%s.pub' % self.key_id)
-        with open(cert_file, 'r') as f:
-            return f.read()
+        return settings.CERTS['default']['public_key']
 
     @property
     def id(self):
-        return self.key_id
+        return settings.CERTS['default']['uuid']
 
     @property
     def public_rsa(self):
-        cert_file = os.path.join(settings.DIRNAME, 'cert', '%s.pub' % self.key_id)        
-        with open(cert_file, 'r') as f:
-            return RSA.importKey(f.read())
+        return RSA.importKey(self.pub_key)
         
     def sign(self, message):
         return  PKCS1_v1_5.new(self.rsa).sign(SHA256.new(message))
