@@ -12,7 +12,7 @@ env.use_ssh_config = True
 env.apps = ['sso']
 # map valid  server names to enviroments, to ensure we deploy accurately
 valid_server_names = {
-    'g10f': ['dwbn-sso.g10f.de', 'sso.g10f.de', 'sso2.g10f.de'],
+    'g10f': ['dwbn-sso.g10f.de', 'sso.g10f.de', 'vw-sso.g10f.de'],
     'elsapro': ['sso.elsapro.com'],
     'dwbn001': ['sso.dwbn.org'],
 }
@@ -167,10 +167,10 @@ def perms():
     django.manage.run(command="update_permissions")
 
 def migrate_data(python, server_name, code_dir, app):
-    #sudo("%s ./src/apps/manage.py syncdb --noinput" % python, user='www-data', group='www-data')
-    sudo("%s ./src/apps/manage.py migrate accounts" % python, user='www-data', group='www-data')
+    sudo("%s ./src/apps/manage.py syncdb --noinput" % python, user='www-data', group='www-data')
+    #sudo("%s ./src/apps/manage.py migrate accounts" % python, user='www-data', group='www-data')
     #sudo("%s ./src/apps/manage.py migrate registration 0001 --fake" % python, user='www-data', group='www-data')
-    sudo("%s ./src/apps/manage.py migrate registration" % python, user='www-data', group='www-data')
+    #sudo("%s ./src/apps/manage.py migrate registration" % python, user='www-data', group='www-data')
     
 
 @task
@@ -202,19 +202,20 @@ def deploy_database(db_name):
 def deploy_webserver(code_dir, server_name):
     # Require an nginx server proxying to our app
     docroot = '/proj/static/htdocs/%(server_name)s' % {'server_name': server_name}
-    """
     require.directory('%(code_dir)s/logs' % {'code_dir': code_dir}, use_sudo=True, owner="www-data", mode='770')
+    require.directory('%(code_dir)s/config' % {'code_dir': code_dir}, use_sudo=True, owner="www-data", mode='770')
     require.directory(docroot, use_sudo=True, owner="www-data", mode='770')
-    require.nginx.server()
     
-    context = {'certroot': '/proj/g10f/certs', 'server_name': server_name}
-    require.files.directory(context['certroot'], use_sudo=True, owner='www-data', group='www-data')
-    require.files.template_file('/etc/nginx/conf.d/ssl.nginx.conf', template_contents=NGINX_SSL_TEMPLATE, context=context, use_sudo=True)
-    require.file('%(certroot)s/certificate.crt' % context, source='certs/%(server_name)s.certificate.crt' % context, use_sudo=True, owner='www-data', group='www-data')
-    require.file('%(certroot)s/certificate.key' % context, source='certs/%(server_name)s.certificate.key' % context, use_sudo=True, owner='www-data', group='www-data')
+    #require.nginx.server()
+    
+    #context = {'certroot': '/proj/g10f/certs', 'server_name': server_name}
+    #require.files.directory(context['certroot'], use_sudo=True, owner='www-data', group='www-data')
+    #require.files.template_file('/etc/nginx/conf.d/ssl.nginx.conf', template_contents=NGINX_SSL_TEMPLATE, context=context, use_sudo=True)
+    #require.file('%(certroot)s/certificate.crt' % context, source='certs/%(server_name)s.certificate.crt' % context, use_sudo=True, owner='www-data', group='www-data')
+    #require.file('%(certroot)s/certificate.key' % context, source='certs/%(server_name)s.certificate.key' % context, use_sudo=True, owner='www-data', group='www-data')
     require.files.template_file('%s/config/nginx.expired.conf' % code_dir, template_contents=NGINX_EXPIRED_TEMPLATE)
     require.files.template_file('%s/config/nginx.webfonts.conf' % code_dir, template_contents=NGINX_WEBFONTS_TEMPLATE)
-    """
+    
     require.nginx.site(server_name, template_contents=PROXIED_SITE_TEMPLATE, docroot=docroot)
 
 def deploy_app():
@@ -239,9 +240,9 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
     
     #user = 'ubuntu'
     #setup_user(user)
-    #require.files.directory(code_dir)
+    require.files.directory(code_dir)
     #deploy_debian()
-    deploy_webserver(code_dir, server_name)
+    #deploy_webserver(code_dir, server_name)
     
     #fabtools.user.modify(name=user, extra_groups=['www-data'])
     #deploy_database(db_name)
@@ -264,6 +265,7 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
             require.python.requirements('src/requirements.txt')
     
     require.file('/envs/%(virtualenv)s/lib/python2.7/sitecustomize.py' % {'virtualenv': virtualenv}, source='apps/sitecustomize.py')
+    """
     
     # configure gunicorn
     require.directory('%(code_dir)s/config' % {'code_dir': code_dir}, use_sudo=True, owner="www-data", mode='770')
@@ -283,13 +285,13 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
     config_filename = '/etc/logrotate.d/%(server_name)s' % {'server_name': server_name}
     context = {'code_dir': code_dir}
     require.files.template_file(config_filename, template_contents=LOGROTATE_TEMPLATE, context=context, use_sudo=True)
-    """
+    
     python = '/envs/%(virtualenv)s/bin/python' % {'virtualenv': virtualenv}
     with cd(code_dir):
         sudo("chown www-data:www-data -R  ./logs")  
         sudo("chmod 0660 -R  ./logs")
         sudo("chmod +X logs")
-        #migrate_data(python, server_name, code_dir, app)
+        migrate_data(python, server_name, code_dir, app)
         sudo("%s ./src/apps/manage.py collectstatic --noinput" % python)
         sudo("supervisorctl restart %(server_name)s" % {'server_name': server_name})
     
