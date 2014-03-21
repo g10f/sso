@@ -29,8 +29,8 @@ class SSOBackend(ModelBackend):
                 groups_query = Q(group__user=user_obj)  
                 
                 # this comes through groups associated to roles
-                groups_from_roles_query = Q(group__role__applicationrole__user=user_obj, group__role__applicationrole__application__uuid=settings.APP_UUID)
-                groups_from_roles_query |= Q(group__role__applicationrole__roleprofile__user=user_obj, group__role__applicationrole__application__uuid=settings.APP_UUID)
+                groups_from_roles_query = Q(group__role__applicationrole__user=user_obj, group__role__applicationrole__application__uuid=settings.SSO_CUSTOM['APP_UUID'])
+                groups_from_roles_query |= Q(group__role__applicationrole__roleprofile__user=user_obj, group__role__applicationrole__application__uuid=settings.SSO_CUSTOM['APP_UUID'])
                 
                 perms = Permission.objects.filter(groups_query | groups_from_roles_query)
             perms = perms.values_list('content_type__app_label', 'codename').order_by()

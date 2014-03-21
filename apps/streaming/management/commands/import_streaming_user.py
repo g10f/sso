@@ -24,7 +24,7 @@ class Command(NoArgsCommand):
 def load_streaming_users():
     
     streaming_users = StreamingUser.objects.all()
-    application = Application.objects.get_or_create(uuid=settings.STREAMING_UUID, defaults={'title': 'Streaming'})[0]
+    application = Application.objects.get_or_create(uuid=settings.SSO_CUSTOM['STREAMING_UUID'], defaults={'title': 'Streaming'})[0]
     
     role = Role.objects.get_or_create(name='User')[0]
     user_app_role = ApplicationRole.objects.get_or_create(application=application, role=role)[0]

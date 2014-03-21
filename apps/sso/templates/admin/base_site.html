@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load admin_static %}
 
-{% block extrahead %}<link rel="shortcut icon" id="favicon" href="{{ STATIC_URL }}ico/favicon.ico" />{% endblock %}
+{% block extrahead %}<link rel="shortcut icon" id="favicon" href="{{ STATIC_URL }}{{ favicon }}" />{% endblock %}
 
 {% block extrastyle %}<link rel="stylesheet" type="text/css" href="{% static "admin/css/mybase.css" %}" />{% endblock %}
 

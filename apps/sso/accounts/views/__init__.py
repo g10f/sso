@@ -107,7 +107,7 @@ def logout(request, next_page=None,
 
     if next_page is None:
         current_site = get_current_site(request)
-        site_name = settings.SITE_NAME
+        site_name = settings.SSO_CUSTOM['SITE_NAME']
         context = {
             'site': current_site,
             'site_name': site_name,
@@ -147,7 +147,7 @@ def login(request):
     Displays the login form for the given HttpRequest.
     """
     current_site = get_current_site(request)
-    site_name = settings.SITE_NAME
+    site_name = settings.SSO_CUSTOM['SITE_NAME']
     redirect_to = request.REQUEST.get(REDIRECT_FIELD_NAME, '')
     # hidden field in the template to check from which form the post request comes
     login_form_key = request.REQUEST.get(LOGIN_FORM_KEY)  

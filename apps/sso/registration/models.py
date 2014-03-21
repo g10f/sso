@@ -37,7 +37,7 @@ def send_set_password_email(user, request, token_generator=default_pwd_reset_tok
                               ):
     use_https = request.is_secure()
     current_site = get_current_site(request)
-    site_name = settings.SITE_NAME
+    site_name = settings.SSO_CUSTOM['SITE_NAME']
     domain = current_site.domain
     c = {
         'email': user.email,
@@ -58,7 +58,7 @@ def send_set_password_email(user, request, token_generator=default_pwd_reset_tok
 def send_validation_email(registration_profile, request, token_generator=default_token_generator):
     use_https = request.is_secure()
     current_site = get_current_site(request)
-    site_name = settings.SITE_NAME
+    site_name = settings.SSO_CUSTOM['SITE_NAME']
     domain = current_site.domain
     c = {
         'domain': domain,

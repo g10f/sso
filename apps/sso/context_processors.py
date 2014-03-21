@@ -12,9 +12,9 @@ def get_base_url(request):
 
 def settings(request):
     
-    return {'brand': site_settings.BRAND,
-            'app_uuid': site_settings.APP_UUID,
+    return {'brand': site_settings.SSO_CUSTOM['BRAND'],
             'base_url': get_base_url(request),
-            'stylesheet': site_settings.STYLESHEET,
-            'favicon': site_settings.FAVICON
+            'stylesheet': site_settings.SSO_CUSTOM['STYLESHEET'],
+            'stylesheet_less': site_settings.SSO_CUSTOM['SYLE_LESS'],
+            'favicon': site_settings.SSO_CUSTOM['FAVICON']
             }

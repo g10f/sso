@@ -19,12 +19,24 @@ else:
 
 TEMPLATE_DEBUG = DEBUG
 
-BRAND = 'G10F'
-SITE_NAME = 'G10F'
-ABOUT = 'http://g10f.de/'
-APP_UUID = 'fa467234b81e4838a009e38d9e655d18'
-STREAMING_UUID = 'c362bea58c67457fa32234e3178285c4'
-EMAIL_SUBJECT_PREFIX = '[%s SSO] ' % BRAND
+SSO_CUSTOM = {
+    'BRAND': 'G10F',
+    'SITE_NAME': 'G10F',
+    'ABOUT': 'http://g10f.de/',
+    'APP_UUID': 'fa467234b81e4838a009e38d9e655d18',
+    'STREAMING_UUID': 'c362bea58c67457fa32234e3178285c4',
+    'STYLESHEET': 'css/default-1.0.0.css',
+    'SYLE_LESS': 'less/default.less',
+    'FAVICON': 'ico/favicon.ico'
+    
+}
+#BRAND = 'G10F'
+#SITE_NAME = 'G10F'
+#ABOUT = 'http://g10f.de/'
+#APP_UUID = 'fa467234b81e4838a009e38d9e655d18'
+#STREAMING_UUID = 'c362bea58c67457fa32234e3178285c4'
+
+EMAIL_SUBJECT_PREFIX = '[SSO] '
 
 DIRNAME = os.path.join(os.path.dirname(__file__), '..')
 
@@ -175,7 +187,6 @@ LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/accounts/login/'
 LOGOUT_URL = '/accounts/logout/'
 AUTH_USER_MODEL = 'accounts.User'
-STYLESHEET = 'css/default-1.0.0.css'
 
 REGISTRATION = {
     'OPEN': False,
