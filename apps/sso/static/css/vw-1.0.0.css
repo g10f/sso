@@ -268,7 +268,7 @@ body {
   font-family: Verdana, Helvetica, sans-serif;
   font-size: 13px;
   line-height: 1.42857143;
-  color: #333333;
+  color: #34393b;
   background-color: #ffffff;
 }
 input,
@@ -280,7 +280,7 @@ textarea {
   line-height: inherit;
 }
 a {
-  color: #4c5356;
+  color: #a21e4d;
   text-decoration: none;
 }
 a:hover,
@@ -1916,7 +1916,7 @@ select[multiple].input-lg {
   display: block;
   margin-top: 5px;
   margin-bottom: 10px;
-  color: #737373;
+  color: #707a7f;
 }
 @media (min-width: 768px) {
   .form-inline .form-group {
@@ -2277,7 +2277,7 @@ fieldset[disabled] .btn-danger.active {
   background-color: #ffffff;
 }
 .btn-link {
-  color: #4c5356;
+  color: #a21e4d;
   font-weight: normal;
   cursor: pointer;
   border-radius: 0;
@@ -3470,7 +3470,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 .nav .open > a:hover,
 .nav .open > a:focus {
   background-color: #eeeeee;
-  border-color: #4c5356;
+  border-color: #a21e4d;
 }
 .nav .nav-divider {
   height: 1px;
@@ -4031,7 +4031,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
 .navbar-inverse .navbar-nav > li > a:hover,
 .navbar-inverse .navbar-nav > li > a:focus {
   color: #ffffff;
-  background-color: #004666;
+  background-color: transparent;
 }
 .navbar-inverse .navbar-nav > .active > a,
 .navbar-inverse .navbar-nav > .active > a:hover,
@@ -4078,7 +4078,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   .navbar-inverse .navbar-nav .open .dropdown-menu > li > a:hover,
   .navbar-inverse .navbar-nav .open .dropdown-menu > li > a:focus {
     color: #ffffff;
-    background-color: #004666;
+    background-color: transparent;
   }
   .navbar-inverse .navbar-nav .open .dropdown-menu > .active > a,
   .navbar-inverse .navbar-nav .open .dropdown-menu > .active > a:hover,
@@ -4133,7 +4133,7 @@ select[multiple].input-group-sm > .input-group-btn > .btn {
   padding: 6px 12px;
   line-height: 1.42857143;
   text-decoration: none;
-  color: #4c5356;
+  color: #a21e4d;
   background-color: #ffffff;
   border: 1px solid #dddddd;
   margin-left: -1px;
@@ -4348,7 +4348,7 @@ a.badge:focus {
 }
 a.list-group-item.active > .badge,
 .nav-pills > .active > a > .badge {
-  color: #4c5356;
+  color: #a21e4d;
   background-color: #ffffff;
 }
 .nav-pills > li > a > .badge {
@@ -4408,11 +4408,11 @@ a.list-group-item.active > .badge,
 a.thumbnail:hover,
 a.thumbnail:focus,
 a.thumbnail.active {
-  border-color: #4c5356;
+  border-color: #a21e4d;
 }
 .thumbnail .caption {
   padding: 9px;
-  color: #333333;
+  color: #34393b;
 }
 .alert {
   padding: 15px;
