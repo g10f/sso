@@ -7,7 +7,7 @@ from django.core import signing
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.crypto import get_random_string
 
-from oauthlib import oauth2
+from oauthlib import oauth2, uri_validate
 from oauthlib.oauth2.rfc6749.tokens import random_token_generator
 from .models import BearerToken, RefreshToken, AuthorizationCode, Client, check_redirect_uri
 from .crypt import loads_jwt, make_jwt
@@ -94,11 +94,11 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
         return DEFAULT_SCOPES
 
     def validate_response_type(self, client_id, response_type, client, request, *args, **kwargs):
-        # currently we support "code" and "token"
+        # currently we support "code", "token" and "id_token token"
         client_type = client.type
         if client_type in ['web', 'native'] and response_type == "code":
             return True
-        elif client_type == 'javascript' and response_type == 'token':
+        elif client_type == 'javascript' and response_type in ['token', 'id_token token']:
             return True
         else:
             return False            
@@ -319,25 +319,111 @@ class OpenIDConnectAuthorizationCodeGrant(oauth2.AuthorizationCodeGrant):
         return headers, json.dumps(token), 200
 
 
+class OpenIDConnectImplicitGrant(oauth2.ImplicitGrant):
+
+    def validate_token_request(self, request):
+        """
+        Same functionality as in oauth2.ImplicitGrant, except that
+        response_type must be in ['id_token token', 'token']
+        """
+        if not request.client_id:
+            raise oauth2.MissingClientIdError(state=request.state, request=request)
+
+        if not self.request_validator.validate_client_id(request.client_id, request):
+            raise oauth2.InvalidClientIdError(state=request.state, request=request)
+
+        # OPTIONAL. As described in Section 3.1.2.
+        # http://tools.ietf.org/html/rfc6749#section-3.1.2
+        if request.redirect_uri is not None:
+            request.using_default_redirect_uri = False
+            logger.debug('Using provided redirect_uri %s', request.redirect_uri)
+            if not uri_validate.is_absolute_uri(request.redirect_uri):
+                raise oauth2.InvalidRedirectURIError(state=request.state, request=request)
+
+            # The authorization server MUST verify that the redirection URI
+            # to which it will redirect the access token matches a
+            # redirection URI registered by the client as described in
+            # Section 3.1.2.
+            # http://tools.ietf.org/html/rfc6749#section-3.1.2
+            if not self.request_validator.validate_redirect_uri(
+                    request.client_id, request.redirect_uri, request):
+                raise oauth2.MismatchingRedirectURIError(state=request.state, request=request)
+        else:
+            request.redirect_uri = self.request_validator.get_default_redirect_uri(
+                    request.client_id, request)
+            request.using_default_redirect_uri = True
+            logger.debug('Using default redirect_uri %s.', request.redirect_uri)
+            if not request.redirect_uri:
+                raise oauth2.MissingRedirectURIError(state=request.state, request=request)
+            if not uri_validate.is_absolute_uri(request.redirect_uri):
+                raise oauth2.InvalidRedirectURIError(state=request.state, request=request)
+
+        # Then check for normal errors.
+
+        # If the resource owner denies the access request or if the request
+        # fails for reasons other than a missing or invalid redirection URI,
+        # the authorization server informs the client by adding the following
+        # parameters to the fragment component of the redirection URI using the
+        # "application/x-www-form-urlencoded" format, per Appendix B.
+        # http://tools.ietf.org/html/rfc6749#appendix-B
+
+        # Note that the correct parameters to be added are automatically
+        # populated through the use of specific exceptions.
+        if request.response_type is None:
+            raise oauth2.InvalidRequestError(state=request.state,
+                    description='Missing response_type parameter.',
+                    request=request)
+
+        for param in ('client_id', 'response_type', 'redirect_uri', 'scope', 'state'):
+            if param in request.duplicate_params:
+                raise oauth2.InvalidRequestError(state=request.state,
+                        description='Duplicate %s parameter.' % param, request=request)
+
+        # REQUIRED. Value MUST be set to "id_token token" or token.
+        if request.response_type not in ['id_token token', 'token']:
+            raise oauth2.UnsupportedResponseTypeError(state=request.state, request=request)
+
+        logger.debug('Validating use of response_type token for client %r (%r).',
+                  request.client_id, request.client)
+        if not self.request_validator.validate_response_type(request.client_id,
+                request.response_type, request.client, request):
+            logger.debug('Client %s is not authorized to use response_type %s.',
+                      request.client_id, request.response_type)
+            raise oauth2.UnauthorizedClientError(request=request)
+
+        # OPTIONAL. The scope of the access request as described by Section 3.3
+        # http://tools.ietf.org/html/rfc6749#section-3.3
+        self.validate_scopes(request)
+
+        return request.scopes, {
+                'client_id': request.client_id,
+                'redirect_uri': request.redirect_uri,
+                'response_type': request.response_type,
+                'state': request.state,
+        }
+
+
 class OAuthServer(oauth2.AuthorizationEndpoint, oauth2.TokenEndpoint, oauth2.ResourceEndpoint):
     """An  endpoint featuring authorization code and implicit grant types."""
 
     def __init__(self, request_validator, *args, **kwargs):
-        auth_grant = OpenIDConnectAuthorizationCodeGrant(request_validator)
+        oidc_auth_grant = OpenIDConnectAuthorizationCodeGrant(request_validator)
+        oidc_implicit_grant = OpenIDConnectImplicitGrant(request_validator)
         bearer = OpenIDConnectBearerToken(request_validator)
         refresh_grant = oauth2.RefreshTokenGrant(request_validator)
-        implicit_grant = oauth2.ImplicitGrant(request_validator)
+        #implicit_grant = oauth2.ImplicitGrant(request_validator)
         client_credentials = oauth2.ClientCredentialsGrant(request_validator)
         resource_owner_password_credentials = oauth2.ResourceOwnerPasswordCredentialsGrant(request_validator)
         oauth2.AuthorizationEndpoint.__init__(self, default_response_type='code',
                 response_types={
-                    'code': auth_grant,
-                    'token': implicit_grant,
+                    'code': oidc_auth_grant,
+                    'token': oidc_implicit_grant,
+                    'id_token token': oidc_implicit_grant
                 },
                 default_token_type=bearer)
         oauth2.TokenEndpoint.__init__(self, default_grant_type='authorization_code',
                 grant_types={
-                    'authorization_code': auth_grant,
+                    'authorization_code': oidc_auth_grant,
                     'refresh_token': refresh_grant,
                     'client_credentials': client_credentials,
                     'password': resource_owner_password_credentials,
