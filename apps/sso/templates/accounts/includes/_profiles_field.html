@@ -1,8 +1,8 @@
 {% load i18n form %}
 {% if field|length %}
-<div class="row form-group {% if field.errors %}has-error{% endif %}">
-  <label class="col-sm-3 control-label">{{ field.label }}{% if field.field.required %}*{% endif %}</label> 
-  <div class="col-sm-9">   
+<div class="form-group {% if field.errors %}has-error{% endif %}">
+  <label class="control-label">{{ field.label }}{% if field.field.required %}*{% endif %}</label> 
+  <div class="dwbn-form-control">   
        {% for item in field %}
        <div class="checkbox">
            {{ item }}

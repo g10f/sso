@@ -42,61 +42,55 @@
     
     <div class="tab-content">
         <div class="tab-pane active" id="user">
-            <div>        
-                {% include 'include/_field.html' with field=form.username %}
-				{% include 'include/_field.html' with field=form.first_name %}
-				{% include 'include/_field.html' with field=form.last_name %}
-				{% include 'include/_field.html' with field=form.organisations %}
-				{% include 'include/_email_field.html' with field=form.email %}          
-				{% include 'include/_field.html' with field=form.date_registered %}
-				{% include 'include/_field.html' with field=form.country %}
-				{% include 'include/_field.html' with field=form.city %}
-				{% include 'include/_field.html' with field=form.about_me %}
-                <span class="help-block">{% trans 'A person who already has an account and can recommend the user.' %}</span>
-                {% include 'registration/include/_user_search_field.html' with field=form.known_person1_first_name %}
-                {% include 'registration/include/_user_search_field.html' with field=form.known_person1_last_name %}
-                <span class="help-block">{% trans 'A second person who already has an account and can recommend the user.' %}</span>
-                {% include 'registration/include/_user_search_field.html' with field=form.known_person2_first_name %}
-                {% include 'registration/include/_user_search_field.html' with field=form.known_person2_last_name %}
-                <span class="help-block">{% trans 'Registration processing information' %}</span>
-				{% include 'include/_field.html' with field=form.is_verified %}
-				{% include 'include/_user_field.html' with field=form.verified_by_user %}          
-                {% include 'include/_field.html' with field=form.check_back %}                      
-                {% include 'include/_field.html' with field=form.is_access_denied %}                      
-                {% include 'include/_user_field.html' with field=form.last_modified_by_user %}
-                {% include 'accounts/includes/_profiles_field.html' with field=form.role_profiles %}
-            </div>
+            {% include 'include/_field.html' with field=form.username %}
+			{% include 'include/_field.html' with field=form.first_name %}
+			{% include 'include/_field.html' with field=form.last_name %}
+			{% include 'include/_field.html' with field=form.organisations %}
+			{% include 'include/_email_field.html' with field=form.email %}          
+			{% include 'include/_field.html' with field=form.date_registered %}
+			{% include 'include/_field.html' with field=form.country %}
+			{% include 'include/_field.html' with field=form.city %}
+			{% include 'include/_field.html' with field=form.about_me %}
+            <span class="help-block">{% trans 'A person who already has an account and can recommend the user.' %}</span>
+            {% include 'registration/include/_user_search_field.html' with field=form.known_person1_first_name %}
+            {% include 'registration/include/_user_search_field.html' with field=form.known_person1_last_name %}
+            <span class="help-block">{% trans 'A second person who already has an account and can recommend the user.' %}</span>
+            {% include 'registration/include/_user_search_field.html' with field=form.known_person2_first_name %}
+            {% include 'registration/include/_user_search_field.html' with field=form.known_person2_last_name %}
+            <span class="help-block">{% trans 'Registration processing information' %}</span>
+			{% include 'include/_field.html' with field=form.is_verified %}
+			{% include 'include/_user_field.html' with field=form.verified_by_user %}          
+            {% include 'include/_field.html' with field=form.check_back %}                      
+            {% include 'include/_field.html' with field=form.is_access_denied %}                      
+            {% include 'include/_user_field.html' with field=form.last_modified_by_user %}
+            {% include 'accounts/includes/_profiles_field.html' with field=form.role_profiles %}
         </div>        
    
       <div class="tab-pane" id="app_roles">
-           <div>
-             {% with field=form.application_roles %}
-             <div class="row form-group {% if field.errors %}has-error{% endif %}">
-                <div class="col-sm-12">
-                 {{ field }}{% if field.help_text or field.errors %}<span class="help-block">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
-                </div>
-             </div>
-             {% endwith %}
-          </div>
+            {% with field=form.application_roles %}
+            <div class="form-group {% if field.errors %}has-error{% endif %}">
+               <div class="dwbn-form-control_lg">
+                {{ field }}{% if field.help_text or field.errors %}<span class="help-block">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
+               </div>
+            </div>
+            {% endwith %}
       </div>
         
-      <div class="tab-pane" id="notes">
-            <div>
-                {% with field=form.notes %}
-		          <div class="row form-group {% if field.errors %}has-error{% endif %}">
-		            <div class="col-sm-12">
-			           {{ field }}{% if field.help_text or field.errors %}<span class="help-inline">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
-			         </div>
-		          </div>
-                {% endwith %}
-            </div>
-       </div>
-  </div>
+		<div class="tab-pane" id="notes">
+			{% with field=form.notes %}
+			<div class="form-group {% if field.errors %}has-error{% endif %}">
+				<div class="dwbn-form-control_lg">
+				{{ field }}{% if field.help_text or field.errors %}<span class="help-inline">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
+				</div>
+			</div>
+			{% endwith %}
+		</div>
+    </div>
   
   
     {% if not form.user.is_active %}
      <div class="form-group">
-      <div class="col-sm-12">
+      <div class="dwbn-form-control_lg">
           <a class="btn btn-default" href="{% url 'registration:delete_user_registration' form.user.pk %}">{% trans 'Delete' %}</a>
           <button type="submit" class="btn btn-default" name="_save">{% trans 'Save' %}</button>
 	      <button type="submit" class="btn btn-default" name="_continue">{% trans 'Save and continue editing' %}</button>

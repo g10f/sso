@@ -1,8 +1,34 @@
 html {
- overflow-y: scroll;
+    overflow-y: scroll;
 }
 body {
-  padding-top: 70px;
+    padding-top: 70px;
+}
+main {
+    .make-row();
+}
+main aside {
+    .make-md-column(3);
+    .make-sm-column(4);
+}
+main section {
+    .make-md-column(9);
+    .make-sm-column(8);
+}
+div.form-group {
+    > label {
+        .make-sm-column(3);
+    }
+    > .dwbn-form-control {
+        .make-sm-column(9);
+    }
+    > .dwbn-form-control_lg {
+        .make-sm-column(12);
+    }
+    > .dwbn-form-submit {
+        .make-sm-column-offset(3);
+        .make-sm-column(9);
+    }
 }
 noscript div {
     margin-top: -20px;
@@ -22,4 +48,10 @@ noscript div {
 .dwbn-icon-user {
     margin-top: -10px;
     margin-bottom: -10px;
+}
+.dwbn-centered {
+    .make-md-column-offset(1);
+    .make-md-column(10);
+    .make-lg-column-offset(2);
+    .make-lg-column(8);
 }

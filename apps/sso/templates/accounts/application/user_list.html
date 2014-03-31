@@ -22,7 +22,6 @@
 	</div>
 </div><!-- /.row -->
 
-
 <div class="row dwbn-filter-row">
 	{% block search_form %}
 	<div class="col-sm-3">
@@ -40,8 +39,7 @@
 		    </div>
 		</form>
     </div>
-	{% endblock search_form %}
-	
+	{% endblock search_form %}	
 	
 	<div class="col-sm-9">
 		{% block country_filter %}
@@ -147,28 +145,26 @@
     </div><!-- /.col-sm-9 -->
 </div>
 
-<div class="row">
-    <div class="col-sm-12">
-        <div class="table-responsive">
-		<table class="table table-bordered table-striped">
-		  {% include "include/table_header.html" %}
-		  <tbody>
-		  {% for user in object_list %}
-		    <tr> 
-		      <td data-title="{% trans 'username' %}">
-		          <a class="" href="{% url 'accounts:update_user' user.uuid %}{{ cl.get_query_string }}">{{ user.username }}</a>
-		      </td>
-		      <td data-title="{% trans 'first name' %}">{{ user.first_name }}</td>
-		      <td data-title="{% trans 'last name' %}">{{ user.last_name }}</td>
-		      <td data-title="{% trans 'email' %}">{{ user.email }}</td>
-		      <td data-title="{% trans 'last login' %} (UTC)">{{ user.last_login|utc|date:"Y-m-d H:i" }}</td>
-		      <td data-title="{% trans 'date joined' %} (UTC)">{{ user.date_joined|utc|date:"Y-m-d H:i" }}</td>
-		    </tr>
-		  {% endfor %}
-		  </tbody>
-		</table>
-		</div>
-	{% block pagination %}{% if is_paginated %}{% pagination page_obj cl %}{% endif %}{% endblock %}
-	</div>
-</div>
+<main>
+    <div class="col-sm-12 table-responsive">
+	   <table class="table table-bordered table-striped">
+	       {% include "include/table_header.html" %}
+	       <tbody>
+	           {% for user in object_list %}
+	           <tr> 
+	               <td>
+	                   <a class="" href="{% url 'accounts:update_user' user.uuid %}{{ cl.get_query_string }}">{{ user.username }}</a>
+	               </td>
+	               <td>{{ user.first_name }}</td>
+	               <td>{{ user.last_name }}</td>
+	               <td>{{ user.email }}</td>
+	               <td>{{ user.last_login|utc|date:"Y-m-d H:i" }}</td>
+	               <td>{{ user.date_joined|utc|date:"Y-m-d H:i" }}</td>
+	           </tr>
+	           {% endfor %}
+	       </tbody>
+	   </table>
+	   {% block pagination %}{% if is_paginated %}{% pagination page_obj cl %}{% endif %}{% endblock %}
+    </div>
+</main>
 {% endblock content %}

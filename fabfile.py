@@ -12,7 +12,7 @@ env.use_ssh_config = True
 env.apps = ['sso']
 # map valid  server names to enviroments, to ensure we deploy accurately
 valid_server_names = {
-    'g10f': ['dwbn-sso.g10f.de', 'sso.g10f.de', 'vw-sso.g10f.de'],
+    'g10f': ['dwbn-sso.g10f.de', 'sso.g10f.de', 'sso.elsapro.com'],
     'elsapro': ['sso.elsapro.com'],
     'dwbn001': ['sso.dwbn.org'],
 }
@@ -233,6 +233,11 @@ def setup_user(user):
     require.files.directory('/proj', use_sudo=True, owner=user)
     require.files.directory('/envs', use_sudo=True, owner=user)    
     
+def update_dir_settings(directory):
+    sudo("chown www-data:www-data -R %s" % directory)  
+    sudo("chmod 0660 -R %s" % directory)
+    sudo("chmod +X %s" % directory)
+    
 @task 
 def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
     server_name = check_server_name(server_name)
@@ -242,7 +247,7 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
     #setup_user(user)
     require.files.directory(code_dir)
     #deploy_debian()
-    #deploy_webserver(code_dir, server_name)
+    deploy_webserver(code_dir, server_name)
     
     #fabtools.user.modify(name=user, extra_groups=['www-data'])
     #deploy_database(db_name)
@@ -288,10 +293,9 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
     
     python = '/envs/%(virtualenv)s/bin/python' % {'virtualenv': virtualenv}
     with cd(code_dir):
-        sudo("chown www-data:www-data -R  ./logs")  
-        sudo("chmod 0660 -R  ./logs")
-        sudo("chmod +X logs")
+        update_dir_settings(code_dir + '/logs')
         #migrate_data(python, server_name, code_dir, app)
         sudo("%s ./src/apps/manage.py collectstatic --noinput" % python)
         sudo("supervisorctl restart %(server_name)s" % {'server_name': server_name})
+        update_dir_settings(code_dir + '/logs')
     

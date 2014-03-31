@@ -151,34 +151,32 @@
 	</div>
 </div><!-- /.row -->
 
-<div class="row">
-    <div class="col-sm-12">
-        <div class="table-responsive">
-			<table class="table-bordered table-striped table">
-			  {% include "include/table_header.html" %}
-			  <tbody>
-			  {% for registration in object_list %}
-			    <tr> 
-			      <td data-title="{% trans 'user' %}">
-			          <a class="" href="{% url 'registration:update_user_registration' registration.pk %}{{ cl.get_query_string }}">{{ registration.user }}</a>
-			      </td>
-                  <td data-title="{% trans 'email' %}">{{ registration.user.email }}</td>
-	              <td data-title="{% trans 'center' %}">{{ registration.user.organisations.all|join:", " }}</td>
-	              <td data-title="{% trans 'country' %}">{{ registration.country }}</td>
-	              <td data-title="{% trans 'city' %}">{{ registration.city }}</td>
-                  <td data-title="{% trans 'date registered' %}">{{ registration.date_registered|utc|date:"Y-m-d H:i" }}</td>
-	              <td data-title="{% trans 'verified by user' %}">
-	              {% if registration.verified_by_user %}
-	                <a class="" href="{% url 'accounts:update_user' registration.verified_by_user.uuid %}{{ cl.get_query_string }}">{{ registration.verified_by_user }}</a>
-	              {% endif %}
-	              </td>
-                  <td data-title="{% trans 'check back' %}"><i class="{% if registration.check_back %}glyphicon glyphicon glyphicon-exclamation-sign{% endif %}"></i></td>
-			    </tr>
-			  {% endfor %}
-			  </tbody>
-			</table>
-	       {% block pagination %}{% if is_paginated %}{% pagination page_obj cl %}{% endif %}{% endblock %}
-	    </div>
-	</div>
-</div>
+<main>
+    <div class="col-sm-12 table-responsive">
+		<table class="table-bordered table-striped table">
+		  {% include "include/table_header.html" %}
+		  <tbody>
+		  {% for registration in object_list %}
+		    <tr> 
+		      <td>
+		          <a class="" href="{% url 'registration:update_user_registration' registration.pk %}{{ cl.get_query_string }}">{{ registration.user }}</a>
+		      </td>
+              <td>{{ registration.user.email }}</td>
+              <td>{{ registration.user.organisations.all|join:", " }}</td>
+              <td>{{ registration.country }}</td>
+              <td>{{ registration.city }}</td>
+              <td>{{ registration.date_registered|utc|date:"Y-m-d H:i" }}</td>
+              <td>
+              {% if registration.verified_by_user %}
+                <a class="" href="{% url 'accounts:update_user' registration.verified_by_user.uuid %}{{ cl.get_query_string }}">{{ registration.verified_by_user }}</a>
+              {% endif %}
+              </td>
+              <td><i class="{% if registration.check_back %}glyphicon glyphicon glyphicon-exclamation-sign{% endif %}"></i></td>
+		    </tr>
+		  {% endfor %}
+		  </tbody>
+		</table>
+       {% block pagination %}{% if is_paginated %}{% pagination page_obj cl %}{% endif %}{% endblock %}
+    </div>
+</main>
 {% endblock %}
