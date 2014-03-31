@@ -7,13 +7,12 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="shortcut icon" href="{% static favicon  %}" type="image/ico"/>
-    {% block style %}{% with less=False %}
-	    {% if debug and less %}
-		    <link rel="stylesheet/less" href="{% static stylesheet_less %}">
-		    <script src="{% static "js/vendor/less-1.7.0.min.js" %}"></script>
-		    <script>less.modifyVars({'@icon-font-path': '"/static/fonts/"'});</script>
-	    {% else %}
-            <link rel="stylesheet" href="{% static stylesheet %}">{% endif %}{% endwith %}{% endblock style %}
+    {% block style %}{% with less=False %}{% if debug and less %}
+    <link rel="stylesheet/less" href="{% static stylesheet_less %}">
+    <script src="{% static "js/vendor/less-1.7.0.min.js" %}"></script>
+    <script>less.modifyVars({'@icon-font-path': '"/static/fonts/"'});</script>{% else %}
+    <link rel="stylesheet" href="{% static stylesheet %}">{% endif %}{% endwith %}
+    {% endblock style %}
     {% block extrastyle %}{% endblock %}
     {% block extrahead %}{% endblock %}
     <script type="text/javascript">window.__media_prefix__ = "{% filter escapejs %}{% static "" %}{% endfilter %}";</script>
@@ -38,10 +37,10 @@
 	    {% block breadcrumb %}{% endblock %}
         
         {% block content %}
-		<div class="row">
-		    <div class="col-md-3 col-sm-4">
+        <main role="main">
+		    <aside>
 		        {% block left_content %}
-				<div class="list-group">              
+				<nav class="list-group">              
 				    {% if user.is_staff %}
 				    <a class="list-group-item" href="{% url 'admin:index' %}"><i class="glyphicon glyphicon-wrench"></i> {% trans 'administration' %}</a>
 				    {% endif %}
@@ -59,19 +58,19 @@
 				    <a class="list-group-item {% block nav_accounts_profile_class %}{% endblock %}" href="{% url 'accounts:profile' %}"><i class="glyphicon glyphicon-user"></i> {% trans 'My account' %}</a>
 				    <a class="list-group-item {% block nav_accounts_password_change_class %}{% endblock %}" href="{% url 'accounts:password_change' %}"><i class="glyphicon glyphicon-edit"></i> {% trans 'Change my password ' %}</a>
 				    {% endif %}
-				</div>
+				</nav>
 				{% endblock left_content %}
-		    </div>
-		    <div class="col-md-9 col-sm-8">
-		        <div class="">{% block right_content %}<h2>{% trans 'Home' %}</h2>{% endblock %}</div>
-		    </div>
-	  </div>
-      {% endblock content %}      
+		    </aside>
+		    <section>
+		        {% block right_content %}<h2>{% trans 'Home' %}</h2>{% endblock %}
+		    </section>
+	    </main>
+        {% endblock content %}      
 
       <hr>
       {% block footer %}
       <footer>
-        <ul class="dwbn-footer-links">
+        <ul>
             <li><a href="{% url 'about' %}">{% trans 'About us' %}</a></li>
             <li class="text-muted">·</li>
             <li><a href="{% url 'accounts:contact' %}">{% trans 'Feedback' %}</a></li>

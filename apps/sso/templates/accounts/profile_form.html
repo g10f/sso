@@ -15,7 +15,6 @@
 
 
 {% block form %}
-
 <form enctype="multipart/form-data" class="form-horizontal" method="post">{% csrf_token %}	
     <div class="">
 	    <h3>{% trans 'My account' %}</h3>
@@ -39,10 +38,10 @@
     {% include 'include/_field.html' with field=form.email %} 
     {% include 'include/_picture_field.html' with field=form.picture %} 
     
-    <div class="row form-group">
-	    <div class="col-sm-offset-3 col-sm-9">
-            <a class="btn btn-default" href="{% url 'accounts:delete_profile' %}">{% trans 'Delete' %}</a>
+    <div class="form-group">
+	    <div class="dwbn-form-submit">
 	        <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
+            <a class="btn btn-default" href="{% url 'accounts:delete_profile' %}">{% trans 'Delete' %}</a>
 	    </div>
     </div>
 	

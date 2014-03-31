@@ -41,10 +41,9 @@
     
      <div class="tab-content">
 		<div class="tab-pane active" id="user"> 
-		  <div>      
-		   <div class="row form-group">
-		     <label class="col-sm-3 control-label">{% trans 'picture' %}</label>    
-		     <div class="col-sm-9 dwbn-form-control">
+		   <div class="form-group">
+		     <label class="control-label">{% trans 'picture' %}</label>    
+		     <div class="dwbn-form-control">
 		      {% thumbnail form.user.picture "108x108" as im %}<img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">{% endthumbnail %}          
 		     </div>
 		   </div>
@@ -60,9 +59,9 @@
 		   {% if perms.registration.change_registrationprofile %}
 		   {% with registrationprofile=form.user.registrationprofile %}
 		   {% if registrationprofile %}        
-		   <div class="row form-group">
-		     <label class="col-sm-3 control-label"></label>    
-		     <div class="col-sm-9 dwbn-form-control">
+		   <div class="form-group">
+		     <label class="control-label"></label>    
+		     <div class="dwbn-form-control">
 		        <a href="{% url 'registration:update_user_registration' registrationprofile.pk %}" >{% trans 'Registration' %}</a>
 		     </div>
 		   </div>
@@ -70,37 +69,32 @@
 		   {% endwith %}
 		   {% endif %}
 		   
-		  </div>
 		</div>
 	    <div class="tab-pane" id="app_roles">
-	       <div>
 	        {% with field=form.application_roles %}
-	        <div class="row form-group {% if field.errors %}has-error{% endif %}">
-	          <div class="col-sm-12">
+	        <div class="form-group {% if field.errors %}has-error{% endif %}">
+	          <div class="dwbn-form-control_lg">
 	            {{ field }}{% if field.help_text or field.errors %}<span class="help-inline">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
 	          </div>
 	        </div>
 	        {% endwith %}
-	      </div>
 	    </div>
 		<div class="tab-pane" id="notes">
-		     <div>
-		         {% with field=form.notes %}
-		           <div class="row form-group {% if field.errors %}has-error{% endif %}">
-		             <div class="col-sm-12">
-		                {{ field }}{% if field.help_text or field.errors %}<span class="help-inline">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
-		              </div>
-		           </div>
-		         {% endwith %}
-		     </div>
+	         {% with field=form.notes %}
+	           <div class="form-group {% if field.errors %}has-error{% endif %}">
+	             <div class="dwbn-form-control_lg">
+	                {{ field }}{% if field.help_text or field.errors %}<span class="help-inline">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
+	              </div>
+	           </div>
+	         {% endwith %}
 		</div>
      
  
     </div><!-- /.tab-content -->
 
      <div class="form-group">
-      <div class="col-sm-12">
-          <a class="btn btn-default" href="{% url 'accounts:delete_user' form.user.pk %}">{% trans 'Delete' %}</a>
+      <div class="dwbn-form-control_lg">
+         <a class="btn btn-default" href="{% url 'accounts:delete_user' form.user.pk %}">{% trans 'Delete' %}</a>
          <button type="submit" class="btn btn-default" name="_addanother" {{ onclick_attrib }}>{% trans 'Save and add another' %}</button>
          <button type="submit" class="btn btn-default" name="_continue" {{ onclick_attrib }}>{% trans 'Save and continue editing' %}</button>
          <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
