@@ -139,6 +139,11 @@ os.environ['DEBUG'] = ""
 """
 
 @task
+def compile_less(version='1.0.1'):
+    for style in ['default', 'dwbn', 'cerulean', 'slate', 'vw']:
+        local('lessc ./apps/sso/static/less/%(style)s.less ./apps/sso/static/css/%(style)s-%(version)s.css' %{'style': style, 'version': version})
+
+@task
 def compilemessages():
     for app in env.apps:
         with lcd('apps/%s' % app):
