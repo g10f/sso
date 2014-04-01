@@ -5791,16 +5791,16 @@ main aside {
   padding-left: 15px;
   padding-right: 15px;
 }
-@media (min-width: 992px) {
-  main aside {
-    float: left;
-    width: 25%;
-  }
-}
 @media (min-width: 768px) {
   main aside {
     float: left;
     width: 33.33333333%;
+  }
+}
+@media (min-width: 992px) {
+  main aside {
+    float: left;
+    width: 25%;
   }
 }
 main section {
@@ -5809,16 +5809,16 @@ main section {
   padding-left: 15px;
   padding-right: 15px;
 }
-@media (min-width: 992px) {
-  main section {
-    float: left;
-    width: 75%;
-  }
-}
 @media (min-width: 768px) {
   main section {
     float: left;
     width: 66.66666667%;
+  }
+}
+@media (min-width: 992px) {
+  main section {
+    float: left;
+    width: 75%;
   }
 }
 div.form-group > label {
