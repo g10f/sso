@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import json
-
 from django.views.decorators.cache import never_cache, cache_page
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView

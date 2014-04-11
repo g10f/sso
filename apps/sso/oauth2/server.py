@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import time
 import json
+import calendar
 import urlparse
 from django.contrib.auth import authenticate, get_user_model
 from django.core import signing
@@ -51,12 +52,14 @@ def default_idtoken_generator(request, max_age=MAX_AGE, refresh_token=False):
     else:
         domain = get_domain_from_absolute_uri(request.uri)
         user = request.user
+        auth_time = int(calendar.timegm(user.last_login.utctimetuple()))
         claim_set = {
             'iss': domain,
             'sub': user.uuid,
             'aud': request.client.client_id,
             'exp': int(time.time()) + max_age,
             'iat': int(time.time()),
+            'auth_time': auth_time,  # required when max_age is in the request
             'email': user.email,  # custom
             'name': user.username,  # custom
         }

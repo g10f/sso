@@ -2,6 +2,7 @@
 import urlparse
 import json
 import base64
+from time import sleep
 
 from django.http import QueryDict, SimpleCookie
 from django.test import TestCase
@@ -60,16 +61,21 @@ class OAuth2BaseTestCase(TestCase):
         self.client.logout()
         self.client.cookies = SimpleCookie()
         
-    def login_and_get_code(self, client_id=None):       
+    def login_and_get_code(self, client_id=None, max_age=None, wait=0):       
         self.client.login(username='GunnarScherf', password='gsf')
+        if wait > 0:
+            sleep(wait)
+ 
         authorize_data = {
             'scope': "openid profile email",
             'state': self._state,
             'redirect_uri': "http://localhost",
             'response_type': "code",
-            'client_id': client_id if client_id else self._client_id
+            'client_id': client_id if client_id else self._client_id,
         }
-        
+        if max_age:
+            authorize_data['max_age'] = max_age
+            
         response = self.client.get(reverse('oauth2:authorize'), data=authorize_data)
         self.assertEqual(response.status_code, 302)
         query_dict = get_query_dict(response['Location'])
@@ -120,6 +126,25 @@ class OAuth2Tests(OAuth2BaseTestCase):
         response = self.client.get(response['Location'])
         self.assertEqual(response.context['error'], 'mismatching_redirect_uri')
 
+    def test_login_and_get_code_max_age_failure(self):
+        self.client.login(username='GunnarScherf', password='gsf')
+        max_age = 2
+        sleep(max_age)
+        authorize_data = {
+            'scope': "openid profile email",
+            'state': self._state,
+            'redirect_uri': "http://localhost",
+            'response_type': "code",
+            'client_id': self._client_id,
+            'max_age': max_age
+        }
+            
+        response = self.client.get(reverse('oauth2:authorize'), data=authorize_data)
+        # check if the response is a redirect to the login page
+        self.assertEqual(response.status_code, 302)
+        path = urlparse.urlsplit(response['Location'])[2]
+        self.assertEqual(path, reverse('accounts:login'))
+        
     def test_get_token(self):
         code = self.login_and_get_code()
         token_data = {
@@ -127,11 +152,13 @@ class OAuth2Tests(OAuth2BaseTestCase):
             'redirect_uri': "http://localhost",
             'client_secret': "geheim",
             'client_id': self._client_id,
-            'code': code
+            'code': code,
         }
         token_response = self.client.post(reverse('oauth2:token'), token_data)
         self.assertEqual(token_response.status_code, 200)
         self.assertEqual(token_response['Content-Type'], 'application/json;charset=UTF-8')
+        self.assertEqual(token_response['Cache-Control'], 'no-store')
+        self.assertEqual(token_response['Pragma'], 'no-cache')
         
         token = json.loads(token_response.content)  
         self.assertIn('access_token', token)
