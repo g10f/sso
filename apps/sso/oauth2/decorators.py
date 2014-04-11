@@ -11,6 +11,7 @@ from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.conf import settings
 from django.utils.encoding import force_str
 from django.shortcuts import resolve_url
+from django.utils import timezone
 
 import logging
 
@@ -54,16 +55,19 @@ def redirect_to_login_and_extract_display_param(next, login_url=None, redirect_f
 def login_required(view_func):
     """
     Copy of django.contrib.auth.decorators.login_required
-    with the following change:
-    If there is a display parameter in the url, this parameter is extracted and 
+    with the following changes:
+    1. If there is a display parameter in the url, this parameter is extracted and 
     gets passed to the login url. 
     The display parameter changes the layout of the login form
+    2. if there is a max_age param check ...
     """
 
     @wraps(view_func, assigned=available_attrs(view_func))
     def _wrapped_view(request, *args, **kwargs):
         if request.user.is_authenticated():
-            return view_func(request, *args, **kwargs)
+            max_age = request.POST.get('max_age') if request.POST.get('max_age') else request.GET.get('max_age')
+            if not max_age or (int(max_age) > (timezone.now() - request.user.last_login).total_seconds()):
+                return view_func(request, *args, **kwargs)
         
         path = request.build_absolute_uri()
         # urlparse chokes on lazy objects in Python 3, force to str
