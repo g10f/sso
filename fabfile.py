@@ -140,7 +140,7 @@ os.environ['DEBUG'] = ""
 """
 
 @task
-def compile_less(version='1.0.1'):
+def compile_less(version='1.0.2'):
     for style in ['default', 'dwbn', 'cerulean', 'slate', 'vw']:
         local('lessc ./apps/sso/static/less/%(style)s.less ./apps/sso/static/css/%(style)s-%(version)s.css' %{'style': style, 'version': version})
 
@@ -174,6 +174,8 @@ def perms():
 
 def migrate_data(python, server_name, code_dir, app):
     sudo("%s ./src/apps/manage.py syncdb --noinput" % python, user='www-data', group='www-data')
+    sudo("%s ./src/apps/manage.py migrate accounts 0001 --fake" % python, user='www-data', group='www-data')
+    sudo("%s ./src/apps/manage.py migrate accounts" % python, user='www-data', group='www-data')
     #sudo("%s ./src/apps/manage.py migrate accounts" % python, user='www-data', group='www-data')
     #sudo("%s ./src/apps/manage.py migrate registration 0001 --fake" % python, user='www-data', group='www-data')
     #sudo("%s ./src/apps/manage.py migrate registration" % python, user='www-data', group='www-data')

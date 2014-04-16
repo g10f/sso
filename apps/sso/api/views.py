@@ -122,7 +122,7 @@ def get_user_list(request):
     qs = get_user_model().objects.filter(is_active=True).order_by('username')
     username = request.GET.get('q', None)
     if username:
-        qs = qs.filter(user__username__icontains=username)
+        qs = qs.filter(username__icontains=username)
     organisation__uuid = request.GET.get('organisation__uuid', None)
     if organisation__uuid:
         qs = qs.filter(organisations__uuid=organisation__uuid)

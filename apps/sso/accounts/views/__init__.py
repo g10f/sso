@@ -24,9 +24,10 @@ from django.utils.translation import ugettext as _
 from throttle.decorators import throttle
 from sso.auth.forms import EmailAuthenticationForm
 from sso.oauth2.models import get_oauth2_cancel_url
+from sso.forms.helpers import ErrorList, ChangedDataList, log_change 
 
-from ..models import Application
-from ..forms import PasswordResetForm, SetPasswordForm, PasswordChangeForm, ContactForm
+from ..models import Application, User, UserAddress, UserPhoneNumber
+from ..forms import PasswordResetForm, SetPasswordForm, PasswordChangeForm, ContactForm, AddressForm, PhoneNumberForm
 from ..forms import UserSelfProfileForm, UserSelfProfileDeleteForm
 
 LOGIN_FORM_KEY = 'login_form_key'
@@ -202,19 +203,65 @@ def login(request):
     }
     return TemplateResponse(request, template_name, context)
 
+from django.forms.models import inlineformset_factory
 
 @login_required
 def profile(request):
+    address_extra = 0
+    phonenumber_extra = 1
     user = request.user
+    address_count = user.useraddress_set.count()
+    if address_count == 0: 
+        address_extra = 1
+    
+    AddressInlineFormSet = inlineformset_factory(User, UserAddress, AddressForm, extra=address_extra, max_num=3)
+    PhoneNumberInlineFormSet = inlineformset_factory(User, UserPhoneNumber, PhoneNumberForm, extra=phonenumber_extra, max_num=6)
+    
     if request.method == 'POST':
         form = UserSelfProfileForm(request.POST, instance=user, files=request.FILES)
-        if form.is_valid():
-            form.save()
-            messages.success(request, _('Thank you. Your settings were safed.'))
+        
+        address_inline_formset = AddressInlineFormSet(request.POST, instance=user)
+        phonenumber_inline_formset = PhoneNumberInlineFormSet(request.POST, instance=user)
+        
+        if form.is_valid() and address_inline_formset.is_valid() and phonenumber_inline_formset.is_valid():
+            form.save()  
+            
+            address_inline_formset.save()                        
+            phonenumber_inline_formset.save()
+            
+            UserAddress.ensure_single_primary(user)
+            UserPhoneNumber.ensure_single_primary(user)
+                        
+            formsets = [address_inline_formset, phonenumber_inline_formset] 
+            change_message = ChangedDataList(form, formsets).change_message() 
+            log_change(request, user, change_message)
+            
+            messages.success(request, _('Thank you. Your settings were saved.'))
+
             return redirect('accounts:profile')
     else:
+        address_inline_formset = AddressInlineFormSet(instance=user)
+        phonenumber_inline_formset = PhoneNumberInlineFormSet(instance=user)
         form = UserSelfProfileForm(instance=user)
-    dictionary = {'form': form}
+
+    phonenumber_inline_formset.forms += [phonenumber_inline_formset.empty_form]    
+    address_inline_formset.forms += [address_inline_formset.empty_form]    
+        
+    formsets = [address_inline_formset, phonenumber_inline_formset] 
+    
+    media = form.media
+    for fs in formsets:
+        media = media + fs.media
+    
+    errors = ErrorList(form, formsets)
+    active = 'profile'
+    if errors and form.is_valid():  # set the first formset with an error as active
+        for formset in formsets:
+            if not formset.is_valid():
+                active = formset.prefix
+                break
+
+    dictionary = {'form': form, 'errors': errors, 'formsets': formsets, 'media': media, 'active': active}
     return render(request, 'accounts/profile_form.html', dictionary)
 
 

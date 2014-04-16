@@ -22,6 +22,7 @@ from sorl import thumbnail
 from l10n.models import Country
 
 from sso.fields import UUIDField
+from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin
 from sso.utils import disable_for_loaddata
 from current_user.models import CurrentUserField
 import logging
@@ -32,29 +33,6 @@ logger = logging.getLogger(__name__)
 SUPERUSER_ROLE = 'Superuser'
 #STAFF_ROLE = 'Staff'
 #USER_ROLE = 'User'
-
-class AbstractBaseModelManager(models.Manager):
-    def get_by_natural_key(self, uuid):
-        return self.get(uuid=uuid)
-
-
-class AbstractBaseModel(models.Model):
-    uuid = UUIDField(version=4, unique=True, editable=True)
-    last_modified = models.DateTimeField(_('last modified'), auto_now=True, default=now)
-    name = models.CharField(_("name"), max_length=255)
-    objects = AbstractBaseModelManager()
-    
-    def natural_key(self):
-        return (self.uuid, )
-
-    def __unicode__(self):
-        return u"%s" % (self.name)
-    
-    class Meta:
-        abstract = True
-        ordering = ['name']
-        get_latest_by = 'last_modified'
-        
 
 class ApplicationManager(models.Manager):
     def get_by_natural_key(self, uuid):
@@ -71,6 +49,11 @@ class Application(models.Model):
     is_active = models.BooleanField(_('active'), default=True, help_text=_('Designates whether this application should be provided.'))
     objects = ApplicationManager()
     
+    class Meta:
+        ordering = ['order', 'title']
+        verbose_name = _("application")
+        verbose_name_plural = _("applications")
+        
     def link(self):
         if self.url:
             return u'<a href="%s">%s</a>' % (self.url, self.title)
@@ -84,11 +67,6 @@ class Application(models.Model):
     def __unicode__(self):
         return u"%s" % (self.title)
 
-    class Meta:
-        ordering = ['order', 'title']
-        verbose_name = _("application")
-        verbose_name_plural = _("applications")
-        
 
 class RoleManager(models.Manager):
     def get_by_natural_key(self, name):
@@ -101,15 +79,15 @@ class Role(models.Model):
     group = models.ForeignKey(Group, blank=True, null=True, help_text=_('Associated group for SSO internal permission management.'))
     objects = RoleManager()
     
+    class Meta:
+        ordering = ['order', 'name']    
+
     def natural_key(self):
         return (self.name, )
 
     def __unicode__(self):
         return u"%s" % (self.name)
     
-    class Meta:
-        ordering = ['order', 'name']    
-
 
 class ApplicationRoleManager(models.Manager):
     def get_by_natural_key(self, uuid, name):
@@ -125,20 +103,21 @@ class ApplicationRole(models.Model):
         help_text=_('Designates that the role can inherited by a global admin.'))
     objects = ApplicationRoleManager()
      
-    def natural_key(self):
-        return (self.application.natural_key(), self.role.natural_key())
-
     class Meta:
         ordering = ['application', 'role']
         unique_together = (("application", "role"),)
         verbose_name = _('application role')
         verbose_name_plural = _('application roles')
     
+    def natural_key(self):
+        return (self.application.natural_key(), self.role.natural_key())
+
     def __unicode__(self):
         return u"%s - %s" % (self.application, self.role)
 
 
 class RoleProfile(AbstractBaseModel):
+    name = models.CharField(_("name"), max_length=255)
     application_roles = models.ManyToManyField(ApplicationRole, help_text=_('Associates a group of application roles that are usually assigned together.'))
     order = models.IntegerField(default=0, help_text=_('Overwrites the alphabetic order.'))
     is_inheritable_by_org_admin = models.BooleanField(_('inheritable by organisation admin'), default=True,
@@ -151,30 +130,46 @@ class RoleProfile(AbstractBaseModel):
         verbose_name = _('role profile')
         verbose_name_plural = _('role profiles')
 
+    def __unicode__(self):
+        return u"%s" % (self.name)
+
 
 class Region(AbstractBaseModel):
-    pass
+    name = models.CharField(_("name"), max_length=255)
+
+    class Meta(AbstractBaseModel.Meta):
+        ordering = ['name']
+
+    def __unicode__(self):
+        return u"%s" % (self.name)
 
  
 class Organisation(AbstractBaseModel):
+    name = models.CharField(_("name"), max_length=255)
     iso2_code = models.CharField(_('ISO alpha-2'), max_length=2)
     last_update = models.DateTimeField(auto_now=True, default=now)
     email = models.EmailField(_('e-mail address'), blank=True)
     region = models.ForeignKey(Region, blank=True, null=True)
 
-    def __unicode__(self):
-        return u"%s (%s)" % (self.name, self.iso2_code)
-    
     class Meta(AbstractBaseModel.Meta):
+        ordering = ['name']
         verbose_name = _('center')
         verbose_name_plural = _('centers')
 
+    def __unicode__(self):
+        return u"%s (%s)" % (self.name, self.iso2_code)
+    
 
 def get_filename(filename):
     return os.path.normpath(get_valid_filename(os.path.basename(filename)))
 
 
 class User(AbstractUser):
+    GENDER_CHOICES = [
+        ('m', _('male')),
+        ('f', _('female'))
+    ]
+    
     def generate_filename(self, filename):
         return u'image/%s/%s' % (self.uuid, get_filename(filename.encode('ascii', 'replace'))) 
 
@@ -189,6 +184,16 @@ class User(AbstractUser):
     is_subscriber = models.BooleanField(_('subscriber'), default=False, help_text=_('Designates whether this user is a DWBN News subscriber.'))
     picture = thumbnail.ImageField(_('picture'), upload_to=generate_filename, blank=True)
     notes = models.TextField(_("Notes"), blank=True, max_length=1024)
+    gender = models.CharField(_('gender'), max_length=255, choices=GENDER_CHOICES, blank=True)
+    dob = models.DateField(_("date of birth"), blank=True, null=True)
+    homepage = models.URLField(_("homepage"), max_length=512, blank=True)
+
+    class Meta(AbstractUser.Meta):
+        permissions = (
+            ("change_reg_users", "Can manage region users"),
+            ("change_org_users", "Can manage organisation users"),
+            ("change_all_users", "Can manage all users"),
+        )
 
     def get_apps(self):
         q = Q(applicationrole__user__uuid=self.uuid) & Q(is_active=True) 
@@ -223,7 +228,7 @@ class User(AbstractUser):
                     
         q = Q(id__in=application_roles.values_list('id', flat=True))
         
-        # additionaly all roles of application where the user is a superuser
+        # additionally all roles of application where the user is a superuser
         for application_role in application_roles:
             if application_role.role.name == SUPERUSER_ROLE:
                 q |= Q(application__id=application_role.application.id)
@@ -337,13 +342,49 @@ class User(AbstractUser):
             except ObjectDoesNotExist:
                 logger.warning("Application %s does not exist" % app_roles_dict_item['uuid'])
 
-    class Meta(AbstractUser.Meta):
-        permissions = (
-            ("change_reg_users", "Can manage region users"),
-            ("change_org_users", "Can manage organisation users"),
-            ("change_all_users", "Can manage all users"),
-        )
 
+class UserAddress(AbstractBaseModel, AddressMixin):
+    user = models.ForeignKey(User)
+
+    class Meta(AbstractBaseModel.Meta, AddressMixin.Meta):
+        unique_together = (("user", "address_type"),)
+    
+    @classmethod
+    def ensure_single_primary(cls, user):
+        user_items = user.useraddress_set.filter(user=user)
+        primary_items = user_items.filter(primary=True)
+        if (primary_items.count() > 1):
+            for item in primary_items[1:]:
+                item.primary = False
+                item.save()
+        elif primary_items.count() == 0:
+            item = user_items.first()
+            if item:
+                item.primary = True
+                item.save()
+                
+
+class UserPhoneNumber(AbstractBaseModel, PhoneNumberMixin):
+    user = models.ForeignKey(User)
+
+    class Meta(AbstractBaseModel.Meta, PhoneNumberMixin.Meta):
+        unique_together = (("user", "phone_type"),)
+        pass
+    
+    @classmethod
+    def ensure_single_primary(cls, user):
+        user_items = user.userphonenumber_set.filter(user=user)
+        primary_items = user_items.filter(primary=True)
+        if (primary_items.count() > 1):
+            for item in primary_items[1:]:
+                item.primary = False
+                item.save()
+        elif primary_items.count() == 0:
+            item = user_items.first()
+            if item:
+                item.primary = True
+                item.save()
+    
 
 class UserAssociatedSystem(models.Model):
     """
