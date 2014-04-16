@@ -7,7 +7,8 @@ from django.conf import settings
 #from django.contrib.auth.signals import user_logged_in
 from django.http import QueryDict
 from django.utils.translation import ugettext_lazy as _
-from sso.accounts.models import Application, AbstractBaseModel
+from sso.accounts.models import Application
+from sso.models import AbstractBaseModel
 from django.utils.crypto import get_random_string
 
 import logging
@@ -69,6 +70,7 @@ CLIENT_TYPES = [
 ]
 
 class Client(AbstractBaseModel):
+    name = models.CharField(_("name"), max_length=255)
     application = models.ForeignKey(Application, verbose_name=_('application'), blank=True, null=True)
     redirect_uris = models.TextField(_('redirect uris'), blank=True)
     default_redirect_uri = models.CharField(_('default redirect uri'), max_length=2047, blank=True)
@@ -77,6 +79,12 @@ class Client(AbstractBaseModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'), null=True, blank=True, help_text="Associated user, required for Client Credentials Grant")
     type = models.CharField(_('type'), max_length=255, choices=CLIENT_TYPES, default='web')
     
+    class Meta(AbstractBaseModel.Meta):
+        ordering = ['name']
+        
+    def __unicode__(self):
+        return u"%s" % (self.name)
+            
     @property
     def client_id(self):
         return self.uuid

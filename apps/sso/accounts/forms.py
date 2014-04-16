@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import re
+import datetime
+
 from django import forms 
 
 from django.conf import settings
@@ -18,13 +20,14 @@ from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.forms import PasswordResetForm as DjangoPasswordResetForm
 from django.contrib.auth.forms import SetPasswordForm as DjangoSetPasswordForm
 from django.contrib.auth.tokens import default_token_generator
+#from django.contrib.staticfiles.templatetags.staticfiles import static
 
 from captcha.fields import ReCaptchaField
 from passwords.fields import PasswordField
-from .models import Organisation
+from .models import Organisation, User, UserAddress, UserPhoneNumber
 from sso.registration import default_username_generator
 from sso.registration.forms import UserRegistrationCreationForm
-from sso.forms import bootstrap, mixins
+from sso.forms import bootstrap, mixins, BLANK_CHOICE_DASH
 
 import logging
 logger = logging.getLogger(__name__)
@@ -32,7 +35,7 @@ logger = logging.getLogger(__name__)
 
 class ContactForm(forms.Form):
     name = forms.CharField(label=_("Name"), max_length=100, widget=bootstrap.TextInput())
-    email = forms.EmailField(label=_("e-mail address"), max_length=75, widget=bootstrap.TextInput())
+    email = forms.EmailField(label=_("E-mail address"), max_length=75, widget=bootstrap.TextInput())
     subject = forms.CharField(label=_("Subject"), widget=bootstrap.TextInput())
     message = forms.CharField(label=_("Message"), widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 5}))
 
@@ -168,9 +171,9 @@ class UserAddForm(forms.ModelForm):
         'password_mismatch': _("The two password fields didn't match."),
         'duplicate_email': _("A user with that email address already exists."),
     }
-    email = forms.EmailField(label=_('Email'), required=True, widget=bootstrap.EmailInput())
-    first_name = forms.CharField(label=_('first name'), required=True, widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('first name'))}))
-    last_name = forms.CharField(label=_('last name'), required=True, widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('last name'))}))
+    email = forms.EmailField(label=_('E-mail'), required=True, widget=bootstrap.EmailInput())
+    first_name = forms.CharField(label=_('First name'), required=True, widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('first name'))}))
+    last_name = forms.CharField(label=_('Last name'), required=True, widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('last name'))}))
     notes = forms.CharField(label=_("Notes"), required=False, max_length=1024, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
 
     class Meta:
@@ -239,10 +242,81 @@ class UserAddFormExt(UserAddForm):
         return user
     
 
+class BaseForm(forms.ModelForm):
+    """
+    @property
+    def media(self):
+        media = super(BaseForm, self).media
+        js = ['inlines.js']
+        return forms.Media(js=[static('js/%s' % url) for url in js]) + media
+    """
+    def save(self, commit=True):
+        if self.has_changed():
+            return super(BaseForm, self).save(commit)
+        else:
+            return self.instance
+
+class AddressForm(BaseForm):
+    class Meta:
+        model = UserAddress
+        fields = ('primary', 'address_type', 'addressee', 'street_address', 'city', 'postal_code', 'country'  # , 'state'
+                  ) 
+        widgets = {
+                   'primary': bootstrap.CheckboxInput(),
+                   'address_type': bootstrap.Select(),
+                   'addressee': bootstrap.TextInput(attrs={'size': 50}),
+                   'street_address': bootstrap.Textarea(attrs={'cols': 50, 'rows': 2}),
+                   'city': bootstrap.TextInput(attrs={'size': 50}),
+                   'postal_code': bootstrap.TextInput(attrs={'size': 50}),
+                   'country': bootstrap.Select()
+                   }
+    
+    def opts(self):
+        # i need the model verbose_name in the html form, is there a better way?
+        return self._meta.model._meta
+    
+    def template(self):
+        return 'edit_inline/stacked.html'
+
+
+class PhoneNumberForm(BaseForm):
+    class Meta:
+        model = UserPhoneNumber
+        fields = ('phone_type', 'phone', 'primary') 
+        widgets = {
+                   'phone_type': bootstrap.Select(),
+                   'phone': bootstrap.TextInput(attrs={'size': 50}),
+                   'primary': bootstrap.CheckboxInput()
+                   }
+    
+    def opts(self):
+        # i need the model verbose_name in the html form, is there a better way?
+        return self._meta.model._meta
+    
+    def template(self):
+        return 'edit_inline/tabular.html'
+
+
 class UserSelfProfileForm(forms.Form):
     """
     Form for the user himself to change editable values
     """
+    username = forms.CharField(label=_("Username"), required=False, widget=bootstrap.StaticInput())
+    organisation = forms.Field()  # place holder for field order when dynamically inserting organisation in __init__
+    first_name = forms.CharField(label=_('First name'), max_length=30, widget=bootstrap.TextInput())
+    last_name = forms.CharField(label=_('Last name'), max_length=30, widget=bootstrap.TextInput())
+    email = forms.EmailField(label=_('E-mail address'), widget=bootstrap.EmailInput())
+    picture = forms.ImageField(label=_('Picture'), required=False, widget=bootstrap.ImageWidget())
+    gender = forms.ChoiceField(label=_('Gender'), required=False, choices=(BLANK_CHOICE_DASH + User.GENDER_CHOICES), widget=bootstrap.Select())
+    dob = forms.DateTimeField(label=_('Date of birth'), required=False, 
+                widget=bootstrap.SelectDateWidget(years=range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1), required=False))
+    homepage = forms.URLField(label=_('Homepage'), required=False, max_length=512, widget=bootstrap.TextInput())
+
+    error_messages = {
+        'duplicate_username': _("A user with that username already exists."),
+        'duplicate_email': _("A user with that email address already exists."),
+    }
+
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('instance')
         object_data = model_to_dict(self.user)
@@ -264,18 +338,7 @@ class UserSelfProfileForm(forms.Form):
                                                 help_text=_('You can set this value only once.'), required=False)
         if organisation_field:
             self.fields['organisation'] = organisation_field
-        
-    error_messages = {
-        'duplicate_username': _("A user with that username already exists."),
-        'duplicate_email': _("A user with that email address already exists."),
-    }
-    username = forms.CharField(label=_("Username"), required=False, widget=bootstrap.StaticInput())
-    organisation = forms.Field()  # place holder for field order when dynamically inserting organisation in __init__
-    first_name = forms.CharField(label=_('first name'), max_length=30, widget=bootstrap.TextInput())
-    last_name = forms.CharField(label=_('last name'), max_length=30, widget=bootstrap.TextInput())
-    email = forms.EmailField(label=_('e-mail address'), widget=bootstrap.EmailInput())
-    picture = forms.ImageField(label=_('picture'), required=False, widget=bootstrap.ImageWidget())
-    
+
     def clean_email(self):
         email = self.cleaned_data["email"]
         qs = get_user_model().objects.filter(email__iexact=email).exclude(pk=self.user.pk)
@@ -315,6 +378,9 @@ class UserSelfProfileForm(forms.Form):
         self.user.first_name = cd['first_name']
         self.user.last_name = cd['last_name']
         self.user.picture = cd['picture'] if cd['picture'] else None
+        self.user.dob = cd.get('dob', None)
+        self.user.gender = cd['gender']
+        self.user.homepage = cd['homepage']
         self.user.save()
         
         organisation = cd.get('organisation')
@@ -338,11 +404,12 @@ class UserSelfProfileDeleteForm(forms.Form):
 class BasicUserChangeForm(forms.ModelForm):
     class Meta:
         model = get_user_model()
+        fields = '__all__'
 
     error_messages = {
         'duplicate_email': _("That email address is already in use."),
     }
-
+    
     def clean_email(self):
         email = self.cleaned_data["email"]
         qs = get_user_model().objects.filter(email__iexact=email).exclude(pk=self.instance.pk)
@@ -373,9 +440,6 @@ class AdminUserChangeForm(UserChangeForm, BasicUserChangeForm):
         exclude.append('username')
         return exclude    
 
-    class Meta:
-        model = get_user_model()
-
 
 class UserRegistrationCreationForm2(UserRegistrationCreationForm):
     """
@@ -385,7 +449,7 @@ class UserRegistrationCreationForm2(UserRegistrationCreationForm):
         'email_mismatch': _("The two email fields didn't match."),
     })
     organisation = forms.ModelChoiceField(queryset=Organisation.objects.all(), required=False, label=_("Center"), widget=bootstrap.Select())
-    email2 = forms.EmailField(label=_('repeat your Email'), required=True, widget=bootstrap.EmailInput())
+    email2 = forms.EmailField(label=_('Repeat your Email'), required=True, widget=bootstrap.EmailInput())
     # for Bots. If you enter anything in this field you will be treated as a robot
     state = forms.CharField(label=_('State'), required=False, widget=bootstrap.HiddenInput())
     
@@ -459,10 +523,11 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
         'duplicate_email': _("A user with that email address already exists."),
     }
     username = forms.CharField(label=_("Username"), max_length=30, widget=bootstrap.TextInput())
-    first_name = forms.CharField(label=_('first name'), max_length=30, widget=bootstrap.TextInput())
-    last_name = forms.CharField(label=_('last name'), max_length=30, widget=bootstrap.TextInput())
-    email = forms.EmailField(label=_('e-mail address'), widget=bootstrap.EmailInput())
-    is_active = forms.BooleanField(label=_('active'), help_text=_('Designates whether this user should be treated as active. Unselect this instead of deleting accounts.'), required=False)
+    first_name = forms.CharField(label=_('First name'), max_length=30, widget=bootstrap.TextInput())
+    last_name = forms.CharField(label=_('Last name'), max_length=30, widget=bootstrap.TextInput())
+    email = forms.EmailField(label=_('E-mail address'), widget=bootstrap.EmailInput())
+    is_active = forms.BooleanField(label=_('Active'), help_text=_('Designates whether this user should be treated as active. Unselect this instead of deleting accounts.'), 
+                                   widget=bootstrap.CheckboxInput(), required=False)
     organisations = forms.ModelChoiceField(queryset=None, required=False, label=_("Organisation"), widget=bootstrap.Select())
     application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
     notes = forms.CharField(label=_("Notes"), required=False, max_length=1024, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))

@@ -61,8 +61,8 @@ class OAuth2BaseTestCase(TestCase):
         self.client.logout()
         self.client.cookies = SimpleCookie()
         
-    def login_and_get_code(self, client_id=None, max_age=None, wait=0):       
-        self.client.login(username='GunnarScherf', password='gsf')
+    def login_and_get_code(self, client_id=None, max_age=None, wait=0, username='GunnarScherf', password='gsf'):       
+        self.client.login(username=username, password=password)
         if wait > 0:
             sleep(wait)
  
@@ -84,8 +84,8 @@ class OAuth2BaseTestCase(TestCase):
         self.assertDictContainsSubset({'state': self._state}, query_dict)
         return query_dict['code']
 
-    def get_authorization(self, client_id=None):
-        code = self.login_and_get_code(client_id)
+    def get_authorization(self, client_id=None, username='GunnarScherf', password='gsf'):
+        code = self.login_and_get_code(client_id, username=username, password=password)
         token_data = {
             'grant_type': "authorization_code",
             'redirect_uri': "http://localhost",

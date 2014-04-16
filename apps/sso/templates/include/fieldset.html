@@ -1,0 +1,11 @@
+<div class="original">
+   {% spaceless %}
+   {% for field in inline_form %}
+        {% if field.is_hidden %} {{ field }} {% endif %}
+   {% endfor %}
+   {% endspaceless %}
+</div>
+
+{% for field in inline_form.visible_fields %}{% if field.name != "DELETE" %}
+    {% include 'include/_field.html' %}
+{% endif %}{% endfor %}

@@ -45,3 +45,20 @@ class ApiTests(OAuth2BaseTestCase):
         
         response = self.client.put(uri, data=self.data)
         self.assertEqual(response.status_code, 400) 
+
+    def test_get_user_list(self):
+        authorization = self.get_authorization()
+        uri = reverse('api:v1_users')        
+        response = self.client.get(uri, HTTP_AUTHORIZATION=authorization)
+        self.assertEqual(response.status_code, 401)  # Standard user is not allowed to query all users
+
+        # login as user with the rigth to change all users
+        authorization = self.get_authorization(username="GlobalAdmin", password="secret007")
+        response = self.client.get(uri, HTTP_AUTHORIZATION=authorization)
+        self.assertEqual(response.status_code, 200)
+        
+        # filter for usernames 
+        response = self.client.get(uri, data={'q': 'unna'}, HTTP_AUTHORIZATION=authorization)
+        self.assertEqual(response.status_code, 200)
+        userlist = json.loads(response.content)
+        self.assertEqual(len(userlist['collection']), 1)

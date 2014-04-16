@@ -17,7 +17,7 @@ class StreamingUserAdmin(admin.ModelAdmin):
     def password_clear(self, obj):
         return obj.password.decode("base64")
     
-    def queryset(self, request):
+    def get_queryset(self, request):
         return super(StreamingUserAdmin, self).queryset(request).select_related('registrar')
 
 
@@ -32,7 +32,7 @@ class LoggingAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return False
 
-    def queryset(self, request):
+    def get_queryset(self, request):
         return super(LoggingAdmin, self).queryset(request).select_related('user')
     
     

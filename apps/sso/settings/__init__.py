@@ -25,7 +25,7 @@ SSO_CUSTOM = {
     'ABOUT': 'http://g10f.de/',
     'APP_UUID': 'fa467234b81e4838a009e38d9e655d18',
     'STREAMING_UUID': 'c362bea58c67457fa32234e3178285c4',
-    'STYLESHEET': 'css/default-1.0.1.css',
+    'STYLESHEET': 'css/default-1.0.2.css',
     'SYLE_LESS': 'less/default.less',
     'FAVICON': 'ico/favicon.ico'
     
@@ -141,6 +141,7 @@ INSTALLED_APPS = (
     'captcha',
     'passwords',
     'l10n',
+    #'smart_selects',
     'south',
     'streaming',
     'sso',

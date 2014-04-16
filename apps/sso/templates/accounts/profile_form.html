@@ -4,6 +4,10 @@
 
 {% block title %}{% trans 'Profile' %}{% endblock %}
 
+{% block extrascript %}
+{{ media }}
+{% endblock extrascript %}
+
 {% block nav_accounts_profile_class %}active{% endblock %}
 
 {% block breadcrumb %}
@@ -17,27 +21,43 @@
 {% block form %}
 <form enctype="multipart/form-data" class="form-horizontal" method="post">{% csrf_token %}	
     <div class="">
-	    <h3>{% trans 'My account' %}</h3>
-		<p>{% trans "Update your user account." %}</p>
-		
+	    <h3>{% trans 'My account' %}</h3>		
 	    {% if messages %}{% for message in messages %}
 	       <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
 	    {% endif %}
 		
-	    {% if form.errors %}
+	    {% if errors %}
 	        <div class="alert alert-danger">
-	        {% if form.errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
+	        {% if errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
 	        </div>
 	    {% endif %}
     </div>
     
-    {% include 'include/_field.html' with field=form.username %}
-    {% include 'include/_field.html' with field=form.organisation %}
-    {% include 'include/_field.html' with field=form.first_name %}
-    {% include 'include/_field.html' with field=form.last_name %}
-    {% include 'include/_field.html' with field=form.email %} 
-    {% include 'include/_picture_field.html' with field=form.picture %} 
-    
+     <ul class="nav nav-tabs dwbn-nav-tabs" id="myTab">
+       <li class="{% if active == "profile" %}active{% endif %}"><a data-toggle="tab" href="#profile">{% trans "Profile" %}</a></li>
+       {% for formset in formsets %}
+       <li class="{% if active == formset.prefix %}active{% endif %}"><a data-toggle="tab" href="#{{ formset.prefix }}">{{ formset.form.opts.verbose_name_plural|title }}</a></li>
+       {% endfor %}
+     </ul>
+
+     <div class="tab-content">
+        <div class="tab-pane {% if active == "profile" %}active{% endif %}" id="profile"> 
+	    {% include 'include/_picture_field.html' with field=form.picture %} 
+	    {% include 'include/_field.html' with field=form.username %}
+	    {% include 'include/_field.html' with field=form.organisation %}
+	    {% include 'include/_field.html' with field=form.first_name %}
+	    {% include 'include/_field.html' with field=form.last_name %}
+	    {% include 'include/_field.html' with field=form.email %} 
+	    {% include 'include/_field.html' with field=form.gender %} 
+	    {% include 'include/_field.html' with field=form.dob %} 
+	    {% include 'include/_field.html' with field=form.homepage %} 
+        </div>
+	    {% for formset in formsets %}
+	       <div class="tab-pane {% if active == formset.prefix %}active{% endif %}" id="{{ formset.prefix }}"> 
+	       {% include formset.form.template %}
+	       </div>
+	    {% endfor %}
+    </div> <!-- /.tab-content -->
     <div class="form-group">
 	    <div class="dwbn-form-submit">
 	        <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>

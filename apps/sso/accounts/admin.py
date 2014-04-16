@@ -8,7 +8,6 @@ from django.contrib.admin.util import model_ngettext
 from django.db.models import Q
 from django.contrib.admin import SimpleListFilter
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin, GroupAdmin as DjangoGroupAdmin
-#from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 from django.utils.safestring import mark_safe
@@ -16,14 +15,11 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 from sorl.thumbnail.admin import AdminImageMixin
 
-from models import Application, Organisation, Region, UserAssociatedSystem
-#from models import ApplicationRole, Role, ApplicationRoleProfile
+from models import Application, Organisation, Region, UserAssociatedSystem, UserAddress, UserPhoneNumber
 from .forms import UserAddForm, BasicUserChangeForm, AdminUserChangeForm
 import logging
 
 logger = logging.getLogger(__name__)
-
-#admin.site.unregister(Group)
 
 
 class ApplicationAdmin(admin.ModelAdmin):
@@ -210,6 +206,27 @@ class GroupAdmin(DjangoGroupAdmin):
     list_filter = ('role', )
 
 
+class Address_Inline(admin.StackedInline):
+    model = UserAddress
+    extra = 0
+    max_num = 2
+    fieldsets = [
+        (None,
+         {'fields':
+          ['address_type', 'addressee', 'street_address', 'postal_code', 'city', 'country',
+           #'country', 'state', 
+           'primary', ],
+          'classes': ['wide'], }),
+        ]
+
+
+class PhoneNumber_Inline(admin.TabularInline):
+    model = UserPhoneNumber
+    extra = 1
+    max_num = 6
+    exclude = ['uuid']
+
+
 class UserAdmin(AdminImageMixin, DjangoUserAdmin):
     form = AdminUserChangeForm
     add_form = UserAddForm
@@ -221,10 +238,13 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
     filter_horizontal = DjangoUserAdmin.filter_horizontal + ('groups', 'application_roles', 'role_profiles', 'organisations')
     ordering = ['-last_login', '-first_name', '-last_name']
     actions = ['mark_info_mail']
+    inlines = [PhoneNumber_Inline, Address_Inline]
     
     fieldsets = (
         (None, {'fields': ('username', 'password'), 'classes': ['wide']}),
-        (_('Personal info'), {'fields': ('first_name', 'last_name', 'email', 'uuid', 'is_center', 'is_subscriber', 'picture'), 'classes': ['wide']}),
+        (_('Personal info'), {
+                'fields': ('first_name', 'last_name', 'email', 'gender', 'dob', 'homepage', 'uuid', 'is_center', 'is_subscriber', 'picture'), 
+                'classes': ['wide']}),
         (_('AppRoles'), {'fields': ('assigned_organisations', 'organisations', 'application_roles', 'role_profiles'), 'classes': ['wide', 'wide_ex']}),
         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'), 'classes': ['wide', 'wide_ex']}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined', 'get_last_modified_by_user', 'get_created_by_user'), 'classes': ['wide']}),
@@ -359,11 +379,11 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         else:
             return self.non_su_readonly_fields
                    
-    def queryset(self, request):
+    def get_queryset(self, request):
         """
         display no superusers in the changelist for non superusers
         """
-        qs = super(UserAdmin, self).queryset(request).select_related('last_modified_by',
+        qs = super(UserAdmin, self).get_queryset(request).select_related('last_modified_by',
                                                                      'created_by')
         user = request.user
         if user.is_superuser:
@@ -415,14 +435,3 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         # Display the confirmation page
         return TemplateResponse(request, "admin/accounts/send_mail_selected_confirmation.html", context, current_app=self.admin_site.name)
     mark_info_mail.short_description = _('Send info email')
-   
-"""
-admin.site.register(Group, GroupAdmin)
-admin.site.register(get_user_model(), UserAdmin)
-admin.site.register(ApplicationRole, ApplicationRoleAdmin)
-admin.site.register(ApplicationRoleProfile, ApplicationRoleProfileAdmin)
-admin.site.register(Role, RoleAdmin)
-admin.site.register(Application, ApplicationAdmin)
-admin.site.register(Organisation, OrganisationAdmin)
-admin.site.register(Region, RegionAdmin)
-"""
