@@ -141,7 +141,7 @@ INSTALLED_APPS = (
     'captcha',
     'passwords',
     'l10n',
-    #'smart_selects',
+    'smart_selects',
     'south',
     'streaming',
     'sso',

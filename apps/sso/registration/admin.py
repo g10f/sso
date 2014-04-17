@@ -8,7 +8,6 @@ from django.core import urlresolvers
 from django.utils.safestring import mark_safe
 from .models import RegistrationProfile, send_set_password_email, send_validation_email
 
-
 class ExpiredFilter(SimpleListFilter):
     parameter_name = 'expired'
     title = _('expired')
@@ -54,7 +53,6 @@ class RegistrationAdmin(admin.ModelAdmin):
         (None,
          {'fields':
           ['user', 'user_link', 'last_modified', 'date_registered', 'is_validated', 'is_active', 'about_me',
-           'country', 'postal_code', 'city', 'street', 'phone', 
            'known_person1_first_name', 'known_person2_first_name', 'known_person1_last_name', 'known_person2_last_name',
            'check_back', 'is_access_denied', 'verified_by_user'],
           'classes': ['wide']}), ]

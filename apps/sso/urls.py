@@ -17,5 +17,5 @@ urlpatterns = patterns('',
     url(r'^accounts/', include(registration_site.urls)),
     url(r'^oauth2/', include('sso.oauth2.urls', namespace="oauth2")),
     url(r'^api/', include('sso.api.urls', namespace="api")),
-    #url(r'^chaining/', include('smart_selects.urls')),
+    url(r'^chained_filter/(?P<app>l10n)/(?P<model>[\w\-]+)/(?P<field>[\w\-]+)/(?P<value>[\w\-]+)/$', 'smart_selects.views.filterchain', name='chained_filter'),
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

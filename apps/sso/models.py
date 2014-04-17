@@ -4,8 +4,8 @@ from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import pgettext_lazy
 
-from l10n.models import Country  # , AdminArea
-#from smart_selects.db_fields import ChainedForeignKey
+from l10n.models import Country, AdminArea
+from smart_selects.db_fields import ChainedForeignKey
 from sso.fields import UUIDField
 
 class AbstractBaseModelManager(models.Manager):
@@ -50,12 +50,12 @@ class AddressMixin(models.Model):
         
     address_type = models.CharField(_("address type"), choices=ADDRESSTYPE_CHOICES, max_length=20)
     addressee = models.CharField(_("addressee"), max_length=80)
-    street_address = models.TextField(_('street address'), help_text=_('full street address, with house number, street name, P.O. box, and extended street address information.'), max_length=512)
-    city = models.CharField(_("city"), max_length=100)  # , help_text=_('city or locality')
-    postal_code = models.CharField(_("postal code"), max_length=30)  # , help_text=_('zipcode or postal code') 
+    street_address = models.TextField(_('street address'), blank=True, help_text=_('Full street address, with house number, street name, P.O. box, and extended street address information.'), max_length=512)
+    city = models.CharField(_("city"), max_length=100)  # , help_text=_('City or locality')
+    postal_code = models.CharField(_("postal code"), max_length=30, blank=True)  # , help_text=_('Zipcode or postal code') 
     country = models.ForeignKey(Country, verbose_name=_("country"), limit_choices_to={'active': True})
-    #state = ChainedForeignKey(AdminArea, chained_field='country', chained_model_field="country", verbose_name=_("State"), 
-    #                                                  help_text=_('state or region'), blank=True, null=True)    
+    state = ChainedForeignKey(AdminArea, chained_field='country', chained_model_field="country", verbose_name=_("State"), 
+                                                      help_text=_('State or region'), blank=True, null=True)    
     primary = models.BooleanField(_("primary"), default=False)
     #history = HistoricalRecords()
     
@@ -84,7 +84,7 @@ class PhoneNumberMixin(models.Model):
     for choice in PHONE_CHOICES:
         _phone_choices[choice[0]] = choice[1]
    
-    phone_type = models.CharField(_("phone type"), help_text=_('mobile, home, office, etc.'), choices=PHONE_CHOICES, max_length=20)
+    phone_type = models.CharField(_("phone type"), help_text=_('Mobile, home, office, etc.'), choices=PHONE_CHOICES, max_length=20)
     phone = models.CharField(_("phone number"), max_length=30,)
     primary = models.BooleanField(_("primary"), default=False)
     #history = HistoricalRecords()
