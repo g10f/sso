@@ -17,6 +17,8 @@ from .models import RegistrationProfile, send_set_password_email, send_validatio
 from . import default_username_generator
 
 from sso.forms import bootstrap, mixins
+from sso.accounts.models import UserAddress
+
 
 import logging
 logger = logging.getLogger(__name__)
@@ -32,27 +34,27 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
     
     username = forms.CharField(label=_("Username"), max_length=30, widget=bootstrap.TextInput())
     notes = forms.CharField(label=_("Notes"), required=False, max_length=1024, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
-    first_name = forms.CharField(label=_('first name'), max_length=30, widget=bootstrap.TextInput())
-    last_name = forms.CharField(label=_('last name'), max_length=30, widget=bootstrap.TextInput())
-    email = forms.EmailField(label=_('e-mail address'), required=False, widget=bootstrap.TextInput(attrs={'disabled': ''}))
-    phone = forms.CharField(label=_("phone Number"), max_length=30, required=False, widget=bootstrap.TextInput())
-    date_registered = forms.DateTimeField(label=_("date registered"), required=False, widget=bootstrap.StaticInput())
-    country = forms.CharField(label=_("country"), required=False, max_length=30, widget=bootstrap.StaticInput())
-    city = forms.CharField(label=_("city"), required=False, max_length=100, widget=bootstrap.StaticInput())
-    postal_code = forms.CharField(label=_("zip code"), required=False, max_length=30, widget=bootstrap.StaticInput())
-    street = forms.CharField(label=_('street'), required=False, max_length=255, widget=bootstrap.StaticInput())
-    about_me = forms.CharField(label=_('about me'), required=False, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 5, 'readonly': 'readonly'}))
-    known_person1_first_name = forms.CharField(label=_("first name"), max_length=100, required=False, widget=bootstrap.TextInput())
-    known_person1_last_name = forms.CharField(label=_("last name"), max_length=100, required=False, widget=bootstrap.TextInput())
-    known_person2_first_name = forms.CharField(label=_("first name #2"), max_length=100, required=False, widget=bootstrap.TextInput())
-    known_person2_last_name = forms.CharField(label=_("last name #2"), max_length=100, required=False, widget=bootstrap.TextInput())
-    last_modified_by_user = forms.CharField(label=_("last modified by"), required=False, widget=bootstrap.TextInput(attrs={'disabled': ''}))
-    verified_by_user = forms.CharField(label=_("verified by"), help_text=_('administrator who verified the user'), required=False, widget=bootstrap.TextInput(attrs={'disabled': ''}))
-    is_verified = forms.BooleanField(label=_("is verified"), help_text=_('Designates if the user was verified by another administrator'), required=False)    
+    first_name = forms.CharField(label=_('First name'), max_length=30, widget=bootstrap.TextInput())
+    last_name = forms.CharField(label=_('Last name'), max_length=30, widget=bootstrap.TextInput())
+    email = forms.EmailField(label=_('E-mail address'), required=False, widget=bootstrap.TextInput(attrs={'disabled': ''}))
+    #phone = forms.CharField(label=_("Phone Number"), max_length=30, required=False, widget=bootstrap.TextInput())
+    date_registered = forms.DateTimeField(label=_("Date registered"), required=False, widget=bootstrap.StaticInput())
+    country = forms.CharField(label=_("Country"), required=False, max_length=30, widget=bootstrap.StaticInput())
+    city = forms.CharField(label=_("City"), required=False, max_length=100, widget=bootstrap.StaticInput())
+    #postal_code = forms.CharField(label=_("Postal code"), required=False, max_length=30, widget=bootstrap.StaticInput())
+    #street_address = forms.Textarea(_('Street address'), required=False, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 3, 'readonly': 'readonly'}))
+    about_me = forms.CharField(label=_('About me'), required=False, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 5, 'readonly': 'readonly'}))
+    known_person1_first_name = forms.CharField(label=_("First name"), max_length=100, required=False, widget=bootstrap.TextInput())
+    known_person1_last_name = forms.CharField(label=_("Last name"), max_length=100, required=False, widget=bootstrap.TextInput())
+    known_person2_first_name = forms.CharField(label=_("First name"), max_length=100, required=False, widget=bootstrap.TextInput())
+    known_person2_last_name = forms.CharField(label=_("Last name"), max_length=100, required=False, widget=bootstrap.TextInput())
+    last_modified_by_user = forms.CharField(label=_("Last modified by"), required=False, widget=bootstrap.TextInput(attrs={'disabled': ''}))
+    verified_by_user = forms.CharField(label=_("Verified by"), help_text=_('administrator who verified the user'), required=False, widget=bootstrap.TextInput(attrs={'disabled': ''}))
+    is_verified = forms.BooleanField(label=_("Is verified"), help_text=_('Designates if the user was verified by another administrator'), required=False)    
     organisations = forms.ModelChoiceField(queryset=None, label=_("Organisation"), widget=bootstrap.Select(), required=False)
     application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple, label=_("Application roles"))
-    check_back = forms.BooleanField(label=_("check back"), help_text=_('Designates if there are open questions to check.'), required=False)    
-    is_access_denied = forms.BooleanField(label=_("access denied"), help_text=_('Designates if access is denied to the user.'), required=False)    
+    check_back = forms.BooleanField(label=_("Check back"), help_text=_('Designates if there are open questions to check.'), required=False)    
+    is_access_denied = forms.BooleanField(label=_("Access denied"), help_text=_('Designates if access is denied to the user.'), required=False)    
     role_profiles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
                                                    help_text=_('Groups of application roles that are assigned together.'))
 
@@ -70,7 +72,6 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
         self.user = self.registrationprofile.user
         
         registrationprofile_data = model_to_dict(self.registrationprofile)
-        registrationprofile_data['country'] = self.registrationprofile.country
         
         user_data = model_to_dict(self.user)
         try:
@@ -80,10 +81,16 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
             # center is optional
             #logger.error("User without center?", exc_info=1)
             pass
+        address_data = {}
+        if self.user.useraddress_set.exists():
+            useraddress = self.user.useraddress_set.first()
+            address_data = model_to_dict(useraddress)
+            address_data['country'] = useraddress.country
             
         initial = kwargs.get('initial', {})
         initial.update(registrationprofile_data)
         initial.update(user_data)
+        initial.update(address_data)
         
         last_modified_by_user = self.registrationprofile.last_modified_by_user
         initial['last_modified_by_user'] = last_modified_by_user if last_modified_by_user else ''   
@@ -108,7 +115,6 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
         self.registrationprofile.known_person1_last_name = cd['known_person1_last_name']
         self.registrationprofile.known_person2_first_name = cd['known_person2_first_name']
         self.registrationprofile.known_person2_last_name = cd['known_person2_last_name']
-        self.registrationprofile.phone = cd['phone']
         self.registrationprofile.check_back = cd['check_back']
         self.registrationprofile.is_access_denied = cd['is_access_denied']
         if current_user.has_perm('registrationprofile.verify_users'):
@@ -143,16 +149,16 @@ class UserRegistrationCreationForm(forms.Form):
         'duplicate_username': _("A user with that username already exists."),
         'duplicate_email': _("A user with that email address already exists."),
     }
-    first_name = forms.CharField(label=_('first name'), required=True, widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('first name'))}))
-    last_name = forms.CharField(label=_('last name'), required=True, widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('last name'))}))
-    email = forms.EmailField(label=_('Email'), required=True, widget=bootstrap.EmailInput())
-    known_person1_first_name = forms.CharField(label=_("first name"), max_length=100, widget=bootstrap.TextInput())
-    known_person1_last_name = forms.CharField(label=_("last name"), max_length=100, widget=bootstrap.TextInput())
-    known_person2_first_name = forms.CharField(label=_("first name #2"), max_length=100, widget=bootstrap.TextInput())
-    known_person2_last_name = forms.CharField(label=_("last name #2"), max_length=100, widget=bootstrap.TextInput())
-    about_me = forms.CharField(label=_('about me'), required=False, help_text=_('If you would like to tell us something about yourself or your involvement with buddhism please do so in this box.'), widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 5}))
-    country = forms.ModelChoiceField(queryset=Country.objects.all(), label=_("country"), widget=bootstrap.Select())
-    city = forms.CharField(label=_("city"), max_length=100, widget=bootstrap.TextInput())
+    first_name = forms.CharField(label=_('First name'), required=True, widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('first name'))}))
+    last_name = forms.CharField(label=_('Last name'), required=True, widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('last name'))}))
+    email = forms.EmailField(label=_('E-mail'), required=True, widget=bootstrap.EmailInput())
+    known_person1_first_name = forms.CharField(label=_("First name"), max_length=100, widget=bootstrap.TextInput())
+    known_person1_last_name = forms.CharField(label=_("Last name"), max_length=100, widget=bootstrap.TextInput())
+    known_person2_first_name = forms.CharField(label=_("First name"), max_length=100, widget=bootstrap.TextInput())
+    known_person2_last_name = forms.CharField(label=_("Last name"), max_length=100, widget=bootstrap.TextInput())
+    about_me = forms.CharField(label=_('About me'), required=False, help_text=_('If you would like to tell us something about yourself or your involvement with buddhism please do so in this box.'), widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 5}))
+    country = forms.ModelChoiceField(queryset=Country.objects.all(), label=_("Country"), widget=bootstrap.Select())
+    city = forms.CharField(label=_("City"), max_length=100, widget=bootstrap.TextInput())
 
     def clean_email(self):
         # Check if email is unique,
@@ -185,15 +191,21 @@ class UserRegistrationCreationForm(forms.Form):
         new_user.is_active = False
         new_user.set_unusable_password()
         new_user.save()
-                
+        
+        user_address = UserAddress()
+        user_address.user = new_user
+        user_address.address_type = 'home'        
+        user_address.country = data['country']
+        user_address.city = data['city']
+        user_address.addressee = "%s %s" % (data.get('first_name'), data.get('last_name'))
+        user_address.save()
+
         registration_profile = RegistrationProfile.objects.create(user=new_user)
         registration_profile.about_me = data['about_me']
-        registration_profile.city = data['city']
         registration_profile.known_person1_first_name = data['known_person1_first_name']
         registration_profile.known_person1_last_name = data['known_person1_last_name']
         registration_profile.known_person2_first_name = data['known_person2_first_name']
         registration_profile.known_person2_last_name = data['known_person2_last_name']
-        registration_profile.country = data['country']
         registration_profile.save()
         return registration_profile
 

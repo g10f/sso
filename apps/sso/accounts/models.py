@@ -368,7 +368,7 @@ class UserPhoneNumber(AbstractBaseModel, PhoneNumberMixin):
     user = models.ForeignKey(User)
 
     class Meta(AbstractBaseModel.Meta, PhoneNumberMixin.Meta):
-        unique_together = (("user", "phone_type"),)
+        #unique_together = (("user", "phone_type"),)
         pass
     
     @classmethod

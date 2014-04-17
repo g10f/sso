@@ -44,7 +44,7 @@
 		        {% block left_content %}
 				<nav class="list-group">              
 				    {% if user.is_staff %}
-				    <a class="list-group-item" href="{% url 'admin:index' %}"><i class="glyphicon glyphicon-wrench"></i> {% trans 'administration' %}</a>
+				    <a class="list-group-item" href="{% url 'admin:index' %}"><i class="glyphicon glyphicon-wrench"></i> {% trans 'Administration' %}</a>
 				    {% endif %}
 				    
                     {% if perms.registration.change_registrationprofile %}

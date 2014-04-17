@@ -259,8 +259,7 @@ class BaseForm(forms.ModelForm):
 class AddressForm(BaseForm):
     class Meta:
         model = UserAddress
-        fields = ('primary', 'address_type', 'addressee', 'street_address', 'city', 'postal_code', 'country'  # , 'state'
-                  ) 
+        fields = ('primary', 'address_type', 'addressee', 'street_address', 'city', 'postal_code', 'country', 'state') 
         widgets = {
                    'primary': bootstrap.CheckboxInput(),
                    'address_type': bootstrap.Select(),
@@ -459,7 +458,9 @@ class UserRegistrationCreationForm2(UserRegistrationCreationForm):
         super(UserRegistrationCreationForm2, self).__init__(data, *args, **kwargs)
         
         if self.is_captcha_needed():
-            self.fields['captcha'] = ReCaptchaField(label=_('Prove you are human'), error_messages={'captcha_invalid': _('Incorrect, please try again.')}, attrs={'theme': 'clean'})
+            self.fields['captcha'] = ReCaptchaField(label=_('Prove you are human'),
+                                                    help_text=_('Please enter the words you see in the box, in order and separated by a space. Doing so helps prevent automated programs from abusing this service.'), 
+                                                    error_messages={'captcha_invalid': _('Incorrect, please try again.')}, attrs={'theme': 'clean'})
 
     def is_captcha_needed(self):
         max_age = 300
