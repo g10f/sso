@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 import os
+import datetime
+
 from django.db import models
 from django.db.models import Q
 from django.conf import settings
 from django.dispatch import receiver
 from django.db.models import signals
-from django.utils.timezone import now
 from django.template import loader
 from django.contrib.auth.models import AbstractUser, Group
 from django.contrib.auth.tokens import default_token_generator as default_pwd_reset_token_generator
@@ -14,6 +15,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
+from django.utils.timezone import now
 from django.utils.translation import get_language, activate, ugettext_lazy as _
 from django.utils.text import get_valid_filename
 
@@ -187,6 +189,7 @@ class User(AbstractUser):
     gender = models.CharField(_('gender'), max_length=255, choices=GENDER_CHOICES, blank=True)
     dob = models.DateField(_("date of birth"), blank=True, null=True)
     homepage = models.URLField(_("homepage"), max_length=512, blank=True)
+    language = models.CharField(_('language'), max_length=254, choices=settings.LANGUAGES, blank=True)
 
     class Meta(AbstractUser.Meta):
         permissions = (
@@ -194,6 +197,22 @@ class User(AbstractUser):
             ("change_org_users", "Can manage organisation users"),
             ("change_all_users", "Can manage all users"),
         )
+    
+    @classmethod
+    def get_primary_or_none(cls, queryset):
+        # iterate through all uses the prfetch_related cache
+        for item in queryset:
+            if item.primary == True:
+                return item
+        return None
+
+    @property
+    def primary_address(self):
+        return self.get_primary_or_none(self.useraddress_set.all())
+        
+    @property
+    def primary_phone(self):
+        return self.get_primary_or_none(self.userphonenumber_set.all())
 
     def get_apps(self):
         q = Q(applicationrole__user__uuid=self.uuid) & Q(is_active=True) 
@@ -211,58 +230,66 @@ class User(AbstractUser):
         return Role.objects.distinct().filter(q)
     
     def get_applicationroles(self):
-        q = Q(user__uuid=self.uuid) | Q(roleprofile__user__uuid=self.uuid)
-        return ApplicationRole.objects.filter(q).distinct().select_related()
+        if not hasattr(self, '_applicationroles_cache'):
+            q = Q(user__uuid=self.uuid) | Q(roleprofile__user__uuid=self.uuid)
+            self._applicationroles_cache = ApplicationRole.objects.filter(q).distinct().select_related()
+        return self._applicationroles_cache
     
     def get_administrable_application_roles(self):
-        if self.is_superuser:
-            return ApplicationRole.objects.all().select_related()
-        
-        # all roles the user has, with adequate inheritable flag
-        if self.has_perm("accounts.change_all_users"):
-            application_roles = self.get_applicationroles().filter(is_inheritable_by_global_admin=True)
-        elif self.has_perm("accounts.change_org_users") or self.has_perm("accounts.change_reg_users"):
-            application_roles = self.get_applicationroles().filter(is_inheritable_by_org_admin=True)
-        else:
-            application_roles = self.application_roles.none()
-                    
-        q = Q(id__in=application_roles.values_list('id', flat=True))
-        
-        # additionally all roles of application where the user is a superuser
-        for application_role in application_roles:
-            if application_role.role.name == SUPERUSER_ROLE:
-                q |= Q(application__id=application_role.application.id)
-         
-        app_roles = ApplicationRole.objects.filter(q).select_related()
-        return app_roles
+        if not hasattr(self, '_administrable_application_roles_cache'):
+            if self.is_superuser:
+                self._administrable_application_roles_cache = ApplicationRole.objects.all().select_related()
+            else:
+                # all roles the user has, with adequate inheritable flag
+                if self.has_perm("accounts.change_all_users"):
+                    application_roles = self.get_applicationroles().filter(is_inheritable_by_global_admin=True)
+                elif self.has_perm("accounts.change_org_users") or self.has_perm("accounts.change_reg_users"):
+                    application_roles = self.get_applicationroles().filter(is_inheritable_by_org_admin=True)
+                else:
+                    application_roles = self.application_roles.none()
+                            
+                q = Q(id__in=application_roles.values_list('id', flat=True))
+                
+                # additionally all roles of application where the user is a superuser
+                for application_role in application_roles:
+                    if application_role.role.name == SUPERUSER_ROLE:
+                        q |= Q(application__id=application_role.application.id)
+                 
+                self._administrable_application_roles_cache = ApplicationRole.objects.filter(q).select_related()
+        return self._administrable_application_roles_cache
 
     def get_administrable_role_profiles(self):
-        if self.is_superuser:
-            return RoleProfile.objects.all().prefetch_related('application_roles', 'application_roles__role', 'application_roles__application')
-
-        # all role profiles the user has, with adequate inheritable flag
-        if self.has_perm("accounts.change_all_users"):
-            role_profiles = self.role_profiles.filter(is_inheritable_by_global_admin=True)
-        elif self.has_perm("accounts.change_org_users") or self.has_perm("accounts.change_reg_users"):
-            role_profiles = self.role_profiles.filter(is_inheritable_by_org_admin=True)
-        else:
-            role_profiles = self.role_profiles.none()
-                    
-        return role_profiles.prefetch_related('application_roles', 'application_roles__role', 'application_roles__application')    
+        if not hasattr(self, '_administrable_role_profiles_cache'):
+            if self.is_superuser:
+                self._administrable_role_profiles_cache = RoleProfile.objects.all().prefetch_related('application_roles', 'application_roles__role', 'application_roles__application')
+            else:
+                # all role profiles the user has, with adequate inheritable flag
+                if self.has_perm("accounts.change_all_users"):
+                    role_profiles = self.role_profiles.filter(is_inheritable_by_global_admin=True)
+                elif self.has_perm("accounts.change_org_users") or self.has_perm("accounts.change_reg_users"):
+                    role_profiles = self.role_profiles.filter(is_inheritable_by_org_admin=True)
+                else:
+                    role_profiles = self.role_profiles.none()
+                            
+                self._administrable_role_profiles_cache = role_profiles.prefetch_related('application_roles', 'application_roles__role', 'application_roles__application')    
+        return self._administrable_role_profiles_cache
     
     def get_administrable_organisations(self):
         """
         return a list of all organisations the user has admin rights on
         """
-        if self.has_perm("accounts.change_all_users"):
-            return Organisation.objects.all()
-        if self.has_perm("accounts.change_reg_users"):
-            # Regional Admin
-            return Organisation.objects.filter(Q(user=self) | Q(region__organisation__user=self)).distinct()
-        elif self.has_perm("accounts.change_org_users"):
-            return self.organisations.all()
-        else:
-            return Organisation.objects.none()
+        if not hasattr(self, '_administrable_organisations_cache'):
+            if self.has_perm("accounts.change_all_users"):
+                self._administrable_organisations_cache = Organisation.objects.all()
+            else:
+                if self.has_perm("accounts.change_reg_users"):
+                    # Regional Admin
+                    self._administrable_organisations_cache = Organisation.objects.filter(Q(user=self) | Q(region__organisation__user=self)).distinct()
+                elif self.has_perm("accounts.change_org_users"):
+                    self._administrable_organisations_cache = self.organisations.all()
+                else:
+                    self._administrable_organisations_cache = Organisation.objects.none()
+        return self._administrable_organisations_cache
     
     def get_countries_of_administrable_organisations(self):
         """
@@ -433,15 +460,13 @@ def send_account_created_email(user, request, token_generator=default_pwd_reset_
                               email_template_name='accounts/account_created_email.txt',
                               subject_template_name='accounts/account_created_email_subject.txt'
                               ):
-    organisation = user.organisations.all()[:1]
-    if organisation and organisation[0].iso2_code in ['DE', 'CH', 'AT', 'LI']:
-        language = 'de'
-    else:
-        language = 'en'
+    
     use_https = request.is_secure()
     current_site = get_current_site(request)
     site_name = settings.SSO_CUSTOM['SITE_NAME']
     domain = current_site.domain
+    expiration_date = now() + datetime.timedelta(settings.PASSWORD_RESET_TIMEOUT_DAYS)
+    
     c = {
         'email': user.email,
         'username': user.username,
@@ -450,11 +475,13 @@ def send_account_created_email(user, request, token_generator=default_pwd_reset_
         'uid': urlsafe_base64_encode(force_bytes(user.pk)),
         'token': token_generator.make_token(user),
         'protocol': use_https and 'https' or 'http',
+        'expiration_date': expiration_date
     }
 
     cur_language = get_language()
         
     try:
+        language = user.language if user.language else settings.LANGUAGE_CODE
         activate(language)
         subject = loader.render_to_string(subject_template_name, c)
         # Email subject *must not* contain newlines

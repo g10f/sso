@@ -51,7 +51,7 @@ class UserRegistrationList(main.ListView):
     model = RegistrationProfile
     paginate_by = 20
     page_kwarg = main.PAGE_VAR
-    list_display = ['user', 'email', 'center', 'country', 'city', 'date_registered', 'verified_by_user', 'check_back']
+    list_display = ['user', 'email', 'center', 'date_registered', 'verified_by_user', 'check_back', 'is_access_denied']
     
     @method_decorator(user_passes_test(has_permission))
     def dispatch(self, request, *args, **kwargs):
@@ -64,8 +64,8 @@ class UserRegistrationList(main.ListView):
             return self.paginate_by
 
     def get_queryset(self):
-        qs = super(UserRegistrationList, self).get_queryset().prefetch_related('user__organisations')\
-                    .select_related('user', 'country__printable_name').filter(user__is_active=False, is_validated=True)
+        qs = super(UserRegistrationList, self).get_queryset().prefetch_related('user__organisations', 'user__useraddress_set', 'user__useraddress_set__country')\
+                    .select_related('user', 'user__useraddress__country__printable_name').filter(user__is_active=False, is_validated=True)
         
         # display only users from centers where the logged in user has admin rights
         user = self.request.user
@@ -121,7 +121,10 @@ class UserRegistrationList(main.ListView):
                 num_sorted_fields += 1
         
         # list of centers of registrations where the user has admin rights
-        user_organisations = self.request.user.get_administrable_organisations().filter(user__registrationprofile__isnull=False)
+        user_organisations = self.request.user.get_administrable_organisations().filter(
+                                    user__is_active=False, 
+                                    user__registrationprofile__isnull=False,
+                                    user__registrationprofile__is_validated=True)
         countries = Country.objects.filter(iso2_code__in=user_organisations.values_list('iso2_code', flat=True))
         if len(countries) == 1:
             self.country = countries[0]

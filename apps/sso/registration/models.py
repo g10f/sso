@@ -1,10 +1,12 @@
 import datetime 
+
+from django.utils.timezone import now
 from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from django.contrib.sites.models import get_current_site
 from django.template.loader import render_to_string
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import get_language, activate, ugettext_lazy as _
 from django.utils import timezone
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
@@ -12,7 +14,6 @@ from django.core.mail import send_mail
 from django.template import loader
 from django.core import urlresolvers
 from django.contrib.auth.tokens import default_token_generator as default_pwd_reset_token_generator
-from l10n.models import Country
 from tokens import default_token_generator
 from current_user.models import CurrentUserField
 
@@ -39,6 +40,8 @@ def send_set_password_email(user, request, token_generator=default_pwd_reset_tok
     current_site = get_current_site(request)
     site_name = settings.SSO_CUSTOM['SITE_NAME']
     domain = current_site.domain
+    expiration_date = now() + datetime.timedelta(settings.PASSWORD_RESET_TIMEOUT_DAYS)
+
     c = {
         'email': user.email,
         'username': user.username,
@@ -47,11 +50,19 @@ def send_set_password_email(user, request, token_generator=default_pwd_reset_tok
         'uid': urlsafe_base64_encode(force_bytes(user.pk)),
         'token': token_generator.make_token(user),
         'protocol': use_https and 'https' or 'http',
+        'expiration_date': expiration_date
     }
-    subject = loader.render_to_string(subject_template_name, c)
-    # Email subject *must not* contain newlines
-    subject = ''.join(subject.splitlines())
-    email = loader.render_to_string(email_template_name, c)
+    cur_language = get_language()
+    try:
+        language = user.language if user.language else settings.LANGUAGE_CODE
+        activate(language)    
+        subject = loader.render_to_string(subject_template_name, c)
+        # Email subject *must not* contain newlines
+        subject = ''.join(subject.splitlines())
+        email = loader.render_to_string(email_template_name, c)
+    finally:
+        activate(cur_language)
+
     send_mail(subject, email, from_email, [user.email])
 
 
@@ -60,13 +71,15 @@ def send_validation_email(registration_profile, request, token_generator=default
     current_site = get_current_site(request)
     site_name = settings.SSO_CUSTOM['SITE_NAME']
     domain = current_site.domain
+    expiration_date = now() + datetime.timedelta(settings.REGISTRATION.get('TOKEN_EXPIRATION_DAYS', 7))
+    
     c = {
         'domain': domain,
         'site_name': site_name,
         'protocol': use_https and 'https' or 'http',
         'token': token_generator.make_token(registration_profile),
         'uid': urlsafe_base64_encode(force_bytes(registration_profile.pk)),
-        'expiration_days': settings.REGISTRATION.get('TOKEN_EXPIRATION_DAYS', 7)
+        'expiration_date': expiration_date
     }
     subject = render_to_string('registration/validation_email_subject.txt', c)
     # Email subject *must not* contain newlines

@@ -176,8 +176,8 @@ def migrate_data(python, server_name, code_dir, app):
     #sudo("%s ./src/apps/manage.py syncdb --noinput" % python, user='www-data', group='www-data')
     #sudo("%s ./src/apps/manage.py migrate accounts 0001 --fake" % python, user='www-data', group='www-data')
     sudo("%s ./src/apps/manage.py migrate accounts" % python, user='www-data', group='www-data')
-    sudo("%s ./src/apps/manage.py migrate registration 0001 --fake" % python, user='www-data', group='www-data')
-    sudo("%s ./src/apps/manage.py migrate registration" % python, user='www-data', group='www-data')
+    #sudo("%s ./src/apps/manage.py migrate registration 0001 --fake" % python, user='www-data', group='www-data')
+    #sudo("%s ./src/apps/manage.py migrate registration" % python, user='www-data', group='www-data')
     
 
 @task

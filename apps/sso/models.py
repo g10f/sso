@@ -16,7 +16,6 @@ class AbstractBaseModelManager(models.Manager):
 class AbstractBaseModel(models.Model):
     uuid = UUIDField(version=4, unique=True, editable=True)
     last_modified = models.DateTimeField(_('last modified'), auto_now=True, default=now)
-    #name = models.CharField(_("name"), max_length=255)
     objects = AbstractBaseModelManager()
     
     class Meta:
@@ -26,9 +25,6 @@ class AbstractBaseModel(models.Model):
 
     def natural_key(self):
         return (self.uuid, )
-
-    #def __unicode__(self):
-    #    return u"%s" % (self.name)
 
 
 class AddressMixin(models.Model):

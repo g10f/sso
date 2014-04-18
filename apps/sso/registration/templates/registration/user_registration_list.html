@@ -163,8 +163,6 @@
 		      </td>
               <td>{{ registration.user.email }}</td>
               <td>{{ registration.user.organisations.all|join:", " }}</td>
-              <td>{{ registration.country }}</td>
-              <td>{{ registration.city }}</td>
               <td>{{ registration.date_registered|utc|date:"Y-m-d H:i" }}</td>
               <td>
               {% if registration.verified_by_user %}
@@ -172,6 +170,7 @@
               {% endif %}
               </td>
               <td><i class="{% if registration.check_back %}glyphicon glyphicon glyphicon-exclamation-sign{% endif %}"></i></td>
+              <td><i class="{% if registration.is_access_denied %}glyphicon glyphicon glyphicon-minus-sign{% endif %}"></i></td>
 		    </tr>
 		  {% endfor %}
 		  </tbody>
