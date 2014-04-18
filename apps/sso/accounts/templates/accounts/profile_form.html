@@ -51,6 +51,7 @@
 	    {% include 'include/_field.html' with field=form.gender %} 
 	    {% include 'include/_field.html' with field=form.dob %} 
 	    {% include 'include/_field.html' with field=form.homepage %} 
+        {% include 'include/_field.html' with field=form.language %}
         </div>
 	    {% for formset in formsets %}
 	       <div class="tab-pane {% if active == formset.prefix %}active{% endif %}" id="{{ formset.prefix }}"> 

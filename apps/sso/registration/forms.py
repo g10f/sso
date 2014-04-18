@@ -16,7 +16,7 @@ from l10n.models import Country
 from .models import RegistrationProfile, send_set_password_email, send_validation_email
 from . import default_username_generator
 
-from sso.forms import bootstrap, mixins
+from sso.forms import bootstrap, mixins, BLANK_CHOICE_DASH
 from sso.accounts.models import UserAddress
 
 
@@ -43,6 +43,7 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
     city = forms.CharField(label=_("City"), required=False, max_length=100, widget=bootstrap.StaticInput())
     #postal_code = forms.CharField(label=_("Postal code"), required=False, max_length=30, widget=bootstrap.StaticInput())
     #street_address = forms.Textarea(_('Street address'), required=False, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 3, 'readonly': 'readonly'}))
+    language = forms.CharField(label=_("Language"), required=False, max_length=100, widget=bootstrap.StaticInput())
     about_me = forms.CharField(label=_('About me'), required=False, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 5, 'readonly': 'readonly'}))
     known_person1_first_name = forms.CharField(label=_("First name"), max_length=100, required=False, widget=bootstrap.TextInput())
     known_person1_last_name = forms.CharField(label=_("Last name"), max_length=100, required=False, widget=bootstrap.TextInput())
@@ -51,11 +52,11 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
     last_modified_by_user = forms.CharField(label=_("Last modified by"), required=False, widget=bootstrap.TextInput(attrs={'disabled': ''}))
     verified_by_user = forms.CharField(label=_("Verified by"), help_text=_('administrator who verified the user'), required=False, widget=bootstrap.TextInput(attrs={'disabled': ''}))
     is_verified = forms.BooleanField(label=_("Is verified"), help_text=_('Designates if the user was verified by another administrator'), required=False)    
-    organisations = forms.ModelChoiceField(queryset=None, label=_("Organisation"), widget=bootstrap.Select(), required=False)
-    application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple, label=_("Application roles"))
+    organisations = forms.ModelChoiceField(queryset=None, cache_choices=True, label=_("Organisation"), widget=bootstrap.Select(), required=False)
+    application_roles = forms.ModelMultipleChoiceField(queryset=None, cache_choices=True, required=False, widget=bootstrap.CheckboxSelectMultiple, label=_("Application roles"))
     check_back = forms.BooleanField(label=_("Check back"), help_text=_('Designates if there are open questions to check.'), required=False)    
     is_access_denied = forms.BooleanField(label=_("Access denied"), help_text=_('Designates if access is denied to the user.'), required=False)    
-    role_profiles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
+    role_profiles = forms.ModelMultipleChoiceField(queryset=None, cache_choices=True, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
                                                    help_text=_('Groups of application roles that are assigned together.'))
 
     def clean_username(self):
@@ -74,6 +75,8 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
         registrationprofile_data = model_to_dict(self.registrationprofile)
         
         user_data = model_to_dict(self.user)
+        if self.user.language:
+            user_data['language'] = self.user.get_language_display()
         try:
             # after registration, the user should have exactly 1 center 
             user_data['organisations'] = self.user.organisations.all()[0]
@@ -157,8 +160,9 @@ class UserRegistrationCreationForm(forms.Form):
     known_person2_first_name = forms.CharField(label=_("First name"), max_length=100, widget=bootstrap.TextInput())
     known_person2_last_name = forms.CharField(label=_("Last name"), max_length=100, widget=bootstrap.TextInput())
     about_me = forms.CharField(label=_('About me'), required=False, help_text=_('If you would like to tell us something about yourself or your involvement with buddhism please do so in this box.'), widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 5}))
-    country = forms.ModelChoiceField(queryset=Country.objects.all(), label=_("Country"), widget=bootstrap.Select())
+    country = forms.ModelChoiceField(queryset=Country.objects.all(), cache_choices=True, label=_("Country"), widget=bootstrap.Select())
     city = forms.CharField(label=_("City"), max_length=100, widget=bootstrap.TextInput())
+    language = forms.ChoiceField(label=_("Language"), required=False, choices=(BLANK_CHOICE_DASH + list(settings.LANGUAGES)), widget=bootstrap.Select())
 
     def clean_email(self):
         # Check if email is unique,
@@ -188,11 +192,13 @@ class UserRegistrationCreationForm(forms.Form):
         new_user.email = data.get('email')
         new_user.first_name = data.get('first_name')
         new_user.last_name = data.get('last_name')        
+        new_user.language = data.get('language')        
         new_user.is_active = False
         new_user.set_unusable_password()
         new_user.save()
         
         user_address = UserAddress()
+        user_address.primary = True
         user_address.user = new_user
         user_address.address_type = 'home'        
         user_address.country = data['country']

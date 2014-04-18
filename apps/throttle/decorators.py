@@ -4,11 +4,16 @@ import hashlib
 import os
 from django.core.cache import cache
 from django.utils.decorators import available_attrs
-from django.http import HttpResponseForbidden, HttpResponse
+from django.http import HttpResponse
 
 import logging
 logger = logging.getLogger(__name__)
 
+
+class HttpResponseTooManyRequests(HttpResponse):
+    status_code = 403  # mayby 429 is better?
+    
+    
 def throttle(method='POST', duration=15, max_calls=1, response=None):
     """
     This decorator is based on Django snippet #1573 code that 
@@ -53,7 +58,7 @@ def throttle(method='POST', duration=15, max_calls=1, response=None):
                         return response    
                     else:
                         logger.warning('throttling client: %s:%s', remote_addr, path)
-                        return HttpResponseForbidden('Try slowing down a little.')
+                        return HttpResponseTooManyRequests('Try slowing down a little.')
             
                 cache.set(key, called, duration)
             return func(request, *args, **kwargs)

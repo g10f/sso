@@ -2,8 +2,8 @@
 import re
 import datetime
 
+from django.utils.timezone import now
 from django import forms 
-
 from django.conf import settings
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
@@ -13,14 +13,12 @@ from django.forms.models import model_to_dict
 from django.template import loader
 from django.core.exceptions import ObjectDoesNotExist
 from django.core import signing
-
 from django.contrib.sites.models import get_current_site
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.forms import PasswordResetForm as DjangoPasswordResetForm
 from django.contrib.auth.forms import SetPasswordForm as DjangoSetPasswordForm
 from django.contrib.auth.tokens import default_token_generator
-#from django.contrib.staticfiles.templatetags.staticfiles import static
 
 from captcha.fields import ReCaptchaField
 from passwords.fields import PasswordField
@@ -130,6 +128,7 @@ class PasswordResetForm(DjangoPasswordResetForm):
                 # a password marked as unusable
                 if not user.has_usable_password():
                     continue
+                expiration_date = now() + datetime.timedelta(settings.PASSWORD_RESET_TIMEOUT_DAYS)
                 c = {
                     'email': user.email,
                     'domain': domain,
@@ -138,6 +137,7 @@ class PasswordResetForm(DjangoPasswordResetForm):
                     'user': user,
                     'token': token_generator.make_token(user),
                     'protocol': 'https' if use_https else 'http',
+                    'expiration_date': expiration_date
                 }
                 subject = loader.render_to_string(subject_template_name, c)
                 # Email subject *must not* contain newlines
@@ -220,9 +220,9 @@ class UserAddFormExt(UserAddForm):
     """
     UserAddForm with organisations, roles and notes element
     """
-    organisation = forms.ModelChoiceField(queryset=None, required=False, label=_("Organisation"), widget=bootstrap.Select())
-    application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
-    role_profiles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
+    organisation = forms.ModelChoiceField(queryset=None, cache_choices=True, required=False, label=_("Organisation"), widget=bootstrap.Select())
+    application_roles = forms.ModelMultipleChoiceField(queryset=None, cache_choices=True, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
+    role_profiles = forms.ModelMultipleChoiceField(queryset=None, cache_choices=True, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
                                                    help_text=_('Groups of application roles that are assigned together.'))
    
     def __init__(self, user, *args, **kwargs):
@@ -310,6 +310,7 @@ class UserSelfProfileForm(forms.Form):
     dob = forms.DateTimeField(label=_('Date of birth'), required=False, 
                 widget=bootstrap.SelectDateWidget(years=range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1), required=False))
     homepage = forms.URLField(label=_('Homepage'), required=False, max_length=512, widget=bootstrap.TextInput())
+    language = forms.ChoiceField(label=_("Language"), required=False, choices=(BLANK_CHOICE_DASH + list(settings.LANGUAGES)), widget=bootstrap.Select())
 
     error_messages = {
         'duplicate_username': _("A user with that username already exists."),
@@ -333,7 +334,7 @@ class UserSelfProfileForm(forms.Form):
             organisation_field = forms.CharField(required=False, initial=organisation, label=_("Center"), 
                                                 help_text=_('Please use the contact form for a request to change this value.'), widget=bootstrap.StaticInput())
         else:
-            organisation_field = forms.ModelChoiceField(queryset=Organisation.objects.all(), label=_("Center"), widget=bootstrap.Select(), 
+            organisation_field = forms.ModelChoiceField(queryset=Organisation.objects.all(), cache_choices=True, label=_("Center"), widget=bootstrap.Select(), 
                                                 help_text=_('You can set this value only once.'), required=False)
         if organisation_field:
             self.fields['organisation'] = organisation_field
@@ -380,6 +381,7 @@ class UserSelfProfileForm(forms.Form):
         self.user.dob = cd.get('dob', None)
         self.user.gender = cd['gender']
         self.user.homepage = cd['homepage']
+        self.user.language = cd['language']
         self.user.save()
         
         organisation = cd.get('organisation')
@@ -447,7 +449,7 @@ class UserRegistrationCreationForm2(UserRegistrationCreationForm):
     UserRegistrationCreationForm.error_messages.update({
         'email_mismatch': _("The two email fields didn't match."),
     })
-    organisation = forms.ModelChoiceField(queryset=Organisation.objects.all(), required=False, label=_("Center"), widget=bootstrap.Select())
+    organisation = forms.ModelChoiceField(queryset=Organisation.objects.all(), cache_choices=True, required=False, label=_("Center"), widget=bootstrap.Select())
     email2 = forms.EmailField(label=_('Repeat your Email'), required=True, widget=bootstrap.EmailInput())
     # for Bots. If you enter anything in this field you will be treated as a robot
     state = forms.CharField(label=_('State'), required=False, widget=bootstrap.HiddenInput())
@@ -529,10 +531,10 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
     email = forms.EmailField(label=_('E-mail address'), widget=bootstrap.EmailInput())
     is_active = forms.BooleanField(label=_('Active'), help_text=_('Designates whether this user should be treated as active. Unselect this instead of deleting accounts.'), 
                                    widget=bootstrap.CheckboxInput(), required=False)
-    organisations = forms.ModelChoiceField(queryset=None, required=False, label=_("Organisation"), widget=bootstrap.Select())
-    application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
+    organisations = forms.ModelChoiceField(queryset=None, cache_choices=True, required=False, label=_("Organisation"), widget=bootstrap.Select())
+    application_roles = forms.ModelMultipleChoiceField(queryset=None, cache_choices=True, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
     notes = forms.CharField(label=_("Notes"), required=False, max_length=1024, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
-    role_profiles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
+    role_profiles = forms.ModelMultipleChoiceField(queryset=None, required=False, cache_choices=True, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
                                                    help_text=_('Groups of application roles that are assigned together.'))
 
     def __init__(self, *args, **kwargs):

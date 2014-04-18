@@ -383,8 +383,8 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         """
         display no superusers in the changelist for non superusers
         """
-        qs = super(UserAdmin, self).get_queryset(request).select_related('last_modified_by',
-                                                                     'created_by')
+        qs = super(UserAdmin, self).get_queryset(request).select_related('last_modified_by_user',
+                                                                     'created_by_user')
         user = request.user
         if user.is_superuser:
             return qs

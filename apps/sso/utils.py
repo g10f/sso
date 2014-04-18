@@ -21,6 +21,7 @@ def build_url(url, params):
     return urlparse.urlunsplit((scheme, netloc, path, new_query_string, fragment))
     
 
+"""
 def catch_errors(f):
     @functools.wraps(f)
     def wrapper(request, *args, **kwargs):
@@ -29,14 +30,14 @@ def catch_errors(f):
         except PermissionDenied as e:
             logger.warning('PermissionDenied caught while processing request, %s.' % e)
             error = oauth2.AccessDeniedError(description=str(e))
-            return HttpResponse(content=error.json, status=error.status_code)
+            return HttpResponse(content=error.json, status=error.status_code, content_type='application/json')
         except Exception as e:
             error = oauth2.ServerError(description=str(e))
             logger.warning('Exception caught while processing request, %s.' % e)
-            return HttpResponse(content=error.json, status=error.status_code)
+            return HttpResponse(content=error.json, status=error.status_code, content_type='application/json')
         
     return wrapper
-
+"""
 
 def disable_for_loaddata(signal_handler):
     """

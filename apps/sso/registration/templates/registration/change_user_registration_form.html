@@ -50,6 +50,7 @@
 			{% include 'include/_field.html' with field=form.date_registered %}
 			{% include 'include/_field.html' with field=form.country %}
 			{% include 'include/_field.html' with field=form.city %}
+            {% include 'include/_field.html' with field=form.language %}
 			{% include 'include/_field.html' with field=form.about_me %}
             <span class="help-block">{% trans 'A person who already has an account and can recommend the user.' %}</span>
             {% include 'registration/include/_user_search_field.html' with field=form.known_person1_first_name %}
@@ -67,6 +68,7 @@
         </div>        
    
       <div class="tab-pane" id="app_roles">
+      {#% comment %#}
             {% with field=form.application_roles %}
             <div class="form-group {% if field.errors %}has-error{% endif %}">
                <div class="dwbn-form-control_lg">
@@ -74,6 +76,7 @@
                </div>
             </div>
             {% endwith %}
+      {#% endcomment %#}
       </div>
         
 		<div class="tab-pane" id="notes">
