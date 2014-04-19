@@ -231,7 +231,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
     form = AdminUserChangeForm
     add_form = UserAddForm
     save_on_top = True
-    list_display = ('id',) + DjangoUserAdmin.list_display + ('last_login', 'date_joined', 'get_last_modified_by_user', 'get_created_by_user')
+    list_display = ('id',) + DjangoUserAdmin.list_display + ('last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user')
     search_fields = ('username', 'first_name', 'last_name', 'email', 'uuid')
     list_filter = (SuperuserFilter, ) + ('is_staff', 'is_center', 'is_active', 'groups', UserAssociatedSystemFilter, UserRegionListFilter,
                     RoleProfilesFilter, ApplicationRolesFilter, LastModifiedUserFilter, CreatedByUserFilter, UserOrganisationsListFilter)
@@ -247,16 +247,16 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
                 'classes': ['wide']}),
         (_('AppRoles'), {'fields': ('assigned_organisations', 'organisations', 'application_roles', 'role_profiles'), 'classes': ['wide', 'wide_ex']}),
         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'), 'classes': ['wide', 'wide_ex']}),
-        (_('Important dates'), {'fields': ('last_login', 'date_joined', 'get_last_modified_by_user', 'get_created_by_user'), 'classes': ['wide']}),
+        (_('Important dates'), {'fields': ('last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user'), 'classes': ['wide']}),
     )
     non_su_fieldsets = (
         (None, {'fields': ('username', ), 'classes': ['wide']}),
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'email', 'uuid', 'is_center', 'is_subscriber'), 'classes': ['wide']}),
         (_('AppRoles'), {'fields': ('is_active', 'assigned_organisations', 'organisations', 'application_roles', 'role_profiles'), 'classes': ['wide', 'wide_ex']}),
-        (_('Important dates'), {'fields': ('last_login', 'date_joined', 'get_last_modified_by_user', 'get_created_by_user'), 'classes': ['wide']}),
+        (_('Important dates'), {'fields': ('last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user'), 'classes': ['wide']}),
     )
-    readonly_fields = ['assigned_organisations', 'is_subscriber', 'get_last_modified_by_user', 'get_created_by_user']
-    non_su_readonly_fields = ['uuid', 'assigned_organisations', 'is_subscriber', 'username', 'last_login', 'date_joined', 'get_last_modified_by_user', 'get_created_by_user']
+    readonly_fields = ['assigned_organisations', 'is_subscriber', 'get_last_modified_by_user', 'last_modified', 'get_created_by_user']
+    non_su_readonly_fields = ['uuid', 'assigned_organisations', 'is_subscriber', 'username', 'last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user']
     
     add_fieldsets = (
         (None, {
