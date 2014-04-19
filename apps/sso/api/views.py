@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+import datetime
 
 from django.views.generic import View
 from django.views.decorators.vary import vary_on_headers
@@ -7,13 +8,14 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import cache_control
 from django.core.urlresolvers import reverse
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.db import transaction
 from django.utils.translation import ugettext as _
-from django.contrib.auth import get_user_model
+from django.utils import timezone, dateparse
 from django.template.defaultfilters import date
 from sorl.thumbnail import get_thumbnail
 
@@ -32,7 +34,7 @@ logger = logging.getLogger(__name__)
 DEFAULT_PER_PAGE = 100
 MIN_PER_PAGE = 2
 MAX_PER_PAGE = 1000
-FIND_EXPRESSION = "{?q,organisation__uuid,per_page,app_uuid}"
+FIND_EXPRESSION = "{?q,organisation__uuid,per_page,app_uuid,modified_since}"
 
 
 def get_page_and_links(request, qs, find_expression=FIND_EXPRESSION):
@@ -93,6 +95,20 @@ def _address_state(address):
     return state
 
 
+def parse_datetime_with_timezone_support(value):
+    parsed = dateparse.parse_datetime(value)
+    
+    if not parsed:  # try date format
+        parsed = dateparse.parse_date(value)
+        if parsed is not None:
+            parsed = datetime.datetime(parsed.year, parsed.month, parsed.day)
+        
+    # Confirm that dt is naive before overwriting its tzinfo.
+    if parsed is not None and timezone.is_naive(parsed):
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed
+
+# TODO: design api more HATEOAS like
 @catch_errors
 @api_user_passes_test(lambda u: u.has_perm("accounts.change_all_users"))
 def get_user_list(request):
@@ -107,8 +123,12 @@ def get_user_list(request):
     if app_uuid:
         qs = qs.filter(application_roles__application__uuid=app_uuid)
     modified_since = request.GET.get('modified_since', None)
-    if modified_since:
-        qs = qs.filter(last_modified__gte=modified_since)
+    if modified_since:  # parse modified_since
+        parsed = parse_datetime_with_timezone_support(modified_since)
+        if parsed is None:
+            raise ValueError("can not parse %s" % modified_since)  # TODO: distinguish between client and server error in exception handling
+        # TODO: take into account last_modified of addresses and phone numbers            
+        qs = qs.filter(last_modified__gte=parsed)
 
     page, links = get_page_and_links(request, qs)
             
@@ -124,6 +144,7 @@ def get_user_list(request):
                 'birth_date': date(user.dob, "c"),
                 'homepage': user.homepage,
                 'language': user.language,
+                'last_modified': date(user.last_modified, "c"),
                 'addresses': {
                     address.uuid: {
                         'address_type': address.address_type,
