@@ -25,6 +25,8 @@
     {% include 'include/_field.html' with field=form.country %}
     {% include 'include/_field.html' with field=form.city %}
     {% include 'include/_field.html' with field=form.language %}
+    {% include 'include/_field.html' with field=form.gender %}
+    {% include 'include/_field.html' with field=form.dob %}
     {% include 'include/_field.html' with field=form.about_me %}    
     <span class="help-block">{% trans 'Please name a person who already has an account and can recommend you.' %}</span>
     {% include 'include/_field.html' with field=form.known_person1_first_name %}
@@ -33,6 +35,8 @@
     {% include 'include/_field.html' with field=form.known_person2_first_name %}
     {% include 'include/_field.html' with field=form.known_person2_last_name %}
     {% include 'include/_field.html' with field=form.captcha %}
+    {# used to cache the captcha, that the user needs to solve only 1 captcha #} 
+    {% include 'include/_field.html' with field=form.state %}  
         
      <div class="form-group">
          <div class="col-sm-offset-3 col-sm-9">

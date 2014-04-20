@@ -1,6 +1,8 @@
 """
 Forms and validation code for user registration.
 """
+import datetime
+
 from django import forms
 from django.db import transaction
 from django.conf import settings
@@ -17,7 +19,7 @@ from .models import RegistrationProfile, send_set_password_email, send_validatio
 from . import default_username_generator
 
 from sso.forms import bootstrap, mixins, BLANK_CHOICE_DASH
-from sso.accounts.models import UserAddress
+from sso.accounts.models import UserAddress, User
 
 
 import logging
@@ -44,6 +46,8 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
     #postal_code = forms.CharField(label=_("Postal code"), required=False, max_length=30, widget=bootstrap.StaticInput())
     #street_address = forms.Textarea(_('Street address'), required=False, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 3, 'readonly': 'readonly'}))
     language = forms.CharField(label=_("Language"), required=False, max_length=100, widget=bootstrap.StaticInput())
+    gender = forms.ChoiceField(label=_('Gender'), required=False, choices=(BLANK_CHOICE_DASH + User.GENDER_CHOICES), widget=bootstrap.Select())
+    dob = forms.CharField(label=_("Date of birth"), required=False, widget=bootstrap.TextInput(attrs={'disabled': ''})) 
     about_me = forms.CharField(label=_('About me'), required=False, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 5, 'readonly': 'readonly'}))
     known_person1_first_name = forms.CharField(label=_("First name"), max_length=100, required=False, widget=bootstrap.TextInput())
     known_person1_last_name = forms.CharField(label=_("Last name"), max_length=100, required=False, widget=bootstrap.TextInput())
@@ -162,7 +166,10 @@ class UserRegistrationCreationForm(forms.Form):
     about_me = forms.CharField(label=_('About me'), required=False, help_text=_('If you would like to tell us something about yourself or your involvement with buddhism please do so in this box.'), widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 5}))
     country = forms.ModelChoiceField(queryset=Country.objects.all(), cache_choices=True, label=_("Country"), widget=bootstrap.Select())
     city = forms.CharField(label=_("City"), max_length=100, widget=bootstrap.TextInput())
-    language = forms.ChoiceField(label=_("Language"), required=False, choices=(BLANK_CHOICE_DASH + list(settings.LANGUAGES)), widget=bootstrap.Select())
+    language = forms.ChoiceField(label=_("Language"), required=False, choices=(BLANK_CHOICE_DASH + sorted(list(settings.LANGUAGES), key=lambda x: x[1])), widget=bootstrap.Select())
+    gender = forms.ChoiceField(label=_('Gender'), required=False, choices=(BLANK_CHOICE_DASH + User.GENDER_CHOICES), widget=bootstrap.Select())
+    dob = forms.DateTimeField(label=_('Date of birth'), required=False, 
+                widget=bootstrap.SelectDateWidget(years=range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1), required=False))
 
     def clean_email(self):
         # Check if email is unique,
@@ -193,6 +200,8 @@ class UserRegistrationCreationForm(forms.Form):
         new_user.first_name = data.get('first_name')
         new_user.last_name = data.get('last_name')        
         new_user.language = data.get('language')        
+        new_user.gender = data.get('gender')
+        new_user.dob = data.get('dob')    
         new_user.is_active = False
         new_user.set_unusable_password()
         new_user.save()
