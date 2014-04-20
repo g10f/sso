@@ -310,7 +310,7 @@ class UserSelfProfileForm(forms.Form):
     dob = forms.DateTimeField(label=_('Date of birth'), required=False, 
                 widget=bootstrap.SelectDateWidget(years=range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1), required=False))
     homepage = forms.URLField(label=_('Homepage'), required=False, max_length=512, widget=bootstrap.TextInput())
-    language = forms.ChoiceField(label=_("Language"), required=False, choices=(BLANK_CHOICE_DASH + list(settings.LANGUAGES)), widget=bootstrap.Select())
+    language = forms.ChoiceField(label=_("Language"), required=False, choices=(BLANK_CHOICE_DASH + sorted(list(settings.LANGUAGES), key=lambda x: x[1])), widget=bootstrap.Select())
 
     error_messages = {
         'duplicate_username': _("A user with that username already exists."),

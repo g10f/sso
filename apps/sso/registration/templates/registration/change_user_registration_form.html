@@ -51,6 +51,8 @@
 			{% include 'include/_field.html' with field=form.country %}
 			{% include 'include/_field.html' with field=form.city %}
             {% include 'include/_field.html' with field=form.language %}
+            {% include 'include/_field.html' with field=form.gender %}
+            {% include 'include/_field.html' with field=form.dob %}
 			{% include 'include/_field.html' with field=form.about_me %}
             <span class="help-block">{% trans 'A person who already has an account and can recommend the user.' %}</span>
             {% include 'registration/include/_user_search_field.html' with field=form.known_person1_first_name %}

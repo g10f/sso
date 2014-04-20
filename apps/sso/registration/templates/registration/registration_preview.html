@@ -15,6 +15,9 @@
     {% include 'include/_static_model_choice_field.html' with field=form.organisation %}
     {% include 'include/_static_model_choice_field.html' with field=form.country %}
     {% include 'include/_static_field.html' with field=form.city %}
+    {% include 'include/_static_choice_field.html' with field=form.language %}
+    {% include 'include/_static_choice_field.html' with field=form.gender %}
+    {% include 'include/_static_field.html' with field=form.dob %}
     {% include 'include/_static_field.html' with field=form.about_me %}
     <span class="help-block">{% trans 'A person who already has an account and can recommend you.' %}</span>
     {% include 'include/_static_field.html' with field=form.known_person1_first_name %}
