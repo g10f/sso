@@ -1,10 +1,10 @@
-{% extends "centered_form.html" %}
+{% extends "registration/base_registration.html" %}
 {% load i18n %}
 
 {% block title %}{% trans 'Registration done' %}{% endblock %}
 
 {% block form %}
-  <h1>{% trans 'Registration done' %}</h1>
-  <p>{% trans "We will send you an e-mail with an validation link which you'll need to click to verify your e-mail." %}</p>
-  <p>{% trans 'Please check your email.' %}</p>
+<h1>{% trans 'Registration done' %}</h1>
+<p>{% trans "We will send you an e-mail with an validation link which you'll need to click to verify your e-mail." %}</p>
+<p>{% trans 'Please check your email.' %}</p>
 {% endblock %}
