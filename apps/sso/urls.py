@@ -3,11 +3,11 @@ from django.conf.urls import patterns, url, include
 from django.conf import settings
 from django.views.generic import RedirectView
 from django.conf.urls.static import static
-from sso.accounts.forms import UserRegistrationCreationForm2
+from sso.accounts.forms import UserSelfRegistrationForm2
 from sso.registration.sites import RegistrationSite
 from sso.admin import sso_admin_site
 
-registration_site = RegistrationSite(form_cls=UserRegistrationCreationForm2)
+registration_site = RegistrationSite(form_cls=UserSelfRegistrationForm2)
 
 urlpatterns = patterns('',
     url(r'^admin/', include(sso_admin_site.urls)),

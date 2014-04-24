@@ -19,7 +19,7 @@ from .models import RegistrationProfile, send_set_password_email, send_validatio
 from . import default_username_generator
 
 from sso.forms import bootstrap, mixins, BLANK_CHOICE_DASH
-from sso.accounts.models import UserAddress, User
+from sso.accounts.models import UserAddress, User, RoleProfile
 
 
 import logging
@@ -103,7 +103,7 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
         initial['last_modified_by_user'] = last_modified_by_user if last_modified_by_user else ''   
         initial['is_verified'] = True if self.registrationprofile.verified_by_user else False
         verified_by_user = self.registrationprofile.verified_by_user
-        initial['verified_by_user'] = verified_by_user if verified_by_user else ''   
+        initial['verified_by_user'] = verified_by_user if verified_by_user else ''                
         kwargs['initial'] = initial
 
         super(RegistrationProfileForm, self).__init__(*args, **kwargs)
@@ -148,7 +148,7 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
         return self.registrationprofile
 
 
-class UserRegistrationCreationForm(forms.Form):
+class UserSelfRegistrationForm(forms.Form):
     """
     used in for the user self registration
     """
@@ -189,7 +189,7 @@ class UserRegistrationCreationForm(forms.Form):
         if edit_again:
             raise forms.ValidationError('_edit_again', '_edit_again')
         
-        return super(UserRegistrationCreationForm, self).clean()
+        return super(UserSelfRegistrationForm, self).clean()
         
     @staticmethod
     def save_data(data, username_generator=default_username_generator):
@@ -205,6 +205,13 @@ class UserRegistrationCreationForm(forms.Form):
         new_user.is_active = False
         new_user.set_unusable_password()
         new_user.save()
+
+        if settings.SSO_CUSTOM.get('DEFAULT_ROLE_PROFILE_UUID'):
+            try:
+                default_role_profile = RoleProfile.objects.get(uuid=settings.SSO_CUSTOM.get('DEFAULT_ROLE_PROFILE_UUID'))
+                new_user.role_profiles.add(default_role_profile)
+            except ObjectDoesNotExist as e:
+                logger.warning(str(e))
         
         user_address = UserAddress()
         user_address.primary = True
@@ -225,13 +232,13 @@ class UserRegistrationCreationForm(forms.Form):
         return registration_profile
 
 
-class UserRegistrationCreationFormPreview(FormPreview):
+class UserSelfRegistrationFormPreview(FormPreview):
     form_template = 'registration/registration_form.html'
     preview_template = 'registration/registration_preview.html'
 
     def get_context(self, request, form):
         "Context for template rendering."
-        context = super(UserRegistrationCreationFormPreview, self).get_context(request, form)
+        context = super(UserSelfRegistrationFormPreview, self).get_context(request, form)
         context.update({'site_name': settings.SSO_CUSTOM['SITE_NAME'], 'title': _('User registration')})
         return context
     

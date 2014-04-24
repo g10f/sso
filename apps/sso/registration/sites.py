@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, url
 from django.views.generic import TemplateView 
 from .views import validation_confirm, UserRegistrationList, UserRegistrationDeleteView, update_user_registration  # , register
-from forms import UserRegistrationCreationForm, UserRegistrationCreationFormPreview
+from forms import UserSelfRegistrationForm, UserSelfRegistrationFormPreview
 from tokens import default_token_generator
 from . import default_username_generator
 
@@ -12,7 +12,7 @@ class RegistrationSite(object):
     username_generator
     """
     def __init__(self, 
-                 form_cls=UserRegistrationCreationForm, 
+                 form_cls=UserSelfRegistrationForm, 
                  token_generator=default_token_generator,
                  username_generator=default_username_generator):
         self.form_cls = form_cls
@@ -25,7 +25,7 @@ class RegistrationSite(object):
             url(r'^register/validate/complete/$', TemplateView.as_view(template_name='registration/validation_complete.html'), name='validation_complete'),
             url(r'^register/validate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', validation_confirm, name='validation_confirm'),
             #url(r'^register/$', register, {'form_cls': self.form_cls}, name='registration_register'),
-            url(r'^register/$', UserRegistrationCreationFormPreview(self.form_cls), name='registration_register'),
+            url(r'^register/$', UserSelfRegistrationFormPreview(self.form_cls), name='registration_register'),
             url(r'^register/done/$', TemplateView.as_view(template_name='registration/registration_done.html'), name='registration_done'),
             url(r'^register/closed/$', TemplateView.as_view(template_name='registration/registration_closed.html'), name='registration_disallowed'),
             url(r'^registrations/$', UserRegistrationList.as_view(), name='user_registration_list'),
