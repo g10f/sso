@@ -24,7 +24,7 @@ from captcha.fields import ReCaptchaField
 from passwords.fields import PasswordField
 from .models import Organisation, User, UserAddress, UserPhoneNumber
 from sso.registration import default_username_generator
-from sso.registration.forms import UserRegistrationCreationForm
+from sso.registration.forms import UserSelfRegistrationForm
 from sso.forms import bootstrap, mixins, BLANK_CHOICE_DASH
 
 import logging
@@ -442,11 +442,11 @@ class AdminUserChangeForm(UserChangeForm, BasicUserChangeForm):
         return exclude    
 
 
-class UserRegistrationCreationForm2(UserRegistrationCreationForm):
+class UserSelfRegistrationForm2(UserSelfRegistrationForm):
     """
-    Overwritten UserRegistrationCreationForm Form with additional  organisation field
+    Overwritten UserSelfRegistrationForm Form with additional  organisation field
     """
-    UserRegistrationCreationForm.error_messages.update({
+    UserSelfRegistrationForm.error_messages.update({
         'email_mismatch': _("The two email fields didn't match."),
     })
     organisation = forms.ModelChoiceField(queryset=Organisation.objects.all(), cache_choices=True, required=False, label=_("Center"), widget=bootstrap.Select())
@@ -457,7 +457,7 @@ class UserRegistrationCreationForm2(UserRegistrationCreationForm):
     signer = signing.TimestampSigner()
 
     def __init__(self, data=None, *args, **kwargs):
-        super(UserRegistrationCreationForm2, self).__init__(data, *args, **kwargs)
+        super(UserSelfRegistrationForm2, self).__init__(data, *args, **kwargs)
         
         if self.is_captcha_needed():
             self.fields['captcha'] = ReCaptchaField(label=_('Prove you are human'),
@@ -484,7 +484,7 @@ class UserRegistrationCreationForm2(UserRegistrationCreationForm):
             data['state'] = self.signer.sign('True')
             self.data = data
             del self.fields['captcha']
-        return super(UserRegistrationCreationForm2, self).clean()
+        return super(UserSelfRegistrationForm2, self).clean()
 
     def clean_email2(self):
         email = self.cleaned_data.get('email')
@@ -509,7 +509,7 @@ class UserRegistrationCreationForm2(UserRegistrationCreationForm):
     
     @staticmethod
     def save_data(data, username_generator=default_username_generator):
-        registration_profile = UserRegistrationCreationForm.save_data(data, username_generator)
+        registration_profile = UserSelfRegistrationForm.save_data(data, username_generator)
         organisation = data["organisation"]
         if organisation:
             user = registration_profile.user

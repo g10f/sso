@@ -18,7 +18,7 @@ from django.core.urlresolvers import reverse, reverse_lazy
 
 from sso.views import main
 from .models import RegistrationProfile, RegistrationManager, send_user_validated_email  # , send_validation_email
-from .forms import RegistrationProfileForm  # ,UserRegistrationCreationForm
+from .forms import RegistrationProfileForm  # ,UserSelfRegistrationForm
 from .tokens import default_token_generator
 #from . import default_username_generator
 
@@ -204,7 +204,7 @@ def validation_confirm(request, uidb64=None, token=None, token_generator=default
 
 """
 @transaction.atomic
-def register(request, username_generator=default_username_generator, form_cls=UserRegistrationCreationForm, template='registration/registration_form.html'):
+def register(request, username_generator=default_username_generator, form_cls=UserSelfRegistrationForm, template='registration/registration_form.html'):
     
     if not settings.REGISTRATION.get('OPEN', True):
         return redirect('registration:registration_disallowed')
