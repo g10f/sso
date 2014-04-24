@@ -140,7 +140,7 @@ os.environ['DEBUG'] = ""
 """
 
 @task
-def compile_less(version='1.0.2'):
+def compile_less(version='1.0.3'):
     for style in ['default', 'dwbn', 'cerulean', 'slate', 'vw']:
         local('lessc ./apps/sso/static/less/%(style)s.less ./apps/sso/static/css/%(style)s-%(version)s.css' %{'style': style, 'version': version})
 
