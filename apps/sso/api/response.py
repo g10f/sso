@@ -4,7 +4,7 @@ import json
 from django.utils.http import same_origin
 from django.http import HttpResponse
 from django.utils.translation import ugettext as _
-from sso.http_status import *  # @UnusedWildImport
+from http.http_status import *  # @UnusedWildImport
 
 import logging
 

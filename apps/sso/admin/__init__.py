@@ -9,6 +9,7 @@ from sso.accounts.admin import *
 from sso.oauth2.admin import *
 from sso.registration.admin import *
 from sso.accounts.models import *
+#from sso.organisations.models import *
 
 from l10n.admin import *
 from streaming.admin import *
@@ -41,6 +42,7 @@ if 'streaming' in settings.DATABASES:
     sso_admin_site.register(Logging, LoggingAdmin)
 
 sso_admin_site.register(RegistrationProfile, RegistrationAdmin)
+#sso_admin_site.register(Organisation, OrganisationAdmin)
 
 #sso_admin_site.register(ContentType)
 #sso_admin_site.register(Permission)

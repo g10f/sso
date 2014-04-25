@@ -10,7 +10,7 @@ from django.shortcuts import render, get_object_or_404
 from oauthlib import oauth2
 from oauthlib.common import urlencode
 
-from sso.http_status import *  # @UnusedWildImport
+from http.http_status import *  # @UnusedWildImport
 from sso.oauth2.decorators import login_required
 from .crypt import key, loads_jwt, BadSignature
 from .server import server
