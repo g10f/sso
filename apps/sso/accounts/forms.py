@@ -25,7 +25,7 @@ from passwords.fields import PasswordField
 from .models import Organisation, User, UserAddress, UserPhoneNumber
 from sso.registration import default_username_generator
 from sso.registration.forms import UserSelfRegistrationForm
-from sso.forms import bootstrap, mixins, BLANK_CHOICE_DASH
+from sso.forms import bootstrap, mixins, BLANK_CHOICE_DASH, BaseForm
 
 import logging
 logger = logging.getLogger(__name__)
@@ -241,20 +241,6 @@ class UserAddFormExt(UserAddForm):
             user.organisations.add(organisation)
         return user
     
-
-class BaseForm(forms.ModelForm):
-    """
-    @property
-    def media(self):
-        media = super(BaseForm, self).media
-        js = ['inlines.js']
-        return forms.Media(js=[static('js/%s' % url) for url in js]) + media
-    """
-    def save(self, commit=True):
-        if self.has_changed():
-            return super(BaseForm, self).save(commit)
-        else:
-            return self.instance
 
 class AddressForm(BaseForm):
     class Meta:

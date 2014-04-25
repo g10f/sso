@@ -21,7 +21,7 @@ from sorl.thumbnail import get_thumbnail
 
 from sso.accounts.models import Organisation, ApplicationRole, send_account_created_email
 from sso.registration import default_username_generator
-from sso.http_status import *  # @UnusedWildImport
+from http.http_status import *  # @UnusedWildImport
 from sso.oauth2.decorators import client_required  # scopes_required
 from sso.utils import base_url, build_url, absolute_url
 from sso.api.decorators import api_user_passes_test, catch_errors

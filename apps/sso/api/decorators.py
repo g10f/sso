@@ -3,7 +3,7 @@ from functools import wraps
 
 from django.core.exceptions import PermissionDenied
 from django.utils.decorators import available_attrs
-from sso.http_status import *  # @UnusedWildImport
+from http.http_status import *  # @UnusedWildImport
 from sso.api.response import HttpApiResponseNotAuthorized, HttpApiErrorResponse
 
 import logging

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 from django.core.urlresolvers import reverse
-from sso.http_status import *  # @UnusedWildImport
+from http.http_status import *  # @UnusedWildImport
 
 from sso.oauth2.tests import OAuth2BaseTestCase
 
