@@ -13,10 +13,12 @@ from django.db.models import Q
 from django.utils.encoding import force_text
 from l10n.models import Country
 from sso.views import main
-from sso.accounts.models import Region, Organisation, ApplicationRole, RoleProfile, send_account_created_email
+from sso.accounts.models import ApplicationRole, RoleProfile, send_account_created_email  # Region, Organisation, 
+from sso.organisations.models import AdminRegion, Organisation
 from sso.accounts.forms import UserAddFormExt, UserProfileForm
 
 
+# TODO: refine the permission checks
 def has_permission(user):
     return user.is_authenticated() and user.can_add_users
     
@@ -81,23 +83,23 @@ class UserList(ListView):
         country = self.request.GET.get('country', '')
         if country:
             self.country = Country.objects.get(iso2_code=country)
-            qs = qs.filter(organisations__iso2_code__in=[self.country.iso2_code])
+            qs = qs.filter(organisations2__country__in=[self.country])
         else:
             self.country = None
 
-        # apply region filter
-        region = self.request.GET.get('region', '')
-        if region:
-            self.region = Region.objects.get(pk=region)
-            qs = qs.filter(organisations__region__in=[self.region])
+        # apply admin_region filter
+        admin_region = self.request.GET.get('admin_region', '')
+        if admin_region:
+            self.admin_region = AdminRegion.objects.get(pk=admin_region)
+            qs = qs.filter(organisations2__admin_region__in=[self.admin_region])
         else:
-            self.region = None
+            self.admin_region = None
 
         # apply center filter
         center = self.request.GET.get('center', '')
         if center:
             self.center = Organisation.objects.get(pk=center)
-            qs = qs.filter(organisations__in=[self.center])
+            qs = qs.filter(organisations2__in=[self.center])
         else:
             self.center = None
             
@@ -145,32 +147,31 @@ class UserList(ListView):
             if h['sortable'] and h['sorted']:
                 num_sorted_fields += 1
         
-        regions = Region.objects.none()
         centers = Organisation.objects.none()
         application_roles = user.get_administrable_application_roles()
         role_profiles = user.get_administrable_role_profiles()
         countries = user.get_countries_of_administrable_organisations()
+        admin_regions = user.get_administrable_regions()
         if len(countries) == 1:
             self.country = countries[0]
             countries = Country.objects.none()
 
         if self.country:
-            regions = Region.objects.filter(organisation__iso2_code=self.country.iso2_code).distinct()
-            centers = user.get_administrable_organisations().filter(iso2_code=self.country.iso2_code)
-            if self.region:
-                centers = centers.filter(region=self.region)
+            centers = user.get_administrable_organisations().filter(country=self.country)
+            if self.admin_region:
+                centers = centers.filter(admin_region=self.admin_region)
             
             if self.center:
-                application_roles = application_roles.filter(user__organisations__in=[self.center]).distinct()
-                role_profiles = role_profiles.filter(user__organisations__in=[self.center]).distinct()
+                application_roles = application_roles.filter(user__organisations2__in=[self.center]).distinct()
+                role_profiles = role_profiles.filter(user__organisations2__in=[self.center]).distinct()
             else:
-                application_roles = application_roles.filter(user__organisations__in=centers).distinct()
-                role_profiles = role_profiles.filter(user__organisations__in=centers).distinct()
+                application_roles = application_roles.filter(user__organisations2__in=centers).distinct()
+                role_profiles = role_profiles.filter(user__organisations2__in=centers).distinct()
 
         if len(countries) == 1:
             countries = None
-        if len(regions) == 1:
-            regions = None
+        if len(admin_regions) == 1:
+            admin_regions = None
         if len(centers) == 1:
             centers = None
         
@@ -183,8 +184,8 @@ class UserList(ListView):
             'cl': self.cl,
             'countries': countries,
             'country': self.country,
-            'regions': regions,
-            'region': self.region,
+            'admin_regions': admin_regions,
+            'admin_region': self.admin_region,
             'centers': centers,
             'center': self.center,
             'app_roles': application_roles,

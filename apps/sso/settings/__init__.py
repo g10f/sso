@@ -28,7 +28,6 @@ SSO_CUSTOM = {
     'STYLESHEET': 'css/default-1.0.2.css',
     'SYLE_LESS': 'less/default.less',
     'FAVICON': 'ico/favicon.ico'
-    
 }
 
 EMAIL_SUBJECT_PREFIX = '[SSO] '
@@ -145,6 +144,7 @@ INSTALLED_APPS = (
     'south',
     'streaming',
     'sso',
+    'sso.organisations',
     'sso.accounts',
     'sso.registration',
     'sso.auth',

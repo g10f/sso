@@ -10,7 +10,7 @@ from django.core.urlresolvers import reverse
 
 
 class RegistrationTest(TestCase):
-    fixtures = ['initial_data.json', 'app_roles.json', 'test_user_data.json', 'test_l10n_data.xml']
+    fixtures = ['initial_data.json', 'app_roles.json', 'test_l10n_data.xml', 'test_organisation_data.json', 'test_user_data.json']
 
     def setUp(self):
         os.environ['RECAPTCHA_TESTING'] = 'True'

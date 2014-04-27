@@ -16,7 +16,7 @@ from django.core.mail import send_mail
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.utils.timezone import now
-from django.utils.translation import get_language, activate, ugettext_lazy as _
+from django.utils.translation import get_language, activate, pgettext_lazy, ugettext_lazy as _
 from django.utils.text import get_valid_filename
 
 from south.modelsinspector import add_introspection_rules
@@ -24,7 +24,9 @@ from sorl import thumbnail
 from l10n.models import Country
 
 from sso.fields import UUIDField
-from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin
+from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary
+from sso.organisations.models import AdminRegion, Organisation as Organisation2
+
 from sso.utils import disable_for_loaddata
 from current_user.models import CurrentUserField
 import logging
@@ -177,6 +179,7 @@ class User(AbstractUser):
 
     uuid = UUIDField(version=4, editable=True, unique=True)
     organisations = models.ManyToManyField(Organisation, verbose_name=_('organisations'), blank=True, null=True)
+    organisations2 = models.ManyToManyField(Organisation2, verbose_name=_('organisations2'), blank=True, null=True)
     application_roles = models.ManyToManyField(ApplicationRole, verbose_name=_('application roles'), blank=True, null=True)
     role_profiles = models.ManyToManyField(RoleProfile, verbose_name=_('role profiles'), blank=True, null=True, help_text=_('Organises a group of application roles that are usually assigned together.'))
     last_modified_by_user = CurrentUserField(verbose_name=_('last modified by'), related_name='+')
@@ -274,28 +277,63 @@ class User(AbstractUser):
                 self._administrable_role_profiles_cache = role_profiles.prefetch_related('application_roles', 'application_roles__role', 'application_roles__application')    
         return self._administrable_role_profiles_cache
     
+    def get_administrable_organisations2(self):
+        """
+        temporary for migration
+        """
+        return self.get_administrable_organisations()
+    
     def get_administrable_organisations(self):
         """
         return a list of all organisations the user has admin rights on
         """
         if not hasattr(self, '_administrable_organisations_cache'):
-            if self.has_perm("accounts.change_all_users"):
-                self._administrable_organisations_cache = Organisation.objects.all()
+            organisation = Organisation2.objects.none()
+            if self.has_perm("accounts.change_all_users"):  # Global Admin
+                organisation = Organisation2.objects.all().select_related('country')
             else:
-                if self.has_perm("accounts.change_reg_users"):
-                    # Regional Admin
-                    self._administrable_organisations_cache = Organisation.objects.filter(Q(user=self) | Q(region__organisation__user=self)).distinct()
-                elif self.has_perm("accounts.change_org_users"):
-                    self._administrable_organisations_cache = self.organisations.all()
-                else:
-                    self._administrable_organisations_cache = Organisation.objects.none()
+                if self.has_perm("accounts.change_reg_users"):  # Regional Admin
+                    organisation = Organisation2.objects.filter(Q(user=self) | Q(admin_region__organisation__user=self)).select_related('country').distinct()
+                elif self.has_perm("accounts.change_org_users"):  # Organisation Admin
+                    organisation = self.organisations2.all().select_related('country')
+            
+            self._administrable_organisations_cache = organisation
+        
         return self._administrable_organisations_cache
+    
+    def get_administrable_regions(self):
+        """
+        return a list of all organisations the user has admin rights on
+        """
+        if not hasattr(self, '_administrable_regions_cache'):
+            admin_regions = AdminRegion.objects.none()
+            if self.has_perm("accounts.change_all_users"):  # Global Admin
+                admin_regions = AdminRegion.objects.all()
+            elif self.has_perm("accounts.change_reg_users"):  # Regional Admin
+                admin_regions = AdminRegion.objects.filter(organisation__user=self).distinct()
+            
+            self._administrable_regions_cache = admin_regions
+        
+        return self._administrable_regions_cache
     
     def get_countries_of_administrable_organisations(self):
         """
         return a list of countries from the administrable organisations the user has 
-        """
-        return Country.objects.filter(iso2_code__in=self.get_administrable_organisations().values_list('iso2_code', flat=True))
+        """        
+        if not hasattr(self, '_countries_of_administrable_organisations_cache'):
+            countries = Country.objects.none()
+            
+            if self.has_perm("accounts.change_all_users"):  # Global Admin
+                countries = Country.objects.filter(organisation__isnull=False).distinct()
+            else:
+                if self.has_perm("accounts.change_reg_users"):  # Regional Admin
+                    countries = Country.objects.filter(Q(organisation__user=self) | Q(organisation__admin_region__organisation__user=self)).distinct()
+                elif self.has_perm("accounts.change_org_users"):  # Organisation Admin
+                    countries = Country.objects.filter(organisation__user=self)
+            
+            self._countries_of_administrable_organisations_cache = countries
+        
+        return self._countries_of_administrable_organisations_cache
 
     @property
     def can_add_users(self):
@@ -342,7 +380,7 @@ class User(AbstractUser):
                 qs = qs.filter(is_superuser=False)
             else:
                 organisations = self.get_administrable_organisations()
-                q = Q(is_superuser=False) & Q(organisations__in=organisations)
+                q = Q(is_superuser=False) & Q(organisations2__in=organisations)
                 qs = qs.filter(q).distinct()
         return qs
         
@@ -371,6 +409,19 @@ class User(AbstractUser):
 
 
 class UserAddress(AbstractBaseModel, AddressMixin):
+    ADDRESSTYPE_CHOICES = (
+            ('home', pgettext_lazy('address', 'Home')),
+            ('work', _('Business')),
+            ('other', _('Other')),            
+            )
+    #_addresstype_choices = {}
+    #for choice in ADDRESSTYPE_CHOICES:
+    #    _addresstype_choices[choice[0]] = choice[1]
+    
+    #def get_addresstype_desc(self):
+    #    return self._addresstype_choices.get(self.address_type)
+        
+    address_type = models.CharField(_("address type"), choices=ADDRESSTYPE_CHOICES, max_length=20)
     user = models.ForeignKey(User)
 
     class Meta(AbstractBaseModel.Meta, AddressMixin.Meta):
@@ -378,20 +429,19 @@ class UserAddress(AbstractBaseModel, AddressMixin):
     
     @classmethod
     def ensure_single_primary(cls, user):
-        user_items = user.useraddress_set.filter(user=user)
-        primary_items = user_items.filter(primary=True)
-        if (primary_items.count() > 1):
-            for item in primary_items[1:]:
-                item.primary = False
-                item.save()
-        elif primary_items.count() == 0:
-            item = user_items.first()
-            if item:
-                item.primary = True
-                item.save()
-                
+        ensure_single_primary(user.useraddress_set.all())
+
 
 class UserPhoneNumber(AbstractBaseModel, PhoneNumberMixin):
+    PHONE_CHOICES = [
+        ('home', pgettext_lazy('phone number', 'Home')),  # with translation context 
+        ('mobile', _('Mobile')),
+        ('work', _('Business')),
+        ('fax', _('Fax')),
+        ('pager', _('Pager')),
+        ('other', _('Other')),
+    ]
+    phone_type = models.CharField(_("phone type"), help_text=_('Mobile, home, office, etc.'), choices=PHONE_CHOICES, max_length=20)
     user = models.ForeignKey(User)
 
     class Meta(AbstractBaseModel.Meta, PhoneNumberMixin.Meta):
@@ -400,18 +450,8 @@ class UserPhoneNumber(AbstractBaseModel, PhoneNumberMixin):
     
     @classmethod
     def ensure_single_primary(cls, user):
-        user_items = user.userphonenumber_set.filter(user=user)
-        primary_items = user_items.filter(primary=True)
-        if (primary_items.count() > 1):
-            for item in primary_items[1:]:
-                item.primary = False
-                item.save()
-        elif primary_items.count() == 0:
-            item = user_items.first()
-            if item:
-                item.primary = True
-                item.save()
-    
+        ensure_single_primary(user.userphonenumber_set.all())
+
 
 class UserAssociatedSystem(models.Model):
     """

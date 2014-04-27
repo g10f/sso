@@ -6,7 +6,8 @@ from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.db import transaction
 from django.db import IntegrityError
-from sso.accounts.models import UserAssociatedSystem, Application, Organisation
+from sso.accounts.models import UserAssociatedSystem, Application
+from sso.organisations.models import Organisation
 from models import StreamingUser
 
 logger = logging.getLogger(__name__)
@@ -48,7 +49,7 @@ def add_streaming_user(username, email, password, is_center, is_subscriber, is_a
     if is_center:
         try:
             organisation = Organisation.objects.get(email__iexact=email)
-            user.organisations.add(organisation)
+            user.organisations2.add(organisation)
             user.first_name = 'BuddhistCenter'
             user.last_name = email.split('@')[0]
             user.save()            

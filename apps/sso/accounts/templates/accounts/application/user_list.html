@@ -59,22 +59,22 @@
 		{% endif %}
 		{% endblock country_filter %}
     
-	    {% block region_filter %}
-	    {% if regions %}
+	    {% block admin_region_filter %}
+	    {% if admin_regions %}
 	    <div class="btn-group">
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                {% if region %}{{ region }}{% else %}{% trans 'Select region' %}{% endif %}
+                {% if admin_region %}{{ admin_region }}{% else %}{% trans 'Select region' %}{% endif %}
                 <span class="caret"></span>
             </button>
             <ul class="dropdown-menu" role="menu">
-                {% if region %}<li><a tabindex="-1" href="{% query_string cl 'region' 'center' %}"">{% trans 'All regions' %}</a></li>{% endif %}
-                {% for region in regions %}
-                    <li><a tabindex="-1" href="{% query_string cl 'region' region.pk 'center,app_role,p' %}">{{ region }}</a></li>
+                {% if admin_region %}<li><a tabindex="-1" href="{% query_string cl 'admin_region' '' 'center' %}"">{% trans 'All regions' %}</a></li>{% endif %}
+                {% for admin_region in admin_regions %}
+                    <li><a tabindex="-1" href="{% query_string cl 'admin_region' admin_region.pk 'center,app_role,p' %}">{{ admin_region }}</a></li>
                 {% endfor %}
             </ul>
         </div>
 		{% endif %}
-		{% endblock region_filter %}
+		{% endblock admin_region_filter %}
 
 		{% block center_filter %}
 		{% if centers %}

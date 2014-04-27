@@ -1,0 +1,41 @@
+[
+ {
+	 "pk" : 1,
+	 "model" : "organisations.adminregion",
+	 "fields" : {
+		 "last_modified" : "2013-04-28T16:56:13.807Z",
+		 "uuid" : "0ebf2537fc664b7db285ea773c981404",
+		 "name" : "Region 1"
+	 }
+}, {
+	 "pk" : 2,
+	 "model" : "organisations.adminregion",
+	 "fields" : {
+		 "last_modified" : "2013-04-28T16:56:23.067Z",
+		 "uuid" : "1a5985f6a9fc4ead975de1291f8a65a9",
+		 "name" : "Region 2"
+	 }
+}, {
+	 "pk" : 1,
+	 "model" : "organisations.organisation",
+	 "fields" : {
+		 "uuid" : "31664dd38ca4454e916e55fe8b1f0745",
+		 "admin_region": ["0ebf2537fc664b7db285ea773c981404"],
+		 "name" : "Test Center 1",
+		 "center_type": "1",
+		 "country" : 81,
+		 "email" : "testcenter1@example.com"
+	 }
+}, {
+	 "pk" : 2,
+	 "model" : "organisations.organisation",
+	 "fields" : {
+		 "uuid" : "31664dd38ca4454e916e55fe8b1f0746",
+		 "admin_region": ["0ebf2537fc664b7db285ea773c981404"],
+		 "name" : "Test Center 2",
+		 "center_type": "1",
+		 "country" : 81,
+		 "email" : "testcenter2@example.com"
+	 }
+}
+]

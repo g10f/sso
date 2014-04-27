@@ -12,7 +12,7 @@ from sso.tests import SSOSeleniumTests
 from sso.accounts.models import ApplicationRole
 
 class AccountsSeleniumTests(SSOSeleniumTests):
-    fixtures = ['initial_data.json', 'app_roles.json', 'test_user_data.json']
+    fixtures = ['initial_data.json', 'test_l10n_data.xml', 'app_roles.json', 'test_organisation_data.json', 'test_user_data.json']
     
     def login_test(self, username, password):
         self.login(username=username, password=password)
@@ -157,6 +157,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         # login as admin and add new user
         self.login(username='GunnarScherf', password='gsf')
         self.selenium.get('%s%s' % (self.live_server_url, reverse('accounts:add_user')))
+        self.wait_page_loaded()
 
         new_first_name = 'Test'
         new_last_name = 'User'
