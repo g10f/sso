@@ -252,12 +252,6 @@ class User(AbstractUser):
     
     def get_administrable_organisations(self):
         """
-        temporary for migration
-        """
-        return self.get_administrable_organisations()
-    
-    def get_administrable_organisations(self):
-        """
         return a list of all organisations the user has admin rights on
         """
         if not hasattr(self, '_administrable_organisations_cache'):
