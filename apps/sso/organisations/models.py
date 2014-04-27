@@ -84,21 +84,7 @@ class Organisation(AbstractBaseModel):
             return ''
     homepage_link.allow_tags = True
     homepage_link.short_description = _('homepage')
-    
-    """
-    def country(self):
-        try:
-            for address in self.address_set.all():
-                country = address.country
-                if country:
-                    return country
-                
-        except ObjectDoesNotExist:
-            return None
-        return None
-    country.short_description = _('country')
-    """
-    
+        
     def phone_number(self, phone_type=None):
         """Return the default phone number or None."""
         try:
@@ -112,14 +98,6 @@ class Organisation(AbstractBaseModel):
             pass            
         return None
     primary_phone = property(phone_number)       
-    
-    def _post_address(self):
-        """Return the default post address or None."""
-        try:
-            return self.address_set.get(is_default_postal=True)
-        except ObjectDoesNotExist:
-            return None
-    post_address = property(_post_address)
 
 
 class OrganisationAddress(AbstractBaseModel, AddressMixin):
