@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import urllib2
 import json
-import decimal
+import decimal 
 from django.utils.dateparse import parse_date
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import NoArgsCommand
