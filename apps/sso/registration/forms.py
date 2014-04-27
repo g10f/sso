@@ -83,7 +83,7 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
             user_data['language'] = self.user.get_language_display()
         try:
             # after registration, the user should have exactly 1 center 
-            user_data['organisations'] = self.user.organisations2.all()[0]
+            user_data['organisations'] = self.user.organisations.all()[0]
         except IndexError:
             # center is optional
             #logger.error("User without center?", exc_info=1)
@@ -138,7 +138,7 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
         # userprofile data
         self.update_user_m2m_fields('application_roles', current_user)
         self.update_user_m2m_fields('role_profiles', current_user)
-        self.update_user_m2m_fields('organisations2', current_user)
+        self.update_user_m2m_fields('organisations', current_user)
         
         if activate:
             self.user.is_active = True

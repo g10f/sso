@@ -152,7 +152,7 @@ class User(AbstractUser):
         return u'image/%s/%s' % (self.uuid, get_filename(filename.encode('ascii', 'replace'))) 
 
     uuid = UUIDField(version=4, editable=True, unique=True)
-    organisations2 = models.ManyToManyField(Organisation2, verbose_name=_('organisations2'), blank=True, null=True)
+    organisations = models.ManyToManyField(Organisation2, verbose_name=_('organisations'), blank=True, null=True)
     application_roles = models.ManyToManyField(ApplicationRole, verbose_name=_('application roles'), blank=True, null=True)
     role_profiles = models.ManyToManyField(RoleProfile, verbose_name=_('role profiles'), blank=True, null=True, help_text=_('Organises a group of application roles that are usually assigned together.'))
     last_modified_by_user = CurrentUserField(verbose_name=_('last modified by'), related_name='+')
@@ -250,7 +250,7 @@ class User(AbstractUser):
                 self._administrable_role_profiles_cache = role_profiles.prefetch_related('application_roles', 'application_roles__role', 'application_roles__application')    
         return self._administrable_role_profiles_cache
     
-    def get_administrable_organisations2(self):
+    def get_administrable_organisations(self):
         """
         temporary for migration
         """
@@ -268,7 +268,7 @@ class User(AbstractUser):
                 if self.has_perm("accounts.change_reg_users"):  # Regional Admin
                     organisation = Organisation2.objects.filter(Q(user=self) | Q(admin_region__organisation__user=self)).select_related('country').distinct()
                 elif self.has_perm("accounts.change_org_users"):  # Organisation Admin
-                    organisation = self.organisations2.all().select_related('country')
+                    organisation = self.organisations.all().select_related('country')
             
             self._administrable_organisations_cache = organisation
         
@@ -353,7 +353,7 @@ class User(AbstractUser):
                 qs = qs.filter(is_superuser=False)
             else:
                 organisations = self.get_administrable_organisations()
-                q = Q(is_superuser=False) & Q(organisations2__in=organisations)
+                q = Q(is_superuser=False) & Q(organisations__in=organisations)
                 qs = qs.filter(q).distinct()
         return qs
         

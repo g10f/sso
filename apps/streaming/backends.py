@@ -49,7 +49,7 @@ def add_streaming_user(username, email, password, is_center, is_subscriber, is_a
     if is_center:
         try:
             organisation = Organisation.objects.get(email__iexact=email)
-            user.organisations2.add(organisation)
+            user.organisations.add(organisation)
             user.first_name = 'BuddhistCenter'
             user.last_name = email.split('@')[0]
             user.save()            

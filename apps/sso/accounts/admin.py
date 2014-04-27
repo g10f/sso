@@ -74,8 +74,8 @@ class OrganisationsListFilter(BaseFilter):
     Fiter for user admin
     """
     title = _('Organisation')
-    parameter_name = 'organisation2'
-    field_path = 'organisations2'
+    parameter_name = 'organisation'
+    field_path = 'organisations'
     
     def get_lookup_qs(self, request, model_admin):
         return Organisation.objects.filter(user__isnull=False).distinct()
@@ -113,7 +113,7 @@ class UserAssociatedSystemFilter(BaseFilter):
         
 
 class UserOrganisationsListFilter(OrganisationsListFilter):
-    field_path = 'organisations2'
+    field_path = 'organisations'
 
     def get_lookup_qs(self, request, model_admin):
         return request.user.get_administrable_organisations()
@@ -125,7 +125,7 @@ class UserRegionListFilter(BaseFilter):
     """
     title = _('Admin Region')
     parameter_name = 'admin_region'
-    field_path = 'organisations2__admin_region'
+    field_path = 'organisations__admin_region'
     
     def get_lookup_qs(self, request, model_admin):
         return AdminRegion.objects.all()
@@ -228,7 +228,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
     search_fields = ('username', 'first_name', 'last_name', 'email', 'uuid')
     list_filter = (SuperuserFilter, ) + ('is_staff', 'is_center', 'is_active', 'groups', UserAssociatedSystemFilter, UserRegionListFilter,
                     RoleProfilesFilter, ApplicationRolesFilter, UserOrganisationsListFilter, CreatedByUserFilter, LastModifiedUserFilter)
-    filter_horizontal = DjangoUserAdmin.filter_horizontal + ('groups', 'application_roles', 'role_profiles', 'organisations2')
+    filter_horizontal = DjangoUserAdmin.filter_horizontal + ('groups', 'application_roles', 'role_profiles', 'organisations')
     ordering = ['-last_login', '-first_name', '-last_name']
     actions = ['mark_info_mail']
     inlines = [PhoneNumber_Inline, Address_Inline]
@@ -238,14 +238,14 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         (_('Personal info'), {
                 'fields': ('first_name', 'last_name', 'email', 'gender', 'dob', 'homepage', 'uuid', 'is_center', 'is_subscriber', 'picture'), 
                 'classes': ['wide']}),
-        (_('AppRoles'), {'fields': ('assigned_organisations', 'organisations2', 'application_roles', 'role_profiles'), 'classes': ['wide', 'wide_ex']}),
+        (_('AppRoles'), {'fields': ('assigned_organisations', 'organisations', 'application_roles', 'role_profiles'), 'classes': ['wide', 'wide_ex']}),
         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'), 'classes': ['wide', 'wide_ex']}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user'), 'classes': ['wide']}),
     )
     non_su_fieldsets = (
         (None, {'fields': ('username', ), 'classes': ['wide']}),
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'email', 'uuid', 'is_center', 'is_subscriber'), 'classes': ['wide']}),
-        (_('AppRoles'), {'fields': ('is_active', 'assigned_organisations', 'organisations2', 'application_roles', 'role_profiles'), 'classes': ['wide', 'wide_ex']}),
+        (_('AppRoles'), {'fields': ('is_active', 'assigned_organisations', 'organisations', 'application_roles', 'role_profiles'), 'classes': ['wide', 'wide_ex']}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user'), 'classes': ['wide']}),
     )
     readonly_fields = ['assigned_organisations', 'is_subscriber', 'get_last_modified_by_user', 'last_modified', 'get_created_by_user']
@@ -276,7 +276,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
 
     def assigned_organisations(self, obj):
         if obj:
-            return u', '.join([x.__unicode__() for x in obj.organisations2.all()])
+            return u', '.join([x.__unicode__() for x in obj.organisations.all()])
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         user = request.user
@@ -287,7 +287,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         if db_field.name == "role_profiles":
             kwargs["queryset"] = user.get_administrable_role_profiles()
 
-        if db_field.name == "organisations2":
+        if db_field.name == "organisations":
             kwargs["queryset"] = user.get_administrable_organisations()
             
         return super(UserAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
@@ -301,7 +301,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
             user = request.user
             self.merge_allowed_values(form, 'application_roles', user.get_administrable_application_roles())
             self.merge_allowed_values(form, 'role_profiles', user.get_administrable_role_profiles())
-            self.merge_allowed_values(form, 'organisations2', user.get_administrable_organisations())
+            self.merge_allowed_values(form, 'organisations', user.get_administrable_organisations())
             
         return super(UserAdmin, self).save_form(request, form, change)
 
@@ -386,9 +386,9 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
             if user.has_perm("accounts.change_all_users"):
                 return qs.filter(is_superuser=False)
             else:
-                organisations2 = user.get_administrable_organisations()
+                organisations = user.get_administrable_organisations()
                 q = Q(is_superuser=False) & (
-                    Q(organisations2__in=organisations2))
+                    Q(organisations__in=organisations))
                 return  qs.filter(q).distinct()
                         
     def mark_info_mail(self, request, queryset):
