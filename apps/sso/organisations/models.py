@@ -63,7 +63,10 @@ class Organisation(AbstractBaseModel):
         verbose_name_plural = _('Buddhist Centers')
     
     def __unicode__(self):
-        return u'%s (%s)' % (self.name, self.country.iso2_code)
+        if self.country:
+            return u'%s (%s)' % (self.name, self.country.iso2_code)
+        else:
+            return u'%s' % self.name
 
     @models.permalink
     def get_absolute_url(self):
