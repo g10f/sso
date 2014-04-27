@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model
 
 class StreamingMethodTests(TestCase):
 
-    fixtures = ['initial_data.json', 'app_roles.json', 'test_streaming_user.json', 'test_user_data.json', 'test_app_roles.json']
+    fixtures = ['initial_data.json', 'app_roles.json', 'test_streaming_user.json', 'test_l10n_data.xml', 'test_organisation_data.json', 'test_user_data.json', 'test_app_roles.json']
     
     def setUp(self):
         self.client = Client()

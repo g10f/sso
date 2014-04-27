@@ -29,7 +29,7 @@ class SSOSeleniumTests(LiveServerTestCase):
         """
         from selenium.webdriver.support.wait import WebDriverWait
         WebDriverWait(self.selenium, timeout).until(callback)
-
+    
     def wait_loaded_tag(self, tag_name, timeout=10):
         """
         Helper function that blocks until the element with the given tag name

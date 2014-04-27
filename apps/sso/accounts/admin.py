@@ -15,7 +15,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 from sorl.thumbnail.admin import AdminImageMixin
 
-from models import Application, Organisation, Region, UserAssociatedSystem, UserAddress, UserPhoneNumber
+from models import Application, UserAssociatedSystem, UserAddress, UserPhoneNumber  # , Organisation, Region
+from sso.organisations.models import Organisation, AdminRegion
 from .forms import UserAddForm, BasicUserChangeForm, AdminUserChangeForm
 import logging
 
@@ -45,19 +46,6 @@ class RoleProfileAdmin(admin.ModelAdmin):
     filter_horizontal = ('application_roles', )
     
 
-class RegionAdmin(admin.ModelAdmin):
-    list_display = ('name', 'uuid', 'last_modified')
-    date_hierarchy = 'last_modified'
-    search_fields = ('name', 'uuid')
-
-
-class OrganisationAdmin(admin.ModelAdmin):
-    list_display = ('name', 'region', 'iso2_code', 'uuid', 'last_modified')
-    date_hierarchy = 'last_modified'
-    search_fields = ('name', 'uuid', 'email')
-    list_filter = ('region', 'iso2_code')
-
-
 class BaseFilter(SimpleListFilter):
     def get_lookup_qs(self, request, model_admin):
         """ Return the queryset for the filter"""
@@ -86,8 +74,8 @@ class OrganisationsListFilter(BaseFilter):
     Fiter for user admin
     """
     title = _('Organisation')
-    parameter_name = 'organisation'
-    field_path = 'organisations'
+    parameter_name = 'organisation2'
+    field_path = 'organisations2'
     
     def get_lookup_qs(self, request, model_admin):
         return Organisation.objects.filter(user__isnull=False).distinct()
@@ -125,7 +113,7 @@ class UserAssociatedSystemFilter(BaseFilter):
         
 
 class UserOrganisationsListFilter(OrganisationsListFilter):
-    field_path = 'organisations'
+    field_path = 'organisations2'
 
     def get_lookup_qs(self, request, model_admin):
         return request.user.get_administrable_organisations()
@@ -135,13 +123,14 @@ class UserRegionListFilter(BaseFilter):
     """
     Fiter for user admin
     """
-    title = _('Region')
-    parameter_name = 'region'
-    field_path = 'organisations__region'
+    title = _('Admin Region')
+    parameter_name = 'admin_region'
+    field_path = 'organisations2__admin_region'
     
     def get_lookup_qs(self, request, model_admin):
-        return Region.objects.all()
-    
+        return AdminRegion.objects.all()
+
+
 class ApplicationRolesFilter(BaseFilter):
     """
     Fiter for user admin
@@ -213,9 +202,7 @@ class Address_Inline(admin.StackedInline):
     fieldsets = [
         (None,
          {'fields':
-          ['address_type', 'addressee', 'street_address', 'postal_code', 'city', 'country',
-           #'country', 'state', 
-           'primary', ],
+          ['address_type', 'addressee', 'street_address', 'postal_code', 'city', 'country', 'state', 'primary', ],
           'classes': ['wide'], }),
         ]
 
@@ -225,6 +212,12 @@ class PhoneNumber_Inline(admin.TabularInline):
     extra = 1
     max_num = 6
     exclude = ['uuid']
+    fieldsets = [
+        (None,
+         {'fields':
+          ['phone_type', 'phone', 'primary', ],
+          'classes': ['wide'], }),
+        ]
 
 
 class UserAdmin(AdminImageMixin, DjangoUserAdmin):
@@ -234,8 +227,8 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
     list_display = ('id',) + DjangoUserAdmin.list_display + ('last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user')
     search_fields = ('username', 'first_name', 'last_name', 'email', 'uuid')
     list_filter = (SuperuserFilter, ) + ('is_staff', 'is_center', 'is_active', 'groups', UserAssociatedSystemFilter, UserRegionListFilter,
-                    RoleProfilesFilter, ApplicationRolesFilter, LastModifiedUserFilter, CreatedByUserFilter, UserOrganisationsListFilter)
-    filter_horizontal = DjangoUserAdmin.filter_horizontal + ('groups', 'application_roles', 'role_profiles', 'organisations')
+                    RoleProfilesFilter, ApplicationRolesFilter, UserOrganisationsListFilter, CreatedByUserFilter, LastModifiedUserFilter)
+    filter_horizontal = DjangoUserAdmin.filter_horizontal + ('groups', 'application_roles', 'role_profiles', 'organisations2')
     ordering = ['-last_login', '-first_name', '-last_name']
     actions = ['mark_info_mail']
     inlines = [PhoneNumber_Inline, Address_Inline]
@@ -245,14 +238,14 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         (_('Personal info'), {
                 'fields': ('first_name', 'last_name', 'email', 'gender', 'dob', 'homepage', 'uuid', 'is_center', 'is_subscriber', 'picture'), 
                 'classes': ['wide']}),
-        (_('AppRoles'), {'fields': ('assigned_organisations', 'organisations', 'application_roles', 'role_profiles'), 'classes': ['wide', 'wide_ex']}),
+        (_('AppRoles'), {'fields': ('assigned_organisations', 'organisations2', 'application_roles', 'role_profiles'), 'classes': ['wide', 'wide_ex']}),
         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'), 'classes': ['wide', 'wide_ex']}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user'), 'classes': ['wide']}),
     )
     non_su_fieldsets = (
         (None, {'fields': ('username', ), 'classes': ['wide']}),
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'email', 'uuid', 'is_center', 'is_subscriber'), 'classes': ['wide']}),
-        (_('AppRoles'), {'fields': ('is_active', 'assigned_organisations', 'organisations', 'application_roles', 'role_profiles'), 'classes': ['wide', 'wide_ex']}),
+        (_('AppRoles'), {'fields': ('is_active', 'assigned_organisations', 'organisations2', 'application_roles', 'role_profiles'), 'classes': ['wide', 'wide_ex']}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user'), 'classes': ['wide']}),
     )
     readonly_fields = ['assigned_organisations', 'is_subscriber', 'get_last_modified_by_user', 'last_modified', 'get_created_by_user']
@@ -283,21 +276,34 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
 
     def assigned_organisations(self, obj):
         if obj:
-            return u', '.join([x.__unicode__() for x in obj.organisations.all()])
+            return u', '.join([x.__unicode__() for x in obj.organisations2.all()])
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         user = request.user
-        if user.is_superuser:
-            return super(UserAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
-        
         # use the application_roles from application_roles of the authenticated user        
         if db_field.name == "application_roles":
             kwargs["queryset"] = user.get_administrable_application_roles()
 
-        if db_field.name == "organisations":
+        if db_field.name == "role_profiles":
+            kwargs["queryset"] = user.get_administrable_role_profiles()
+
+        if db_field.name == "organisations2":
             kwargs["queryset"] = user.get_administrable_organisations()
             
         return super(UserAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
+
+    def save_form(self, request, form, change):
+        """
+        merge the read only and editable values
+        """
+        if not request.user.is_superuser:
+            # add the application_roles wich were excluded in formfield_for_manytomany
+            user = request.user
+            self.merge_allowed_values(form, 'application_roles', user.get_administrable_application_roles())
+            self.merge_allowed_values(form, 'role_profiles', user.get_administrable_role_profiles())
+            self.merge_allowed_values(form, 'organisations2', user.get_administrable_organisations())
+            
+        return super(UserAdmin, self).save_form(request, form, change)
 
     def get_last_modified_by_user(self, obj):
         if obj.last_modified_by_user:
@@ -339,17 +345,6 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
             return []
         else:
             return super(UserAdmin, self).get_formsets(request, obj)
-
-    def save_formset(self, request, form, formset, change):
-        if not request.user.is_superuser:
-            # add the application_roles wich were excluded in formfield_for_manytomany
-            user_profile_form = formset.forms[0]
-            user = request.user
-            self.merge_allowed_values(user_profile_form, 'application_roles',
-                                                  user.get_administrable_application_roles())
-            self.merge_allowed_values(user_profile_form, 'organisations',
-                                                  user.get_administrable_organisations())
-        return super(UserAdmin, self).save_formset(request, form, formset, change)
         
     def get_fieldsets(self, request, obj=None):
         """
@@ -383,8 +378,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         """
         display no superusers in the changelist for non superusers
         """
-        qs = super(UserAdmin, self).get_queryset(request).select_related('last_modified_by_user',
-                                                                     'created_by_user')
+        qs = super(UserAdmin, self).get_queryset(request).select_related('last_modified_by_user', 'created_by_user')
         user = request.user
         if user.is_superuser:
             return qs
@@ -392,9 +386,9 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
             if user.has_perm("accounts.change_all_users"):
                 return qs.filter(is_superuser=False)
             else:
-                organisations = user.get_administrable_organisations()
+                organisations2 = user.get_administrable_organisations()
                 q = Q(is_superuser=False) & (
-                    Q(organisations__in=organisations))
+                    Q(organisations2__in=organisations2))
                 return  qs.filter(q).distinct()
                         
     def mark_info_mail(self, request, queryset):

@@ -19,7 +19,8 @@ from django.utils import timezone, dateparse
 from django.template.defaultfilters import date
 from sorl.thumbnail import get_thumbnail
 
-from sso.accounts.models import Organisation, ApplicationRole, send_account_created_email
+from sso.accounts.models import ApplicationRole, send_account_created_email
+from sso.organisations.models import Organisation
 from sso.registration import default_username_generator
 from http.http_status import *  # @UnusedWildImport
 from sso.oauth2.decorators import client_required  # scopes_required
@@ -112,13 +113,13 @@ def parse_datetime_with_timezone_support(value):
 @catch_errors
 @api_user_passes_test(lambda u: u.has_perm("accounts.change_all_users"))
 def get_user_list(request):
-    qs = get_user_model().objects.filter(is_active=True).order_by('username').prefetch_related('organisations', 'useraddress_set', 'userphonenumber_set')
+    qs = get_user_model().objects.filter(is_active=True).order_by('username').prefetch_related('organisations2', 'useraddress_set', 'userphonenumber_set')
     username = request.GET.get('q', None)
     if username:
         qs = qs.filter(username__icontains=username)
     organisation__uuid = request.GET.get('organisation__uuid', None)
     if organisation__uuid:
-        qs = qs.filter(organisations__uuid=organisation__uuid)
+        qs = qs.filter(organisations2__uuid=organisation__uuid)
     app_uuid = request.GET.get('app_uuid', None)
     if app_uuid:
         qs = qs.filter(application_roles__application__uuid=app_uuid)
@@ -164,7 +165,7 @@ def get_user_list(request):
                         'primary': phone_number.primary
                     } for phone_number in user.userphonenumber_set.all()
                 },                
-                'organisations': {organisation.uuid: {'name': organisation.name} for organisation in user.organisations.all()},
+                'organisations': {organisation.uuid: {'name': organisation.name} for organisation in user.organisations2.all()},
                 'links': {
                     'self': {'href': "%s%s" % (base_url(request), reverse('api:v1_user', args=(user.uuid,)))}
                 }
@@ -254,7 +255,7 @@ class UserDetailView(View):
                     'primary': phone_number.primary
                 } for phone_number in user.userphonenumber_set.all()
             },                
-            'organisations': {organisation.uuid: {'name': organisation.name} for organisation in user.organisations.all()},
+            'organisations': {organisation.uuid: {'name': organisation.name} for organisation in user.organisations2.all()},
             'links': {'self': {'href': "%s%s" % (base, reverse('api:v1_user', kwargs={'uuid': user.uuid}))},
                       'apps': {'href': "%s%s" % (base, reverse('api:v1_users_apps', kwargs={'uuid': user.uuid}))}}
         } 
@@ -324,7 +325,7 @@ class UserDetailView(View):
         organisations = Organisation.objects.filter(uuid__in=userinfo['organisations'].keys())
         
         if user:
-            user.organisations = organisations
+            user.organisations2 = organisations
             user.is_active = True
             user.save()                          
         else:
@@ -343,7 +344,7 @@ class UserDetailView(View):
             user.save()
 
             user.application_roles = application_roles
-            user.organisations = organisations
+            user.organisations2 = organisations
             user.add_default_roles()
             
             send_account_created_email(user, request)

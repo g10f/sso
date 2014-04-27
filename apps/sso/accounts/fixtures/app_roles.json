@@ -3,51 +3,71 @@
 	 "pk" : 1,
 	 "model" : "auth.group",
 	 "fields" : {
-		 "name" : "Admin",
-		 "permissions" : [ [ "add_user", "accounts", "user" ],
-		                   [ "change_all_users", "accounts", "user" ],
-		                   [ "change_user", "accounts", "user" ] ]
+		 "name" : "GlobalAdmin",
+		 "permissions" : [ 
+               [ "add_user", "accounts", "user" ],
+               [ "change_all_users", "accounts", "user" ],
+               [ "change_user", "accounts", "user" ],
+               [ "add_useraddress", "accounts", "useraddress" ],
+               [ "change_useraddress", "accounts", "useraddress" ], 
+               [ "delete_useraddress", "accounts", "useraddress" ],
+               [ "add_userphonenumber", "accounts", "userphonenumber" ],
+               [ "change_userphonenumber", "accounts", "userphonenumber" ], 
+               [ "delete_userphonenumber", "accounts", "userphonenumber" ]
+          ]
 	 }
  },
  {
 	 "pk" : 2,
 	 "model" : "auth.group",
 	 "fields" : {
-		 "name" : "Center",
-		 "permissions" : [ [ "add_user", "accounts", "user" ],
-		                   [ "change_org_users", "accounts", "user" ],
-		                   [ "change_user", "accounts", "user" ] ]
+		 "name" : "CenterAdmin",
+		 "permissions" : [ 
+               [ "add_user", "accounts", "user" ],
+               [ "change_org_users", "accounts", "user" ],
+               [ "change_user", "accounts", "user" ],
+               [ "add_useraddress", "accounts", "useraddress" ],
+               [ "change_useraddress", "accounts", "useraddress" ], 
+               [ "delete_useraddress", "accounts", "useraddress" ],
+               [ "add_userphonenumber", "accounts", "userphonenumber" ],
+               [ "change_userphonenumber", "accounts", "userphonenumber" ], 
+               [ "delete_userphonenumber", "accounts", "userphonenumber" ]
+          ]
 	 }
  },
  {
 	 "pk" : 3,
 	 "model" : "auth.group",
 	 "fields" : {
-		 "name" : "Region",
-		 "permissions" : [ [ "add_user", "accounts", "user" ],
-		                   [ "change_reg_users", "accounts", "user" ],
-		                   [ "change_user", "accounts", "user" ] ]
+		 "name" : "RegionAdmin",
+		 "permissions" : [ 
+               [ "add_user", "accounts", "user" ],
+               [ "change_reg_users", "accounts", "user" ],
+               [ "change_user", "accounts", "user" ],
+               [ "add_useraddress", "accounts", "useraddress" ],
+               [ "change_useraddress", "accounts", "useraddress" ], 
+               [ "delete_useraddress", "accounts", "useraddress" ],
+               [ "add_userphonenumber", "accounts", "userphonenumber" ],
+               [ "change_userphonenumber", "accounts", "userphonenumber" ], 
+               [ "delete_userphonenumber", "accounts", "userphonenumber" ]
+		 ]
 	 }
- },
- {
+ }, {
 	 "pk" : 4,
 	 "model" : "auth.group",
 	 "fields" : {
-		 "name" : "Registration",
+		 "name" : "RegistrationAdmin",
 		 "permissions" : [
-		                  [ "add_registrationprofile", "registration",
-		                    "registrationprofile" ],
-		                    [ "change_registrationprofile", "registration",
-		                      "registrationprofile" ],
-		                      [ "delete_registrationprofile", "registration",
-		                        "registrationprofile" ] ]
+              [ "add_registrationprofile", "registration", "registrationprofile" ],
+              [ "change_registrationprofile", "registration", "registrationprofile" ],
+              [ "delete_registrationprofile", "registration", "registrationprofile" ] ]
 	 }
  }, {
 	 "pk" : 5,
 	 "model" : "accounts.role",
 	 "fields" : {
 		 "name" : "Admin",
-		 "group" : [ "Admin" ],
+		 "group" : [ "GlobalAdmin" ],
 		 "order" : 11
 	 }
  }, {
@@ -55,7 +75,7 @@
 	 "model" : "accounts.role",
 	 "fields" : {
 		 "name" : "Region",
-		 "group" : [ "Region" ],
+		 "group" : [ "RegionAdmin" ],
 		 "order" : 12
 	 }
  }, {
@@ -63,7 +83,7 @@
 	 "model" : "accounts.role",
 	 "fields" : {
 		 "name" : "Center",
-		 "group" : [ "Center" ],
+		 "group" : [ "CenterAdmin" ],
 		 "order" : 13
 	 }
  }, {

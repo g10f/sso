@@ -64,7 +64,7 @@ class UserRegistrationList(main.ListView):
             return self.paginate_by
 
     def get_queryset(self):
-        qs = super(UserRegistrationList, self).get_queryset().prefetch_related('user__organisations', 'user__useraddress_set', 'user__useraddress_set__country')\
+        qs = super(UserRegistrationList, self).get_queryset().prefetch_related('user__organisations2', 'user__useraddress_set', 'user__useraddress_set__country')\
                     .select_related('user', 'user__useraddress__country__printable_name').filter(user__is_active=False, is_validated=True)
         
         # display only users from centers where the logged in user has admin rights
@@ -87,7 +87,7 @@ class UserRegistrationList(main.ListView):
         country = self.request.GET.get('country', '')
         if country:
             self.country = Country.objects.get(iso2_code=country)
-            qs = qs.filter(user__organisations__iso2_code__in=[self.country.iso2_code])
+            qs = qs.filter(user__organisations2__country__in=[self.country])
         else:
             self.country = None
            
@@ -125,7 +125,7 @@ class UserRegistrationList(main.ListView):
                                     user__is_active=False, 
                                     user__registrationprofile__isnull=False,
                                     user__registrationprofile__is_validated=True)
-        countries = Country.objects.filter(iso2_code__in=user_organisations.values_list('iso2_code', flat=True))
+        countries = Country.objects.filter(pk__in=user_organisations.values_list('country', flat=True))
         if len(countries) == 1:
             self.country = countries[0]
             countries = Country.objects.none()
