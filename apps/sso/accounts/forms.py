@@ -321,7 +321,7 @@ class UserSelfProfileForm(forms.Form):
             organisation_field = forms.CharField(required=False, initial=organisation, label=_("Center"), 
                                                 help_text=_('Please use the contact form for a request to change this value.'), widget=bootstrap.StaticInput())
         else:
-            organisation_field = forms.ModelChoiceField(queryset=Organisation.objects.all(), cache_choices=True, label=_("Center"), widget=bootstrap.Select(), 
+            organisation_field = forms.ModelChoiceField(queryset=Organisation.objects.all().select_related('country'), cache_choices=True, label=_("Center"), widget=bootstrap.Select(), 
                                                 help_text=_('You can set this value only once.'), required=False)
         if organisation_field:
             self.fields['organisation'] = organisation_field
@@ -436,7 +436,7 @@ class UserSelfRegistrationForm2(UserSelfRegistrationForm):
     UserSelfRegistrationForm.error_messages.update({
         'email_mismatch': _("The two email fields didn't match."),
     })
-    organisation = forms.ModelChoiceField(queryset=Organisation.objects.all(), cache_choices=True, required=False, label=_("Center"), widget=bootstrap.Select())
+    organisation = forms.ModelChoiceField(queryset=Organisation.objects.all().select_related('country'), cache_choices=True, required=False, label=_("Center"), widget=bootstrap.Select())
     email2 = forms.EmailField(label=_('Repeat your Email'), required=True, widget=bootstrap.EmailInput())
     # for Bots. If you enter anything in this field you will be treated as a robot
     state = forms.CharField(label=_('State'), required=False, widget=bootstrap.HiddenInput())
