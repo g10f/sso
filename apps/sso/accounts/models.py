@@ -138,32 +138,6 @@ class RoleProfile(AbstractBaseModel):
         return u"%s" % (self.name)
 
 
-class Region(AbstractBaseModel):
-    name = models.CharField(_("name"), max_length=255)
-
-    class Meta(AbstractBaseModel.Meta):
-        ordering = ['name']
-
-    def __unicode__(self):
-        return u"%s" % (self.name)
-
- 
-class Organisation(AbstractBaseModel):
-    name = models.CharField(_("name"), max_length=255)
-    iso2_code = models.CharField(_('ISO alpha-2'), max_length=2)
-    last_update = models.DateTimeField(auto_now=True, default=now)
-    email = models.EmailField(_('e-mail address'), blank=True)
-    region = models.ForeignKey(Region, blank=True, null=True)
-
-    class Meta(AbstractBaseModel.Meta):
-        ordering = ['name']
-        verbose_name = _('center')
-        verbose_name_plural = _('centers')
-
-    def __unicode__(self):
-        return u"%s (%s)" % (self.name, self.iso2_code)
-    
-
 def get_filename(filename):
     return os.path.normpath(get_valid_filename(os.path.basename(filename)))
 
@@ -178,7 +152,6 @@ class User(AbstractUser):
         return u'image/%s/%s' % (self.uuid, get_filename(filename.encode('ascii', 'replace'))) 
 
     uuid = UUIDField(version=4, editable=True, unique=True)
-    organisations = models.ManyToManyField(Organisation, verbose_name=_('organisations'), blank=True, null=True)
     organisations2 = models.ManyToManyField(Organisation2, verbose_name=_('organisations2'), blank=True, null=True)
     application_roles = models.ManyToManyField(ApplicationRole, verbose_name=_('application roles'), blank=True, null=True)
     role_profiles = models.ManyToManyField(RoleProfile, verbose_name=_('role profiles'), blank=True, null=True, help_text=_('Organises a group of application roles that are usually assigned together.'))
