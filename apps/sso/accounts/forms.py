@@ -239,7 +239,7 @@ class UserAddFormExt(UserAddForm):
         user.role_profiles = self.cleaned_data["role_profiles"]
         organisation = self.cleaned_data["organisation"]
         if organisation:
-            user.organisations2.add(organisation)
+            user.organisations.add(organisation)
         return user
     
 
@@ -316,8 +316,8 @@ class UserSelfProfileForm(forms.Form):
         # the organisation field is readonly
         # otherwise a required select field is displayed 
         organisation_field = None   
-        if self.user.organisations2.exists():
-            organisation = u', '.join([x.__unicode__() for x in self.user.organisations2.all()])
+        if self.user.organisations.exists():
+            organisation = u', '.join([x.__unicode__() for x in self.user.organisations.all()])
             organisation_field = forms.CharField(required=False, initial=organisation, label=_("Center"), 
                                                 help_text=_('Please use the contact form for a request to change this value.'), widget=bootstrap.StaticInput())
         else:
@@ -334,7 +334,7 @@ class UserSelfProfileForm(forms.Form):
         return email
     
     def clean_organisation(self):
-        if self.user.organisations2.exists():
+        if self.user.organisations.exists():
             # if already assigned to an organisation return None, (readonly use case)
             return None
         else:
@@ -375,7 +375,7 @@ class UserSelfProfileForm(forms.Form):
         if organisation:
             # user selected an organisation, this can only happen if the user before had
             # no organisation (see clean_organisation).
-            self.user.organisations2.add(cd['organisation']) 
+            self.user.organisations.add(cd['organisation']) 
         
 
 class UserSelfProfileDeleteForm(forms.Form):
@@ -500,7 +500,7 @@ class UserSelfRegistrationForm2(UserSelfRegistrationForm):
         organisation = data["organisation"]
         if organisation:
             user = registration_profile.user
-            user.organisations2.add(data["organisation"])
+            user.organisations.add(data["organisation"])
         return registration_profile
 
 
@@ -530,7 +530,7 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
         user_data = model_to_dict(self.user)
         try:
             # the user should have exactly 1 center 
-            user_data['organisations'] = self.user.organisations2.all()[0]
+            user_data['organisations'] = self.user.organisations.all()[0]
         except IndexError:
             # center is optional
             #logger.error("User without center?", exc_info=1)
@@ -574,6 +574,6 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
         
         self.update_user_m2m_fields('application_roles', current_user)
         self.update_user_m2m_fields('role_profiles', current_user)
-        self.update_user_m2m_fields('organisations2', current_user)
+        self.update_user_m2m_fields('organisations', current_user)
 
         return self.user

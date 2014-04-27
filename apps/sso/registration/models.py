@@ -117,7 +117,7 @@ class RegistrationManager(models.Manager):
                 qs = qs.filter(user__is_superuser=False)
             else:
                 organisations = user.get_administrable_organisations()
-                q = Q(user__is_superuser=False) & Q(user__organisations2__in=organisations)
+                q = Q(user__is_superuser=False) & Q(user__organisations__in=organisations)
                 qs = qs.filter(q).distinct()
         return qs
 

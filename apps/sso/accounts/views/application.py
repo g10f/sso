@@ -83,7 +83,7 @@ class UserList(ListView):
         country = self.request.GET.get('country', '')
         if country:
             self.country = Country.objects.get(iso2_code=country)
-            qs = qs.filter(organisations2__country__in=[self.country])
+            qs = qs.filter(organisations__country__in=[self.country])
         else:
             self.country = None
 
@@ -91,7 +91,7 @@ class UserList(ListView):
         admin_region = self.request.GET.get('admin_region', '')
         if admin_region:
             self.admin_region = AdminRegion.objects.get(pk=admin_region)
-            qs = qs.filter(organisations2__admin_region__in=[self.admin_region])
+            qs = qs.filter(organisations__admin_region__in=[self.admin_region])
         else:
             self.admin_region = None
 
@@ -99,7 +99,7 @@ class UserList(ListView):
         center = self.request.GET.get('center', '')
         if center:
             self.center = Organisation.objects.get(pk=center)
-            qs = qs.filter(organisations2__in=[self.center])
+            qs = qs.filter(organisations__in=[self.center])
         else:
             self.center = None
             
@@ -162,11 +162,11 @@ class UserList(ListView):
                 centers = centers.filter(admin_region=self.admin_region)
             
             if self.center:
-                application_roles = application_roles.filter(user__organisations2__in=[self.center]).distinct()
-                role_profiles = role_profiles.filter(user__organisations2__in=[self.center]).distinct()
+                application_roles = application_roles.filter(user__organisations__in=[self.center]).distinct()
+                role_profiles = role_profiles.filter(user__organisations__in=[self.center]).distinct()
             else:
-                application_roles = application_roles.filter(user__organisations2__in=centers).distinct()
-                role_profiles = role_profiles.filter(user__organisations2__in=centers).distinct()
+                application_roles = application_roles.filter(user__organisations__in=centers).distinct()
+                role_profiles = role_profiles.filter(user__organisations__in=centers).distinct()
 
         if len(countries) == 1:
             countries = None
