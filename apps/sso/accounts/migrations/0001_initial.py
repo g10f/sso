@@ -77,7 +77,7 @@ class Migration(SchemaMigration):
             ('is_active', self.gf('django.db.models.fields.BooleanField')(default=True)),
             ('date_joined', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
             ('uuid', self.gf('sso.fields.UUIDField')(version=4, max_length=36, blank=True, unique=True, name='uuid')),
-            ('last_modified_by_user', self.gf('current_user.models.CurrentUserField')(related_name='+', null=True, to=orm['accounts.User'])),
+            ('last_modified_by_user', self.gf('django.db.models.fields.related.ForeignKey')(related_name='+', null=True, to=orm['accounts.User'])),
             ('last_modified', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
             ('created_by_user', self.gf('django.db.models.fields.related.ForeignKey')(related_name='+', null=True, to=orm['accounts.User'])),
             ('is_center', self.gf('django.db.models.fields.BooleanField')(default=False)),
