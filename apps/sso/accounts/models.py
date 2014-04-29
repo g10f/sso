@@ -319,7 +319,7 @@ class User(AbstractUser):
         ds_roles = [{'uuid': 'e4a281ef13e1484b93fe4b7cc66374c8', 'roles': ['User']}]  # Dharma Shop 108 Home]
         roles = ['Guest', 'User'] if self.is_center else ['Guest']
         
-        if self.organisations.filter(iso2_code__in=['CZ', 'SK', 'PL', 'RU', 'UA', 'RO', 'RS', 'HR', 'GR', 'BG', 'EE', 'LV']).exists():
+        if self.organisations.filter(country__iso2_code__in=['CZ', 'SK', 'PL', 'RU', 'UA', 'RO', 'RS', 'HR', 'GR', 'BG', 'EE', 'LV']).exists():
             # Dharma Shop 108 - Central and East Europe
             ds_roles += [{'uuid': '2139dc55af8b42ec84a1ce9fd25fdf18', 'roles': roles}]
         else:
