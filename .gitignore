@@ -5,6 +5,8 @@
 /logs
 /data
 /apps/sso/settings/local_*.py
+/erm
+/sql
 .project
 .pydevproject
 .settings

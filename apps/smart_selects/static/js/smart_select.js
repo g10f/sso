@@ -1,10 +1,10 @@
 (function($) {
     $(document).ready(function(){
-    	$( ".chained" ).each(function( index ) {
+    	$(".chained").each(function(index) {
     		var chainfield$ = $('#id_' + $(this).data('chainfield'));
-    		var chained$ = $(this);
-    		
-    		var fill_field = function(id, val, init_value) {
+    		var chainedfield$ = $(this);
+
+    		var fill_field = function(chained$, id, val, init_value) {
     			var empty_label = chained$.data('empty_label');
     			var url = chained$.data('url');
     	        if (!val || val == '') {
@@ -27,10 +27,13 @@
     	            $(id).trigger('change');
     	        })
     		}
-    		chainfield$.change(function() {
+    		/*
+    		 * closure with chainedfield$
+    		 */
+    		var change = function() {
 		        var self = $(this);
 		        var curr_parts = self.attr('id').split('-');
-		        var base_parts = chained$.attr('id').split('-');
+		        var base_parts = chainedfield$.attr('id').split('-');
 		        var id = '#';
 		        for (var i = 0; i < curr_parts.length-1; i++) { 
 		            id += curr_parts[i] + '-'; 
@@ -38,9 +41,12 @@
 		        id += base_parts[base_parts.length - 1];
 		        var start_value = $(id).val();
 		        var val = self.val();
-		        fill_field(id, val, start_value);
-			});
+		        fill_field(chainedfield$, id, val, start_value);
+    		}
+
+    		chainfield$.change(change);
     		chainfield$.trigger('change');    		
+    		
     	});    	
     })
 })(jQuery || django.jQuery);

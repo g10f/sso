@@ -22,7 +22,7 @@ from .forms import RegistrationProfileForm  # ,UserSelfRegistrationForm
 from .tokens import default_token_generator
 #from . import default_username_generator
 
-def has_permission(user):
+def is_registration_admin(user):
     return user.is_authenticated() and user.has_perm('registration.change_registrationprofile')
 
 
@@ -36,7 +36,7 @@ class UserRegistrationDeleteView(DeleteView):
         user = self.request.user
         return user.filter_administrable_users(qs)
     
-    @method_decorator(user_passes_test(has_permission))
+    @method_decorator(user_passes_test(is_registration_admin))
     def dispatch(self, request, *args, **kwargs):
         return super(UserRegistrationDeleteView, self).dispatch(request, *args, **kwargs)
 
@@ -53,7 +53,7 @@ class UserRegistrationList(main.ListView):
     page_kwarg = main.PAGE_VAR
     list_display = ['user', 'email', 'center', 'date_registered', 'verified_by_user', 'check_back', 'is_access_denied']
     
-    @method_decorator(user_passes_test(has_permission))
+    @method_decorator(user_passes_test(is_registration_admin))
     def dispatch(self, request, *args, **kwargs):
         return super(UserRegistrationList, self).dispatch(request, *args, **kwargs)
 
@@ -147,28 +147,30 @@ class UserRegistrationList(main.ListView):
         return super(UserRegistrationList, self).get_context_data(**context)
  
 
-@user_passes_test(has_permission)
+@user_passes_test(is_registration_admin)
 def update_user_registration(request, pk, template='registration/change_user_registration_form.html'):
     registrationprofile = get_object_or_404(RegistrationProfile, pk=pk)
     
     if request.method == 'POST':
         registrationprofile_form = RegistrationProfileForm(request.POST, instance=registrationprofile, request=request)
         if registrationprofile_form.is_valid(): 
+            message = ""
+            success_url = ""            
             if "_continue" in request.POST:
                 registrationprofile = registrationprofile_form.save()
                 message = _('The user "%(obj)s" was changed successfully. You may edit it again below.') % {'obj': force_text(registrationprofile.user)}
-                messages.add_message(request, level=messages.INFO, message=message, fail_silently=True)
-                return HttpResponseRedirect(reverse('registration:update_user_registration', args=[registrationprofile.pk]))
+                success_url = reverse('registration:update_user_registration', args=[registrationprofile.pk])
             elif "_save" in request.POST:
                 registrationprofile = registrationprofile_form.save()
                 message = _('The user "%(obj)s" was changed successfully.') % {'obj': force_text(registrationprofile.user)}
-                messages.add_message(request, level=messages.INFO, message=message, fail_silently=True)
-                return HttpResponseRedirect(reverse('registration:user_registration_list') + "?" + request.GET.urlencode())
+                success_url = reverse('registration:user_registration_list') + "?" + request.GET.urlencode()
             else:
                 registrationprofile = registrationprofile_form.save(activate=True)
                 message = _('The user "%(obj)s" was activated successfully.') % {'obj': force_text(registrationprofile.user)}
-                messages.add_message(request, level=messages.INFO, message=message, fail_silently=True)
-                return HttpResponseRedirect(reverse('registration:user_registration_list') + "?" + request.GET.urlencode())
+                success_url = reverse('registration:user_registration_list') + "?" + request.GET.urlencode()
+            
+            messages.add_message(request, level=messages.INFO, message=message, fail_silently=True)
+            return HttpResponseRedirect(success_url)
     else:
         registrationprofile_form = RegistrationProfileForm(instance=registrationprofile, request=request)
 
@@ -200,30 +202,3 @@ def validation_confirm(request, uidb64=None, token=None, token_generator=default
         'validlink': validlink,
     }
     return TemplateResponse(request, template, context)
-
-
-"""
-@transaction.atomic
-def register(request, username_generator=default_username_generator, form_cls=UserSelfRegistrationForm, template='registration/registration_form.html'):
-    
-    if not settings.REGISTRATION.get('OPEN', True):
-        return redirect('registration:registration_disallowed')
-
-    if request.method == 'POST':
-        form = form_cls(request.POST)
-        
-        if form.is_valid():
-            registration_profile = form.save(username_generator)
-            send_validation_email(registration_profile, request)
-                 
-            return redirect('registration:registration_done')
-    else:
-        form = form_cls()
-    
-    site_name = settings.SSO_CUSTOM['SITE_NAME']
-    data = {
-            'site_name': site_name,
-            'form': form, 
-            'title': _('User registration')}
-    return render(request, template, data)
-"""

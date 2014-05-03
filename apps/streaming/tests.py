@@ -51,11 +51,8 @@ class StreamingMethodTests(TestCase):
         app_roles = user.application_roles.all().values('application__uuid', 'role__name')
         # SSO
         self.assertIn({'application__uuid': settings.SSO_CUSTOM['APP_UUID'], 'role__name': 'Center'}, app_roles)  
-        # Streaming
-        self.assertIn({'application__uuid': 'c362bea58c67457fa32234e3178285c4', 'role__name': 'Center'}, app_roles)  
-        # Dharmashop Home
-        self.assertIn({'application__uuid': 'e4a281ef13e1484b93fe4b7cc66374c8', 'role__name': 'User'}, app_roles)  
         # Dharma Shop 108 - West Europe
         self.assertIn({'application__uuid': '35efc492b8f54f1f86df9918e8cc2b3d', 'role__name': 'User'}, app_roles)
-        # Wiki 
-        self.assertIn({'application__uuid': 'b8c38af479e54f4c94faf9d8184528fe', 'role__name': 'User'}, app_roles) 
+        
+        role_profiles = user.role_profiles.all().values('uuid')
+        self.assertIn({'uuid': settings.SSO_CUSTOM['DEFAULT_ROLE_PROFILE_UUID']}, role_profiles)  

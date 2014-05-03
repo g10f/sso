@@ -53,6 +53,7 @@ class ChainedSelect(Select):
             kwargs.update({'manager': self.manager})
         url = "/".join(reverse(view_name, kwargs=kwargs).split("/")[:-2])
         empty_label = iter(self.choices).next()[1]  # Hacky way to getting the correct empty_label from the field instead of a hardcoded '--------'
+        
         final_choices = []
 
         if value:

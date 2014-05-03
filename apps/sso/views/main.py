@@ -31,7 +31,11 @@ IGNORED_PARAMS = (
     
 class ChangeList(object):
     
-    def __init__(self, request, model, list_display, default_ordering=[], orderd_columns=[]):
+    def __init__(self, request, model, list_display, default_ordering=None, orderd_columns=None):
+        if default_ordering is None:
+            default_ordering = []
+        if orderd_columns is None:
+            orderd_columns = []
         self.opts = model._meta
         self.lookup_opts = self.opts
         self.list_display = list_display

@@ -4,7 +4,7 @@
 	 "model" : "accounts.role",
 	 "fields" : {
 		 "name" : "Admin",
-		 "group" : [ "Admin" ],
+		 "group" : [ "GlobalAdmin" ],
 		 "order" : 11
 	 }
  }, {
@@ -12,7 +12,7 @@
 	 "model" : "accounts.role", 
 	 "fields" : {
 		 "name" : "Region",
-		 "group" : [ "Region" ],
+		 "group" : [ "RegionAdmin" ],
 		 "order" : 12
 	 }
  }, {
@@ -20,7 +20,7 @@
 	 "model" : "accounts.role",
 	 "fields" : {
 		 "name" : "Center",
-		 "group" : [ "Center" ],
+		 "group" : [ "CenterAdmin" ],
 		 "order" : 13
 	 }
  }, {

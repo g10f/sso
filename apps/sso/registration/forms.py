@@ -19,7 +19,7 @@ from .models import RegistrationProfile, send_set_password_email, send_validatio
 from . import default_username_generator
 
 from sso.forms import bootstrap, mixins, BLANK_CHOICE_DASH
-from sso.accounts.models import UserAddress, User, RoleProfile
+from sso.accounts.models import UserAddress, User
 
 
 import logging
@@ -39,12 +39,9 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
     first_name = forms.CharField(label=_('First name'), max_length=30, widget=bootstrap.TextInput())
     last_name = forms.CharField(label=_('Last name'), max_length=30, widget=bootstrap.TextInput())
     email = forms.EmailField(label=_('E-mail address'), required=False, widget=bootstrap.TextInput(attrs={'disabled': ''}))
-    #phone = forms.CharField(label=_("Phone Number"), max_length=30, required=False, widget=bootstrap.TextInput())
     date_registered = forms.DateTimeField(label=_("Date registered"), required=False, widget=bootstrap.StaticInput())
     country = forms.CharField(label=_("Country"), required=False, max_length=30, widget=bootstrap.StaticInput())
     city = forms.CharField(label=_("City"), required=False, max_length=100, widget=bootstrap.StaticInput())
-    #postal_code = forms.CharField(label=_("Postal code"), required=False, max_length=30, widget=bootstrap.StaticInput())
-    #street_address = forms.Textarea(_('Street address'), required=False, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 3, 'readonly': 'readonly'}))
     language = forms.CharField(label=_("Language"), required=False, max_length=100, widget=bootstrap.StaticInput())
     gender = forms.ChoiceField(label=_('Gender'), required=False, choices=(BLANK_CHOICE_DASH + User.GENDER_CHOICES), widget=bootstrap.Select())
     dob = forms.CharField(label=_("Date of birth"), required=False, widget=bootstrap.TextInput(attrs={'disabled': ''})) 
@@ -205,13 +202,6 @@ class UserSelfRegistrationForm(forms.Form):
         new_user.is_active = False
         new_user.set_unusable_password()
         new_user.save()
-
-        if settings.SSO_CUSTOM.get('DEFAULT_ROLE_PROFILE_UUID'):
-            try:
-                default_role_profile = RoleProfile.objects.get(uuid=settings.SSO_CUSTOM.get('DEFAULT_ROLE_PROFILE_UUID'))
-                new_user.role_profiles.add(default_role_profile)
-            except ObjectDoesNotExist as e:
-                logger.warning(str(e))
         
         user_address = UserAddress()
         user_address.primary = True
