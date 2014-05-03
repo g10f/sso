@@ -11,16 +11,22 @@ from django.utils.translation import ugettext as _
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from django.utils.encoding import force_text
+
 from l10n.models import Country
+
 from sso.views import main
-from sso.accounts.models import ApplicationRole, RoleProfile, send_account_created_email  # Region, Organisation, 
+from sso.accounts.models import ApplicationRole, RoleProfile, User, send_account_created_email  # Region, Organisation, 
 from sso.organisations.models import AdminRegion, Organisation
 from sso.accounts.forms import UserAddFormExt, UserProfileForm
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 # TODO: refine the permission checks
-def has_permission(user):
-    return user.is_authenticated() and user.can_add_users
+def is_admin(user):
+    return user.is_authenticated() and user.is_admin
     
 
 class UserDeleteView(DeleteView):
@@ -33,7 +39,7 @@ class UserDeleteView(DeleteView):
         qs = super(UserDeleteView, self).get_queryset()
         return user.filter_administrable_users(qs)
     
-    @method_decorator(user_passes_test(has_permission))
+    @method_decorator(user_passes_test(is_admin))
     def dispatch(self, request, *args, **kwargs):
         return super(UserDeleteView, self).dispatch(request, *args, **kwargs)
 
@@ -50,7 +56,7 @@ class UserList(ListView):
     page_kwarg = main.PAGE_VAR
     list_display = ['username', 'first_name', 'last_name', 'email', 'last_login', 'date_joined']
     
-    @method_decorator(user_passes_test(has_permission))
+    @method_decorator(user_passes_test(is_admin))
     def dispatch(self, request, *args, **kwargs):
         return super(UserList, self).dispatch(request, *args, **kwargs)
 
@@ -198,7 +204,7 @@ class UserList(ListView):
         return super(UserList, self).get_context_data(**context)
     
     
-@user_passes_test(has_permission)
+@user_passes_test(is_admin)
 def add_user(request, template='accounts/application/add_user_form.html'):
     if request.method == 'POST':
         form = UserAddFormExt(request.user, request.POST)
@@ -208,21 +214,22 @@ def add_user(request, template='accounts/application/add_user_form.html'):
             
             return HttpResponseRedirect(reverse('accounts:add_user_done', args=[user.uuid]))
     else:
-        form = UserAddFormExt(request.user)
+        default_role_profile = User.get_default_role_profile()
+        form = UserAddFormExt(request.user, initial={'role_profiles': [default_role_profile]})
 
     data = {'form': form,
              'title': _('Add user')}
     return render(request, template, data)
 
 
-@user_passes_test(has_permission)
+@user_passes_test(is_admin)
 def add_user_done(request, uuid, template='accounts/application/add_user_done.html'):
     new_user = get_user_model().objects.get(uuid=uuid)
     data = {'new_user': new_user, 'title': _('Add user')}
     return render(request, template, data)
 
     
-@user_passes_test(has_permission)
+@user_passes_test(is_admin)
 def update_user(request, uuid, template='accounts/application/change_user_form.html'):
     #TODO: check if the authenticated user has admin rights for the organisation
     user = get_object_or_404(get_user_model(), uuid=uuid)

@@ -1,0 +1,68 @@
+{% extends "base_form.html" %}
+{% load i18n admin_static %}
+
+{% block title %}{% trans 'Center Details' %}{% endblock %}
+
+{% block nav_organisations_organisation_list_class %}active{% endblock %}
+
+{% block breadcrumb %}
+<ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+    <li><a href="{% url 'organisations:organisation_list' %}">{% trans 'Center List' %}</a></li>
+    <li class="active">{% trans 'Center Details' %}</li>
+</ol> 
+{% endblock breadcrumb %}
+
+
+{% block form %}
+
+{% block message %}{% endblock %}
+
+<h3>{{ object.get_center_type_display }} {{ object.name }}</h3>
+
+{% if messages %}{% for message in messages %}
+<div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
+{% endif %}
+
+<p>
+	<div class="row"><div class="dwbn-label">{% trans 'E-Mail' %}: </div><div class="dwbn-content">{{ object.email }}</div></div>
+	<div class="row"><div class="dwbn-label">{% trans 'Country' %}: </div><div class="dwbn-content">{{ object.country }}</div></div>
+	{% if object.founded %}<div class="row"><div class="dwbn-label">{% trans 'Founded' %}: </div><div class="dwbn-content">{{ object.founded }}</div></div>{% endif %}
+	<div class="row"><div class="dwbn-label">{% trans 'Homepage' %}: </div><div class="dwbn-content"><a href="{{ object.homepage }}">{{ object.homepage }}</a></div></div>
+	{% if object.google_maps_url %}<div class="row"><div class="dwbn-label">{% trans 'Google Maps' %}: </div><div class="dwbn-content"><a href="{{ object.google_maps_url }}">{% trans 'Google Maps' %} <span class="glyphicon glyphicon-map-marker"></span></a></div></div>{% endif %}
+	
+	{% for address in object.organisationaddress_set.all %}
+	<h4>{{ address.get_address_type_display }} {% trans 'Address' %}</h4>
+	<div class="row"><div class="dwbn-label">{% trans 'Addressee' %}: </div><div class="dwbn-content">{{ address.addressee }}</div></div>
+	<div class="row"><div class="dwbn-label">{% trans 'Street Address' %}: </div><div class="dwbn-content">{{ address.street_address|linebreaksbr }}</div></div>
+	<div class="row"><div class="dwbn-label">{% trans 'City' %}: </div><div class="dwbn-content">{{ address.city }}</div></div>
+	<div class="row"><div class="dwbn-label">{% trans 'Postal Code' %}: </div><div class="dwbn-content">{{ address.postal_code }}</div></div>
+	{% if state %}<div class="row"><div class="dwbn-label">{% trans 'state' %}: </div><div class="dwbn-content">{{ address.state }}</div></div>{% endif %}
+	{% endfor %}
+	
+	{% if object.organisationphonenumber_set.all %}
+	<h4>{% trans 'Phone Numbers' %}</h4>
+	{% for phone_number in object.organisationphonenumber_set.all %}
+	<div class="row"><div class="dwbn-label">{{ phone_number.get_phone_type_display }} {% trans 'Phone' %}: </div><div class="dwbn-content">{{ phone_number.phone }}</div></div>
+	{% endfor %}{% endif %}
+</p>
+
+<div class="form-group">
+    <div class="dwbn-form-control_lg">
+        {% block submit_group %}
+        {% if return_url %}<a class="btn btn-default" href="{{ return_url }}">{% trans 'Back' %}</a>{% endif %}
+
+        {% if perms.organisations.delete_organisation and is_organisation_admin %}
+        <a class="btn btn-default" href="{% url 'organisations:organisation_delete' object.uuid %}">{% trans 'Delete' %}</a>
+        {% endif %}
+
+        {% if is_organisation_admin %}
+        <a class="btn btn-primary" href="{% url 'organisations:organisation_update' object.uuid %}">{% trans 'Update' %}</a>
+        {% endif %}
+        
+        {% endblock %}
+    </div>
+</div>
+
+{% endblock %}
+

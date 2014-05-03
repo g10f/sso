@@ -38,9 +38,9 @@ class Organisation(AbstractBaseModel):
     def center_type_desc(self):
         return self._center_type_choices.get(self.center_type, '')
 
-    name = models.CharField(_("name"), blank=True, max_length=255)
-    country = models.ForeignKey(Country, verbose_name=_("country"), blank=True, null=True, limit_choices_to={'active': True})
-    email = models.EmailField(_('e-mail address'), blank=True)
+    name = models.CharField(_("name"), max_length=255)
+    country = models.ForeignKey(Country, verbose_name=_("country"), null=True, limit_choices_to={'active': True})
+    email = models.EmailField(_('e-mail address'))
     homepage = models.URLField(_("homepage"), blank=True,)
     notes = models.TextField(_('notes'), blank=True, max_length=255)
     center_type = models.CharField(_('center type'), max_length=2, choices=CENTER_TYPE_CHOICES, db_index=True)    
@@ -70,13 +70,17 @@ class Organisation(AbstractBaseModel):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('organisations:buddhistcenter_detail', (), {'slug': self.uuid, })
-     
-    def google_maps_link(self):
+        return ('organisations:organisation_detail', (), {'uuid': self.uuid, })
+    
+    @property
+    def google_maps_url(self):
         if self.latitude and self.longitude:
-            return u'<a href="http://maps.google.de/maps?q=%f,+%f&iwloc=A">%s</a>' % (self.latitude, self.longitude, 'google maps link')
+            return "http://maps.google.de/maps?q=%f,+%f&iwloc=A" % (self.latitude, self.longitude)
         else:
-            return ''
+            ""
+        
+    def google_maps_link(self):
+        return u'<a href="%s">%s</a>' % (self.google_maps_url, 'google maps')
     google_maps_link.allow_tags = True
     google_maps_link.short_description = _('Maps')
 
@@ -105,7 +109,7 @@ class Organisation(AbstractBaseModel):
 
 class OrganisationAddress(AbstractBaseModel, AddressMixin):
     ADDRESSTYPE_CHOICES = (
-            ('post', _('Post address')),
+            ('post', _('Post')),
             ('meditation', _('Meditation')),
             )        
     address_type = models.CharField(_("address type"), choices=ADDRESSTYPE_CHOICES, max_length=20)

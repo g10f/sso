@@ -1,0 +1,25 @@
+{% extends "organisations/organisation_detail.html" %}
+{% load i18n %}
+
+{% block breadcrumb %}
+<ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+    <li><a href="{% url 'organisations:organisation_list' %}">{% trans 'Center List' %}</a></li>
+    <li class="active">{% trans 'Delete Center' %}</li>
+</ol> 
+{% endblock breadcrumb %}
+
+
+{% block message %}
+<div class="alert alert-danger">
+{% trans "Please confirm deleting this center" %}
+</div>
+{% endblock %}
+
+
+{% block submit_group %}
+<form class="form-horizontal" method="post">{% csrf_token %}  
+	<button type="submit" class="btn btn-danger">{% trans 'Confirm Delete Center' %}</button>
+	<a class="btn btn-primary" href="{% url 'organisations:organisation_detail' object.uuid %}">{% trans 'Cancel' %}</a>
+</form>
+{% endblock %}

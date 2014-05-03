@@ -497,10 +497,15 @@ class UserSelfRegistrationForm2(UserSelfRegistrationForm):
     @staticmethod
     def save_data(data, username_generator=default_username_generator):
         registration_profile = UserSelfRegistrationForm.save_data(data, username_generator)
+        new_user = registration_profile.user
+        
+        default_role_profile = User.get_default_role_profile()
+        if default_role_profile:
+            new_user.role_profiles.add(default_role_profile)
+
         organisation = data["organisation"]
         if organisation:
-            user = registration_profile.user
-            user.organisations.add(data["organisation"])
+            new_user.organisations.add(data["organisation"])
         return registration_profile
 
 

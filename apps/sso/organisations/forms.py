@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 import datetime
+from django import forms
+from django.utils.translation import ugettext as _
 
-#from django.contrib.staticfiles.templatetags.staticfiles import static
+from sso.forms import bootstrap, BaseForm
 from .models import OrganisationPhoneNumber, OrganisationAddress, Organisation 
 
-#from django import forms
-from sso.forms import bootstrap, BaseForm
-
-class AddressForm(BaseForm):
+class OrganisationAddressForm(BaseForm):
     class Meta:
         model = OrganisationAddress
         fields = ('primary', 'address_type', 'addressee', 'street_address', 'city', 'postal_code', 'country', 'state') 
@@ -29,7 +28,7 @@ class AddressForm(BaseForm):
         return 'edit_inline/stacked.html'
 
 
-class PhoneNumberForm(BaseForm):
+class OrganisationPhoneNumberForm(BaseForm):
     class Meta:
         model = OrganisationPhoneNumber
         fields = ('phone_type', 'phone', 'primary') 
@@ -48,24 +47,44 @@ class PhoneNumberForm(BaseForm):
 
 
 class OrganisationForm(BaseForm):
+    google_maps_url = forms.CharField(label=_("Google Maps"), required=False, widget=bootstrap.StaticInput())
+
     class Meta:
         model = Organisation
         
-        fields = (
-                  'email', 'homepage', 'founded', 'latitude', 'longitude',)
+        fields = ('name', 'email', 'homepage', 'founded', 'latitude', 'longitude', 'is_active', 'center_type', 'country', 'admin_region')
         years_to_display = range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1)
         widgets = {
                    'email': bootstrap.TextInput(attrs={'size': 50}),
                    'homepage': bootstrap.TextInput(attrs={'size': 50}),
-                   'name': bootstrap.TextInput(attrs={'size': 50, 'readonly': True}), 
+                   'country': bootstrap.Select(),
+                   'admin_region': bootstrap.Select(),
+                   'name': bootstrap.TextInput(attrs={'size': 50}), 
                    'founded': bootstrap.SelectDateWidget(years=years_to_display, required=False),
                    'latitude': bootstrap.TextInput(attrs={'size': 50}),
                    'longitude': bootstrap.TextInput(attrs={'size': 50}),
+                   'center_type': bootstrap.Select(),
+                   'is_active': bootstrap.CheckboxInput()
+                   
                    }
-    
+        
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user')  # remove custom user keyword      
+        # initialise the form
+        super(OrganisationForm, self).__init__(*args, **kwargs)
+        
+        instance = kwargs.get('instance')
+        # regional admins can create only centers for the there region
+        if not user.has_perm("accounts.change_all_users"):
+            if instance:  # update view 
+                del self.fields['admin_region']
+            else:  # create view. The user must be a regional admin
+                assert(user.has_perm("accounts.change_reg_users"))                
+                admin_regions = user.get_administrable_regions()
+                assert(len(admin_regions) > 0)
+                self.fields['admin_region'].queryset = admin_regions
+                self.fields['admin_region'].required = True
+        
     def opts(self):
         # i need the model verbose_name in the html form, is there a better way?
         return self._meta.model._meta
-    
-    def template(self):
-        return 'edit_inline/single_stacked.html'

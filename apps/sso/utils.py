@@ -3,10 +3,10 @@ import urlparse
 import urllib
 import functools
 
-from django.core.exceptions import PermissionDenied
-from django.http import HttpResponse
+#from django.core.exceptions import PermissionDenied
+#from django.http import HttpResponse
 from django.contrib.sites.models import get_current_site
-from oauthlib import oauth2
+#from oauthlib import oauth2
 
 import logging
 
@@ -19,7 +19,20 @@ def build_url(url, params):
     query_params.update(params)
     new_query_string = urllib.urlencode(query_params, doseq=True)
     return urlparse.urlunsplit((scheme, netloc, path, new_query_string, fragment))
-    
+
+
+def is_safe_url(url, host=None):
+    """
+    Return ``True`` if the url is a safe redirection (i.e. it doesn't point to
+    a different host and uses a safe scheme).
+
+    Always returns ``False`` on an empty url.
+    """
+    if not url:
+        return False
+    url_info = urlparse.urlparse(url)
+    return (not url_info.netloc or url_info.netloc == host) and \
+        (not url_info.scheme or url_info.scheme in ['http', 'https'])
 
 """
 def catch_errors(f):

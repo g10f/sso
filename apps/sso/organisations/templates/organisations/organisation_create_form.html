@@ -1,0 +1,20 @@
+{% extends "organisations/organisation_form.html" %}
+{% load i18n %}
+
+{% block title %}{% trans 'Add Center' %}{% endblock %}
+
+{% block nav_organisations_organisation_create_class %}active{% endblock %}
+{% block nav_organisations_organisation_list_class %}{% endblock %}
+
+{% block breadcrumb %}
+<ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+    <li><a href="{% url 'organisations:organisation_list' %}">{% trans 'Center List' %}</a></li>
+    <li class="active">{% trans 'Add Center' %}</li>
+</ol> 
+{% endblock breadcrumb %}
+
+
+{% block submit_group %}
+<button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
+{% endblock %}

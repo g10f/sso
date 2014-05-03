@@ -20,6 +20,7 @@ from django.core.mail import mail_managers
 from django.utils.html import strip_tags
 from django.db.models import ObjectDoesNotExist
 from django.utils.translation import ugettext as _
+from django.forms.models import inlineformset_factory
 
 from throttle.decorators import throttle
 from sso.auth.forms import EmailAuthenticationForm
@@ -203,7 +204,6 @@ def login(request):
     }
     return TemplateResponse(request, template_name, context)
 
-from django.forms.models import inlineformset_factory
 
 @login_required
 def profile(request):
@@ -254,12 +254,15 @@ def profile(request):
         media = media + fs.media
     
     errors = ErrorList(form, formsets)
-    active = 'profile'
-    if errors and form.is_valid():  # set the first formset with an error as active
-        for formset in formsets:
-            if not formset.is_valid():
-                active = formset.prefix
-                break
+    active = ''
+    if errors:
+        if not form.is_valid():  
+            active = 'object'
+        else:  # set the first formset with an error as active
+            for formset in formsets:
+                if not formset.is_valid():
+                    active = formset.prefix
+                    break
 
     dictionary = {'form': form, 'errors': errors, 'formsets': formsets, 'media': media, 'active': active}
     return render(request, 'accounts/profile_form.html', dictionary)

@@ -148,7 +148,9 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         applicationrole = ApplicationRole.objects.get(application__uuid=settings.SSO_CUSTOM['APP_UUID'], role__name="Center")
         self.add_user(applicationrole=applicationrole, allowed_orgs=["1"], denied_orgs=["2"])
     
-    def add_user(self, applicationrole, allowed_orgs, denied_orgs=[]):
+    def add_user(self, applicationrole, allowed_orgs, denied_orgs=None):
+        if denied_orgs is None:
+            denied_orgs = []
         
         user = get_user_model().objects.get(username='GunnarScherf')
         user.application_roles.add(applicationrole)

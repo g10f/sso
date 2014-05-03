@@ -140,7 +140,7 @@ os.environ['DEBUG'] = ""
 """
 
 @task
-def compile_less(version='1.0.3'):
+def compileless(version='1.0.3'):
     for style in ['default', 'dwbn', 'cerulean', 'slate', 'vw']:
         local('lessc ./apps/sso/static/less/%(style)s.less ./apps/sso/static/css/%(style)s-%(version)s.css' %{'style': style, 'version': version})
 
@@ -162,7 +162,7 @@ def test():
         local("~/envs/sso/bin/python ./manage.py test streaming accounts oauth2")
 
 @task 
-def prepare_deploy():
+def preparedeploy():
     compilemessages()
     #test()
     local("git commit -a")
@@ -302,7 +302,7 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
     python = '/envs/%(virtualenv)s/bin/python' % {'virtualenv': virtualenv}
     with cd(code_dir):
         update_dir_settings(code_dir + '/logs')
-        migrate_data(python, server_name, code_dir, app)
+        #migrate_data(python, server_name, code_dir, app)
         sudo("%s ./src/apps/manage.py collectstatic --noinput" % python)
         sudo("supervisorctl restart %(server_name)s" % {'server_name': server_name})
         update_dir_settings(code_dir + '/logs')
