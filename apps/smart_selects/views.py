@@ -1,6 +1,6 @@
+import json
 from django.db.models import get_model
 from django.http import HttpResponse
-from django.utils import simplejson
 from django.views.decorators.cache import cache_page
 
 import locale
@@ -22,8 +22,8 @@ def filterchain(request, app, model, field, value, manager=None):
     result = []
     for item in results:
         result.append({'value': item.pk, 'display': unicode(item)})
-    json = simplejson.dumps(result)
-    return HttpResponse(json, content_type='application/json')
+    content = json.dumps(result)
+    return HttpResponse(content, content_type='application/json')
 
 @cache_page(60) 
 def filterchain_all(request, app, model, field, value):
@@ -43,5 +43,5 @@ def filterchain_all(request, app, model, field, value):
 
     for item in results:
         final.append({'value': item.pk, 'display': unicode(item)})
-    json = simplejson.dumps(final)
-    return HttpResponse(json, content_type='application/json')
+    content = json.dumps(final)
+    return HttpResponse(content, content_type='application/json')
