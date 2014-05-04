@@ -42,8 +42,7 @@ class FormsetsUpdateView(UpdateView):
         return True
     
     def get_context_data(self, **kwargs):
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
+        form = kwargs.get("form")
         
         media = self.media + form.media
         formsets = self.formsets

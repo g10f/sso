@@ -1,7 +1,7 @@
 {% extends "base_form.html" %}
 {% load i18n %}
 
-{% block title %}{% trans 'Delete user' %}{% endblock %}
+{% block title %}{% trans 'Delete User' %}{% endblock %}
 
 {% block breadcrumb %}
 <ol class="breadcrumb">
@@ -15,17 +15,17 @@
     <h3>{% trans 'Delete user' %}</h3>
     
 	<div class="form-group">
-	  <label class="control-label">{% trans 'first name' %}</label> 
+	  <label class="control-label">{% trans 'First name' %}</label> 
 	  <div class="dwbn-form-control"><p class="form-control-static">{{ object.first_name  }}</p></div>
 	</div>
 
     <div class="form-group">
-      <label class="control-label">{% trans 'last name' %}</label> 
+      <label class="control-label">{% trans 'Last name' %}</label> 
       <div class="dwbn-form-control"><p class="form-control-static">{{ object.last_name  }}</p></div>
     </div>
 
     <div class="form-group">
-      <label class="control-label">{% trans 'e-mail address' %}</label> 
+      <label class="control-label">{% trans 'E-mail address' %}</label> 
       <div class="dwbn-form-control"><p class="form-control-static">{{ object.email  }}</p></div>
     </div>
     
@@ -36,7 +36,7 @@
 
     {% for organisation in object.organisations.all %}
     <div class="form-group">
-      <label class="control-label">{% trans 'center' %}</label> 
+      <label class="control-label">{% trans 'Center' %}</label> 
       <div class="dwbn-form-control"><p class="form-control-static">{{ organisation }}</p></div>
     </div>
     {% endfor %}
@@ -44,12 +44,12 @@
     {% if object.registrationprofile %}
     {% with registrationprofile=object.registrationprofile %}
     <div class="form-group">
-      <label class="control-label">{% trans 'country' %}</label> 
+      <label class="control-label">{% trans 'Country' %}</label> 
       <div class="dwbn-form-control"><p class="form-control-static">{{ registrationprofile.country   }}</p></div>
     </div>
 
     <div class="form-group">
-      <label class="control-label">{% trans 'city' %}</label> 
+      <label class="control-label">{% trans 'City' %}</label> 
       <div class="dwbn-form-control"><p class="form-control-static">{{ registrationprofile.city  }}</p></div>
     </div>
     {% endwith %}
@@ -57,7 +57,7 @@
     
     <div class="form-group">
         <div class="dwbn-form-control_lg">
-            <button type="submit" class="btn btn-danger">{% trans 'Delete' %}</button>
+            <button type="submit" class="btn btn-danger">{% trans 'Confirm Delete' %}</button>
             {% if cancel_url %}&nbsp;{% trans 'or' %}&nbsp; <a class="btn btn-default" href="{{ cancel_url }}">{% trans 'Cancel' %}</a>{% endif %}            
         </div>
    </div>

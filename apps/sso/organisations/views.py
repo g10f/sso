@@ -4,9 +4,8 @@ from django.core.exceptions import PermissionDenied
 from django.utils.encoding import force_text
 from django.contrib.auth.decorators import login_required, permission_required
 from django.views.generic import ListView, DeleteView, DetailView, CreateView
-from django.views.generic.detail import SingleObjectMixin
 from django.utils.decorators import method_decorator
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
 from django.forms.models import inlineformset_factory
 from django.contrib import messages
@@ -14,6 +13,7 @@ from django.contrib import messages
 from l10n.models import Country
 
 from sso.views import main
+from sso.views.main import FilterItem
 from sso.organisations.models import AdminRegion, Organisation
 from sso.views.generic import FormsetsUpdateView
 from sso.utils import is_safe_url
@@ -36,7 +36,7 @@ def get_last_modified(request, *args, **kwargs):
     return last_modified
 
 
-class OrganisationBaseView(SingleObjectMixin):
+class OrganisationBaseView(object):
     model = Organisation
     slug_field = slug_url_kwarg = 'uuid'
 
@@ -136,19 +136,17 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
         return [address_inline_formset, phonenumber_inline_formset]
 
     def get_success_url(self):
-        message = ""
+        msg = ""
         success_url = ""
-        if "_addanother" in self.request.POST:
-            message = _('The center "%(obj)s" was changed successfully. You may add another user below.') % {'obj': force_text(self.object)}
-            success_url = reverse('organisations:organisation_create')
-        elif "_continue" in self.request.POST:
-            message = _('The center "%(obj)s" was changed successfully. You may edit it again below.') % {'obj': force_text(self.object)}
+        msg_dict = {'name': force_text(self.model._meta.verbose_name), 'obj': force_text(self.object)}
+        if "_continue" in self.request.POST:
+            msg = _('The %(name)s "%(obj)s" was changed successfully. You may edit it again below.') % msg_dict
             success_url = reverse('organisations:organisation_update', args=[self.object.uuid])
         else:
-            message = _('The center "%(obj)s" was changed successfully.') % {'obj': force_text(self.object)}
+            msg = _('The %(name)s "%(obj)s" was changed successfully.') % msg_dict
             success_url = super(OrganisationUpdateView, self).get_success_url()   
             
-        messages.add_message(self.request, level=messages.SUCCESS, message=message, fail_silently=True)
+        messages.add_message(self.request, level=messages.SUCCESS, message=msg, fail_silently=True)
         return success_url    
     
 
@@ -158,7 +156,8 @@ class OrganisationList(ListView):
     paginate_by = 20
     page_kwarg = main.PAGE_VAR
     list_display = ['name', 'email', 'google maps', 'country', 'founded']
-    
+    IS_ACTIVE_CHOICES = (('1', _('Active Centers')), ('2', _('Inactive Centers')))  
+
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super(OrganisationList, self).dispatch(request, *args, **kwargs)
@@ -174,7 +173,6 @@ class OrganisationList(ListView):
         Get the list of items for this view. This must be an iterable, and may
         be a queryset (in which qs-specific behavior will be enabled).
         """
-        
         # apply my_organisations filter only for admins
         my_organisations = None
         if self.request.user.is_admin:
@@ -200,7 +198,7 @@ class OrganisationList(ListView):
         # apply country filter
         country = self.request.GET.get('country', '')
         if country:
-            self.country = Country.objects.get(iso2_code=country)
+            self.country = Country.objects.get(pk=country)
             qs = qs.filter(country__in=[self.country])
         else:
             self.country = None
@@ -216,7 +214,7 @@ class OrganisationList(ListView):
         # apply center_type filter
         center_type = self.request.GET.get('center_type', '')
         if center_type:
-            self.center_type = (center_type, dict(Organisation.CENTER_TYPE_CHOICES)[center_type])
+            self.center_type = FilterItem((center_type, dict(Organisation.CENTER_TYPE_CHOICES)[center_type]))
             qs = qs.filter(center_type=center_type)
         else:
             self.center_type = None
@@ -225,11 +223,11 @@ class OrganisationList(ListView):
         if self.request.user.is_admin:
             is_active = self.request.GET.get('is_active', '')
         else:
-            is_active = "True"
+            is_active = "1"
             
         if is_active:
-            self.is_active = is_active
-            is_active_filter = True if (is_active == "True") else False
+            self.is_active = FilterItem((is_active, dict(OrganisationList.IS_ACTIVE_CHOICES)[is_active]))
+            is_active_filter = True if (is_active == "1") else False
             qs = qs.filter(is_active=is_active_filter)
         else:
             self.is_active = None
@@ -240,9 +238,6 @@ class OrganisationList(ListView):
         return qs.distinct()
 
     def get_context_data(self, **kwargs):
-        """
-        Get the context for this view.
-        """
         headers = list(self.cl.result_headers())
         num_sorted_fields = 0
         for h in headers:
@@ -251,7 +246,6 @@ class OrganisationList(ListView):
         
         countries = Country.objects.filter(organisation__isnull=False).distinct()
         admin_regions = AdminRegion.objects.all()
-        center_types = Organisation.CENTER_TYPE_CHOICES
         if len(countries) == 1:
             self.country = countries[0]
             countries = Country.objects.none()
@@ -260,6 +254,24 @@ class OrganisationList(ListView):
             countries = None
         if len(admin_regions) == 1:
             admin_regions = None
+
+        is_active_list = [FilterItem(item) for item in OrganisationList.IS_ACTIVE_CHOICES]
+        center_types = [FilterItem(item) for item in Organisation.CENTER_TYPE_CHOICES]
+        filters = [
+            {
+                'selected': self.country, 'list': countries, 'select_text': _('Select Country'), 'select_all_text': _("All Countries"), 
+                'param_name': 'country', 'all_remove': 'region,center', 'remove': 'region,center,app_role,role_profile,p'
+            }, {
+                'selected': self.admin_region, 'list': admin_regions, 'select_text': _('Select Region'), 'select_all_text': _("All Regions"), 
+                'param_name': 'admin_region', 'all_remove': 'center', 'remove': 'center,app_role,role_profile,p'
+            }, {
+                'selected': self.center_type, 'list': center_types, 'select_text': _('Select Center Type'), 'select_all_text': _("All Center Types"), 
+                'param_name': 'center_type', 'all_remove': '', 'remove': 'p'
+            }, {
+                'selected': self.is_active, 'list': is_active_list, 'select_text': _('Select active/inactive'), 'select_all_text': _("All"), 
+                'param_name': 'is_active', 'all_remove': '', 'remove': 'p'
+            }
+        ]
         
         context = {
             'result_headers': headers,
@@ -268,13 +280,7 @@ class OrganisationList(ListView):
             'page_var': main.PAGE_VAR,
             'query': self.request.GET.get(main.SEARCH_VAR, ''),
             'cl': self.cl,
-            'countries': countries,
-            'country': self.country,
-            'admin_regions': admin_regions,
-            'admin_region': self.admin_region,
-            'center_types': center_types,
-            'center_type': self.center_type,
-            'is_active': self.is_active,
+            'filters': filters,
             'my_organisations': getattr(self, 'my_organisations', '')
         }
         context.update(kwargs)

@@ -1,7 +1,7 @@
 {% extends 'base_site.html' %}
 {% load i18n list tz static %}
 
-{% block title %}{% trans 'Centers' %}{% endblock %}
+{% block title %}{% trans 'Center List' %}{% endblock %}
 
 {% block nav_organisations_organisation_list_class %}active{% endblock %}
 
@@ -23,104 +23,20 @@
 </div><!-- /.row -->
 
 <div class="row dwbn-filter-row">
-	{% block search_form %}
 	<div class="col-sm-3">
-		<form class="" method="get">
-            {% for key, value in cl.params.items %}
-	            {% if key != search_var and key != page_var %}
-	               <input type="hidden" name="{{ key }}" value="{{ value }}">          
-                {% endif %}
-            {% endfor %}
-            <div class="input-group">
-				<input type="text" class="form-control" name="{{ search_var }}" value="{{ query }}" placeholder="{% trans 'search text' %}">
-				<span class="input-group-btn">
-				  <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
-				</span>
-		    </div>
-		</form>
+       {% include 'include/_search_form.html' %}
     </div>
-	{% endblock search_form %}	
 	
 	<div class="col-sm-9">
-        {% block admin_organisations_filter %}
-        {% if user.is_admin and not perms.accounts.change_all_users %}
-        {% if my_organisations %}
+        {% if user.is_admin and not perms.accounts.change_all_users %}{% if my_organisations %}
         <a type="button" class="btn btn-default active"  href="{% query_string cl 'my_organisations' '' %}">{% trans 'Select My Centers' %}</a>
         {% else %}
         <a type="button" class="btn btn-default" href="{% query_string cl 'my_organisations' 'True' 'p' %}">{% trans 'Select My Centers' %}</a>
-        {% endif %}
-        {% endif %}
-        {% endblock admin_organisations_filter %}
+        {% endif %}{% endif %}
 
-		{% block country_filter %}
-		{% if countries %}
-	    <div class="btn-group">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                {% if country %}{{ country }}{% else %}{% trans 'Select country' %}{% endif %}
-                 <span class="caret"></span>
-            </button>
-	       <ul class="dropdown-menu" role="menu">
-	           {% if country %}<li><a tabindex="-1" href="{% query_string cl 'country' '' 'region' %}"">{% trans 'All countries' %}</a></li>{% endif %}
-	           {% for country in countries %}
-	               <li><a href="{% query_string cl 'country' country.iso2_code 'region,p' %}">{{ country }}</a></li>
-	           {% endfor %}
-	       </ul>
-        </div>
-		{% endif %}
-		{% endblock country_filter %}
-    
-	    {% block admin_region_filter %}
-	    {% if admin_regions %}
-	    <div class="btn-group">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                {% if admin_region %}{{ admin_region }}{% else %}{% trans 'Select region' %}{% endif %}
-                <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" role="menu">
-                {% if admin_region %}<li><a tabindex="-1" href="{% query_string cl 'admin_region' '' %}"">{% trans 'All regions' %}</a></li>{% endif %}
-                {% for admin_region in admin_regions %}
-                    <li><a tabindex="-1" href="{% query_string cl 'admin_region' admin_region.pk 'p' %}">{{ admin_region }}</a></li>
-                {% endfor %}
-            </ul>
-        </div>
-		{% endif %}
-		{% endblock admin_region_filter %}
-		      
-        {% block center_type_filter %}
-        {% if center_types %}
-        <div class="btn-group">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                {% if center_type %}{{ center_type.1 }}{% else %}{% trans 'Select Centre Type' %}{% endif %}
-                <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" role="menu">
-                {% if center_type %}<li><a tabindex="-1" href="{% query_string cl 'center_type' '' %}"">{% trans 'All Centre Types' %}</a></li>{% endif %}
-                {% for center_type in center_types %}
-                    <li><a tabindex="-1" href="{% query_string cl 'center_type' center_type.0 'p' %}">{{ center_type.1 }}</a></li>
-                {% endfor %}
-            </ul>
-        </div>
-        {% endif %}
-        {% endblock center_type_filter %}
-
-        {% block is_active_filter %}
-        {% if user.is_admin %}
-	    <div class="btn-group">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                 {% if is_active == 'True' %}{% trans 'Active Centers' %}
-                 {% elif is_active == 'False' %}{% trans 'Inactive Centers' %}
-                 {% else %}{% trans 'Select active/inactive' %}
-                 {% endif %}
-                 <span class="caret"></span>
-            </button>
-           <ul class="dropdown-menu" role="menu">
-                 {% if is_active %}<li><a tabindex="-1" href="{% query_string cl 'is_active' '' %}"">{% trans 'All' %}</a></li>{% endif %}
-                 <li><a tabindex="-1" href="{% query_string cl 'is_active' 'False' 'p' %}">{% trans 'Inactive Centers' %}</a></li>
-                 <li><a tabindex="-1" href="{% query_string cl 'is_active' 'True' 'p' %}">{% trans 'Active Centers' %}</a></li>
-            </ul>
-        </div>
-        {% endif %}
-        {% endblock is_active_filter %}
+        {% for filter in filters %} 
+        {% include 'include/_list_filter.html' with filter=filter %}
+        {% endfor %}
     </div><!-- /.col-sm-9 -->
 </div>
 
@@ -140,7 +56,7 @@
 	           {% endfor %}
 	       </tbody>
 	   </table>
-	   {% block pagination %}{% if is_paginated %}{% pagination page_obj cl %}{% endif %}{% endblock %}
+	   {% if is_paginated %}{% pagination page_obj cl %}{% endif %}
     </div>
 </main>
 {% endblock content %}

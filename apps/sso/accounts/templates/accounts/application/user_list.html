@@ -1,7 +1,7 @@
 {% extends 'base_site.html' %}
 {% load i18n list tz static %}
 
-{% block title %}{% trans 'users' %}{% endblock %}
+{% block title %}{% trans 'User List' %}{% endblock %}
 
 {% block nav_accounts_user_list_class %}active{% endblock %}
 
@@ -23,125 +23,13 @@
 </div><!-- /.row -->
 
 <div class="row dwbn-filter-row">
-	{% block search_form %}
 	<div class="col-sm-3">
-		<form class="" method="get">
-            {% for key, value in cl.params.items %}
-	            {% if key != search_var and key != page_var %}
-	               <input type="hidden" name="{{ key }}" value="{{ value }}">          
-                {% endif %}
-            {% endfor %}
-            <div class="input-group">
-				<input type="text" class="form-control" name="{{ search_var }}" value="{{ query }}" placeholder="{% trans 'search text' %}">
-				<span class="input-group-btn">
-				  <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-search"></span></button>
-				</span>
-		    </div>
-		</form>
+	   {% include 'include/_search_form.html' %}
     </div>
-	{% endblock search_form %}	
-	
 	<div class="col-sm-9">
-		{% block country_filter %}
-		{% if countries %}
-	    <div class="btn-group">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                {% if country %}{{ country }}{% else %}{% trans 'Select country' %}{% endif %}
-                 <span class="caret"></span>
-            </button>
-	       <ul class="dropdown-menu" role="menu">
-	           {% if country %}<li><a tabindex="-1" href="{% query_string cl 'country' '' 'region,center' %}"">{% trans 'All countries' %}</a></li>{% endif %}
-	           {% for country in countries %}
-	               <li><a href="{% query_string cl 'country' country.iso2_code 'region,center,app_role,p' %}">{{ country }}</a></li>
-	           {% endfor %}
-	       </ul>
-        </div>
-		{% endif %}
-		{% endblock country_filter %}
-    
-	    {% block admin_region_filter %}
-	    {% if admin_regions %}
-	    <div class="btn-group">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                {% if admin_region %}{{ admin_region }}{% else %}{% trans 'Select region' %}{% endif %}
-                <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" role="menu">
-                {% if admin_region %}<li><a tabindex="-1" href="{% query_string cl 'admin_region' '' 'center' %}"">{% trans 'All regions' %}</a></li>{% endif %}
-                {% for admin_region in admin_regions %}
-                    <li><a tabindex="-1" href="{% query_string cl 'admin_region' admin_region.pk 'center,app_role,p' %}">{{ admin_region }}</a></li>
-                {% endfor %}
-            </ul>
-        </div>
-		{% endif %}
-		{% endblock admin_region_filter %}
-
-		{% block center_filter %}
-		{% if centers %}
-		<div class="btn-group">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-			    {% if center %}{{ center }}{% else %}{% trans 'Select center' %}{% endif %}
-			    <span class="caret"></span>
-            </button>
-           <ul class="dropdown-menu" role="menu">
-		        {% if center %}<li><a tabindex="-1" href="{% query_string cl 'center' '' %}"">{% trans 'All centers' %}</a></li>{% endif %}
-		        {% for center in centers %}
-		            <li><a tabindex="-1" href="{% query_string cl 'center' center.pk 'app_role,p' %}">{{ center }}</a></li>
-		        {% endfor %}
-		    </ul>
-	    </div>
-		{% endif %}
-		{% endblock center_filter %}
-		
-        {% block role_profiles_filter %}
-        {% if role_profiles %}
-        <div class="btn-group">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                {% if role_profile %}{{ role_profile }}{% else %}{% trans 'Select role profile' %}{% endif %}
-                <span class="caret"></span>
-            </button>
-           <ul class="dropdown-menu" role="menu">
-                {% if role_profile %}<li><a tabindex="-1" href="{% query_string cl 'role_profile' '' %}"">{% trans 'All role profiles' %}</a></li>{% endif %}
-                {% for role_profile in role_profiles %}
-                    <li><a tabindex="-1" href="{% query_string cl 'role_profile' role_profile.pk 'p' %}">{{ role_profile }}</a></li>
-                {% endfor %}
-            </ul>
-        </div>
-        {% endif %}
-        {% endblock role_profiles_filter %}
-
-		{% block app_roles_filter %}
-		{% if app_roles %}
-	    <div class="btn-group">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                {% if app_role %}{{ app_role }}{% else %}{% trans 'Select application role' %}{% endif %}
-                <span class="caret"></span>
-            </button>
-           <ul class="dropdown-menu" role="menu">
-                {% if app_role %}<li><a tabindex="-1" href="{% query_string cl 'app_role' '' %}"">{% trans 'All application roles' %}</a></li>{% endif %}
-                {% for app_role in app_roles %}
-                    <li><a tabindex="-1" href="{% query_string cl 'app_role' app_role.pk 'p' %}">{{ app_role }}</a></li>
-                {% endfor %}
-            </ul>
-        </div>
-		{% endif %}
-		{% endblock app_roles_filter %}
-		      
-		{# is_active filter #}
-	    <div class="btn-group">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                 {% if is_active == 'True' %}{% trans 'active users' %}
-                 {% elif is_active == 'False' %}{% trans 'inactive users' %}
-                 {% else %}{% trans 'Select active/inactive' %}
-                 {% endif %}
-                 <span class="caret"></span>
-            </button>
-           <ul class="dropdown-menu" role="menu">
-                 {% if is_active %}<li><a tabindex="-1" href="{% query_string cl 'is_active' '' %}"">{% trans 'All' %}</a></li>{% endif %}
-                 <li><a tabindex="-1" href="{% query_string cl 'is_active' 'False' 'p' %}">{% trans 'inactive users' %}</a></li>
-                 <li><a tabindex="-1" href="{% query_string cl 'is_active' 'True' 'p' %}">{% trans 'active users' %}</a></li>
-            </ul>
-        </div>
+	    {% for filter in filters %} 
+        {% include 'include/_list_filter.html' with filter=filter %}
+        {% endfor %}
     </div><!-- /.col-sm-9 -->
 </div>
 
@@ -152,9 +40,7 @@
 	       <tbody>
 	           {% for user in object_list %}
 	           <tr> 
-	               <td>
-	                   <a class="" href="{% url 'accounts:update_user' user.uuid %}{{ cl.get_query_string }}">{{ user.username }}</a>
-	               </td>
+	               <td><a class="" href="{% url 'accounts:update_user' user.uuid %}{{ cl.get_query_string }}">{{ user.username }}</a></td>
 	               <td>{{ user.first_name }}</td>
 	               <td>{{ user.last_name }}</td>
 	               <td>{{ user.email }}</td>
@@ -164,7 +50,7 @@
 	           {% endfor %}
 	       </tbody>
 	   </table>
-	   {% block pagination %}{% if is_paginated %}{% pagination page_obj cl %}{% endif %}{% endblock %}
+	   {% if is_paginated %}{% pagination page_obj cl %}{% endif %}
     </div>
 </main>
 {% endblock content %}

@@ -214,6 +214,7 @@ class ChangeList(object):
                 "class_attrib": format_html(' class="{0}"', ' '.join(th_classes)) if th_classes else '',
             }
 
+
 class ListView(generic.ListView):
     def apply_binary_filter(self, qs, field_name, default=''):
         field_value = self.request.GET.get(field_name, default)
@@ -225,3 +226,15 @@ class ListView(generic.ListView):
         else:
             setattr(self, field_name, None)
         return qs
+
+
+class FilterItem(object):
+    def __init__(self, item_tuple):
+        self.item_tuple = item_tuple
+    
+    @property
+    def pk(self):
+        return self.item_tuple[0]
+    
+    def __unicode__(self):
+        return self.item_tuple[1]

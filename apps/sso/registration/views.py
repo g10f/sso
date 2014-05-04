@@ -154,22 +154,23 @@ def update_user_registration(request, pk, template='registration/change_user_reg
     if request.method == 'POST':
         registrationprofile_form = RegistrationProfileForm(request.POST, instance=registrationprofile, request=request)
         if registrationprofile_form.is_valid(): 
-            message = ""
-            success_url = ""            
+            msg = ""
+            success_url = ""
+            msg_dict = {'name': force_text(get_user_model()._meta.verbose_name), 'obj': force_text(registrationprofile)}         
             if "_continue" in request.POST:
                 registrationprofile = registrationprofile_form.save()
-                message = _('The user "%(obj)s" was changed successfully. You may edit it again below.') % {'obj': force_text(registrationprofile.user)}
+                msg = _('The %(name)s "%(obj)s" was changed successfully. You may edit it again below.') % msg_dict
                 success_url = reverse('registration:update_user_registration', args=[registrationprofile.pk])
             elif "_save" in request.POST:
                 registrationprofile = registrationprofile_form.save()
-                message = _('The user "%(obj)s" was changed successfully.') % {'obj': force_text(registrationprofile.user)}
+                msg = _('The %(name)s "%(obj)s" was changed successfully.') % msg_dict
                 success_url = reverse('registration:user_registration_list') + "?" + request.GET.urlencode()
             else:
                 registrationprofile = registrationprofile_form.save(activate=True)
-                message = _('The user "%(obj)s" was activated successfully.') % {'obj': force_text(registrationprofile.user)}
+                msg = _('The %(name)s "%(obj)s" was activated successfully.') % msg_dict
                 success_url = reverse('registration:user_registration_list') + "?" + request.GET.urlencode()
             
-            messages.add_message(request, level=messages.INFO, message=message, fail_silently=True)
+            messages.add_message(request, level=messages.SUCCESS, message=msg, fail_silently=True)
             return HttpResponseRedirect(success_url)
     else:
         registrationprofile_form = RegistrationProfileForm(instance=registrationprofile, request=request)
