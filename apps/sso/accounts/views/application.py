@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import user_passes_test
 from django.views.generic import ListView, DeleteView
 from django.utils.decorators import method_decorator
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import get_object_or_404
 from django.db.models import Q
 from django.utils.encoding import force_text
@@ -15,6 +15,7 @@ from django.utils.encoding import force_text
 from l10n.models import Country
 
 from sso.views import main
+from sso.views.main import FilterItem
 from sso.accounts.models import ApplicationRole, RoleProfile, User, send_account_created_email  # Region, Organisation, 
 from sso.organisations.models import AdminRegion, Organisation
 from sso.accounts.forms import UserAddFormExt, UserProfileForm
@@ -55,6 +56,7 @@ class UserList(ListView):
     paginate_by = 20
     page_kwarg = main.PAGE_VAR
     list_display = ['username', 'first_name', 'last_name', 'email', 'last_login', 'date_joined']
+    IS_ACTIVE_CHOICES = (('1', _('Active Users')), ('2', _('Inactive Users')))
     
     @method_decorator(user_passes_test(is_admin))
     def dispatch(self, request, *args, **kwargs):
@@ -88,7 +90,7 @@ class UserList(ListView):
         # apply country filter
         country = self.request.GET.get('country', '')
         if country:
-            self.country = Country.objects.get(iso2_code=country)
+            self.country = Country.objects.get(pk=country)
             qs = qs.filter(organisations__country__in=[self.country])
         else:
             self.country = None
@@ -131,8 +133,8 @@ class UserList(ListView):
         # apply is_active filter
         is_active = self.request.GET.get('is_active', '')
         if is_active:
-            self.is_active = is_active
-            is_active_filter = True if (is_active == "True") else False
+            self.is_active = FilterItem((is_active, dict(UserList.IS_ACTIVE_CHOICES)[is_active]))
+            is_active_filter = True if (is_active == "1") else False
             qs = qs.filter(is_active=is_active_filter)
         else:
             self.is_active = None
@@ -143,9 +145,6 @@ class UserList(ListView):
         return qs.distinct()
 
     def get_context_data(self, **kwargs):
-        """
-        Get the context for this view.
-        """
         user = self.request.user
         headers = list(self.cl.result_headers())
         num_sorted_fields = 0
@@ -181,6 +180,27 @@ class UserList(ListView):
         if len(centers) == 1:
             centers = None
         
+        is_active_list = [FilterItem(item) for item in UserList.IS_ACTIVE_CHOICES]
+        filters = [{
+                'selected': self.country, 'list': countries, 'select_text': _('Select Country'), 'select_all_text': _("All Countries"), 
+                'param_name': 'country', 'all_remove': 'region,center', 'remove': 'region,center,app_role,role_profile,p'
+            }, {
+                'selected': self.admin_region, 'list': admin_regions, 'select_text': _('Select Region'), 'select_all_text': _("All Regions"), 
+                'param_name': 'admin_region', 'all_remove': 'center', 'remove': 'center,app_role,role_profile,p'
+            }, {
+                'selected': self.center, 'list': centers, 'select_text': _('Select Center'), 'select_all_text': _("All Centers"), 
+                'param_name': 'center', 'all_remove': '', 'remove': 'app_role,p'
+            }, {
+                'selected': self.role_profile, 'list': role_profiles, 'select_text': _('Select Profile'), 'select_all_text': _("All Profiles"), 
+                'param_name': 'role_profile', 'all_remove': '', 'remove': 'p'
+            }, {
+                'selected': self.app_role, 'list': application_roles, 'select_text': _('Select Role'), 'select_all_text': _("All Roles"), 
+                'param_name': 'app_role', 'all_remove': '', 'remove': 'p'
+            }, {
+                'selected': self.is_active, 'list': is_active_list, 'select_text': _('Select active/inactive'), 'select_all_text': _("All"), 
+                'param_name': 'is_active', 'all_remove': '', 'remove': 'p'
+            }
+        ]
         context = {
             'result_headers': headers,
             'num_sorted_fields': num_sorted_fields,
@@ -188,16 +208,7 @@ class UserList(ListView):
             'page_var': main.PAGE_VAR,
             'query': self.request.GET.get(main.SEARCH_VAR, ''),
             'cl': self.cl,
-            'countries': countries,
-            'country': self.country,
-            'admin_regions': admin_regions,
-            'admin_region': self.admin_region,
-            'centers': centers,
-            'center': self.center,
-            'app_roles': application_roles,
-            'app_role': self.app_role,
-            'role_profiles': role_profiles,
-            'role_profile': self.role_profile,
+            'filters': filters,
             'is_active': self.is_active       
         }
         context.update(kwargs)
@@ -237,20 +248,21 @@ def update_user(request, uuid, template='accounts/application/change_user_form.h
     if request.method == 'POST':
         userprofile_form = UserProfileForm(request.POST, instance=user, request=request)
         if userprofile_form.is_valid():
+            success_url = ""
             user = userprofile_form.save()
-
+            msg_dict = {'name': force_text(get_user_model()._meta.verbose_name), 'obj': force_text(user)}
             if "_addanother" in request.POST:
-                message = _('The user "%(obj)s" was changed successfully. You may add another user below.') % {'obj': force_text(user)}
-                messages.add_message(request, level=messages.INFO, message=message, fail_silently=True)
-                return HttpResponseRedirect(reverse('accounts:add_user'))
+                msg = _('The %(name)s "%(obj)s" was changed successfully. You may add another %(name)s below.') % msg_dict
+                success_url = reverse('accounts:add_user')
             elif "_continue" in request.POST:
-                message = _('The user "%(obj)s" was changed successfully. You may edit it again below.') % {'obj': force_text(user)}
-                messages.add_message(request, level=messages.INFO, message=message, fail_silently=True)
-                return HttpResponseRedirect(reverse('accounts:update_user', args=[user.uuid]))
+                msg = _('The %(name)s "%(obj)s" was changed successfully. You may edit it again below.') % msg_dict
+                success_url = reverse('accounts:update_user', args=[user.uuid])
             else:
-                message = _('The user "%(obj)s" was changed successfully.') % {'obj': force_text(user)}
-                messages.add_message(request, level=messages.INFO, message=message, fail_silently=True)
-                return HttpResponseRedirect(reverse('accounts:user_list') + "?" + request.GET.urlencode())
+                msg = _('The %(name)s "%(obj)s" was changed successfully.') % msg_dict
+                success_url = reverse('accounts:user_list') + "?" + request.GET.urlencode()
+            messages.add_message(request, level=messages.SUCCESS, message=msg, fail_silently=True)
+            return HttpResponseRedirect(success_url)
+
     else:
         userprofile_form = UserProfileForm(instance=user, request=request)
 

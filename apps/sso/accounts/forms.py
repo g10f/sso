@@ -231,8 +231,9 @@ class UserAddFormExt(UserAddForm):
         self.fields['application_roles'].queryset = user.get_administrable_application_roles()
         self.fields['role_profiles'].queryset = user.get_administrable_role_profiles()
         self.fields['organisation'].queryset = user.get_administrable_organisations()
-        #self.fields.keyOrder = ['first_name', 'last_name', 'email', 'organisation', 'application_roles']  # , 'password1', 'password2']
-    
+        if not user.has_perm("accounts.change_all_users"):
+            self.fields['organisation'].required = True
+
     def save(self):
         user = super(UserAddFormExt, self).save()
         user.application_roles = self.cleaned_data["application_roles"]

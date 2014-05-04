@@ -144,6 +144,16 @@ class OrganisationPhoneNumber(AbstractBaseModel, PhoneNumberMixin):
     def ensure_single_primary(cls, organisation):
         ensure_single_primary(organisation.organisationphonenumber_set.all())
 
+"""
+class OrganisationEmail(AbstractBaseModel):
+    EMAILTYPE_CHOICES = (
+            ('alias', _('Alias')),
+            ('forward', _('Forward')),
+            )
+    email = models.EmailField(_('email address'))
+    email_type = models.CharField(_("email type"), choices=EMAILTYPE_CHOICES, max_length=20)
+    organisation = models.ForeignKey(Organisation)
+"""
 
 # TODO: user adress, phone numbet ? 
 """

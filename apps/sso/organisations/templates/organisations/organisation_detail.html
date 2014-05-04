@@ -56,7 +56,7 @@
         <a class="btn btn-default" href="{% url 'organisations:organisation_delete' object.uuid %}">{% trans 'Delete' %}</a>
         {% endif %}
 
-        {% if is_organisation_admin %}
+        {% if perms.organisations.change_organisation and is_organisation_admin %}
         <a class="btn btn-primary" href="{% url 'organisations:organisation_update' object.uuid %}">{% trans 'Update' %}</a>
         {% endif %}
         
