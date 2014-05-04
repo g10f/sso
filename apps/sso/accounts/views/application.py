@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 # TODO: refine the permission checks
 def is_admin(user):
-    return user.is_authenticated() and user.is_admin
+    return user.is_authenticated() and user.is_admin()
     
 
 class UserDeleteView(DeleteView):

@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 
 def is_admin(user):
-    return user.is_authenticated() and user.is_admin
+    return user.is_authenticated() and user.is_admin()
 
 
 def get_last_modified(request, *args, **kwargs):
@@ -175,7 +175,7 @@ class OrganisationList(ListView):
         """
         # apply my_organisations filter only for admins
         my_organisations = None
-        if self.request.user.is_admin:
+        if self.request.user.is_admin():
             my_organisations = self.request.GET.get('my_organisations', '')
         
         if my_organisations:
@@ -220,7 +220,7 @@ class OrganisationList(ListView):
             self.center_type = None
 
         # apply is_active filter only for admins
-        if self.request.user.is_admin:
+        if self.request.user.is_admin():
             is_active = self.request.GET.get('is_active', '')
         else:
             is_active = "1"
@@ -255,7 +255,7 @@ class OrganisationList(ListView):
         if len(admin_regions) == 1:
             admin_regions = None
         
-        if self.request.user.is_admin:  # offer is_active filter only for admins
+        if self.request.user.is_admin():  # offer is_active filter only for admins
             is_active_list = [FilterItem(item) for item in OrganisationList.IS_ACTIVE_CHOICES]
         else:
             is_active_list = None
