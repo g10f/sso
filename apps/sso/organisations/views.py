@@ -254,8 +254,11 @@ class OrganisationList(ListView):
             countries = None
         if len(admin_regions) == 1:
             admin_regions = None
-
-        is_active_list = [FilterItem(item) for item in OrganisationList.IS_ACTIVE_CHOICES]
+        
+        if self.request.user.is_admin:  # offer is_active filter only for admins
+            is_active_list = [FilterItem(item) for item in OrganisationList.IS_ACTIVE_CHOICES]
+        else:
+            is_active_list = None
         center_types = [FilterItem(item) for item in Organisation.CENTER_TYPE_CHOICES]
         filters = [
             {
