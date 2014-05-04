@@ -334,7 +334,7 @@ class User(AbstractUser):
     
     @property
     def default_dharmashop_roles(self):
-        ds_roles = [{'uuid': 'e4a281ef13e1484b93fe4b7cc66374c8', 'roles': ['User']}]  # Dharma Shop 108 Home]
+        ds_roles = []  # [{'uuid': 'e4a281ef13e1484b93fe4b7cc66374c8', 'roles': ['User']}]  # Dharma Shop 108 Home]
         roles = ['Guest', 'User'] if self.is_center else ['Guest']
         
         if self.organisations.filter(country__iso2_code__in=['CZ', 'SK', 'PL', 'RU', 'UA', 'RO', 'RS', 'HR', 'GR', 'BG', 'EE', 'LV']).exists():
