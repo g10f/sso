@@ -367,7 +367,7 @@ class User(AbstractUser):
         return qs
         
     def add_default_roles(self):
-        app_roles_dict_array = self.default_dharmashop_roles + self.default_sso_roles
+        app_roles_dict_array = self.default_dharmashop_roles
         self.add_roles(app_roles_dict_array)
         
         default_role_profile = self.get_default_role_profile()

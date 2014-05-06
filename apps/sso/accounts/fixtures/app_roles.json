@@ -122,5 +122,12 @@
 		 "name": "Diamondway Member",
 		 "uuid": "b4caab335bbc4c90a6f552f7f13aa410"
 	 }
+ }, {
+	 "pk" : 2,
+	 "model" : "accounts.roleprofile",
+	 "fields" : {
+		 "name": "Center Admin",
+		 "uuid": "1593284b238c4a1cabf291e573205508"
+	 }
  } 
 ]
