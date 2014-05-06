@@ -162,7 +162,7 @@ def test():
         local("~/envs/sso/bin/python ./manage.py test streaming accounts oauth2")
 
 @task 
-def preparedeploy():
+def prepare_deploy():
     compilemessages()
     #test()
     local("git commit -a")

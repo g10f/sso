@@ -184,13 +184,23 @@ class User(AbstractUser):
 
     @classmethod
     def get_default_role_profile(cls):
-        if settings.SSO_CUSTOM.get('DEFAULT_ROLE_PROFILE_UUID'):
-            default_role_profile = RoleProfile.objects.none()
+        if 'DEFAULT_ROLE_PROFILE_UUID' in settings.SSO_CUSTOM:
+            role_profile = RoleProfile.objects.none()
             try:
-                default_role_profile = RoleProfile.objects.get(uuid=settings.SSO_CUSTOM.get('DEFAULT_ROLE_PROFILE_UUID'))
+                role_profile = RoleProfile.objects.get(uuid=settings.SSO_CUSTOM['DEFAULT_ROLE_PROFILE_UUID'])
             except ObjectDoesNotExist:
                 pass
-            return default_role_profile                
+            return role_profile                
+
+    @classmethod
+    def get_default_admin_profile(cls):
+        if 'DEFAULT_ADMIN_PROFILE_UUID' in settings.SSO_CUSTOM:
+            role_profile = RoleProfile.objects.none()
+            try:
+                role_profile = RoleProfile.objects.get(uuid=settings.SSO_CUSTOM['DEFAULT_ADMIN_PROFILE_UUID'])
+            except ObjectDoesNotExist:
+                pass
+            return role_profile                
 
     @property
     def primary_address(self):
@@ -345,10 +355,6 @@ class User(AbstractUser):
             ds_roles += [{'uuid': '35efc492b8f54f1f86df9918e8cc2b3d', 'roles': roles}]
         return ds_roles
 
-    @property
-    def default_sso_roles(self):
-        return [{'uuid': settings.SSO_CUSTOM['APP_UUID'], 'roles': ['Center']}] if self.is_center else []
-
     def filter_administrable_users(self, qs):
         # filter the users for who the authenticated user has admin rights
         if not self.is_superuser:
@@ -363,10 +369,14 @@ class User(AbstractUser):
     def add_default_roles(self):
         app_roles_dict_array = self.default_dharmashop_roles + self.default_sso_roles
         self.add_roles(app_roles_dict_array)
-
+        
         default_role_profile = self.get_default_role_profile()
         if default_role_profile:
-            self.role_profiles.add(default_role_profile)        
+            self.role_profiles.add(default_role_profile) 
+        
+        default_admin_profile = self.get_default_admin_profile()
+        if default_admin_profile and self.is_center:  # for center accounts from streaming database
+            self.role_profiles.add(default_admin_profile)       
         
     def add_roles(self, app_roles_dict_array):
         # get or create Roles
