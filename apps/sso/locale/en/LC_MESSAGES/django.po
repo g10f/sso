@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-04 11:46+0200\n"
+"POT-Creation-Date: 2014-05-11 12:26+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -47,7 +47,7 @@ msgstr ""
 msgid "country"
 msgstr ""
 
-#: models.py:56 accounts/forms.py:443
+#: models.py:56 accounts/forms.py:441
 msgid "State"
 msgstr ""
 
@@ -79,7 +79,7 @@ msgstr ""
 msgid "(None)"
 msgstr ""
 
-#: accounts/admin.py:76 accounts/forms.py:224 accounts/forms.py:527
+#: accounts/admin.py:76 accounts/forms.py:222 accounts/forms.py:525
 #: registration/forms.py:56
 msgid "Organisation"
 msgstr "Center"
@@ -93,7 +93,7 @@ msgstr ""
 msgid "created by"
 msgstr ""
 
-#: accounts/admin.py:107 accounts/models.py:438
+#: accounts/admin.py:107 accounts/models.py:448
 msgid "associated system"
 msgstr ""
 
@@ -106,7 +106,7 @@ msgstr "Center"
 msgid "Application Roles"
 msgstr ""
 
-#: accounts/admin.py:150 accounts/forms.py:226 accounts/forms.py:530
+#: accounts/admin.py:150 accounts/forms.py:224 accounts/forms.py:528
 #: accounts/templates/accounts/application/add_user_done.html:43
 #: registration/forms.py:60
 msgid "Role profiles"
@@ -164,7 +164,7 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: accounts/forms.py:37 accounts/forms.py:295 accounts/forms.py:524
+#: accounts/forms.py:37 accounts/forms.py:293 accounts/forms.py:522
 #: accounts/templates/accounts/user_confirm_delete.html:28
 #: registration/forms.py:41
 msgid "E-mail address"
@@ -195,49 +195,53 @@ msgid "Old password"
 msgstr ""
 
 #: accounts/forms.py:75
-msgid "That email address doesn't have an associated "
+msgid ""
+"That email address doesn't have an associated user account. Are you sure "
+"you've registered?"
 msgstr ""
 
-#: accounts/forms.py:77
-msgid "The user account associated with this email "
+#: accounts/forms.py:76
+msgid ""
+"The user account associated with this email address cannot reset the "
+"password."
 msgstr ""
 
-#: accounts/forms.py:80
+#: accounts/forms.py:78
 #: accounts/templates/accounts/application/add_user_done.html:36
 msgid "Email"
 msgstr ""
 
-#: accounts/forms.py:167 auth/forms.py:14 auth/forms.py:16
+#: accounts/forms.py:165 auth/forms.py:14 auth/forms.py:16
 msgid "Password"
 msgstr ""
 
-#: accounts/forms.py:168
+#: accounts/forms.py:166
 msgid "Password confirmation"
 msgstr ""
 
-#: accounts/forms.py:169
+#: accounts/forms.py:167
 msgid "Enter the same password as above, for verification."
 msgstr ""
 
-#: accounts/forms.py:171 accounts/forms.py:304 accounts/forms.py:518
+#: accounts/forms.py:169 accounts/forms.py:302 accounts/forms.py:516
 #: registration/forms.py:33 registration/forms.py:153
 msgid "A user with that username already exists."
 msgstr ""
 
-#: accounts/forms.py:172
+#: accounts/forms.py:170
 msgid "The two password fields didn't match."
 msgstr ""
 
-#: accounts/forms.py:173 accounts/forms.py:305 accounts/forms.py:519
+#: accounts/forms.py:171 accounts/forms.py:303 accounts/forms.py:517
 #: registration/forms.py:34 registration/forms.py:154
 msgid "A user with that email address already exists."
 msgstr ""
 
-#: accounts/forms.py:175 registration/forms.py:158
+#: accounts/forms.py:173 registration/forms.py:158
 msgid "E-mail"
 msgstr ""
 
-#: accounts/forms.py:176 accounts/forms.py:293 accounts/forms.py:522
+#: accounts/forms.py:174 accounts/forms.py:291 accounts/forms.py:520
 #: accounts/templates/accounts/user_confirm_delete.html:18
 #: accounts/templates/accounts/application/add_user_done.html:30
 #: registration/forms.py:39 registration/forms.py:49 registration/forms.py:51
@@ -246,11 +250,11 @@ msgstr ""
 msgid "First name"
 msgstr ""
 
-#: accounts/forms.py:176 registration/forms.py:156
+#: accounts/forms.py:174 registration/forms.py:156
 msgid "first name"
 msgstr ""
 
-#: accounts/forms.py:177 accounts/forms.py:294 accounts/forms.py:523
+#: accounts/forms.py:175 accounts/forms.py:292 accounts/forms.py:521
 #: accounts/templates/accounts/user_confirm_delete.html:23
 #: accounts/templates/accounts/application/add_user_done.html:33
 #: registration/forms.py:40 registration/forms.py:50 registration/forms.py:52
@@ -259,116 +263,116 @@ msgstr ""
 msgid "Last name"
 msgstr ""
 
-#: accounts/forms.py:177 registration/forms.py:157
+#: accounts/forms.py:175 registration/forms.py:157
 msgid "last name"
 msgstr ""
 
-#: accounts/forms.py:178 accounts/forms.py:529 accounts/models.py:164
+#: accounts/forms.py:176 accounts/forms.py:527 accounts/models.py:164
 #: accounts/templates/accounts/user_confirm_delete.html:33
 #: accounts/templates/accounts/application/add_user_done.html:54
 #: registration/forms.py:38
 msgid "Notes"
 msgstr ""
 
-#: accounts/forms.py:225 accounts/forms.py:528
+#: accounts/forms.py:223 accounts/forms.py:526
 #: accounts/templates/accounts/application/add_user_done.html:49
 #: registration/forms.py:57
 msgid "Application roles"
 msgstr ""
 
-#: accounts/forms.py:227 accounts/forms.py:531 registration/forms.py:61
+#: accounts/forms.py:225 accounts/forms.py:529 registration/forms.py:61
 msgid "Groups of application roles that are assigned together."
 msgstr ""
 
-#: accounts/forms.py:291 accounts/forms.py:417 accounts/forms.py:521
+#: accounts/forms.py:289 accounts/forms.py:415 accounts/forms.py:519
 #: registration/forms.py:37
 msgid "Username"
 msgstr ""
 
-#: accounts/forms.py:296
+#: accounts/forms.py:294
 msgid "Picture"
 msgstr ""
 
-#: accounts/forms.py:297 registration/forms.py:46 registration/forms.py:167
+#: accounts/forms.py:295 registration/forms.py:46 registration/forms.py:167
 msgid "Gender"
 msgstr ""
 
-#: accounts/forms.py:298 registration/forms.py:47 registration/forms.py:168
+#: accounts/forms.py:296 registration/forms.py:47 registration/forms.py:168
 msgid "Date of birth"
 msgstr ""
 
-#: accounts/forms.py:300
+#: accounts/forms.py:298
 #: organisations/templates/organisations/organisation_detail.html:31
 msgid "Homepage"
 msgstr ""
 
-#: accounts/forms.py:301 registration/forms.py:45 registration/forms.py:166
+#: accounts/forms.py:299 registration/forms.py:45 registration/forms.py:166
 msgid "Language"
 msgstr ""
 
-#: accounts/forms.py:322 accounts/forms.py:325 accounts/forms.py:440
+#: accounts/forms.py:320 accounts/forms.py:323 accounts/forms.py:438
 #: accounts/templates/accounts/user_confirm_delete.html:39
 msgid "Center"
 msgstr ""
 
-#: accounts/forms.py:323
+#: accounts/forms.py:321
 msgid "Please use the contact form for a request to change this value."
 msgstr ""
 
-#: accounts/forms.py:326
+#: accounts/forms.py:324
 msgid "You can set this value only once."
 msgstr ""
 
-#: accounts/forms.py:352
+#: accounts/forms.py:350
 #, python-format
 msgid ""
 "Please keep filesize under %(filesize)s. Current filesize "
 "%(current_filesize)s"
 msgstr ""
 
-#: accounts/forms.py:355
+#: accounts/forms.py:353
 msgid "File type is not supported"
 msgstr ""
 
-#: accounts/forms.py:399
+#: accounts/forms.py:397
 msgid "That email address is already in use."
 msgstr ""
 
-#: accounts/forms.py:418
+#: accounts/forms.py:416
 msgid "Required. 30 characters or fewer. Letters, digits and "
 msgstr ""
 
-#: accounts/forms.py:421
+#: accounts/forms.py:419
 msgid "This value may contain only letters, numbers and "
 msgstr ""
 
-#: accounts/forms.py:438
+#: accounts/forms.py:436
 msgid "The two email fields didn't match."
 msgstr ""
 
-#: accounts/forms.py:441
+#: accounts/forms.py:439
 msgid "Repeat your Email"
 msgstr ""
 
-#: accounts/forms.py:451
+#: accounts/forms.py:449
 msgid "Prove you are human"
 msgstr ""
 
-#: accounts/forms.py:452
+#: accounts/forms.py:450
 msgid ""
 "Please enter the words you see in the box, in order and separated by a "
 "space. Doing so helps prevent automated programs from abusing this service."
 msgstr ""
 
-#: accounts/forms.py:453
+#: accounts/forms.py:451
 msgid "Incorrect, please try again."
 msgstr ""
 
-#: accounts/forms.py:525
+#: accounts/forms.py:523
 msgid "Active"
 msgstr ""
 
-#: accounts/forms.py:525
+#: accounts/forms.py:523
 msgid ""
 "Designates whether this user should be treated as active. Unselect this "
 "instead of deleting accounts."
@@ -521,49 +525,49 @@ msgstr ""
 msgid "language"
 msgstr ""
 
-#: accounts/models.py:392
+#: accounts/models.py:402
 msgctxt "address"
 msgid "Home"
 msgstr ""
 
-#: accounts/models.py:393 accounts/models.py:412
+#: accounts/models.py:403 accounts/models.py:422
 msgid "Business"
 msgstr ""
 
-#: accounts/models.py:394 accounts/models.py:415 organisations/models.py:133
+#: accounts/models.py:404 accounts/models.py:425 organisations/models.py:133
 msgid "Other"
 msgstr ""
 
-#: accounts/models.py:397 organisations/models.py:115
+#: accounts/models.py:407 organisations/models.py:115
 msgid "address type"
 msgstr ""
 
-#: accounts/models.py:410 organisations/models.py:129
+#: accounts/models.py:420 organisations/models.py:129
 msgctxt "phone number"
 msgid "Home"
 msgstr ""
 
-#: accounts/models.py:411 organisations/models.py:130
+#: accounts/models.py:421 organisations/models.py:130
 msgid "Mobile"
 msgstr ""
 
-#: accounts/models.py:413 organisations/models.py:132
+#: accounts/models.py:423 organisations/models.py:132
 msgid "Fax"
 msgstr ""
 
-#: accounts/models.py:414
+#: accounts/models.py:424
 msgid "Pager"
 msgstr ""
 
-#: accounts/models.py:417 organisations/models.py:136
+#: accounts/models.py:427 organisations/models.py:136
 msgid "phone type"
 msgstr ""
 
-#: accounts/models.py:417 organisations/models.py:136
+#: accounts/models.py:427 organisations/models.py:136
 msgid "Mobile, home, office, etc."
 msgstr ""
 
-#: accounts/models.py:439
+#: accounts/models.py:449
 msgid "associated systems"
 msgstr ""
 
@@ -1080,19 +1084,19 @@ msgstr ""
 msgid "Inactive Users"
 msgstr ""
 
-#: accounts/views/application.py:185 organisations/views.py:262
+#: accounts/views/application.py:185 organisations/views.py:265
 msgid "Select Country"
 msgstr ""
 
-#: accounts/views/application.py:185 organisations/views.py:262
+#: accounts/views/application.py:185 organisations/views.py:265
 msgid "All Countries"
 msgstr ""
 
-#: accounts/views/application.py:188 organisations/views.py:265
+#: accounts/views/application.py:188 organisations/views.py:268
 msgid "Select Region"
 msgstr ""
 
-#: accounts/views/application.py:188 organisations/views.py:265
+#: accounts/views/application.py:188 organisations/views.py:268
 #, fuzzy
 msgid "All Regions"
 msgstr "Center"
@@ -1121,11 +1125,11 @@ msgstr ""
 msgid "All Roles"
 msgstr ""
 
-#: accounts/views/application.py:200 organisations/views.py:271
+#: accounts/views/application.py:200 organisations/views.py:274
 msgid "Select active/inactive"
 msgstr ""
 
-#: accounts/views/application.py:200 organisations/views.py:271
+#: accounts/views/application.py:200 organisations/views.py:274
 #: registration/templates/registration/user_registration_list.html:111
 #: registration/templates/registration/user_registration_list.html:128
 #: registration/templates/registration/user_registration_list.html:145
@@ -1210,8 +1214,16 @@ msgstr ""
 msgid "Log out"
 msgstr ""
 
+#: auth/forms.py:10
+msgid "Please enter your Email address or Username."
+msgstr ""
+
 #: auth/forms.py:11 auth/forms.py:12
 msgid "Email address or Username"
+msgstr ""
+
+#: auth/forms.py:15
+msgid "Please enter your Password."
 msgstr ""
 
 #: auth/hashers.py:35 auth/hashers.py:74
@@ -1446,11 +1458,11 @@ msgstr ""
 msgid "Inactive Centers"
 msgstr ""
 
-#: organisations/views.py:268
+#: organisations/views.py:271
 msgid "Select Center Type"
 msgstr ""
 
-#: organisations/views.py:268
+#: organisations/views.py:271
 msgid "All Center Types"
 msgstr ""
 
@@ -2048,16 +2060,16 @@ msgstr ""
 msgid "Change password"
 msgstr ""
 
-#: templates/edit_inline/stacked.html:33 templates/edit_inline/tabular.html:67
+#: templates/edit_inline/stacked.html:33 templates/edit_inline/tabular.html:68
 msgid "Remove"
 msgstr ""
 
-#: templates/edit_inline/stacked.html:34 templates/edit_inline/tabular.html:66
+#: templates/edit_inline/stacked.html:34 templates/edit_inline/tabular.html:67
 #, python-format
 msgid "Add another %(verbose_name)s"
 msgstr ""
 
-#: templates/edit_inline/tabular.html:19
+#: templates/edit_inline/tabular.html:20
 msgid "Delete?"
 msgstr ""
 

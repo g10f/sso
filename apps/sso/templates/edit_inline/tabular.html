@@ -1,4 +1,5 @@
 {% load i18n static %}
+{% load cycle from future %}
 <div class="inline-group" id="{{ formset.prefix }}-group">
 	<div class="tabular inline-related {% if forloop.last %}last-related{% endif %}">
 	   {{ formset.management_form }}
@@ -26,7 +27,7 @@
                   <div>{% if form.non_field_errors|length == 1 %}{{ form.non_field_errors.0 }}{% else %}{{ form.non_field_errors }}{% endif %}</div></td>
             </tr>
             {% endif %}
-	        <tr class="{% cycle "row1" "row2" %} {% if field.errors or form.non_field_errors %}danger{% endif %} {% if form.fields.id.initial %}has_original{% endif %}{% if forloop.last %} empty-form{% endif %}"
+	        <tr class="{% cycle 'row1' 'row2' %} {% if field.errors or form.non_field_errors %}danger{% endif %} {% if form.fields.id.initial %}has_original{% endif %}{% if forloop.last %} empty-form{% endif %}"
 	             id="{{ formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
 	        <td class="original">
 	          {% spaceless %}

@@ -154,7 +154,7 @@ def compilemessages():
 def makemessages():
     for app in env.apps:
         with lcd('apps/%s' % app):
-            local('django-admin.py makemessages -a ')
+            local('django-admin.py makemessages -a')
 
 @task 
 def test():
