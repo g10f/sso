@@ -72,10 +72,8 @@ class PasswordResetForm(DjangoPasswordResetForm):
     and the user has to change the password with the password reset feature
     """
     error_messages = {
-        'unknown': _("That email address doesn't have an associated "
-                     "user account. Are you sure you've registered?"),
-        'unusable': _("The user account associated with this email "
-                      "address cannot reset the password."),
+        'unknown': _("That email address doesn't have an associated user account. Are you sure you've registered?"),
+        'unusable': _("The user account associated with this email address cannot reset the password."),
     }
     email = forms.EmailField(label=_("Email"), max_length=254, widget=bootstrap.EmailInput())
 
