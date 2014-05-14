@@ -198,9 +198,7 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
     def save_bearer_token(self, token, request, *args, **kwargs):
         bearer_token = BearerToken.objects.create(client=request.client, access_token=token['access_token'], user=request.user)
         if 'refresh_token' in token:
-            RefreshToken.objects.create(
-                    token=token['refresh_token'], 
-                    bearer_token=bearer_token)
+            RefreshToken.objects.create(token=token['refresh_token'], bearer_token=bearer_token)
         
     def invalidate_authorization_code(self, client_id, code, request, *args, **kwargs):
         # Authorization codes are use once, invalidate it when a Bearer token
