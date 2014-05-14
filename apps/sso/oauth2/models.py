@@ -23,14 +23,10 @@ def replace_query_param(url, attr, val):
     return urlparse.urlunsplit((scheme, netloc, path, query, fragment))
 
 
-def check_redirect_uri(client_id, redirect_uri):
-    try:
-        redirect_uris = Client.objects.get(uuid=client_id).redirect_uris
-        if redirect_uri in redirect_uris.split():
-            return True
-        else:
-            return False
-    except ObjectDoesNotExist:
+def check_redirect_uri(client, redirect_uri):
+    if redirect_uri in client.redirect_uris.split():
+        return True
+    else:
         return False
 
 
@@ -42,10 +38,13 @@ def get_oauth2_cancel_url(redirect_to):
     query_dict = QueryDict(urlparse.urlsplit(redirect_to).query)
     if ('redirect_uri'in query_dict) and  ('client_id' in query_dict):
         redirect_uri = query_dict['redirect_uri']
-        client_id = query_dict['client_id']
-        if check_redirect_uri(client_id, redirect_uri):
-            redirect_uri = replace_query_param(redirect_uri, 'error', 'access_denied')
-            return redirect_uri
+        try:
+            client = Client.objects.get(uuid=query_dict['client_id'])
+            if check_redirect_uri(client, redirect_uri):
+                redirect_uri = replace_query_param(redirect_uri, 'error', 'access_denied')
+                return redirect_uri
+        except ObjectDoesNotExist:
+            pass
     return reverse('home')
 
 """

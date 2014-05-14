@@ -1,28 +1,34 @@
 # -*- coding: utf-8 -*-
-from django import forms
 from django.utils.text import get_text_list
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.encoding import force_unicode
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext as _
+from django.utils import six
 
 import logging
 logger = logging.getLogger(__name__)
 
+try:
+    from django.forms.utils import ErrorList as DjangoErrorList
+except ImportError:  # django < 1.7 
+    from django.forms.util import ErrorList as DjangoErrorList  # @UnusedImport
+    
 
-class ErrorList(forms.util.ErrorList):
+class ErrorList(DjangoErrorList):
     """
     Stores all errors for the form/formsets in an add/change stage view.
     """
     def __init__(self, form, inline_formsets):
+        super(ErrorList, self).__init__()
+
         if form.is_bound:
-            self.extend(form.errors.values())
+            self.extend(list(six.itervalues(form.errors)))
             for inline_formset in inline_formsets:
                 self.extend(inline_formset.non_form_errors())
                 for errors_in_inline_form in inline_formset.errors:
-                    self.extend(errors_in_inline_form.values())
-
+                    self.extend(list(six.itervalues(errors_in_inline_form)))
 
 class ChangedDataList(list):
     """

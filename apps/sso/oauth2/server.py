@@ -69,18 +69,26 @@ def default_idtoken_generator(request, max_age=MAX_AGE, refresh_token=False):
 
 
 class OAuth2RequestValidator(oauth2.RequestValidator):
+    def _get_client(self, client_id, request):
+        if request.client:
+            assert(request.client.uuid == client_id)
+        else:
+            request.client = Client.objects.get(uuid=client_id)
+        return request.client
+        
     # Ordered roughly in order of apperance in the authorization grant flow
     # Pre- and Post-authorization.
     def validate_client_id(self, client_id, request, *args, **kwargs):
         try:
-            request.client = Client.objects.get(uuid=client_id)
+            self._get_client(client_id, request)
             return True
         except ObjectDoesNotExist:
             return False
         
     def validate_redirect_uri(self, client_id, redirect_uri, request, *args, **kwargs):
         # We use the pre registerd default uri
-        return check_redirect_uri(client_id, redirect_uri)            
+        client = self._get_client(client_id, request)
+        return check_redirect_uri(client, redirect_uri)            
 
     def get_default_redirect_uri(self, client_id, request, *args, **kwargs):
         return request.client.default_redirect_uri
@@ -111,9 +119,10 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
         # Remember to associate it with request.scopes, request.redirect_uri
         # request.client, request.state and request.user (the last is passed in
         # post_authorization credentials, i.e. { 'user': request.user}.
-        client = Client.objects.get(uuid=client_id)
+        self._get_client(client_id, request)
+            
         state = request.state if request.state else ''
-        authorization_code = AuthorizationCode(client=client, code=code['code'], user=request.user, 
+        authorization_code = AuthorizationCode(client=request.client, code=code['code'], user=request.user, 
                                                redirect_uri=request.redirect_uri, state=state, 
                                                scopes=' '.join(request.scopes))
         authorization_code.save()
@@ -155,7 +164,7 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
             authorization_code = AuthorizationCode.objects.get(code=request.code, client__uuid=client_id, is_valid=True)
             request.user = authenticate(token=authorization_code)
             request.state = authorization_code.state
-            request.scopes = authorization_code.scopes.split()  
+            request.scopes = authorization_code.scopes.split()
             return True
         except ObjectDoesNotExist:
             return False        
