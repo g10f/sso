@@ -199,6 +199,7 @@ SESSION_SAVE_EVERY_REQUEST = False
 SESSION_ENGINE = 'sso.sessions.backends'
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies' 
 CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_AGE = None 
 
 if not(LOCAL_DEV or TEST):
     SESSION_COOKIE_SECURE = True

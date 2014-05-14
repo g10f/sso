@@ -58,6 +58,7 @@ def authorize(request):
     try:
         scopes, credentials = server.validate_authorization_request(uri, http_method, body, headers)
         credentials['user'] = request.user
+        credentials['client'] = credentials['request'].client
         redirect_uri = credentials.get('redirect_uri')
         headers, body, status = server.create_authorization_response(uri, http_method, body, headers, scopes, credentials)  # @UnusedVariable
         return HttpOAuth2ResponseRedirect(headers['Location'])

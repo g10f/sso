@@ -237,4 +237,4 @@ class FilterItem(object):
         return self.item_tuple[0]
     
     def __unicode__(self):
-        return self.item_tuple[1]
+        return u"%s" % self.item_tuple[1]

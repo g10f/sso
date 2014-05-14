@@ -201,6 +201,7 @@ class UserList(ListView):
                 'param_name': 'is_active', 'all_remove': '', 'remove': 'p'
             }
         ]
+        
         context = {
             'result_headers': headers,
             'num_sorted_fields': num_sorted_fields,

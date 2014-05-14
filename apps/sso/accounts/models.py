@@ -210,6 +210,7 @@ class User(AbstractUser):
     def primary_phone(self):
         return self.get_primary_or_none(self.userphonenumber_set.all())
 
+    @memoize
     def get_apps(self):
         q = Q(applicationrole__user__uuid=self.uuid) & Q(is_active=True) 
         q |= Q(applicationrole__roleprofile__user__uuid=self.uuid) & Q(is_active=True)
