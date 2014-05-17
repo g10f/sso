@@ -168,9 +168,6 @@ def login(request):
                 user = form.get_user()
                 auth_login(request, user)
     
-                if request.session.test_cookie_worked():
-                    request.session.delete_test_cookie()
-    
                 if (not user.is_complete) and (display == 'page'):
                     # Display user profile form to complete user data
                     form = UserSelfProfileForm(instance=user)
@@ -190,8 +187,6 @@ def login(request):
                         
                     redirect_to = _check_redirect_url(request, redirect_to)
                     return HttpResponseRedirect(redirect_to)
-
-    request.session.set_test_cookie()
 
     context = {
         'form': form or EmailAuthenticationForm(request),
