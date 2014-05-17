@@ -12,4 +12,4 @@ def csrf_failure(request, reason="", template='csrf_failure.html'):
         'no_referer': reason == REASON_NO_REFERER,
         'no_cookie': reason == REASON_NO_CSRF_COOKIE,
     })
-    return render(request, template, c)
+    return render(request, template, c, status=403)
