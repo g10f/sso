@@ -16,23 +16,22 @@ from .crypt import loads_jwt, make_jwt
 import logging
 logger = logging.getLogger(__name__)
 
-SUPPORTED_SCOPES = ['openid', 'profile', 'email', 'offline_access', '']
-DEFAULT_SCOPES = ['profile']
+#SUPPORTED_SCOPES = ['openid', 'profile', 'email', 'offline_access', 'address', 'phone']
+#DEFAULT_SCOPES = ['openid', 'profile']
 MAX_AGE = 3600
 
-def get_domain_from_absolute_uri(abs_uri):
+def get_iss_from_absolute_uri(abs_uri):
     (scheme, netloc, path, query, fragment) = urlparse.urlsplit(abs_uri)  # @UnusedVariable
-    return netloc
+    return "%s://%s" % (scheme, netloc)
 
     
 def default_token_generator(request, max_age=MAX_AGE, refresh_token=False):
     if refresh_token:
         return random_token_generator(request, refresh_token=True)
     else:
-        domain = get_domain_from_absolute_uri(request.uri)
         claim_set = {
             'jti': get_random_string(), 
-            'iss': domain,
+            'iss': get_iss_from_absolute_uri(request.uri),
             'sub': request.user.uuid,  # required
             'aud': request.client.client_id,  # required
             'exp': int(time.time()) + max_age,  # required
@@ -50,11 +49,10 @@ def default_idtoken_generator(request, max_age=MAX_AGE, refresh_token=False):
     if refresh_token:
         return random_token_generator(request, refresh_token=True)
     else:
-        domain = get_domain_from_absolute_uri(request.uri)
         user = request.user
         auth_time = int(calendar.timegm(user.last_login.utctimetuple()))
         claim_set = {
-            'iss': domain,
+            'iss': get_iss_from_absolute_uri(request.uri),
             'sub': user.uuid,
             'aud': request.client.client_id,
             'exp': int(time.time()) + max_age,
@@ -95,14 +93,16 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
 
     def validate_scopes(self, client_id, scopes, client, request, *args, **kwargs):
         requested_scopes = set(scopes)
-        valid_scopes = set(SUPPORTED_SCOPES)
+        #valid_scopes = set(SUPPORTED_SCOPES)
+        valid_scopes = set(client.scopes.split())
         if requested_scopes.issubset(valid_scopes):
             return True
         else:
             return False
         
     def get_default_scopes(self, client_id, request, *args, **kwargs):
-        return DEFAULT_SCOPES
+        client = self._get_client(client_id, request)
+        return client.scopes.split()
 
     def validate_response_type(self, client_id, response_type, client, request, *args, **kwargs):
         # currently we support "code", "token" and "id_token token"

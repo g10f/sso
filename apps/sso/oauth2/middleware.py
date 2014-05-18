@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.utils.functional import SimpleLazyObject
+from django.utils.functional import SimpleLazyObject, empty
 from django.contrib import auth
 from django.contrib.auth import get_user_model
 from django.core import signing
@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class IterableLazyObject(SimpleLazyObject):
     def __iter__(self):
-        if self._wrapped is None: 
+        if self._wrapped is empty:
             self._setup()
         return self._wrapped.__iter__()
 

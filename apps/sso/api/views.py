@@ -23,7 +23,7 @@ from sso.accounts.models import ApplicationRole, send_account_created_email
 from sso.organisations.models import Organisation
 from sso.registration import default_username_generator
 from http.http_status import *  # @UnusedWildImport
-from sso.oauth2.decorators import client_required  # scopes_required
+from sso.oauth2.decorators import client_required
 from sso.utils import base_url, build_url, absolute_url
 from sso.api.decorators import api_user_passes_test, catch_errors
 from sso.api.response import JsonHttpResponse
@@ -109,6 +109,94 @@ def parse_datetime_with_timezone_support(value):
         parsed = parsed.replace(tzinfo=timezone.utc)
     return parsed
 
+
+def get_userapps(user, request):
+    """
+    JSON data for the global navigation bar
+    """
+    applications = []
+    for application in user.get_apps():
+        application_data = {
+            'uuid': application.uuid,
+            'order': application.order, 
+            'links': {'app': {'href': application.url, 'title': application.title, 'global_navigation': application.global_navigation}}
+        }
+        applications.append(application_data)
+    
+    userinfo = {
+        'uuid': user.uuid,
+        'applications': applications,
+        'full_name': user.get_full_name(),
+        'text': {'More': _('More'), 'Logout': _('Log out')},
+        'links': {'profile': {'href': absolute_url(request, reverse('accounts:profile'))},
+                  'logout': {'href': reverse('accounts:logout')}}
+    }
+    if user.picture:
+        userinfo['links']['picture_30x30'] = {'href': absolute_url(request, get_thumbnail(user.picture, "30x30").url)}
+    return userinfo
+
+
+def get_userinfo(user, request, show_details=False):
+    scopes = request.scopes
+    base = base_url(request)
+    userinfo = {
+        'sub': u'%s' % user.uuid,
+        'name': u'%s' % user,
+        'given_name': u'%s' % user.first_name,
+        'family_name': u'%s' % user.last_name,
+        'email': u'%s' % user.email,
+        'gender': user.gender,
+        'birth_date': date(user.dob, "c"),
+        'homepage': user.homepage,
+        'language': user.language,
+        'organisations': {organisation.uuid: {'name': organisation.name} for organisation in user.organisations.all()},
+        'links': {'self': {'href': "%s%s" % (base, reverse('api:v1_user', kwargs={'uuid': user.uuid}))},
+                  'apps': {'href': "%s%s" % (base, reverse('api:v1_users_apps', kwargs={'uuid': user.uuid}))}}
+    } 
+    if user.picture:
+        userinfo['picture'] = absolute_url(request, user.picture.url)
+    if show_details:
+        applications = {}
+        applicationroles = user.get_applicationroles()
+             
+        for application in user.get_apps():
+            application_data = {
+                'order': application.order, 
+                'links': {'app': {'href': application.url, 'title': application.title, 'global_navigation': application.global_navigation}}
+            }
+            application_data['roles'] = []
+            for applicationrole in applicationroles:
+                if applicationrole.application == application:
+                    application_data['roles'].append(applicationrole.role.name)
+            
+            applications[application.uuid] = application_data
+        userinfo['applications'] = applications
+        
+        if 'address' in scopes:
+            userinfo['addresses'] = {
+                address.uuid: {
+                    'address_type': address.address_type,
+                    'addressee': address.addressee,
+                    'street_address': address.street_address,
+                    'city': address.city,
+                    'postal_code': address.postal_code,
+                    'country': address.country.iso2_code,
+                    'state': _address_state(address),
+                    'primary': address.primary
+                } for address in user.useraddress_set.all()
+            }
+        
+        if 'phone' in scopes:
+            userinfo['phone_numbers'] = {
+                phone_number.uuid: {
+                    'phone_type': phone_number.phone_type,
+                    'phone': phone_number.phone,
+                    'primary': phone_number.primary
+                } for phone_number in user.userphonenumber_set.all()
+            }
+    return userinfo          
+        
+    
 # TODO: design api more HATEOAS like
 @catch_errors
 @api_user_passes_test(lambda u: u.has_perm("accounts.change_all_users"))
@@ -132,44 +220,9 @@ def get_user_list(request):
         qs = qs.filter(last_modified__gte=parsed)
 
     page, links = get_page_and_links(request, qs)
-            
     userinfo = {
         'collection': {
-            user.uuid: {
-                'sub': user.uuid,
-                'given_name': user.first_name, 
-                'family_name': user.last_name,
-                'name': u'%s' % user,
-                'email': u'%s' % user.email,
-                'gender': user.gender,
-                'birth_date': date(user.dob, "c"),
-                'homepage': user.homepage,
-                'language': user.language,
-                'last_modified': date(user.last_modified, "c"),
-                'addresses': {
-                    address.uuid: {
-                        'address_type': address.address_type,
-                        'addressee': address.addressee,
-                        'street_address': address.street_address,
-                        'city': address.city,
-                        'postal_code': address.postal_code,
-                        'country': address.country.iso2_code,
-                        'state': _address_state(address),
-                        'primary': address.primary
-                    } for address in user.useraddress_set.all()
-                },                
-                'phone_numbers': {
-                    phone_number.uuid: {
-                        'phone_type': phone_number.phone_type,
-                        'phone': phone_number.phone,
-                        'primary': phone_number.primary
-                    } for phone_number in user.userphonenumber_set.all()
-                },                
-                'organisations': {organisation.uuid: {'name': organisation.name} for organisation in user.organisations.all()},
-                'links': {
-                    'self': {'href': "%s%s" % (base_url(request), reverse('api:v1_user', args=(user.uuid,)))}
-                }
-             } for user in page
+            user.uuid: get_userinfo(user, request, show_details=False) for user in page
         },
         'links': links
     }
@@ -185,85 +238,6 @@ class UserDetailView(View):
     def dispatch(self, request, *args, **kwargs):
         return super(UserDetailView, self).dispatch(request, *args, **kwargs)
     
-    def json_apps_response(self, user):
-        applications = []
-        for application in user.get_apps():
-            application_data = {
-                'uuid': application.uuid,
-                'order': application.order, 
-                'links': {'app': {'href': application.url, 'title': application.title, 'global_navigation': application.global_navigation}}
-            }
-            applications.append(application_data)
-        
-        userinfo = {
-            'uuid': user.uuid,
-            'applications': applications,
-            'full_name': user.get_full_name(),
-            'text': {'More': _('More'), 'Logout': _('Log out')},
-            'links': {'profile': {'href': absolute_url(self.request, reverse('accounts:profile'))},
-                      'logout': {'href': reverse('accounts:logout')}}
-        }
-        if user.picture:
-            userinfo['links']['picture_30x30'] = {'href': absolute_url(self.request, get_thumbnail(user.picture, "30x30").url)}
-        
-        return JsonHttpResponse(content=userinfo, request=self.request)
-
-    def json_response(self, user):
-        
-        applications = {}
-        applicationroles = user.get_applicationroles()
-             
-        for application in user.get_apps():
-            application_data = {
-                'order': application.order, 
-                'links': {'app': {'href': application.url, 'title': application.title, 'global_navigation': application.global_navigation}}
-            }
-            application_data['roles'] = []
-            for applicationrole in applicationroles:
-                if applicationrole.application == application:
-                    application_data['roles'].append(applicationrole.role.name)
-            
-            applications[application.uuid] = application_data
-        base = base_url(self.request)
-        userinfo = {
-            'sub': u'%s' % user.uuid,
-            'name': u'%s' % user,
-            'given_name': u'%s' % user.first_name,
-            'family_name': u'%s' % user.last_name,
-            'email': u'%s' % user.email,
-            'gender': user.gender,
-            'birth_date': date(user.dob, "c"),
-            'homepage': user.homepage,
-            'language': user.language,
-            'applications': applications,
-            'addresses': {
-                address.uuid: {
-                    'address_type': address.address_type,
-                    'addressee': address.addressee,
-                    'street_address': address.street_address,
-                    'city': address.city,
-                    'postal_code': address.postal_code,
-                    'country': address.country.iso2_code,
-                    'state': _address_state(address),
-                    'primary': address.primary
-                } for address in user.useraddress_set.all()
-            },                
-            'phone_numbers': {
-                phone_number.uuid: {
-                    'phone_type': phone_number.phone_type,
-                    'phone': phone_number.phone,
-                    'primary': phone_number.primary
-                } for phone_number in user.userphonenumber_set.all()
-            },                
-            'organisations': {organisation.uuid: {'name': organisation.name} for organisation in user.organisations.all()},
-            'links': {'self': {'href': "%s%s" % (base, reverse('api:v1_user', kwargs={'uuid': user.uuid}))},
-                      'apps': {'href': "%s%s" % (base, reverse('api:v1_users_apps', kwargs={'uuid': user.uuid}))}}
-        } 
-        if user.picture:
-            userinfo['picture'] = absolute_url(self.request, user.picture.url)                    
-        
-        return JsonHttpResponse(content=userinfo, request=self.request)
-
     def options(self, request, *args, **kwargs):
         """
         check for cors Preflight Request
@@ -303,9 +277,11 @@ class UserDetailView(View):
             selected_user = get_object_or_404(get_user_model(), uuid=uuid)
         
         if self.is_apps_only:
-            return self.json_apps_response(selected_user)
+            userinfo = get_userapps(selected_user, request)
         else:
-            return self.json_response(selected_user)
+            userinfo = get_userinfo(selected_user, request, show_details=True)
+        
+        return JsonHttpResponse(content=userinfo, request=request)
 
     @method_decorator(client_required(['68bfae12a58541548def243e223053fb']))
     @method_decorator(api_user_passes_test(lambda u: u.is_authenticated()))
@@ -348,8 +324,9 @@ class UserDetailView(View):
             user.add_default_roles()
             
             send_account_created_email(user, request)
-                          
-        return self.json_response(user)          
+        
+        userinfo = get_userinfo(user, request, show_details=True)
+        return JsonHttpResponse(content=userinfo, request=request)
 
     @method_decorator(client_required(['68bfae12a58541548def243e223053fb']))
     @method_decorator(api_user_passes_test(lambda u: u.is_authenticated()))   

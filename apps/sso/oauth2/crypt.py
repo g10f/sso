@@ -14,8 +14,8 @@ from django.core.signing import BadSignature
 import logging
 logger = logging.getLogger(__name__)
 
-SUPPORTED_SCOPES = ['openid', 'profile', 'email', '']
-DEFAULT_SCOPES = ['profile']
+#SUPPORTED_SCOPES = ['openid', 'profile', 'email', '']
+#DEFAULT_SCOPES = ['profile']
 CLOCK_SKEW_SECS = 300    # 5 minutes in seconds
 AUTH_TOKEN_LIFETIME_SECS = 300    # 5 minutes in seconds
 MAX_TOKEN_LIFETIME_SECS = 86400    # 1 day in seconds
