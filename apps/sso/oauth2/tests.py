@@ -180,7 +180,7 @@ class OAuth2Tests(OAuth2BaseTestCase):
         self.assertIn('roles', id_token)
         
         expected = {
-            'iss': 'testserver', 
+            'iss': 'http://testserver', 
             'sub': 'a8992f0348634f76b0dac2de4e4c83ee',  # user_id 
             'aud': self._client_id, 
             'email': 'gunnar@g10f.de', 
