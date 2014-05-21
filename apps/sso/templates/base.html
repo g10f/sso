@@ -33,6 +33,11 @@
     
     {% block navbar %}
     {% include "include/global_navigation.html" %}
+	{% if brand == "DWBN" %}
+	<div id="dwbn-logo-header">
+	    <div id="dwbn-diamondway-logo">&nbsp;</div>               
+	</div>
+	{% endif %}
     {% endblock navbar %}
     
     <div class="{% block containerclass %}container{% endblock %}">      

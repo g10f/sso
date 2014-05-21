@@ -1,11 +1,2 @@
 {% extends "centered_form.html" %}
 {% load i18n %}
-
-{% block navbar %}
-{{ block.super }} 
-{% if brand == "DWBN" %}
-<div id="dwbn-logo-header">
-    <div id="dwbn-diamondway-logo">&nbsp;</div>               
-</div>
-{% endif %}
-{% endblock navbar %}
