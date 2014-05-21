@@ -270,12 +270,12 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
         sudo("chown www-data:www-data -R  ./src")
         sudo("chmod g+w -R  ./src")
     
-    """
     # local settings 
     require.file('%(code_dir)s/src/apps/%(app)s/settings/local_settings.py' % {'code_dir': code_dir, 'app': app}, 
                  source='apps/%(app)s/settings/local_%(server_name)s.py' % {'server_name': server_name, 'app': app},
                  use_sudo=True, owner='www-data', group='www-data')
     
+    """
     # python enviroment
     require.python.virtualenv('/envs/sso')
     with fabtools.python.virtualenv('/envs/sso'):
@@ -308,7 +308,7 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
     python = '/envs/%(virtualenv)s/bin/python' % {'virtualenv': virtualenv}
     with cd(code_dir):
         update_dir_settings(code_dir + '/logs')
-        migrate_data(python, server_name, code_dir, app)
+        #migrate_data(python, server_name, code_dir, app)
         sudo("%s ./src/apps/manage.py collectstatic --noinput" % python)
         sudo("supervisorctl restart %(server_name)s" % {'server_name': server_name})
         update_dir_settings(code_dir + '/logs')
