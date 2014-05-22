@@ -202,6 +202,32 @@ def login(request):
 
 @login_required
 def profile(request):
+    if ('SHOW_ADDRESS_AND_PHONE_FORM' in settings.SSO_CUSTOM) and settings.SSO_CUSTOM['SHOW_ADDRESS_AND_PHONE_FORM']: 
+        return profile_with_address_and_phone(request)
+    else:
+        return profile_core(request)
+        
+
+@login_required
+def profile_core(request):
+    user = request.user
+    if request.method == 'POST':
+        form = UserSelfProfileForm(request.POST, instance=user, files=request.FILES)
+        if form.is_valid():
+            form.save()
+            change_message = ChangedDataList(form, []).change_message() 
+            log_change(request, user, change_message)            
+            messages.success(request, _('Thank you. Your settings were saved.'))
+            return redirect('accounts:profile')
+    else:
+        form = UserSelfProfileForm(instance=user)
+
+    dictionary = {'form': form}
+    return render(request, 'accounts/profile_core_form.html', dictionary)
+    
+
+@login_required
+def profile_with_address_and_phone(request):
     address_extra = 0
     phonenumber_extra = 1
     user = request.user
@@ -219,8 +245,7 @@ def profile(request):
         phonenumber_inline_formset = PhoneNumberInlineFormSet(request.POST, instance=user)
         
         if form.is_valid() and address_inline_formset.is_valid() and phonenumber_inline_formset.is_valid():
-            form.save()  
-            
+            form.save()            
             address_inline_formset.save()                        
             phonenumber_inline_formset.save()
             
