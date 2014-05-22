@@ -29,7 +29,7 @@ from sso.forms.helpers import ErrorList, ChangedDataList, log_change
 
 from ..models import Application, User, UserAddress, UserPhoneNumber
 from ..forms import PasswordResetForm, SetPasswordForm, PasswordChangeForm, ContactForm, AddressForm, PhoneNumberForm
-from ..forms import UserSelfProfileForm, UserSelfProfileDeleteForm
+from ..forms import UserSelfProfileForm, UserSelfProfileDeleteForm, CenterSelfProfileForm
 
 LOGIN_FORM_KEY = 'login_form_key'
 
@@ -202,11 +202,31 @@ def login(request):
 
 @login_required
 def profile(request):
+    if getattr(request.user, 'is_center', False):
+        return profile_center_account(request)        
     if ('SHOW_ADDRESS_AND_PHONE_FORM' in settings.SSO_CUSTOM) and settings.SSO_CUSTOM['SHOW_ADDRESS_AND_PHONE_FORM']: 
         return profile_with_address_and_phone(request)
     else:
         return profile_core(request)
-        
+
+
+@login_required
+def profile_center_account(request):
+    user = request.user
+    if request.method == 'POST':
+        form = CenterSelfProfileForm(request.POST, instance=user, files=request.FILES)
+        if form.is_valid():
+            form.save()
+            change_message = ChangedDataList(form, []).change_message() 
+            log_change(request, user, change_message)            
+            messages.success(request, _('Thank you. Your settings were saved.'))
+            return redirect('accounts:profile')
+    else:
+        form = CenterSelfProfileForm(instance=user)
+
+    dictionary = {'form': form}
+    return render(request, 'accounts/profile_center_form.html', dictionary)
+
 
 @login_required
 def profile_core(request):

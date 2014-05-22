@@ -286,8 +286,7 @@ class UserSelfProfileForm(forms.Form):
     """
     Form for the user himself to change editable values
     """
-    username = forms.CharField(label=_("Username"), required=False, widget=bootstrap.StaticInput())
-    organisation = forms.Field()  # place holder for field order when dynamically inserting organisation in __init__
+    username = bootstrap.ReadOnlyField(label=_("Username"))
     first_name = forms.CharField(label=_('First name'), max_length=30, widget=bootstrap.TextInput())
     last_name = forms.CharField(label=_('Last name'), max_length=30, widget=bootstrap.TextInput())
     email = forms.EmailField(label=_('E-mail address'), widget=bootstrap.EmailInput())
@@ -317,13 +316,11 @@ class UserSelfProfileForm(forms.Form):
         organisation_field = None   
         if self.user.organisations.exists():
             organisation = u', '.join([x.__unicode__() for x in self.user.organisations.all()])
-            organisation_field = forms.CharField(required=False, initial=organisation, label=_("Center"), 
-                                                help_text=_('Please use the contact form for a request to change this value.'), widget=bootstrap.StaticInput())
+            organisation_field = bootstrap.ReadOnlyField(initial=organisation, label=_("Center"), help_text=_('Please use the contact form for a request to change this value.'))
         else:
             organisation_field = forms.ModelChoiceField(queryset=Organisation.objects.all().select_related('country'), cache_choices=True, label=_("Center"), widget=bootstrap.Select(), 
-                                                help_text=_('You can set this value only once.'), required=False)
-        if organisation_field:
-            self.fields['organisation'] = organisation_field
+                                                        help_text=_('You can set this value only once.'), required=False)
+        self.fields['organisation'] = organisation_field
 
     def clean_email(self):
         email = self.cleaned_data["email"]
@@ -370,11 +367,41 @@ class UserSelfProfileForm(forms.Form):
         self.user.language = cd['language']
         self.user.save()
         
-        organisation = cd.get('organisation')
-        if organisation:
+        if 'organisation' in cd and cd['organisation']:
             # user selected an organisation, this can only happen if the user before had
             # no organisation (see clean_organisation).
             self.user.organisations.add(cd['organisation']) 
+        
+
+class CenterSelfProfileForm(forms.Form):
+    """
+    Form for a user which represents a center
+    """
+    account_type = bootstrap.ReadOnlyField(label=_("Account type"))
+    username = bootstrap.ReadOnlyField(label=_("Username"))
+    first_name = bootstrap.ReadOnlyField(label=_('First name'))
+    last_name = bootstrap.ReadOnlyField(label=_('Last name'))
+    email = bootstrap.ReadOnlyField(label=_('E-mail address'))
+    language = forms.ChoiceField(label=_("Language"), required=False, choices=(BLANK_CHOICE_DASH + sorted(list(settings.LANGUAGES), key=lambda x: x[1])), widget=bootstrap.Select())
+    
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('instance')
+        object_data = model_to_dict(self.user)
+        object_data['account_type'] = _('Center Account') if self.user.is_center else _('Member Account')
+        initial = kwargs.get('initial', {})
+        object_data.update(initial)
+        kwargs['initial'] = object_data
+        super(CenterSelfProfileForm, self).__init__(*args, **kwargs)
+
+        if self.user.organisations.exists():
+            organisation = u', '.join([x.__unicode__() for x in self.user.organisations.all()])
+            organisation_field = bootstrap.ReadOnlyField(initial=organisation, label=_("Center"))
+            self.fields['organisation'] = organisation_field
+
+    def save(self):
+        cd = self.cleaned_data
+        self.user.language = cd['language']
+        self.user.save()
         
 
 class UserSelfProfileDeleteForm(forms.Form):
