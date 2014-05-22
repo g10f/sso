@@ -48,17 +48,46 @@ def add_to_css_class(classes, new_class):
         classes = u" ".join(classes)
     return classes
 
-
+"""
 class StaticInput(forms.TextInput):
     def render(self, name, value, attrs=None):
         if attrs is None:
             attrs = {}
         
         attrs['type'] = 'hidden'
+        
         klass = add_to_css_class(self.attrs.pop('class', ''), 'form-control-static')
         klass = add_to_css_class(klass, attrs.pop('class', ''))
+
         base = super(StaticInput, self).render(name, value, attrs)
         return mark_safe(base + u'<p class="%s">%s</p>' % (klass, value))
+"""
+
+class ReadOnlyWidget(forms.TextInput):
+    def render(self, name, value, attrs=None):
+        if attrs is None:
+            attrs = {}
+                
+        klass = add_to_css_class(self.attrs.pop('class', ''), 'form-control-static')
+        klass = add_to_css_class(klass, attrs.pop('class', ''))
+
+        return mark_safe(u'<p class="%s">%s</p>' % (klass, value))
+
+
+class ReadOnlyField(forms.Field):
+    widget = ReadOnlyWidget
+
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault("required", False)
+        super(ReadOnlyField, self).__init__(*args, **kwargs)
+
+    def bound_data(self, data, initial):
+        # Always return initial because the widget doesn't
+        # render an input field.
+        return initial
+
+    def _has_changed(self, initial, data):
+        return False
 
 
 class ImageWidget(forms.ClearableFileInput):

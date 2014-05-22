@@ -1,0 +1,56 @@
+{% extends "base_form.html" %}
+{% load i18n static %}
+{% load thumbnail %}
+
+{% block title %}{% trans 'Profile' %}{% endblock %}
+
+{% block extrascript %}
+{{ media }}
+<script src="{% static "js/formsets.js" %}"></script>
+{% endblock extrascript %}
+
+{% block nav_accounts_profile_class %}active{% endblock %}
+
+{% block breadcrumb %}
+<ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+    <li class="active">{% trans 'User profile' %}</li>
+</ol> 
+{% endblock breadcrumb %}
+
+
+{% block form %}
+<form enctype="multipart/form-data" class="form-horizontal" method="post" data-active="{{ active }}">{% csrf_token %}	
+    <h3>{% trans 'My account' %}</h3>		
+    {% if messages %}{% for message in messages %}
+    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
+    {% endif %}
+		
+    {% if form.errors %}
+    <div class="alert alert-danger">
+    {% if form.errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
+    </div>
+    {% endif %}
+	{% if errors %}
+    <div class="alert alert-danger">
+    {% if errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
+    </div>
+	{% endif %}
+    
+    {% include 'include/_field.html' with field=form.account_type %}
+    {% include 'include/_field.html' with field=form.username %}
+    {% include 'include/_field.html' with field=form.organisation %}
+    {% include 'include/_field.html' with field=form.first_name %}
+    {% include 'include/_field.html' with field=form.last_name %}
+    {% include 'include/_field.html' with field=form.email %} 
+    {% include 'include/_field.html' with field=form.language %}
+	    
+    <div class="form-group">
+	    <div class="dwbn-form-submit">
+	        <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
+            <a class="btn btn-default" href="{% url 'accounts:delete_profile' %}">{% trans 'Delete' %}</a>
+	    </div>
+    </div>
+</form>
+
+{% endblock %}

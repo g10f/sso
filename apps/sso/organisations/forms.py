@@ -47,7 +47,7 @@ class OrganisationPhoneNumberForm(BaseForm):
 
 
 class OrganisationForm(BaseForm):
-    google_maps_url = forms.CharField(label=_("Google Maps"), required=False, widget=bootstrap.StaticInput())
+    google_maps_url = bootstrap.ReadOnlyField(label=_("Google Maps"))
 
     class Meta:
         model = Organisation
