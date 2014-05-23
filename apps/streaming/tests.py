@@ -3,11 +3,11 @@ from django.conf import settings
 from django.test import TestCase
 from django.test.client import Client
 from .backends import StreamingBackend
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate
 
 class StreamingMethodTests(TestCase):
 
-    fixtures = ['initial_data.json', 'app_roles.json', 'test_streaming_user.json', 'test_l10n_data.xml', 'test_organisation_data.json', 'test_user_data.json', 'test_app_roles.json']
+    fixtures = ['initial_data.json', 'app_roles.json', 'test_streaming_user.json', 'test_l10n_data.xml', 'test_organisation_data.json', 'test_app_roles.json', 'test_user_data.json']
     
     def setUp(self):
         self.client = Client()
@@ -40,6 +40,33 @@ class StreamingMethodTests(TestCase):
         user = backend.authenticate("admin@example.com", "geheim08")
         self.assertIsNotNone(user)
         
+    def test_login_with_streaming_user_where_email_exists(self):
+        """
+        user gunnar@g10f.de exist already in the sso and in the streaming database with a different password
+        """
+        # authenticate at SSO
+        user = authenticate(username="gunnar@g10f.de", password="gsf")
+        self.assertIsNotNone(user)
+
+        # authenticate at Streaming 
+        user = authenticate(username="gunnar@g10f.de", password="geheim08")
+        self.assertIsNotNone(user)
+
+        # after 1 successful authentication at streaming, SSO is always used
+        # authenticate at SSO (new password from streaming)
+        user = authenticate(username="gunnar@g10f.de", password="gsf")
+        self.assertIsNone(user)
+
+        # authenticate at SSO
+        user = authenticate(username="gunnar@g10f.de", password="geheim08")
+        self.assertIsNotNone(user)
+        user.set_password("123456")
+        user.save()
+
+        # authenticate at SSO and Streaming is failing (old streaming password is not possble anymore)
+        user = authenticate(username="gunnar@g10f.de", password="geheim08")
+        self.assertIsNone(user)
+        
     def test_create_center_account(self):
         backend = StreamingBackend()
         user = backend.authenticate("testcenter1@example.com", "geheim08")
@@ -47,7 +74,6 @@ class StreamingMethodTests(TestCase):
         
         self.assertEqual(user.first_name, 'BuddhistCenter')
         self.assertEqual(user.last_name, 'testcenter1')
-        self.assertGreater(len(user.application_roles.all()), 1)
         app_roles = user.get_applicationroles().values('application__uuid', 'role__name')
         role_profiles = user.role_profiles.all().values('uuid')
 

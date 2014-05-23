@@ -12,7 +12,7 @@ from sso.tests import SSOSeleniumTests
 from sso.accounts.models import ApplicationRole
 
 class AccountsSeleniumTests(SSOSeleniumTests):
-    fixtures = ['initial_data.json', 'test_l10n_data.xml', 'app_roles.json', 'test_organisation_data.json', 'test_user_data.json']
+    fixtures = ['initial_data.json', 'test_l10n_data.xml', 'app_roles.json', 'test_organisation_data.json', 'test_app_roles.json', 'test_user_data.json']
     
     def login_test(self, username, password):
         self.login(username=username, password=password)

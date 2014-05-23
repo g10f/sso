@@ -33,6 +33,7 @@ SSO_CUSTOM = {
 EMAIL_SUBJECT_PREFIX = '[SSO] '
 
 DIRNAME = os.path.join(os.path.dirname(__file__), '..')
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))  # django 1.7 settings
 
 hostname = socket.gethostname().upper()
 TEST = 'test' in sys.argv

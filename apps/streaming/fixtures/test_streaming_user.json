@@ -34,4 +34,17 @@
 		"created" : "2013-02-27T08:58:59.757824+01:00",
 		"subscriber" : "N"
 	}
+} , {
+	"pk" : "4",
+	"model" : "streaming.streaminguser",
+	"fields" : {
+		"email" : "gunnar@g10f.de",
+		"password" : "Z2VoZWltMDg=",
+		"center" : "N",
+		"admin" : "N",
+		"mailsent" : "J",
+		"created" : "2013-02-27T08:58:59.757824+01:00",
+		"subscriber" : "N"
+	}
 } ]
+

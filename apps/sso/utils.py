@@ -58,7 +58,7 @@ def disable_for_loaddata(signal_handler):
     """
     @functools.wraps(signal_handler)
     def wrapper(*args, **kwargs):
-        if kwargs['raw']:
+        if 'raw' in kwargs:
             return
         signal_handler(*args, **kwargs)
     return wrapper

@@ -1,27 +1,5 @@
 [
-{
-	 "pk" : 2,
-	 "model" : "accounts.application",
-	 "fields" : {
-		 "uuid": "bc0ee635a536491eb8e7fbe5749e8111",
-		 "title" : "Test App",
-		 "url" : "http://test.example.com"
-	 }
-}, {
-	 "pk" : 4,
-	 "model" : "accounts.applicationrole",
-	 "fields" : {
-		 "application" : ["bc0ee635a536491eb8e7fbe5749e8111"],
-		 "role" : ["Admin"]
-	 }
-}, {
-	 "pk" : 5,
-	 "model" : "accounts.applicationrole",
-	 "fields" : {
-		 "application" : ["bc0ee635a536491eb8e7fbe5749e8111"],
-		 "role" : ["Staff"]
-	 }
-}, {
+ {
 	 "pk" : 1,
 	 "model" : "accounts.user",
 	 "fields" : {
