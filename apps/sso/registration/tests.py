@@ -8,6 +8,7 @@ from django.test import TestCase
 from django.test.client import Client
 from django.core.urlresolvers import reverse
 
+from sso.registration import default_username_generator
 
 class RegistrationTest(TestCase):
     fixtures = ['initial_data.json', 'app_roles.json', 'test_l10n_data.xml', 'test_organisation_data.json', 'test_app_roles.json', 'test_user_data.json']
@@ -27,6 +28,13 @@ class RegistrationTest(TestCase):
         scheme, netloc, path, query_string, fragment = urlparse.urlsplit(urls[0])  # @UnusedVariable
         return path
 
+    def test_default_username_generator(self):
+        username = default_username_generator("Gunnar", "Scherf")
+        self.assertEqual(username, "GunnarScherf1")
+
+        username = default_username_generator("GunnarXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "Scherf")
+        self.assertEqual(username, "GunnarXXXXXXXXXXXXXXXXXXXXXXX")
+                
     def test_registration_register_by_bot(self):
         """
         User self registration with email validation
