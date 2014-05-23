@@ -18,7 +18,7 @@ EMAIL_RE = re.compile(
     r')@(?:[A-Z0-9-]+\.)+[A-Z]{2,6}$', re.IGNORECASE)  # domain
 
 
-def create_user(username, email, password):
+def create_user(username, email):
     for i in range(0, 99):
         try:
             with transaction.atomic():
@@ -27,7 +27,6 @@ def create_user(username, email, password):
                 else:
                     new_username = username
                 user = get_user_model()(username=new_username, email=email)
-                user.set_password(password)
                 user.save()
                 return user
         except IntegrityError:
@@ -38,17 +37,18 @@ def create_user(username, email, password):
 
 def add_streaming_user(username, email, password, is_center, is_subscriber, is_admin, application):
     try:
-        user = get_user_model().objects.get(email__iexact=email)            
+        user = get_user_model().objects.get(email__iexact=email)
     except ObjectDoesNotExist:
-        user = create_user(username, email, password)
+        user = create_user(username, email)
         
-    user.is_center = is_center
+    user.set_password(password)
     user.is_subscriber = is_subscriber
     user.save()
     
     if is_center:
         try:
             organisation = Organisation.objects.get(email__iexact=email)
+            user.is_center = is_center
             user.organisations.add(organisation)
             user.first_name = 'BuddhistCenter'
             user.last_name = email.split('@')[0]

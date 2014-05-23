@@ -38,6 +38,9 @@ SUPERUSER_ROLE = 'Superuser'
 #STAFF_ROLE = 'Staff'
 #USER_ROLE = 'User'
 
+DS108_EU = '35efc492b8f54f1f86df9918e8cc2b3d'
+DS108_CEE = '2139dc55af8b42ec84a1ce9fd25fdf18'
+
 class ApplicationManager(models.Manager):
     def get_by_natural_key(self, uuid):
         return self.get(uuid=uuid)
@@ -347,13 +350,14 @@ class User(AbstractUser):
     def default_dharmashop_roles(self):
         ds_roles = []  # [{'uuid': 'e4a281ef13e1484b93fe4b7cc66374c8', 'roles': ['User']}]  # Dharma Shop 108 Home]
         roles = ['Guest', 'User'] if self.is_center else ['Guest']
-        
-        if self.organisations.filter(country__iso2_code__in=['CZ', 'SK', 'PL', 'RU', 'UA', 'RO', 'RS', 'HR', 'GR', 'BG', 'EE', 'LV']).exists():
-            # Dharma Shop 108 - Central and East Europe
-            ds_roles += [{'uuid': '2139dc55af8b42ec84a1ce9fd25fdf18', 'roles': roles}]
-        else:
-            # Dharma Shop 108 - West Europe
-            ds_roles += [{'uuid': '35efc492b8f54f1f86df9918e8cc2b3d', 'roles': roles}]
+        organisation = self.organisations.first()
+        if organisation:                
+            if organisation.country.iso2_code in ['CZ', 'SK', 'PL', 'RU', 'UA', 'RO', 'RS', 'HR', 'GR', 'BG', 'EE', 'LV']:
+                # Dharma Shop 108 - Central and East Europe
+                ds_roles += [{'uuid': DS108_CEE, 'roles': roles}]
+            else:
+                # Dharma Shop 108 - West Europe
+                ds_roles += [{'uuid': DS108_EU, 'roles': roles}]
         return ds_roles
 
     def filter_administrable_users(self, qs):
@@ -515,6 +519,18 @@ def send_account_created_email(user, request, token_generator=default_pwd_reset_
         activate(cur_language)
 
     send_mail(subject, email, from_email, [user.email], fail_silently=settings.DEBUG)
+
+
+@receiver(signals.m2m_changed, sender=User.organisations.through)
+@disable_for_loaddata
+def user_organisation_changed(sender, instance, action, **kwargs):
+    """
+    Add regional dharmashop role if the user has no dharmashop role
+    """
+    if action == 'post_add' and settings.SSO_CUSTOM.get('ADD_DHARMASHOP_ROLE', False):
+        app_roles_dict_array = instance.default_dharmashop_roles
+        if not instance.application_roles.filter(application__uuid__in=[DS108_CEE, DS108_EU]).exists():
+            instance.add_roles(app_roles_dict_array)
 
 
 @receiver(signals.post_save, sender=User)

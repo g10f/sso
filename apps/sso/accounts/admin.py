@@ -227,7 +227,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
     list_display = ('id',) + DjangoUserAdmin.list_display + ('last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user')
     search_fields = ('username', 'first_name', 'last_name', 'email', 'uuid')
     list_filter = (SuperuserFilter, ) + ('is_staff', 'is_center', 'is_active', 'groups', UserAssociatedSystemFilter, UserRegionListFilter,
-                    RoleProfilesFilter, ApplicationRolesFilter, UserOrganisationsListFilter, CreatedByUserFilter, LastModifiedUserFilter)
+                    RoleProfilesFilter, ApplicationRolesFilter)  # ,UserOrganisationsListFilter, CreatedByUserFilter, LastModifiedUserFilter
     filter_horizontal = DjangoUserAdmin.filter_horizontal + ('groups', 'application_roles', 'role_profiles', 'organisations')
     ordering = ['-last_login', '-first_name', '-last_name']
     actions = ['mark_info_mail']

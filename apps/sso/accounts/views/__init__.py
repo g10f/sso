@@ -225,7 +225,7 @@ def profile_center_account(request):
         form = CenterSelfProfileForm(instance=user)
 
     dictionary = {'form': form}
-    return render(request, 'accounts/profile_center_form.html', dictionary)
+    return render(request, 'accounts/profile_form_center.html', dictionary)
 
 
 @login_required
