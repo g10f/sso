@@ -35,9 +35,12 @@ def create_user(username, email):
                 raise
 
 
-def add_streaming_user(username, email, password, is_center, is_subscriber, is_admin, application):
+def create_or_get_streaming_user(username, email, password, is_center, is_subscriber, is_admin):
     try:
         user = get_user_model().objects.get(email__iexact=email)
+        user.set_password(password)
+        user.save()
+        return user
     except ObjectDoesNotExist:
         user = create_user(username, email)
         
@@ -58,8 +61,6 @@ def add_streaming_user(username, email, password, is_center, is_subscriber, is_a
 
     user.add_default_roles()
 
-    # create UserAssociatedSystem
-    UserAssociatedSystem.objects.create(userid=email, user=user, application=application)
     return user
 
     
@@ -72,21 +73,17 @@ class StreamingBackend(object):
             if not EMAIL_RE.search(username):
                 return None
             
-            # if the user was already authenticated once successful against the streaming database,
-            # we use the sso database for password checking
-            if get_user_model().objects.filter(userassociatedsystem__userid=username).exists():
-                return None
+            userassociatedsystem = UserAssociatedSystem.objects.filter(userid__iexact=username, application__uuid=settings.SSO_CUSTOM['STREAMING_UUID']).first()
 
-            streaming_user = StreamingUser.objects.get(email__iexact=username)
-            
+            # if the user was already authenticated once successful against the streaming database,
+            # we use the sso database for password checking      
+            if userassociatedsystem:
+                return None
+            sql = "SELECT id_nr, password FROM streaming_user WHERE LOWER(email) LIKE LOWER(%(email)s)"
+            streaming_user = StreamingUser.objects.raw(sql, {'email': username})[0]
+                        
             if streaming_user.check_password(password):
-                # the streaming app is not yet under control of the sso!
-                application = Application.objects.get_or_create(uuid=settings.SSO_CUSTOM['STREAMING_UUID'], defaults={'title': 'Streaming', })[0]
-                #role = Role.objects.get_or_create(name='User')[0]
-                #user_app_roles = [ApplicationRole.objects.get_or_create(application=application, role=role)[0]]
-                
                 email = username
-                
                 # truncate the length if needed
                 username = username[:28]
                 
@@ -94,10 +91,15 @@ class StreamingBackend(object):
                 is_subscriber = True if (streaming_user.subscriber == 'J') else False
                 is_admin = True if (streaming_user.admin == 'J') else False
                 
-                return add_streaming_user(username, email, password, is_center, is_subscriber, is_admin, application)
-                    
+                user = create_or_get_streaming_user(username, email, password, is_center, is_subscriber, is_admin)
+                # create UserAssociatedSystem
+                if not userassociatedsystem:
+                    application = Application.objects.get_or_create(uuid=settings.SSO_CUSTOM['STREAMING_UUID'], defaults={'title': 'Streaming', })[0]
+                    UserAssociatedSystem.objects.get_or_create(userid=email, user=user, application=application)
+                return user
+            
             return None
-        except StreamingUser.DoesNotExist:
+        except IndexError:
             return None
         except Exception, e:
             logger.exception(e)

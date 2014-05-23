@@ -19,17 +19,17 @@ def default_username_generator(first_name, last_name):
     first_name = capfirst(remove(first_name, *remove_chars))
     last_name = capfirst(remove(last_name, *remove_chars))
     username = u"%s%s" % (first_name, last_name)
-    
+    username = username[:29]  # max 30 chars
     try:
         get_user_model().objects.get(username=username)
     except ObjectDoesNotExist:
         return username
     
-    username_pattern = r'^%s([0-9]+)%s$' % (first_name, last_name)
+    username_pattern = r'^%s([0-9]+)$' % (username)
     users = get_user_model().objects.filter(username__regex=username_pattern)
     
     existing = set()
-    username_pattern = r'%s(?P<no>[0-9]+)%s' % (first_name, last_name)
+    username_pattern = r'%s(?P<no>[0-9]+)' % (username)
     prog = re.compile(username_pattern)
     for user in users:
         m = prog.match(user.username)  # we should alway find a match, because of the filter
@@ -41,5 +41,5 @@ def default_username_generator(first_name, last_name):
     while new_no in existing:
         new_no += 1
 
-    username = u"%s%d%s" % (first_name, new_no, last_name)
+    username = u"%s%d" % (username, new_no)
     return username
