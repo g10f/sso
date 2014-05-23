@@ -231,7 +231,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
     filter_horizontal = DjangoUserAdmin.filter_horizontal + ('groups', 'application_roles', 'role_profiles', 'organisations')
     ordering = ['-last_login', '-first_name', '-last_name']
     actions = ['mark_info_mail']
-    inlines = [PhoneNumber_Inline, Address_Inline]
+    inlines = [PhoneNumber_Inline, Address_Inline, UserAssociatedSystemInline]
     
     fieldsets = (
         (None, {'fields': ('username', 'password'), 'classes': ['wide']}),
