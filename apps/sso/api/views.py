@@ -149,6 +149,7 @@ def get_userinfo(user, request, show_details=False):
         'birth_date': date(user.dob, "c"),
         'homepage': user.homepage,
         'language': user.language,
+        'is_center': user.is_center,
         'organisations': {organisation.uuid: {'name': organisation.name} for organisation in user.organisations.all()},
         'links': {'self': {'href': "%s%s" % (base, reverse('api:v1_user', kwargs={'uuid': user.uuid}))},
                   'apps': {'href': "%s%s" % (base, reverse('api:v1_users_apps', kwargs={'uuid': user.uuid}))}}
