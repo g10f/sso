@@ -549,6 +549,8 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
     email = forms.EmailField(label=_('E-mail address'), widget=bootstrap.EmailInput())
     is_active = forms.BooleanField(label=_('Active'), help_text=_('Designates whether this user should be treated as active. Unselect this instead of deleting accounts.'), 
                                    widget=bootstrap.CheckboxInput(), required=False)
+    is_center = forms.BooleanField(label=_('Center'), help_text=_('Designates that this user is representing a center and not a private person.'), 
+                                   widget=bootstrap.CheckboxInput(), required=False)
     organisations = forms.ModelChoiceField(queryset=None, cache_choices=True, required=False, label=_("Organisation"), widget=bootstrap.Select())
     application_roles = forms.ModelMultipleChoiceField(queryset=None, cache_choices=True, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
     notes = forms.CharField(label=_("Notes"), required=False, max_length=1024, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
@@ -600,6 +602,7 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
         self.user.first_name = cd['first_name']
         self.user.last_name = cd['last_name']
         self.user.is_active = cd['is_active']
+        self.user.is_center = cd['is_center']
         self.user.notes = cd['notes']
         self.user.save()
         

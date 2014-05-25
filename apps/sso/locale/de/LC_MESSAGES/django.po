@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-22 22:28+0200\n"
+"POT-Creation-Date: 2014-05-25 21:05+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -81,82 +81,86 @@ msgstr "Telefonnummern"
 msgid "(None)"
 msgstr ""
 
-#: accounts/admin.py:76 accounts/forms.py:222 accounts/forms.py:552
+#: accounts/admin.py:73 accounts/forms.py:222 accounts/forms.py:554
 #: registration/forms.py:56
 msgid "Organisation"
 msgstr "Zentrum"
 
-#: accounts/admin.py:85 accounts/admin.py:314 accounts/models.py:161
+#: accounts/admin.py:82 accounts/admin.py:333 accounts/models.py:161
 #: registration/models.py:136
 msgid "last modified by"
 msgstr "letzte Änderung durch"
 
-#: accounts/admin.py:96 accounts/admin.py:323 accounts/models.py:163
+#: accounts/admin.py:93 accounts/admin.py:342 accounts/models.py:163
 msgid "created by"
 msgstr "angelegt von"
 
-#: accounts/admin.py:107 accounts/models.py:449
+#: accounts/admin.py:104 accounts/models.py:453
 msgid "associated system"
 msgstr "Assoziertes System"
 
-#: accounts/admin.py:126
+#: accounts/admin.py:120
 msgid "Admin Region"
 msgstr ""
 
-#: accounts/admin.py:138
+#: accounts/admin.py:129
 msgid "Application Roles"
 msgstr "Anwendungsrollen"
 
-#: accounts/admin.py:150 accounts/forms.py:224 accounts/forms.py:555
+#: accounts/admin.py:154 accounts/forms.py:224 accounts/forms.py:557
 #: accounts/templates/accounts/application/add_user_done.html:43
 #: registration/forms.py:60
 msgid "Role profiles"
 msgstr "Rollenprofile"
 
-#: accounts/admin.py:159
+#: accounts/admin.py:163
+msgid "Exclude Role profiles"
+msgstr "nicht enthaltene Rollenprofile"
+
+#: accounts/admin.py:178
 msgid "superuser status"
 msgstr ""
 
-#: accounts/admin.py:165 registration/admin.py:16 registration/admin.py:32
+#: accounts/admin.py:184 registration/admin.py:16 registration/admin.py:32
 msgid "Yes"
 msgstr ""
 
-#: accounts/admin.py:165 registration/admin.py:16 registration/admin.py:32
+#: accounts/admin.py:184 registration/admin.py:16 registration/admin.py:32
 msgid "No"
 msgstr ""
 
-#: accounts/admin.py:238 accounts/admin.py:247
+#: accounts/admin.py:257 accounts/admin.py:266
 msgid "Personal info"
 msgstr ""
 
-#: accounts/admin.py:241 accounts/admin.py:248
+#: accounts/admin.py:260 accounts/admin.py:267
 msgid "AppRoles"
 msgstr "Anwendungsrollen"
 
-#: accounts/admin.py:242
+#: accounts/admin.py:261
 msgid "Permissions"
 msgstr ""
 
-#: accounts/admin.py:243 accounts/admin.py:249
+#: accounts/admin.py:262 accounts/admin.py:268
 msgid "Important dates"
 msgstr ""
 
-#: accounts/admin.py:398
+#: accounts/admin.py:417
 #, python-format
 msgid "%s SSO Information"
 msgstr "%s SSO Information"
 
-#: accounts/admin.py:408
+#: accounts/admin.py:427
 #, python-format
 msgid "Successfully send Information Email to  %(count)d %(items)s."
 msgstr ""
 
-#: accounts/admin.py:422
+#: accounts/admin.py:441
 #: accounts/templates/admin/accounts/send_mail_selected_confirmation.html:13
 msgid "Send information mail to selected users"
 msgstr ""
 
-#: accounts/admin.py:431
+#: accounts/admin.py:450
 msgid "Send info email"
 msgstr ""
 
@@ -274,20 +278,20 @@ msgstr "Nachname"
 msgid "last name"
 msgstr ""
 
-#: accounts/forms.py:176 accounts/forms.py:554 accounts/models.py:167
+#: accounts/forms.py:176 accounts/forms.py:556 accounts/models.py:167
 #: accounts/templates/accounts/user_confirm_delete.html:33
 #: accounts/templates/accounts/application/add_user_done.html:54
 #: registration/forms.py:38
 msgid "Notes"
 msgstr "Notizen"
 
-#: accounts/forms.py:223 accounts/forms.py:553
+#: accounts/forms.py:223 accounts/forms.py:555
 #: accounts/templates/accounts/application/add_user_done.html:49
 #: registration/forms.py:57
 msgid "Application roles"
 msgstr "Anwendungsrollen"
 
-#: accounts/forms.py:225 accounts/forms.py:556 registration/forms.py:61
+#: accounts/forms.py:225 accounts/forms.py:558 registration/forms.py:61
 msgid "Groups of application roles that are assigned together."
 msgstr "Gruppen von Anwendungsrollen, die zusammen vergeben werden."
 
@@ -319,7 +323,7 @@ msgid "Language"
 msgstr "Sprache"
 
 #: accounts/forms.py:319 accounts/forms.py:321 accounts/forms.py:398
-#: accounts/forms.py:465
+#: accounts/forms.py:465 accounts/forms.py:552
 #: accounts/templates/accounts/user_confirm_delete.html:39
 msgid "Center"
 msgstr "Zentrum"
@@ -405,6 +409,13 @@ msgid ""
 msgstr ""
 "Legt fest, ob dieser Benutzer aktiv ist. Kann deaktiviert werden, anstatt "
 "den Benutzer zu löschen."
+
+#: accounts/forms.py:552 accounts/models.py:164
+msgid ""
+"Designates that this user is representing a center and not a private person."
+msgstr ""
+"Legt fest, ob dieser Benutzer ein Zentrum präsentiert und keine private "
+"Person."
 
 #: accounts/models.py:50 accounts/models.py:85 accounts/models.py:129
 msgid "Overwrites the alphabetic order."
@@ -524,12 +535,6 @@ msgstr ""
 msgid "center"
 msgstr "Zentrum"
 
-#: accounts/models.py:164
-msgid ""
-"Designates that this user is representing a center and not a private person."
-msgstr ""
-"Gibt an, dass der Benutzer ein Zentrum präsentiert und keine private Person."
-
 #: accounts/models.py:165
 msgid "subscriber"
 msgstr ""
@@ -560,49 +565,49 @@ msgstr ""
 msgid "language"
 msgstr ""
 
-#: accounts/models.py:403
+#: accounts/models.py:407
 msgctxt "address"
 msgid "Home"
 msgstr "Zuhause"
 
-#: accounts/models.py:404 accounts/models.py:423
+#: accounts/models.py:408 accounts/models.py:427
 msgid "Business"
 msgstr "Geschäftlich"
 
-#: accounts/models.py:405 accounts/models.py:426 organisations/models.py:133
+#: accounts/models.py:409 accounts/models.py:430 organisations/models.py:133
 msgid "Other"
 msgstr "Andere"
 
-#: accounts/models.py:408 organisations/models.py:115
+#: accounts/models.py:412 organisations/models.py:115
 msgid "address type"
 msgstr "Adressart"
 
-#: accounts/models.py:421 organisations/models.py:129
+#: accounts/models.py:425 organisations/models.py:129
 msgctxt "phone number"
 msgid "Home"
 msgstr "Privat"
 
-#: accounts/models.py:422 organisations/models.py:130
+#: accounts/models.py:426 organisations/models.py:130
 msgid "Mobile"
 msgstr "Handy"
 
-#: accounts/models.py:424 organisations/models.py:132
+#: accounts/models.py:428 organisations/models.py:132
 msgid "Fax"
 msgstr ""
 
-#: accounts/models.py:425
+#: accounts/models.py:429
 msgid "Pager"
 msgstr ""
 
-#: accounts/models.py:428 organisations/models.py:136
+#: accounts/models.py:432 organisations/models.py:136
 msgid "phone type"
 msgstr "Telefontyp"
 
-#: accounts/models.py:428 organisations/models.py:136
+#: accounts/models.py:432 organisations/models.py:136
 msgid "Mobile, home, office, etc."
 msgstr "Handy, privat, Büro, etc."
 
-#: accounts/models.py:450
+#: accounts/models.py:454
 msgid "associated systems"
 msgstr "Assoziertes System"
 
@@ -760,7 +765,7 @@ msgstr "Möchtest Du dein Konto löschen?"
 #: accounts/templates/accounts/profile_core_form.html:54
 #: accounts/templates/accounts/profile_form.html:68
 #: accounts/templates/accounts/profile_form_center.html:51
-#: accounts/templates/accounts/application/change_user_form.html:99
+#: accounts/templates/accounts/application/change_user_form.html:100
 #: organisations/templates/organisations/organisation_detail.html:56
 #: organisations/templates/organisations/organisation_form.html:74
 #: registration/templates/admin/registration/registrationprofile/change_form.html:9
@@ -837,7 +842,7 @@ msgstr "Aktualisiere Dein Benutzer Profil"
 #: accounts/templates/accounts/profile_core_form.html:53
 #: accounts/templates/accounts/profile_form.html:67
 #: accounts/templates/accounts/profile_form_center.html:50
-#: accounts/templates/accounts/application/change_user_form.html:102
+#: accounts/templates/accounts/application/change_user_form.html:103
 #: organisations/templates/organisations/organisation_create_form.html:19
 #: organisations/templates/organisations/organisation_form.html:76
 #: registration/templates/admin/registration/registrationprofile/change_form.html:8
@@ -1080,15 +1085,15 @@ msgstr "Benutzer hinzufügen und E-mail Einladung senden"
 msgid "Change User"
 msgstr ""
 
-#: accounts/templates/accounts/application/change_user_form.html:67
+#: accounts/templates/accounts/application/change_user_form.html:68
 msgid "Registration"
 msgstr "Registrierung"
 
-#: accounts/templates/accounts/application/change_user_form.html:100
+#: accounts/templates/accounts/application/change_user_form.html:101
 msgid "Save and add another"
 msgstr "Speichern und einen neuen Hinzufügen"
 
-#: accounts/templates/accounts/application/change_user_form.html:101
+#: accounts/templates/accounts/application/change_user_form.html:102
 #: organisations/templates/organisations/organisation_form.html:75
 #: registration/templates/admin/registration/registrationprofile/change_form.html:11
 #: registration/templates/registration/change_user_registration_form.html:101
