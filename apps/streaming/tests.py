@@ -4,6 +4,7 @@ from django.test import TestCase
 from django.test.client import Client
 from .backends import StreamingBackend
 from django.contrib.auth import get_user_model, authenticate
+from sso.organisations.models import Organisation
 
 class StreamingMethodTests(TestCase):
 
@@ -77,10 +78,19 @@ class StreamingMethodTests(TestCase):
         app_roles = user.get_applicationroles().values('application__uuid', 'role__name')
         role_profiles = user.role_profiles.all().values('uuid')
 
-        # SSO
-        self.assertIn({'uuid': settings.SSO_CUSTOM['DEFAULT_ADMIN_PROFILE_UUID']}, role_profiles)  
-        # Dharma Shop 108 - West Europe
-        self.assertIn({'application__uuid': '35efc492b8f54f1f86df9918e8cc2b3d', 'role__name': 'User'}, app_roles)
+        self.assertIn({'application__uuid': '35efc492b8f54f1f86df9918e8cc2b3d', 'role__name': 'User'}, app_roles)  # Dharma Shop 108 - West Europe
+        self.assertIn({'uuid': settings.SSO_CUSTOM['DEFAULT_ADMIN_PROFILE_UUID']}, role_profiles)  # SSO        
+        self.assertIn({'uuid': settings.SSO_CUSTOM['DEFAULT_ROLE_PROFILE_UUID']}, role_profiles)  
+
+        self.assertQuerysetEqual(user.organisations.all(), [repr(x) for x in Organisation.objects.filter(uuid='31664dd38ca4454e916e55fe8b1f0745')])
         
+    def test_create_center_account_without_a_center_email(self):
+        backend = StreamingBackend()
+        user = backend.authenticate("admin@example.com", "geheim08")
+        
+        self.assertEqual(user.first_name, 'BuddhistCenter')
+        self.assertEqual(user.last_name, 'admin')
         role_profiles = user.role_profiles.all().values('uuid')
+
+        self.assertIn({'uuid': settings.SSO_CUSTOM['DEFAULT_ADMIN_PROFILE_UUID']}, role_profiles)  
         self.assertIn({'uuid': settings.SSO_CUSTOM['DEFAULT_ROLE_PROFILE_UUID']}, role_profiles)  
