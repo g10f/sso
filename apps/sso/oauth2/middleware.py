@@ -59,7 +59,7 @@ def get_auth_data(request):
         
         if not hasattr(request, '_cached_auth_data'):
             # try django auth session
-            request._cached_auth_data = auth.get_user(request), None, set('address', 'phone')
+            request._cached_auth_data = auth.get_user(request), None, set(['address', 'phone'])
     return request._cached_auth_data
 
 
