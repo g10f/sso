@@ -49,15 +49,14 @@ def create_or_get_streaming_user(username, email, password, is_center, is_subscr
     user.save()
     
     if is_center:
-        try:
-            organisation = Organisation.objects.get(email__iexact=email)
-            user.is_center = is_center
+        organisation = Organisation.objects.filter(email__iexact=email).first()
+        if organisation:
             user.organisations.add(organisation)
-            user.first_name = 'BuddhistCenter'
-            user.last_name = email.split('@')[0]
-            user.save()            
-        except ObjectDoesNotExist:
-            pass
+
+        user.is_center = is_center
+        user.first_name = 'BuddhistCenter'
+        user.last_name = email.split('@')[0]
+        user.save()            
 
     user.add_default_roles()
 
