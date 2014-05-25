@@ -70,9 +70,6 @@ class BaseFilter(SimpleListFilter):
 
 
 class OrganisationsListFilter(BaseFilter):
-    """
-    Fiter for user admin
-    """
     title = _('Organisation')
     parameter_name = 'organisation'
     field_path = 'organisations'
@@ -120,9 +117,6 @@ class UserOrganisationsListFilter(OrganisationsListFilter):
         
 
 class UserRegionListFilter(BaseFilter):
-    """
-    Fiter for user admin
-    """
     title = _('Admin Region')
     parameter_name = 'admin_region'
     field_path = 'organisations__admin_region'
@@ -132,9 +126,6 @@ class UserRegionListFilter(BaseFilter):
 
 
 class ApplicationRolesFilter(BaseFilter):
-    """
-    Fiter for user admin
-    """
     title = _('Application Roles')
     parameter_name = 'application_role'
     field_path = 'application_roles'
@@ -142,17 +133,45 @@ class ApplicationRolesFilter(BaseFilter):
     def get_lookup_qs(self, request, model_admin):
         return request.user.get_administrable_application_roles()
 
+"""
+may be in the future?
+class ExcludeApplicationRolesFilter(ApplicationRolesFilter):
+    title = _('Exclude Application Roles')
+    parameter_name = 'ne_application_roles'
+
+    def queryset(self, request, queryset):
+        if self.value() == '-':
+            kwargs = {'%s__isnull' % self.field_path: True}
+            return queryset.exclude(**kwargs).distinct()
+        elif self.value():
+            kwargs = {'%s__id' % self.field_path: self.value()}
+            return queryset.exclude(**kwargs).distinct()
+        else:
+            return queryset.all()
+"""
 
 class RoleProfilesFilter(BaseFilter):
-    """
-    Fiter for user admin
-    """
     title = _('Role profiles')
     parameter_name = 'role_profiles'
     field_path = 'role_profiles'
 
     def get_lookup_qs(self, request, model_admin):
         return request.user.get_administrable_role_profiles()
+
+
+class ExcludeRoleProfilesFilter(RoleProfilesFilter):
+    title = _('Exclude Role profiles')
+    parameter_name = 'ne_role_profiles'
+
+    def queryset(self, request, queryset):
+        if self.value() == '-':
+            kwargs = {'%s__isnull' % self.field_path: True}
+            return queryset.exclude(**kwargs).distinct()
+        elif self.value():
+            kwargs = {'%s__id' % self.field_path: self.value()}
+            return queryset.exclude(**kwargs).distinct()
+        else:
+            return queryset.all()
 
 
 class SuperuserFilter(SimpleListFilter):
@@ -227,7 +246,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
     list_display = ('id',) + DjangoUserAdmin.list_display + ('last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user')
     search_fields = ('username', 'first_name', 'last_name', 'email', 'uuid')
     list_filter = (SuperuserFilter, ) + ('is_staff', 'is_center', 'is_active', 'groups', UserAssociatedSystemFilter, UserRegionListFilter,
-                    RoleProfilesFilter, ApplicationRolesFilter)  # ,UserOrganisationsListFilter, CreatedByUserFilter, LastModifiedUserFilter
+                    RoleProfilesFilter, ExcludeRoleProfilesFilter, ApplicationRolesFilter)  # ,UserOrganisationsListFilter, CreatedByUserFilter, LastModifiedUserFilter
     filter_horizontal = DjangoUserAdmin.filter_horizontal + ('groups', 'application_roles', 'role_profiles', 'organisations')
     ordering = ['-last_login', '-first_name', '-last_name']
     actions = ['mark_info_mail']
