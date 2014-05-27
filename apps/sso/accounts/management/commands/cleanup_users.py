@@ -8,7 +8,7 @@ from django.contrib.auth.hashers import check_password
 
 from utils.ucsv import UnicodeReader, UnicodeWriter, dic_from_csv
 
-from sso.accounts.models import User, UserAssociatedSystem, Application
+from sso.accounts.models import User, UserAssociatedSystem, Application, RoleProfile
 from streaming.models import StreamingUser
 
 import logging
@@ -21,9 +21,18 @@ class Command(BaseCommand):
     
     def handle(self, *args, **options):
         #cleanup()
-        testpwd()
+        #testpwd()
+        remove_profile()
 
 
+def remove_profile():
+    centerprofile = RoleProfile.objects.get(uuid=settings.SSO_CUSTOM['DEFAULT_ADMIN_PROFILE_UUID'])
+    user_list = User.objects.filter(is_center=False, role_profiles=centerprofile)
+    for user in user_list:
+        user.role_profiles.remove(centerprofile)
+        print user
+        
+    
 def testpwd():
     streaming_app = Application.objects.get(uuid='c362bea58c67457fa32234e3178285c4')
     #user_list = User.objects.filter(is_center=True) #, userassociatedsystem__isnull=True)

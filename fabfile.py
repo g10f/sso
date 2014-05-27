@@ -121,6 +121,16 @@ server {
 }
 """
 
+REGISTRATION_TEMPLATE = """\
+server {
+    listen 80;
+    server_name %(server_name)s;
+    # path for static files
+    root %(docroot)s;
+    return 301 https://%(target_name)s/accounts/register/;
+}
+"""
+
 NGINX_SSL_TEMPLATE = """\
 #ssl                       on;
 ssl_certificate           %(certroot)s/certificate.crt;
@@ -215,6 +225,7 @@ def deploy_database(db_name):
 def deploy_webserver(code_dir, server_name):
     # Require an nginx server proxying to our app
     docroot = '/proj/static/htdocs/%(server_name)s' % {'server_name': server_name}
+    """
     require.directory('%(code_dir)s/logs' % {'code_dir': code_dir}, use_sudo=True, owner="www-data", mode='770')
     require.directory('%(code_dir)s/config' % {'code_dir': code_dir}, use_sudo=True, owner="www-data", mode='770')
     require.directory(docroot, use_sudo=True, owner="www-data", mode='770')
@@ -230,6 +241,10 @@ def deploy_webserver(code_dir, server_name):
     require.files.template_file('%s/config/nginx.webfonts.conf' % code_dir, template_contents=NGINX_WEBFONTS_TEMPLATE, use_sudo=True, owner='www-data', group='www-data')
     
     require.nginx.site(server_name, template_contents=PROXIED_SITE_TEMPLATE, docroot=docroot)
+    """
+    if server_name in ['sso.dwbn.org', 'dwbn-sso.g10f.de']:
+        require.nginx.site('register.diamondway-buddhism.org', template_contents=REGISTRATION_TEMPLATE, docroot=docroot, target_name=server_name)
+        
 
 def deploy_app():
     pass
