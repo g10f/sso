@@ -3,6 +3,8 @@ SSO
 
 *An identity provider with OpenID Connect support.*
 
+since 2014-05-27 active for streaming.dwbn.org
+
 Prepare a development environment
 ---------------------------------
 1. get python >= 2.7
@@ -30,3 +32,4 @@ Changelog
 ---------
 
 1.0.0: OAuth2 and OpenID Connect Support 
+

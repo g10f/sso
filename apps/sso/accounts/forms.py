@@ -5,6 +5,7 @@ import datetime
 from django.utils.timezone import now
 from django import forms 
 from django.conf import settings
+from django.utils.crypto import get_random_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.utils.text import capfirst
@@ -208,7 +209,11 @@ class UserAddForm(forms.ModelForm):
 
     def save(self, commit=True):
         user = super(UserAddForm, self).save(commit=False)
-        user.set_password(self.cleaned_data.get("password1", ""))
+        password = self.cleaned_data.get("password1", "")
+        if password == "":
+            password = get_random_string(40)
+        user.set_password(password)
+        
         user.username = default_username_generator(capfirst(self.cleaned_data.get('first_name')), capfirst(self.cleaned_data.get('last_name')))
         if commit:
             user.save()
