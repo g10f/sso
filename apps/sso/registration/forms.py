@@ -9,6 +9,7 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import get_user_model
 from django.contrib.formtools.preview import FormPreview
+from django.utils.crypto import get_random_string
 from django.utils.translation import ugettext_lazy as _
 from django.utils.text import capfirst
 from django.forms.models import model_to_dict
@@ -139,6 +140,7 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
         
         if activate:
             self.user.is_active = True
+            self.user.set_password(get_random_string(40))
             send_set_password_email(self.user, self.request)
         self.user.save()
 
