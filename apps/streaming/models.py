@@ -2,7 +2,21 @@
 from django.db import models
 from django.utils.crypto import constant_time_compare
 from django.conf import settings
- 
+
+
+class StreamingUserManager(models.Manager):
+    def get_by_email(self, email):
+        """
+        case insensitive query!
+        MySQL workaround 
+        """
+        try:
+            sql = "SELECT id_nr, password FROM streaming_user WHERE LOWER(email) LIKE LOWER(%(email)s)"
+            return self.raw(sql, {'email': email})[0]
+        except IndexError:
+            raise StreamingUser.ObjectDoesNotExist("%s not found in Streaming DB" % email)
+    
+
 class StreamingUser(models.Model):
     id_nr = models.IntegerField(primary_key=True)
     email = models.CharField(max_length=300)
@@ -14,6 +28,8 @@ class StreamingUser(models.Model):
     mailsent = models.CharField(max_length=3)
     created = models.DateTimeField()
     subscriber = models.CharField(max_length=3)
+    
+    objects = StreamingUserManager()
     
     def check_password(self, raw_password):
         encoded_2 = raw_password.encode('base64')

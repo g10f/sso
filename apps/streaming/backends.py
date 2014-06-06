@@ -78,8 +78,9 @@ class StreamingBackend(object):
             # we use the sso database for password checking      
             if userassociatedsystem:
                 return None
-            sql = "SELECT id_nr, password FROM streaming_user WHERE LOWER(email) LIKE LOWER(%(email)s)"
-            streaming_user = StreamingUser.objects.raw(sql, {'email': username})[0]
+            #sql = "SELECT id_nr, password FROM streaming_user WHERE LOWER(email) LIKE LOWER(%(email)s)"
+            #streaming_user = StreamingUser.objects.raw(sql, {'email': username})[0]
+            streaming_user = StreamingUser.objects.get_by_email(username)
                         
             if streaming_user.check_password(password):
                 email = username
@@ -98,7 +99,7 @@ class StreamingBackend(object):
                 return user
             
             return None
-        except IndexError:
+        except ObjectDoesNotExist:
             return None
         except Exception, e:
             logger.exception(e)

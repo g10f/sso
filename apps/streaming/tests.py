@@ -1,10 +1,18 @@
 # -*- coding: utf-8 -*-
+try:
+    from urllib.parse import urlsplit
+except ImportError:     # Python 2
+    from urlparse import urlsplit
 from django.conf import settings
 from django.test import TestCase
 from django.test.client import Client
 from .backends import StreamingBackend
 from django.contrib.auth import get_user_model, authenticate
+from django.core.urlresolvers import reverse
+from django.core import mail
+
 from sso.organisations.models import Organisation
+from sso.accounts.forms import PasswordResetForm
 
 class StreamingMethodTests(TestCase):
 
@@ -12,6 +20,41 @@ class StreamingMethodTests(TestCase):
     
     def setUp(self):
         self.client = Client()
+
+    def test_successful_login(self):
+        
+        backend = StreamingBackend()
+        user = backend.authenticate("user07@example.com", "geheim07")
+        self.assertIsNotNone(user)
+        
+    def test_change_email_and_password_reset(self):
+        """
+        try password reset with email should succeed
+        """
+        response = self.client.post(reverse('accounts:password_reset'), {'email': 'user07@example.com'})
+        self.assertEqual(response.status_code, 302)
+        (scheme, netloc, path, query, fragment) = urlsplit(response.url)  # @UnusedVariable
+        self.assertEqual(path, reverse('accounts:password_resend_done'))
+
+        outbox = getattr(mail, 'outbox')
+        self.assertNotEqual(outbox[-1].body.find('geheim07'), -1) 
+
+        """
+        successful authentication
+        """
+        backend = StreamingBackend()
+        user = backend.authenticate("user07@example.com", "geheim07")
+        self.assertIsNotNone(user)
+        # change email
+        user.email = "new@example.com"
+        user.save()
+        
+        """
+        password reset with old email should fail
+        """
+        response = self.client.post(reverse('accounts:password_reset'), {'email': 'user07@example.com'})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(PasswordResetForm.error_messages['unknown'], response.context['form'].errors['email'][0])
 
     def test_streaming_authentication_is_used_only_for_one_successful_login(self):
         
