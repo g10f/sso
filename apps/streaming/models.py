@@ -2,7 +2,7 @@
 from django.db import models
 from django.utils.crypto import constant_time_compare
 from django.conf import settings
-
+from django.core.exceptions import ObjectDoesNotExist
 
 class StreamingUserManager(models.Manager):
     def get_by_email(self, email):
@@ -14,7 +14,7 @@ class StreamingUserManager(models.Manager):
             sql = "SELECT id_nr, password FROM streaming_user WHERE LOWER(email) LIKE LOWER(%(email)s)"
             return self.raw(sql, {'email': email})[0]
         except IndexError:
-            raise StreamingUser.ObjectDoesNotExist("%s not found in Streaming DB" % email)
+            raise ObjectDoesNotExist("%s not found in Streaming DB" % email)
     
 
 class StreamingUser(models.Model):
