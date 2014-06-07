@@ -27,6 +27,12 @@ class StreamingMethodTests(TestCase):
         user = backend.authenticate("user07@example.com", "geheim07")
         self.assertIsNotNone(user)
         
+    def test_user_not_found(self):
+        
+        backend = StreamingBackend()
+        user = backend.authenticate("user07xy@example.com", "geheim07")
+        self.assertIsNone(user)
+
     def test_change_email_and_password_reset(self):
         """
         try password reset with email should succeed
