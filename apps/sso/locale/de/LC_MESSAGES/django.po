@@ -1751,7 +1751,7 @@ msgid ""
 "If you would like to tell us something about yourself or your involvement "
 "with buddhism please do so in this box."
 msgstr ""
-"Wenn Du möchtest, erzähle uns etwa über Dich und Deine Verbindung zum "
+"Wenn Du möchtest, erzähle uns etwas über Dich und Deine Verbindung zum "
 "Buddhismus."
 
 #: registration/forms.py:232
