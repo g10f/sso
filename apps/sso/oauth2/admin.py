@@ -12,23 +12,30 @@ class ClientAdmin(admin.ModelAdmin):
     raw_id_fields = ("user",)
     fields = ('application', 'type', 'name', 'uuid', 'client_secret', 'redirect_uris', 'scopes', 'user', 'last_modified')
     readonly_fields = ('last_modified', )
+    raw_id_fields = ("user",)
+
 
 class BearerTokenAdmin(admin.ModelAdmin):
     list_display = ('client', 'user', 'created_at')
     list_filter = ('client__application', 'client')
     search_fields = ('user__username', 'user__first_name', 'user__last_name', 'user__email', 'user__uuid')
+    raw_id_fields = ("user",)
+    readonly_fields = ('created_at', )
 
 
 class RefreshTokenAdmin(admin.ModelAdmin):
     list_display = ('bearer_token', 'created_at')
     list_filter = ('bearer_token__client__application', 'bearer_token__client')
     search_fields = ('user__username', 'user__first_name', 'user__last_name', 'user__email', 'user__uuid')
+    raw_id_fields = ("bearer_token",)
+    readonly_fields = ('created_at', )
 
 
 class AuthorizationCodeAdmin(admin.ModelAdmin):
     list_display = ('client', 'user', 'code', 'created_at', 'redirect_uri', 'is_valid')
     list_filter = ('client__application', 'client', 'is_valid')
     search_fields = ('user__username', 'user__first_name', 'user__last_name', 'user__email', 'user__uuid')
+    raw_id_fields = ("user",)
 
 
 admin.site.register(AuthorizationCode, AuthorizationCodeAdmin)

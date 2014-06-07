@@ -96,7 +96,6 @@ class PasswordResetForm(DjangoPasswordResetForm):
                     # check if the user exist in the streaming db
                     from streaming.models import StreamingUser
                     try:
-                        #streaming_user = StreamingUser.objects.get(email=email)
                         streaming_user = StreamingUser.objects.get_by_email(email)
                         self.password = streaming_user.password.decode("base64")
                         return email
