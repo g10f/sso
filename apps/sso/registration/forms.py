@@ -167,7 +167,7 @@ class UserSelfRegistrationForm(forms.Form):
     city = forms.CharField(label=_("City"), max_length=100, widget=bootstrap.TextInput())
     language = forms.ChoiceField(label=_("Language"), required=False, choices=(BLANK_CHOICE_DASH + sorted(list(settings.LANGUAGES), key=lambda x: x[1])), widget=bootstrap.Select())
     gender = forms.ChoiceField(label=_('Gender'), required=False, choices=(BLANK_CHOICE_DASH + User.GENDER_CHOICES), widget=bootstrap.Select())
-    dob = forms.DateTimeField(label=_('Date of birth'), required=False, 
+    dob = forms.DateField(label=_('Date of birth'), required=False, 
                 widget=bootstrap.SelectDateWidget(years=range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1), required=False))
 
     def clean_email(self):
