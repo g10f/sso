@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-05-25 21:05+0200\n"
+"POT-Creation-Date: 2014-06-12 12:20+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: models.py:18 accounts/models.py:162 registration/models.py:135
+#: models.py:18 accounts/models.py:162 registration/models.py:140
 msgid "last modified"
 msgstr ""
 
@@ -47,7 +47,7 @@ msgstr ""
 msgid "country"
 msgstr ""
 
-#: models.py:56 accounts/forms.py:468
+#: models.py:56 accounts/forms.py:476
 msgid "State"
 msgstr ""
 
@@ -79,17 +79,17 @@ msgstr ""
 msgid "(None)"
 msgstr ""
 
-#: accounts/admin.py:73 accounts/forms.py:222 accounts/forms.py:554
-#: registration/forms.py:56
+#: accounts/admin.py:73 accounts/forms.py:230 accounts/forms.py:562
+#: registration/forms.py:57
 msgid "Organisation"
 msgstr "Center"
 
-#: accounts/admin.py:82 accounts/admin.py:333 accounts/models.py:161
-#: registration/models.py:136
+#: accounts/admin.py:82 accounts/admin.py:335 accounts/models.py:161
+#: registration/models.py:141
 msgid "last modified by"
 msgstr ""
 
-#: accounts/admin.py:93 accounts/admin.py:342 accounts/models.py:163
+#: accounts/admin.py:93 accounts/admin.py:344 accounts/models.py:163
 msgid "created by"
 msgstr ""
 
@@ -106,9 +106,9 @@ msgstr "Center"
 msgid "Application Roles"
 msgstr ""
 
-#: accounts/admin.py:154 accounts/forms.py:224 accounts/forms.py:557
+#: accounts/admin.py:154 accounts/forms.py:232 accounts/forms.py:565
 #: accounts/templates/accounts/application/add_user_done.html:43
-#: registration/forms.py:60
+#: registration/forms.py:61
 msgid "Role profiles"
 msgstr ""
 
@@ -128,11 +128,11 @@ msgstr ""
 msgid "No"
 msgstr ""
 
-#: accounts/admin.py:257 accounts/admin.py:266
+#: accounts/admin.py:257 accounts/admin.py:268
 msgid "Personal info"
 msgstr ""
 
-#: accounts/admin.py:260 accounts/admin.py:267
+#: accounts/admin.py:260 accounts/admin.py:269
 msgid "AppRoles"
 msgstr ""
 
@@ -140,266 +140,267 @@ msgstr ""
 msgid "Permissions"
 msgstr ""
 
-#: accounts/admin.py:262 accounts/admin.py:268
+#: accounts/admin.py:262 accounts/admin.py:270
 msgid "Important dates"
 msgstr ""
 
-#: accounts/admin.py:417
+#: accounts/admin.py:263 accounts/forms.py:180 accounts/forms.py:564
+#: accounts/models.py:167
+#: accounts/templates/accounts/user_confirm_delete.html:33
+#: accounts/templates/accounts/application/add_user_done.html:54
+#: registration/forms.py:39
+msgid "Notes"
+msgstr ""
+
+#: accounts/admin.py:419
 #, python-format
 msgid "%s SSO Information"
 msgstr ""
 
-#: accounts/admin.py:427
+#: accounts/admin.py:429
 #, python-format
 msgid "Successfully send Information Email to  %(count)d %(items)s."
 msgstr ""
 
-#: accounts/admin.py:441
+#: accounts/admin.py:443
 #: accounts/templates/admin/accounts/send_mail_selected_confirmation.html:13
 msgid "Send information mail to selected users"
 msgstr ""
 
-#: accounts/admin.py:450
+#: accounts/admin.py:452
 msgid "Send info email"
 msgstr ""
 
-#: accounts/forms.py:36
+#: accounts/forms.py:37
 #: accounts/templates/accounts/application/add_user_done.html:27
 msgid "Name"
 msgstr ""
 
-#: accounts/forms.py:37 accounts/forms.py:292 accounts/forms.py:384
-#: accounts/forms.py:549
+#: accounts/forms.py:38 accounts/forms.py:300 accounts/forms.py:392
+#: accounts/forms.py:557
 #: accounts/templates/accounts/user_confirm_delete.html:28
-#: registration/forms.py:41
+#: registration/forms.py:42
 msgid "E-mail address"
 msgstr ""
 
-#: accounts/forms.py:38
+#: accounts/forms.py:39
 msgid "Subject"
 msgstr ""
 
-#: accounts/forms.py:39
+#: accounts/forms.py:40
 msgid "Message"
 msgstr ""
 
-#: accounts/forms.py:43
+#: accounts/forms.py:44
 msgid "New password"
 msgstr ""
 
-#: accounts/forms.py:44
+#: accounts/forms.py:45
 msgid "New password confirmation"
 msgstr ""
 
-#: accounts/forms.py:53
+#: accounts/forms.py:54
 msgid "Your old password was entered incorrectly. Please enter it again."
 msgstr ""
 
-#: accounts/forms.py:55
+#: accounts/forms.py:56
 msgid "Old password"
 msgstr ""
 
-#: accounts/forms.py:75
+#: accounts/forms.py:76
 msgid ""
 "That email address doesn't have an associated user account. Are you sure "
 "you've registered?"
 msgstr ""
 
-#: accounts/forms.py:76
+#: accounts/forms.py:77
 msgid ""
 "The user account associated with this email address cannot reset the "
 "password."
 msgstr ""
 
-#: accounts/forms.py:78
+#: accounts/forms.py:79
 #: accounts/templates/accounts/application/add_user_done.html:36
 msgid "Email"
 msgstr ""
 
-#: accounts/forms.py:165 auth/forms.py:14 auth/forms.py:16
+#: accounts/forms.py:169 auth/forms.py:14 auth/forms.py:16
 msgid "Password"
 msgstr ""
 
-#: accounts/forms.py:166
+#: accounts/forms.py:170
 msgid "Password confirmation"
 msgstr ""
 
-#: accounts/forms.py:167
+#: accounts/forms.py:171
 msgid "Enter the same password as above, for verification."
 msgstr ""
 
-#: accounts/forms.py:169 accounts/forms.py:301 accounts/forms.py:543
-#: registration/forms.py:33 registration/forms.py:153
+#: accounts/forms.py:173 accounts/forms.py:309 accounts/forms.py:551
+#: registration/forms.py:34 registration/forms.py:155
 msgid "A user with that username already exists."
 msgstr ""
 
-#: accounts/forms.py:170
+#: accounts/forms.py:174
 msgid "The two password fields didn't match."
 msgstr ""
 
-#: accounts/forms.py:171 accounts/forms.py:302 accounts/forms.py:544
-#: registration/forms.py:34 registration/forms.py:154
+#: accounts/forms.py:175 accounts/forms.py:310 accounts/forms.py:552
+#: registration/forms.py:35 registration/forms.py:156
 msgid "A user with that email address already exists."
 msgstr ""
 
-#: accounts/forms.py:173 registration/forms.py:158
+#: accounts/forms.py:177 registration/forms.py:160
 msgid "E-mail"
 msgstr ""
 
-#: accounts/forms.py:174 accounts/forms.py:290 accounts/forms.py:382
-#: accounts/forms.py:547
+#: accounts/forms.py:178 accounts/forms.py:298 accounts/forms.py:390
+#: accounts/forms.py:555
 #: accounts/templates/accounts/user_confirm_delete.html:18
 #: accounts/templates/accounts/application/add_user_done.html:30
-#: registration/forms.py:39 registration/forms.py:49 registration/forms.py:51
-#: registration/forms.py:156 registration/forms.py:159
-#: registration/forms.py:161
+#: registration/forms.py:40 registration/forms.py:50 registration/forms.py:52
+#: registration/forms.py:158 registration/forms.py:161
+#: registration/forms.py:163
 msgid "First name"
 msgstr ""
 
-#: accounts/forms.py:174 registration/forms.py:156
+#: accounts/forms.py:178 registration/forms.py:158
 msgid "first name"
 msgstr ""
 
-#: accounts/forms.py:175 accounts/forms.py:291 accounts/forms.py:383
-#: accounts/forms.py:548
+#: accounts/forms.py:179 accounts/forms.py:299 accounts/forms.py:391
+#: accounts/forms.py:556
 #: accounts/templates/accounts/user_confirm_delete.html:23
 #: accounts/templates/accounts/application/add_user_done.html:33
-#: registration/forms.py:40 registration/forms.py:50 registration/forms.py:52
-#: registration/forms.py:157 registration/forms.py:160
-#: registration/forms.py:162
+#: registration/forms.py:41 registration/forms.py:51 registration/forms.py:53
+#: registration/forms.py:159 registration/forms.py:162
+#: registration/forms.py:164
 msgid "Last name"
 msgstr ""
 
-#: accounts/forms.py:175 registration/forms.py:157
+#: accounts/forms.py:179 registration/forms.py:159
 msgid "last name"
 msgstr ""
 
-#: accounts/forms.py:176 accounts/forms.py:556 accounts/models.py:167
-#: accounts/templates/accounts/user_confirm_delete.html:33
-#: accounts/templates/accounts/application/add_user_done.html:54
-#: registration/forms.py:38
-msgid "Notes"
-msgstr ""
-
-#: accounts/forms.py:223 accounts/forms.py:555
+#: accounts/forms.py:231 accounts/forms.py:563
 #: accounts/templates/accounts/application/add_user_done.html:49
-#: registration/forms.py:57
+#: registration/forms.py:58
 msgid "Application roles"
 msgstr ""
 
-#: accounts/forms.py:225 accounts/forms.py:558 registration/forms.py:61
+#: accounts/forms.py:233 accounts/forms.py:566 registration/forms.py:62
 msgid "Groups of application roles that are assigned together."
 msgstr ""
 
-#: accounts/forms.py:289 accounts/forms.py:381 accounts/forms.py:442
-#: accounts/forms.py:546 registration/forms.py:37
+#: accounts/forms.py:297 accounts/forms.py:389 accounts/forms.py:450
+#: accounts/forms.py:554 registration/forms.py:38
 msgid "Username"
 msgstr ""
 
-#: accounts/forms.py:293
+#: accounts/forms.py:301
 msgid "Picture"
 msgstr ""
 
-#: accounts/forms.py:294 registration/forms.py:46 registration/forms.py:167
+#: accounts/forms.py:302 registration/forms.py:47 registration/forms.py:169
 msgid "Gender"
 msgstr ""
 
-#: accounts/forms.py:295 registration/forms.py:47 registration/forms.py:168
+#: accounts/forms.py:303 registration/forms.py:48 registration/forms.py:170
 msgid "Date of birth"
 msgstr ""
 
-#: accounts/forms.py:297
+#: accounts/forms.py:305
 #: organisations/templates/organisations/organisation_detail.html:31
 msgid "Homepage"
 msgstr ""
 
-#: accounts/forms.py:298 accounts/forms.py:385 registration/forms.py:45
-#: registration/forms.py:166
+#: accounts/forms.py:306 accounts/forms.py:393 registration/forms.py:46
+#: registration/forms.py:168
 msgid "Language"
 msgstr ""
 
-#: accounts/forms.py:319 accounts/forms.py:321 accounts/forms.py:398
-#: accounts/forms.py:465 accounts/forms.py:552
+#: accounts/forms.py:327 accounts/forms.py:329 accounts/forms.py:406
+#: accounts/forms.py:473 accounts/forms.py:560
 #: accounts/templates/accounts/user_confirm_delete.html:39
 msgid "Center"
 msgstr ""
 
-#: accounts/forms.py:319
+#: accounts/forms.py:327
 msgid "Please use the contact form for a request to change this value."
 msgstr ""
 
-#: accounts/forms.py:322
+#: accounts/forms.py:330
 msgid "You can set this value only once."
 msgstr ""
 
-#: accounts/forms.py:347
+#: accounts/forms.py:355
 #, python-format
 msgid ""
 "Please keep filesize under %(filesize)s. Current filesize "
 "%(current_filesize)s"
 msgstr ""
 
-#: accounts/forms.py:350
+#: accounts/forms.py:358
 msgid "File type is not supported"
 msgstr ""
 
-#: accounts/forms.py:380
+#: accounts/forms.py:388
 msgid "Account type"
 msgstr ""
 
-#: accounts/forms.py:390
+#: accounts/forms.py:398
 msgid "Center Account"
 msgstr ""
 
-#: accounts/forms.py:390
+#: accounts/forms.py:398
 msgid "Member Account"
 msgstr ""
 
-#: accounts/forms.py:424
+#: accounts/forms.py:432
 msgid "That email address is already in use."
 msgstr ""
 
-#: accounts/forms.py:443
+#: accounts/forms.py:451
 msgid "Required. 30 characters or fewer. Letters, digits and "
 msgstr ""
 
-#: accounts/forms.py:446
+#: accounts/forms.py:454
 msgid "This value may contain only letters, numbers and "
 msgstr ""
 
-#: accounts/forms.py:463
+#: accounts/forms.py:471
 msgid "The two email fields didn't match."
 msgstr ""
 
-#: accounts/forms.py:466
+#: accounts/forms.py:474
 msgid "Repeat your Email"
 msgstr ""
 
-#: accounts/forms.py:476
+#: accounts/forms.py:484
 msgid "Prove you are human"
 msgstr ""
 
-#: accounts/forms.py:477
+#: accounts/forms.py:485
 msgid ""
 "Please enter the words you see in the box, in order and separated by a "
 "space. Doing so helps prevent automated programs from abusing this service."
 msgstr ""
 
-#: accounts/forms.py:478
+#: accounts/forms.py:486
 msgid "Incorrect, please try again."
 msgstr ""
 
-#: accounts/forms.py:550
+#: accounts/forms.py:558
 msgid "Active"
 msgstr ""
 
-#: accounts/forms.py:550
+#: accounts/forms.py:558
 msgid ""
 "Designates whether this user should be treated as active. Unselect this "
 "instead of deleting accounts."
 msgstr ""
 
-#: accounts/forms.py:552 accounts/models.py:164
+#: accounts/forms.py:560 accounts/models.py:164
 msgid ""
 "Designates that this user is representing a center and not a private person."
 msgstr ""
@@ -659,7 +660,7 @@ msgstr ""
 #: organisations/templates/organisations/organisation_list.html:10
 #: registration/templates/registration/change_user_registration_form.html:6
 #: registration/templates/registration/user_registration_list.html:10
-#: templates/base.html:81 templates/home.html:13
+#: templates/base.html:79 templates/home.html:13
 #: templates/admin/base_site.html:16 views/__init__.py:16
 msgid "Home"
 msgstr ""
@@ -667,7 +668,7 @@ msgstr ""
 #: accounts/templates/accounts/contact_form.html:11
 #: accounts/templates/accounts/contact_form.html:17
 #: accounts/templates/accounts/contact_thanks.html:11
-#: accounts/templates/accounts/contact_thanks.html:17 templates/base.html:92
+#: accounts/templates/accounts/contact_thanks.html:17 templates/base.html:90
 msgid "Feedback"
 msgstr ""
 
@@ -759,7 +760,7 @@ msgid "or"
 msgstr ""
 
 #: accounts/templates/accounts/delete_profile_form.html:37
-#: accounts/templates/accounts/login.html:75
+#: accounts/templates/accounts/login.html:73
 #: accounts/templates/accounts/login_profile_form.html:43
 #: accounts/templates/accounts/user_confirm_delete.html:61
 #: organisations/templates/organisations/organisation_confirm_delete.html:25
@@ -782,23 +783,23 @@ msgid "Log in again"
 msgstr ""
 
 #: accounts/templates/accounts/login.html:14
-#: accounts/templates/accounts/login.html:53
+#: accounts/templates/accounts/login.html:51
 #: accounts/templates/accounts/login_profile_form.html:4
 #: accounts/templates/accounts/password_reset_complete.html:12
 #: templates/include/global_navigation.html:45
 msgid "Log in"
 msgstr ""
 
-#: accounts/templates/accounts/login.html:30
+#: accounts/templates/accounts/login.html:28
 #, python-format
 msgid "Log in with your %(brand)s account"
 msgstr ""
 
-#: accounts/templates/accounts/login.html:60
+#: accounts/templates/accounts/login.html:58
 msgid "Forgotten your password?"
 msgstr ""
 
-#: accounts/templates/accounts/login.html:68
+#: accounts/templates/accounts/login.html:66
 #, python-format
 msgid ""
 "New at %(site_name)s? <a href=\"%(registration_register_url)s\">Sign up</a>"
@@ -942,7 +943,7 @@ msgstr ""
 #: accounts/templates/accounts/profile_core_form.html:24
 #: accounts/templates/accounts/profile_form.html:25
 #: accounts/templates/accounts/profile_form_center.html:24
-#: templates/base.html:74
+#: templates/base.html:72
 msgid "My account"
 msgstr ""
 
@@ -958,13 +959,13 @@ msgstr ""
 #: accounts/templates/accounts/user_confirm_delete.html:47
 #: organisations/admin.py:11
 #: organisations/templates/organisations/organisation_detail.html:29
-#: registration/forms.py:43 registration/forms.py:164
+#: registration/forms.py:44 registration/forms.py:166
 msgid "Country"
 msgstr ""
 
 #: accounts/templates/accounts/user_confirm_delete.html:52
 #: organisations/templates/organisations/organisation_detail.html:38
-#: registration/forms.py:44 registration/forms.py:165
+#: registration/forms.py:45 registration/forms.py:167
 msgid "City"
 msgstr ""
 
@@ -977,7 +978,7 @@ msgstr ""
 #: accounts/templates/accounts/application/add_user_form.html:4
 #: accounts/templates/accounts/application/add_user_form.html:12
 #: accounts/templates/accounts/application/add_user_form.html:23
-#: templates/base.html:70
+#: templates/base.html:68
 msgid "Add User"
 msgstr ""
 
@@ -986,7 +987,7 @@ msgstr ""
 #: accounts/templates/accounts/application/change_user_form.html:12
 #: accounts/templates/accounts/application/user_list.html:4
 #: accounts/templates/accounts/application/user_list.html:11
-#: templates/base.html:62
+#: templates/base.html:60
 msgid "User List"
 msgstr ""
 
@@ -1327,7 +1328,7 @@ msgid "client secret"
 msgstr ""
 
 #: oauth2/models.py:78 oauth2/models.py:101 oauth2/models.py:122
-#: registration/admin.py:73 registration/models.py:134
+#: registration/admin.py:73 registration/models.py:139
 msgid "user"
 msgstr ""
 
@@ -1530,7 +1531,7 @@ msgstr ""
 #: organisations/templates/organisations/organisation_form.html:14
 #: organisations/templates/organisations/organisation_list.html:4
 #: organisations/templates/organisations/organisation_list.html:11
-#: templates/base.html:59
+#: templates/base.html:57
 msgid "Center List"
 msgstr ""
 
@@ -1544,7 +1545,7 @@ msgstr ""
 
 #: organisations/templates/organisations/organisation_create_form.html:4
 #: organisations/templates/organisations/organisation_create_form.html:13
-#: templates/base.html:66
+#: templates/base.html:64
 msgid "Add Center"
 msgstr ""
 
@@ -1654,112 +1655,112 @@ msgstr ""
 msgid "Re-send validation emails"
 msgstr ""
 
-#: registration/forms.py:42
+#: registration/forms.py:43
 msgid "Date registered"
 msgstr ""
 
-#: registration/forms.py:48 registration/forms.py:163
+#: registration/forms.py:49 registration/forms.py:165
 msgid "About me"
 msgstr ""
 
-#: registration/forms.py:53
+#: registration/forms.py:54
 msgid "Last modified by"
 msgstr ""
 
-#: registration/forms.py:54
+#: registration/forms.py:55
 msgid "Verified by"
 msgstr ""
 
-#: registration/forms.py:54
+#: registration/forms.py:55
 msgid "administrator who verified the user"
 msgstr ""
 
-#: registration/forms.py:55
+#: registration/forms.py:56
 msgid "Is verified"
 msgstr ""
 
-#: registration/forms.py:55
+#: registration/forms.py:56
 #, fuzzy
 msgid "Designates if the user was verified by another administrator"
 msgstr "Designates that role can inherited by a center admin."
 
-#: registration/forms.py:58
+#: registration/forms.py:59
 msgid "Check back"
 msgstr ""
 
-#: registration/forms.py:58 registration/models.py:145
+#: registration/forms.py:59 registration/models.py:150
 msgid "Designates if there are open questions to check."
 msgstr ""
 
-#: registration/forms.py:59
+#: registration/forms.py:60
 msgid "Access denied"
 msgstr ""
 
-#: registration/forms.py:59 registration/models.py:146
+#: registration/forms.py:60 registration/models.py:151
 msgid "Designates if access is denied to the user."
 msgstr ""
 
-#: registration/forms.py:163
+#: registration/forms.py:165
 msgid ""
 "If you would like to tell us something about yourself or your involvement "
 "with buddhism please do so in this box."
 msgstr ""
 
-#: registration/forms.py:232
+#: registration/forms.py:234
 msgid "User registration"
 msgstr ""
 
-#: registration/models.py:137
+#: registration/models.py:142
 msgid "verified by"
 msgstr ""
 
-#: registration/models.py:138
+#: registration/models.py:143
 msgid "date registered"
 msgstr ""
 
-#: registration/models.py:139
+#: registration/models.py:144
 msgid "validated"
 msgstr ""
 
-#: registration/models.py:139
+#: registration/models.py:144
 msgid "Designates whether this profile was already validated by the user."
 msgstr ""
 
-#: registration/models.py:140
+#: registration/models.py:145
 msgid "about_me"
 msgstr ""
 
-#: registration/models.py:141
+#: registration/models.py:146
 msgid "first name of a known person"
 msgstr ""
 
-#: registration/models.py:142
+#: registration/models.py:147
 msgid "last name of a known person"
 msgstr ""
 
-#: registration/models.py:143
+#: registration/models.py:148
 msgid "first name of a another known person"
 msgstr ""
 
-#: registration/models.py:144
+#: registration/models.py:149
 msgid "last name of a another known person"
 msgstr ""
 
-#: registration/models.py:145
+#: registration/models.py:150
 msgid "check back"
 msgstr ""
 
-#: registration/models.py:146
+#: registration/models.py:151
 #: registration/templates/registration/user_registration_list.html:138
 #: registration/templates/registration/user_registration_list.html:146
 msgid "access denied"
 msgstr ""
 
-#: registration/models.py:154
+#: registration/models.py:159
 msgid "registration profile"
 msgstr ""
 
-#: registration/models.py:155
+#: registration/models.py:160
 msgid "registration profiles"
 msgstr ""
 
@@ -1779,7 +1780,7 @@ msgstr ""
 
 #: registration/templates/registration/change_user_registration_form.html:7
 #: registration/templates/registration/user_registration_list.html:11
-#: templates/base.html:56
+#: templates/base.html:54
 msgid "User Registration List"
 msgstr ""
 
@@ -2007,8 +2008,7 @@ msgid "Confirm Registration failed"
 msgstr ""
 
 #: registration/templates/registration/validation_confirm.html:35
-msgid ""
-"The validation link was invalid, possibly because it has already been used."
+msgid "The validation link was invalid, possibly because it had expired."
 msgstr ""
 
 #: registration/templates/registration/validation_email.txt:1
@@ -2055,16 +2055,16 @@ msgid ""
 "mail and should be fixed shortly. Thanks for your patience."
 msgstr ""
 
-#: templates/base.html:52
+#: templates/base.html:50
 #, fuzzy
 msgid "Administration"
 msgstr "Center"
 
-#: templates/base.html:75
+#: templates/base.html:73
 msgid "Change my password "
 msgstr ""
 
-#: templates/base.html:90
+#: templates/base.html:88
 msgid "About us"
 msgstr ""
 

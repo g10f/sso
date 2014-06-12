@@ -187,16 +187,19 @@ def validation_confirm(request, uidb64=None, token=None, token_generator=default
         profile = RegistrationProfile.objects.get(pk=uid)
     except (ValueError, RegistrationProfile.DoesNotExist):
         profile = None
-
-    if profile is not None and token_generator.check_token(profile, token):
-        validlink = True
-        if request.method == 'POST':
-            profile.is_validated = True
-            profile.save()
-            send_user_validated_email(profile, request)
+    
+    validlink = False
+    if profile is not None:
+        if profile.is_validated:
             return redirect('registration:validation_complete')
-    else:
-        validlink = False
+        elif token_generator.check_token(profile, token):
+            validlink = True
+            
+            if request.method == 'POST':
+                profile.is_validated = True
+                profile.save()
+                send_user_validated_email(profile, request)
+                return redirect('registration:validation_complete')
             
     context = {
         'email': profile.user.email if profile else None,
