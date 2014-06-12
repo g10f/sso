@@ -140,7 +140,8 @@ def get_userinfo(user, request, show_details=False):
     scopes = request.scopes
     base = base_url(request)
     userinfo = {
-        'sub': u'%s' % user.uuid,
+        'id': u'%s' % user.uuid,
+        'sub': u'%s' % user.uuid,  # remove after all clients migrated to id
         'name': u'%s' % user,
         'given_name': u'%s' % user.first_name,
         'family_name': u'%s' % user.last_name,
