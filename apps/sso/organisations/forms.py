@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import datetime
-from django import forms
 from django.utils.translation import ugettext as _
 
 from sso.forms import bootstrap, BaseForm
@@ -81,7 +80,7 @@ class OrganisationForm(BaseForm):
             else:  # create view. The user must be a regional admin
                 assert(user.has_perm("accounts.change_reg_users"))                
                 admin_regions = user.get_administrable_regions()
-                assert(len(admin_regions) > 0)
+                assert(len(admin_regions) > 0)  # TODO: handle this case more elegant
                 self.fields['admin_region'].queryset = admin_regions
                 self.fields['admin_region'].required = True
         
