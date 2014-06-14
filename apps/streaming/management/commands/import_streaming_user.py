@@ -19,10 +19,30 @@ class Command(NoArgsCommand):
         if len(args) > 0:
             self.url = args[0]
         try:
-            load_streaming_users()
+            #load_streaming_users()
+            clean()
         except Exception, e:
             logger.error(e)
 
+
+def clean():
+    sql = """
+    SELECT 
+      user1.*  
+    FROM 
+      accounts_user as user1,
+      accounts_user as user2
+    where
+        lower(user1.email) = lower(user2.email) AND
+        user1.id != user2.id and 
+        user1.id > 5321
+        order by
+        user1.id;
+    """    
+    for user in User.objects.raw(sql):
+        user.delete()
+        #print user.email, user.id
+    
 
 def create_user(username, email, password, is_center, is_subscriber, first_name, last_name, date_joined, last_login):
     for i in range(0, 99):
@@ -84,10 +104,10 @@ def load_streaming_users():
     for streaming_user in streaming_users:
         email = streaming_user.email
         
-        if UserAssociatedSystem.objects.filter(userid=email, application=application).exists():
+        if UserAssociatedSystem.objects.filter(userid__iexact=email, application=application).exists():
             #print 'user exists in UserAssociatedSystem: %s ' % (email)  # , UserAssociatedSystem.objects.filter(userid=email, application=application)[0].user.email)
             continue
-        elif User.objects.filter(email=email).exists():
+        elif User.objects.filter(email__iexact=email).exists():
             #print 'user exists in User:                 %s ' % email
             continue
         else:
