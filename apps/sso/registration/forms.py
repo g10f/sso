@@ -174,7 +174,7 @@ class UserSelfRegistrationForm(forms.Form):
         # Check if email is unique,
         email = self.cleaned_data["email"]
         try:
-            get_user_model().objects.get(email=email)
+            get_user_model().objects.get(email__iexact=email)
         except ObjectDoesNotExist:
             return email
         raise forms.ValidationError(self.error_messages['duplicate_email'])
