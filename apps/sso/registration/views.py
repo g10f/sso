@@ -1,14 +1,10 @@
-
-#from django.conf import settings
 from django.shortcuts import redirect, render, get_object_or_404
 from django.utils.translation import ugettext_lazy as _
-#from django.db import transaction
 from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.contrib.auth import get_user_model
-#from django.contrib.sites.models import get_current_site
 from django.template.response import TemplateResponse
-from django.views.generic import DeleteView  # , ListView
+from django.views.generic import DeleteView
 from django.db.models import Q
 from django.contrib.auth.decorators import user_passes_test
 from django.utils.decorators import method_decorator
@@ -17,10 +13,9 @@ from django.utils.encoding import force_text
 from django.core.urlresolvers import reverse, reverse_lazy
 
 from sso.views import main
-from .models import RegistrationProfile, RegistrationManager, send_user_validated_email  # , send_validation_email
-from .forms import RegistrationProfileForm  # ,UserSelfRegistrationForm
+from .models import RegistrationProfile, RegistrationManager, send_user_validated_email
+from .forms import RegistrationProfileForm
 from .tokens import default_token_generator
-#from . import default_username_generator
 
 def is_registration_admin(user):
     return user.is_authenticated() and user.has_perm('registration.change_registrationprofile')
