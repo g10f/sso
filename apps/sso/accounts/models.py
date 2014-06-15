@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import os
 import datetime
+from itertools import groupby, chain
+from operator import attrgetter
 
 from django.db import models
 from django.db.models import Q
@@ -8,7 +10,7 @@ from django.conf import settings
 from django.dispatch import receiver
 from django.db.models import signals
 from django.template import loader
-from django.contrib.auth.models import AbstractUser, Group
+from django.contrib.auth.models import AbstractUser, Group, Permission
 from django.contrib.auth.tokens import default_token_generator as default_pwd_reset_token_generator
 from django.contrib.sites.models import get_current_site
 from django.core.exceptions import ObjectDoesNotExist
@@ -215,24 +217,30 @@ class User(AbstractUser):
 
     @memoize
     def get_apps(self):
-        q = Q(applicationrole__user__uuid=self.uuid) & Q(is_active=True) 
-        q |= Q(applicationrole__roleprofile__user__uuid=self.uuid) & Q(is_active=True)
-        return Application.objects.distinct().filter(q).order_by('order').prefetch_related('applicationrole_set', 'applicationrole_set__role')
+        applicationroles = self.get_applicationroles()
+        return Application.objects.distinct().filter(applicationrole__in=applicationroles, is_active=True).order_by('order').prefetch_related('applicationrole_set', 'applicationrole_set__role')
 
     def get_global_navigation_urls(self):
-        q = Q(applicationrole__user__uuid=self.uuid) & Q(is_active=True) & Q(global_navigation=True) 
-        q |= Q(applicationrole__roleprofile__user__uuid=self.uuid) & Q(is_active=True) & Q(global_navigation=True)
-        return Application.objects.distinct().filter(q).order_by('order')
+        applicationroles = self.get_applicationroles()
+        return Application.objects.distinct().filter(applicationrole__in=applicationroles, is_active=True, global_navigation=True).order_by('order')
     
     def get_roles_by_app(self, app_uuid):
-        q = Q(applicationrole__user__uuid=self.uuid) & Q(applicationrole__application__uuid=app_uuid) 
-        q |= Q(applicationrole__roleprofile__user__uuid=self.uuid) & Q(applicationrole__application__uuid=app_uuid)
-        return Role.objects.distinct().filter(q)
+        applicationroles = self.get_applicationroles()
+        return Role.objects.distinct().filter(applicationrole__in=applicationroles, applicationrole__application__uuid=app_uuid)
     
+    def get_permissions(self):
+        applicationroles = self.get_applicationroles()
+        q = Q(group__role__applicationrole__in=applicationroles, group__role__applicationrole__application__uuid=settings.SSO_CUSTOM['APP_UUID']) | Q(group__user=self)  
+        return Permission.objects.distinct().filter(q)
+        
     @memoize
     def get_applicationroles(self):
-        q = Q(user__uuid=self.uuid) | Q(roleprofile__user__uuid=self.uuid)
-        return ApplicationRole.objects.filter(q).distinct().select_related()
+        approles1 = ApplicationRole.objects.distinct().filter(user__uuid=self.uuid).select_related()
+        approles2 = ApplicationRole.objects.distinct().filter(roleprofile__user__uuid=self.uuid).select_related()
+        
+        result_list = chain(approles1, approles2)
+        unique_results = [rows.next() for (_, rows) in groupby(result_list, key=attrgetter('id'))]
+        return unique_results
     
     @memoize
     def get_administrable_application_roles(self):
@@ -241,22 +249,27 @@ class User(AbstractUser):
         else:
             # all roles the user has, with adequate inheritable flag
             if self.has_perm("accounts.change_all_users"):
-                application_roles = self.get_applicationroles().filter(is_inheritable_by_global_admin=True)
+                application_roles = filter(attrgetter('is_inheritable_by_global_admin'), self.get_applicationroles())
             elif self.has_perm("accounts.change_org_users") or self.has_perm("accounts.change_reg_users"):
-                application_roles = self.get_applicationroles().filter(is_inheritable_by_org_admin=True)
+                application_roles = filter(attrgetter('is_inheritable_by_org_admin'), self.get_applicationroles())
             else:
-                application_roles = self.application_roles.none()
-                        
-            q = Q(id__in=application_roles.values_list('id', flat=True))
+                application_roles = [] 
+            
+            administrable_application_roles = application_roles
+            #q = Q(id__in=application_roles.values_list('id', flat=True))
             
             # additionally all roles of application where the user is a superuser
-            for application_role in application_roles:
-                if application_role.role.name == SUPERUSER_ROLE:
-                    q |= Q(application__id=application_role.application.id)
+            #for application_role in application_roles:
+            #    if application_role.role.name == SUPERUSER_ROLE:
+            #        q |= Q(application__id=application_role.application.id)
              
-            administrable_application_roles = ApplicationRole.objects.filter(q).select_related()
+            #administrable_application_roles = ApplicationRole.objects.filter(q).select_related()
         return administrable_application_roles
-
+    
+    @property
+    def administrable_application_roles_choices(self):
+        return [(x.id, x.__unicode__()) for x in self.get_administrable_application_roles()]
+    
     @memoize
     def get_administrable_role_profiles(self):
         if self.is_superuser:

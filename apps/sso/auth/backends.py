@@ -1,5 +1,3 @@
-from django.conf import settings
-from django.db.models import Q
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.models import Permission
@@ -25,14 +23,7 @@ class SSOBackend(ModelBackend):
             if user_obj.is_superuser:
                 perms = Permission.objects.all()
             else:
-                # this is standard django model backend behavior
-                groups_query = Q(group__user=user_obj)  
-                
-                # this comes through groups associated to roles
-                groups_from_roles_query = Q(group__role__applicationrole__user=user_obj, group__role__applicationrole__application__uuid=settings.SSO_CUSTOM['APP_UUID'])
-                groups_from_roles_query |= Q(group__role__applicationrole__roleprofile__user=user_obj, group__role__applicationrole__application__uuid=settings.SSO_CUSTOM['APP_UUID'])
-                
-                perms = Permission.objects.filter(groups_query | groups_from_roles_query)
+                perms = user_obj.get_permissions()
             perms = perms.values_list('content_type__app_label', 'codename').order_by()
             user_obj._sso_group_perm_cache = set(["%s.%s" % (ct, name) for ct, name in perms])
         return user_obj._sso_group_perm_cache
