@@ -265,6 +265,26 @@ class User(AbstractUser):
              
             #administrable_application_roles = ApplicationRole.objects.filter(q).select_related()
         return administrable_application_roles
+
+    @memoize
+    def get_administrable_application_roles_qs(self):
+        """
+        get a queryset for the admin
+        """
+        if self.is_superuser:
+            administrable_application_roles = ApplicationRole.objects.all().select_related()
+        else:
+            applicationrole_ids = [x.id for x in self.get_applicationroles()]
+            # all roles the user has, with adequate inheritable flag
+            if self.has_perm("accounts.change_all_users"):
+                application_roles = ApplicationRole.objects.filter(id__in=applicationrole_ids, is_inheritable_by_global_admin=True).select_related()
+            elif self.has_perm("accounts.change_org_users") or self.has_perm("accounts.change_reg_users"):
+                application_roles = ApplicationRole.objects.filter(id__in=applicationrole_ids, is_inheritable_by_org_admin=True).select_related()
+            else:
+                application_roles = ApplicationRole.objects.none()
+            
+            administrable_application_roles = application_roles
+        return administrable_application_roles
     
     @property
     def administrable_application_roles_choices(self):
