@@ -228,13 +228,13 @@ class UserAddFormExt(UserAddForm):
     UserAddForm with organisations, roles and notes element
     """
     organisation = forms.ModelChoiceField(queryset=None, cache_choices=True, required=False, label=_("Organisation"), widget=bootstrap.Select())
-    application_roles = forms.MultipleChoiceField(choices=[], required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
+    application_roles = forms.ModelMultipleChoiceField(queryset=None, cache_choices=True, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
     role_profiles = forms.ModelMultipleChoiceField(queryset=None, cache_choices=True, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
                                                    help_text=_('Groups of application roles that are assigned together.'))
    
     def __init__(self, user, *args, **kwargs):
         super(UserAddFormExt, self).__init__(*args, **kwargs)
-        self.fields['application_roles'].choices = user.administrable_application_roles_choices
+        self.fields['application_roles'].queryset = user.get_administrable_application_roles()
         self.fields['role_profiles'].queryset = user.get_administrable_role_profiles()
         self.fields['organisation'].queryset = user.get_administrable_organisations()
         if not user.has_perm("accounts.change_all_users"):
@@ -560,7 +560,7 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
     is_center = forms.BooleanField(label=_('Center'), help_text=_('Designates that this user is representing a center and not a private person.'), 
                                    widget=bootstrap.CheckboxInput(), required=False)
     organisations = forms.ModelChoiceField(queryset=None, cache_choices=True, required=False, label=_("Organisation"), widget=bootstrap.Select())
-    application_roles = forms.MultipleChoiceField(choices=[], required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
+    application_roles = forms.ModelMultipleChoiceField(queryset=None, cache_choices=True, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
     notes = forms.CharField(label=_("Notes"), required=False, max_length=1024, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
     role_profiles = forms.ModelMultipleChoiceField(queryset=None, required=False, cache_choices=True, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
                                                    help_text=_('Groups of application roles that are assigned together.'))
@@ -582,7 +582,7 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
         kwargs['initial'] = initial
         super(UserProfileForm, self).__init__(*args, **kwargs)
 
-        self.fields['application_roles'].choices = self.request.user.administrable_application_roles_choices
+        self.fields['application_roles'].queryset = self.request.user.get_administrable_application_roles()
         self.fields['role_profiles'].queryset = self.request.user.get_administrable_role_profiles()
         self.fields['organisations'].queryset = self.request.user.get_administrable_organisations()
 
@@ -614,7 +614,7 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
         self.user.notes = cd['notes']
         self.user.save()
         
-        self.update_user_m2m_fields_from_list('application_roles', current_user)
+        self.update_user_m2m_fields('application_roles', current_user)
         self.update_user_m2m_fields('role_profiles', current_user)
         self.update_user_m2m_fields('organisations', current_user)
 
