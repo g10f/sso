@@ -13,6 +13,7 @@ from django.core import mail
 
 from sso.organisations.models import Organisation
 from sso.accounts.forms import PasswordResetForm
+from sso.accounts.models import ApplicationRole
 
 class StreamingMethodTests(TestCase):
 
@@ -124,10 +125,12 @@ class StreamingMethodTests(TestCase):
         
         self.assertEqual(user.first_name, 'BuddhistCenter')
         self.assertEqual(user.last_name, 'testcenter1')
-        app_roles = user.get_applicationroles().values('application__uuid', 'role__name')
+        app_roles = user.get_applicationroles()
         role_profiles = user.role_profiles.all().values('uuid')
-
-        self.assertIn({'application__uuid': '35efc492b8f54f1f86df9918e8cc2b3d', 'role__name': 'User'}, app_roles)  # Dharma Shop 108 - West Europe
+        
+        app_role = ApplicationRole.objects.get(application__uuid='35efc492b8f54f1f86df9918e8cc2b3d', role__name='User')
+        self.assertIn(app_role, app_roles)  # Dharma Shop 108 - West Europe
+        
         self.assertIn({'uuid': settings.SSO_CUSTOM['DEFAULT_ADMIN_PROFILE_UUID']}, role_profiles)  # SSO        
         self.assertIn({'uuid': settings.SSO_CUSTOM['DEFAULT_ROLE_PROFILE_UUID']}, role_profiles)  
 
