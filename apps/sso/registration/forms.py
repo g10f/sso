@@ -122,7 +122,7 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
         self.registrationprofile.known_person2_last_name = cd['known_person2_last_name']
         self.registrationprofile.check_back = cd['check_back']
         self.registrationprofile.is_access_denied = cd['is_access_denied']
-        if current_user.has_perm('registrationprofile.verify_users'):
+        if current_user.has_perm('registration.verify_users'):
             self.registrationprofile.verified_by_user = current_user if (cd['is_verified'] == True) else None
         
         self.registrationprofile.save()        
