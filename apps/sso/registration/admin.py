@@ -6,7 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 from django.utils.safestring import mark_safe
-from .models import RegistrationProfile, send_set_password_email, send_validation_email
+from .models import RegistrationProfile, RegistrationManager, send_set_password_email, send_validation_email
 
 class ExpiredFilter(SimpleListFilter):
     parameter_name = 'expired'
@@ -17,9 +17,9 @@ class ExpiredFilter(SimpleListFilter):
     
     def queryset(self, request, queryset):
         if self.value() == '1':            
-            return RegistrationProfile.objects.get_expired()
+            return queryset.filter(RegistrationManager.expired_q())
         elif self.value() == '0':            
-            return RegistrationProfile.objects.get_not_expired()
+            return queryset.exclude(RegistrationManager.expired_q())
         else:
             return queryset.all()
 

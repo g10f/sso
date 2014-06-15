@@ -131,7 +131,7 @@ class UserList(ListView):
             self.role_profile = None
 
         # apply is_active filter
-        is_active = self.request.GET.get('is_active', '')
+        is_active = self.request.GET.get('is_active', '1')
         if is_active:
             self.is_active = FilterItem((is_active, dict(UserList.IS_ACTIVE_CHOICES)[is_active]))
             is_active_filter = True if (is_active == "1") else False
