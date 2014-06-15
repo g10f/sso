@@ -303,7 +303,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         user = request.user
         # use the application_roles from application_roles of the authenticated user        
         if db_field.name == "application_roles":
-            kwargs["queryset"] = user.get_administrable_application_roles_qs()
+            kwargs["queryset"] = user.get_administrable_application_roles()
 
         if db_field.name == "role_profiles":
             kwargs["queryset"] = user.get_administrable_role_profiles()
@@ -320,7 +320,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         if not request.user.is_superuser:
             # add the application_roles wich were excluded in formfield_for_manytomany
             user = request.user
-            self.merge_allowed_values(form, 'application_roles', user.get_administrable_application_roles_qs())
+            self.merge_allowed_values(form, 'application_roles', user.get_administrable_application_roles())
             self.merge_allowed_values(form, 'role_profiles', user.get_administrable_role_profiles())
             self.merge_allowed_values(form, 'organisations', user.get_administrable_organisations())
             

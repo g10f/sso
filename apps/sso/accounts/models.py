@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import datetime
-from itertools import groupby, chain
-from operator import attrgetter
+from itertools import chain
 
 from django.db import models
 from django.db.models import Q
@@ -239,9 +238,14 @@ class User(AbstractUser):
         approles2 = ApplicationRole.objects.distinct().filter(roleprofile__user__uuid=self.uuid).select_related()
         
         result_list = chain(approles1, approles2)
-        unique_results = [rows.next() for (_, rows) in groupby(result_list, key=attrgetter('id'))]
-        return unique_results
+        # create a list where every value is only once contained
+        result_dict = {}
+        for item in result_list:
+            result_dict[item.pk] = item
+            
+        return result_dict.values()
     
+    """
     @memoize
     def get_administrable_application_roles(self):
         if self.is_superuser:
@@ -265,9 +269,10 @@ class User(AbstractUser):
              
             #administrable_application_roles = ApplicationRole.objects.filter(q).select_related()
         return administrable_application_roles
-
+    """
+    
     @memoize
-    def get_administrable_application_roles_qs(self):
+    def get_administrable_application_roles(self):
         """
         get a queryset for the admin
         """
@@ -286,9 +291,11 @@ class User(AbstractUser):
             administrable_application_roles = application_roles
         return administrable_application_roles
     
+    """
     @property
     def administrable_application_roles_choices(self):
         return [(x.id, x.__unicode__()) for x in self.get_administrable_application_roles()]
+    """
     
     @memoize
     def get_administrable_role_profiles(self):

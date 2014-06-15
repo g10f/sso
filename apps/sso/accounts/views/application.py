@@ -165,12 +165,11 @@ class UserList(ListView):
             centers = user.get_administrable_organisations().filter(country=self.country)
             if self.admin_region:
                 centers = centers.filter(admin_region=self.admin_region)
-            application_role_ids = [x.id for x in application_roles]
             if self.center:
-                application_roles = ApplicationRole.objects.filter(id__in=application_role_ids, user__organisations__in=[self.center]).select_related().distinct()
+                application_roles = application_roles.filter(user__organisations__in=[self.center]).distinct() 
                 role_profiles = role_profiles.filter(user__organisations__in=[self.center]).distinct()
             else:
-                application_roles = ApplicationRole.objects.filter(id__in=application_role_ids, user__organisations__in=centers).select_related().distinct() 
+                application_roles = application_roles.filter(user__organisations__in=centers).distinct() 
                 role_profiles = role_profiles.filter(user__organisations__in=centers).distinct()
 
         if len(countries) == 1:
