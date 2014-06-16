@@ -299,13 +299,13 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
     
     require.file('/envs/%(virtualenv)s/lib/python2.7/sitecustomize.py' % {'virtualenv': virtualenv}, source='apps/sitecustomize.py')
     
-    
+    """
     # configure gunicorn
     require.directory('%(code_dir)s/config' % {'code_dir': code_dir}, use_sudo=True, owner="www-data", mode='770')
     config_filename = '%(code_dir)s/config/gunicorn_%(server_name)s.conf' % {'code_dir': code_dir, 'server_name': server_name}
     context = {'server_name': server_name, 'code_dir': code_dir}
     require.files.template_file(config_filename, template_contents=GUNICORN_TEMPLATE, context=context, use_sudo=True)
-    
+    """
     # Require a supervisor process for our app
     require.supervisor.process(
         server_name,
