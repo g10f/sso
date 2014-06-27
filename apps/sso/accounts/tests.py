@@ -34,8 +34,8 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.wait_page_loaded()
         
     def test_login(self):
-        #username = 'GunnarScherf'
-        #password = 'gsf'
+        # username = 'GunnarScherf'
+        # password = 'gsf'
         username = 'GlobalAdmin'
         password = 'secret007'
         self.login_test(username, password)

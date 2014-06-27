@@ -224,7 +224,7 @@ class OAuth2Tests(OAuth2BaseTestCase):
         }
         
         token_response = self.client.post(reverse('oauth2:token'), token_data)
-        self.assertEqual(token_response.status_code, 400)
+        self.assertEqual(token_response.status_code, 401)
         self.assertEqual(token_response['Content-Type'], 'application/json;charset=UTF-8')
         
         token = json.loads(token_response.content)
@@ -235,7 +235,7 @@ class OAuth2Tests(OAuth2BaseTestCase):
         token_data['code'] = "wrong_code"
         
         token_response = self.client.post(reverse('oauth2:token'), token_data)
-        self.assertEqual(token_response.status_code, 400)
+        self.assertEqual(token_response.status_code, 401)
         self.assertEqual(token_response['Content-Type'], 'application/json;charset=UTF-8')
         
         token = json.loads(token_response.content)  
