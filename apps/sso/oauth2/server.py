@@ -16,8 +16,8 @@ from .crypt import loads_jwt, make_jwt
 import logging
 logger = logging.getLogger(__name__)
 
-#SUPPORTED_SCOPES = ['openid', 'profile', 'email', 'offline_access', 'address', 'phone']
-#DEFAULT_SCOPES = ['openid', 'profile']
+# SUPPORTED_SCOPES = ['openid', 'profile', 'email', 'offline_access', 'address', 'phone']
+# DEFAULT_SCOPES = ['openid', 'profile']
 MAX_AGE = 3600
 
 def get_iss_from_absolute_uri(abs_uri):
@@ -93,7 +93,7 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
 
     def validate_scopes(self, client_id, scopes, client, request, *args, **kwargs):
         requested_scopes = set(scopes)
-        #valid_scopes = set(SUPPORTED_SCOPES)
+        # valid_scopes = set(SUPPORTED_SCOPES)
         valid_scopes = set(client.scopes.split())
         if requested_scopes.issubset(valid_scopes):
             return True
@@ -188,7 +188,7 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
             return True
         elif client_type == 'service' and grant_type == 'client_credentials':
             return True
-        elif client_type == 'trusted' and  grant_type == 'password':
+        elif client_type == 'trusted' and grant_type == 'password':
             return True
         else:
             logger.warning("client_type and grant_type combination is invalid (%s, %s)", client_type, grant_type)
@@ -310,9 +310,9 @@ class OpenIDConnectAuthorizationCodeGrant(oauth2.AuthorizationCodeGrant):
         refresh_token is only true if offline_access is in scope
         """
         headers = {
-                'Content-Type': 'application/json;charset=UTF-8',
-                'Cache-Control': 'no-store',
-                'Pragma': 'no-cache',
+            'Content-Type': 'application/json;charset=UTF-8',
+            'Cache-Control': 'no-store',
+            'Pragma': 'no-cache',
         }
         try:
             self.validate_token_request(request)
@@ -324,8 +324,7 @@ class OpenIDConnectAuthorizationCodeGrant(oauth2.AuthorizationCodeGrant):
         # see http://openid.net/specs/openid-connect-basic-1_0.html#scopes
         refresh_token = 'offline_access' in request.scopes
         token = token_handler.create_token(request, refresh_token=refresh_token)
-        self.request_validator.invalidate_authorization_code(
-                request.client_id, request.code, request)
+        self.request_validator.invalidate_authorization_code(request.client_id, request.code, request)
         return headers, json.dumps(token), 200
 
 
@@ -359,8 +358,7 @@ class OpenIDConnectImplicitGrant(oauth2.ImplicitGrant):
                     request.client_id, request.redirect_uri, request):
                 raise oauth2.MismatchingRedirectURIError(state=request.state, request=request)
         else:
-            request.redirect_uri = self.request_validator.get_default_redirect_uri(
-                    request.client_id, request)
+            request.redirect_uri = self.request_validator.get_default_redirect_uri(request.client_id, request)
             request.using_default_redirect_uri = True
             logger.debug('Using default redirect_uri %s.', request.redirect_uri)
             if not request.redirect_uri:
@@ -381,24 +379,24 @@ class OpenIDConnectImplicitGrant(oauth2.ImplicitGrant):
         # populated through the use of specific exceptions.
         if request.response_type is None:
             raise oauth2.InvalidRequestError(state=request.state,
-                    description='Missing response_type parameter.',
-                    request=request)
+                                             description='Missing response_type parameter.',
+                                             request=request)
 
         for param in ('client_id', 'response_type', 'redirect_uri', 'scope', 'state'):
             if param in request.duplicate_params:
                 raise oauth2.InvalidRequestError(state=request.state,
-                        description='Duplicate %s parameter.' % param, request=request)
+                                                 description='Duplicate %s parameter.' % param, request=request)
 
         # REQUIRED. Value MUST be set to "id_token token" or token.
         if request.response_type not in ['id_token token', 'token']:
             raise oauth2.UnsupportedResponseTypeError(state=request.state, request=request)
 
         logger.debug('Validating use of response_type token for client %r (%r).',
-                  request.client_id, request.client)
+                     request.client_id, request.client)
         if not self.request_validator.validate_response_type(request.client_id,
-                request.response_type, request.client, request):
+                                                             request.response_type, request.client, request):
             logger.debug('Client %s is not authorized to use response_type %s.',
-                      request.client_id, request.response_type)
+                         request.client_id, request.response_type)
             raise oauth2.UnauthorizedClientError(request=request)
 
         # OPTIONAL. The scope of the access request as described by Section 3.3
@@ -406,11 +404,11 @@ class OpenIDConnectImplicitGrant(oauth2.ImplicitGrant):
         self.validate_scopes(request)
 
         return request.scopes, {
-                'client_id': request.client_id,
-                'redirect_uri': request.redirect_uri,
-                'response_type': request.response_type,
-                'state': request.state,
-                'request': request
+            'client_id': request.client_id,
+            'redirect_uri': request.redirect_uri,
+            'response_type': request.response_type,
+            'state': request.state,
+            'request': request
         }
 
 
@@ -422,26 +420,23 @@ class OAuthServer(oauth2.AuthorizationEndpoint, oauth2.TokenEndpoint, oauth2.Res
         oidc_implicit_grant = OpenIDConnectImplicitGrant(request_validator)
         bearer = OpenIDConnectBearerToken(request_validator)
         refresh_grant = oauth2.RefreshTokenGrant(request_validator)
-        #implicit_grant = oauth2.ImplicitGrant(request_validator)
+        # implicit_grant = oauth2.ImplicitGrant(request_validator)
         client_credentials = oauth2.ClientCredentialsGrant(request_validator)
         resource_owner_password_credentials = oauth2.ResourceOwnerPasswordCredentialsGrant(request_validator)
         oauth2.AuthorizationEndpoint.__init__(self, default_response_type='code',
-                response_types={
-                    'code': oidc_auth_grant,
-                    'token': oidc_implicit_grant,
-                    'id_token token': oidc_implicit_grant
-                },
-                default_token_type=bearer)
+                                              response_types={'code': oidc_auth_grant,
+                                                              'token': oidc_implicit_grant,
+                                                              'id_token token': oidc_implicit_grant
+                                                              },
+                                              default_token_type=bearer)
         oauth2.TokenEndpoint.__init__(self, default_grant_type='authorization_code',
-                grant_types={
-                    'authorization_code': oidc_auth_grant,
-                    'refresh_token': refresh_grant,
-                    'client_credentials': client_credentials,
-                    'password': resource_owner_password_credentials,
-                },
-                default_token_type=bearer)
-        oauth2.ResourceEndpoint.__init__(self, default_token='Bearer',
-                token_types={'Bearer': bearer})
+                                      grant_types={'authorization_code': oidc_auth_grant,
+                                                   'refresh_token': refresh_grant,
+                                                   'client_credentials': client_credentials,
+                                                   'password': resource_owner_password_credentials,
+                                                   },
+                                      default_token_type=bearer)
+        oauth2.ResourceEndpoint.__init__(self, default_token='Bearer', token_types={'Bearer': bearer})
 
 
 server = OAuthServer(OAuth2RequestValidator())

@@ -1,7 +1,10 @@
 django
 gunicorn
 psycopg2
-MySQL-python
+# for streaming app only
+#MySQL-python
+# for local testing only
+#selenium
 python-memcached
 docutils
 south
@@ -10,5 +13,4 @@ oauthlib
 sorl-thumbnail
 pillow
 django-recaptcha
-selenium
 pytz

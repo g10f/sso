@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import os
-from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.utils.dateformat import format
@@ -20,11 +19,17 @@ class Command(BaseCommand):
     help = 'Cleanup Users'  # @ReservedAssignment
     
     def handle(self, *args, **options):
-        #cleanup()
-        #testpwd()
-        remove_profile()
+        update_center_usernames()
 
 
+def update_center_usernames():
+    centers = User.objects.filter(is_center=True, username__endswith='@diamondway-center.org')
+    for center in centers:
+        center.last_name = center.last_name.capitalize()        
+        center.username = center.first_name + center.last_name
+        center.save()
+        
+    
 def remove_profile():
     centerprofile = RoleProfile.objects.get(uuid=settings.SSO_CUSTOM['DEFAULT_ADMIN_PROFILE_UUID'])
     user_list = User.objects.filter(is_center=False, role_profiles=centerprofile)
@@ -35,16 +40,16 @@ def remove_profile():
     
 def testpwd():
     streaming_app = Application.objects.get(uuid='c362bea58c67457fa32234e3178285c4')
-    #user_list = User.objects.filter(is_center=True) #, userassociatedsystem__isnull=True)
+    # user_list = User.objects.filter(is_center=True) #, userassociatedsystem__isnull=True)
     user_list = User.objects.filter(is_center=True, userassociatedsystem__application=streaming_app)
     print(len(user_list))
     for user in user_list:
         email = UserAssociatedSystem.objects.get(user=user, application=streaming_app).userid
-        #email = user.email
+        # email = user.email
         try:
             sql = "SELECT * FROM streaming_user WHERE LOWER(email) LIKE LOWER(%(email)s)"
             streaminguser = StreamingUser.objects.raw(sql, {'email': email})[0]
-            #streaminguser = StreamingUser.objects.get(email__iexact=email)
+            # streaminguser = StreamingUser.objects.get(email__iexact=email)
             if streaminguser:
                 raw_password = streaminguser.password.decode("base64")                
                 if not check_password(raw_password, user.password):
@@ -65,7 +70,7 @@ def cleanup():
         encoded = user.password
         algorithm = encoded.split('$')[0]
         if algorithm in ['osc_md5']:  # , 'moin_sha1'
-            if not user.uuid in user_dict:
+            if user.uuid not in user_dict:
                 user_rows.append([user.uuid, user.email, user.first_name, user.last_name, format(user.last_login, 'Y-m-d')])
                 print user, user.last_login
                 user.delete()

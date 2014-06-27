@@ -36,8 +36,8 @@ logger = logging.getLogger(__name__)
 
 
 SUPERUSER_ROLE = 'Superuser'
-#STAFF_ROLE = 'Staff'
-#USER_ROLE = 'User'
+# STAFF_ROLE = 'Staff'
+# USER_ROLE = 'User'
 
 DS108_EU = '35efc492b8f54f1f86df9918e8cc2b3d'
 DS108_CEE = '2139dc55af8b42ec84a1ce9fd25fdf18'
@@ -52,8 +52,8 @@ class Application(models.Model):
     title = models.CharField(max_length=255)
     url = models.URLField(max_length=2047, blank=True)
     uuid = UUIDField(version=4, unique=True, editable=True)
-    global_navigation = models.BooleanField(_('global navigation'), help_text=_('Designates whether this application should be shown in '
-                    'the global navigation bar.'), default=True)
+    global_navigation = models.BooleanField(_('global navigation'), 
+                                            help_text=_('Designates whether this application should be shown in the global navigation bar.'), default=True)
     is_active = models.BooleanField(_('active'), default=True, help_text=_('Designates whether this application should be provided.'))
     objects = ApplicationManager()
     
@@ -106,9 +106,9 @@ class ApplicationRole(models.Model):
     application = models.ForeignKey(Application)
     role = models.ForeignKey(Role)
     is_inheritable_by_org_admin = models.BooleanField(_('inheritable by organisation admin'), default=True,
-        help_text=_('Designates that the role can inherited by a organisation admin.'))
+                                                      help_text=_('Designates that the role can inherited by a organisation admin.'))
     is_inheritable_by_global_admin = models.BooleanField(_('inheritable by global admin'), default=True,
-        help_text=_('Designates that the role can inherited by a global admin.'))
+                                                         help_text=_('Designates that the role can inherited by a global admin.'))
     objects = ApplicationRoleManager()
      
     class Meta:
@@ -129,9 +129,9 @@ class RoleProfile(AbstractBaseModel):
     application_roles = models.ManyToManyField(ApplicationRole, help_text=_('Associates a group of application roles that are usually assigned together.'))
     order = models.IntegerField(default=0, help_text=_('Overwrites the alphabetic order.'))
     is_inheritable_by_org_admin = models.BooleanField(_('inheritable by organisation admin'), default=True,
-        help_text=_('Designates that the role profile can inherited by a organisation admin.'))
+                                                      help_text=_('Designates that the role profile can inherited by a organisation admin.'))
     is_inheritable_by_global_admin = models.BooleanField(_('inheritable by global admin'), default=True,
-        help_text=_('Designates that the role profile can inherited by a global admin.'))
+                                                         help_text=_('Designates that the role profile can inherited by a global admin.'))
 
     class Meta(AbstractBaseModel.Meta):
         ordering = ['order', 'name']
@@ -182,7 +182,7 @@ class User(AbstractUser):
     def get_primary_or_none(cls, queryset):
         # iterate through all uses the prfetch_related cache
         for item in queryset:
-            if item.primary == True:
+            if item.primary:
                 return item
         return None
 
@@ -444,10 +444,10 @@ class User(AbstractUser):
 
 class UserAddress(AbstractBaseModel, AddressMixin):
     ADDRESSTYPE_CHOICES = (
-            ('home', pgettext_lazy('address', 'Home')),
-            ('work', _('Business')),
-            ('other', _('Other')),            
-            )
+        ('home', pgettext_lazy('address', 'Home')),
+        ('work', _('Business')),
+        ('other', _('Other')),            
+    )
         
     address_type = models.CharField(_("address type"), choices=ADDRESSTYPE_CHOICES, max_length=20)
     user = models.ForeignKey(User)
@@ -473,7 +473,7 @@ class UserPhoneNumber(AbstractBaseModel, PhoneNumberMixin):
     user = models.ForeignKey(User)
 
     class Meta(AbstractBaseModel.Meta, PhoneNumberMixin.Meta):
-        #unique_together = (("user", "phone_type"),)
+        # unique_together = (("user", "phone_type"),)
         pass
     
     @classmethod
@@ -524,10 +524,10 @@ add_introspection_rules([
 
 
 def send_account_created_email(user, request, token_generator=default_pwd_reset_token_generator,
-                              from_email=None,
-                              email_template_name='accounts/account_created_email.txt',
-                              subject_template_name='accounts/account_created_email_subject.txt'
-                              ):
+                               from_email=None,
+                               email_template_name='accounts/account_created_email.txt',
+                               subject_template_name='accounts/account_created_email_subject.txt'
+                               ):
     
     use_https = request.is_secure()
     current_site = get_current_site(request)
@@ -596,7 +596,9 @@ def send_notification_email(sender, instance, **kwargs):
     msg.send(fail_silently=settings.DEBUG)
 """
 
-#@receiver(user_logged_in)
-#def add_cache_key(request, user, **kwargs):
-#    cache_key = ",".join([org.uuid for org in user.get_profile().organisations.all().only('uuid')[:10]])    
-#    request.session['_auth_cache_key'] = cache_key
+"""
+@receiver(user_logged_in)
+def add_cache_key(request, user, **kwargs):
+    cache_key = ",".join([org.uuid for org in user.get_profile().organisations.all().only('uuid')[:10]])    
+    request.session['_auth_cache_key'] = cache_key
+"""

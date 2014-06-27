@@ -143,7 +143,6 @@ INSTALLED_APPS = (
     'l10n',
     'smart_selects',
     'south',
-    'streaming',
     'sso',
     'sso.organisations',
     'sso.accounts',
@@ -216,7 +215,7 @@ PASSWORD_COMPLEXITY = {  # You can ommit any or all of these for no limit for th
     "WORDS": 0        # Words (substrings seperates by a whitespace)
 }
 
-#Configure logging
+# Configure logging
 if DEBUG:
     LOGGING_LEVEL = 'DEBUG'
 else:

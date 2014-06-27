@@ -14,8 +14,8 @@ from django.core.signing import BadSignature
 import logging
 logger = logging.getLogger(__name__)
 
-#SUPPORTED_SCOPES = ['openid', 'profile', 'email', '']
-#DEFAULT_SCOPES = ['profile']
+# SUPPORTED_SCOPES = ['openid', 'profile', 'email', '']
+# DEFAULT_SCOPES = ['profile']
 CLOCK_SKEW_SECS = 300    # 5 minutes in seconds
 AUTH_TOKEN_LIFETIME_SECS = 300    # 5 minutes in seconds
 MAX_TOKEN_LIFETIME_SECS = 86400    # 1 day in seconds
@@ -45,7 +45,7 @@ class PrivateKey(object):
         return RSA.importKey(self.pub_key)
         
     def sign(self, message):
-        return  PKCS1_v1_5.new(self.rsa).sign(SHA256.new(message))
+        return PKCS1_v1_5.new(self.rsa).sign(SHA256.new(message))
     
     def verify(self, message, signature):
         return PKCS1_v1_5.new(self.rsa).verify(SHA256.new(message), signature)  
@@ -87,7 +87,7 @@ def make_jwt(claim_set):
         string, The JWT for the claim_set.
     """
     header = {"typ": "JWT", "alg": "RS256"}  # JSON Web token with RSA SHA-256 algorithm
-    if not "iat" in claim_set:
+    if "iat" not in claim_set:
         claim_set["iat"] = int(time.time())  # add  issued at time 
 
     segments = [
