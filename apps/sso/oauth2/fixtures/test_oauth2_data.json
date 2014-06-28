@@ -22,4 +22,16 @@
 		"user" : null,
 		"type" : "web"
 	}
+}, {
+	"pk" : 3,
+	"model" : "oauth2.client",
+	"fields" : {
+		"uuid" : "92d7d9d71d5d41caa652080c19aaa6d8",
+		"name" : "Test Client - javascript",
+		"application" : ["bc0ee635a536491eb8e7fbe5749e8111"],
+		"redirect_uris" : "http://localhost",
+		"client_secret" : "geheim",
+		"user" : null,
+		"type" : "javascript"
+	}
 } ]

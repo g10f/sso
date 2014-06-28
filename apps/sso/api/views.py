@@ -6,7 +6,7 @@ from django.views.generic import View
 from django.views.decorators.vary import vary_on_headers
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.cache import cache_control
+from django.views.decorators.cache import cache_control, cache_page
 from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
@@ -24,7 +24,7 @@ from sso.organisations.models import Organisation
 from sso.registration import default_username_generator
 from http.http_status import *  # @UnusedWildImport
 from sso.oauth2.decorators import client_required
-from sso.utils import base_url, build_url, absolute_url
+from utils.url import base_url, build_url, absolute_url
 from sso.api.decorators import api_user_passes_test, catch_errors
 from sso.api.response import JsonHttpResponse
 
@@ -66,6 +66,7 @@ def get_page_and_links(request, qs, find_expression=FIND_EXPRESSION):
     return page, links
 
 
+@cache_page(60 * 60)
 def get_index(request, find_expression=FIND_EXPRESSION):
     base_uri = base_url(request)
     self_url = "%s%s" % (base_uri, request.path)
@@ -141,7 +142,7 @@ def get_userinfo(user, request, show_details=False):
     base = base_url(request)
     userinfo = {
         'id': u'%s' % user.uuid,
-        #'sub': u'%s' % user.uuid,  # remove after all clients migrated to id
+        # 'sub': u'%s' % user.uuid,  # remove after all clients migrated to id
         'name': u'%s' % user,
         'given_name': u'%s' % user.first_name,
         'family_name': u'%s' % user.last_name,
@@ -314,9 +315,8 @@ class UserDetailView(View):
             
             application_roles = []
             for application_uuid, application_data in userinfo.get('applications', {}).items():
-                application_roles += ApplicationRole.objects.filter(
-                                        application__uuid=application_uuid, 
-                                        role__name__in=application_data['roles'])
+                application_roles += ApplicationRole.objects.filter(application__uuid=application_uuid, 
+                                                                    role__name__in=application_data['roles'])
             
             user.uuid = uuid
             user.save()

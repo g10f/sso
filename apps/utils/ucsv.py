@@ -47,7 +47,7 @@ def csv_map(reader, key_row=0):
     
 def dic_from_csv(reader, key_row=0):
     dic = {}
-    for key, row  in csv_map(reader, key_row):
+    for key, row in csv_map(reader, key_row):
         dic[key] = row
         
     return dic

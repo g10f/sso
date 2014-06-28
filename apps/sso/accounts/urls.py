@@ -4,7 +4,8 @@ from .views import application
 from .views import password_change, password_change_done, login, logout, profile, contact, delete_profile
 from .views import password_reset, password_reset_confirm, password_reset_done, password_reset_complete
  
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(r'^login/$', login, name='login'),
     url(r'^logout/$', logout, name='logout'),
     url(r'^contact/$', contact, name='contact'),

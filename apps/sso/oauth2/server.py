@@ -107,12 +107,15 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
     def validate_response_type(self, client_id, response_type, client, request, *args, **kwargs):
         # currently we support "code", "token" and "id_token token"
         client_type = client.type
-        if client_type in ['web', 'native'] and response_type == "code":
-            return True
-        elif client_type == 'javascript' and response_type in ['token', 'id_token token']:
-            return True
-        else:
-            return False            
+        
+        if client_type in ['web', 'native']: 
+            if response_type == "code":
+                return True
+        elif client_type == 'javascript':
+            if response_type in ["id_token token", "token", "id_token"]:
+                return True
+        
+        return False            
     
     # Post-authorization
     def save_authorization_code(self, client_id, code, request, *args, **kwargs):
@@ -281,11 +284,17 @@ class OpenIDConnectBearerToken(oauth2.BearerToken):
 
     def create_token(self, request, refresh_token=False):
         """Create a BearerToken, without refresh token and with an id_token."""
-        token = {
-            'access_token': self.token_generator(request),
-            'expires_in': self.expires_in,
-            'token_type': 'Bearer',
-        }
+        
+        # if response_type contains only id_token, no access_token is created, only an id_token
+        if request.response_type == 'id_token':
+            # openid should be in request.scopes
+            token = {}
+        else:
+            token = {
+                'access_token': self.token_generator(request),
+                'expires_in': self.expires_in,
+                'token_type': 'Bearer'}
+            
         if request.scopes is not None:
             token['scope'] = ' '.join(request.scopes)
             if 'openid' in request.scopes:
@@ -298,8 +307,9 @@ class OpenIDConnectBearerToken(oauth2.BearerToken):
             token['refresh_token'] = self.token_generator(request, refresh_token=True)
 
         token.update(request.extra_credentials or {})
-
-        self.request_validator.save_bearer_token(token, request)
+        
+        if 'access_token' in token:
+            self.request_validator.save_bearer_token(token, request)
         return token
 
  
@@ -388,7 +398,7 @@ class OpenIDConnectImplicitGrant(oauth2.ImplicitGrant):
                                                  description='Duplicate %s parameter.' % param, request=request)
 
         # REQUIRED. Value MUST be set to "id_token token" or token.
-        if request.response_type not in ['id_token token', 'token']:
+        if request.response_type not in ['id_token token', 'token', 'id_token']:
             raise oauth2.UnsupportedResponseTypeError(state=request.state, request=request)
 
         logger.debug('Validating use of response_type token for client %r (%r).',
@@ -426,6 +436,7 @@ class OAuthServer(oauth2.AuthorizationEndpoint, oauth2.TokenEndpoint, oauth2.Res
         oauth2.AuthorizationEndpoint.__init__(self, default_response_type='code',
                                               response_types={'code': oidc_auth_grant,
                                                               'token': oidc_implicit_grant,
+                                                              'id_token': oidc_implicit_grant,
                                                               'id_token token': oidc_implicit_grant
                                                               },
                                               default_token_type=bearer)

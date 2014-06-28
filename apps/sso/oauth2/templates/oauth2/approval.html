@@ -1,15 +1,20 @@
 {% extends "base_site.html" %}
 {% load i18n %}
 
-{% block breadcrumbs %}<div class="breadcrumbs"><a href="/">{% trans "Home" %}</a> &rsaquo; {% trans "OAuth2 error" %}</div>{% endblock %}
-
 {% block title %}Success code={{ code }}{% endblock %}
 
+{% block breadcrumb %}
+<ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+    <li class="active">{% trans 'Authorization' %}</li>
+</ol> 
+{% endblock breadcrumb %}
+
 {% block content %}
-<h3>{% trans 'OAuth 2 success code' %}</h3>
-<p>{% trans 'Please copy the code and enter it in to your application: ' %}
-<input id="code" class="input-xlarge" type="text" readonly="readonly" value="{{ code }}" onclick="this.focus();this.select();"><br>
+<h3>{% trans 'Authorization code' %}</h3>
+<p>{% trans 'Please copy the code and enter it in to your application: ' %}</p> 
+<input id="code" class="form-control" type="text" readonly  value="{{ code }}" onclick="this.focus();this.select();"><br>
 <input id="state" class="hidden" type="text" readonly="readonly" value="{{ state }}" onclick="this.focus();this.select();">
-</p> 
+
 {% endblock %}
 

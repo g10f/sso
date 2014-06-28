@@ -14,6 +14,11 @@ def get_query_dict(url):
     query_dict = QueryDict(query_string).copy()
     return query_dict
 
+def get_fragment_dict(url):        
+    scheme, netloc, path, query_string, fragment = urlparse.urlsplit(url)  # @UnusedVariable
+    fragment_dict = QueryDict(fragment).copy()
+    return fragment_dict
+
 def urlsafe_b64decode(b64string):
     # Guard against unicode strings, which base64 can't handle.
     b64string = b64string.encode('ascii')
@@ -29,8 +34,8 @@ def load_jwt(jwt, audience=None):
     if (len(segments) != 3):
         raise Exception('id_token_error: Wrong number of segments in token: %s' % jwt)
     
-    #signed = '%s.%s' % (segments[0], segments[1])
-    #signature = urlsafe_b64decode(segments[2])
+    # signed = '%s.%s' % (segments[0], segments[1])
+    # signature = urlsafe_b64decode(segments[2])
 
     # Parse token.
     json_body = urlsafe_b64decode(segments[1])
@@ -83,6 +88,29 @@ class OAuth2BaseTestCase(TestCase):
         self.assertIn('code', query_dict)
         self.assertDictContainsSubset({'state': self._state}, query_dict)
         return query_dict['code']
+
+    def login_and_get_implicit_id_token(self, client_id='92d7d9d71d5d41caa652080c19aaa6d8', max_age=None, wait=0, username='GunnarScherf', password='gsf', response_type="id_token token"):       
+        self.client.login(username=username, password=password)
+        if wait > 0:
+            sleep(wait)
+ 
+        authorize_data = {
+            'scope': "openid profile email",
+            'state': self._state,
+            'redirect_uri': "http://localhost",
+            'response_type': response_type,
+            'client_id': client_id,
+        }
+        if max_age:
+            authorize_data['max_age'] = max_age
+            
+        response = self.client.get(reverse('oauth2:authorize'), data=authorize_data)
+        self.assertEqual(response.status_code, 302)
+        fragment_dict = get_fragment_dict(response['Location'])
+        
+        self.assertIn('id_token', fragment_dict)
+        self.assertDictContainsSubset({'state': self._state}, fragment_dict)
+        return fragment_dict
 
     def get_authorization(self, client_id=None, username='GunnarScherf', password='gsf'):
         code = self.login_and_get_code(client_id, username=username, password=password)
@@ -145,6 +173,25 @@ class OAuth2Tests(OAuth2BaseTestCase):
         path = urlparse.urlsplit(response['Location'])[2]
         self.assertEqual(path, reverse('accounts:login'))
         
+    def test_get_implicit_id_token_and_access_token(self):
+        """
+        implicit login with access_token and id_token
+        """
+        fragment_dict = self.login_and_get_implicit_id_token()
+        self.assertIn('access_token', fragment_dict)
+        self.assertEqual(fragment_dict['expires_in'], '3600')
+        self.assertEqual(fragment_dict['token_type'], 'Bearer')
+        self.assertEqual(fragment_dict['scope'], 'openid profile email')
+        self.assertEqual(fragment_dict['state'], self._state)
+        
+    def test_get_implicit_id_token(self):
+        """
+        implicit login with id_token only
+        """
+        fragment_dict = self.login_and_get_implicit_id_token(response_type="id_token")
+        self.assertNotIn('access_token', fragment_dict)
+        self.assertEqual(fragment_dict['state'], self._state)
+
     def test_get_token(self):
         code = self.login_and_get_code()
         token_data = {
