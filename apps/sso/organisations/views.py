@@ -16,7 +16,7 @@ from sso.views import main
 from sso.views.main import FilterItem
 from sso.organisations.models import AdminRegion, Organisation
 from sso.views.generic import FormsetsUpdateView
-from sso.utils import is_safe_url
+from utils.url import is_safe_url
 from .models import OrganisationAddress, OrganisationPhoneNumber
 from .forms import OrganisationForm, OrganisationAddressForm, OrganisationPhoneNumberForm
 

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+import base64
 from django.views.decorators.cache import never_cache, cache_page
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
@@ -12,6 +13,9 @@ from oauthlib.common import urlencode
 
 from http.http_status import *  # @UnusedWildImport
 from sso.oauth2.decorators import login_required
+from utils.url import base_url
+from utils.convert import pack_bigint
+from sso.api.response import JsonHttpResponse 
 from .crypt import key, loads_jwt, BadSignature
 from .server import server
 from .models import Client
@@ -48,6 +52,39 @@ class HttpOAuth2ResponseRedirect(HttpResponseRedirect):
             
         super(HttpOAuth2ResponseRedirect, self).__init__(redirect_to, *args, **kwargs)
 
+
+@cache_page(60 * 60)
+def openid_configuration(request):
+    """
+    http://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig
+    """
+    base_uri = base_url(request)
+    configuration = {
+        "issuer": base_uri,
+        "authorization_endpoint": '%s%s' % (base_uri, reverse('oauth2:authorize')),
+        "token_endpoint": '%s%s' % (base_uri, reverse('oauth2:token')),
+        "userinfo_endpoint": '%s%s' % (base_uri, reverse('api:v1_users_me')),
+        "jwks_uri": '%s%s' % (base_uri, reverse('oauth2:jwks')),
+        "scopes_supported": 
+            ["openid", "profile", "email", "address", "phone", "offline_access"],
+        "response_types_supported":
+            ["code", "token", "id_token token", "id_token"],
+        "id_token_signing_alg_values_supported":
+            ["RS256"],
+        "token_endpoint_auth_methods_supported":
+            ["client_secret_basic"],
+        "token_endpoint_auth_signing_alg_values_supported":
+            ["RS256"],
+        "display_values_supported":         
+            ["page", "popup"],
+        "service_documentation":
+            "https://wiki.dwbn.org/general/AccessAndIdentityManagement",
+        "logout_uri": '%s%s' % (base_uri, reverse('accounts:logout')),
+        "certs_uri": '%s%s' % (base_uri, reverse('oauth2:certs')),
+        "profile_uri": '%s%s' % (base_uri, reverse('accounts:profile'))
+    }
+    return JsonHttpResponse(configuration, request)
+    
 
 @login_required
 @never_cache
@@ -101,7 +138,7 @@ def tokeninfo(request):
             
         parsed = loads_jwt(token)
         content = json.dumps(parsed) 
-        return  HttpResponse(content=content, content_type='application/json')
+        return HttpResponse(content=content, content_type='application/json')
 
     except oauth2.OAuth2Error as e:
         return HttpResponse(content=e.json, status=e.status_code, content_type='application/json')
@@ -117,6 +154,9 @@ def tokeninfo(request):
 @never_cache
 @login_required
 def approval(request):
+    """
+    View to redirect for installed applications, to get an authorisation code  
+    """
     state = request.GET.get('state', '')
     code = request.GET.get('code', '')    
     return render(request, 'oauth2/approval.html', dictionary={'state': state, 'code': code})
@@ -124,25 +164,41 @@ def approval(request):
 
 @cache_page(60 * 60)
 def certs(request):
-    content = json.dumps({key.id: key.cert}) 
-    return  HttpResponse(content=content, content_type='application/json')
+    return JsonHttpResponse({key.id: key.cert}, request)
 
+
+@cache_page(60 * 60)
+def jwks(request):
+    """
+    jwks_uri view (http://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata)
+    """
+    data = {
+        "keys": [{
+            "kty": "RSA",
+            "alg": "RS256",
+            "use": "sig",
+            "kid": key.id,
+            "n": base64.b64encode(pack_bigint(key.rsa.key.n)),
+            "e": base64.b64encode(pack_bigint(key.rsa.key.e))
+        }]
+    }
+    return JsonHttpResponse(data, request)
 
 @permission_required("oauth2.change_client")
 def client_details(request, object_id):
     client = get_object_or_404(Client, pk=object_id)
-    content = json.dumps({
-           "auth_uri": request.build_absolute_uri(reverse('oauth2:authorize')),
-           "client_secret": client.client_secret,
-           "token_uri": request.build_absolute_uri(reverse('oauth2:token')),
-           "redirect_uris": [uri for uri in client.redirect_uris.split()],
-           "application_id": client.application.uuid if client.application else None,
-           "client_id": client.uuid,
-           "auth_provider_x509_cert_url": request.build_absolute_uri(reverse('oauth2:certs')),
-           "userinfo_uri": request.build_absolute_uri(reverse('api:v1_users_me')),
-           "logout_uri": request.build_absolute_uri(reverse('accounts:logout')),
-         })
-    return HttpResponse(content=content, content_type='application/json')
+    content = {
+        "auth_uri": request.build_absolute_uri(reverse('oauth2:authorize')),
+        "client_secret": client.client_secret,
+        "token_uri": request.build_absolute_uri(reverse('oauth2:token')),
+        "redirect_uris": [uri for uri in client.redirect_uris.split()],
+        "application_id": client.application.uuid if client.application else None,
+        "client_id": client.uuid,
+        "auth_provider_x509_cert_url": request.build_absolute_uri(reverse('oauth2:certs')),
+        "userinfo_uri": request.build_absolute_uri(reverse('api:v1_users_me')),
+        "logout_uri": request.build_absolute_uri(reverse('accounts:logout')),
+    }
+    return JsonHttpResponse(content, request)
 
 class ErrorView(TemplateView):
     template_name = "oauth2/error.html"
