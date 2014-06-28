@@ -26,6 +26,7 @@ def import_names():
             user = User.objects.get(email__iexact=email, first_name='', last_name='')
             user.first_name = row['first_name']
             user.last_name = row['last_name']
+            user.username = default_username_generator(capfirst(row['first_name']), capfirst(row['last_name']))
             user.save()
         except ObjectDoesNotExist:
             pass
