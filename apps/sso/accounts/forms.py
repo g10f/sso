@@ -168,7 +168,7 @@ class UserAddForm(forms.ModelForm):
     """
     password1 = PasswordField(label=_("Password"), required=False, widget=bootstrap.PasswordInput())
     password2 = forms.CharField(label=_("Password confirmation"), required=False, widget=bootstrap.PasswordInput(),
-        help_text=_("Enter the same password as above, for verification."))
+                                help_text=_("Enter the same password as above, for verification."))
     error_messages = {
         'duplicate_username': _("A user with that username already exists."),
         'password_mismatch': _("The two password fields didn't match."),
@@ -255,14 +255,14 @@ class AddressForm(BaseForm):
         model = UserAddress
         fields = ('primary', 'address_type', 'addressee', 'street_address', 'city', 'postal_code', 'country', 'state') 
         widgets = {
-                   'primary': bootstrap.CheckboxInput(),
-                   'address_type': bootstrap.Select(),
-                   'addressee': bootstrap.TextInput(attrs={'size': 50}),
-                   'street_address': bootstrap.Textarea(attrs={'cols': 50, 'rows': 2}),
-                   'city': bootstrap.TextInput(attrs={'size': 50}),
-                   'postal_code': bootstrap.TextInput(attrs={'size': 50}),
-                   'country': bootstrap.Select()
-                   }
+            'primary': bootstrap.CheckboxInput(),
+            'address_type': bootstrap.Select(),
+            'addressee': bootstrap.TextInput(attrs={'size': 50}),
+            'street_address': bootstrap.Textarea(attrs={'cols': 50, 'rows': 2}),
+            'city': bootstrap.TextInput(attrs={'size': 50}),
+            'postal_code': bootstrap.TextInput(attrs={'size': 50}),
+            'country': bootstrap.Select()
+        }
     
     def opts(self):
         # i need the model verbose_name in the html form, is there a better way?
@@ -277,10 +277,10 @@ class PhoneNumberForm(BaseForm):
         model = UserPhoneNumber
         fields = ('phone_type', 'phone', 'primary') 
         widgets = {
-                   'phone_type': bootstrap.Select(),
-                   'phone': bootstrap.TextInput(attrs={'size': 50}),
-                   'primary': bootstrap.CheckboxInput()
-                   }
+            'phone_type': bootstrap.Select(),
+            'phone': bootstrap.TextInput(attrs={'size': 50}),
+            'primary': bootstrap.CheckboxInput()
+        }
     
     def opts(self):
         # i need the model verbose_name in the html form, is there a better way?
@@ -301,7 +301,7 @@ class UserSelfProfileForm(forms.Form):
     picture = forms.ImageField(label=_('Picture'), required=False, widget=bootstrap.ImageWidget())
     gender = forms.ChoiceField(label=_('Gender'), required=False, choices=(BLANK_CHOICE_DASH + User.GENDER_CHOICES), widget=bootstrap.Select())
     dob = forms.DateField(label=_('Date of birth'), required=False, 
-                widget=bootstrap.SelectDateWidget(years=range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1), required=False))
+                          widget=bootstrap.SelectDateWidget(years=range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1), required=False))
     homepage = forms.URLField(label=_('Homepage'), required=False, max_length=512, widget=bootstrap.TextInput())
     language = forms.ChoiceField(label=_("Language"), required=False, choices=(BLANK_CHOICE_DASH + sorted(list(settings.LANGUAGES), key=lambda x: x[1])), widget=bootstrap.Select())
 
@@ -352,7 +352,7 @@ class UserSelfProfileForm(forms.Form):
             content_type = picture.content_type.split('/')[0]
             if content_type in ['image']:
                 if picture._size > MAX_UPLOAD_SIZE:
-                    raise forms.ValidationError(_('Please keep filesize under %(filesize)s. Current filesize %(current_filesize)s') % \
+                    raise forms.ValidationError(_('Please keep filesize under %(filesize)s. Current filesize %(current_filesize)s') %
                                                 {'filesize': filesizeformat(MAX_UPLOAD_SIZE), 'current_filesize': filesizeformat(picture._size)})
             else:
                 raise forms.ValidationError(_('File type is not supported'))
@@ -449,7 +449,7 @@ class AdminUserChangeForm(UserChangeForm, BasicUserChangeForm):
     username = forms.RegexField(
         label=_("Username"), max_length=30, regex=re.compile(r"^[\w.@+-]+$", flags=re.UNICODE),
         help_text=_("Required. 30 characters or fewer. Letters, digits and "
-                      "@/./+/-/_ only."),
+                    "@/./+/-/_ only."),
         error_messages={
             'invalid': _("This value may contain only letters, numbers and "
                          "@/./+/-/_ characters.")})
@@ -574,7 +574,7 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
             user_data['organisations'] = self.user.organisations.all()[0]
         except IndexError:
             # center is optional
-            #logger.error("User without center?", exc_info=1)
+            # logger.error("User without center?", exc_info=1)
             pass
         
         initial = kwargs.get('initial', {})
