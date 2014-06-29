@@ -1476,7 +1476,7 @@ msgstr "Art des Zentrums"
 
 #: organisations/models.py:58
 msgid "founded"
-msgstr ""
+msgstr "gegründet"
 
 #: organisations/models.py:59
 msgid "latitude"
