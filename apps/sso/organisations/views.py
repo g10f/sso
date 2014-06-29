@@ -77,6 +77,16 @@ class OrganisationDetailView(OrganisationBaseView, DetailView):
     pass
 
 
+class MyOrganisationDetailView(OrganisationBaseView, DetailView):
+    """
+    View of the center the user belongs to.
+    """
+    template_name = "organisations/my_organisation_detail.html"
+    
+    def get_object(self, queryset=None):
+        return self.request.user.organisations.first()
+    
+
 class OrganisationDeleteView(OrganisationBaseView, DeleteView):
     def get_success_url(self):
         return reverse('organisations:organisation_list')
