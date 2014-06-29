@@ -20,7 +20,7 @@ class AbstractBaseModel(models.Model):
     
     class Meta:
         abstract = True
-        #ordering = ['name']
+        # ordering = ['name']
         get_latest_by = 'last_modified'
 
     def natural_key(self):
@@ -54,11 +54,11 @@ class AddressMixin(models.Model):
     postal_code = models.CharField(_("postal code"), max_length=30, blank=True)  # , help_text=_('Zipcode or postal code') 
     country = models.ForeignKey(Country, verbose_name=_("country"), limit_choices_to={'active': True})
     state = ChainedForeignKey(AdminArea, chained_field='country', chained_model_field="country", verbose_name=_("State"), 
-                                                      help_text=_('State or region'), blank=True, null=True)    
+                              help_text=_('State or region'), blank=True, null=True)    
     primary = models.BooleanField(_("primary"), default=False)
-    #history = HistoricalRecords()
+    # history = HistoricalRecords()
     
-    #formatted  : formatted Address for mail http://tools.ietf.org/html/draft-ietf-scim-core-schema-03
+    # formatted  : formatted Address for mail http://tools.ietf.org/html/draft-ietf-scim-core-schema-03
     
     class Meta:
         abstract = True
@@ -73,7 +73,7 @@ class AddressMixin(models.Model):
 class PhoneNumberMixin(models.Model): 
     phone = models.CharField(_("phone number"), max_length=30,)
     primary = models.BooleanField(_("primary"), default=False)
-    #history = HistoricalRecords()
+    # history = HistoricalRecords()
 
     class Meta:
         abstract = True

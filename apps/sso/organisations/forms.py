@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 import datetime
 from django.utils.translation import ugettext as _
-
+from django.forms import ModelChoiceField
 from sso.forms import bootstrap, BaseForm
-from .models import OrganisationPhoneNumber, OrganisationAddress, Organisation 
+from .models import OrganisationPhoneNumber, OrganisationAddress, Organisation
+from l10n.models import Country 
 
 class OrganisationAddressForm(BaseForm):
+    country = ModelChoiceField(queryset=Country.objects.filter(organisationcountry__isnull=False), cache_choices=True, required=True, label=_("Country"), widget=bootstrap.Select())
+    
     class Meta:
         model = OrganisationAddress
         fields = ('primary', 'address_type', 'addressee', 'street_address', 'city', 'postal_code', 'country', 'state') 
@@ -47,6 +50,7 @@ class OrganisationPhoneNumberForm(BaseForm):
 
 class OrganisationForm(BaseForm):
     google_maps_url = bootstrap.ReadOnlyField(label=_("Google Maps"))
+    country = ModelChoiceField(queryset=Country.objects.filter(organisationcountry__isnull=False), cache_choices=True, required=True, label=_("Country"), widget=bootstrap.Select())
 
     class Meta:
         model = Organisation

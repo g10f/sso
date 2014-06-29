@@ -40,7 +40,11 @@
 	       <tbody>
 	           {% for user in object_list %}
 	           <tr> 
-	               <td><a class="" href="{% url 'accounts:update_user' user.uuid %}{{ cl.get_query_string }}">{{ user.username }}</a></td>
+	               <td>
+	               {% if perms.accounts.change_user %}
+	               <a class="" href="{% url 'accounts:update_user' user.uuid %}{{ cl.get_query_string }}">{{ user.username }}</a>
+	               {% else %}{{ user.username }{% endif %}
+	               </td>
 	               <td>{{ user.first_name }}</td>
 	               <td>{{ user.last_name }}</td>
 	               <td>{{ user.email }}</td>

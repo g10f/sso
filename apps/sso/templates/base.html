@@ -56,7 +56,7 @@
                        
                     <a class="list-group-item {% block nav_organisations_organisation_list_class %}{% endblock %}" href="{% url 'organisations:organisation_list' %}"><i class="glyphicon glyphicon-list"></i> {% trans 'Center List' %}</a>
 
-                    {% if perms.accounts.change_user %}
+                    {% if user.is_admin %}
                     <a class="list-group-item {% block nav_accounts_user_list_class %}{% endblock %}" href="{% url 'accounts:user_list' %}"><i class="glyphicon glyphicon-list"></i> {% trans 'User List' %}</a>
                     {% endif %}
                     
@@ -70,7 +70,7 @@
 				    
 				    {% if user.is_authenticated %}
 				    {% if user.organisations.exists %}
-                    <a class="list-group-item {% block nav_accounts_center_class %}{% endblock %}" href="{% url 'organisations:my_organisation_detail' %}"><i class="glyphicon glyphicon-home"></i> {% trans 'My center' %}</a>
+                    <a class="list-group-item {% block nav_accounts_center_class %}{% endblock %}" href="{% url 'organisations:my_organisation_detail' %}"><i class="glyphicon glyphicon-home"></i> {% trans 'My Center' %}</a>
                     {% endif %}
 				    <a class="list-group-item {% block nav_accounts_profile_class %}{% endblock %}" href="{% url 'accounts:profile' %}"><i class="glyphicon glyphicon-user"></i> {% trans 'My account' %}</a>
 				    <a class="list-group-item {% block nav_accounts_password_change_class %}{% endblock %}" href="{% url 'accounts:password_change' %}"><i class="glyphicon glyphicon-edit"></i> {% trans 'Change my password ' %}</a>

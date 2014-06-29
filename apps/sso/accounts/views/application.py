@@ -4,7 +4,7 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib import messages
 from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import user_passes_test, permission_required
 from django.views.generic import ListView, DeleteView
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
@@ -58,7 +58,7 @@ class UserList(ListView):
     list_display = ['username', 'first_name', 'last_name', 'email', 'last_login', 'date_joined']
     IS_ACTIVE_CHOICES = (('1', _('Active Users')), ('2', _('Inactive Users')))
     
-    @method_decorator(user_passes_test(is_admin))
+    @method_decorator(permission_required('accounts.change_user'))
     def dispatch(self, request, *args, **kwargs):
         return super(UserList, self).dispatch(request, *args, **kwargs)
 
@@ -216,7 +216,7 @@ class UserList(ListView):
         return super(UserList, self).get_context_data(**context)
     
     
-@user_passes_test(is_admin)
+@permission_required('accounts.add_user')
 def add_user(request, template='accounts/application/add_user_form.html'):
     if request.method == 'POST':
         form = UserAddFormExt(request.user, request.POST)
@@ -233,14 +233,14 @@ def add_user(request, template='accounts/application/add_user_form.html'):
     return render(request, template, data)
 
 
-@user_passes_test(is_admin)
+@permission_required('accounts.add_user')
 def add_user_done(request, uuid, template='accounts/application/add_user_done.html'):
     new_user = get_user_model().objects.get(uuid=uuid)
     data = {'new_user': new_user, 'title': _('Add user')}
     return render(request, template, data)
 
     
-@user_passes_test(is_admin)
+@permission_required('accounts.change_user')
 def update_user(request, uuid, template='accounts/application/change_user_form.html'):
     # TODO: check if the authenticated user has admin rights for the organisation
     user = get_object_or_404(get_user_model(), uuid=uuid)
