@@ -1,0 +1,11 @@
+{% extends "organisations/organisation_detail.html" %}
+{% load i18n admin_static %}
+
+{% block nav_accounts_center_class %}active{% endblock %}
+
+{% block breadcrumb %}
+<ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+    <li class="active">{% trans 'My Center' %}</li>
+</ol> 
+{% endblock breadcrumb %}

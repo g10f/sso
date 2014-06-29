@@ -56,7 +56,7 @@
                        
                     <a class="list-group-item {% block nav_organisations_organisation_list_class %}{% endblock %}" href="{% url 'organisations:organisation_list' %}"><i class="glyphicon glyphicon-list"></i> {% trans 'Center List' %}</a>
 
-				    {% if user.is_admin %}
+                    {% if perms.accounts.change_user %}
                     <a class="list-group-item {% block nav_accounts_user_list_class %}{% endblock %}" href="{% url 'accounts:user_list' %}"><i class="glyphicon glyphicon-list"></i> {% trans 'User List' %}</a>
                     {% endif %}
                     
@@ -64,11 +64,14 @@
                     <a class="list-group-item {% block nav_organisations_organisation_create_class %}{% endblock %}" href="{% url 'organisations:organisation_create' %}"><i class="glyphicon glyphicon-plus-sign"></i> {% trans 'Add Center' %}</a>
                     {% endif %}
                     
-                    {% if user.is_admin %}
+                    {% if perms.accounts.add_user %}
 				    <a class="list-group-item {% block nav_accounts_add_user_class %}{% endblock %}" href="{% url 'accounts:add_user' %}"><i class="glyphicon glyphicon-plus-sign"></i> {% trans 'Add User' %}</a>
                     {% endif %}
 				    
-				    {% if user.is_authenticated %}				    
+				    {% if user.is_authenticated %}
+				    {% if user.organisations.exists %}
+                    <a class="list-group-item {% block nav_accounts_center_class %}{% endblock %}" href="{% url 'organisations:my_organisation_detail' %}"><i class="glyphicon glyphicon-home"></i> {% trans 'My center' %}</a>
+                    {% endif %}
 				    <a class="list-group-item {% block nav_accounts_profile_class %}{% endblock %}" href="{% url 'accounts:profile' %}"><i class="glyphicon glyphicon-user"></i> {% trans 'My account' %}</a>
 				    <a class="list-group-item {% block nav_accounts_password_change_class %}{% endblock %}" href="{% url 'accounts:password_change' %}"><i class="glyphicon glyphicon-edit"></i> {% trans 'Change my password ' %}</a>
 				    {% endif %}
