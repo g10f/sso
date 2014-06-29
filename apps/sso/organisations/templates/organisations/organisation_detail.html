@@ -27,6 +27,11 @@
 <p>
 	<div class="row"><div class="dwbn-label">{% trans 'E-Mail' %}: </div><div class="dwbn-content">{{ object.email }}</div></div>
 	<div class="row"><div class="dwbn-label">{% trans 'Country' %}: </div><div class="dwbn-content">{{ object.country }}</div></div>
+	{% comment %}
+    <div class="row"><div class="dwbn-label">{% trans 'Active' %}: </div><div class="dwbn-content"><span class="glyphicon glyphicon-{% if object.is_active %}ok-sign{% else %}minus-sign{% endif %}"></span></div></div>
+    <div class="row"><div class="dwbn-label">{% trans 'Private' %}: </div><div class="dwbn-content"><span class="glyphicon glyphicon-{% if object.is_private %}ok-sign{% else %}minus-sign{% endif %}"></span></div></div>
+    <div class="row"><div class="dwbn-label">{% trans 'Publish' %}: </div><div class="dwbn-content"><span class="glyphicon glyphicon-{% if object.can_publish %}ok-sign{% else %}minus-sign{% endif %}"></span></div></div>
+	{% endcomment %}
 	{% if object.founded %}<div class="row"><div class="dwbn-label">{% trans 'Founded' %}: </div><div class="dwbn-content">{{ object.founded }}</div></div>{% endif %}
 	<div class="row"><div class="dwbn-label">{% trans 'Homepage' %}: </div><div class="dwbn-content"><a href="{{ object.homepage }}">{{ object.homepage }}</a></div></div>
 	{% if object.google_maps_url %}<div class="row"><div class="dwbn-label">{% trans 'Google Maps' %}: </div><div class="dwbn-content"><a href="{{ object.google_maps_url }}">{% trans 'Google Maps' %} <span class="glyphicon glyphicon-map-marker"></span></a></div></div>{% endif %}

@@ -186,13 +186,13 @@ def perms():
 
 def migrate_data(python, server_name, code_dir, app):
     #sudo("%s ./src/apps/manage.py syncdb --noinput" % python, user='www-data', group='www-data')
-    #sudo("%s ./src/apps/manage.py migrate organisations" % python, user='www-data', group='www-data')
+    sudo("%s ./src/apps/manage.py migrate organisations" % python, user='www-data', group='www-data')
     #sudo("%s ./src/apps/manage.py migrate accounts 0001 --fake" % python, user='www-data', group='www-data')
     #sudo("%s ./src/apps/manage.py migrate accounts" % python, user='www-data', group='www-data')
     #sudo("%s ./src/apps/manage.py migrate registration 0001 --fake" % python, user='www-data', group='www-data')
     #sudo("%s ./src/apps/manage.py migrate registration" % python, user='www-data', group='www-data')
-    sudo("%s ./src/apps/manage.py migrate oauth2 0001 --fake" % python, user='www-data', group='www-data')
-    sudo("%s ./src/apps/manage.py migrate oauth2" % python, user='www-data', group='www-data')
+    #sudo("%s ./src/apps/manage.py migrate oauth2 0001 --fake" % python, user='www-data', group='www-data')
+    #sudo("%s ./src/apps/manage.py migrate oauth2" % python, user='www-data', group='www-data')
 
     #sudo("%s ./src/apps/manage.py loaddata l10n_data.xml" % python, user='www-data', group='www-data')
 
@@ -323,7 +323,7 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
     python = '/envs/%(virtualenv)s/bin/python' % {'virtualenv': virtualenv}
     with cd(code_dir):
         update_dir_settings(code_dir + '/logs')
-        #migrate_data(python, server_name, code_dir, app)
+        migrate_data(python, server_name, code_dir, app)
         sudo("%s ./src/apps/manage.py collectstatic --noinput" % python)
         sudo("supervisorctl restart %(server_name)s" % {'server_name': server_name})
         update_dir_settings(code_dir + '/logs')

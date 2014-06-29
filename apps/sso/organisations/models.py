@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
-#from django.dispatch import receiver
-#from django.db.models import signals
+# from django.dispatch import receiver
+# from django.db.models import signals
 from django.utils.translation import pgettext_lazy, ugettext_lazy as _
 
 from l10n.models import Country
@@ -25,12 +25,12 @@ class AdminRegion(AbstractBaseModel):
 
 class Organisation(AbstractBaseModel):
     CENTER_TYPE_CHOICES = (
-            ('1', _('Buddhist Center')),
-            ('2', _('Buddhist Group')),
-            ('3', _('Buddhist Retreat')),            
-            ('7', _('Buddhist Center & Retreat')),            
-            ('16', _('Buddhist Group & Retreat')),            
-            )
+        ('1', _('Buddhist Center')),
+        ('2', _('Buddhist Group')),
+        ('3', _('Buddhist Retreat')),            
+        ('7', _('Buddhist Center & Retreat')),            
+        ('16', _('Buddhist Group & Retreat')),            
+    )
     _center_type_choices = {}
     for choice in CENTER_TYPE_CHOICES:
         _center_type_choices[choice[0]] = choice[1]
@@ -48,14 +48,19 @@ class Organisation(AbstractBaseModel):
     founded = models.DateField(_("founded"), blank=True, null=True)
     latitude = models.DecimalField(_("latitude"), max_digits=9, decimal_places=6, blank=True, null=True)
     longitude = models.DecimalField(_("longitude"), max_digits=9, decimal_places=6, blank=True, null=True)
-    is_active = models.BooleanField(_('active'), default=True,
-        help_text=_('Designates whether this buddhist center should be treated as '
-                    'active. Unselect this instead of deleting buddhist center.'))
+    is_active = models.BooleanField(_('active'), 
+                                    default=True,
+                                    help_text=_('Designates whether this buddhist center should be treated as '
+                                                'active. Unselect this instead of deleting buddhist center.'))
     is_private = models.BooleanField(_("private"), 
-        help_text=_('Designates whether this buddhist center data should be treated as private and '
-                    'only a telephone number should be displayed on public sites.'), default=False)
+                                     help_text=_('Designates whether this buddhist center data should be treated as private and '
+                                                 'only a telephone number should be displayed on public sites.'), 
+                                     default=False)
+    can_publish = models.BooleanField(_("publish"), 
+                                      help_text=_('Designates whether this buddhist center data can be published.'), 
+                                      default=True)
     admin_region = models.ForeignKey(AdminRegion, blank=True, null=True)
-    #history = HistoricalRecords()
+    # history = HistoricalRecords()
     
     class Meta:
         ordering = ['name']
@@ -109,9 +114,9 @@ class Organisation(AbstractBaseModel):
 
 class OrganisationAddress(AbstractBaseModel, AddressMixin):
     ADDRESSTYPE_CHOICES = (
-            ('post', _('Post')),
-            ('meditation', _('Meditation')),
-            )        
+        ('post', _('Post')),
+        ('meditation', _('Meditation')),
+    )        
     address_type = models.CharField(_("address type"), choices=ADDRESSTYPE_CHOICES, max_length=20)
     organisation = models.ForeignKey(Organisation)
     careof = models.CharField(_('care of (c/o)'), default='', blank=True, max_length=80)
@@ -137,7 +142,7 @@ class OrganisationPhoneNumber(AbstractBaseModel, PhoneNumberMixin):
     organisation = models.ForeignKey(Organisation)
 
     class Meta(AbstractBaseModel.Meta, PhoneNumberMixin.Meta):
-        #unique_together = (("organisation", "phone_type"),)
+        # unique_together = (("organisation", "phone_type"),)
         pass
 
     @classmethod

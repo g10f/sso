@@ -67,6 +67,50 @@ def get_page_and_links(request, qs, find_expression=FIND_EXPRESSION):
 
 
 @cache_page(60 * 60)
+def home(request):
+    base_uri = base_url(request)
+    resources = {
+        "resources": {
+            "http://openid.net/specs/connect/1.0/issuer": {
+                "href": "%s%s" % (base_uri, "/.well-known/openid-configuration")
+            },
+            "http://dwbn.org/specs/api/1.0/me": {
+                "href": "%s%s" % (base_uri, reverse('api:v1_users_me')),
+                "hints": {
+                    "docs": "https://wiki.dwbn.org"
+                }
+            },
+            "http://dwbn.org/specs/api/1.0/my-apps": {
+                "href": "%s%s" % (base_uri, reverse('api:v1_users_my_apps'))
+            },
+            "http://dwbn.org/specs/api/1.0/users": {
+                "href-template": "%s%s%s" % (base_uri, reverse('api:v1_users'), FIND_EXPRESSION),
+                "href-vars": {
+                    "q": "%s/param/q" % (base_uri),
+                    "organisation__uuid": "%s/param/organisation__uuid" % (base_uri),
+                    "per_page": "%s/param/per_page" % (base_uri),
+                    "app_uuid": "%s/param/app_uuid" % (base_uri),
+                    "modified_since": "%s/param/modified_since" % (base_uri)
+                }
+            },
+            "http://dwbn.org/specs/api/1.0/user-apps": {
+                "href-template": "%s%s%s" % (base_uri, reverse('api:v1_users'), '{uuid}/apps/'),
+                "href-vars": {
+                    "uuid": "%s/param/uuid" % (base_uri)
+                }
+            },
+            "http://dwbn.org/specs/api/1.0/user": {
+                "href-template": "%s%s%s" % (base_uri, reverse('api:v1_users'), '{uuid}/'),
+                "href-vars": {
+                    "uuid": "%s/param/uuid" % (base_uri)
+                }
+            }
+        }
+    }
+    return JsonHttpResponse(content=resources, request=request)
+
+"""
+@cache_page(60 * 60)
 def get_index(request, find_expression=FIND_EXPRESSION):
     base_uri = base_url(request)
     self_url = "%s%s" % (base_uri, request.path)
@@ -83,9 +127,8 @@ def get_index(request, find_expression=FIND_EXPRESSION):
             'my_apps': {'href': '%s%s%s' % (base_uri, reverse('api:v1_users'), 'me/apps/'), 'templated': False, 'title': _('apps for logged in user')},
         }
     }
-    content = json.dumps(api)    
-    return HttpResponse(content=content, content_type='application/json')
-
+    return JsonHttpResponse(content=api, request=request)
+"""
 
 def _address_state(address):
     state = ""
