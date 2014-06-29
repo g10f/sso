@@ -28,11 +28,6 @@ class CountryListFilter(SimpleListFilter):
             return queryset.all()
 
 
-"""
-class OrganisationCountryListFilter(CountryListFilter):
-    filter_kwargs = {'organisation__isnull': False}
-"""
-
 class AdminRegionAdmin(admin.ModelAdmin):
     list_display = ('name', 'uuid', 'last_modified')
     date_hierarchy = 'last_modified'
@@ -59,9 +54,19 @@ class Address_Inline(admin.StackedInline):
           'classes': ['wide'], }),
     ]
 
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """
+        display only countries where there is a corresponding entry in organisationcountry table 
+        """
+        if db_field.name == "country":
+            kwargs["queryset"] = Country.objects.filter(organisationcountry__isnull=False)
+        
+        return super(Address_Inline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 class AddressAdmin(admin.ModelAdmin):
     list_display = ('organisation', 'city', 'address_type', 'addressee', 'addressee_add', 'careof')
+
 
 class PhoneNumber_Inline(admin.TabularInline):
     model = OrganisationPhoneNumber
@@ -100,6 +105,15 @@ class OrganisationAdmin(admin.ModelAdmin):
           ['notes'],
           'classes': ['collapse', 'wide'], }),
     ]
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """
+        display only countries where there is a corresponding entry in organisationcountry table 
+        """
+        if db_field.name == "country":
+            kwargs["queryset"] = Country.objects.filter(organisationcountry__isnull=False)
+        
+        return super(OrganisationAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
     def save_model(self, request, obj, form, change):
         if form.has_changed():
