@@ -245,32 +245,6 @@ class User(AbstractUser):
             
         return result_dict.values()
     
-    """
-    @memoize
-    def get_administrable_application_roles(self):
-        if self.is_superuser:
-            administrable_application_roles = ApplicationRole.objects.all().select_related()
-        else:
-            # all roles the user has, with adequate inheritable flag
-            if self.has_perm("accounts.change_all_users"):
-                application_roles = filter(attrgetter('is_inheritable_by_global_admin'), self.get_applicationroles())
-            elif self.has_perm("accounts.change_org_users") or self.has_perm("accounts.change_reg_users"):
-                application_roles = filter(attrgetter('is_inheritable_by_org_admin'), self.get_applicationroles())
-            else:
-                application_roles = [] 
-            
-            administrable_application_roles = application_roles
-            #q = Q(id__in=application_roles.values_list('id', flat=True))
-            
-            # additionally all roles of application where the user is a superuser
-            #for application_role in application_roles:
-            #    if application_role.role.name == SUPERUSER_ROLE:
-            #        q |= Q(application__id=application_role.application.id)
-             
-            #administrable_application_roles = ApplicationRole.objects.filter(q).select_related()
-        return administrable_application_roles
-    """
-    
     @memoize
     def get_administrable_application_roles(self):
         """
@@ -290,12 +264,6 @@ class User(AbstractUser):
             
             administrable_application_roles = application_roles
         return administrable_application_roles
-    
-    """
-    @property
-    def administrable_application_roles_choices(self):
-        return [(x.id, x.__unicode__()) for x in self.get_administrable_application_roles()]
-    """
     
     @memoize
     def get_administrable_role_profiles(self):

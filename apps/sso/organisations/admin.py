@@ -48,7 +48,7 @@ class Address_Inline(admin.StackedInline):
           ['address_type', 'addressee', 'street_address', 'careof', 'postal_code', 'city',
            'country', 'state', 'primary', ],
           'classes': ['wide'], }),
-        ]
+    ]
 
 
 class AddressAdmin(admin.ModelAdmin):
@@ -63,13 +63,13 @@ class PhoneNumber_Inline(admin.TabularInline):
          {'fields':
           ['phone_type', 'phone', 'primary'],
           'classes': ['wide'], }),
-        ]
+    ]
 
 
 class OrganisationAdmin(admin.ModelAdmin):
     class Media:
         css = {
-                "all": ("css/adminstyle.css",)
+            "all": ("css/adminstyle.css",)
         }
 
     ordering = ['name']
@@ -78,7 +78,7 @@ class OrganisationAdmin(admin.ModelAdmin):
     inlines = [PhoneNumber_Inline, Address_Inline]
     readonly_fields = ['uuid', 'last_modified', 'google_maps_link']
     date_hierarchy = 'founded'
-    list_filter = ('is_active', 'admin_region', OrganisationCountryListFilter, 'center_type',
+    list_filter = ('is_active', 'is_private', 'admin_region', OrganisationCountryListFilter, 'center_type',
                    'organisationaddress__address_type', 'organisationphonenumber__phone_type')
     list_display = ('id', 'name', 'email', 'last_modified', 'homepage_link', 'google_maps_link', )
     fieldsets = [
@@ -91,7 +91,7 @@ class OrganisationAdmin(admin.ModelAdmin):
          {'fields':
           ['notes'],
           'classes': ['collapse', 'wide'], }),
-        ]
+    ]
 
     def save_model(self, request, obj, form, change):
         if form.has_changed():

@@ -180,7 +180,8 @@ class UserList(ListView):
             centers = None
         
         is_active_list = [FilterItem(item) for item in UserList.IS_ACTIVE_CHOICES]
-        filters = [{
+        filters = [
+            {
                 'selected': self.country, 'list': countries, 'select_text': _('Select Country'), 'select_all_text': _("All Countries"), 
                 'param_name': 'country', 'all_remove': 'region,center', 'remove': 'region,center,app_role,role_profile,p'
             }, {
@@ -228,8 +229,7 @@ def add_user(request, template='accounts/application/add_user_form.html'):
         default_role_profile = User.get_default_role_profile()
         form = UserAddFormExt(request.user, initial={'role_profiles': [default_role_profile]})
 
-    data = {'form': form,
-             'title': _('Add user')}
+    data = {'form': form, 'title': _('Add user')}
     return render(request, template, data)
 
 
@@ -242,7 +242,7 @@ def add_user_done(request, uuid, template='accounts/application/add_user_done.ht
     
 @user_passes_test(is_admin)
 def update_user(request, uuid, template='accounts/application/change_user_form.html'):
-    #TODO: check if the authenticated user has admin rights for the organisation
+    # TODO: check if the authenticated user has admin rights for the organisation
     user = get_object_or_404(get_user_model(), uuid=uuid)
     
     if request.method == 'POST':

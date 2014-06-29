@@ -10,14 +10,14 @@ class OrganisationAddressForm(BaseForm):
         model = OrganisationAddress
         fields = ('primary', 'address_type', 'addressee', 'street_address', 'city', 'postal_code', 'country', 'state') 
         widgets = {
-                   'primary': bootstrap.CheckboxInput(),
-                   'address_type': bootstrap.Select(),
-                   'addressee': bootstrap.TextInput(attrs={'size': 50}),
-                   'street_address': bootstrap.Textarea(attrs={'cols': 50, 'rows': 2}),
-                   'city': bootstrap.TextInput(attrs={'size': 50}),
-                   'postal_code': bootstrap.TextInput(attrs={'size': 50}),
-                   'country': bootstrap.Select()
-                   }
+            'primary': bootstrap.CheckboxInput(),
+            'address_type': bootstrap.Select(),
+            'addressee': bootstrap.TextInput(attrs={'size': 50}),
+            'street_address': bootstrap.Textarea(attrs={'cols': 50, 'rows': 2}),
+            'city': bootstrap.TextInput(attrs={'size': 50}),
+            'postal_code': bootstrap.TextInput(attrs={'size': 50}),
+            'country': bootstrap.Select()
+        }
     
     def opts(self):
         # i need the model verbose_name in the html form, is there a better way?
@@ -32,10 +32,10 @@ class OrganisationPhoneNumberForm(BaseForm):
         model = OrganisationPhoneNumber
         fields = ('phone_type', 'phone', 'primary') 
         widgets = {
-                   'phone_type': bootstrap.Select(),
-                   'phone': bootstrap.TextInput(attrs={'size': 50}),
-                   'primary': bootstrap.CheckboxInput()
-                   }
+            'phone_type': bootstrap.Select(),
+            'phone': bootstrap.TextInput(attrs={'size': 50}),
+            'primary': bootstrap.CheckboxInput()
+        }
     
     def opts(self):
         # i need the model verbose_name in the html form, is there a better way?
@@ -51,21 +51,22 @@ class OrganisationForm(BaseForm):
     class Meta:
         model = Organisation
         
-        fields = ('name', 'email', 'homepage', 'founded', 'latitude', 'longitude', 'is_active', 'center_type', 'country', 'admin_region')
+        fields = ('name', 'email', 'homepage', 'founded', 'latitude', 'longitude', 'is_active', 'is_private', 'can_publish', 'center_type', 'country', 'admin_region')
         years_to_display = range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1)
         widgets = {
-                   'email': bootstrap.TextInput(attrs={'size': 50}),
-                   'homepage': bootstrap.TextInput(attrs={'size': 50}),
-                   'country': bootstrap.Select(),
-                   'admin_region': bootstrap.Select(),
-                   'name': bootstrap.TextInput(attrs={'size': 50}), 
-                   'founded': bootstrap.SelectDateWidget(years=years_to_display, required=False),
-                   'latitude': bootstrap.TextInput(attrs={'size': 50}),
-                   'longitude': bootstrap.TextInput(attrs={'size': 50}),
-                   'center_type': bootstrap.Select(),
-                   'is_active': bootstrap.CheckboxInput()
-                   
-                   }
+            'email': bootstrap.TextInput(attrs={'size': 50}),
+            'homepage': bootstrap.TextInput(attrs={'size': 50}),
+            'country': bootstrap.Select(),
+            'admin_region': bootstrap.Select(),
+            'name': bootstrap.TextInput(attrs={'size': 50}), 
+            'founded': bootstrap.SelectDateWidget(years=years_to_display, required=False),
+            'latitude': bootstrap.TextInput(attrs={'size': 50}),
+            'longitude': bootstrap.TextInput(attrs={'size': 50}),
+            'center_type': bootstrap.Select(),
+            'is_active': bootstrap.CheckboxInput(),
+            'is_private': bootstrap.CheckboxInput(),
+            'can_publish': bootstrap.CheckboxInput()
+        }
         
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')  # remove custom user keyword      
