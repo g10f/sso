@@ -1,16 +1,25 @@
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
-# from django.dispatch import receiver
-# from django.db.models import signals
 from django.utils.translation import pgettext_lazy, ugettext_lazy as _
-
 from l10n.models import Country
-
 from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary
 
 import logging
 
 logger = logging.getLogger(__name__)
+
+
+class OrganisationCountry(AbstractBaseModel):
+    country = models.OneToOneField(Country, verbose_name=_("country"), null=True, limit_choices_to={'active': True})
+    homepage = models.URLField(_("homepage"), blank=True,)
+    
+    class Meta(AbstractBaseModel.Meta):
+        verbose_name = _('Country')
+        verbose_name_plural = _('Countries')
+        ordering = ['country']
+
+    def __unicode__(self):
+        return u"%s" % (self.country)
 
 
 class AdminRegion(AbstractBaseModel):
@@ -40,6 +49,7 @@ class Organisation(AbstractBaseModel):
 
     name = models.CharField(_("name"), max_length=255)
     country = models.ForeignKey(Country, verbose_name=_("country"), null=True, limit_choices_to={'active': True})
+    # country = models.ForeignKey(Country, verbose_name=_("country"), null=True)
     email = models.EmailField(_('e-mail address'))
     homepage = models.URLField(_("homepage"), blank=True,)
     notes = models.TextField(_('notes'), blank=True, max_length=255)

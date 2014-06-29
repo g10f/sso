@@ -28,14 +28,23 @@ class CountryListFilter(SimpleListFilter):
             return queryset.all()
 
 
+"""
 class OrganisationCountryListFilter(CountryListFilter):
     filter_kwargs = {'organisation__isnull': False}
-
+"""
 
 class AdminRegionAdmin(admin.ModelAdmin):
     list_display = ('name', 'uuid', 'last_modified')
     date_hierarchy = 'last_modified'
     search_fields = ('name', 'uuid')
+
+
+class OrganisationCountryAdmin(admin.ModelAdmin):
+    list_select_related = ('country', )
+    list_display = ('country', 'homepage', 'last_modified')
+    list_filter = ('country__continent', 'country__active')
+    date_hierarchy = 'last_modified'
+    search_fields = ('country__name', 'uuid')
 
 
 class Address_Inline(admin.StackedInline):
@@ -71,14 +80,13 @@ class OrganisationAdmin(admin.ModelAdmin):
         css = {
             "all": ("css/adminstyle.css",)
         }
-
     ordering = ['name']
     save_on_top = True
     search_fields = ('email', 'name', 'homepage', 'uuid')
     inlines = [PhoneNumber_Inline, Address_Inline]
     readonly_fields = ['uuid', 'last_modified', 'google_maps_link']
     date_hierarchy = 'founded'
-    list_filter = ('is_active', 'is_private', 'admin_region', OrganisationCountryListFilter, 'center_type',
+    list_filter = ('is_active', 'is_private', 'admin_region', 'country__continent', CountryListFilter, 'center_type',
                    'organisationaddress__address_type', 'organisationphonenumber__phone_type')
     list_display = ('id', 'name', 'email', 'last_modified', 'homepage_link', 'google_maps_link', )
     fieldsets = [

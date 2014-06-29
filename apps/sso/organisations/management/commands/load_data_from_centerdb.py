@@ -5,7 +5,7 @@ import decimal
 from django.utils.dateparse import parse_date
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import NoArgsCommand
-from ...models import Organisation, OrganisationAddress, OrganisationPhoneNumber
+from ...models import Organisation, OrganisationAddress, OrganisationPhoneNumber, OrganisationCountry
 
 from l10n.models import Country, AdminArea
 from sso.models import update_object_from_dict
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 class Command(NoArgsCommand):
     help = "Load Buddhist Organisations."  # @ReservedAssignment
     url = "https://center.dwbn.org/organisations/buddhistcenter/"
-    #url = "http://localhost:8002/organisations/buddhistcenter/"
+    # url = "http://localhost:8002/organisations/buddhistcenter/"
     
     def handle(self, *args, **options):
         if len(args) > 0:
@@ -83,9 +83,11 @@ def mark_active_centers(active_center_uuids):
     
 def load_buddhistcenters(url):
     
-    def get_country_id(value):
+    def get_country(value):
         try:
-            return Country.objects.get(iso2_code=value)
+            country = Country.objects.get(iso2_code=value)
+            OrganisationCountry.objects.get_or_create(country=country)
+            return country
         except ObjectDoesNotExist, e:
             logger.warning("exception %s, country_id: %s", str(e), value)            
         return None
@@ -103,7 +105,7 @@ def load_buddhistcenters(url):
         'latitude': ('latitude', float_to_decimal),
         'longitude': ('longitude', float_to_decimal),
         'founded': ('founded', parse_date),
-        'country_iso2_code': ('country', get_country_id)
+        'country_iso2_code': ('country', get_country)
     }
     
     buddhistcenters = get_json(url)

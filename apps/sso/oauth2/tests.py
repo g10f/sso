@@ -242,15 +242,15 @@ class OAuth2Tests(OAuth2BaseTestCase):
         authorization = 'Bearer %s' % token['access_token']
         self.logout()
         
-        response = self.client.get(reverse('api:v1_index'))
-        index = json.loads(response.content)
+        response = self.client.get(reverse('openid-configuration'))
+        configuration = json.loads(response.content)
         
         # no authentication
-        response = self.client.get(index['links']['me']['href'])
+        response = self.client.get(configuration['userinfo_endpoint'])
         self.assertEqual(response.status_code, 401)
 
         # valid authentication
-        response = self.client.get(index['links']['me']['href'], HTTP_AUTHORIZATION=authorization)
+        response = self.client.get(configuration['userinfo_endpoint'], HTTP_AUTHORIZATION=authorization)
         self.assertEqual(response.status_code, 200)
         user_info = json.loads(response.content)
         self.assertEqual(user_info['family_name'], 'Scherf')
