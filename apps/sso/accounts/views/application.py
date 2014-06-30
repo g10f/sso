@@ -58,7 +58,7 @@ class UserList(ListView):
     list_display = ['username', 'first_name', 'last_name', 'email', 'last_login', 'date_joined']
     IS_ACTIVE_CHOICES = (('1', _('Active Users')), ('2', _('Inactive Users')))
     
-    @method_decorator(permission_required('accounts.change_user'))
+    @method_decorator(user_passes_test(is_admin))
     def dispatch(self, request, *args, **kwargs):
         return super(UserList, self).dispatch(request, *args, **kwargs)
 
