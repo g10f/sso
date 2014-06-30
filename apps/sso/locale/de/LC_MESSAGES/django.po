@@ -1504,7 +1504,7 @@ msgid ""
 "and only a telephone number should be displayed on public sites."
 msgstr ""
 "Legt fest, ob die Daten diese Zentrums privat sind und nur die "
-"Telefonnummerauf öffentlichen Seiten angezeigt werden soll."
+"Telefonnummer auf öffentlichen Seiten angezeigt werden soll."
 
 #: organisations/models.py:69
 msgid "publish"
