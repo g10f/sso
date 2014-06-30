@@ -43,7 +43,7 @@
 	               <td>
 	               {% if perms.accounts.change_user %}
 	               <a class="" href="{% url 'accounts:update_user' user.uuid %}{{ cl.get_query_string }}">{{ user.username }}</a>
-	               {% else %}{{ user.username }{% endif %}
+	               {% else %}{{ user.username }}{% endif %}
 	               </td>
 	               <td>{{ user.first_name }}</td>
 	               <td>{{ user.last_name }}</td>
