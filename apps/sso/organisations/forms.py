@@ -3,6 +3,7 @@ import datetime
 from django.utils.translation import ugettext_lazy as _
 from django.forms import ModelChoiceField
 from sso.forms import bootstrap, BaseForm
+from sso.emails.models import EmailForward, EmailAlias
 from .models import OrganisationPhoneNumber, OrganisationAddress, Organisation
 from l10n.models import Country 
 
@@ -30,7 +31,16 @@ class OrganisationAddressForm(BaseForm):
         return 'edit_inline/stacked.html'
 
 
-class OrganisationPhoneNumberForm(BaseForm):
+class OrganisationBaseTabularInlineForm(BaseForm):
+    def opts(self):
+        # i need the model verbose_name in the html form, is there a better way?
+        return self._meta.model._meta
+    
+    def template(self):
+        return 'edit_inline/tabular.html'
+
+
+class OrganisationPhoneNumberForm(OrganisationBaseTabularInlineForm):
     class Meta:
         model = OrganisationPhoneNumber
         fields = ('phone_type', 'phone', 'primary') 
@@ -39,13 +49,24 @@ class OrganisationPhoneNumberForm(BaseForm):
             'phone': bootstrap.TextInput(attrs={'size': 50}),
             'primary': bootstrap.CheckboxInput()
         }
-    
-    def opts(self):
-        # i need the model verbose_name in the html form, is there a better way?
-        return self._meta.model._meta
-    
-    def template(self):
-        return 'edit_inline/tabular.html'
+
+
+class OrganisationEmailForwardForm(OrganisationBaseTabularInlineForm):
+    class Meta:
+        model = EmailForward
+        fields = ('email', ) 
+        widgets = {
+            'email': bootstrap.TextInput(attrs={'size': 50}),
+        }
+
+
+class OrganisationEmailAliasForm(OrganisationBaseTabularInlineForm):
+    class Meta:
+        model = EmailAlias
+        fields = ('email', ) 
+        widgets = {
+            'email': bootstrap.TextInput(attrs={'size': 50}),
+        }
 
 
 class OrganisationForm(BaseForm):
@@ -58,7 +79,8 @@ class OrganisationForm(BaseForm):
         fields = ('name', 'email', 'homepage', 'founded', 'latitude', 'longitude', 'is_active', 'is_private', 'can_publish', 'center_type', 'country', 'admin_region')
         years_to_display = range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1)
         widgets = {
-            'email': bootstrap.TextInput(attrs={'size': 50}),
+            # 'email': bootstrap.TextInput(attrs={'size': 50}),
+            'email': bootstrap.Select(),
             'homepage': bootstrap.TextInput(attrs={'size': 50}),
             'country': bootstrap.Select(),
             'admin_region': bootstrap.Select(),

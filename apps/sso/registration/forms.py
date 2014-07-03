@@ -84,7 +84,7 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
             user_data['organisations'] = self.user.organisations.all()[0]
         except IndexError:
             # center is optional
-            #logger.error("User without center?", exc_info=1)
+            # logger.error("User without center?", exc_info=1)
             pass
         address_data = {}
         if self.user.useraddress_set.exists():
@@ -123,7 +123,7 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
         self.registrationprofile.check_back = cd['check_back']
         self.registrationprofile.is_access_denied = cd['is_access_denied']
         if current_user.has_perm('registration.verify_users'):
-            self.registrationprofile.verified_by_user = current_user if (cd['is_verified'] == True) else None
+            self.registrationprofile.verified_by_user = current_user if cd['is_verified'] else None
         
         self.registrationprofile.save()        
         
@@ -168,7 +168,7 @@ class UserSelfRegistrationForm(forms.Form):
     language = forms.ChoiceField(label=_("Language"), required=False, choices=(BLANK_CHOICE_DASH + sorted(list(settings.LANGUAGES), key=lambda x: x[1])), widget=bootstrap.Select())
     gender = forms.ChoiceField(label=_('Gender'), required=False, choices=(BLANK_CHOICE_DASH + User.GENDER_CHOICES), widget=bootstrap.Select())
     dob = forms.DateField(label=_('Date of birth'), required=False, 
-                widget=bootstrap.SelectDateWidget(years=range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1), required=False))
+                          widget=bootstrap.SelectDateWidget(years=range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1), required=False))
 
     def clean_email(self):
         # Check if email is unique,

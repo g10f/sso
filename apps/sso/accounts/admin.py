@@ -223,7 +223,7 @@ class Address_Inline(admin.StackedInline):
          {'fields':
           ['address_type', 'addressee', 'street_address', 'postal_code', 'city', 'country', 'state', 'primary', ],
           'classes': ['wide'], }),
-        ]
+    ]
 
 
 class PhoneNumber_Inline(admin.TabularInline):
@@ -236,7 +236,7 @@ class PhoneNumber_Inline(admin.TabularInline):
          {'fields':
           ['phone_type', 'phone', 'primary', ],
           'classes': ['wide'], }),
-        ]
+    ]
 
 
 class UserAdmin(AdminImageMixin, DjangoUserAdmin):
@@ -246,7 +246,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
     list_display = ('id',) + DjangoUserAdmin.list_display + ('last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user')
     search_fields = ('username', 'first_name', 'last_name', 'email', 'uuid')
     list_filter = (SuperuserFilter, ) + ('is_staff', 'is_center', 'is_active', 'groups', UserAssociatedSystemFilter, UserRegionListFilter,
-                    RoleProfilesFilter, ExcludeRoleProfilesFilter, ApplicationRolesFilter)  # ,UserOrganisationsListFilter, CreatedByUserFilter, LastModifiedUserFilter
+                                         RoleProfilesFilter, ExcludeRoleProfilesFilter, ApplicationRolesFilter)  # ,UserOrganisationsListFilter, CreatedByUserFilter, LastModifiedUserFilter
     filter_horizontal = DjangoUserAdmin.filter_horizontal + ('groups', 'application_roles', 'role_profiles', 'organisations')
     ordering = ['-last_login', '-first_name', '-last_name']
     actions = ['mark_info_mail']
@@ -255,8 +255,8 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
     fieldsets = (
         (None, {'fields': ('username', 'password'), 'classes': ['wide']}),
         (_('Personal info'), {
-                'fields': ('first_name', 'last_name', 'email', 'gender', 'dob', 'homepage', 'uuid', 'is_center', 'is_subscriber', 'picture'), 
-                'classes': ['wide']}),
+            'fields': ('first_name', 'last_name', 'email', 'gender', 'dob', 'homepage', 'uuid', 'is_center', 'is_subscriber', 'picture'), 
+            'classes': ['wide']}),
         (_('AppRoles'), {'fields': ('assigned_organisations', 'organisations', 'application_roles', 'role_profiles'), 'classes': ['wide', 'wide_ex']}),
         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'), 'classes': ['wide', 'wide_ex']}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user'), 'classes': ['wide']}),
@@ -276,7 +276,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         (None, {
             'classes': ('wide',),
             'fields': ('first_name', 'last_name', 'email', 'password1', 'password2')}
-        ),
+         ),
     )
 
     @classmethod
@@ -410,7 +410,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
                 organisations = user.get_administrable_organisations()
                 q = Q(is_superuser=False) & (
                     Q(organisations__in=organisations))
-                return  qs.filter(q).distinct()
+                return qs.filter(q).distinct()
                         
     def mark_info_mail(self, request, queryset):
         
@@ -424,7 +424,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
                 connection = get_connection()
                 for user in queryset:
                     msg = EmailMessage(subject, body, to=[user.email], from_email=from_email, connection=connection)
-                    #msg.content_subtype = "html"
+                    # msg.content_subtype = "html"
                     msg.send(fail_silently=True)
                 self.message_user(request, _("Successfully send Information Email to  %(count)d %(items)s.") % {
                     "count": n, "items": model_ngettext(self.opts, n)
