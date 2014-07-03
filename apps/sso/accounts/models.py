@@ -173,6 +173,7 @@ class User(AbstractUser):
 
     class Meta(AbstractUser.Meta):
         permissions = (
+            ("change_cou_users", "Can manage country users"),
             ("change_reg_users", "Can manage region users"),
             ("change_org_users", "Can manage organisation users"),
             ("change_all_users", "Can manage all users"),

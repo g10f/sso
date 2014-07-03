@@ -32,10 +32,10 @@ def send_user_validated_email(registration_profile, request):
         
         
 def send_set_password_email(user, request, token_generator=default_pwd_reset_token_generator,
-                              from_email=None,
-                              email_template_name='registration/set_password_email.txt',
-                              subject_template_name='registration/set_password_subject.txt'
-                              ):
+                            from_email=None,
+                            email_template_name='registration/set_password_email.txt',
+                            subject_template_name='registration/set_password_subject.txt'
+                            ):
     use_https = request.is_secure()
     current_site = get_current_site(request)
     site_name = settings.SSO_CUSTOM['SITE_NAME']
@@ -169,5 +169,5 @@ class RegistrationProfile(models.Model):
 
     def activation_valid(self):
         activation_expiration_date = RegistrationManager.activation_expiration_date() 
-        return bool((self.user.is_active == True) or (self.date_registered > activation_expiration_date))
+        return self.user.is_active or (self.date_registered > activation_expiration_date)
     activation_valid.boolean = True

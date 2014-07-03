@@ -36,6 +36,12 @@ div.form-group {
         .make-sm-column(9);
     }
 }
+// bootstrap indent the labels to position radios/checkboxes as hanging controls.
+// we have the label as seperate element and not the checkbox inside a label
+.dwbn-form-control .checkbox input[type="checkbox"] {
+  margin-left: 0px;
+}
+
 noscript div {
     margin-top: -20px;
 }

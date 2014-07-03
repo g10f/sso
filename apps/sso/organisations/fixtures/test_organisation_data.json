@@ -23,9 +23,8 @@
 		 "admin_region": ["0ebf2537fc664b7db285ea773c981404"],
 		 "name" : "Test Center 1",
 		 "center_type": "1",
-		 "country" : 81,
-		 "email" : "testcenter1@example.com"
-	 }
+		 "country" : 81
+	}
 }, {
 	 "pk" : 2,
 	 "model" : "organisations.organisation",
@@ -34,8 +33,7 @@
 		 "admin_region": ["0ebf2537fc664b7db285ea773c981404"],
 		 "name" : "Test Center 2",
 		 "center_type": "1",
-		 "country" : 81,
-		 "email" : "testcenter2@example.com"
+		 "country" : 81
 	 }
 }
 ]

@@ -2,6 +2,7 @@
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
 from django.utils.encoding import force_text
+from django.core.exceptions import ValidationError
 from django.contrib.auth.decorators import login_required, permission_required
 from django.views.generic import ListView, DeleteView, DetailView, CreateView
 from django.utils.decorators import method_decorator
@@ -14,11 +15,12 @@ from l10n.models import Country
 
 from sso.views import main
 from sso.views.main import FilterItem
+from sso.emails.models import EmailForward, Email, EmailAlias
 from sso.organisations.models import AdminRegion, Organisation
 from sso.views.generic import FormsetsUpdateView
 from utils.url import is_safe_url
 from .models import OrganisationAddress, OrganisationPhoneNumber
-from .forms import OrganisationForm, OrganisationAddressForm, OrganisationPhoneNumberForm
+from .forms import OrganisationForm, OrganisationAddressForm, OrganisationPhoneNumberForm, OrganisationEmailForwardForm, OrganisationEmailAliasForm
 
 import logging
 logger = logging.getLogger(__name__)
@@ -83,6 +85,10 @@ class MyOrganisationDetailView(OrganisationBaseView, DetailView):
     """
     template_name = "organisations/my_organisation_detail.html"
     
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(MyOrganisationDetailView, self).dispatch(request, *args, **kwargs)
+
     def get_object(self, queryset=None):
         return self.request.user.organisations.first()
     
@@ -112,6 +118,23 @@ class OrganisationCreateView(OrganisationBaseView, CreateView):
         return super(OrganisationCreateView, self).dispatch(request, *args, **kwargs)
 
 
+def get_optional_email_inline_formset(request, email, Model, Form, max_num=6, extra=1):
+    InlineFormSet = inlineformset_factory(Email, Model, Form, extra=extra, max_num=max_num)
+    if not email:
+        return None
+    if request.method == 'POST':
+        formset = InlineFormSet(request.POST, instance=email)        
+        try:
+            # Check if there was a InlineFormSet in the GET response because
+            # InlineFormSet is only in the response when the organisation has a email list
+            formset.initial_form_count()
+        except ValidationError:
+            formset = None
+    else:
+        formset = InlineFormSet(instance=email)
+    return formset
+        
+
 class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
     form_class = OrganisationForm
     
@@ -125,25 +148,38 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
     
     def get_formsets(self):
         address_extra = 0
-        phonenumber_extra = 1
+        phone_number_extra = 1
         
         address_count = self.object.organisationaddress_set.count()
         if address_count == 0: 
             address_extra = 1
         
         AddressInlineFormSet = inlineformset_factory(self.model, OrganisationAddress, OrganisationAddressForm, extra=address_extra, max_num=3)
-        PhoneNumberInlineFormSet = inlineformset_factory(self.model, OrganisationPhoneNumber, OrganisationPhoneNumberForm, extra=phonenumber_extra, max_num=6)
+        PhoneNumberInlineFormSet = inlineformset_factory(self.model, OrganisationPhoneNumber, OrganisationPhoneNumberForm, max_num=6, extra=phone_number_extra)
 
         if self.request.method == 'POST':
             address_inline_formset = AddressInlineFormSet(self.request.POST, instance=self.object)
-            phonenumber_inline_formset = PhoneNumberInlineFormSet(self.request.POST, instance=self.object)
+            phone_number_inline_formset = PhoneNumberInlineFormSet(self.request.POST, instance=self.object)
         else:           
             address_inline_formset = AddressInlineFormSet(instance=self.object)
-            phonenumber_inline_formset = PhoneNumberInlineFormSet(instance=self.object)
+            phone_number_inline_formset = PhoneNumberInlineFormSet(instance=self.object)
         
         address_inline_formset.forms += [address_inline_formset.empty_form] 
-        phonenumber_inline_formset.forms += [phonenumber_inline_formset.empty_form]
-        return [address_inline_formset, phonenumber_inline_formset]
+        phone_number_inline_formset.forms += [phone_number_inline_formset.empty_form]
+        email_forward_inline_formset = get_optional_email_inline_formset(self.request, self.object.email, 
+                                                                         Model=EmailForward, Form=OrganisationEmailForwardForm, max_num=10)
+        email_alias_inline_formset = get_optional_email_inline_formset(self.request, self.object.email, 
+                                                                       Model=EmailAlias, Form=OrganisationEmailAliasForm, max_num=6)
+        
+        formsets = [address_inline_formset, phone_number_inline_formset]
+        if email_forward_inline_formset:
+            email_forward_inline_formset.forms += [email_forward_inline_formset.empty_form]
+            formsets += [email_forward_inline_formset]
+        if email_alias_inline_formset:
+            email_alias_inline_formset.forms += [email_alias_inline_formset.empty_form]
+            formsets += [email_alias_inline_formset]
+        
+        return formsets
 
     def get_success_url(self):
         msg = ""

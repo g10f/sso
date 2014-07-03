@@ -10,9 +10,10 @@
 	   <table class="table table-condensed">
 	     <thead>
 	     	<tr>
+	     	    <th class="hidden"></th>
 	     		{% for key, field in formset.form.base_fields.items %}
 	       		{% if not field.widget.is_hidden %}
-	         		<th{% if forloop.first %} colspan="2"{% endif %}{% if field.required %} class="required"{% endif %}>{{ field.label }}
+	         		<th{% if field.required %} class="required"{% endif %}>{{ field.label }}
 	         		{% if field.help_text %}&nbsp; <i class="glyphicon glyphicon-question-sign" title="{{ field.help_text|striptags }}"></i>{% endif %}
 	         		</th>
 	       		{% endif %}
@@ -29,7 +30,7 @@
             {% endif %}
 	        <tr class="{% cycle 'row1' 'row2' %} {% if field.errors or form.non_field_errors %}danger{% endif %} {% if form.fields.id.initial %}has_original{% endif %}{% if forloop.last %} empty-form{% endif %}"
 	             id="{{ formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
-	        <td class="original">
+	        <td class="original hidden">
 	          {% spaceless %}
 	          {% for field in form %}
 	               {% if field.is_hidden %} {{ field }} {% endif %}

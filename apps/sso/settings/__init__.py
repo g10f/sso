@@ -144,6 +144,7 @@ INSTALLED_APPS = (
     'smart_selects',
     'south',
     'sso',
+    'sso.emails',
     'sso.organisations',
     'sso.accounts',
     'sso.registration',

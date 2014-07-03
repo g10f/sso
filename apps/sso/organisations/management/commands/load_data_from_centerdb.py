@@ -6,6 +6,7 @@ from django.utils.dateparse import parse_date
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import NoArgsCommand
 from ...models import Organisation, OrganisationAddress, OrganisationPhoneNumber, OrganisationCountry
+from sso.emails.models import Email
 
 from l10n.models import Country, AdminArea
 from sso.models import update_object_from_dict
@@ -82,6 +83,7 @@ def mark_active_centers(active_center_uuids):
             center.save()
     
 def load_buddhistcenters(url):
+    DEFAULT_EMAIL_TYPE = '1'
     
     def get_country(value):
         try:
@@ -92,6 +94,9 @@ def load_buddhistcenters(url):
             logger.warning("exception %s, country_id: %s", str(e), value)            
         return None
     
+    def get_email(value):
+        return Email.objects.get_or_create(email=value, defaults={'name': value, 'email_type': DEFAULT_EMAIL_TYPE})[0]
+        
     def float_to_decimal(value):
         # manual conversion, to avoid having changed values caused by conversion from float 
         # to decimal
@@ -105,7 +110,8 @@ def load_buddhistcenters(url):
         'latitude': ('latitude', float_to_decimal),
         'longitude': ('longitude', float_to_decimal),
         'founded': ('founded', parse_date),
-        'country_iso2_code': ('country', get_country)
+        'country_iso2_code': ('country', get_country),
+        'email': ('email', get_email)
     }
     
     buddhistcenters = get_json(url)
