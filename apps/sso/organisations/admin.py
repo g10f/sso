@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.conf.urls import *  # @UnusedWildImport
 from l10n.models import Country
 from .models import OrganisationAddress, OrganisationPhoneNumber
-
+from sso.emails.models import Email, CENTER_EMAIL_TYPE
 
 class CountryListFilter(SimpleListFilter):
     title = _('Country')
@@ -85,6 +85,7 @@ class OrganisationAdmin(admin.ModelAdmin):
         css = {
             "all": ("css/adminstyle.css",)
         }
+    list_select_related = ('email',)
     ordering = ['name']
     save_on_top = True
     search_fields = ('email', 'name', 'homepage', 'uuid')
@@ -112,6 +113,8 @@ class OrganisationAdmin(admin.ModelAdmin):
         """
         if db_field.name == "country":
             kwargs["queryset"] = Country.objects.filter(organisationcountry__isnull=False)
+        if db_field.name == "email":
+            kwargs["queryset"] = Email.objects.filter(email_type=CENTER_EMAIL_TYPE)
         
         return super(OrganisationAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 

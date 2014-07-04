@@ -3,7 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import pgettext_lazy, ugettext_lazy as _
 from l10n.models import Country
 from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary
-from sso.emails.models import Email
+from sso.emails.models import Email, CENTER_EMAIL_TYPE
 
 import logging
 
@@ -52,7 +52,7 @@ class Organisation(AbstractBaseModel):
     country = models.ForeignKey(Country, verbose_name=_("country"), null=True, limit_choices_to={'active': True})
     # country = models.ForeignKey(Country, verbose_name=_("country"), null=True)
     # email = models.EmailField(_('e-mail address'))
-    email = models.ForeignKey(Email, verbose_name=_("e-mail address"), blank=True, null=True)
+    email = models.ForeignKey(Email, verbose_name=_("e-mail address"), blank=True, null=True, limit_choices_to={'email_type': CENTER_EMAIL_TYPE})
     homepage = models.URLField(_("homepage"), blank=True,)
     notes = models.TextField(_('notes'), blank=True, max_length=255)
     center_type = models.CharField(_('center type'), max_length=2, choices=CENTER_TYPE_CHOICES, db_index=True)    

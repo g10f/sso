@@ -7,14 +7,20 @@ logger = logging.getLogger(__name__)
 
 
 class EmailAdmin(admin.ModelAdmin):
-    list_display = ('email', 'name', 'last_modified', 'uuid')
+    search_fields = ('email', 'name', 'uuid')
+    list_display = ('email', 'email_type', 'last_modified', 'uuid')
+    list_filter = ('email_type',)
 
 
 class EmailAliasAdmin(admin.ModelAdmin):
-    list_display = ('email', 'email_list', 'last_modified', 'uuid')
-    list_filter = ('email_list', )
+    list_select_related = ('email',)
+    search_fields = ('email__email', 'alias', 'uuid')
+    list_display = ('alias', 'email', 'last_modified', 'uuid')
+    list_filter = ('email__email_type', 'email')
 
 
 class EmailForwardAdmin(admin.ModelAdmin):
-    list_display = ('email', 'email_list', 'last_modified', 'uuid')
-    list_filter = ('email_list', )
+    list_select_related = ('email',)
+    search_fields = ('email__email', 'forward', 'uuid')
+    list_display = ('forward', 'email', 'last_modified', 'uuid')
+    list_filter = ('email__email_type', 'email')

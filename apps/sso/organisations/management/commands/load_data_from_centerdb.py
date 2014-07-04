@@ -6,7 +6,7 @@ from django.utils.dateparse import parse_date
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import NoArgsCommand
 from ...models import Organisation, OrganisationAddress, OrganisationPhoneNumber, OrganisationCountry
-from sso.emails.models import Email
+from sso.emails.models import Email, CENTER_EMAIL_TYPE
 
 from l10n.models import Country, AdminArea
 from sso.models import update_object_from_dict
@@ -82,9 +82,7 @@ def mark_active_centers(active_center_uuids):
             center.is_active = is_active
             center.save()
     
-def load_buddhistcenters(url):
-    DEFAULT_EMAIL_TYPE = '1'
-    
+def load_buddhistcenters(url):    
     def get_country(value):
         try:
             country = Country.objects.get(iso2_code=value)
@@ -95,7 +93,7 @@ def load_buddhistcenters(url):
         return None
     
     def get_email(value):
-        return Email.objects.get_or_create(email=value, defaults={'name': value, 'email_type': DEFAULT_EMAIL_TYPE})[0]
+        return Email.objects.get_or_create(email=value, defaults={'email_type': CENTER_EMAIL_TYPE})[0]
         
     def float_to_decimal(value):
         # manual conversion, to avoid having changed values caused by conversion from float 

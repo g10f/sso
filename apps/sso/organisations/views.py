@@ -229,7 +229,7 @@ class OrganisationList(ListView):
             qs = self.request.user.get_administrable_organisations()
         else:
             self.my_organisations = None
-            qs = super(OrganisationList, self).get_queryset().select_related('country')
+            qs = super(OrganisationList, self).get_queryset().select_related('country', 'email')
             
         self.cl = main.ChangeList(self.request, self.model, self.list_display, default_ordering=['name'])
         # apply search filter
