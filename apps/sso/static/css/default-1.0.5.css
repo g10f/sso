@@ -6289,7 +6289,7 @@ div.form-group > .dwbn-form-submit {
     width: 75%;
   }
 }
-.dwbn-form-control .checkbox input[type="checkbox"] {
+.dwbn-form-control div.checkbox > input[type="checkbox"] {
   margin-left: 0px;
 }
 noscript div {
