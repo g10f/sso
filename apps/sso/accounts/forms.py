@@ -264,10 +264,6 @@ class AddressForm(BaseForm):
             'country': bootstrap.Select()
         }
     
-    def opts(self):
-        # i need the model verbose_name in the html form, is there a better way?
-        return self._meta.model._meta
-    
     def template(self):
         return 'edit_inline/stacked.html'
 
@@ -281,10 +277,6 @@ class PhoneNumberForm(BaseForm):
             'phone': bootstrap.TextInput(attrs={'size': 50}),
             'primary': bootstrap.CheckboxInput()
         }
-    
-    def opts(self):
-        # i need the model verbose_name in the html form, is there a better way?
-        return self._meta.model._meta
     
     def template(self):
         return 'edit_inline/tabular.html'

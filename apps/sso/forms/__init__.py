@@ -16,6 +16,10 @@ class BaseForm(forms.ModelForm):
         else:
             return self.instance
 
+    def opts(self):
+        # i need the model verbose_name in the html form, is there a better way?
+        return self._meta.model._meta
+
 """
 class ReadonlyField(object):
     def __init__(self, form, field, label=None):

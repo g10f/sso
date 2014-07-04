@@ -10,9 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
 from django.forms.models import inlineformset_factory
 from django.contrib import messages
-
 from l10n.models import Country
-
 from sso.views import main
 from sso.views.main import FilterItem
 from sso.emails.models import EmailForward, Email, EmailAlias
@@ -20,7 +18,7 @@ from sso.organisations.models import AdminRegion, Organisation
 from sso.views.generic import FormsetsUpdateView
 from utils.url import is_safe_url
 from .models import OrganisationAddress, OrganisationPhoneNumber
-from .forms import OrganisationForm, OrganisationAddressForm, OrganisationPhoneNumberForm, OrganisationEmailForwardForm, OrganisationEmailAliasForm
+from .forms import OrganisationCenterForm, OrganisationAddressForm, OrganisationPhoneNumberForm, OrganisationEmailForwardForm, OrganisationEmailAliasForm, OrganisationAdminForm
 
 import logging
 logger = logging.getLogger(__name__)
@@ -106,7 +104,7 @@ class OrganisationDeleteView(OrganisationBaseView, DeleteView):
 
 
 class OrganisationCreateView(OrganisationBaseView, CreateView):
-    form_class = OrganisationForm
+    form_class = OrganisationAdminForm
     template_name_suffix = '_create_form'
     
     def get_success_url(self):
@@ -136,7 +134,7 @@ def get_optional_email_inline_formset(request, email, Model, Form, max_num=6, ex
         
 
 class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
-    form_class = OrganisationForm
+    form_class = OrganisationCenterForm
     
     @method_decorator(login_required)
     @method_decorator(permission_required('organisations.change_organisation', raise_exception=True))
@@ -146,6 +144,15 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
             raise PermissionDenied
         return super(OrganisationUpdateView, self).dispatch(request, *args, **kwargs)
     
+    def get_form_class(self):
+        """
+        Returns the form class to use in this view.
+        """
+        if self.request.user.has_perm('organisations.add_organisation'):
+            return OrganisationAdminForm
+        else:
+            return self.form_class
+
     def get_formsets(self):
         address_extra = 0
         phone_number_extra = 1
