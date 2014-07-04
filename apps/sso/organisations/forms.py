@@ -23,19 +23,11 @@ class OrganisationAddressForm(BaseForm):
             'country': bootstrap.Select()
         }
     
-    def opts(self):
-        # i need the model verbose_name in the html form, is there a better way?
-        return self._meta.model._meta
-    
     def template(self):
         return 'edit_inline/stacked.html'
 
 
-class OrganisationBaseTabularInlineForm(BaseForm):
-    def opts(self):
-        # i need the model verbose_name in the html form, is there a better way?
-        return self._meta.model._meta
-    
+class OrganisationBaseTabularInlineForm(BaseForm):    
     def template(self):
         return 'edit_inline/tabular.html'
 
@@ -69,20 +61,18 @@ class OrganisationEmailAliasForm(OrganisationBaseTabularInlineForm):
         }
 
 
-class OrganisationForm(BaseForm):
+class OrganisationBaseForm(BaseForm):
     google_maps_url = bootstrap.ReadOnlyField(label=_("Google Maps"))
     country = ModelChoiceField(queryset=Country.objects.filter(organisationcountry__isnull=False), cache_choices=True, required=True, label=_("Country"), widget=bootstrap.Select())
-
+    
     class Meta:
         model = Organisation
         
-        fields = ('name', 'email', 'homepage', 'founded', 'latitude', 'longitude', 'is_active', 'is_private', 'can_publish', 'center_type', 'country', 'admin_region')
+        fields = ('name', 'homepage', 'founded', 'latitude', 'longitude', 'is_active', 'is_private', 'can_publish', 'center_type', 'country')
         years_to_display = range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1)
         widgets = {
-            'email': bootstrap.Select(),
             'homepage': bootstrap.TextInput(attrs={'size': 50}),
             'country': bootstrap.Select(),
-            'admin_region': bootstrap.Select(),
             'name': bootstrap.TextInput(attrs={'size': 50}), 
             'founded': bootstrap.SelectDateWidget(years=years_to_display, required=False),
             'latitude': bootstrap.TextInput(attrs={'size': 50}),
@@ -92,24 +82,32 @@ class OrganisationForm(BaseForm):
             'is_private': bootstrap.CheckboxInput(),
             'can_publish': bootstrap.CheckboxInput()
         }
-        
+
     def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user')  # remove custom user keyword      
-        # initialise the form
-        super(OrganisationForm, self).__init__(*args, **kwargs)
+        self.user = kwargs.pop('user')  # remove custom user keyword      
+        super(OrganisationBaseForm, self).__init__(*args, **kwargs)
+
+
+class OrganisationCenterForm(OrganisationBaseForm):
+    email = bootstrap.ReadOnlyField(label=_("Email address"))
+
+    def __init__(self, *args, **kwargs):
+        super(OrganisationCenterForm, self).__init__(*args, **kwargs)
+        self.fields['email'].initial = str(self.instance.email)
         
-        instance = kwargs.get('instance')
-        # regional admins can create only centers for the there region
-        if not user.has_perm("accounts.change_all_users"):
-            if instance:  # update view 
-                del self.fields['admin_region']
-            else:  # create view. The user must be a regional admin
-                assert(user.has_perm("accounts.change_reg_users"))                
-                admin_regions = user.get_administrable_regions()
-                assert(len(admin_regions) > 0)  # TODO: handle this case more elegant
-                self.fields['admin_region'].queryset = admin_regions
-                self.fields['admin_region'].required = True
-        
-    def opts(self):
-        # i need the model verbose_name in the html form, is there a better way?
-        return self._meta.model._meta
+
+class OrganisationAdminForm(OrganisationBaseForm):
+    """
+    A form for a user who can add new organisations and edit the fields
+    - email
+    - admin_region
+    """
+    class Meta(OrganisationBaseForm.Meta):
+        fields = OrganisationBaseForm.Meta.fields + ('admin_region', 'email')
+        widgets = OrganisationBaseForm.Meta.widgets
+        widgets['admin_region'] = bootstrap.Select()
+        widgets['email'] = bootstrap.Select()
+     
+    def __init__(self, *args, **kwargs):
+        super(OrganisationAdminForm, self).__init__(*args, **kwargs)
+        self.fields['admin_region'].queryset = self.user.get_administrable_regions()
