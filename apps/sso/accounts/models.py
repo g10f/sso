@@ -289,12 +289,12 @@ class User(AbstractUser):
         """
         administrable_organisations = Organisation.objects.none()
         if self.has_perm("accounts.change_all_users"):  # Global Admin
-            administrable_organisations = Organisation.objects.all().select_related('country')
+            administrable_organisations = Organisation.objects.all().select_related('country', 'email')
         else:
             if self.has_perm("accounts.change_reg_users"):  # Regional Admin
-                administrable_organisations = Organisation.objects.filter(Q(user=self) | Q(admin_region__organisation__user=self)).select_related('country').distinct()
+                administrable_organisations = Organisation.objects.filter(Q(user=self) | Q(admin_region__organisation__user=self)).select_related('country', 'email').distinct()
             elif self.has_perm("accounts.change_org_users"):  # Organisation Admin
-                administrable_organisations = self.organisations.all().select_related('country')
+                administrable_organisations = self.organisations.all().select_related('country', 'email')
         
         return administrable_organisations
     

@@ -54,18 +54,18 @@ class OrganisationPhoneNumberForm(OrganisationBaseTabularInlineForm):
 class OrganisationEmailForwardForm(OrganisationBaseTabularInlineForm):
     class Meta:
         model = EmailForward
-        fields = ('email', ) 
+        fields = ('forward', ) 
         widgets = {
-            'email': bootstrap.TextInput(attrs={'size': 50}),
+            'forward': bootstrap.TextInput(attrs={'size': 50}),
         }
 
 
 class OrganisationEmailAliasForm(OrganisationBaseTabularInlineForm):
     class Meta:
         model = EmailAlias
-        fields = ('email', ) 
+        fields = ('alias', ) 
         widgets = {
-            'email': bootstrap.TextInput(attrs={'size': 50}),
+            'alias': bootstrap.TextInput(attrs={'size': 50}),
         }
 
 
@@ -79,7 +79,6 @@ class OrganisationForm(BaseForm):
         fields = ('name', 'email', 'homepage', 'founded', 'latitude', 'longitude', 'is_active', 'is_private', 'can_publish', 'center_type', 'country', 'admin_region')
         years_to_display = range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1)
         widgets = {
-            # 'email': bootstrap.TextInput(attrs={'size': 50}),
             'email': bootstrap.Select(),
             'homepage': bootstrap.TextInput(attrs={'size': 50}),
             'country': bootstrap.Select(),
