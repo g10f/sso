@@ -236,7 +236,7 @@ class UserAddFormExt(UserAddForm):
         super(UserAddFormExt, self).__init__(*args, **kwargs)
         self.fields['application_roles'].queryset = user.get_administrable_application_roles()
         self.fields['role_profiles'].queryset = user.get_administrable_role_profiles()
-        self.fields['organisation'].queryset = user.get_administrable_organisations()
+        self.fields['organisation'].queryset = user.get_organisations_of_administrable_users()
         if not user.has_perm("accounts.change_all_users"):
             self.fields['organisation'].required = True
 
@@ -576,7 +576,7 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
 
         self.fields['application_roles'].queryset = self.request.user.get_administrable_application_roles()
         self.fields['role_profiles'].queryset = self.request.user.get_administrable_role_profiles()
-        self.fields['organisations'].queryset = self.request.user.get_administrable_organisations()
+        self.fields['organisations'].queryset = self.request.user.get_organisations_of_administrable_users()
 
     def clean_username(self):
         username = self.cleaned_data["username"]

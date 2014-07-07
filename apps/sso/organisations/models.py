@@ -25,6 +25,7 @@ class OrganisationCountry(AbstractBaseModel):
 
 class AdminRegion(AbstractBaseModel):
     name = models.CharField(_("name"), max_length=255)
+    country = models.ForeignKey(Country, verbose_name=_("country"), null=True, limit_choices_to={'active': True})
 
     class Meta(AbstractBaseModel.Meta):
         ordering = ['name']

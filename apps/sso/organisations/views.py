@@ -123,11 +123,11 @@ def get_optional_email_inline_formset(request, email, Model, Form, max_num=6, ex
     if request.method == 'POST':
         formset = InlineFormSet(request.POST, instance=email)        
         try:
-            # Check if there was a InlineFormSet in the GET response because
-            # InlineFormSet is only in the response when the organisation has a email list
+            # Check if there was a InlineFormSet in the request because
+            # InlineFormSet is only in the response when the organisation has an email
             formset.initial_form_count()
         except ValidationError:
-            formset = None
+            formset = None  # there is no InlineFormSet in the request
     else:
         formset = InlineFormSet(instance=email)
     return formset

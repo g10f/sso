@@ -10,7 +10,7 @@ from sso.emails.models import Email, CENTER_EMAIL_TYPE
 class CountryListFilter(SimpleListFilter):
     title = _('Country')
     parameter_name = 'country_id'
-    filter_kwargs = {'organisation__isnull': False}
+    filter_kwargs = {'organisationcountry__isnull': False}
 
     def lookups(self, request, model_admin):
         qs = Country.objects.filter(**self.filter_kwargs).distinct()
@@ -30,8 +30,18 @@ class CountryListFilter(SimpleListFilter):
 
 class AdminRegionAdmin(admin.ModelAdmin):
     list_display = ('name', 'uuid', 'last_modified')
+    list_filter = (CountryListFilter, )
     date_hierarchy = 'last_modified'
     search_fields = ('name', 'uuid')
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        """
+        display only countries where there is a corresponding entry in organisationcountry table 
+        """
+        if db_field.name == "country":
+            kwargs["queryset"] = Country.objects.filter(organisationcountry__isnull=False)
+        
+        return super(AdminRegionAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 class OrganisationCountryAdmin(admin.ModelAdmin):
