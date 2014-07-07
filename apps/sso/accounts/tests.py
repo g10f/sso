@@ -10,6 +10,7 @@ from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException
 from sso.tests import SSOSeleniumTests 
 from sso.accounts.models import ApplicationRole
+from sso.organisations.models import AdminRegion
 
 class AccountsSeleniumTests(SSOSeleniumTests):
     fixtures = ['initial_data.json', 'test_l10n_data.xml', 'app_roles.json', 'test_organisation_data.json', 'test_app_roles.json', 'test_user_data.json']
@@ -142,19 +143,22 @@ class AccountsSeleniumTests(SSOSeleniumTests):
     
     def test_add_user_as_region(self):
         applicationrole = ApplicationRole.objects.get(application__uuid=settings.SSO_CUSTOM['APP_UUID'], role__name="Region")
-        self.add_user(applicationrole=applicationrole, allowed_orgs=["1", "2"])
+        region = AdminRegion.objects.get_by_natural_key('0ebf2537fc664b7db285ea773c981404')
+        self.add_user(applicationrole=applicationrole, allowed_orgs=["1", "2"], region=region)
 
     def test_add_user_as_center(self):
         applicationrole = ApplicationRole.objects.get(application__uuid=settings.SSO_CUSTOM['APP_UUID'], role__name="Center")
         self.add_user(applicationrole=applicationrole, allowed_orgs=["1"], denied_orgs=["2"])
     
-    def add_user(self, applicationrole, allowed_orgs, denied_orgs=None):
+    def add_user(self, applicationrole, allowed_orgs, denied_orgs=None, region=None):
         if denied_orgs is None:
             denied_orgs = []
         
         user = get_user_model().objects.get(username='GunnarScherf')
         user.application_roles.add(applicationrole)
-        user.save()
+        if region:
+            user.admin_regions.add(region)
+        # user.save()
         
         # login as admin and add new user
         self.login(username='GunnarScherf', password='gsf')

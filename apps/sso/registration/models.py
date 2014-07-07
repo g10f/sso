@@ -16,11 +16,26 @@ from django.core import urlresolvers
 from django.contrib.auth.tokens import default_token_generator as default_pwd_reset_token_generator
 from tokens import default_token_generator
 from current_user.models import CurrentUserField
+from sso.accounts.models import User
 
 
 def send_user_validated_email(registration_profile, request):
+    """
+    Information for registration admins, that a new user registered.
+    """
+    final_recipient_list = []
     email_recipient_list = settings.REGISTRATION.get('EMAIL_RECIPIENT_LIST', None)
-    if email_recipient_list:
+    recipient_list = User.objects.filter(email__in=email_recipient_list)
+    user_organisations = registration_profile.user.organisations.all()
+    
+    # add only admins of the new registered user to the final recipient list
+    for user in recipient_list:
+        for organisation in user_organisations:
+            if user.is_organisation_admin(organisation.uuid):
+                final_recipient_list.append(user.email)
+                break
+
+    if len(final_recipient_list) > 0:
         protocol = 'https' if request.is_secure() else 'http'
         current_site = get_current_site(request)
         domain = current_site.domain
@@ -117,15 +132,25 @@ class RegistrationManager(models.Manager):
         
     @classmethod
     def filter_administrable_registrationprofiles(cls, user, qs):
+        if user.is_superuser:
+            pass  # return unchanged qs
+        elif user.has_perm("accounts.change_all_users"):
+            qs = qs.filter(user__is_superuser=False)
+        else:
+            organisations = user.get_organisations_of_administrable_users()
+            q = Q(user__is_superuser=False) & Q(user__organisations__in=organisations)
+            qs = qs.filter(q).distinct()
+        return qs
+        """
         if not user.is_superuser:
             if user.has_perm("accounts.change_all_users"):
                 qs = qs.filter(user__is_superuser=False)
             else:
-                organisations = user.get_administrable_organisations()
+                organisations = user.get_organisations_of_administrable_users()
                 q = Q(user__is_superuser=False) & Q(user__organisations__in=organisations)
                 qs = qs.filter(q).distinct()
         return qs
-
+        """
     @classmethod
     def delete_expired_users(cls):
         num_deleted = 0

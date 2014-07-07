@@ -2,7 +2,6 @@
 import os
 import datetime
 from itertools import chain
-
 from django.db import models
 from django.db.models import Q
 from django.conf import settings
@@ -19,11 +18,9 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.timezone import now
 from django.utils.translation import get_language, activate, pgettext_lazy, ugettext_lazy as _
 from django.utils.text import get_valid_filename
-
 from south.modelsinspector import add_introspection_rules
 from sorl import thumbnail
 from l10n.models import Country
-
 from sso.fields import UUIDField
 from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary
 from sso.organisations.models import AdminRegion, Organisation
@@ -157,6 +154,8 @@ class User(AbstractUser):
 
     uuid = UUIDField(version=4, editable=True, unique=True)
     organisations = models.ManyToManyField(Organisation, verbose_name=_('organisations'), blank=True, null=True)
+    admin_regions = models.ManyToManyField(AdminRegion, verbose_name=_('admin regions'), blank=True, null=True)
+    admin_countries = models.ManyToManyField(Country, verbose_name=_('admin countries'), blank=True, null=True)
     application_roles = models.ManyToManyField(ApplicationRole, verbose_name=_('application roles'), blank=True, null=True)
     role_profiles = models.ManyToManyField(RoleProfile, verbose_name=_('role profiles'), blank=True, null=True, help_text=_('Organises a group of application roles that are usually assigned together.'))
     last_modified_by_user = CurrentUserField(verbose_name=_('last modified by'), related_name='+')
@@ -173,9 +172,8 @@ class User(AbstractUser):
 
     class Meta(AbstractUser.Meta):
         permissions = (
-            ("change_cou_users", "Can manage country users"),
-            ("change_reg_users", "Can manage region users"),
-            ("change_org_users", "Can manage organisation users"),
+            # ("change_reg_users", "Can manage region users"),
+            # ("change_org_users", "Can manage organisation users"),
             ("change_all_users", "Can manage all users"),
         )
     
@@ -218,19 +216,24 @@ class User(AbstractUser):
     @memoize
     def get_apps(self):
         applicationroles = self.get_applicationroles()
-        return Application.objects.distinct().filter(applicationrole__in=applicationroles, is_active=True).order_by('order').prefetch_related('applicationrole_set', 'applicationrole_set__role')
+        return Application.objects.distinct().filter(applicationrole__in=applicationroles, is_active=True).\
+            order_by('order').prefetch_related('applicationrole_set', 'applicationrole_set__role')
 
     def get_global_navigation_urls(self):
         applicationroles = self.get_applicationroles()
-        return Application.objects.distinct().filter(applicationrole__in=applicationroles, is_active=True, global_navigation=True).order_by('order')
+        return Application.objects.distinct().filter(applicationrole__in=applicationroles, 
+                                                     is_active=True, 
+                                                     global_navigation=True).order_by('order')
     
     def get_roles_by_app(self, app_uuid):
         applicationroles = self.get_applicationroles()
-        return Role.objects.distinct().filter(applicationrole__in=applicationroles, applicationrole__application__uuid=app_uuid)
+        return Role.objects.distinct().filter(applicationrole__in=applicationroles, 
+                                              applicationrole__application__uuid=app_uuid)
     
     def get_permissions(self):
         applicationroles = self.get_applicationroles()
-        q = Q(group__role__applicationrole__in=applicationroles, group__role__applicationrole__application__uuid=settings.SSO_CUSTOM['APP_UUID']) | Q(group__user=self)  
+        q = Q(group__role__applicationrole__in=applicationroles, 
+              group__role__applicationrole__application__uuid=settings.SSO_CUSTOM['APP_UUID']) | Q(group__user=self)  
         return Permission.objects.distinct().filter(q)
         
     @memoize
@@ -238,14 +241,18 @@ class User(AbstractUser):
         approles1 = ApplicationRole.objects.distinct().filter(user__uuid=self.uuid).select_related()
         approles2 = ApplicationRole.objects.distinct().filter(roleprofile__user__uuid=self.uuid).select_related()
         
+        # to get a list of distinct values, we create first a set and then a list 
+        return list(set(chain(approles1, approles2)))
+        """  DELETE
         result_list = chain(approles1, approles2)
         # create a list where every value is only once contained
+        # TODO: use a set
         result_dict = {}
         for item in result_list:
             result_dict[item.pk] = item
             
         return result_dict.values()
-    
+        """
     @memoize
     def get_administrable_application_roles(self):
         """
@@ -257,9 +264,11 @@ class User(AbstractUser):
             applicationrole_ids = [x.id for x in self.get_applicationroles()]
             # all roles the user has, with adequate inheritable flag
             if self.has_perm("accounts.change_all_users"):
-                application_roles = ApplicationRole.objects.filter(id__in=applicationrole_ids, is_inheritable_by_global_admin=True).select_related()
-            elif self.has_perm("accounts.change_org_users") or self.has_perm("accounts.change_reg_users"):
-                application_roles = ApplicationRole.objects.filter(id__in=applicationrole_ids, is_inheritable_by_org_admin=True).select_related()
+                application_roles = ApplicationRole.objects.filter(id__in=applicationrole_ids, 
+                                                                   is_inheritable_by_global_admin=True).select_related()
+            elif self.has_perm("accounts.change_user"):  # self.has_perm("accounts.change_org_users") or self.has_perm("accounts.change_reg_users"):
+                application_roles = ApplicationRole.objects.filter(id__in=applicationrole_ids, 
+                                                                   is_inheritable_by_org_admin=True).select_related()
             else:
                 application_roles = ApplicationRole.objects.none()
             
@@ -274,7 +283,7 @@ class User(AbstractUser):
             # all role profiles the user has, with adequate inheritable flag
             if self.has_perm("accounts.change_all_users"):
                 role_profiles = self.role_profiles.filter(is_inheritable_by_global_admin=True)
-            elif self.has_perm("accounts.change_org_users") or self.has_perm("accounts.change_reg_users"):
+            elif self.has_perm("accounts.change_user"):  # self.has_perm("accounts.change_org_users") or self.has_perm("accounts.change_reg_users"):
                 role_profiles = self.role_profiles.filter(is_inheritable_by_org_admin=True)
             else:
                 role_profiles = self.role_profiles.none()
@@ -283,11 +292,19 @@ class User(AbstractUser):
         return administrable_role_profiles
     
     @memoize
-    def get_administrable_organisations(self):
+    def get_organisations_of_administrable_users(self):
         """
         return a list of all organisations the user has admin rights on
         """
         administrable_organisations = Organisation.objects.none()
+        if self.has_perm("accounts.change_all_users"):  # Global Admin
+            administrable_organisations = Organisation.objects.all().select_related('country', 'email')
+        elif self.has_perm("accounts.change_user"):
+            administrable_organisations = Organisation.objects.filter(
+                Q(user=self) | Q(admin_region__user=self) | Q(country__user=self)).\
+                select_related('country', 'email').distinct()
+            
+        """    
         if self.has_perm("accounts.change_all_users"):  # Global Admin
             administrable_organisations = Organisation.objects.all().select_related('country', 'email')
         else:
@@ -295,9 +312,23 @@ class User(AbstractUser):
                 administrable_organisations = Organisation.objects.filter(Q(user=self) | Q(admin_region__organisation__user=self)).select_related('country', 'email').distinct()
             elif self.has_perm("accounts.change_org_users"):  # Organisation Admin
                 administrable_organisations = self.organisations.all().select_related('country', 'email')
-        
+        """
         return administrable_organisations
     
+    @memoize
+    def get_administrable_organisations(self):
+        """
+        return a list of all organisations the user has admin rights on
+        """
+        administrable_organisations = Organisation.objects.none()
+        if self.is_superuser:
+            administrable_organisations = Organisation.objects.all().select_related('country', 'email')
+        elif self.has_perm("organisations.change_organisation"):
+            administrable_organisations = Organisation.objects.filter(
+                Q(user=self) | Q(admin_region__user=self) | Q(country__user=self)).\
+                select_related('country', 'email').distinct()
+        return administrable_organisations
+
     @memoize
     def get_administrable_regions(self):
         """
@@ -305,11 +336,19 @@ class User(AbstractUser):
         """
         if self.has_perm("accounts.change_all_users"):  # Global Admin
             administrable_regions = AdminRegion.objects.all()
+        elif self.has_perm("accounts.change_user"):
+            administrable_regions = AdminRegion.objects.filter(
+                Q(user=self) | Q(country__user=self)).distinct()
+        else:
+            administrable_regions = AdminRegion.objects.none()
+        """
+        if self.has_perm("accounts.change_all_users"):  # Global Admin
+            administrable_regions = AdminRegion.objects.all()
         elif self.has_perm("accounts.change_reg_users"):  # Regional Admin
             administrable_regions = AdminRegion.objects.filter(organisation__user=self).distinct()
         else:
             administrable_regions = AdminRegion.objects.none()
-        
+        """
         return administrable_regions
     
     @memoize
@@ -318,27 +357,44 @@ class User(AbstractUser):
         return a list of countries from the administrable organisations the user has 
         """        
         countries_of_administrable_organisations = Country.objects.none()
+        if self.has_perm("accounts.change_all_users"):  # Global Admin
+            countries_of_administrable_organisations = Country.objects.filter(organisation__isnull=False).distinct()
+        elif self.has_perm("accounts.change_user"):
+            countries_of_administrable_organisations = Country.objects.filter(
+                Q(organisation__admin_region__user=self) |  # for adminregions without a associated country 
+                Q(organisation__user=self) | Q(adminregion__user=self) | Q(user=self)).distinct()
         
+        """
         if self.has_perm("accounts.change_all_users"):  # Global Admin
             countries_of_administrable_organisations = Country.objects.filter(organisation__isnull=False).distinct()
         else:
             if self.has_perm("accounts.change_reg_users"):  # Regional Admin
-                countries_of_administrable_organisations = Country.objects.filter(Q(organisation__user=self) | Q(organisation__admin_region__organisation__user=self)).distinct()
+                countries_of_administrable_organisations = Country.objects.filter(
+                    Q(organisation__user=self) | Q(organisation__admin_region__organisation__user=self)).distinct()
             elif self.has_perm("accounts.change_org_users"):  # Organisation Admin
                 countries_of_administrable_organisations = Country.objects.filter(organisation__user=self)
-            
+        """    
         return countries_of_administrable_organisations
 
     @memoize
     def is_admin(self):
-        return self.is_active and self.get_administrable_organisations().exists()
+        return self.is_active and self.has_perm("accounts.change_user")
+        # return self.is_active and self.get_organisations_of_administrable_users().exists()
     
     @memoize
     def is_organisation_admin(self, uuid):
         """
-        check if the user is an admin of the organisation
+        check if the user can change the organisation data
         """            
         _is_organisation_admin = False
+        if self.has_perm("accounts.change_all_users"):  # Global Admin
+            _is_organisation_admin = True
+        elif self.has_perm("organisations.change_organisation"):
+            _is_organisation_admin = Organisation.objects.filter(
+                Q(uuid=uuid) & 
+                (Q(user=self) | Q(admin_region__user=self) | Q(country__user=self))).exists()
+            
+        """
         if self.has_perm("accounts.change_all_users"):  # Global Admin
             _is_organisation_admin = True
         else:
@@ -346,6 +402,7 @@ class User(AbstractUser):
                 _is_organisation_admin = Organisation.objects.filter(Q(uuid=uuid) & (Q(user=self) | Q(admin_region__organisation__user=self))).exists()
             elif self.has_perm("accounts.change_org_users"):  # Organisation Admin
                 _is_organisation_admin = self.organisations.filter(uuid=uuid).exists()
+        """
         return _is_organisation_admin
 
     @property
@@ -371,14 +428,25 @@ class User(AbstractUser):
 
     def filter_administrable_users(self, qs):
         # filter the users for who the authenticated user has admin rights
+        if self.is_superuser:
+            pass
+        elif self.has_perm("accounts.change_all_users"):  # Global Admin
+            qs = qs.filter(is_superuser=False)
+        else:
+            organisations = self.get_organisations_of_administrable_users()
+            q = Q(is_superuser=False) & Q(organisations__in=organisations)
+            qs = qs.filter(q).distinct()
+        return qs
+        """
         if not self.is_superuser:
             if self.has_perm("accounts.change_all_users"):
                 qs = qs.filter(is_superuser=False)
             else:
-                organisations = self.get_administrable_organisations()
+                organisations = self.get_organisations_of_administrable_users()
                 q = Q(is_superuser=False) & Q(organisations__in=organisations)
                 qs = qs.filter(q).distinct()
         return qs
+        """
         
     def add_default_roles(self):
         app_roles_dict_array = self.default_dharmashop_roles

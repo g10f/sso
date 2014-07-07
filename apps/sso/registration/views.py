@@ -116,9 +116,10 @@ class UserRegistrationList(main.ListView):
                 num_sorted_fields += 1
         
         # list of centers of registrations where the user has admin rights
-        user_organisations = self.request.user.get_administrable_organisations().filter(user__is_active=False, 
-                                                                                        user__registrationprofile__isnull=False,
-                                                                                        user__registrationprofile__is_validated=True)
+        user_organisations = self.request.user.get_organisations_of_administrable_users().filter(
+            user__is_active=False, 
+            user__registrationprofile__isnull=False,
+            user__registrationprofile__is_validated=True)
         countries = Country.objects.filter(pk__in=user_organisations.values_list('country', flat=True))
         if len(countries) == 1:
             self.country = countries[0]

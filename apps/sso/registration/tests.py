@@ -106,7 +106,7 @@ class RegistrationTest(TestCase):
         path = self.get_url_path_from_mail()
         self.client.login(username='GlobalAdmin', password='secret007')
         
-        #data['is_verified'] = 'on'
+        # data['is_verified'] = 'on'
         data['username'] = "TestUser"
         data['verified_by_user'] = 1
         data['organisations'] = 1

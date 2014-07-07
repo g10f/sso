@@ -24,7 +24,6 @@
 		 "name" : "CenterAdmin",
 		 "permissions" : [ 
                [ "add_user", "accounts", "user" ],
-               [ "change_org_users", "accounts", "user" ],
                [ "change_user", "accounts", "user" ],
                [ "add_useraddress", "accounts", "useraddress" ],
                [ "change_useraddress", "accounts", "useraddress" ], 
@@ -42,7 +41,6 @@
 		 "name" : "RegionAdmin",
 		 "permissions" : [ 
                [ "add_user", "accounts", "user" ],
-               [ "change_reg_users", "accounts", "user" ],
                [ "change_user", "accounts", "user" ],
                [ "add_useraddress", "accounts", "useraddress" ],
                [ "change_useraddress", "accounts", "useraddress" ], 

@@ -26,6 +26,9 @@ class SSOAdminSite(admin.AdminSite):
 sso_admin_site = SSOAdminSite()
 
 sso_admin_site.register(Group, GroupAdmin)
+sso_admin_site.register(Permission, PermissionAdmin)
+sso_admin_site.register(ContentType)
+
 sso_admin_site.register(get_user_model(), UserAdmin)
 sso_admin_site.register(ApplicationRole, ApplicationRoleAdmin)
 sso_admin_site.register(RoleProfile, RoleProfileAdmin)

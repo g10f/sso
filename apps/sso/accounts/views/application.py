@@ -162,7 +162,7 @@ class UserList(ListView):
             countries = Country.objects.none()
 
         if self.country:
-            centers = user.get_administrable_organisations().filter(country=self.country)
+            centers = user.get_organisations_of_administrable_users().filter(country=self.country)
             if self.admin_region:
                 centers = centers.filter(admin_region=self.admin_region)
             if self.center:
