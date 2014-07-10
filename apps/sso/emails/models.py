@@ -9,6 +9,7 @@ logger = logging.getLogger(__name__)
 
 CENTER_EMAIL_TYPE = '1'
 
+
 class Email(AbstractBaseModel):
     EMAIL_TYPE_CHOICES = (
         ('1', _('Center')),
@@ -18,7 +19,10 @@ class Email(AbstractBaseModel):
     )
     name = models.CharField(_("name"), max_length=255, blank=True)    
     email_type = models.CharField(_('email type'), max_length=2, choices=EMAIL_TYPE_CHOICES, db_index=True)
-    email = models.EmailField(_('email address'), unique=True)
+    email = models.EmailField(_('email address'), unique=True, max_length=254)
+    
+    def primary_forward(self):
+        return self.emailforward_set.filter(primary=True).first()
     
     class Meta(AbstractBaseModel.Meta):
         ordering = ['email']
@@ -28,9 +32,11 @@ class Email(AbstractBaseModel):
     def __unicode__(self):
         return u"%s" % self.email
 
+
 class EmailForward(AbstractBaseModel):
     email = models.ForeignKey(Email, verbose_name=_('email address'))
-    forward = models.EmailField(_('email forward address'))
+    forward = models.EmailField(_('email forward address'), max_length=254)
+    primary = models.BooleanField(_("primary"), default=False)
     
     class Meta(AbstractBaseModel.Meta):
         unique_together = (("email", "forward"),)
@@ -38,13 +44,19 @@ class EmailForward(AbstractBaseModel):
         verbose_name = _('e-mail forward')
         verbose_name_plural = _('e-mail forwards')
 
+    def __unicode__(self):
+        return u"%s" % self.forward
+
 
 class EmailAlias(AbstractBaseModel):
     email = models.ForeignKey(Email, verbose_name=_('email address'))
-    alias = models.EmailField(_('email alias address'), unique=True)
+    alias = models.EmailField(_('email alias address'), unique=True, max_length=254)
     
     class Meta(AbstractBaseModel.Meta):
         unique_together = (("email", "alias"),)
         ordering = ['alias', 'email']
         verbose_name = _('e-mail alias')
         verbose_name_plural = _('e-mail aliases')
+
+    def __unicode__(self):
+        return u"%s" % self.alias

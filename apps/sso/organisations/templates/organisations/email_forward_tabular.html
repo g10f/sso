@@ -1,0 +1,15 @@
+{% extends "edit_inline/tabular.html" %}
+{% load i18n %}
+
+{% block formset_extra_row %}
+{% with primary_forward=formset.instance.primary_forward %}
+{% if primary_forward %}
+<tr class="text-danger">
+    <td colspan="3">          
+        <p class="form-control-static">{{ formset.instance.primary_forward }} ({% trans 'Primary forward email' %})</p>
+    </td>
+</tr>
+{% endif %}
+{% endwith %}
+{% endblock %}
+

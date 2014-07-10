@@ -18,7 +18,8 @@ from sso.organisations.models import AdminRegion, Organisation
 from sso.views.generic import FormsetsUpdateView
 from utils.url import is_safe_url
 from .models import OrganisationAddress, OrganisationPhoneNumber
-from .forms import OrganisationCenterForm, OrganisationAddressForm, OrganisationPhoneNumberForm, OrganisationEmailForwardForm, OrganisationEmailAliasForm, OrganisationAdminForm
+from .forms import OrganisationCenterForm, OrganisationAddressForm, OrganisationPhoneNumberForm, OrganisationEmailForwardForm, \
+    OrganisationAdminEmailForwardForm, OrganisationEmailAliasForm, OrganisationAdminForm
 
 import logging
 logger = logging.getLogger(__name__)
@@ -116,12 +117,12 @@ class OrganisationCreateView(OrganisationBaseView, CreateView):
         return super(OrganisationCreateView, self).dispatch(request, *args, **kwargs)
 
 
-def get_optional_email_inline_formset(request, email, Model, Form, max_num=6, extra=1):
+def get_optional_email_inline_formset(request, email, Model, Form, max_num=6, extra=1, queryset=None):
     InlineFormSet = inlineformset_factory(Email, Model, Form, extra=extra, max_num=max_num)
     if not email:
         return None
     if request.method == 'POST':
-        formset = InlineFormSet(request.POST, instance=email)        
+        formset = InlineFormSet(request.POST, instance=email, queryset=queryset)        
         try:
             # Check if there was a InlineFormSet in the request because
             # InlineFormSet is only in the response when the organisation has an email
@@ -129,7 +130,7 @@ def get_optional_email_inline_formset(request, email, Model, Form, max_num=6, ex
         except ValidationError:
             formset = None  # there is no InlineFormSet in the request
     else:
-        formset = InlineFormSet(instance=email)
+        formset = InlineFormSet(instance=email, queryset=queryset)
     return formset
         
 
@@ -173,8 +174,14 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
         
         address_inline_formset.forms += [address_inline_formset.empty_form] 
         phone_number_inline_formset.forms += [phone_number_inline_formset.empty_form]
-        email_forward_inline_formset = get_optional_email_inline_formset(self.request, self.object.email, 
-                                                                         Model=EmailForward, Form=OrganisationEmailForwardForm, max_num=10)
+        if self.request.user.has_perm('organisations.add_organisation'):
+            email_forward_inline_formset = get_optional_email_inline_formset(self.request, self.object.email, 
+                                                                             Model=EmailForward, Form=OrganisationAdminEmailForwardForm, max_num=10)
+        else:
+            email_forward_inline_formset = get_optional_email_inline_formset(self.request, self.object.email, 
+                                                                             Model=EmailForward, Form=OrganisationEmailForwardForm, max_num=10, 
+                                                                             queryset=EmailForward.objects.filter(primary=False))
+            
         email_alias_inline_formset = get_optional_email_inline_formset(self.request, self.object.email, 
                                                                        Model=EmailAlias, Form=OrganisationEmailAliasForm, max_num=6)
         
@@ -245,7 +252,7 @@ class OrganisationList(ListView):
             search_list = search_var.split(' ')
             q = Q()
             for search in search_list:
-                q |= Q(name__icontains=search) | Q(email__icontains=search)
+                q |= Q(name__icontains=search) | Q(email__email__icontains=search)
             qs = qs.filter(q)
         
         # apply country filter
