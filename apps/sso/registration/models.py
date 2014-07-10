@@ -23,12 +23,15 @@ def send_user_validated_email(registration_profile, request):
     """
     Information for registration admins, that a new user registered.
     """
-    final_recipient_list = []
     email_recipient_list = settings.REGISTRATION.get('EMAIL_RECIPIENT_LIST', None)
+    if not email_recipient_list:
+        return
+    
     recipient_list = User.objects.filter(email__in=email_recipient_list)
     user_organisations = registration_profile.user.organisations.all()
     
     # add only admins of the new registered user to the final recipient list
+    final_recipient_list = []
     for user in recipient_list:
         for organisation in user_organisations:
             if user.is_organisation_admin(organisation.uuid):

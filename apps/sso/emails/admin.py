@@ -1,15 +1,41 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
+from .models import EmailAlias, EmailForward
 
 import logging
 
 logger = logging.getLogger(__name__)
 
 
+class EmailAlias_Inline(admin.TabularInline):
+    model = EmailAlias
+    extra = 1
+    max_num = 10
+    fieldsets = [
+        (None,
+         {'fields':
+          ['alias', ],
+          'classes': ['wide'], }),
+    ]
+
+
+class EmailForward_Inline(admin.TabularInline):
+    model = EmailForward
+    extra = 1
+    max_num = 10
+    fieldsets = [
+        (None,
+         {'fields':
+          ['forward', 'primary'],
+          'classes': ['wide'], }),
+    ]
+
+
 class EmailAdmin(admin.ModelAdmin):
     search_fields = ('email', 'name', 'uuid')
     list_display = ('email', 'email_type', 'last_modified', 'uuid')
     list_filter = ('email_type',)
+    inlines = [EmailAlias_Inline, EmailForward_Inline]
 
 
 class EmailAliasAdmin(admin.ModelAdmin):

@@ -5,6 +5,7 @@ from django.forms import ModelChoiceField
 from sso.forms import bootstrap, BaseForm
 from sso.emails.models import EmailForward, EmailAlias
 from .models import OrganisationPhoneNumber, OrganisationAddress, Organisation
+from sso.forms.fields import EmailFieldLower
 from l10n.models import Country 
 
 class OrganisationAddressForm(BaseForm):
@@ -44,21 +45,33 @@ class OrganisationPhoneNumberForm(OrganisationBaseTabularInlineForm):
 
 
 class OrganisationEmailForwardForm(OrganisationBaseTabularInlineForm):
+    forward = EmailFieldLower(max_length=254, label=_('Forward email address'))
+    
     class Meta:
         model = EmailForward
         fields = ('forward', ) 
+
+    def template(self):
+        return 'organisations/email_forward_tabular.html'
+    
+
+class OrganisationAdminEmailForwardForm(OrganisationBaseTabularInlineForm):
+    forward = EmailFieldLower(max_length=254, label=_('Forward email address'))
+    
+    class Meta:
+        model = EmailForward
+        fields = ('forward', 'primary')
         widgets = {
-            'forward': bootstrap.TextInput(attrs={'size': 50}),
+            'primary': bootstrap.CheckboxInput()
         }
 
-
+    
 class OrganisationEmailAliasForm(OrganisationBaseTabularInlineForm):
+    alias = EmailFieldLower(max_length=254, label=_('Alias email address'))
+    
     class Meta:
         model = EmailAlias
         fields = ('alias', ) 
-        widgets = {
-            'alias': bootstrap.TextInput(attrs={'size': 50}),
-        }
 
 
 class OrganisationBaseForm(BaseForm):

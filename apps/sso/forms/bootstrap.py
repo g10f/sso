@@ -97,7 +97,7 @@ class ImageWidget(forms.ClearableFileInput):
     """
     template_with_initial = u'%(clear_template)s<br />%(input_text)s: %(input)s'
     template_with_clear = u'<div class="checkbox"><label>%(clear)s %(clear_checkbox_label)s </label></div>'
-    #template_with_clear = u'<label for="%(clear_checkbox_id)s"></label><div class="checkbox">%(clear_checkbox_label)s %(clear)s'
+    # template_with_clear = u'<label for="%(clear_checkbox_id)s"></label><div class="checkbox">%(clear_checkbox_label)s %(clear)s'
 
     def render(self, name, value, attrs=None):
         output = super(ImageWidget, self).render(name, value, attrs)
@@ -110,7 +110,7 @@ class ImageWidget(forms.ClearableFileInput):
                 output = (
                     u'<div><a href="%s">'
                     u'<img src="%s" alt=""></a></div>%s'  # TODO: add alt text
-                    ) % (value.url, mini.url, output)
+                ) % (value.url, mini.url, output)
         return mark_safe(output)
 
 
