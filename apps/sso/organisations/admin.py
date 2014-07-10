@@ -98,7 +98,7 @@ class OrganisationAdmin(admin.ModelAdmin):
     list_select_related = ('email',)
     ordering = ['name']
     save_on_top = True
-    search_fields = ('email', 'name', 'homepage', 'uuid')
+    search_fields = ('email__email', 'name', 'homepage', 'uuid')
     inlines = [PhoneNumber_Inline, Address_Inline]
     readonly_fields = ['uuid', 'last_modified', 'google_maps_link']
     date_hierarchy = 'founded'
