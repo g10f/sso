@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import user_passes_test, permission_required
-from django.views.generic import ListView, DeleteView
+from django.views.generic import DeleteView
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import get_object_or_404
@@ -15,6 +15,7 @@ from django.utils.encoding import force_text
 from l10n.models import Country
 
 from sso.views import main
+from sso.views.generic import ListView
 from sso.views.main import FilterItem
 from sso.accounts.models import ApplicationRole, RoleProfile, User, send_account_created_email  # Region, Organisation, 
 from sso.organisations.models import AdminRegion, Organisation
@@ -27,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 # TODO: refine the permission checks
 def is_admin(user):
-    return user.is_authenticated() and user.is_admin()
+    return user.is_authenticated() and user.is_user_admin()
     
 
 class UserDeleteView(DeleteView):
@@ -53,20 +54,12 @@ class UserDeleteView(DeleteView):
 class UserList(ListView):
     template_name = 'accounts/application/user_list.html'
     model = get_user_model()
-    paginate_by = 20
-    page_kwarg = main.PAGE_VAR
     list_display = ['username', 'first_name', 'last_name', 'email', 'last_login', 'date_joined']
     IS_ACTIVE_CHOICES = (('1', _('Active Users')), ('2', _('Inactive Users')))
     
     @method_decorator(user_passes_test(is_admin))
     def dispatch(self, request, *args, **kwargs):
         return super(UserList, self).dispatch(request, *args, **kwargs)
-
-    def get_paginate_by(self, queryset):
-        try:
-            return int(self.request.GET.get(main.PAGE_SIZE_VAR, self.paginate_by))
-        except ValueError:
-            return self.paginate_by
 
     def get_queryset(self):
         """
@@ -155,14 +148,14 @@ class UserList(ListView):
         centers = Organisation.objects.none()
         application_roles = user.get_administrable_application_roles()
         role_profiles = user.get_administrable_role_profiles()
-        countries = user.get_countries_of_administrable_organisations()
-        admin_regions = user.get_administrable_regions()
+        countries = user.get_administrable_user_countries()
+        admin_regions = user.get_administrable_user_regions()
         if len(countries) == 1:
             self.country = countries[0]
             countries = Country.objects.none()
 
         if self.country:
-            centers = user.get_organisations_of_administrable_users().filter(country=self.country)
+            centers = user.get_administrable_user_organisations().filter(country=self.country)
             if self.admin_region:
                 centers = centers.filter(admin_region=self.admin_region)
             if self.center:

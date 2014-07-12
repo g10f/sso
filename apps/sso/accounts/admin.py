@@ -113,7 +113,7 @@ class UserOrganisationsListFilter(OrganisationsListFilter):
     field_path = 'organisations'
 
     def get_lookup_qs(self, request, model_admin):
-        return request.user.get_organisations_of_administrable_users()
+        return request.user.get_administrable_user_organisations()
         
 
 class UserRegionListFilter(BaseFilter):
@@ -312,13 +312,13 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
             kwargs["queryset"] = user.get_administrable_role_profiles()
 
         if db_field.name == "organisations":
-            kwargs["queryset"] = user.get_organisations_of_administrable_users()
+            kwargs["queryset"] = user.get_administrable_user_organisations()
             
         if db_field.name == "admin_regions":
-            kwargs["queryset"] = user.get_administrable_regions()
+            kwargs["queryset"] = user.get_administrable_user_regions()
 
         if db_field.name == "admin_countries":
-            kwargs["queryset"] = user.get_countries_of_administrable_organisations()
+            kwargs["queryset"] = user.get_administrable_user_countries()
 
         return super(UserAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
@@ -331,7 +331,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
             user = request.user
             self.merge_allowed_values(form, 'application_roles', user.get_administrable_application_roles())
             self.merge_allowed_values(form, 'role_profiles', user.get_administrable_role_profiles())
-            self.merge_allowed_values(form, 'organisations', user.get_organisations_of_administrable_users())
+            self.merge_allowed_values(form, 'organisations', user.get_administrable_user_organisations())
             
         return super(UserAdmin, self).save_form(request, form, change)
 
@@ -416,7 +416,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
             if user.has_perm("accounts.change_all_users"):
                 return qs.filter(is_superuser=False)
             else:
-                organisations = user.get_organisations_of_administrable_users()
+                organisations = user.get_administrable_user_organisations()
                 q = Q(is_superuser=False) & (
                     Q(organisations__in=organisations))
                 return qs.filter(q).distinct()

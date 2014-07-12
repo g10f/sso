@@ -140,20 +140,11 @@ class RegistrationManager(models.Manager):
         elif user.has_perm("accounts.change_all_users"):
             qs = qs.filter(user__is_superuser=False)
         else:
-            organisations = user.get_organisations_of_administrable_users()
+            organisations = user.get_administrable_user_organisations()
             q = Q(user__is_superuser=False) & Q(user__organisations__in=organisations)
             qs = qs.filter(q).distinct()
         return qs
-        """
-        if not user.is_superuser:
-            if user.has_perm("accounts.change_all_users"):
-                qs = qs.filter(user__is_superuser=False)
-            else:
-                organisations = user.get_organisations_of_administrable_users()
-                q = Q(user__is_superuser=False) & Q(user__organisations__in=organisations)
-                qs = qs.filter(q).distinct()
-        return qs
-        """
+
     @classmethod
     def delete_expired_users(cls):
         num_deleted = 0

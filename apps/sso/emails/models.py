@@ -7,18 +7,33 @@ from sso.models import AbstractBaseModel
 import logging
 logger = logging.getLogger(__name__)
 
-CENTER_EMAIL_TYPE = '1'
-
+PERSON_EMAIL_TYPE = 'person'
+GROUP_EMAIL_TYPE = 'group'
+CENTER_EMAIL_TYPE = 'center'
+REGION_EMAIL_TYPE = 'region'
+COUNTRY_EMAIL_TYPE = 'country'
+GLOBAL_REGION_EMAIL_TYPE = 'global_region'
+CLOSED_GROUP_EMAIL_TYPE = 'closed_group'
 
 class Email(AbstractBaseModel):
     EMAIL_TYPE_CHOICES = (
-        ('1', _('Center')),
-        ('2', _('Type 2')),
-        ('3', _('Type 3')),
-        ('4', _('Type 4')),
+        (PERSON_EMAIL_TYPE, _('Person')),
+        (GROUP_EMAIL_TYPE, _('Group')),
+        (CENTER_EMAIL_TYPE, _('Center')),
+        (REGION_EMAIL_TYPE, _('Region')),
+        (COUNTRY_EMAIL_TYPE, _('Country')),
+        (GLOBAL_REGION_EMAIL_TYPE, _('Global region')),
+        (CLOSED_GROUP_EMAIL_TYPE, _('Closed group')),
+    )
+    ACCESS_CONTROL_CHOICES = (
+        ('1', _('Everybody')),
+        ('2', _('Centers')),
+        ('3', _('Specials')),
+        ('4', _('VIP')),
     )
     name = models.CharField(_("name"), max_length=255, blank=True)    
-    email_type = models.CharField(_('email type'), max_length=2, choices=EMAIL_TYPE_CHOICES, db_index=True)
+    email_type = models.CharField(_('email type'), max_length=20, choices=EMAIL_TYPE_CHOICES, db_index=True)
+    access_control = models.CharField(_('access control'), max_length=20, choices=ACCESS_CONTROL_CHOICES, db_index=True)
     email = models.EmailField(_('email address'), unique=True, max_length=254)
     
     def primary_forward(self):
@@ -26,8 +41,8 @@ class Email(AbstractBaseModel):
     
     class Meta(AbstractBaseModel.Meta):
         ordering = ['email']
-        verbose_name = _('email')
-        verbose_name_plural = _('emails')
+        verbose_name = _('Email')
+        verbose_name_plural = _('Emails')
 
     def __unicode__(self):
         return u"%s" % self.email

@@ -110,7 +110,7 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
             self.fields['is_verified'].widget.attrs['disabled'] = True 
         self.fields['application_roles'].queryset = current_user.get_administrable_application_roles()
         self.fields['role_profiles'].queryset = current_user.get_administrable_role_profiles()
-        self.fields['organisations'].queryset = current_user.get_organisations_of_administrable_users()
+        self.fields['organisations'].queryset = current_user.get_administrable_user_organisations()
 
     def save(self, activate=False):
         cd = self.cleaned_data
