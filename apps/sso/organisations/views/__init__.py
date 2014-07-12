@@ -4,29 +4,29 @@ from django.core.exceptions import PermissionDenied
 from django.utils.encoding import force_text
 from django.core.exceptions import ValidationError
 from django.contrib.auth.decorators import login_required, permission_required
-from django.views.generic import ListView, DeleteView, DetailView, CreateView
+from django.views.generic import DeleteView, DetailView, CreateView
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
 from django.forms.models import inlineformset_factory
 from django.contrib import messages
 from l10n.models import Country
+from utils.url import is_safe_url
 from sso.views import main
 from sso.views.main import FilterItem
 from sso.emails.models import EmailForward, Email, EmailAlias
 from sso.organisations.models import AdminRegion, Organisation
-from sso.views.generic import FormsetsUpdateView
-from utils.url import is_safe_url
-from .models import OrganisationAddress, OrganisationPhoneNumber
-from .forms import OrganisationCenterForm, OrganisationAddressForm, OrganisationPhoneNumberForm, OrganisationEmailForwardForm, \
-    OrganisationAdminEmailForwardForm, OrganisationEmailAliasForm, OrganisationAdminForm
+from sso.views.generic import FormsetsUpdateView, ListView
+from sso.organisations.models import OrganisationAddress, OrganisationPhoneNumber
+from sso.emails.forms import AdminEmailForwardForm, EmailForwardForm, EmailAliasForm
+from sso.organisations.forms import OrganisationCenterForm, OrganisationAddressForm, OrganisationPhoneNumberForm, OrganisationAdminForm
 
 import logging
 logger = logging.getLogger(__name__)
 
 
 def is_admin(user):
-    return user.is_authenticated() and user.is_admin()
+    return user.is_authenticated() and user.is_user_admin()
 
 
 def get_last_modified(request, *args, **kwargs):
@@ -52,11 +52,6 @@ class OrganisationBaseView(object):
         if self.object:  # update view
             initial['google_maps_url'] = self.object.google_maps_url
         return initial           
-
-    def get_form_kwargs(self):
-        kwargs = super(OrganisationBaseView, self).get_form_kwargs()
-        kwargs['user'] = self.request.user
-        return kwargs
 
     def get_context_data(self, **kwargs):
         """
@@ -145,6 +140,14 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
             raise PermissionDenied
         return super(OrganisationUpdateView, self).dispatch(request, *args, **kwargs)
     
+    def get_form_kwargs(self):
+        """
+        add user to form kwargs for filtering the adminregions
+        """
+        kwargs = super(OrganisationUpdateView, self).get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
     def get_form_class(self):
         """
         Returns the form class to use in this view.
@@ -176,14 +179,14 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
         phone_number_inline_formset.forms += [phone_number_inline_formset.empty_form]
         if self.request.user.has_perm('organisations.add_organisation'):
             email_forward_inline_formset = get_optional_email_inline_formset(self.request, self.object.email, 
-                                                                             Model=EmailForward, Form=OrganisationAdminEmailForwardForm, max_num=10)
+                                                                             Model=EmailForward, Form=AdminEmailForwardForm, max_num=10)
         else:
             email_forward_inline_formset = get_optional_email_inline_formset(self.request, self.object.email, 
-                                                                             Model=EmailForward, Form=OrganisationEmailForwardForm, max_num=10, 
+                                                                             Model=EmailForward, Form=EmailForwardForm, max_num=10, 
                                                                              queryset=EmailForward.objects.filter(primary=False))
             
         email_alias_inline_formset = get_optional_email_inline_formset(self.request, self.object.email, 
-                                                                       Model=EmailAlias, Form=OrganisationEmailAliasForm, max_num=6)
+                                                                       Model=EmailAlias, Form=EmailAliasForm, max_num=6)
         
         formsets = [address_inline_formset, phone_number_inline_formset]
         if email_forward_inline_formset:
@@ -194,39 +197,17 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
             formsets += [email_alias_inline_formset]
         
         return formsets
-
-    def get_success_url(self):
-        msg = ""
-        success_url = ""
-        msg_dict = {'name': force_text(self.model._meta.verbose_name), 'obj': force_text(self.object)}
-        if "_continue" in self.request.POST:
-            msg = _('The %(name)s "%(obj)s" was changed successfully. You may edit it again below.') % msg_dict
-            success_url = reverse('organisations:organisation_update', args=[self.object.uuid])
-        else:
-            msg = _('The %(name)s "%(obj)s" was changed successfully.') % msg_dict
-            success_url = super(OrganisationUpdateView, self).get_success_url()   
-            
-        messages.add_message(self.request, level=messages.SUCCESS, message=msg, fail_silently=True)
-        return success_url    
     
 
 class OrganisationList(ListView):
     template_name = 'organisations/organisation_list.html'
     model = Organisation
-    paginate_by = 20
-    page_kwarg = main.PAGE_VAR
     list_display = ['name', 'email', 'google maps', 'country', 'founded']
     IS_ACTIVE_CHOICES = (('1', _('Active Centers')), ('2', _('Inactive Centers')))  
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super(OrganisationList, self).dispatch(request, *args, **kwargs)
-
-    def get_paginate_by(self, queryset):
-        try:
-            return int(self.request.GET.get(main.PAGE_SIZE_VAR, self.paginate_by))
-        except ValueError:
-            return self.paginate_by
         
     def get_queryset(self):
         """
@@ -235,7 +216,7 @@ class OrganisationList(ListView):
         """
         # apply my_organisations filter only for admins
         my_organisations = None
-        if self.request.user.is_admin():
+        if self.request.user.is_user_admin():
             my_organisations = self.request.GET.get('my_organisations', '')
         
         if my_organisations:
@@ -280,7 +261,7 @@ class OrganisationList(ListView):
             self.center_type = None
 
         # apply is_active filter only for admins
-        if self.request.user.is_admin():
+        if self.request.user.is_user_admin():
             is_active = self.request.GET.get('is_active', '')
         else:
             is_active = "1"
@@ -315,7 +296,7 @@ class OrganisationList(ListView):
         if len(admin_regions) == 1:
             admin_regions = None
         
-        if self.request.user.is_admin():  # offer is_active filter only for admins
+        if self.request.user.is_user_admin():  # offer is_active filter only for admins
             is_active_list = [FilterItem(item) for item in OrganisationList.IS_ACTIVE_CHOICES]
         else:
             is_active_list = None

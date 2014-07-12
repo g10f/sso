@@ -20,6 +20,12 @@ class BaseForm(forms.ModelForm):
         # i need the model verbose_name in the html form, is there a better way?
         return self._meta.model._meta
 
+
+class BaseTabularInlineForm(BaseForm):    
+    def template(self):
+        return 'edit_inline/tabular.html'
+
+
 """
 class ReadonlyField(object):
     def __init__(self, form, field, label=None):

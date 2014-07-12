@@ -3,7 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import pgettext_lazy, ugettext_lazy as _
 from l10n.models import Country
 from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary
-from sso.emails.models import Email, CENTER_EMAIL_TYPE
+from sso.emails.models import Email, CENTER_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, REGION_EMAIL_TYPE
 
 import logging
 
@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 class OrganisationCountry(AbstractBaseModel):
     country = models.OneToOneField(Country, verbose_name=_("country"), null=True, limit_choices_to={'active': True})
     homepage = models.URLField(_("homepage"), blank=True,)
+    email = models.ForeignKey(Email, verbose_name=_("e-mail address"), blank=True, null=True, limit_choices_to={'email_type': COUNTRY_EMAIL_TYPE})
     
     class Meta(AbstractBaseModel.Meta):
         verbose_name = _('Country')
@@ -22,16 +23,28 @@ class OrganisationCountry(AbstractBaseModel):
     def __unicode__(self):
         return u"%s" % (self.country)
 
+    @models.permalink
+    def get_absolute_url(self):
+        return ('organisations:organisationcountry_detail', (), {'uuid': self.uuid, })
+
 
 class AdminRegion(AbstractBaseModel):
     name = models.CharField(_("name"), max_length=255)
+    homepage = models.URLField(_("homepage"), blank=True)
     country = models.ForeignKey(Country, verbose_name=_("country"), null=True, limit_choices_to={'active': True})
+    email = models.ForeignKey(Email, verbose_name=_("e-mail address"), blank=True, null=True, unique=True, limit_choices_to={'email_type': REGION_EMAIL_TYPE})
 
     class Meta(AbstractBaseModel.Meta):
+        verbose_name = _('Region')
+        verbose_name_plural = _('Regions')
         ordering = ['name']
 
     def __unicode__(self):
         return u"%s" % (self.name)
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('organisations:adminregion_detail', (), {'uuid': self.uuid, })
 
 
 class Organisation(AbstractBaseModel):

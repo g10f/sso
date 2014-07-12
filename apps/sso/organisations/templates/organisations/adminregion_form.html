@@ -2,7 +2,7 @@
 {% load i18n admin_static %}
 {% load thumbnail %}
 
-{% block title %}{% trans 'Center Details' %}{% endblock %}
+{% block title %}{% trans 'Region Details' %}{% endblock %}
 
 {% block extrascript %}{{ media }}{% endblock extrascript %}
 
@@ -10,8 +10,8 @@
 {% block breadcrumb %}
 <ol class="breadcrumb">
     <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'organisations:organisation_list' %}">{% trans 'Center List' %}</a></li>
-    <li class="active">{% trans 'Update Center' %}</li>
+    <li><a href="{% url 'organisations:adminregion_list' %}">{% trans 'Region List' %}</a></li>
+    <li class="active">{% trans 'Update Region' %}</li>
 </ol> 
 {% endblock breadcrumb %}
 
@@ -23,7 +23,7 @@
     {% endfor %}    
     
     <div class="">
-        <h3>{{ object.get_center_type_display }} {{ object.name }}</h3>
+        <h3>{% trans 'Region' %} {{ object.name }}</h3>
 
         {% if messages %}{% for message in messages %}
         <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
@@ -38,7 +38,7 @@
     </div>
 
      <ul class="nav nav-tabs dwbn-nav-tabs" id="myTab">
-       <li class="{% if not active or active == "object" %}active{% endif %}" ><a data-toggle="tab" href="#object">{% trans 'Center Data' %}</a></li>
+       <li class="{% if not active or active == "object" %}active{% endif %}" ><a data-toggle="tab" href="#object">{% trans 'Region Data' %}</a></li>
        {% for formset in formsets %}
        <li class="{% if active == formset.prefix %}active{% endif %}"><a data-toggle="tab" href="#{{ formset.prefix }}">{{ formset.form.opts.verbose_name_plural|title }}</a></li>
        {% endfor %}
@@ -47,18 +47,9 @@
      <div class="tab-content">
         <div class="tab-pane {% if not active or active == "object" %}active{% endif %}" id="object">         
            {% include 'include/_field.html' with field=form.name %}
-           {% include 'include/_field.html' with field=form.center_type %}
            {% include 'include/_field.html' with field=form.country %}
-           {% include 'include/_field.html' with field=form.admin_region %}           
            {% include 'include/_field.html' with field=form.email %}
            {% include 'include/_field.html' with field=form.homepage %}
-           {% include 'include/_field.html' with field=form.founded %} 
-           {% include 'include/_field.html' with field=form.is_active %}            
-           {% include 'include/_field.html' with field=form.is_private %}            
-           {% include 'include/_field.html' with field=form.can_publish %}            
-           {% include 'include/_static_google_maps_field.html' with field=form.google_maps_url %}           
-           {% include 'include/_field.html' with field=form.latitude %}            
-           {% include 'include/_field.html' with field=form.longitude %}           
         </div>
         
         {% for formset in formsets %}
@@ -72,9 +63,6 @@
     <div class="form-group">
         <div class="dwbn-form-submit">
             {% block submit_group %}
-            {% if perms.organisations.delete_organisation %}
-			<a class="btn btn-default" href="{% url 'organisations:organisation_delete' object.uuid %}">{% trans 'Delete' %}</a>
-			{% endif %}
 			<button type="submit" class="btn btn-default" name="_continue" >{% trans 'Save and continue editing' %}</button>
 			<button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
 			{% endblock submit_group %}

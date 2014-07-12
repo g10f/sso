@@ -2,10 +2,8 @@
 import datetime
 from django.utils.translation import ugettext_lazy as _
 from django.forms import ModelChoiceField
-from sso.forms import bootstrap, BaseForm
-from sso.emails.models import EmailForward, EmailAlias
-from .models import OrganisationPhoneNumber, OrganisationAddress, Organisation
-from sso.forms.fields import EmailFieldLower
+from sso.forms import bootstrap, BaseForm, BaseTabularInlineForm
+from .models import OrganisationPhoneNumber, OrganisationAddress, Organisation, AdminRegion, OrganisationCountry
 from l10n.models import Country 
 
 class OrganisationAddressForm(BaseForm):
@@ -28,12 +26,7 @@ class OrganisationAddressForm(BaseForm):
         return 'edit_inline/stacked.html'
 
 
-class OrganisationBaseTabularInlineForm(BaseForm):    
-    def template(self):
-        return 'edit_inline/tabular.html'
-
-
-class OrganisationPhoneNumberForm(OrganisationBaseTabularInlineForm):
+class OrganisationPhoneNumberForm(BaseTabularInlineForm):
     class Meta:
         model = OrganisationPhoneNumber
         fields = ('phone_type', 'phone', 'primary') 
@@ -42,36 +35,6 @@ class OrganisationPhoneNumberForm(OrganisationBaseTabularInlineForm):
             'phone': bootstrap.TextInput(attrs={'size': 50}),
             'primary': bootstrap.CheckboxInput()
         }
-
-
-class OrganisationEmailForwardForm(OrganisationBaseTabularInlineForm):
-    forward = EmailFieldLower(max_length=254, label=_('Forward email address'))
-    
-    class Meta:
-        model = EmailForward
-        fields = ('forward', ) 
-
-    def template(self):
-        return 'organisations/email_forward_tabular.html'
-    
-
-class OrganisationAdminEmailForwardForm(OrganisationBaseTabularInlineForm):
-    forward = EmailFieldLower(max_length=254, label=_('Forward email address'))
-    
-    class Meta:
-        model = EmailForward
-        fields = ('forward', 'primary')
-        widgets = {
-            'primary': bootstrap.CheckboxInput()
-        }
-
-    
-class OrganisationEmailAliasForm(OrganisationBaseTabularInlineForm):
-    alias = EmailFieldLower(max_length=254, label=_('Alias email address'))
-    
-    class Meta:
-        model = EmailAlias
-        fields = ('alias', ) 
 
 
 class OrganisationBaseForm(BaseForm):
@@ -96,15 +59,12 @@ class OrganisationBaseForm(BaseForm):
             'can_publish': bootstrap.CheckboxInput()
         }
 
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user')  # remove custom user keyword      
-        super(OrganisationBaseForm, self).__init__(*args, **kwargs)
-
 
 class OrganisationCenterForm(OrganisationBaseForm):
     email = bootstrap.ReadOnlyField(label=_("Email address"))
 
     def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')  # remove custom user keyword      
         super(OrganisationCenterForm, self).__init__(*args, **kwargs)
         self.fields['email'].initial = str(self.instance.email)
         
@@ -120,7 +80,35 @@ class OrganisationAdminForm(OrganisationBaseForm):
         widgets = OrganisationBaseForm.Meta.widgets
         widgets['admin_region'] = bootstrap.Select()
         widgets['email'] = bootstrap.Select()
-     
+
     def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')  # remove custom user keyword      
         super(OrganisationAdminForm, self).__init__(*args, **kwargs)
-        self.fields['admin_region'].queryset = self.user.get_administrable_regions()
+        self.fields['admin_region'].queryset = self.user.get_administrable_user_regions()
+
+
+class AdminRegionForm(BaseForm):
+    country = ModelChoiceField(queryset=Country.objects.filter(organisationcountry__isnull=False), cache_choices=True, required=True, label=_("Country"), widget=bootstrap.Select())
+    
+    class Meta:
+        model = AdminRegion
+        
+        fields = ('name', 'email', 'homepage', 'country')
+        widgets = {
+            'homepage': bootstrap.TextInput(attrs={'size': 50}),
+            'country': bootstrap.Select(),
+            'email': bootstrap.Select(),
+            'name': bootstrap.TextInput(attrs={'size': 50}), 
+        }
+
+class OrganisationCountryForm(BaseForm):
+    
+    class Meta:
+        model = OrganisationCountry
+        
+        fields = ('email', 'homepage', 'country')
+        widgets = {
+            'homepage': bootstrap.TextInput(attrs={'size': 50}),
+            'country': bootstrap.Select(),
+            'email': bootstrap.Select(),
+        }

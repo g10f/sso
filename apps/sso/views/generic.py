@@ -1,14 +1,30 @@
 # -*- coding: utf-8 -*-
-from django.views.generic import UpdateView
+from django.contrib import messages
+from django.utils.encoding import force_text
+from django.views import generic
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 
+from sso.views import main
 from sso.forms.helpers import ErrorList
 
 import logging
 logger = logging.getLogger(__name__)
 
-class FormsetsUpdateView(UpdateView):
+
+class ListView(generic.ListView):
+    paginate_by = 20
+    page_kwarg = main.PAGE_VAR
+
+    def get_paginate_by(self, queryset):
+        try:
+            return int(self.request.GET.get(main.PAGE_SIZE_VAR, self.paginate_by))
+        except ValueError:
+            return self.paginate_by
+    
+
+class FormsetsUpdateView(generic.UpdateView):
     
     def get_formsets(self):
         """
@@ -78,3 +94,17 @@ class FormsetsUpdateView(UpdateView):
             return self.form_valid(form)
         else:
             return self.form_invalid(form)
+
+    def get_success_url(self):
+        msg = ""
+        success_url = ""
+        msg_dict = {'name': force_text(self.model._meta.verbose_name), 'obj': force_text(self.object)}
+        if "_continue" in self.request.POST:
+            msg = _('The %(name)s "%(obj)s" was changed successfully. You may edit it again below.') % msg_dict
+            success_url = self.request.path
+        else:
+            msg = _('The %(name)s "%(obj)s" was changed successfully.') % msg_dict
+            success_url = super(FormsetsUpdateView, self).get_success_url()   
+            
+        messages.add_message(self.request, level=messages.SUCCESS, message=msg, fail_silently=True)
+        return success_url    

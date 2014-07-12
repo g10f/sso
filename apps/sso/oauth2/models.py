@@ -4,7 +4,7 @@ from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.conf import settings
-#from django.contrib.auth.signals import user_logged_in
+# from django.contrib.auth.signals import user_logged_in
 from django.http import QueryDict
 from django.utils.translation import ugettext_lazy as _
 from sso.accounts.models import Application
@@ -36,7 +36,7 @@ def get_oauth2_cancel_url(redirect_to):
     which we want to redirect if the user cancels login
     """
     query_dict = QueryDict(urlparse.urlsplit(redirect_to).query)
-    if ('redirect_uri'in query_dict) and  ('client_id' in query_dict):
+    if ('redirect_uri'in query_dict) and ('client_id' in query_dict):
         redirect_uri = query_dict['redirect_uri']
         try:
             client = Client.objects.get(uuid=query_dict['client_id'])
