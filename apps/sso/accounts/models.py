@@ -330,6 +330,33 @@ class User(AbstractUser):
         else:
             return Organisation.objects.none()
     
+    @memoize
+    def get_administrable_regions(self):
+        """
+        return a list of all admin_regions the user has admin rights on
+        """
+        if self.is_global_organisation_admin:
+            return AdminRegion.objects.all()
+        elif self.is_organisation_admin:
+            # TODO: think about and compare to get_administrable_countries
+            return AdminRegion.objects.filter(Q(user=self) | Q(country__user=self)).distinct()
+        else:
+            return AdminRegion.objects.none()
+
+    @memoize
+    def get_administrable_countries(self):
+        """
+        return a list of countries from the administrable organisations the user has 
+        """        
+        if self.is_global_organisation_admin:
+            return Country.objects.filter(organisation__isnull=False).distinct()
+        elif self.is_organisation_admin:
+            return Country.objects.filter(
+                Q(organisation__admin_region__user=self) |  # for adminregions without a associated country 
+                Q(organisation__user=self) | Q(adminregion__user=self) | Q(user=self)).distinct()
+        else:
+            return Country.objects.none()
+
     def filter_administrable_users(self, qs):
         # filter the users for who the authenticated user has admin rights
         if self.is_superuser:
