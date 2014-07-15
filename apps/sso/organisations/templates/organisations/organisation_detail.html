@@ -54,13 +54,15 @@
     <div class="dwbn-form-control_lg">
         {% block submit_group %}
         {% if return_url %}<a class="btn btn-default" href="{{ return_url }}">{% trans 'Back' %}</a>{% endif %}
-
-        {% if perms.organisations.delete_organisation and is_organisation_admin %}
+        
+        {% if has_organisation_access %}
+        {% if perms.organisations.delete_organisation %}
         <a class="btn btn-default" href="{% url 'organisations:organisation_delete' object.uuid %}">{% trans 'Delete' %}</a>
         {% endif %}
 
-        {% if perms.organisations.change_organisation and is_organisation_admin %}
+        {% if perms.organisations.change_organisation %}
         <a class="btn btn-primary" href="{% url 'organisations:organisation_update' object.uuid %}">{% trans 'Update' %}</a>
+        {% endif %}
         {% endif %}
         
         {% endblock %}

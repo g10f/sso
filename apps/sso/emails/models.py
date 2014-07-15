@@ -12,18 +12,18 @@ GROUP_EMAIL_TYPE = 'group'
 CENTER_EMAIL_TYPE = 'center'
 REGION_EMAIL_TYPE = 'region'
 COUNTRY_EMAIL_TYPE = 'country'
-GLOBAL_REGION_EMAIL_TYPE = 'global_region'
+COUNTRY_GROUP_EMAIL_TYPE = 'global_region'
 CLOSED_GROUP_EMAIL_TYPE = 'closed_group'
 
 class Email(AbstractBaseModel):
     EMAIL_TYPE_CHOICES = (
-        (PERSON_EMAIL_TYPE, _('Person')),
-        (GROUP_EMAIL_TYPE, _('Group')),
         (CENTER_EMAIL_TYPE, _('Center')),
         (REGION_EMAIL_TYPE, _('Region')),
         (COUNTRY_EMAIL_TYPE, _('Country')),
-        (GLOBAL_REGION_EMAIL_TYPE, _('Global region')),
-        (CLOSED_GROUP_EMAIL_TYPE, _('Closed group')),
+        (COUNTRY_GROUP_EMAIL_TYPE, _('Country group')),
+        (PERSON_EMAIL_TYPE, _('Person')),
+        (GROUP_EMAIL_TYPE, _('Group')),
+        (CLOSED_GROUP_EMAIL_TYPE, _('Closed Group')),
     )
     ACCESS_CONTROL_CHOICES = (
         ('1', _('Everybody')),
@@ -39,6 +39,11 @@ class Email(AbstractBaseModel):
     def primary_forward(self):
         return self.emailforward_set.filter(primary=True).first()
     
+    @models.permalink
+    def get_absolute_url(self):
+        # return  ('emails:email_update', (), {'uuid': self.uuid, })
+        return ('emails:email_list', (), {})
+
     class Meta(AbstractBaseModel.Meta):
         ordering = ['email']
         verbose_name = _('Email')

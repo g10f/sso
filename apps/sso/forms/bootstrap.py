@@ -161,15 +161,24 @@ class PasswordInput(Widget, forms.PasswordInput):
         self.add_required()
         return super(PasswordInput, self).render(name, value, attrs)
 
+
 class Textarea(Widget, forms.Textarea):
     def render(self, name, value, attrs=None):
         self.add_required()
         return super(Textarea, self).render(name, value, attrs)
 
+
 class Select(Widget, forms.Select):
     def render(self, name, value, attrs=None):
         self.add_required()
         return super(Select, self).render(name, value, attrs)
+
+
+class SelectMultiple(Widget, forms.SelectMultiple):
+    def render(self, name, value, attrs=None):
+        self.add_required()
+        return super(SelectMultiple, self).render(name, value, attrs)
+
 
 class CheckboxInput(forms.CheckboxInput):
 

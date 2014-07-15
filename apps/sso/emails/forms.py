@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from sso.emails.models import EmailForward, EmailAlias
+from sso.emails.models import EmailForward, EmailAlias, Email
 from sso.forms.fields import EmailFieldLower
-from sso.forms import bootstrap, BaseTabularInlineForm
+from sso.forms import bootstrap, BaseForm, BaseTabularInlineForm
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -37,3 +37,16 @@ class EmailAliasForm(BaseTabularInlineForm):
     class Meta:
         model = EmailAlias
         fields = ('alias', ) 
+
+
+class EmailForm(BaseForm):    
+    email = EmailFieldLower(max_length=254, label=_('Email address'))
+    
+    class Meta:
+        model = Email
+        fields = ['name', 'email', 'email_type', 'access_control']
+        widgets = {
+            'name': bootstrap.TextInput(attrs={'size': 50}),
+            'email_type': bootstrap.Select(),
+            'access_control': bootstrap.Select(),
+        }

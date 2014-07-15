@@ -158,7 +158,6 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         user.application_roles.add(applicationrole)
         if region:
             user.admin_regions.add(region)
-        # user.save()
         
         # login as admin and add new user
         self.login(username='GunnarScherf', password='gsf')

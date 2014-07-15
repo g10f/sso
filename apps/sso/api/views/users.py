@@ -245,7 +245,7 @@ def get_userinfo(user, request, show_details=False):
     
 # TODO: design api more HATEOAS like
 @catch_errors
-@api_user_passes_test(lambda u: u.has_perm("accounts.change_all_users"))
+@api_user_passes_test(lambda u: u.has_perm("accounts.access_all_users"))
 def get_user_list(request):
     qs = get_user_model().objects.filter(is_active=True).order_by('username').prefetch_related('organisations', 'useraddress_set', 'userphonenumber_set')
     username = request.GET.get('q', None)

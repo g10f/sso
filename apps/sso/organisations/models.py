@@ -3,15 +3,30 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import pgettext_lazy, ugettext_lazy as _
 from l10n.models import Country
 from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary
-from sso.emails.models import Email, CENTER_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, REGION_EMAIL_TYPE
+from sso.emails.models import Email, CENTER_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, REGION_EMAIL_TYPE, COUNTRY_GROUP_EMAIL_TYPE
 
 import logging
 
 logger = logging.getLogger(__name__)
 
 
+class CountryGroup(AbstractBaseModel):
+    name = models.CharField(_("name"), max_length=255)
+    email = models.ForeignKey(Email, verbose_name=_("e-mail address"), blank=True, null=True, unique=True, limit_choices_to={'email_type': COUNTRY_GROUP_EMAIL_TYPE})
+    homepage = models.URLField(_("homepage"), blank=True,)
+    
+    class Meta(AbstractBaseModel.Meta):
+        verbose_name = _('Country group')
+        verbose_name_plural = _('Country groups')
+        ordering = ['name']
+
+    def __unicode__(self):
+        return u"%s" % (self.name)
+    
+    
 class OrganisationCountry(AbstractBaseModel):
     country = models.OneToOneField(Country, verbose_name=_("country"), null=True, limit_choices_to={'active': True})
+    country_groups = models.ManyToManyField(CountryGroup, default="088620a08cf942deb88a5e31ebc8c7c8", blank=True, null=True)
     homepage = models.URLField(_("homepage"), blank=True,)
     email = models.ForeignKey(Email, verbose_name=_("e-mail address"), blank=True, null=True, limit_choices_to={'email_type': COUNTRY_EMAIL_TYPE})
     
@@ -89,10 +104,13 @@ class Organisation(AbstractBaseModel):
     # history = HistoricalRecords()
     
     class Meta:
+        permissions = (
+            ("access_all_organisations", "Can access all organisations"),
+        )
         ordering = ['name']
         verbose_name = _('Buddhist Center')
         verbose_name_plural = _('Buddhist Centers')
-    
+
     def __unicode__(self):
         if self.country:
             return u'%s (%s)' % (self.name, self.country.iso2_code)
@@ -174,31 +192,3 @@ class OrganisationPhoneNumber(AbstractBaseModel, PhoneNumberMixin):
     @classmethod
     def ensure_single_primary(cls, organisation):
         ensure_single_primary(organisation.organisationphonenumber_set.all())
-
-"""
-class OrganisationEmail(AbstractBaseModel):
-    EMAILTYPE_CHOICES = (
-            ('alias', _('Alias')),
-            ('forward', _('Forward')),
-            )
-    email = models.EmailField(_('email address'))
-    email_type = models.CharField(_("email type"), choices=EMAILTYPE_CHOICES, max_length=20)
-    organisation = models.ForeignKey(Organisation)
-"""
-
-# TODO: user adress, phone numbet ? 
-"""
-@receiver(signals.pre_delete, sender=OrganisationAddress)
-def pre_delete_address(sender, **kwargs):
-    address = kwargs.get('instance')
-    if address.primary:
-        try:
-            # if we delete the primary address we
-            # make the first address we find the primary address
-            _address = address.organisation.organisationaddress_set.exclude(id=address.id)[0]
-            _address.primary = True
-            _address.save() 
-        except IndexError:
-            # buddhistcenter without other addresses (standard use case)
-            pass
-"""

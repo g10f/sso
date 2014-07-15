@@ -44,10 +44,17 @@ class AdminRegionAdmin(admin.ModelAdmin):
         return super(AdminRegionAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
+class CountryGroupAdmin(admin.ModelAdmin):
+    list_display = ('name', 'email', 'homepage', 'last_modified')
+    date_hierarchy = 'last_modified'
+    search_fields = ('name', 'email', 'homepage', 'uuid')
+
+
 class OrganisationCountryAdmin(admin.ModelAdmin):
     list_select_related = ('country', )
     list_display = ('country', 'homepage', 'last_modified')
-    list_filter = ('country__continent', 'country__active')
+    list_filter = ('country__continent', 'country__active', 'country_groups')
+    filter_horizontal = ('country_groups', )
     date_hierarchy = 'last_modified'
     search_fields = ('country__name', 'uuid')
 

@@ -23,18 +23,29 @@
 {% endif %}
 
 <p>
-	<div class="row"><div class="dwbn-label">{% trans 'E-Mail' %}: </div><div class="dwbn-content">{{ object.email }}</div></div>
+	<div class="row"><div class="dwbn-label">{% trans 'E-Mail' %}: </div><div class="dwbn-content">{{ object.email|default_if_none:"" }}</div></div>
 	<div class="row"><div class="dwbn-label">{% trans 'Country' %}: </div><div class="dwbn-content">{{ object.country }}</div></div>
 	<div class="row"><div class="dwbn-label">{% trans 'Homepage' %}: </div><div class="dwbn-content"><a href="{{ object.homepage }}">{{ object.homepage }}</a></div></div>
-	
+    {% if perms.organisations.change_organisationcountry and has_country_access %}
+    <div class="row"><div class="dwbn-label">{% trans 'Country Groups' %}: </div>
+        <div class="dwbn-content">
+            <ul>
+            {% for group in object.country_groups.all %}
+                <li>{{ group }}</li>
+            {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% endif %}
 </p>
+
 
 <div class="form-group">
     <div class="dwbn-form-control_lg">
         {% block submit_group %}
         {% if return_url %}<a class="btn btn-default" href="{{ return_url }}">{% trans 'Back' %}</a>{% endif %}
                 
-        {% if perms.organisations.change_organisationcountry %}
+        {% if perms.organisations.change_organisationcountry and has_country_access %}
         <a class="btn btn-primary" href="{% url 'organisations:organisationcountry_update' object.uuid %}">{% trans 'Update' %}</a>
         {% endif %}
         

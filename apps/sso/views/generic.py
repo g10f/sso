@@ -5,6 +5,7 @@ from django.views import generic
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+from django.db.models import Q
 
 from sso.views import main
 from sso.forms.helpers import ErrorList
@@ -13,16 +14,136 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+class BaseFilter(object):
+    name = 'name'
+    qs_name = None
+    select_text = 'Select Choice'
+    select_all_text = 'All Choices'
+    all_remove = ''
+    remove = 'p'
+
+    def map_to_database(self, value):
+        """
+        Returns the value for the database query
+        """
+        return value
+    
+    def get_value_from_query_param(self, view):
+        raise NotImplemented
+    
+    def get_filter_list(self):
+        raise NotImplemented        
+    
+    def apply(self, view, qs, default=''):
+        """
+        filter the queryset with the selected value from the HTTP query parameter
+        """
+        value = self.get_value_from_query_param(view, default)
+        if value: 
+            if self.qs_name is None:
+                qs_name = self.name
+            else:
+                qs_name = self.qs_name
+            qs = qs.filter(**{qs_name: self.map_to_database(value)})
+        setattr(view, self.name, value)
+        return qs
+
+    def get(self, view):
+        """
+        create a dictionary with all required data for the HTML template
+        """
+        filter_list = self.get_filter_list()
+            
+        if len(filter_list) == 1:
+            setattr(view, self.name, filter_list[0])
+            filter_list = None
+        
+        return {
+            'selected': getattr(view, self.name), 'list': filter_list, 'select_text': self.select_text, 'select_all_text': self.select_all_text, 
+            'param_name': self.name, 'all_remove': self.all_remove, 'remove': self.remove
+        }      
+
+
+class ViewQuerysetFilter(BaseFilter):
+    model = None
+    filter_list = None
+    
+    def get_value_from_query_param(self, view, default):
+        value = view.request.GET.get(self.name, default)
+        if value:
+            return self.model.objects.get(pk=value)
+        else:
+            return None
+    
+    def get(self, view, filter_list=None):
+        """
+        create a dictionary with all required data for the HTML template
+        """
+        if filter_list is None:
+            if self.filter_list:
+                filter_list = self.filter_list
+            else:
+                filter_list = self.model.objects.all()
+            
+        if len(filter_list) == 1:
+            setattr(view, self.name, filter_list[0])
+            filter_list = self.model.objects.none()
+        
+        return {
+            'selected': getattr(view, self.name), 'list': filter_list, 'select_text': self.select_text, 'select_all_text': self.select_all_text, 
+            'param_name': self.name, 'all_remove': self.all_remove, 'remove': self.remove
+        }      
+
+
+class ViewChoicesFilter(BaseFilter):
+    choices = ()
+    
+    def map_to_database(self, value):
+        return value.pk
+
+    def get_value_from_query_param(self, view, default):
+        value = view.request.GET.get(self.name, default)
+        if value:
+            return main.FilterItem((value, dict(self.choices)[value]))
+        else:
+            return None
+    
+    def get(self, view):
+        """
+        create a dictionary with all required data for the HTML template
+        """
+        filter_list = [main.FilterItem(item) for item in self.choices]
+        return {
+            'selected': getattr(view, self.name), 'list': filter_list, 'select_text': self.select_text, 'select_all_text': self.select_all_text, 
+            'param_name': self.name, 'all_remove': self.all_remove, 'remove': self.remove
+        }      
+
+
+class SearchFilter(object):
+    search_names = []
+    
+    def apply(self, view, qs):
+        # apply search filter
+        search_var = view.request.GET.get(main.SEARCH_VAR, '')
+        if search_var:
+            search_list = search_var.split()
+            q = Q()
+            for search in search_list:
+                for name in self.search_names:
+                    q |= Q(**{name: search})
+            qs = qs.filter(q)
+        return qs
+
 class ListView(generic.ListView):
     paginate_by = 20
     page_kwarg = main.PAGE_VAR
-
+    
     def get_paginate_by(self, queryset):
         try:
             return int(self.request.GET.get(main.PAGE_SIZE_VAR, self.paginate_by))
         except ValueError:
             return self.paginate_by
-    
+
 
 class FormsetsUpdateView(generic.UpdateView):
     

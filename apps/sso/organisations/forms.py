@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import datetime
 from django.utils.translation import ugettext_lazy as _
-from django.forms import ModelChoiceField
+from django.forms import ModelChoiceField, ModelMultipleChoiceField
 from sso.forms import bootstrap, BaseForm, BaseTabularInlineForm
-from .models import OrganisationPhoneNumber, OrganisationAddress, Organisation, AdminRegion, OrganisationCountry
+from .models import OrganisationPhoneNumber, OrganisationAddress, Organisation, AdminRegion, OrganisationCountry, CountryGroup
 from l10n.models import Country 
 
 class OrganisationAddressForm(BaseForm):
@@ -88,6 +88,7 @@ class OrganisationAdminForm(OrganisationBaseForm):
 
 
 class AdminRegionForm(BaseForm):
+    # cache_choices performance optimisation and filter for organisation countries
     country = ModelChoiceField(queryset=Country.objects.filter(organisationcountry__isnull=False), cache_choices=True, required=True, label=_("Country"), widget=bootstrap.Select())
     
     class Meta:
@@ -102,11 +103,13 @@ class AdminRegionForm(BaseForm):
         }
 
 class OrganisationCountryForm(BaseForm):
+    # cache_choices performance optimisation 
+    country_groups = ModelMultipleChoiceField(queryset=CountryGroup.objects.all(), cache_choices=True, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Country Groups"))
     
     class Meta:
         model = OrganisationCountry
         
-        fields = ('email', 'homepage', 'country')
+        fields = ('email', 'homepage', 'country', 'country_groups')
         widgets = {
             'homepage': bootstrap.TextInput(attrs={'size': 50}),
             'country': bootstrap.Select(),

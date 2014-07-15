@@ -23,10 +23,10 @@
 {% endif %}
 
 <p>
+    <div class="row"><div class="dwbn-label">{% trans 'Name' %}: </div><div class="dwbn-content">{{ object.name }}</div></div>
 	<div class="row"><div class="dwbn-label">{% trans 'E-Mail' %}: </div><div class="dwbn-content">{{ object.email }}</div></div>
 	<div class="row"><div class="dwbn-label">{% trans 'Country' %}: </div><div class="dwbn-content">{{ object.country }}</div></div>
 	<div class="row"><div class="dwbn-label">{% trans 'Homepage' %}: </div><div class="dwbn-content"><a href="{{ object.homepage }}">{{ object.homepage }}</a></div></div>
-	
 </p>
 
 <div class="form-group">
@@ -34,7 +34,7 @@
         {% block submit_group %}
         {% if return_url %}<a class="btn btn-default" href="{{ return_url }}">{% trans 'Back' %}</a>{% endif %}
                 
-        {% if perms.organisations.change_region and is_region_admin %}
+        {% if perms.organisations.change_adminregion and has_region_access %}
         <a class="btn btn-primary" href="{% url 'organisations:adminregion_update' object.uuid %}">{% trans 'Update' %}</a>
         {% endif %}
         

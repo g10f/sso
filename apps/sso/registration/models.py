@@ -34,7 +34,7 @@ def send_user_validated_email(registration_profile, request):
     final_recipient_list = []
     for user in recipient_list:
         for organisation in user_organisations:
-            if user.is_organisation_admin(organisation.uuid):
+            if user.has_organisation_user_access(organisation.uuid):
                 final_recipient_list.append(user.email)
                 break
 
@@ -137,7 +137,7 @@ class RegistrationManager(models.Manager):
     def filter_administrable_registrationprofiles(cls, user, qs):
         if user.is_superuser:
             pass  # return unchanged qs
-        elif user.has_perm("accounts.change_all_users"):
+        elif user.has_perm("accounts.access_all_users"):
             qs = qs.filter(user__is_superuser=False)
         else:
             organisations = user.get_administrable_user_organisations()
