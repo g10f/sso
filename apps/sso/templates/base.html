@@ -45,41 +45,7 @@
         <main role="main">
 		    <aside>
 		        {% block left_content %}
-				<nav class="list-group">              
-				    {% if user.is_staff %}
-				    <a class="list-group-item" href="{% url 'admin:index' %}"><i class="glyphicon glyphicon-wrench"></i> {% trans 'Administration' %}</a>
-				    {% endif %}
-				                           
-                    <a class="list-group-item {% block nav_organisations_country_list_class %}{% endblock %}" href="{% url 'organisations:organisationcountry_list' %}"><i class="glyphicon glyphicon-list"></i> {% trans 'Country List' %}</a>
-
-                    <a class="list-group-item {% block nav_organisations_region_list_class %}{% endblock %}" href="{% url 'organisations:adminregion_list' %}"><i class="glyphicon glyphicon-list"></i> {% trans 'Region List' %}</a>
-
-                    <a class="list-group-item {% block nav_organisations_organisation_list_class %}{% endblock %}" href="{% url 'organisations:organisation_list' %}"><i class="glyphicon glyphicon-list"></i> {% trans 'Center List' %}</a>
-
-                    {% if perms.registration.change_registrationprofile %}
-                    <a class="list-group-item {% block nav_registration_user_list_class %}{% endblock %}" href="{% url 'registration:user_registration_list' %}"><i class="glyphicon glyphicon-list"></i> {% trans 'User Registration List' %}</a>
-                    {% endif %}
-
-                    {% if user.is_user_admin %}
-                    <a class="list-group-item {% block nav_accounts_user_list_class %}{% endblock %}" href="{% url 'accounts:user_list' %}"><i class="glyphicon glyphicon-list"></i> {% trans 'User List' %}</a>
-                    {% endif %}
-                    
-                    {% if perms.organisations.add_organisation %}
-                    <a class="list-group-item {% block nav_organisations_organisation_create_class %}{% endblock %}" href="{% url 'organisations:organisation_create' %}"><i class="glyphicon glyphicon-plus-sign"></i> {% trans 'Add Center' %}</a>
-                    {% endif %}
-                    
-                    {% if perms.accounts.change_user and perms.accounts.add_user %}
-				    <a class="list-group-item {% block nav_accounts_add_user_class %}{% endblock %}" href="{% url 'accounts:add_user' %}"><i class="glyphicon glyphicon-plus-sign"></i> {% trans 'Add User' %}</a>
-                    {% endif %}
-				    
-				    {% if user.is_authenticated %}
-				    {% if user.organisations.exists %}
-                    <a class="list-group-item {% block nav_accounts_center_class %}{% endblock %}" href="{% url 'organisations:my_organisation_detail' %}"><i class="glyphicon glyphicon-home"></i> {% trans 'My Center' %}</a>
-                    {% endif %}
-				    <a class="list-group-item {% block nav_accounts_profile_class %}{% endblock %}" href="{% url 'accounts:profile' %}"><i class="glyphicon glyphicon-user"></i> {% trans 'My account' %}</a>
-				    <a class="list-group-item {% block nav_accounts_password_change_class %}{% endblock %}" href="{% url 'accounts:password_change' %}"><i class="glyphicon glyphicon-edit"></i> {% trans 'Change my password ' %}</a>
-				    {% endif %}
-				</nav>
+		        {% include "include/_navigation.html" %}
 				{% endblock left_content %}
 		    </aside>
 		    <section>

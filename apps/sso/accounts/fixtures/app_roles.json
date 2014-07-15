@@ -6,7 +6,7 @@
 		 "name" : "GlobalAdmin",
 		 "permissions" : [ 
                [ "add_user", "accounts", "user" ],
-               [ "change_all_users", "accounts", "user" ],
+               [ "access_all_users", "accounts", "user" ],
                [ "change_user", "accounts", "user" ],
                [ "add_useraddress", "accounts", "useraddress" ],
                [ "change_useraddress", "accounts", "useraddress" ], 

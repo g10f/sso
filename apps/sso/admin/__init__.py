@@ -50,6 +50,8 @@ sso_admin_site.register(RegistrationProfile, RegistrationAdmin)
 sso_admin_site.register(org_models.Organisation, org_admin.OrganisationAdmin)
 sso_admin_site.register(org_models.AdminRegion, org_admin.AdminRegionAdmin)
 sso_admin_site.register(org_models.OrganisationCountry, org_admin.OrganisationCountryAdmin)
+sso_admin_site.register(org_models.CountryGroup, org_admin.CountryGroupAdmin)
+
 
 sso_admin_site.register(Email, EmailAdmin)
 sso_admin_site.register(EmailAlias, EmailAliasAdmin)

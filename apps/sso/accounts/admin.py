@@ -217,6 +217,7 @@ class GroupAdmin(DjangoGroupAdmin):
 class PermissionAdmin(admin.ModelAdmin):
     list_filter = ('content_type', )
     
+    
 class Address_Inline(admin.StackedInline):
     model = UserAddress
     extra = 0
@@ -413,7 +414,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         if user.is_superuser:
             return qs
         else:
-            if user.has_perm("accounts.change_all_users"):
+            if user.has_perm("accounts.access_all_users"):
                 return qs.filter(is_superuser=False)
             else:
                 organisations = user.get_administrable_user_organisations()

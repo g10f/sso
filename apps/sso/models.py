@@ -93,7 +93,7 @@ def update_object_from_dict(destination, source_dict, key_mapping={}):
     key_mapping can be a simple mapping of key names or
     a mapping of key names to a tuple with a key name and a transformation
     for the value, 
-    for exampls {'key': ('new_key', lambda x : x + 2), ..}
+    for example {'key': ('new_key', lambda x : x + 2), ..}
     """
     field_names = [f.name for f in destination._meta.fields]
     new_object = True if destination.pk is None else False
@@ -101,7 +101,7 @@ def update_object_from_dict(destination, source_dict, key_mapping={}):
             
     for key in source_dict:
         field_name = key
-        transformation = lambda x: x
+        transformation = None
 
         if key in key_mapping:
             field_name = key_mapping[key]            
@@ -109,9 +109,13 @@ def update_object_from_dict(destination, source_dict, key_mapping={}):
                 (field_name, transformation) = key_mapping[key]
             else:
                 field_name = key_mapping[key]
-            
+             
         if field_name in field_names:
-            new_value = transformation(source_dict[key])
+            if transformation is None:
+                new_value = source_dict[key]
+            else:
+                new_value = transformation(source_dict[key])
+                
             if new_object:
                 setattr(destination, field_name, new_value)
             else:

@@ -1,48 +1,39 @@
 # -*- coding: utf-8 -*-
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib import messages
 from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import user_passes_test, permission_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.views.generic import DeleteView
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import get_object_or_404
-from django.db.models import Q
 from django.utils.encoding import force_text
-
 from l10n.models import Country
-
 from sso.views import main
-from sso.views.generic import ListView
-from sso.views.main import FilterItem
-from sso.accounts.models import ApplicationRole, RoleProfile, User, send_account_created_email  # Region, Organisation, 
+from sso.views.generic import ListView, SearchFilter, ViewChoicesFilter, ViewQuerysetFilter
+from sso.accounts.models import ApplicationRole, RoleProfile, User, send_account_created_email 
 from sso.organisations.models import AdminRegion, Organisation
 from sso.accounts.forms import UserAddFormExt, UserProfileForm
 
 import logging
 
 logger = logging.getLogger(__name__)
-
-
-# TODO: refine the permission checks
-def is_admin(user):
-    return user.is_authenticated() and user.is_user_admin()
     
 
 class UserDeleteView(DeleteView):
+    slug_field = slug_url_kwarg = 'uuid'
     model = get_user_model()
     success_url = reverse_lazy('accounts:user_list')
-
-    def get_queryset(self):
-        # filter the users for who the authenticated user has admin rights
-        user = self.request.user
-        qs = super(UserDeleteView, self).get_queryset()
-        return user.filter_administrable_users(qs)
     
-    @method_decorator(user_passes_test(is_admin))
+    @method_decorator(login_required)
+    @method_decorator(permission_required('accounts.delete_user', raise_exception=True))
     def dispatch(self, request, *args, **kwargs):
+        # additionally check if the user is admin of the user       
+        if not request.user.has_user_access(kwargs.get('uuid')):
+            raise PermissionDenied
         return super(UserDeleteView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -51,13 +42,74 @@ class UserDeleteView(DeleteView):
         return context
 
 
+class UserSearchFilter(SearchFilter):
+    search_names = ['username__icontains', 'first_name__icontains', 'last_name__icontains', 'email__icontains']
+
+
+class IsActiveFilter(ViewChoicesFilter):
+    name = 'is_active'
+    choices = (('1', _('Active Users')), ('2', _('Inactive Users')))
+    select_text = _('Select active/inactive')
+    select_all_text = _("All")
+    
+    def map_to_database(self, value):
+        return True if (value.pk == "1") else False
+
+
+class CountryFilter(ViewQuerysetFilter):
+    name = 'country'
+    qs_name = 'organisations__country'
+    model = Country
+    filter_list = Country.objects.filter(organisation__isnull=False).distinct()
+    select_text = _('Select Country')
+    select_all_text = _('All Countries')
+    all_remove = 'region,center'
+    remove = 'region,center,app_role,role_profile,p'
+
+
+class AdminRegionFilter(ViewQuerysetFilter):
+    name = 'admin_region'
+    qs_name = 'organisations__admin_region'
+    model = AdminRegion
+    select_text = _('Select Region')
+    select_all_text = _('All Regions')
+    all_remove = 'center'
+    remove = 'center,app_role,role_profile,p'
+
+
+class CenterFilter(ViewQuerysetFilter):
+    name = 'center'
+    qs_name = 'organisations'
+    model = Organisation
+    select_text = _('Select Region')
+    select_all_text = _('All Regions')
+    remove = 'app_role,p'
+
+
+class ApplicationRoleFilter(ViewQuerysetFilter):
+    name = 'app_role'
+    qs_name = 'role_profiles__application_roles'
+    model = ApplicationRole
+    select_text = _('Select Role')
+    select_all_text = _('All Roles')
+
+
+class RoleProfileFilter(ViewQuerysetFilter):
+    name = 'role_profile'
+    qs_name = 'role_profiles'
+    model = RoleProfile
+    select_text = _('Select Profile')
+    select_all_text = _('All Profiles')
+
+
 class UserList(ListView):
     template_name = 'accounts/application/user_list.html'
     model = get_user_model()
     list_display = ['username', 'first_name', 'last_name', 'email', 'last_login', 'date_joined']
     IS_ACTIVE_CHOICES = (('1', _('Active Users')), ('2', _('Inactive Users')))
     
-    @method_decorator(user_passes_test(is_admin))
+    @method_decorator(login_required)
+    @method_decorator(permission_required('accounts.change_user', raise_exception=True))
     def dispatch(self, request, *args, **kwargs):
         return super(UserList, self).dispatch(request, *args, **kwargs)
 
@@ -71,67 +123,15 @@ class UserList(ListView):
         qs = user.filter_administrable_users(qs)
             
         self.cl = main.ChangeList(self.request, self.model, self.list_display, default_ordering=['-last_login'])
-        # apply search filter
-        search_var = self.request.GET.get(main.SEARCH_VAR, '')
-        if search_var:
-            search_list = search_var.split(' ')
-            q = Q()
-            for search in search_list:
-                q |= Q(username__icontains=search) | Q(first_name__icontains=search) | Q(last_name__icontains=search) | Q(email__icontains=search)
-            qs = qs.filter(q)
+        # apply filters
+        qs = UserSearchFilter().apply(self, qs) 
+        qs = CountryFilter().apply(self, qs) 
+        qs = AdminRegionFilter().apply(self, qs) 
+        qs = CenterFilter().apply(self, qs) 
+        qs = ApplicationRoleFilter().apply(self, qs) 
+        qs = RoleProfileFilter().apply(self, qs) 
+        qs = IsActiveFilter().apply(self, qs, default='1') 
         
-        # apply country filter
-        country = self.request.GET.get('country', '')
-        if country:
-            self.country = Country.objects.get(pk=country)
-            qs = qs.filter(organisations__country__in=[self.country])
-        else:
-            self.country = None
-
-        # apply admin_region filter
-        admin_region = self.request.GET.get('admin_region', '')
-        if admin_region:
-            self.admin_region = AdminRegion.objects.get(pk=admin_region)
-            qs = qs.filter(organisations__admin_region__in=[self.admin_region])
-        else:
-            self.admin_region = None
-
-        # apply center filter
-        center = self.request.GET.get('center', '')
-        if center:
-            self.center = Organisation.objects.get(pk=center)
-            qs = qs.filter(organisations__in=[self.center])
-        else:
-            self.center = None
-            
-        # apply app_role filter
-        app_role = self.request.GET.get('app_role', '')
-        if app_role:
-            self.app_role = ApplicationRole.objects.get(pk=app_role)
-            q = Q(application_roles__in=[self.app_role])
-            q |= Q(role_profiles__application_roles__in=[self.app_role])
-            qs = qs.filter(q)
-        else:
-            self.app_role = None
-
-        # apply role_profile filter
-        role_profile = self.request.GET.get('role_profile', '')
-        if role_profile:
-            self.role_profile = RoleProfile.objects.get(pk=role_profile)
-            q = Q(role_profiles__in=[self.role_profile])
-            qs = qs.filter(q)
-        else:
-            self.role_profile = None
-
-        # apply is_active filter
-        is_active = self.request.GET.get('is_active', '1')
-        if is_active:
-            self.is_active = FilterItem((is_active, dict(UserList.IS_ACTIVE_CHOICES)[is_active]))
-            is_active_filter = True if (is_active == "1") else False
-            qs = qs.filter(is_active=is_active_filter)
-        else:
-            self.is_active = None
-
         # Set ordering.
         ordering = self.cl.get_ordering(self.request, qs)
         qs = qs.order_by(*ordering)
@@ -145,14 +145,13 @@ class UserList(ListView):
             if h['sortable'] and h['sorted']:
                 num_sorted_fields += 1
         
+        countries = user.get_administrable_user_countries()
+        country_filter = CountryFilter().get(self, countries)
+
         centers = Organisation.objects.none()
         application_roles = user.get_administrable_application_roles()
         role_profiles = user.get_administrable_role_profiles()
-        countries = user.get_administrable_user_countries()
         admin_regions = user.get_administrable_user_regions()
-        if len(countries) == 1:
-            self.country = countries[0]
-            countries = Country.objects.none()
 
         if self.country:
             centers = user.get_administrable_user_organisations().filter(country=self.country)
@@ -164,36 +163,14 @@ class UserList(ListView):
             else:
                 application_roles = application_roles.filter(user__organisations__in=centers).distinct() 
                 role_profiles = role_profiles.filter(user__organisations__in=centers).distinct()
+                
+        admin_region_filter = AdminRegionFilter().get(self, admin_regions)
+        center_filter = CenterFilter().get(self, centers)
+        application_role_filter = ApplicationRoleFilter().get(self, application_roles)
+        is_active_filter = IsActiveFilter().get(self)
+        role_profile_filter = RoleProfileFilter().get(self, role_profiles)
 
-        if len(countries) == 1:
-            countries = None
-        if len(admin_regions) == 1:
-            admin_regions = None
-        if len(centers) == 1:
-            centers = None
-        
-        is_active_list = [FilterItem(item) for item in UserList.IS_ACTIVE_CHOICES]
-        filters = [
-            {
-                'selected': self.country, 'list': countries, 'select_text': _('Select Country'), 'select_all_text': _("All Countries"), 
-                'param_name': 'country', 'all_remove': 'region,center', 'remove': 'region,center,app_role,role_profile,p'
-            }, {
-                'selected': self.admin_region, 'list': admin_regions, 'select_text': _('Select Region'), 'select_all_text': _("All Regions"), 
-                'param_name': 'admin_region', 'all_remove': 'center', 'remove': 'center,app_role,role_profile,p'
-            }, {
-                'selected': self.center, 'list': centers, 'select_text': _('Select Center'), 'select_all_text': _("All Centers"), 
-                'param_name': 'center', 'all_remove': '', 'remove': 'app_role,p'
-            }, {
-                'selected': self.role_profile, 'list': role_profiles, 'select_text': _('Select Profile'), 'select_all_text': _("All Profiles"), 
-                'param_name': 'role_profile', 'all_remove': '', 'remove': 'p'
-            }, {
-                'selected': self.app_role, 'list': application_roles, 'select_text': _('Select Role'), 'select_all_text': _("All Roles"), 
-                'param_name': 'app_role', 'all_remove': '', 'remove': 'p'
-            }, {
-                'selected': self.is_active, 'list': is_active_list, 'select_text': _('Select active/inactive'), 'select_all_text': _("All"), 
-                'param_name': 'is_active', 'all_remove': '', 'remove': 'p'
-            }
-        ]
+        filters = [country_filter, admin_region_filter, center_filter, role_profile_filter, application_role_filter, is_active_filter]        
         
         context = {
             'result_headers': headers,
@@ -209,7 +186,8 @@ class UserList(ListView):
         return super(UserList, self).get_context_data(**context)
     
     
-@permission_required('accounts.add_user')
+@login_required
+@permission_required('accounts.add_user', raise_exception=True)
 def add_user(request, template='accounts/application/add_user_form.html'):
     if request.method == 'POST':
         form = UserAddFormExt(request.user, request.POST)
@@ -226,16 +204,19 @@ def add_user(request, template='accounts/application/add_user_form.html'):
     return render(request, template, data)
 
 
-@permission_required('accounts.add_user')
+@login_required
+@permission_required('accounts.add_user', raise_exception=True)
 def add_user_done(request, uuid, template='accounts/application/add_user_done.html'):
     new_user = get_user_model().objects.get(uuid=uuid)
     data = {'new_user': new_user, 'title': _('Add user')}
     return render(request, template, data)
 
     
-@permission_required('accounts.change_user')
+@login_required
+@permission_required('accounts.change_user', raise_exception=True)
 def update_user(request, uuid, template='accounts/application/change_user_form.html'):
-    # TODO: check if the authenticated user has admin rights for the organisation
+    if not request.user.has_user_access(uuid):
+        raise PermissionDenied
     user = get_object_or_404(get_user_model(), uuid=uuid)
     
     if request.method == 'POST':

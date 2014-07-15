@@ -27,127 +27,15 @@
 	</div>
 </div>
 
-<div class="row dwbn-filter-row">	
-	{% block search_form %}
+<div class="row dwbn-filter-row">
     <div class="col-sm-3">
-        <form class="" method="get">
-            {% for key, value in cl.params.items %}
-                {% if key != search_var and key != page_var %}
-                   <input type="hidden" name="{{ key }}" value="{{ value }}">          
-                {% endif %}
-            {% endfor %}
-            <div class="input-group">
-                <input type="text" class="form-control" name="{{ search_var }}" value="{{ query }}" placeholder="{% trans 'search text' %}">
-                <span class="input-group-btn">
-                  <button type="submit" class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
-                </span>
-            </div>
-        </form>
+       {% include 'include/_search_form.html' %}
     </div>
-	{% endblock search_form %}
-    
+        
     <div class="col-sm-9">
-		{% block country_filter %}
-		{% if countries %}
-        <div class="btn-group" >
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                    {% if country %}{{ country }}{% else %}{% trans 'Select country' %}{% endif %}
-                    <span class="caret"></span>
-            </button>
-                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                    {% if country %}<li><a tabindex="-1" href="{% query_string cl 'country' '' %}"">{% trans 'All countries' %}</a></li>{% endif %}
-                    {% for country in countries %}
-                        <li><a tabindex="-1" href="{% query_string cl 'country' country.iso2_code 'region,center,app_role,p' %}">{{ country }}</a></li>
-                    {% endfor %}
-                </ul>
-            </div>
-            {% endif %}
-            {% endblock country_filter %}
-
-            {% block region_filter %}
-            {% if regions %}
-            <div class="btn-group" >
-	            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-		            {% if region %}{{ region }}{% else %}{% trans 'Select region' %}{% endif %}
-		            <span class="caret"></span>
-	            </button>
-	            <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-	                {% if region %}<li><a tabindex="-1" href="{% query_string cl 'region' '' %}"">{% trans 'All regions' %}</a></li>{% endif %}
-	                {% for region in regions %}
-	                    <li><a tabindex="-1" href="{% query_string cl 'region' region.pk 'center,app_role,p' %}">{{ region }}</a></li>
-	                {% endfor %}
-	            </ul>
-            </div>
-            {% endif %}
-            {% endblock region_filter %}
-
-			{% block center_filter %}
-			{% if centers %}
-			<div class="btn-group" >
-	            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-					    {% if center %}{{ center }}{% else %}{% trans 'Select center' %}{% endif %}
-					    <span class="caret"></span>
-	            </button>
-			    <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-			        {% if center %}<li><a tabindex="-1" href="{% query_string cl 'center' '' %}"">{% trans 'All centers' %}</a></li>{% endif %}
-			        {% for center in centers %}
-			            <li><a tabindex="-1" href="{% query_string cl 'center' center.pk 'app_role,p' %}">{{ center }}</a></li>
-			        {% endfor %}
-			    </ul>
-			</div>
-			{% endif %}
-			{% endblock center_filter %}
-			
-            {% block is_verified_filter %}
-            <div class="btn-group" >
-	            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-		            {% if is_verified == 'True' %}{% trans 'verified users' %}
-		            {% elif is_verified == 'False' %}{% trans 'not verified users' %}
-		            {% else %}{% trans 'Select verified filter' %}
-		            {% endif %}
-	                <span class="caret"></span>
-	            </button>
-                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                    {% if is_verified %}<li><a tabindex="-1" href="{% query_string cl 'is_verified' '' %}"">{% trans 'All' %}</a></li>{% endif %}
-                    <li><a tabindex="-1" href="{% query_string cl 'is_verified' 'True' 'p' %}">{% trans 'verified users' %}</a></li>
-                    <li><a tabindex="-1" href="{% query_string cl 'is_verified' 'False' 'p' %}">{% trans 'not verified users' %}</a></li>
-                </ul>
-            </div>
-			{% endblock is_verified_filter %}
-            
-            {% block check_back_filter %}
-            <div class="btn-group" >
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                    {% if check_back == 'True' %}{% trans 'check back required' %}
-                    {% elif check_back == 'False' %}{% trans 'no check back required' %}
-                    {% else %}{% trans 'Select check back filter' %}
-                    {% endif %}
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                    {% if check_back %}<li><a tabindex="-1" href="{% query_string cl 'check_back' '' %}"">{% trans 'All' %}</a></li>{% endif %}
-                    <li><a tabindex="-1" href="{% query_string cl 'check_back' 'True' 'p' %}">{% trans 'check back required' %}</a></li>
-                    <li><a tabindex="-1" href="{% query_string cl 'check_back' 'False' 'p' %}">{% trans 'no check back required' %}</a></li>
-                </ul>
-            </div>
-            {% endblock check_back_filter %}
-
-            {% block is_access_denied_filter %}
-            <div class="btn-group" >
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                    {% if is_access_denied == 'True' %}{% trans 'access denied' %}
-                    {% elif is_access_denied == 'False' %}{% trans 'access not denied' %}
-                    {% else %}{% trans 'Select access denied filter' %}
-                    {% endif %}
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                    {% if is_access_denied %}<li><a tabindex="-1" href="{% query_string cl 'is_access_denied' '' %}"">{% trans 'All' %}</a></li>{% endif %}
-                    <li><a tabindex="-1" href="{% query_string cl 'is_access_denied' 'True' 'p' %}">{% trans 'access denied' %}</a></li>
-                    <li><a tabindex="-1" href="{% query_string cl 'is_access_denied' 'False' 'p' %}">{% trans 'access not denied' %}</a></li>
-                </ul>
-            </div>
-            {% endblock is_access_denied_filter %}
+        {% for filter in filters %} 
+        {% include 'include/_list_filter.html' with filter=filter %}
+        {% endfor %}
 	</div>
 </div><!-- /.row -->
 

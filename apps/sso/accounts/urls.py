@@ -24,5 +24,5 @@ urlpatterns = patterns(
     url(r'^application/users/add/$', application.add_user, name='add_user'),
     url(r'^application/users/add/done/(?P<uuid>[^/]+)/$', application.add_user_done, name="add_user_done"),
     url(r'^application/users/(?P<uuid>[^/]+)/$', application.update_user, name="update_user"), 
-    url(r'^application/users/delete/(?P<pk>\d+)/$', application.UserDeleteView.as_view(), name="delete_user"),
+    url(r'^application/users/delete/(?P<uuid>[^/]+)/$', application.UserDeleteView.as_view(), name="delete_user"),
 )

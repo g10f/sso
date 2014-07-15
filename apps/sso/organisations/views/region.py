@@ -4,12 +4,11 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.views.generic import DetailView
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
-from django.db.models import Q
 from l10n.models import Country
 from sso.views import main
 from sso.emails.models import EmailForward, EmailAlias
 from sso.organisations.models import AdminRegion
-from sso.views.generic import FormsetsUpdateView, ListView
+from sso.views.generic import FormsetsUpdateView, ListView, SearchFilter, ViewQuerysetFilter
 from sso.emails.forms import AdminEmailForwardForm, EmailAliasForm
 from sso.organisations.forms import AdminRegionForm
 from sso.organisations.views import get_optional_email_inline_formset
@@ -23,12 +22,9 @@ class AdminRegionBaseView(object):
     slug_field = slug_url_kwarg = 'uuid'
     
     def get_context_data(self, **kwargs):
-        """
-        """
         context = {}
-        
         if self.object and self.request.user.is_authenticated():
-            context['is_region_admin'] = self.request.user.is_organisation_admin(self.object.uuid)  # TODO: ...
+            context['has_region_access'] = self.request.user.has_region_access(self.object.uuid)
         
         context.update(kwargs)
         return super(AdminRegionBaseView, self).get_context_data(**context)
@@ -42,10 +38,10 @@ class AdminRegionUpdateView(AdminRegionBaseView, FormsetsUpdateView):
     form_class = AdminRegionForm
     
     @method_decorator(login_required)
-    @method_decorator(permission_required('organisations.change_organisation', raise_exception=True))
+    @method_decorator(permission_required('organisations.change_adminregion', raise_exception=True))
     def dispatch(self, request, *args, **kwargs): 
-        # additionally check if the user is admin of the organisation       
-        if not request.user.is_organisation_admin(kwargs.get('uuid')):  # TODO: ...
+        # additionally check if the user is admin of the region       
+        if not request.user.has_region_access(kwargs.get('uuid')):
             raise PermissionDenied
         return super(AdminRegionUpdateView, self).dispatch(request, *args, **kwargs)
     
@@ -66,6 +62,18 @@ class AdminRegionUpdateView(AdminRegionBaseView, FormsetsUpdateView):
         return formsets
     
 
+class AdminRegionSearchFilter(SearchFilter):
+    search_names = ['name__icontains', 'email__email__icontains']
+
+
+class CountryFilter(ViewQuerysetFilter):
+    name = 'country'
+    model = Country
+    filter_list = Country.objects.filter(organisation__isnull=False).distinct()
+    select_text = _('Select Country')
+    select_all_text = _('All Countries')
+
+
 class AdminRegionList(ListView):
     template_name = 'organisations/adminregion_list.html'
     model = AdminRegion
@@ -83,23 +91,11 @@ class AdminRegionList(ListView):
         qs = super(AdminRegionList, self).get_queryset().select_related('country', 'email')
             
         self.cl = main.ChangeList(self.request, self.model, self.list_display, default_ordering=['name'])
-        # apply search filter
-        search_var = self.request.GET.get(main.SEARCH_VAR, '')
-        if search_var:
-            search_list = search_var.split(' ')
-            q = Q()
-            for search in search_list:
-                q |= Q(name__icontains=search) | Q(email__email__icontains=search)
-            qs = qs.filter(q)
-        
-        # apply country filter
-        country = self.request.GET.get('country', '')
-        if country:
-            self.country = Country.objects.get(pk=country)
-            qs = qs.filter(country__in=[self.country])
-        else:
-            self.country = None
-            
+
+        # apply filters
+        qs = AdminRegionSearchFilter().apply(self, qs)  
+        qs = CountryFilter().apply(self, qs)  
+                    
         # Set ordering.
         ordering = self.cl.get_ordering(self.request, qs)
         qs = qs.order_by(*ordering)
@@ -112,20 +108,8 @@ class AdminRegionList(ListView):
             if h['sortable'] and h['sorted']:
                 num_sorted_fields += 1
         
-        countries = Country.objects.filter(organisation__isnull=False).distinct()
-        if len(countries) == 1:
-            self.country = countries[0]
-            countries = Country.objects.none()
-
-        if len(countries) == 1:
-            countries = None
-        
-        filters = [
-            {
-                'selected': self.country, 'list': countries, 'select_text': _('Select Country'), 'select_all_text': _("All Countries"), 
-                'param_name': 'country', 'all_remove': '', 'remove': ''
-            }
-        ]
+        country_filter = CountryFilter().get(self)
+        filters = [country_filter]
         
         context = {
             'result_headers': headers,

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect, render, get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from django.http import HttpResponseRedirect
@@ -5,20 +7,16 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.template.response import TemplateResponse
 from django.views.generic import DeleteView
-from django.db.models import Q
-from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import permission_required, login_required
 from django.utils.decorators import method_decorator
 from l10n.models import Country
 from django.utils.encoding import force_text
 from django.core.urlresolvers import reverse, reverse_lazy
-
 from sso.views import main
+from sso.views.generic import SearchFilter, ViewChoicesFilter, ViewQuerysetFilter
 from .models import RegistrationProfile, RegistrationManager, send_user_validated_email
 from .forms import RegistrationProfileForm
 from .tokens import default_token_generator
-
-def is_registration_admin(user):
-    return user.is_authenticated() and user.has_perm('registration.change_registrationprofile')
 
 
 class UserRegistrationDeleteView(DeleteView):
@@ -31,7 +29,8 @@ class UserRegistrationDeleteView(DeleteView):
         user = self.request.user
         return user.filter_administrable_users(qs)
     
-    @method_decorator(user_passes_test(is_registration_admin))
+    @method_decorator(login_required)
+    @method_decorator(permission_required('registration.change_registrationprofile', raise_exception=True))
     def dispatch(self, request, *args, **kwargs):
         return super(UserRegistrationDeleteView, self).dispatch(request, *args, **kwargs)
 
@@ -40,7 +39,51 @@ class UserRegistrationDeleteView(DeleteView):
         context['cancel_url'] = reverse('registration:update_user_registration', args=[self.object.registrationprofile.pk])
         return context
     
+
+class RegistrationSearchFilter(SearchFilter):
+    search_names = ['user__username__icontains', 'user__first_name__icontains', 
+                    'user__last_name__icontains', 'user__email__icontains']
+
+
+class CountryFilter(ViewQuerysetFilter):
+    name = 'country'
+    qs_name = 'user__organisations__country'
+    model = Country
+    select_text = _('Select Country')
+    select_all_text = _('All Countries')
+
+
+class IsVerifiedFilter(ViewChoicesFilter):
+    name = 'is_verified'
+    qs_name = 'verified_by_user__isnull'
+    choices = (('1', _('Verified Users')), ('2', _('Unverified Users')))  
+    select_text = _('Select verified filter')
+    select_all_text = _("All")
     
+    def map_to_database(self, value):
+        return False if (value.pk == "1") else True
+
+
+class CheckBackFilter(ViewChoicesFilter):
+    name = 'check_back'
+    choices = (('1', _('Check Back Required')), ('2', _('No Check Back Required')))  
+    select_text = _('Select check back filter')
+    select_all_text = _("All")
+    
+    def map_to_database(self, value):
+        return True if (value.pk == "1") else False
+
+
+class IsAccessDeniedFilter(ViewChoicesFilter):
+    name = 'is_access_denied'
+    choices = (('1', _('Access Denied')), ('2', _('Access Not Denied')))  
+    select_text = _('Select access denied filter')
+    select_all_text = _("All")
+    
+    def map_to_database(self, value):
+        return True if (value.pk == "1") else False
+
+
 class UserRegistrationList(main.ListView):
     template_name = 'registration/user_registration_list.html'
     model = RegistrationProfile
@@ -48,7 +91,8 @@ class UserRegistrationList(main.ListView):
     page_kwarg = main.PAGE_VAR
     list_display = ['user', 'email', 'center', 'date_registered', 'verified_by_user', 'check_back', 'is_access_denied']
     
-    @method_decorator(user_passes_test(is_registration_admin))
+    @method_decorator(login_required)
+    @method_decorator(permission_required('registration.change_registrationprofile', raise_exception=True))
     def dispatch(self, request, *args, **kwargs):
         return super(UserRegistrationList, self).dispatch(request, *args, **kwargs)
 
@@ -69,37 +113,12 @@ class UserRegistrationList(main.ListView):
         # Set ordering.
         self.cl = main.ChangeList(self.request, self.model, self.list_display, default_ordering=['-date_registered'])
         
-        # apply search filter
-        search_var = self.request.GET.get(main.SEARCH_VAR, '')
-        if search_var:
-            search_list = search_var.split(' ')
-            q = Q()
-            for search in search_list:
-                q |= Q(user__username__icontains=search) | Q(user__first_name__icontains=search) | Q(user__last_name__icontains=search) | Q(user__email__icontains=search)
-            qs = qs.filter(q)
-                
-        # apply country filter
-        country = self.request.GET.get('country', '')
-        if country:
-            self.country = Country.objects.get(iso2_code=country)
-            qs = qs.filter(user__organisations__country__in=[self.country])
-        else:
-            self.country = None
-           
-        # apply is_verified filter
-        is_verified = self.request.GET.get('is_verified', '')
-        if is_verified:
-            self.is_verified = is_verified
-            is_verified_filter = True if (is_verified == "True") else False
-            qs = qs.filter(verified_by_user__isnull=not is_verified_filter)
-        else:
-            self.is_verified = None
-               
-        # apply check_back filter
-        qs = self.apply_binary_filter(qs, 'check_back')
-
-        # apply is_access_denied filter
-        qs = self.apply_binary_filter(qs, 'is_access_denied', 'False')
+        # apply filters
+        qs = RegistrationSearchFilter().apply(self, qs) 
+        qs = CountryFilter().apply(self, qs) 
+        qs = CheckBackFilter().apply(self, qs) 
+        qs = IsAccessDeniedFilter().apply(self, qs) 
+        qs = IsVerifiedFilter().apply(self, qs) 
         
         ordering = self.cl.get_ordering(self.request, qs)
         qs = qs.order_by(*ordering)
@@ -121,10 +140,13 @@ class UserRegistrationList(main.ListView):
             user__registrationprofile__isnull=False,
             user__registrationprofile__is_validated=True)
         countries = Country.objects.filter(pk__in=user_organisations.values_list('country', flat=True))
-        if len(countries) == 1:
-            self.country = countries[0]
-            countries = Country.objects.none()
         
+        country_filter = CountryFilter().get(self, countries)
+        is_verified_filter = IsVerifiedFilter().get(self)
+        check_back_filter = CheckBackFilter().get(self)
+        is_access_denied_filter = IsAccessDeniedFilter().get(self)
+        
+        filters = [country_filter, is_verified_filter, check_back_filter, is_access_denied_filter]
         context = {
             'result_headers': headers,
             'num_sorted_fields': num_sorted_fields,
@@ -132,19 +154,18 @@ class UserRegistrationList(main.ListView):
             'page_var': main.PAGE_VAR,
             'query': self.request.GET.get(main.SEARCH_VAR, ''),
             'cl': self.cl,
-            'countries': countries,
-            'country': self.country,
-            'is_verified': self.is_verified,   
-            'check_back': self.check_back, 
-            'is_access_denied': self.is_access_denied      
+            'filters': filters,
         }
         context.update(kwargs)
         return super(UserRegistrationList, self).get_context_data(**context)
- 
 
-@user_passes_test(is_registration_admin)
+
+@login_required
+@permission_required('registration.change_registrationprofile', raise_exception=True)
 def update_user_registration(request, pk, template='registration/change_user_registration_form.html'):
     registrationprofile = get_object_or_404(RegistrationProfile, pk=pk)
+    if not request.user.has_user_access(registrationprofile.user.uuid):
+        raise PermissionDenied
     
     if request.method == 'POST':
         registrationprofile_form = RegistrationProfileForm(request.POST, instance=registrationprofile, request=request)
