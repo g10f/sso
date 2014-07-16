@@ -46,18 +46,19 @@ class OrganisationCountryUpdateView(OrganisationCountryBaseView, FormsetsUpdateV
         return super(OrganisationCountryUpdateView, self).dispatch(request, *args, **kwargs)
     
     def get_formsets(self):
-        email_forward_inline_formset = get_optional_email_inline_formset(self.request, self.object.email, 
-                                                                         Model=EmailForward, Form=AdminEmailForwardForm, max_num=10)
-        email_alias_inline_formset = get_optional_email_inline_formset(self.request, self.object.email, 
-                                                                       Model=EmailAlias, Form=EmailAliasForm, max_num=6)
-        
         formsets = []
-        if email_forward_inline_formset:
-            email_forward_inline_formset.forms += [email_forward_inline_formset.empty_form]
-            formsets += [email_forward_inline_formset]
-        if email_alias_inline_formset:
-            email_alias_inline_formset.forms += [email_alias_inline_formset.empty_form]
-            formsets += [email_alias_inline_formset]
+        if self.request.method == 'GET' or 'email' not in self.form.changed_data:
+            email_forward_inline_formset = get_optional_email_inline_formset(self.request, self.object.email, 
+                                                                             Model=EmailForward, Form=AdminEmailForwardForm, max_num=10)
+            email_alias_inline_formset = get_optional_email_inline_formset(self.request, self.object.email, 
+                                                                           Model=EmailAlias, Form=EmailAliasForm, max_num=6)
+            
+            if email_forward_inline_formset:
+                email_forward_inline_formset.forms += [email_forward_inline_formset.empty_form]
+                formsets += [email_forward_inline_formset]
+            if email_alias_inline_formset:
+                email_alias_inline_formset.forms += [email_alias_inline_formset.empty_form]
+                formsets += [email_alias_inline_formset]
         
         return formsets
     
