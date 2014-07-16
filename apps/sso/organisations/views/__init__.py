@@ -95,6 +95,7 @@ class OrganisationDeleteView(OrganisationBaseView, DeleteView):
         return super(OrganisationDeleteView, self).dispatch(request, *args, **kwargs)
 
 
+# TODO: ensure that the new created center can be edited by the user who created the center
 class OrganisationCreateView(OrganisationBaseView, CreateView):
     form_class = OrganisationAdminForm
     template_name_suffix = '_create_form'
@@ -160,8 +161,9 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
             return OrganisationAdminForm
         else:
             return self.form_class
-
+        
     def get_formsets(self):
+
         address_extra = 0
         phone_number_extra = 1
         
@@ -181,24 +183,26 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
         
         address_inline_formset.forms += [address_inline_formset.empty_form] 
         phone_number_inline_formset.forms += [phone_number_inline_formset.empty_form]
-        if self.request.user.has_perm('organisations.add_organisation'):
-            email_forward_inline_formset = get_optional_email_inline_formset(self.request, self.object.email, 
-                                                                             Model=EmailForward, Form=AdminEmailForwardForm, max_num=10)
-        else:
-            email_forward_inline_formset = get_optional_email_inline_formset(self.request, self.object.email, 
-                                                                             Model=EmailForward, Form=EmailForwardForm, max_num=10, 
-                                                                             queryset=EmailForward.objects.filter(primary=False))
-            
-        email_alias_inline_formset = get_optional_email_inline_formset(self.request, self.object.email, 
-                                                                       Model=EmailAlias, Form=EmailAliasForm, max_num=6)
-        
         formsets = [address_inline_formset, phone_number_inline_formset]
-        if email_forward_inline_formset:
-            email_forward_inline_formset.forms += [email_forward_inline_formset.empty_form]
-            formsets += [email_forward_inline_formset]
-        if email_alias_inline_formset:
-            email_alias_inline_formset.forms += [email_alias_inline_formset.empty_form]
-            formsets += [email_alias_inline_formset]
+        
+        if self.request.method == 'GET' or 'email' not in self.form.changed_data:
+            if self.request.user.has_perm('organisations.add_organisation'):
+                email_forward_inline_formset = get_optional_email_inline_formset(self.request, self.object.email, 
+                                                                                 Model=EmailForward, Form=AdminEmailForwardForm, max_num=10)
+            else:
+                email_forward_inline_formset = get_optional_email_inline_formset(self.request, self.object.email, 
+                                                                                 Model=EmailForward, Form=EmailForwardForm, max_num=10, 
+                                                                                 queryset=EmailForward.objects.filter(primary=False))
+                
+            email_alias_inline_formset = get_optional_email_inline_formset(self.request, self.object.email, 
+                                                                           Model=EmailAlias, Form=EmailAliasForm, max_num=6)
+            
+            if email_forward_inline_formset:
+                email_forward_inline_formset.forms += [email_forward_inline_formset.empty_form]
+                formsets += [email_forward_inline_formset]
+            if email_alias_inline_formset:
+                email_alias_inline_formset.forms += [email_alias_inline_formset.empty_form]
+                formsets += [email_alias_inline_formset]
         
         return formsets
     

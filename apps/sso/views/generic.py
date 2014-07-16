@@ -167,10 +167,10 @@ class FormsetsUpdateView(generic.UpdateView):
     
     @property
     def is_valid(self):
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)        
+        # form_class = self.get_form_class()
+        # form = self.get_form(form_class)        
 
-        if not form.is_valid():
+        if not self.form.is_valid():
             return False
         
         for formset in self.formsets:
@@ -201,20 +201,24 @@ class FormsetsUpdateView(generic.UpdateView):
         context.update(kwargs)
         
         return super(FormsetsUpdateView, self).get_context_data(**context)
-
+        
     def post(self, request, *args, **kwargs):
+        """
+        add additionally the form class to self, because we need to check changed_data for verifying the formsets 
+        """
         self.object = self.get_object()
         form_class = self.get_form_class()
-        form = self.get_form(form_class)
+        # TODO: is this is a hack? 
+        self.form = self.get_form(form_class)
 
         if self.is_valid:
-            form.save()  
+            self.form.save()  
             for formset in self.formsets:
                 formset.save()
 
-            return self.form_valid(form)
+            return self.form_valid(self.form)
         else:
-            return self.form_invalid(form)
+            return self.form_invalid(self.form)
 
     def get_success_url(self):
         msg = ""

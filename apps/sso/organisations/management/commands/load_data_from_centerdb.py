@@ -93,7 +93,11 @@ def load_buddhistcenters(url):
         return None
     
     def get_email(value):
-        return Email.objects.get_or_create(email=value, defaults={'email_type': CENTER_EMAIL_TYPE})[0]
+        email = Email.objects.filter(email__iexact=value).first()
+        if not email:
+            email = Email(email=value, email_type=CENTER_EMAIL_TYPE)
+            email.save()
+        return email
         
     def float_to_decimal(value):
         # manual conversion, to avoid having changed values caused by conversion from float 
