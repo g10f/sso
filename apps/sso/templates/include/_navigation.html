@@ -10,7 +10,9 @@
     {% endif %}
     {% endcomment %}
 
+    {% if perms.organisations.change_organisationcountry %}
     <a class="list-group-item" href="{% url 'organisations:organisationcountry_list' %}"><i class="glyphicon glyphicon-list"></i> {% trans 'Countries' %}</a>
+    {% endif %}
 
     {% if perms.organisations.change_adminregion %}
     <a class="list-group-item" href="{% url 'organisations:adminregion_list' %}"><i class="glyphicon glyphicon-list"></i> {% trans 'Regions' %}</a>
