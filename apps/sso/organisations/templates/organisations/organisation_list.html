@@ -28,17 +28,9 @@
     </div>
 	
 	<div class="col-sm-9">
-        {% if not user.is_superuser and user.get_administrable_organisations.exists %}
-        {% if my_organisations %}
-        <a type="button" class="btn btn-default active"  href="{% query_string cl 'my_organisations' '' %}">{% trans 'Select My Centers' %}</a>
-        {% else %}
-        <a type="button" class="btn btn-default" href="{% query_string cl 'my_organisations' 'True' 'p' %}">{% trans 'Select My Centers' %}</a>
-        {% endif %}
-        {% endif %}
-
-        {% for filter in filters %} 
-        {% include 'include/_list_filter.html' with filter=filter %}
-        {% endfor %}
+        {% for filter in filters %}{% if filter %} 
+        {% include filter.template_name with filter=filter %}
+        {% endif %}{% endfor %}
     </div><!-- /.col-sm-9 -->
 </div>
 

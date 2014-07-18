@@ -48,9 +48,9 @@ class EmailTypeFilter(ViewChoicesFilter):
     select_all_text = _("All Email Types")
 
 
-class AccessControlFilter(ViewChoicesFilter):
-    name = 'access_control'
-    choices = Email.ACCESS_CONTROL_CHOICES
+class PermissionFilter(ViewChoicesFilter):
+    name = 'permission'
+    choices = Email.PERMISSION_CHOICES
     select_text = _('Select Access Control')
     select_all_text = _("All Access Controls")
 
@@ -62,7 +62,7 @@ class EmailSearchFilter(SearchFilter):
 class EmailList(ListView):
     template_name = 'emails/email_list.html'
     model = Email
-    list_display = ['email', 'name', 'email_type', 'access_control']
+    list_display = ['email', 'name', 'email_type', 'permission']
         
     @method_decorator(login_required)
     @method_decorator(permission_required('emails.change_email', raise_exception=True))
@@ -81,7 +81,7 @@ class EmailList(ListView):
         # apply filters
         qs = EmailSearchFilter().apply(self, qs)  
         qs = EmailTypeFilter().apply(self, qs)
-        qs = AccessControlFilter().apply(self, qs)
+        qs = PermissionFilter().apply(self, qs)
         
         # Set ordering.
         ordering = self.cl.get_ordering(self.request, qs)
@@ -96,8 +96,8 @@ class EmailList(ListView):
                 num_sorted_fields += 1
         
         email_filter = EmailTypeFilter().get(self)
-        access_control_filter = AccessControlFilter().get(self)
-        filters = [email_filter, access_control_filter]
+        permission_filter = PermissionFilter().get(self)
+        filters = [email_filter, permission_filter]
         
         context = {
             'result_headers': headers,

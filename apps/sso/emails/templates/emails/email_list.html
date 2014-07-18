@@ -44,7 +44,7 @@
 	               <td><a href="{% url 'emails:email_update' object.uuid %}">{{ object.email }}</a></td>
 	               <td>{{ object.name }}</td>
                    <td>{{ object.get_email_type_display }}</td>
-                   <td>{{ object.get_access_control_display }}</td>
+                   <td>{{ object.get_permission_display }}</td>
 	           </tr>
 	           {% endfor %}
 	       </tbody>

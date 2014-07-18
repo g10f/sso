@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class BaseFilter(object):
+    template_name = 'include/_list_filter.html'
     name = 'name'
     qs_name = None
     select_text = 'Select Choice'
@@ -28,8 +29,8 @@ class BaseFilter(object):
         """
         return value
     
-    def get_value_from_query_param(self, view):
-        raise NotImplemented
+    def get_value_from_query_param(self, view, default):
+        return view.request.GET.get(self.name, default)
     
     def get_filter_list(self):
         raise NotImplemented        
@@ -60,9 +61,25 @@ class BaseFilter(object):
         
         return {
             'selected': getattr(view, self.name), 'list': filter_list, 'select_text': self.select_text, 'select_all_text': self.select_all_text, 
-            'param_name': self.name, 'all_remove': self.all_remove, 'remove': self.remove
+            'param_name': self.name, 'all_remove': self.all_remove, 'remove': self.remove, 'template_name': self.template_name
         }      
 
+
+class ViewButtonFilter(BaseFilter):
+    template_name = 'include/_list_filter_button.html'
+    
+    def get(self, view):
+        """
+        create a dictionary with all required data for the HTML template
+        """
+        value = getattr(view, self.name, None)
+        if value is not None:
+            return {
+                'value': value, 'select_text': self.select_text, 'param_name': self.name, 'remove': self.remove, 'template_name': self.template_name
+            }      
+        else:
+            return None
+        
 
 class ViewQuerysetFilter(BaseFilter):
     model = None
@@ -91,7 +108,7 @@ class ViewQuerysetFilter(BaseFilter):
         
         return {
             'selected': getattr(view, self.name), 'list': filter_list, 'select_text': self.select_text, 'select_all_text': self.select_all_text, 
-            'param_name': self.name, 'all_remove': self.all_remove, 'remove': self.remove
+            'param_name': self.name, 'all_remove': self.all_remove, 'remove': self.remove, 'template_name': self.template_name
         }      
 
 
@@ -115,7 +132,7 @@ class ViewChoicesFilter(BaseFilter):
         filter_list = [main.FilterItem(item) for item in self.choices]
         return {
             'selected': getattr(view, self.name), 'list': filter_list, 'select_text': self.select_text, 'select_all_text': self.select_all_text, 
-            'param_name': self.name, 'all_remove': self.all_remove, 'remove': self.remove
+            'param_name': self.name, 'all_remove': self.all_remove, 'remove': self.remove, 'template_name': self.template_name
         }      
 
 

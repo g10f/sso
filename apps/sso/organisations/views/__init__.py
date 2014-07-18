@@ -16,7 +16,7 @@ from sso.views import main
 from sso.views.main import FilterItem
 from sso.emails.models import EmailForward, Email, EmailAlias
 from sso.organisations.models import AdminRegion, Organisation
-from sso.views.generic import FormsetsUpdateView, ListView, SearchFilter, ViewChoicesFilter, ViewQuerysetFilter
+from sso.views.generic import FormsetsUpdateView, ListView, SearchFilter, ViewChoicesFilter, ViewQuerysetFilter, ViewButtonFilter
 from sso.organisations.models import OrganisationAddress, OrganisationPhoneNumber
 from sso.emails.forms import AdminEmailForwardForm, EmailForwardForm, EmailAliasForm
 from sso.organisations.forms import OrganisationCenterForm, OrganisationAddressForm, OrganisationPhoneNumberForm, OrganisationAdminForm
@@ -247,6 +247,21 @@ class AdminRegionFilter(ViewQuerysetFilter):
     remove = 'region,center,app_role,role_profile,p'
     
 
+class MyOrganisationsFilter(ViewButtonFilter):
+    name = 'my_organisations'
+    select_text = _('Select My Centers')
+    
+    def apply(self, view, qs, default=''):
+        if not view.request.user.is_superuser:
+            value = self.get_value_from_query_param(view, default)
+            if value:
+                qs = view.request.user.get_administrable_organisations()
+            setattr(view, self.name, value)
+            return qs
+        else:
+            return qs
+
+
 class OrganisationList(ListView):
     template_name = 'organisations/organisation_list.html'
     model = Organisation
@@ -261,6 +276,8 @@ class OrganisationList(ListView):
         Get the list of items for this view. This must be an iterable, and may
         be a queryset (in which qs-specific behavior will be enabled).
         """
+        
+        """
         # apply my_organisations filter only for admins
         my_organisations = None
         if self.request.user.is_user_admin:
@@ -272,10 +289,13 @@ class OrganisationList(ListView):
         else:
             self.my_organisations = None
             qs = super(OrganisationList, self).get_queryset().select_related('country', 'email')
-            
+        """
+         
         self.cl = main.ChangeList(self.request, self.model, self.list_display, default_ordering=['name'])
+        qs = super(OrganisationList, self).get_queryset().select_related('country', 'email')
         
         # apply filters
+        qs = MyOrganisationsFilter().apply(self, qs) 
         qs = OrganisationSearchFilter().apply(self, qs) 
         qs = CenterTypeFilter().apply(self, qs)
         qs = CountryFilter().apply(self, qs)
@@ -298,11 +318,12 @@ class OrganisationList(ListView):
             if h['sortable'] and h['sorted']:
                 num_sorted_fields += 1
         
+        my_organisations_filter = MyOrganisationsFilter().get(self)
         center_type_filter = CenterTypeFilter().get(self)
         country_filter = CountryFilter().get(self)
         admin_region_filter = AdminRegionFilter().get(self)
         
-        filters = [country_filter, admin_region_filter, center_type_filter]
+        filters = [my_organisations_filter, country_filter, admin_region_filter, center_type_filter]
         # is_active filter is only for admins
         if self.request.user.is_organisation_admin:  
             filters.append(IsActiveFilter().get(self))
@@ -315,7 +336,6 @@ class OrganisationList(ListView):
             'query': self.request.GET.get(main.SEARCH_VAR, ''),
             'cl': self.cl,
             'filters': filters,
-            'my_organisations': getattr(self, 'my_organisations', '')
         }
         context.update(kwargs)
         return super(OrganisationList, self).get_context_data(**context)

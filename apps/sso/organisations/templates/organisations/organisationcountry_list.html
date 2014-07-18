@@ -28,9 +28,9 @@
     </div>
 	
 	<div class="col-sm-9">
-        {% for filter in filters %} 
-        {% include 'include/_list_filter.html' with filter=filter %}
-        {% endfor %}
+        {% for filter in filters %}{% if filter %} 
+        {% include filter.template_name with filter=filter %}
+        {% endif %}{% endfor %}
     </div><!-- /.col-sm-9 -->
 </div>
 

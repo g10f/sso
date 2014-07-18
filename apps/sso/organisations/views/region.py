@@ -8,7 +8,7 @@ from l10n.models import Country
 from sso.views import main
 from sso.emails.models import EmailForward, EmailAlias
 from sso.organisations.models import AdminRegion
-from sso.views.generic import FormsetsUpdateView, ListView, SearchFilter, ViewQuerysetFilter
+from sso.views.generic import FormsetsUpdateView, ListView, SearchFilter, ViewQuerysetFilter, ViewButtonFilter
 from sso.emails.forms import AdminEmailForwardForm, EmailAliasForm
 from sso.organisations.forms import AdminRegionForm
 from sso.organisations.views import get_optional_email_inline_formset
@@ -45,6 +45,14 @@ class AdminRegionUpdateView(AdminRegionBaseView, FormsetsUpdateView):
             raise PermissionDenied
         return super(AdminRegionUpdateView, self).dispatch(request, *args, **kwargs)
     
+    def get_form_kwargs(self):
+        """
+        add user to form kwargs for filtering the adminregions
+        """
+        kwargs = super(AdminRegionUpdateView, self).get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
     def get_formsets(self):
         formsets = []
         if self.request.method == 'GET' or 'email' not in self.form.changed_data:
@@ -75,6 +83,20 @@ class CountryFilter(ViewQuerysetFilter):
     select_all_text = _('All Countries')
 
 
+class MyRegionsFilter(ViewButtonFilter):
+    name = 'my_regions'
+    select_text = _('Select My Regions')
+    
+    def apply(self, view, qs, default=''):
+        if not view.request.user.is_superuser and view.request.user.get_administrable_regions().exists():
+            value = self.get_value_from_query_param(view, default)
+            if value:
+                qs = qs.filter(pk__in=view.request.user.get_administrable_regions())
+            setattr(view, self.name, value)
+            return qs
+        else:
+            return qs
+
 class AdminRegionList(ListView):
     template_name = 'organisations/adminregion_list.html'
     model = AdminRegion
@@ -94,6 +116,7 @@ class AdminRegionList(ListView):
         self.cl = main.ChangeList(self.request, self.model, self.list_display, default_ordering=['name'])
 
         # apply filters
+        qs = MyRegionsFilter().apply(self, qs)  
         qs = AdminRegionSearchFilter().apply(self, qs)  
         qs = CountryFilter().apply(self, qs)  
                     
@@ -109,8 +132,9 @@ class AdminRegionList(ListView):
             if h['sortable'] and h['sorted']:
                 num_sorted_fields += 1
         
+        my_regions_filter = MyRegionsFilter().get(self)
         country_filter = CountryFilter().get(self)
-        filters = [country_filter]
+        filters = [my_regions_filter, country_filter]
         
         context = {
             'result_headers': headers,
