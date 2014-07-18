@@ -252,7 +252,7 @@ class MyOrganisationsFilter(ViewButtonFilter):
     select_text = _('Select My Centers')
     
     def apply(self, view, qs, default=''):
-        if not view.request.user.is_superuser:
+        if not view.request.user.is_superuser and view.request.user.get_administrable_organisations().exists():
             value = self.get_value_from_query_param(view, default)
             if value:
                 qs = view.request.user.get_administrable_organisations()
