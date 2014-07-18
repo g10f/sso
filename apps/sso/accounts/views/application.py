@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.db.models import Q
 from django.core.exceptions import PermissionDenied
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
@@ -88,10 +89,21 @@ class CenterFilter(ViewQuerysetFilter):
 
 class ApplicationRoleFilter(ViewQuerysetFilter):
     name = 'app_role'
-    qs_name = 'role_profiles__application_roles'
     model = ApplicationRole
     select_text = _('Select Role')
     select_all_text = _('All Roles')
+
+    def apply(self, view, qs, default=''):
+        """
+        filter with respect to application_roles and role_profiles
+        """
+        value = self.get_value_from_query_param(view, default)
+        if value: 
+            q = Q(application_roles=value)
+            q |= Q(role_profiles__application_roles=value)
+            qs = qs.filter(q)
+        setattr(view, self.name, value)
+        return qs
 
 
 class RoleProfileFilter(ViewQuerysetFilter):
