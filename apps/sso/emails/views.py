@@ -51,8 +51,8 @@ class EmailTypeFilter(ViewChoicesFilter):
 class PermissionFilter(ViewChoicesFilter):
     name = 'permission'
     choices = Email.PERMISSION_CHOICES
-    select_text = _('Select Access Control')
-    select_all_text = _("All Access Controls")
+    select_text = _('Select Permission')
+    select_all_text = _("All Permissions")
 
 
 class EmailSearchFilter(SearchFilter):
