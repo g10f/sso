@@ -8,7 +8,7 @@ from l10n.models import CONTINENTS
 from sso.views import main
 from sso.emails.models import EmailForward, EmailAlias
 from sso.organisations.models import OrganisationCountry, CountryGroup
-from sso.views.generic import FormsetsUpdateView, ListView, ViewChoicesFilter, SearchFilter, ViewQuerysetFilter
+from sso.views.generic import FormsetsUpdateView, ListView, ViewChoicesFilter, SearchFilter, ViewQuerysetFilter, ViewButtonFilter
 from sso.emails.forms import AdminEmailForwardForm, EmailAliasForm
 from sso.organisations.forms import OrganisationCountryForm
 from sso.organisations.views import get_optional_email_inline_formset
@@ -83,6 +83,21 @@ class CountryGroupFilter(ViewQuerysetFilter):
     select_all_text = _('All Groups')
 
 
+class MyCountriesFilter(ViewButtonFilter):
+    name = 'my_countries'
+    select_text = _('Select My Countries')
+    
+    def apply(self, view, qs, default=''):
+        if not view.request.user.is_superuser and view.request.user.get_administrable_countries().exists():
+            value = self.get_value_from_query_param(view, default)
+            if value:
+                qs = qs.filter(country__in=view.request.user.get_administrable_countries())
+            setattr(view, self.name, value)
+            return qs
+        else:
+            return qs
+
+
 class OrganisationCountryList(ListView):
     template_name = 'organisations/organisationcountry_list.html'
     model = OrganisationCountry
@@ -97,10 +112,11 @@ class OrganisationCountryList(ListView):
         Get the list of items for this view. This must be an iterable, and may
         be a queryset (in which qs-specific behavior will be enabled).
         """
-        qs = super(OrganisationCountryList, self).get_queryset().select_related('country', 'email')
-            
         self.cl = main.ChangeList(self.request, self.model, self.list_display, default_ordering=['country'])
+        qs = super(OrganisationCountryList, self).get_queryset().select_related('country', 'email')
         
+        # apply filters
+        qs = MyCountriesFilter().apply(self, qs)
         qs = CountrySearchFilter().apply(self, qs)  
         qs = ContinentsFilter().apply(self, qs)
         qs = CountryGroupFilter().apply(self, qs)
@@ -117,9 +133,10 @@ class OrganisationCountryList(ListView):
             if h['sortable'] and h['sorted']:
                 num_sorted_fields += 1
         
+        my_countries_filter = MyCountriesFilter().get(self)
         continent_filter = ContinentsFilter().get(self)
         
-        filters = [continent_filter]
+        filters = [my_countries_filter, continent_filter]
         # offer is_active filter only for admins
         if self.request.user.is_organisation_admin:  
             filters.append(CountryGroupFilter().get(self))
@@ -132,7 +149,6 @@ class OrganisationCountryList(ListView):
             'query': self.request.GET.get(main.SEARCH_VAR, ''),
             'cl': self.cl,
             'filters': filters,
-            'my_organisations': getattr(self, 'my_organisations', '')
         }
         context.update(kwargs)
         return super(OrganisationCountryList, self).get_context_data(**context)

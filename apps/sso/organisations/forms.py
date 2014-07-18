@@ -67,7 +67,7 @@ class OrganisationCenterForm(OrganisationBaseForm):
         self.user = kwargs.pop('user')  # remove custom user keyword      
         super(OrganisationCenterForm, self).__init__(*args, **kwargs)
         self.fields['email'].initial = str(self.instance.email)
-        self.fields['country'].queryset = self.user.get_administrable_countries()
+        self.fields['country'].queryset = self.user.get_administrable_organisation_countries()
         
 
 class OrganisationAdminForm(OrganisationBaseForm):
@@ -86,7 +86,7 @@ class OrganisationAdminForm(OrganisationBaseForm):
         self.user = kwargs.pop('user')  # remove custom user keyword      
         super(OrganisationAdminForm, self).__init__(*args, **kwargs)
         self.fields['admin_region'].queryset = self.user.get_administrable_regions()
-        self.fields['country'].queryset = self.user.get_administrable_countries()
+        self.fields['country'].queryset = self.user.get_administrable_organisation_countries()
 
 
 class AdminRegionForm(BaseForm):
@@ -103,6 +103,12 @@ class AdminRegionForm(BaseForm):
             'email': bootstrap.Select(),
             'name': bootstrap.TextInput(attrs={'size': 50}), 
         }
+        
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')  # remove custom user keyword      
+        super(AdminRegionForm, self).__init__(*args, **kwargs)
+        self.fields['country'].queryset = self.user.get_administrable_region_countries()
+
 
 class OrganisationCountryForm(BaseForm):
     # cache_choices performance optimisation 

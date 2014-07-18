@@ -81,8 +81,8 @@ class CenterFilter(ViewQuerysetFilter):
     name = 'center'
     qs_name = 'organisations'
     model = Organisation
-    select_text = _('Select Region')
-    select_all_text = _('All Regions')
+    select_text = _('Select Center')
+    select_all_text = _('All Centers')
     remove = 'app_role,p'
 
 

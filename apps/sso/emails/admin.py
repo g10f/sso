@@ -34,7 +34,7 @@ class EmailForward_Inline(admin.TabularInline):
 class EmailAdmin(admin.ModelAdmin):
     search_fields = ('email', 'name', 'uuid')
     list_display = ('email', 'email_type', 'last_modified', 'uuid')
-    list_filter = ('email_type', 'access_control')
+    list_filter = ('email_type', 'permission')
     inlines = [EmailAlias_Inline, EmailForward_Inline]
 
 

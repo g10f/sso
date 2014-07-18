@@ -44,9 +44,9 @@ class EmailForm(BaseForm):
     
     class Meta:
         model = Email
-        fields = ['name', 'email', 'email_type', 'access_control']
+        fields = ['name', 'email', 'email_type', 'permission']
         widgets = {
             'name': bootstrap.TextInput(attrs={'size': 50}),
             'email_type': bootstrap.Select(),
-            'access_control': bootstrap.Select(),
+            'permission': bootstrap.Select(),
         }

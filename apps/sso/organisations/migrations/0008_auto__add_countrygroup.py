@@ -40,7 +40,7 @@ class Migration(SchemaMigration):
     models = {
         u'emails.email': {
             'Meta': {'ordering': "['email']", 'object_name': 'Email'},
-            'access_control': ('django.db.models.fields.CharField', [], {'max_length': '20', 'db_index': 'True'}),
+            'permission': ('django.db.models.fields.CharField', [], {'max_length': '20', 'db_index': 'True'}),
             'email': ('django.db.models.fields.EmailField', [], {'unique': 'True', 'max_length': '254'}),
             'email_type': ('django.db.models.fields.CharField', [], {'max_length': '20', 'db_index': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),

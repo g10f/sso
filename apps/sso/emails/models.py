@@ -15,6 +15,7 @@ COUNTRY_EMAIL_TYPE = 'country'
 COUNTRY_GROUP_EMAIL_TYPE = 'global_region'
 CLOSED_GROUP_EMAIL_TYPE = 'closed_group'
 
+
 class Email(AbstractBaseModel):
     EMAIL_TYPE_CHOICES = (
         (CENTER_EMAIL_TYPE, _('Center')),
@@ -25,7 +26,7 @@ class Email(AbstractBaseModel):
         (GROUP_EMAIL_TYPE, _('Group')),
         (CLOSED_GROUP_EMAIL_TYPE, _('Closed Group')),
     )
-    ACCESS_CONTROL_CHOICES = (
+    PERMISSION_CHOICES = (
         ('1', _('Everybody')),
         ('2', _('Centers')),
         ('3', _('Specials')),
@@ -33,7 +34,7 @@ class Email(AbstractBaseModel):
     )
     name = models.CharField(_("name"), max_length=255, blank=True)    
     email_type = models.CharField(_('email type'), max_length=20, choices=EMAIL_TYPE_CHOICES, db_index=True)
-    access_control = models.CharField(_('access control'), max_length=20, choices=ACCESS_CONTROL_CHOICES, db_index=True)
+    permission = models.CharField(_('access control'), max_length=20, choices=PERMISSION_CHOICES, db_index=True, default='1')
     email = models.EmailField(_('email address'), unique=True, max_length=254)
     
     def primary_forward(self):

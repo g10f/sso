@@ -287,33 +287,33 @@ class User(AbstractUser):
             return Organisation.objects.all().select_related('country', 'email')
         elif self.is_user_admin:
             return Organisation.objects.filter(
-                Q(user=self) | Q(admin_region__user=self) | Q(country__user=self)).select_related('country', 'email').distinct()
+                Q(pk__in=self.organisations.all()) | Q(admin_region__in=self.admin_regions.all()) | Q(country__in=self.admin_countries.all())).select_related('country', 'email').distinct()
         else:
             return Organisation.objects.none()
     
     @memoize
     def get_administrable_user_regions(self):
         """
-        return a list of all organisations the user has admin rights on
+        return a list of regions from all the users we have admin rights on
         """
         if self.is_global_user_admin:
             return AdminRegion.objects.all()
         elif self.is_user_admin:
-            return AdminRegion.objects.filter(Q(user=self) | Q(country__user=self)).distinct()
+            return AdminRegion.objects.filter(Q(organisation__in=self.organisations.all()) | Q(pk__in=self.admin_regions.all()) | Q(country__in=self.admin_countries.all())).distinct()
         else:
             return AdminRegion.objects.none()
 
     @memoize
     def get_administrable_user_countries(self):
         """
-        return a list of countries from the administrable organisations the user has 
+        return a list of countries from all the users we have admin rights on
         """        
         if self.is_global_user_admin:
             return Country.objects.filter(organisation__isnull=False).distinct()
         elif self.is_user_admin:
             return Country.objects.filter(
-                Q(organisation__admin_region__user=self) |  # for adminregions without a associated country 
-                Q(organisation__user=self) | Q(adminregion__user=self) | Q(user=self)).distinct()
+                Q(organisation__admin_region__in=self.admin_regions.all()) |  # for adminregions without a associated country 
+                Q(organisation__in=self.organisations.all()) | Q(adminregion__in=self.admin_regions.all()) | Q(pk__in=self.admin_countries.all())).distinct()
         else:
             return Country.objects.none()
 
@@ -322,38 +322,61 @@ class User(AbstractUser):
         """
         return a list of all organisations the user has admin rights on
         """
-        if self.is_global_organisation_admin:
+        if self.has_perms(["organisations.change_organisation", "organisations.access_all_organisations"]):
             return Organisation.objects.all().select_related('country', 'email')
-        elif self.is_organisation_admin:
+        elif self.has_perm("organisations.change_organisation"):
             return Organisation.objects.filter(
                 Q(user=self) | Q(admin_region__user=self) | Q(country__user=self)).select_related('country', 'email').distinct()
         else:
             return Organisation.objects.none()
     
     @memoize
+    def get_administrable_organisation_countries(self):
+        """
+        return a list of countries from the administrable organisations the user has admin rights on 
+        """        
+        if self.has_perms(["organisations.change_organisation", "organisations.access_all_organisations"]):
+            return Country.objects.filter(organisation__isnull=False).distinct()
+        elif self.has_perm("organisations.change_organisation"):
+            return Country.objects.filter(
+                Q(organisation__admin_region__user=self) |  # for adminregions without a associated country 
+                Q(organisation__user=self) | Q(adminregion__user=self) | Q(user=self)).distinct()
+        else:
+            return Country.objects.none()
+
+    @memoize
     def get_administrable_regions(self):
         """
         return a list of all admin_regions the user has admin rights on
         """
-        if self.is_global_organisation_admin:
+        if self.has_perms(["organisations.change_adminregion", "organisations.access_all_organisations"]):
             return AdminRegion.objects.all()
-        elif self.is_organisation_admin:
-            # TODO: think about and compare to get_administrable_countries
+        elif self.has_perm("organisations.change_adminregion"):
             return AdminRegion.objects.filter(Q(user=self) | Q(country__user=self)).distinct()
         else:
             return AdminRegion.objects.none()
 
     @memoize
+    def get_administrable_region_countries(self):
+        """
+        return a list of countries from the administrable regions the user has 
+        """        
+        if self.has_perms(["organisations.change_adminregion", "organisations.access_all_organisations"]):
+            return Country.objects.filter(organisation__isnull=False).distinct()
+        elif self.has_perm("organisations.change_adminregion"):
+            return Country.objects.filter(Q(adminregion__user=self) | Q(user=self)).distinct()
+        else:
+            return Country.objects.none()
+
+    @memoize
     def get_administrable_countries(self):
         """
-        return a list of countries from the administrable organisations the user has 
+        return a list of countries the user has admin rights on 
         """        
-        if self.is_global_organisation_admin:
+        if self.has_perms(["organisations.change_organisationcountry", "organisations.access_all_organisations"]):
             return Country.objects.filter(organisation__isnull=False).distinct()
-        elif self.is_organisation_admin:
-            return Country.objects.filter(
-                Q(organisation__admin_region__user=self) |  # for adminregions without a associated country 
-                Q(organisation__user=self) | Q(adminregion__user=self) | Q(user=self)).distinct()
+        elif self.has_perm("organisations.change_organisationcountry"):
+            return Country.objects.filter(user=self)
         else:
             return Country.objects.none()
 
