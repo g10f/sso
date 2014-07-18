@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-18 11:58+0200\n"
+"POT-Creation-Date: 2014-07-18 12:11+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1684,6 +1684,10 @@ msgstr ""
 msgid "Designates whether this buddhist center data can be published."
 msgstr ""
 "Gibt an, ob dieses Zentrum auf öffentlichen Seiten publiziert werden kann."
+
+#: organisations/models.py:103
+msgid "admin region"
+msgstr "Region"
 
 #: organisations/models.py:112
 msgid "Buddhist Centers"
