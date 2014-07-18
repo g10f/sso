@@ -100,7 +100,7 @@ class Organisation(AbstractBaseModel):
     can_publish = models.BooleanField(_("publish"), 
                                       help_text=_('Designates whether this buddhist center data can be published.'), 
                                       default=True)
-    admin_region = models.ForeignKey(AdminRegion, blank=True, null=True)
+    admin_region = models.ForeignKey(AdminRegion, verbose_name=_("admin region"), blank=True, null=True)
     # history = HistoricalRecords()
     
     class Meta:
