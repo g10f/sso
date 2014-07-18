@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-07-18 11:17+0200\n"
+"POT-Creation-Date: 2014-07-18 11:58+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -56,7 +56,7 @@ msgstr ""
 msgid "State or region"
 msgstr ""
 
-#: models.py:58 models.py:75 emails/models.py:59
+#: models.py:58 models.py:75 emails/models.py:60
 msgid "primary"
 msgstr ""
 
@@ -223,7 +223,7 @@ msgstr ""
 
 #: accounts/forms.py:79
 #: accounts/templates/accounts/application/add_user_done.html:36
-#: emails/models.py:49 emails/templates/emails/email_form.html:26
+#: emails/models.py:50 emails/templates/emails/email_form.html:26
 msgid "Email"
 msgstr ""
 
@@ -326,7 +326,7 @@ msgstr ""
 
 #: accounts/forms.py:319 accounts/forms.py:321 accounts/forms.py:398
 #: accounts/forms.py:465 accounts/forms.py:552
-#: accounts/templates/accounts/user_confirm_delete.html:39 emails/models.py:20
+#: accounts/templates/accounts/user_confirm_delete.html:39 emails/models.py:21
 msgid "Center"
 msgstr ""
 
@@ -442,7 +442,7 @@ msgstr ""
 msgid "applications"
 msgstr ""
 
-#: accounts/models.py:82 accounts/models.py:125 emails/models.py:34
+#: accounts/models.py:82 accounts/models.py:125 emails/models.py:35
 #: oauth2/models.py:72 organisations/models.py:14 organisations/models.py:47
 #: organisations/models.py:80
 msgid "name"
@@ -990,7 +990,7 @@ msgstr ""
 msgid "Delete user"
 msgstr ""
 
-#: accounts/templates/accounts/user_confirm_delete.html:47 emails/models.py:22
+#: accounts/templates/accounts/user_confirm_delete.html:47 emails/models.py:23
 #: organisations/admin.py:11 organisations/forms.py:10
 #: organisations/forms.py:42 organisations/forms.py:94
 #: organisations/models.py:34
@@ -1301,85 +1301,85 @@ msgstr ""
 msgid "Email address"
 msgstr ""
 
-#: emails/models.py:21 organisations/models.py:53
+#: emails/models.py:22 organisations/models.py:53
 #: organisations/templates/organisations/adminregion_detail.html:19
 #: organisations/templates/organisations/adminregion_form.html:26
 #, fuzzy
 msgid "Region"
 msgstr "Center"
 
-#: emails/models.py:23 organisations/models.py:19
+#: emails/models.py:24 organisations/models.py:19
 msgid "Country group"
 msgstr ""
 
-#: emails/models.py:24
+#: emails/models.py:25
 msgid "Person"
 msgstr ""
 
-#: emails/models.py:25
+#: emails/models.py:26
 msgid "Group"
 msgstr ""
 
-#: emails/models.py:26
+#: emails/models.py:27
 msgid "Closed Group"
 msgstr ""
 
-#: emails/models.py:29
+#: emails/models.py:30
 msgid "Everybody"
 msgstr ""
 
-#: emails/models.py:30 templates/include/_navigation.html:21
+#: emails/models.py:31 templates/include/_navigation.html:21
 msgid "Centers"
 msgstr ""
 
-#: emails/models.py:31
+#: emails/models.py:32
 msgid "Specials"
 msgstr ""
 
-#: emails/models.py:32
+#: emails/models.py:33
 msgid "VIP"
 msgstr ""
 
-#: emails/models.py:35
+#: emails/models.py:36
 msgid "email type"
 msgstr ""
 
-#: emails/models.py:36
+#: emails/models.py:37
 msgid "access control"
 msgstr ""
 
-#: emails/models.py:37 emails/models.py:57 emails/models.py:72
+#: emails/models.py:38 emails/models.py:58 emails/models.py:73
 #: forms/fields.py:16
 msgid "email address"
 msgstr ""
 
-#: emails/models.py:50 emails/templates/emails/email_form.html:13
+#: emails/models.py:51 emails/templates/emails/email_form.html:13
 #: emails/templates/emails/email_list.html:4
 #: emails/templates/emails/email_list.html:11
 msgid "Emails"
 msgstr ""
 
-#: emails/models.py:58
+#: emails/models.py:59
 msgid "email forward address"
 msgstr ""
 
-#: emails/models.py:64
+#: emails/models.py:65
 msgid "e-mail forward"
 msgstr ""
 
-#: emails/models.py:65
+#: emails/models.py:66
 msgid "e-mail forwards"
 msgstr ""
 
-#: emails/models.py:73
+#: emails/models.py:74
 msgid "email alias address"
 msgstr ""
 
-#: emails/models.py:78
+#: emails/models.py:79
 msgid "e-mail alias"
 msgstr ""
 
-#: emails/models.py:79
+#: emails/models.py:80
 msgid "e-mail aliases"
 msgstr ""
 
@@ -1392,12 +1392,14 @@ msgid "All Email Types"
 msgstr ""
 
 #: emails/views.py:54
-msgid "Select Access Control"
-msgstr ""
+#, fuzzy
+msgid "Select Permission"
+msgstr "Center"
 
 #: emails/views.py:55
-msgid "All Access Controls"
-msgstr ""
+#, fuzzy
+msgid "All Permissions"
+msgstr "Center"
 
 #: emails/templates/emails/email_form.html:5
 msgid "Email Details"
