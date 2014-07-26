@@ -32,7 +32,7 @@ class SSOBackend(ModelBackend):
 class EmailBackend(SSOBackend):
     """Authenticate using email or username"""
     def authenticate(self, username=None, password=None):
-        #If username is an email address, then try to pull it up
+        # If username is an email address, then try to pull it up
         user_model = get_user_model()
         if EMAIL_RE.search(username):
             user = user_model.objects.filter(email__iexact=username)

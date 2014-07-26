@@ -59,7 +59,15 @@ def get_auth_data(request):
         
         if not hasattr(request, '_cached_auth_data'):
             # try django auth session
-            request._cached_auth_data = auth.get_user(request), None, set(['address', 'phone'])
+            try:
+                # A client id for the Browser
+                client = Client.objects.get(uuid='ca96cd88bc2740249d0def68221cba88') 
+                scopes = set(client.scopes.split())
+            except ObjectDoesNotExist:
+                client = None
+                scopes = set()
+                
+            request._cached_auth_data = auth.get_user(request), client, scopes
     return request._cached_auth_data
 
 

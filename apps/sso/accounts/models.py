@@ -172,9 +172,10 @@ class User(AbstractUser):
     
     class Meta(AbstractUser.Meta):
         permissions = (
+            ("read_user", "Can read user data"),
             ("access_all_users", "Can access all users"),
         )
-    
+
     @classmethod
     def get_primary_or_none(cls, queryset):
         # iterate through all uses the prefetch_related cache
@@ -396,11 +397,11 @@ class User(AbstractUser):
         
     @property
     def is_global_user_admin(self):
-        return self.has_perms(["accounts.change_user", "accounts.access_all_users"])
+        return self.has_perms(["accounts.read_user", "accounts.access_all_users"])
     
     @property
     def is_user_admin(self):
-        return self.has_perm("accounts.change_user")
+        return self.has_perm("accounts.read_user")
 
     @property
     def is_global_organisation_admin(self):
@@ -422,6 +423,12 @@ class User(AbstractUser):
     def has_country(self, uuid):
         return self.admin_countries.filter(organisationcountry__uuid=uuid).exists()
     
+    def has_user_access_and_perm(self, uuid, perm):
+        """
+        Check if the user is an admin of the user with uuid and has the permission
+        """
+        return self.has_perm(perm) and self.has_user_access(uuid)
+
     def has_user_access(self, uuid):
         """
         Check if the user is an admin of the user with uuid
@@ -439,6 +446,9 @@ class User(AbstractUser):
         else:
             return self.has_organisation(uuid)
     
+    def has_organisation_access_and_perm(self, uuid, perm):
+        return self.has_perm(perm) and self.has_organisation_access(uuid)
+
     def has_organisation_access(self, uuid):
         if self.has_perm("organisations.access_all_organisations"):
             return True

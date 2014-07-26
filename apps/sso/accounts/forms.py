@@ -253,7 +253,7 @@ class UserAddFormExt(UserAddForm):
 class AddressForm(BaseForm):
     class Meta:
         model = UserAddress
-        fields = ('primary', 'address_type', 'addressee', 'street_address', 'city', 'postal_code', 'country', 'state') 
+        fields = ('primary', 'address_type', 'addressee', 'street_address', 'city', 'postal_code', 'country', 'region') 
         widgets = {
             'primary': bootstrap.CheckboxInput(),
             'address_type': bootstrap.Select(),
@@ -261,7 +261,8 @@ class AddressForm(BaseForm):
             'street_address': bootstrap.Textarea(attrs={'cols': 50, 'rows': 2}),
             'city': bootstrap.TextInput(attrs={'size': 50}),
             'postal_code': bootstrap.TextInput(attrs={'size': 50}),
-            'country': bootstrap.Select()
+            'country': bootstrap.Select(),
+            'region': bootstrap.TextInput(attrs={'size': 50}),
         }
     
     def template(self):

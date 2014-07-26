@@ -8,7 +8,7 @@ from django.core.management.base import NoArgsCommand
 from ...models import Organisation, OrganisationAddress, OrganisationPhoneNumber, OrganisationCountry
 from sso.emails.models import Email, CENTER_EMAIL_TYPE
 
-from l10n.models import Country, AdminArea
+from l10n.models import Country  # , AdminArea
 from sso.models import update_object_from_dict
 
 import logging 
@@ -46,16 +46,18 @@ def update_adresses(addresses, organisation):
     OrganisationAddress.objects.filter(organisation=organisation).delete()
     for address_item in addresses:
         country = Country.objects.get(iso2_code=address_item['country_iso2_code'])
+        """
         state = None
         if address_item['state']:
             try:
                 state = AdminArea.objects.get(country=country, name=address_item['state'])
             except ObjectDoesNotExist:
                 pass
-        address_item['address_type'] = address_type_map[address_item['address_type']] 
         address_item['state'] = state
+        """
+        address_item['address_type'] = address_type_map[address_item['address_type']] 
         address = OrganisationAddress(organisation=organisation, country=country)
-        update_object_from_dict(address, address_item, key_mapping={'is_default_postal': 'primary'})
+        update_object_from_dict(address, address_item, key_mapping={'is_default_postal': 'primary', 'state': 'region'})
 
 def update_phonenumbers(phonenumbers, organisation):
     phone_type_map = {

@@ -5,8 +5,9 @@
 	 "fields" : {
 		 "name" : "GlobalAdmin",
 		 "permissions" : [ 
-               [ "add_user", "accounts", "user" ],
                [ "access_all_users", "accounts", "user" ],
+               [ "read_user", "accounts", "user" ],
+               [ "add_user", "accounts", "user" ],
                [ "change_user", "accounts", "user" ],
                [ "add_useraddress", "accounts", "useraddress" ],
                [ "change_useraddress", "accounts", "useraddress" ], 
@@ -23,6 +24,7 @@
 	 "fields" : {
 		 "name" : "CenterAdmin",
 		 "permissions" : [ 
+               [ "read_user", "accounts", "user" ],
                [ "add_user", "accounts", "user" ],
                [ "change_user", "accounts", "user" ],
                [ "add_useraddress", "accounts", "useraddress" ],
@@ -40,6 +42,7 @@
 	 "fields" : {
 		 "name" : "RegionAdmin",
 		 "permissions" : [ 
+               [ "read_user", "accounts", "user" ],
                [ "add_user", "accounts", "user" ],
                [ "change_user", "accounts", "user" ],
                [ "add_useraddress", "accounts", "useraddress" ],

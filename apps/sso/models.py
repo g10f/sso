@@ -54,7 +54,8 @@ class AddressMixin(models.Model):
     postal_code = models.CharField(_("postal code"), max_length=30, blank=True)  # , help_text=_('Zipcode or postal code') 
     country = models.ForeignKey(Country, verbose_name=_("country"), limit_choices_to={'active': True})
     state = ChainedForeignKey(AdminArea, chained_field='country', chained_model_field="country", verbose_name=_("State"), 
-                              help_text=_('State or region'), blank=True, null=True)    
+                              help_text=_('State or region'), blank=True, null=True)
+    region = models.CharField(_("region"), help_text=_('State or region'), blank=True, max_length=100)
     primary = models.BooleanField(_("primary"), default=False)
     # history = HistoricalRecords()
     
@@ -135,7 +136,31 @@ def filter_dict_from_kls(destination, source_dict, prefix=''):
         if key in source_dict:
             filtered_dict[field_name] = source_dict[key]
     return filtered_dict
-    
+
+  
+def map_dict2dict(mapping, source_dict):
+    new_dict = {}    
+    for key, value in mapping.items():
+        if key in source_dict:
+            try:
+                new_key = value['name']
+                parser = value.get('parser', None)
+                if parser is not None:
+                    new_value = parser(source_dict[key])
+                else:
+                    new_value = source_dict[key]
+                
+                validate = value.get('validate', None)
+                if validate is not None:
+                    if not validate(new_value):
+                        raise ValueError("\"%s\" is not valid for %s" % (new_value, new_key))
+            except TypeError:
+                new_key = value
+                new_value = source_dict[key]
+                
+            new_dict[new_key] = new_value
+    return new_dict
+
 
 def update_object_from_object(destination, source, exclude=['id']):
     source_dict = model_to_dict(source, exclude=exclude)
