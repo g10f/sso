@@ -106,6 +106,7 @@ class Organisation(AbstractBaseModel):
     class Meta:
         permissions = (
             ("access_all_organisations", "Can access all organisations"),
+            # ("read_organisation", "Can read organisation data"),
         )
         ordering = ['name']
         verbose_name = _('Buddhist Center')

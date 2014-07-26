@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 import json
-import datetime
 
 from django.views.generic import View
 from django.views.decorators.vary import vary_on_headers
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.cache import cache_control, cache_page
+from django.views.decorators.cache import cache_control
 from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
@@ -15,7 +14,6 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.db import transaction
 from django.utils.translation import ugettext as _
-from django.utils import timezone, dateparse
 from django.template.defaultfilters import date
 from sorl.thumbnail import get_thumbnail
 
@@ -27,6 +25,7 @@ from sso.oauth2.decorators import client_required
 from utils.url import base_url, build_url, absolute_url
 from sso.api.decorators import api_user_passes_test, catch_errors
 from sso.api.response import JsonHttpResponse
+from utils.parse import parse_datetime_with_timezone_support
 
 import logging
 
@@ -66,70 +65,6 @@ def get_page_and_links(request, qs, find_expression=FIND_EXPRESSION):
     return page, links
 
 
-@cache_page(60 * 60)
-def home(request):
-    base_uri = base_url(request)
-    resources = {
-        "resources": {
-            "http://openid.net/specs/connect/1.0/issuer": {
-                "href": "%s%s" % (base_uri, "/.well-known/openid-configuration")
-            },
-            "http://dwbn.org/specs/api/1.0/me": {
-                "href": "%s%s" % (base_uri, reverse('api:v1_users_me')),
-                "hints": {
-                    "docs": "https://wiki.dwbn.org"
-                }
-            },
-            "http://dwbn.org/specs/api/1.0/my-apps": {
-                "href": "%s%s" % (base_uri, reverse('api:v1_users_my_apps'))
-            },
-            "http://dwbn.org/specs/api/1.0/users": {
-                "href-template": "%s%s%s" % (base_uri, reverse('api:v1_users'), FIND_EXPRESSION),
-                "href-vars": {
-                    "q": "%s/param/q" % (base_uri),
-                    "organisation__uuid": "%s/param/organisation__uuid" % (base_uri),
-                    "per_page": "%s/param/per_page" % (base_uri),
-                    "app_uuid": "%s/param/app_uuid" % (base_uri),
-                    "modified_since": "%s/param/modified_since" % (base_uri)
-                }
-            },
-            "http://dwbn.org/specs/api/1.0/user-apps": {
-                "href-template": "%s%s%s" % (base_uri, reverse('api:v1_users'), '{uuid}/apps/'),
-                "href-vars": {
-                    "uuid": "%s/param/uuid" % (base_uri)
-                }
-            },
-            "http://dwbn.org/specs/api/1.0/user": {
-                "href-template": "%s%s%s" % (base_uri, reverse('api:v1_users'), '{uuid}/'),
-                "href-vars": {
-                    "uuid": "%s/param/uuid" % (base_uri)
-                }
-            }
-        }
-    }
-    return JsonHttpResponse(content=resources, request=request)
-
-"""
-@cache_page(60 * 60)
-def get_index(request, find_expression=FIND_EXPRESSION):
-    base_uri = base_url(request)
-    self_url = "%s%s" % (base_uri, request.path)
-    api = {
-        'links': {
-            'self': {'href': self_url, 'title': _('API base uri')},
-            'token': {'href': '%s%s' % (base_uri, reverse('oauth2:token')), 'templated': False, 'title': _('oauth2 token')},
-            'tokeninfo': {'href': '%s%s%s' % (base_uri, reverse('oauth2:tokeninfo'), '{?access_token,id_token}'), 'templated': True, 'title': _('get tokeninfo')},
-            'certs': {'href': '%s%s' % (base_uri, reverse('oauth2:certs')), 'templated': False, 'title': _('signature certificates')},
-            'users': {'href': '%s%s%s' % (base_uri, reverse('api:v1_users'), find_expression), 'templated': True, 'title': _('paginated list of all users')},
-            'me': {'href': '%s%s%s' % (base_uri, reverse('api:v1_users'), 'me/'), 'templated': False, 'title': _('logged in user')},
-            'user': {'href': '%s%s%s' % (base_uri, reverse('api:v1_users'), '{uuid}/'), 'templated': True, 'title': _('user identified by uuid')},
-            'user_apps': {'href': '%s%s%s' % (base_uri, reverse('api:v1_users'), '{uuid}/apps/'), 'templated': True, 'title': _('apps for user identified by uuid')},
-            'my_apps': {'href': '%s%s%s' % (base_uri, reverse('api:v1_users'), 'me/apps/'), 'templated': False, 'title': _('apps for logged in user')},
-        }
-    }
-    return JsonHttpResponse(content=api, request=request)
-"""
-
 def _address_state(address):
     state = ""
     if address.state:
@@ -138,20 +73,6 @@ def _address_state(address):
         else:
             state = address.state.name
     return state
-
-
-def parse_datetime_with_timezone_support(value):
-    parsed = dateparse.parse_datetime(value)
-    
-    if not parsed:  # try date format
-        parsed = dateparse.parse_date(value)
-        if parsed is not None:
-            parsed = datetime.datetime(parsed.year, parsed.month, parsed.day)
-        
-    # Confirm that dt is naive before overwriting its tzinfo.
-    if parsed is not None and timezone.is_naive(parsed):
-        parsed = parsed.replace(tzinfo=timezone.utc)
-    return parsed
 
 
 def get_userapps(user, request):

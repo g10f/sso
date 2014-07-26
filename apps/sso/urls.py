@@ -20,7 +20,6 @@ urlpatterns = patterns(
     url(r'^emails/', include('sso.emails.urls', namespace="emails")),
     url(r'^oauth2/', include('sso.oauth2.urls', namespace="oauth2")),
     url(r'^.well-known/openid-configuration', 'sso.oauth2.views.openid_configuration', name='openid-configuration'),
-    url(r'^.well-known/home', 'sso.api.views.users.home', name='json-home'),
     url(r'^api/', include('sso.api.urls', namespace="api")),
     url(r'^chained_filter/(?P<app>l10n)/(?P<model>[\w\-]+)/(?P<field>[\w\-]+)/(?P<value>[\w\-]+)/$', 'smart_selects.views.filterchain', name='chained_filter'),
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

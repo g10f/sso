@@ -53,12 +53,12 @@ class MoinSha1PasswordHasher(BasePasswordHasher):
         hash.update(salt)
         encoded = base64.encodestring(hash.digest() + salt).rstrip()
         return "%s$%s" % (self.algorithm, encoded)
-        #return '{SSHA}' + base64.encodestring(hash.digest() + salt).rstrip()
+        # return '{SSHA}' + base64.encodestring(hash.digest() + salt).rstrip()
 
     def verify(self, password, encoded):
         algorithm, hash = encoded.split('$', 1)  # @ReservedAssignment
         assert algorithm == self.algorithm
-        #data = base64.decodestring(encoded[6:])
+        # data = base64.decodestring(encoded[6:])
         data = base64.decodestring(hash)
         salt = data[20:]
         hash = hashlib.new('sha1', password.encode('utf-8'))  # @ReservedAssignment
