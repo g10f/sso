@@ -4,29 +4,28 @@ from django.utils.html import format_html
 from django.db import models
 from django.views import generic
 
-#from django.utils.translation import ugettext_lazy
 from django.utils.datastructures import SortedDict
 
 
 # Changelist settings
-#ALL_VAR = 'all'
+# ALL_VAR = 'all'
 ORDER_VAR = 'o'
-#ORDER_TYPE_VAR = 'ot'
+# ORDER_TYPE_VAR = 'ot'
 PAGE_VAR = 'p'
 PAGE_SIZE_VAR = 's'
 SEARCH_VAR = 'q'
-#TO_FIELD_VAR = 't'
-#IS_POPUP_VAR = 'pop'
+# TO_FIELD_VAR = 't'
+# IS_POPUP_VAR = 'pop'
 ERROR_FLAG = 'e'
 
 IGNORED_PARAMS = (  
-    #ALL_VAR,    
+    # ALL_VAR,    
     ORDER_VAR,   # ORDER_TYPE_VAR,    
     SEARCH_VAR,  # IS_POPUP_VAR,  #TO_FIELD_VAR   
 )
 
 # Text to display within change-list table cells if the value is blank.
-#EMPTY_CHANGELIST_VALUE = ugettext_lazy('(None)')
+# EMPTY_CHANGELIST_VALUE = ugettext_lazy('(None)')
     
     
 class ChangeList(object):
@@ -41,7 +40,7 @@ class ChangeList(object):
         self.list_display = list_display
         self.orderd_columns = orderd_columns
         self.params = dict(request.GET.items())
-        #if PAGE_VAR in self.params:
+        # if PAGE_VAR in self.params:
         #    del self.params[PAGE_VAR]
         if ERROR_FLAG in self.params:
             del self.params[ERROR_FLAG]
@@ -78,7 +77,7 @@ class ChangeList(object):
             return field_name, {"sortable": False} 
             
     def get_ordering_field(self, field_name):
-        #TODO: ?
+        # TODO: ?
         return field_name
 
     def get_ordering(self, request, queryset):

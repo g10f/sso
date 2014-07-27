@@ -85,7 +85,8 @@ class UserMixin(object):
                     '@id': "%s%s" % (base, reverse('api:v2_organisation', kwargs={'uuid': organisation.uuid}))
                 } for organisation in obj.organisations.all().prefetch_related('country')
             }
-            
+            # data['roles'] = [role.name for role in obj.get_roles_by_app(request.client.application.uuid)]
+
             if 'role' in scopes:
                 applications = {}
                 applicationroles = obj.get_applicationroles()

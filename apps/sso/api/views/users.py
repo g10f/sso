@@ -164,7 +164,6 @@ def get_userinfo(user, request, show_details=False):
     return userinfo          
         
     
-# TODO: design api more HATEOAS like
 @catch_errors
 @api_user_passes_test(lambda u: u.has_perm("accounts.access_all_users"))
 def get_user_list(request):
@@ -182,8 +181,7 @@ def get_user_list(request):
     if modified_since:  # parse modified_since
         parsed = parse_datetime_with_timezone_support(modified_since)
         if parsed is None:
-            raise ValueError("can not parse %s" % modified_since)  # TODO: distinguish between client and server error in exception handling
-        # TODO: take into account last_modified of addresses and phone numbers            
+            raise ValueError("can not parse %s" % modified_since)
         qs = qs.filter(last_modified__gte=parsed)
 
     page, links = get_page_and_links(request, qs)
