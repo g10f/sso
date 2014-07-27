@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 from django.utils.translation import ugettext_lazy as _
-from django.forms import ModelChoiceField, ModelMultipleChoiceField
+from django.forms import ModelChoiceField, ModelMultipleChoiceField, ValidationError
 from sso.forms import bootstrap, BaseForm, BaseTabularInlineForm
 from .models import OrganisationPhoneNumber, OrganisationAddress, Organisation, AdminRegion, OrganisationCountry, CountryGroup
 from l10n.models import Country 
@@ -40,12 +40,12 @@ class OrganisationPhoneNumberForm(BaseTabularInlineForm):
 
 class OrganisationBaseForm(BaseForm):
     google_maps_url = bootstrap.ReadOnlyField(label=_("Google Maps"))
-    country = ModelChoiceField(queryset=Country.objects.filter(organisationcountry__isnull=False), cache_choices=True, required=True, label=_("Country"), widget=bootstrap.Select())
+    # country = ModelChoiceField(queryset=Country.objects.filter(organisationcountry__isnull=False), cache_choices=True, required=True, label=_("Country"), widget=bootstrap.Select())
     
     class Meta:
         model = Organisation
         
-        fields = ('name', 'homepage', 'founded', 'latitude', 'longitude', 'is_active', 'is_private', 'can_publish', 'center_type', 'country')
+        fields = ('name', 'homepage', 'founded', 'latitude', 'longitude', 'is_active', 'is_private', 'can_publish', 'center_type')
         years_to_display = range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1)
         widgets = {
             'homepage': bootstrap.TextInput(attrs={'size': 50}),
@@ -57,37 +57,107 @@ class OrganisationBaseForm(BaseForm):
             'center_type': bootstrap.Select(),
             'is_active': bootstrap.CheckboxInput(),
             'is_private': bootstrap.CheckboxInput(),
-            'can_publish': bootstrap.CheckboxInput()
+            'can_publish': bootstrap.CheckboxInput(),
+            'email': bootstrap.Select()
         }
 
 
-class OrganisationCenterForm(OrganisationBaseForm):
+class OrganisationCenterAdminForm(OrganisationBaseForm):
     email = bootstrap.ReadOnlyField(label=_("Email address"))
+    country = bootstrap.ReadOnlyField(label=_("Country"))
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')  # remove custom user keyword      
-        super(OrganisationCenterForm, self).__init__(*args, **kwargs)
-        self.fields['email'].initial = str(self.instance.email)
-        self.fields['country'].queryset = self.user.get_administrable_organisation_countries()
+        super(OrganisationCenterAdminForm, self).__init__(*args, **kwargs)
+        self.fields['email'].initial = self.instance.email
+        if self.instance.admin_region:
+            self.fields['admin_region'] = bootstrap.ReadOnlyField(initial=self.instance.admin_region, label=_("Admin region"))
+        self.fields['country'].initial = self.instance.country
         
 
-class OrganisationAdminForm(OrganisationBaseForm):
+class OrganisationCountryAdminForm(OrganisationBaseForm):
     """
-    A form for a user who can add new organisations and edit the fields
+    A form for a country admin
+    - email
+    - admin_region
+    - country
+    """
+    class Meta(OrganisationBaseForm.Meta):
+        fields = OrganisationBaseForm.Meta.fields + ('email', 'country', 'admin_region')
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')  # remove custom user keyword      
+        super(OrganisationCountryAdminForm, self).__init__(*args, **kwargs)
+        self.fields['country'].queryset = self.user.get_assignable_organisation_countries()
+
+
+class OrganisationRegionAdminForm(OrganisationBaseForm):
+    """
+    A form for a regional admin
     - email
     - admin_region
     """
+    # don't use the default ChainedModelChoiceField, because the regions are restricted to the administrable_organisation_regions
+    # of the region admin
+    admin_region = ModelChoiceField(queryset=AdminRegion.objects.none(), cache_choices=True, required=True, label=_("Admin Region"), widget=bootstrap.Select())
+
     class Meta(OrganisationBaseForm.Meta):
-        fields = OrganisationBaseForm.Meta.fields + ('admin_region', 'email')
-        widgets = OrganisationBaseForm.Meta.widgets
-        widgets['admin_region'] = bootstrap.Select()
-        widgets['email'] = bootstrap.Select()
+        fields = OrganisationBaseForm.Meta.fields + ('email', 'admin_region')
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')  # remove custom user keyword      
-        super(OrganisationAdminForm, self).__init__(*args, **kwargs)
-        self.fields['admin_region'].queryset = self.user.get_administrable_regions()
-        self.fields['country'].queryset = self.user.get_administrable_organisation_countries()
+        super(OrganisationRegionAdminForm, self).__init__(*args, **kwargs)
+        self.fields['admin_region'].queryset = self.user.get_assignable_organisation_regions()
+        self.fields['country'] = bootstrap.ReadOnlyField(initial=self.instance.country, label=_("Country"))
+
+    def clean_admin_region(self):
+        """
+        check if the admin_region and country fits together
+        """
+        data = self.cleaned_data['admin_region']
+
+        if data.country != self.instance.country:
+            msg = _("The admin region is not valid for the selected country.")
+            raise ValidationError(msg)
+        return data
+
+
+class OrganisationRegionAdminCreateForm(OrganisationBaseForm):
+    """
+    A form for a regional admin to create new centers
+    the selectable  countries are limited to the countries from the regions
+    - email
+    - admin_region
+    """
+    # don't use the default ChainedModelChoiceField, because the regions are restricted to the administrable_organisation_regions
+    # of the region admin
+    admin_region = ModelChoiceField(queryset=AdminRegion.objects.none(), cache_choices=True, required=True, label=_("Admin Region"), widget=bootstrap.Select())
+    
+    class Meta(OrganisationBaseForm.Meta):
+        fields = OrganisationBaseForm.Meta.fields + ('email', 'country', 'admin_region')
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')  # remove custom user keyword      
+        super(OrganisationRegionAdminCreateForm, self).__init__(*args, **kwargs)
+        regions = self.user.get_assignable_organisation_regions()
+        self.fields['admin_region'].queryset = regions
+        self.fields['country'].queryset = Country.objects.filter(adminregion__in=regions).distinct()
+
+    def clean(self):
+        """
+        check if the admin_region and country fits together
+        """
+        cleaned_data = super(OrganisationBaseForm, self).clean()
+        admin_region = cleaned_data.get("admin_region")
+        country = cleaned_data.get("country")
+
+        if admin_region and country:
+            if admin_region.country != country:
+                msg = _("The admin region is not valid for the selected country.")
+                # self.add_error('admin_region', msg)  #  django 1.7
+                self._errors["admin_region"] = self.error_class([msg])
+                del cleaned_data["admin_region"]
+        return cleaned_data
 
 
 class AdminRegionForm(BaseForm):

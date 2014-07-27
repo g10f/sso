@@ -28,9 +28,9 @@ class Email(AbstractBaseModel):
     )
     PERMISSION_CHOICES = (
         ('1', _('Everybody')),
-        ('2', _('Centers')),
-        ('3', _('Specials')),
-        ('4', _('VIP')),
+        ('2', _('Diamondway Buddhism')),
+        ('3', _('VIP')),
+        ('4', _('VIP + Diamondway Buddhism')),
     )
     name = models.CharField(_("name"), max_length=255, blank=True)    
     email_type = models.CharField(_('email type'), max_length=20, choices=EMAIL_TYPE_CHOICES, db_index=True)

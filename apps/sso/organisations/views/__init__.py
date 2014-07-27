@@ -19,7 +19,9 @@ from sso.organisations.models import AdminRegion, Organisation
 from sso.views.generic import FormsetsUpdateView, ListView, SearchFilter, ViewChoicesFilter, ViewQuerysetFilter, ViewButtonFilter
 from sso.organisations.models import OrganisationAddress, OrganisationPhoneNumber
 from sso.emails.forms import AdminEmailForwardForm, EmailForwardForm, EmailAliasForm
-from sso.organisations.forms import OrganisationCenterForm, OrganisationAddressForm, OrganisationPhoneNumberForm, OrganisationAdminForm
+from sso.organisations.forms import OrganisationAddressForm, OrganisationPhoneNumberForm, OrganisationCountryAdminForm, \
+    OrganisationRegionAdminForm, OrganisationCenterAdminForm, OrganisationRegionAdminCreateForm
+
 
 import logging
 logger = logging.getLogger(__name__)
@@ -95,9 +97,8 @@ class OrganisationDeleteView(OrganisationBaseView, DeleteView):
         return super(OrganisationDeleteView, self).dispatch(request, *args, **kwargs)
 
 
-# TODO: ensure that the new created center can be edited by the user who created the center
 class OrganisationCreateView(OrganisationBaseView, CreateView):
-    form_class = OrganisationAdminForm
+    form_class = OrganisationRegionAdminCreateForm
     template_name_suffix = '_create_form'
     
     def get_success_url(self):
@@ -115,6 +116,16 @@ class OrganisationCreateView(OrganisationBaseView, CreateView):
         kwargs = super(OrganisationCreateView, self).get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
+
+    def get_form_class(self):
+        """
+        Returns the form class to use in this view.
+        """
+        user = self.request.user
+        if user.get_assignable_organisation_countries().exists():
+            return OrganisationCountryAdminForm
+        else:
+            return self.form_class
 
 
 def get_optional_email_inline_formset(request, email, Model, Form, max_num=6, extra=1, queryset=None):
@@ -135,7 +146,7 @@ def get_optional_email_inline_formset(request, email, Model, Form, max_num=6, ex
         
 
 class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
-    form_class = OrganisationCenterForm
+    form_class = OrganisationCenterAdminForm
     
     @method_decorator(login_required)
     @method_decorator(permission_required('organisations.change_organisation', raise_exception=True))
@@ -157,8 +168,11 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
         """
         Returns the form class to use in this view.
         """
-        if self.request.user.has_perm('organisations.add_organisation'):
-            return OrganisationAdminForm
+        user = self.request.user
+        if self.object.country in user.get_assignable_organisation_countries():
+            return OrganisationCountryAdminForm
+        elif self.object.admin_region in user.get_assignable_organisation_regions():
+            return OrganisationRegionAdminForm
         else:
             return self.form_class
         
