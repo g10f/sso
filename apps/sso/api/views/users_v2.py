@@ -337,10 +337,10 @@ class UserList(UserMixin, JsonListView):
         username = self.request.GET.get('q', None)
         if username:
             qs = qs.filter(username__icontains=username)
-        organisation__uuid = self.request.GET.get('organisation__uuid', None)
+        organisation__uuid = self.request.GET.get('org_id', None)
         if organisation__uuid:
             qs = qs.filter(organisations__uuid=organisation__uuid)
-        app_uuid = self.request.GET.get('app_uuid', None)
+        app_uuid = self.request.GET.get('app_id', None)
         if app_uuid:
             qs = qs.filter(application_roles__application__uuid=app_uuid)
         modified_since = self.request.GET.get('modified_since', None)
