@@ -6,7 +6,7 @@ from django.test import LiveServerTestCase
 from selenium.webdriver.firefox.webdriver import WebDriver
 
 class SSOSeleniumTests(LiveServerTestCase):
-    fixtures = ['user_data.json']
+    # fixtures = ['user_data.json']
 
     @classmethod
     def setUpClass(cls):
