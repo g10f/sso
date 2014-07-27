@@ -20,8 +20,8 @@ def home(request):
     resources = {
         "@id": "%s%s" % (base_uri, reverse('api:home')),
         "@type": "EntryPoint",
-        "centers": "%s%s%s" % (base_uri, reverse('api:v2_organisations'), FIND_ORGANISATION_EXPRESSION),
-        "center": "%s%s%s" % (base_uri, reverse('api:v2_organisations'), "{uuid}/"),
+        "organisations": "%s%s%s" % (base_uri, reverse('api:v2_organisations'), FIND_ORGANISATION_EXPRESSION),
+        "organisation": "%s%s%s" % (base_uri, reverse('api:v2_organisations'), "{uuid}/"),
         "users": "%s%s%s" % (base_uri, reverse('api:v2_users'), FIND_USER_EXPRESSION),
         "user": "%s%s%s" % (base_uri, reverse('api:v2_users'), "{uuid}/"),
         "me": "%s%s" % (base_uri, reverse('api:v2_users_me')),
