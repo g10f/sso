@@ -13,6 +13,6 @@ urlpatterns = patterns(
     url(r'^v2/users/me/$', users_v2.MyDetailView.as_view(), name='v2_users_me'),
     url(r'^v2/users/(?P<uuid>[a-z0-9]{32})/$', users_v2.UserDetailView.as_view(), name='v2_user'),
     url(r'^v2/users/me/navigation/$', users_v2.GlobalNavigationView.as_view(), name='v2_navigation'),
-    url(r'^v2/centers/$', organisations.OrganisationList.as_view(), name='v2_organisations'),
-    url(r'^v2/centers/(?P<uuid>[a-z0-9]{32})/$', organisations.OrganisationDetailView.as_view(), name='v2_organisation'),
+    url(r'^v2/organisations/$', organisations.OrganisationList.as_view(), name='v2_organisations'),
+    url(r'^v2/organisations/(?P<uuid>[a-z0-9]{32})/$', organisations.OrganisationDetailView.as_view(), name='v2_organisation'),
 )
