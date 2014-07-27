@@ -10,7 +10,7 @@ class ChainedModelChoiceField(ModelChoiceField):
             'widget': ChainedSelect(app_name, model_name, chain_field, model_field, show_all, auto_choose, manager),
         }
         defaults.update(kwargs)
-        if not 'queryset' in kwargs:
+        if 'queryset' not in kwargs:
             queryset = get_model(app_name, model_name).objects.all()
             super(ChainedModelChoiceField, self).__init__(queryset=queryset, initial=initial, *args, **defaults)
         else:

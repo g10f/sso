@@ -332,18 +332,28 @@ class User(AbstractUser):
             return Organisation.objects.none()
     
     @memoize
-    def get_administrable_organisation_countries(self):
+    def get_assignable_organisation_countries(self):
         """
-        return a list of countries from the administrable organisations the user has admin rights on 
+        return a list of countries the user can assign to organisations
         """        
         if self.has_perms(["organisations.change_organisation", "organisations.access_all_organisations"]):
             return Country.objects.filter(organisationcountry__isnull=False).distinct()
         elif self.has_perm("organisations.change_organisation"):
-            return Country.objects.filter(
-                Q(organisation__admin_region__user=self) |  # for adminregions without a associated country 
-                Q(organisation__user=self) | Q(adminregion__user=self) | Q(user=self)).distinct()
+            return Country.objects.filter(user=self)
         else:
             return Country.objects.none()
+
+    @memoize
+    def get_assignable_organisation_regions(self):
+        """
+        return a list of regions the user can assign to organisations
+        """        
+        if self.has_perms(["organisations.change_organisation", "organisations.access_all_organisations"]):
+            return AdminRegion.objects.all()
+        elif self.has_perm("organisations.change_organisation"):
+            return AdminRegion.objects.filter(Q(user=self) | Q(country__user=self)).distinct()
+        else:
+            return AdminRegion.objects.none()
 
     @memoize
     def get_administrable_regions(self):

@@ -4,6 +4,7 @@ from django.utils.translation import pgettext_lazy, ugettext_lazy as _
 from l10n.models import Country
 from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary
 from sso.emails.models import Email, CENTER_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, REGION_EMAIL_TYPE, COUNTRY_GROUP_EMAIL_TYPE
+from smart_selects.db_fields import ChainedForeignKey
 
 import logging
 
@@ -46,7 +47,7 @@ class OrganisationCountry(AbstractBaseModel):
 class AdminRegion(AbstractBaseModel):
     name = models.CharField(_("name"), max_length=255)
     homepage = models.URLField(_("homepage"), blank=True)
-    country = models.ForeignKey(Country, verbose_name=_("country"), null=True, limit_choices_to={'active': True})
+    country = models.ForeignKey(Country, verbose_name=_("country"), limit_choices_to={'active': True})
     email = models.ForeignKey(Email, verbose_name=_("e-mail address"), blank=True, null=True, unique=True, limit_choices_to={'email_type': REGION_EMAIL_TYPE})
 
     class Meta(AbstractBaseModel.Meta):
@@ -79,6 +80,7 @@ class Organisation(AbstractBaseModel):
 
     name = models.CharField(_("name"), max_length=255)
     country = models.ForeignKey(Country, verbose_name=_("country"), null=True, limit_choices_to={'active': True})
+    admin_region = ChainedForeignKey(AdminRegion, chained_field='country', chained_model_field="country", verbose_name=_("admin region"), blank=True, null=True)
     # country = models.ForeignKey(Country, verbose_name=_("country"), null=True)
     # email = models.EmailField(_('e-mail address'))
     email = models.ForeignKey(Email, verbose_name=_("e-mail address"), blank=True, null=True, limit_choices_to={'email_type': CENTER_EMAIL_TYPE})
@@ -100,7 +102,7 @@ class Organisation(AbstractBaseModel):
     can_publish = models.BooleanField(_("publish"), 
                                       help_text=_('Designates whether this buddhist center data can be published.'), 
                                       default=True)
-    admin_region = models.ForeignKey(AdminRegion, verbose_name=_("admin region"), blank=True, null=True)
+    # admin_region = models.ForeignKey(AdminRegion, verbose_name=_("admin region"), blank=True, null=True)
     # history = HistoricalRecords()
     
     class Meta:

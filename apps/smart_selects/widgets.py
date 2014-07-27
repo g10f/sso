@@ -17,7 +17,7 @@ class ChainedSelect(Select):
         self.manager = manager
         
         # add form-control class for bootstrap
-        if attrs == None:
+        if attrs is None:
             attrs = {}    
         css_classes = attrs.get('class', '').split()
         css_classes.append('form-control')
@@ -57,24 +57,27 @@ class ChainedSelect(Select):
         final_choices = []
 
         if value:
-            item = self.queryset.filter(pk=value)[0]
             try:
-                pk = getattr(item, self.model_field + "_id")
-                objects_filter = {self.model_field: pk}
-            except AttributeError:
-                try:  # maybe m2m?
-                    pks = getattr(item, self.model_field).all().values_list('pk', flat=True)
-                    objects_filter = {self.model_field + "__in": pks}
+                item = self.queryset.filter(pk=value)[0]
+                try:
+                    pk = getattr(item, self.model_field + "_id")
+                    objects_filter = {self.model_field: pk}
                 except AttributeError:
-                    try:  # maybe a set?
-                        pks = getattr(item, self.model_field + "_set").all().values_list('pk', flat=True)
+                    try:  # maybe m2m?
+                        pks = getattr(item, self.model_field).all().values_list('pk', flat=True)
                         objects_filter = {self.model_field + "__in": pks}
-                    except:  # give up
-                        objects_filter = {}
-            filtered = list(get_model(self.app_name, self.model_name).objects.filter(**objects_filter).distinct())
-            filtered.sort(cmp=locale.strcoll, key=lambda x: unicode_sorter(unicode(x)))
-            for choice in filtered:
-                final_choices.append((choice.pk, unicode(choice)))
+                    except AttributeError:
+                        try:  # maybe a set?
+                            pks = getattr(item, self.model_field + "_set").all().values_list('pk', flat=True)
+                            objects_filter = {self.model_field + "__in": pks}
+                        except:  # give up
+                            objects_filter = {}
+                filtered = list(get_model(self.app_name, self.model_name).objects.filter(**objects_filter).distinct())
+                filtered.sort(cmp=locale.strcoll, key=lambda x: unicode_sorter(unicode(x)))
+                for choice in filtered:
+                    final_choices.append((choice.pk, unicode(choice)))
+            except IndexError:
+                pass
         if len(final_choices) > 1:
             final_choices = [("", (empty_label))] + final_choices
         if self.show_all:
@@ -82,7 +85,7 @@ class ChainedSelect(Select):
             self.choices = list(self.choices)
             self.choices.sort(cmp=locale.strcoll, key=lambda x: unicode_sorter(x[1]))
             for ch in self.choices:
-                if not ch in final_choices:
+                if ch not in final_choices:
                     final_choices.append(ch)
         self.choices = ()
         final_attrs = self.build_attrs(attrs, name=name)
