@@ -5,7 +5,8 @@
 	 "fields" : {
 		 "last_modified" : "2013-04-28T16:56:13.807Z",
 		 "uuid" : "0ebf2537fc664b7db285ea773c981404",
-		 "name" : "Region 1"
+		 "name" : "Region 1",
+		 "country" : 81
 	 }
 }, {
 	 "pk" : 2,
@@ -13,7 +14,8 @@
 	 "fields" : {
 		 "last_modified" : "2013-04-28T16:56:23.067Z",
 		 "uuid" : "1a5985f6a9fc4ead975de1291f8a65a9",
-		 "name" : "Region 2"
+		 "name" : "Region 2",
+		 "country" : 81
 	 }
 }, {
 	 "pk" : 1,
