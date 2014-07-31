@@ -63,7 +63,7 @@ def openid_configuration(request):
         "issuer": base_uri,
         "authorization_endpoint": '%s%s' % (base_uri, reverse('oauth2:authorize')),
         "token_endpoint": '%s%s' % (base_uri, reverse('oauth2:token')),
-        "userinfo_endpoint": '%s%s' % (base_uri, reverse('api:v1_users_me')),
+        "userinfo_endpoint": '%s%s' % (base_uri, reverse('api:v2_users_me')),
         "jwks_uri": '%s%s' % (base_uri, reverse('oauth2:jwks')),
         "scopes_supported": 
             ["openid", "profile", "email", "address", "phone", "offline_access"],

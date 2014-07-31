@@ -46,7 +46,7 @@ def send_user_validated_email(registration_profile, request):
         subject = u"Validation for %s completed" % registration_profile.user
         admin_url = urlresolvers.reverse("registration:update_user_registration", args=(registration_profile.pk,))
         email = subject + u"\n %s://%s%s" % (protocol, domain, admin_url)
-        send_mail(subject, email, None, email_recipient_list)
+        send_mail(subject, email, None, final_recipient_list)
         
         
 def send_set_password_email(user, request, token_generator=default_pwd_reset_token_generator,

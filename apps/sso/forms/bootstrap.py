@@ -10,14 +10,13 @@ from django.utils.safestring import mark_safe
 from django.conf import settings
 
 from sorl.thumbnail.shortcuts import get_thumbnail
-#from django.forms.util import flatatt
 from django.utils.encoding import force_text
 from django.utils.html import format_html
 
 class Widget(forms.Widget):
     def __init__(self, attrs=None, **kwargs):
         # add form-control class
-        if attrs == None:
+        if attrs is None:
             attrs = {}    
         css_classes = attrs.get('class', '').split()
         css_classes.append('form-control')
@@ -42,7 +41,7 @@ def add_to_css_class(classes, new_class):
         # Remove empty elements
         classes = filter(None, classes)
         # Test for existing
-        if not new_class in classes:
+        if new_class not in classes:
             classes.append(new_class)
             # Convert to string
         classes = u" ".join(classes)
@@ -109,8 +108,8 @@ class ImageWidget(forms.ClearableFileInput):
             else:
                 output = (
                     u'<div><a href="%s">'
-                    u'<img src="%s" alt=""></a></div>%s'  # TODO: add alt text
-                ) % (value.url, mini.url, output)
+                    u'<img src="%s" alt="%s"></a></div>%s'
+                ) % (value.url, mini.url, name, output)
         return mark_safe(output)
 
 
@@ -197,13 +196,13 @@ def _parse_date_fmt():
             escaped = True
         elif char in 'Yy':
             output.append('year')
-            #if not self.first_select: self.first_select = 'year'
+            # if not self.first_select: self.first_select = 'year'
         elif char in 'bEFMmNn':
             output.append('month')
-            #if not self.first_select: self.first_select = 'month'
+            # if not self.first_select: self.first_select = 'month'
         elif char in 'dj':
             output.append('day')
-            #if not self.first_select: self.first_select = 'day'
+            # if not self.first_select: self.first_select = 'day'
     return output
 
 class SelectDateWidget(Widget):

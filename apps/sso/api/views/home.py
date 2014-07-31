@@ -21,9 +21,9 @@ def home(request):
         "@id": "%s%s" % (base_uri, reverse('api:home')),
         "@type": "EntryPoint",
         "organisations": "%s%s%s" % (base_uri, reverse('api:v2_organisations'), FIND_ORGANISATION_EXPRESSION),
-        "organisation": "%s%s%s" % (base_uri, reverse('api:v2_organisations'), "{uuid}/"),
+        "organisation": "%s%s%s" % (base_uri, reverse('api:v2_organisations'), "{org_id}/"),
         "users": "%s%s%s" % (base_uri, reverse('api:v2_users'), FIND_USER_EXPRESSION),
-        "user": "%s%s%s" % (base_uri, reverse('api:v2_users'), "{uuid}/"),
+        "user": "%s%s%s" % (base_uri, reverse('api:v2_users'), "{user_id}/"),
         "me": "%s%s" % (base_uri, reverse('api:v2_users_me')),
         "navigation": "%s%s" % (base_uri, reverse('api:v2_navigation'))
     }
@@ -50,55 +50,4 @@ def home(request):
         "address_type": "schema:contactType",
         "primary": "http://dwbn.org/primary",  # custom property
     }]
-"""
-
-"""
-@cache_page(60 * 60)
-def home(request):
-    base_uri = base_url(request)
-    resources = {
-        "resources": {
-            "http://dwbn.org/specs/api/2.0/me": {
-                "href": "%s%s" % (base_uri, reverse('api:v2_users_me')),
-                "hints": {
-                    "docs": "https://wiki.dwbn.org"
-                }
-            },
-            "http://dwbn.org/specs/api/2.0/my-apps": {
-                "href": "%s%s" % (base_uri, reverse('api:v2_navigation'))
-            },
-            "http://dwbn.org/specs/api/2.0/users": {
-                "href-template": "%s%s%s" % (base_uri, reverse('api:v2_users'), FIND_USER_EXPRESSION),
-                "href-vars": {
-                    "q": "%s/param/q" % (base_uri),
-                    "organisation__uuid": "%s/param/organisation__uuid" % (base_uri),
-                    "per_page": "%s/param/per_page" % (base_uri),
-                    "app_uuid": "%s/param/app_uuid" % (base_uri),
-                    "modified_since": "%s/param/modified_since" % (base_uri)
-                }
-            },
-            "http://dwbn.org/specs/api/2.0/organisations": {
-                "href-template": "%s%s%s" % (base_uri, reverse('api:v2_organisations'), FIND_ORGANISATION_EXPRESSION),
-                "href-vars": {
-                    "q": "%s/param/q" % (base_uri),
-                    "per_page": "%s/param/per_page" % (base_uri),
-                    "app_uuid": "%s/param/app_uuid" % (base_uri),
-                    "modified_since": "%s/param/modified_since" % (base_uri)
-                }
-            },
-            "http://dwbn.org/specs/api/2.0/user": {
-                "href-template": "%s%s%s" % (base_uri, reverse('api:v2_users'), '{uuid}/'),
-                "href-vars": {
-                    "uuid": "%s/param/uuid" % (base_uri)
-                }
-            },
-            "http://dwbn.org/specs/api/2.0/organisation": {
-                "href-template": "%s%s%s" % (base_uri, reverse('api:v2_organisations'), '{uuid}/'),
-                "href-vars": {
-                    "uuid": "%s/param/uuid" % (base_uri)
-                }
-            },
-        }
-    }
-    return JsonHttpResponse(content=resources, request=request)
 """
