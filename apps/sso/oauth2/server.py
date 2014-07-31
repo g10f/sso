@@ -60,6 +60,8 @@ def default_idtoken_generator(request, max_age=MAX_AGE, refresh_token=False):
             'auth_time': auth_time,  # required when max_age is in the request
             'email': user.email,  # custom
             'name': user.username,  # custom
+            'given_name': user.first_name,  # custom
+            'family_name': user.last_name,  # custom
         }
         if request.client.application:            
             claim_set['roles'] = ' '.join(user.get_roles_by_app(request.client.application.uuid).values_list('name', flat=True))  # custom

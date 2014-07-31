@@ -107,7 +107,6 @@ class UserMixin(object):
             if 'address' in scopes:
                 data['addresses'] = {
                     address.uuid: {
-                        'id': address.uuid,
                         'address_type': address.address_type,
                         'addressee': address.addressee,
                         'street_address': address.street_address,
@@ -122,7 +121,6 @@ class UserMixin(object):
             if 'phone' in scopes:
                 data['phone_numbers'] = {
                     phone_number.uuid: {
-                        'id': phone_number.uuid,
                         'phone_type': phone_number.phone_type,
                         'phone': phone_number.phone,
                         'primary': phone_number.primary

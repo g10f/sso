@@ -10,7 +10,6 @@ class UUIDVersionError(Exception):
     pass
 
 class UUIDField(CharField):
-    #TODO: Prufen des Wertes beim editieren
     """ UUIDField for Django, supports all uuid versions which are natively
         suported by the uuid python module.
     """
