@@ -129,7 +129,8 @@ class GroupEmailForm(BaseForm):
         return email_value
 
     def save(self, commit=True):
-        if 'email_value' in self.changed_data:
+        cd = self.changed_data
+        if 'email_value' in cd or 'name' in cd or 'permission' in cd:
             created = False 
             try:
                 email = self.instance.email
