@@ -16,9 +16,8 @@ def emails(request):
     # response = HttpResponse(content_type='text/csv')
     response = HttpResponse(content_type='text')
     # response['Content-Disposition'] = 'attachment; filename="emails.csv"'
-
+    response.write('approved: karmapa\r\n')
     writer = csv.writer(response, delimiter=';')
-    writer.writerow(['email', 'forward', 'dummy', 'type'])
     
     for email in Email.objects.filter(is_active=True, email_type=COUNTRY_GROUP_EMAIL_TYPE).prefetch_related('countrygroup_set__organisationcountry_set__email'):
         for countrygroup in email.countrygroup_set.all():
