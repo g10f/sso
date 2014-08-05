@@ -7,6 +7,7 @@ from django.views.generic import DeleteView, DetailView, CreateView
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
+from django.http import HttpResponseRedirect
 from django.forms.models import inlineformset_factory
 from django.contrib import messages
 from l10n.models import Country
@@ -95,6 +96,21 @@ class OrganisationDeleteView(OrganisationBaseView, DeleteView):
         if not request.user.has_organisation_access(kwargs.get('uuid')):
             raise PermissionDenied
         return super(OrganisationDeleteView, self).dispatch(request, *args, **kwargs)
+
+    def delete(self, request, *args, **kwargs):
+        """
+        delete the organisation and email object then
+        redirects to the success URL.
+        """
+        self.object = self.get_object()
+        success_url = self.get_success_url()
+        
+        self.object.email.delete() 
+        #  self.object.email.delete() already deletes the center because of the foreign key in organisation
+        # https://docs.djangoproject.com/en/dev/topics/db/queries/#deleting-objects
+        # self.object.delete()
+        
+        return HttpResponseRedirect(success_url)
 
 
 class OrganisationCreateView(OrganisationBaseView, CreateView):
