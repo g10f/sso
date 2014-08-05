@@ -1,9 +1,10 @@
 from django.conf.urls import patterns, url
-from sso.api.views import users, users_v2, organisations, home
+from sso.api.views import users, users_v2, organisations, home, emails
  
 urlpatterns = patterns(
     '',
     url(r'^$', home.home, name='home'),
+    url(r'^emails/$', emails.emails, name='emails'),
     url(r'^v1/users/$', users.get_user_list, name='v1_users'),
     url(r'^v1/users/me/$', users.UserDetailView.as_view(), name='v1_users_me'),
     url(r'^v1/users/(?P<uuid>[a-z0-9]{32})/$', users.UserDetailView.as_view(), name='v1_user'),

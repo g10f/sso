@@ -53,6 +53,9 @@ class Email(AbstractBaseModel):
         return ('emails:email_list', (), {})
 
     class Meta(AbstractBaseModel.Meta):
+        permissions = (
+            ("read_email", "Can read mail data"),
+        )
         ordering = ['email']
         verbose_name = _('Email')
         verbose_name_plural = _('Emails')
