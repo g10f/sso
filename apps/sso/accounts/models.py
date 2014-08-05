@@ -24,6 +24,7 @@ from l10n.models import Country
 from sso.fields import UUIDField
 from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary
 from sso.organisations.models import AdminRegion, Organisation
+from sso.emails.models import GroupEmailAdmin
 from sso.decorators import memoize
 from utils.loaddata import disable_for_loaddata
 from current_user.models import CurrentUserField
@@ -337,9 +338,9 @@ class User(AbstractUser):
         return a list of countries the user can assign to organisations
         """        
         if self.has_perms(["organisations.change_organisation", "organisations.access_all_organisations"]):
-            return Country.objects.filter(organisationcountry__isnull=False).distinct()
+            return Country.objects.filter(organisationcountry__isnull=False, organisationcountry__is_active=True).distinct()
         elif self.has_perm("organisations.change_organisation"):
-            return Country.objects.filter(user=self)
+            return Country.objects.filter(user=self, organisationcountry__is_active=True)
         else:
             return Country.objects.none()
 
@@ -349,9 +350,9 @@ class User(AbstractUser):
         return a list of regions the user can assign to organisations
         """        
         if self.has_perms(["organisations.change_organisation", "organisations.access_all_organisations"]):
-            return AdminRegion.objects.all()
+            return AdminRegion.active_objects.all()
         elif self.has_perm("organisations.change_organisation"):
-            return AdminRegion.objects.filter(Q(user=self) | Q(country__user=self)).distinct()
+            return AdminRegion.active_objects.filter(Q(user=self) | Q(country__user=self)).distinct()
         else:
             return AdminRegion.objects.none()
 
@@ -476,6 +477,19 @@ class User(AbstractUser):
             return True
         else:
             return self.has_country(uuid)
+
+    @property
+    def is_groupemail_admin(self):
+        if self.has_perm('emails.change_groupemail') or GroupEmailAdmin.objects.filter(user=self).exists():
+            return True
+        else:
+            return False 
+
+    def has_groupemail_access(self, uuid):
+        if self.has_perm('emails.change_groupemail') or GroupEmailAdmin.objects.filter(group_email__uuid=uuid, user=self).exists():
+            return True
+        else:
+            return False 
 
     @property
     def is_complete(self):

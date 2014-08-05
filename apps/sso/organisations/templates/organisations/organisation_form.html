@@ -10,7 +10,7 @@
 {% block breadcrumb %}
 <ol class="breadcrumb">
     <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'organisations:organisation_list' %}">{% trans 'Center List' %}</a></li>
+    <li><a href="{% url 'organisations:organisation_list' %}">{% trans 'Centers' %}</a></li>
     <li class="active">{% trans 'Update Center' %}</li>
 </ol> 
 {% endblock breadcrumb %}
@@ -50,11 +50,12 @@
            {% include 'include/_field.html' with field=form.center_type %}
            {% include 'include/_field.html' with field=form.country %}
            {% include 'include/_field.html' with field=form.admin_region %}           
-           {% include 'include/_field.html' with field=form.email %}
+           {% include 'include/_field.html' with field=form.email_value %}
+           {% include 'include/_field.html' with field=form.email_forward %} {# for the create form #}
            {% include 'include/_field.html' with field=form.homepage %}
            {% include 'include/_field.html' with field=form.founded %} 
-           {% include 'include/_field.html' with field=form.is_active %}            
            {% include 'include/_field.html' with field=form.is_private %}            
+           {% include 'include/_field.html' with field=form.is_active %}            
            {% include 'include/_field.html' with field=form.can_publish %}            
            {% include 'include/_static_google_maps_field.html' with field=form.google_maps_url %}           
            {% include 'include/_field.html' with field=form.latitude %}            

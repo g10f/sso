@@ -3,7 +3,7 @@
 
 {% block title %}{% trans 'Add User' %}{% endblock %}
 
-{% block nav_accounts_add_user_class %}active{% endblock %}
+{% block left_content %}{% include navigation_template with active_navigation="add_user" %}{% endblock left_content %}
 
 {% block breadcrumb %}
 <ol class="breadcrumb">

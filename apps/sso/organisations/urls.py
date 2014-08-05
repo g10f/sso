@@ -13,7 +13,9 @@ urlpatterns = patterns(
     url(r'^region/$', region.AdminRegionList.as_view(), name='adminregion_list'), 
     url(r'^region/(?P<uuid>[a-z0-9]{32})/$', region.AdminRegionDetailView.as_view(), name='adminregion_detail'),
     url(r'^region/(?P<uuid>[a-z0-9]{32})/update/$', region.AdminRegionUpdateView.as_view(), name='adminregion_update'),
+    url(r'^region/create/$', region.AdminRegionCreateView.as_view(), name='adminregion_create'),
     url(r'^country/$', country.OrganisationCountryList.as_view(), name='organisationcountry_list'), 
     url(r'^country/(?P<uuid>[a-z0-9]{32})/$', country.OrganisationCountryDetailView.as_view(), name='organisationcountry_detail'),
     url(r'^country/(?P<uuid>[a-z0-9]{32})/update/$', country.OrganisationCountryUpdateView.as_view(), name='organisationcountry_update'),
+    url(r'^country/create/$', country.OrganisationCountryCreateView.as_view(), name='organisationcountry_create'),
 )

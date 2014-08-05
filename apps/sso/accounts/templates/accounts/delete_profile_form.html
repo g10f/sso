@@ -4,7 +4,7 @@
 
 {% block title %}{% trans 'Profile' %}{% endblock %}
 
-{% block nav_accounts_profile_class %}active{% endblock %}
+{% block left_content %}{% include navigation_template with active_navigation="profile" %}{% endblock left_content %}
 
 {% block breadcrumb %}
 <ol class="breadcrumb">

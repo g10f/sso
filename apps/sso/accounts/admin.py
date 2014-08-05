@@ -436,7 +436,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
                     msg = EmailMessage(subject, body, to=[user.email], from_email=from_email, connection=connection)
                     # msg.content_subtype = "html"
                     msg.send(fail_silently=True)
-                self.message_user(request, _("Successfully send Information Email to  %(count)d %(items)s.") % {
+                self.message_user(request, _("Successfully send information email to %(count)d %(items)s.") % {
                     "count": n, "items": model_ngettext(self.opts, n)
                 })
             # Return None to display the change list page again.

@@ -4,17 +4,17 @@
 
 {% block title %}{% trans 'Profile' %}{% endblock %}
 
+{% block left_content %}{% include navigation_template with active_navigation="profile" %}{% endblock left_content %}
+
 {% block extrascript %}
 {{ media }}
 <script src="{% static "js/formsets.js" %}"></script>
 {% endblock extrascript %}
 
-{% block nav_accounts_profile_class %}active{% endblock %}
-
 {% block breadcrumb %}
 <ol class="breadcrumb">
     <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li class="active">{% trans 'User profile' %}</li>
+    <li class="active">{% trans 'My Account' %}</li>
 </ol> 
 {% endblock breadcrumb %}
 

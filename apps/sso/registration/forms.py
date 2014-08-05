@@ -39,7 +39,7 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
     notes = forms.CharField(label=_("Notes"), required=False, max_length=1024, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
     first_name = forms.CharField(label=_('First name'), max_length=30, widget=bootstrap.TextInput())
     last_name = forms.CharField(label=_('Last name'), max_length=30, widget=bootstrap.TextInput())
-    email = forms.EmailField(label=_('E-mail address'), required=False, widget=bootstrap.TextInput(attrs={'disabled': ''}))
+    email = forms.EmailField(label=_('Email address'), required=False, widget=bootstrap.TextInput(attrs={'disabled': ''}))
     date_registered = bootstrap.ReadOnlyField(label=_("Date registered"))
     country = bootstrap.ReadOnlyField(label=_("Country"))
     city = bootstrap.ReadOnlyField(label=_("City"))
@@ -157,7 +157,7 @@ class UserSelfRegistrationForm(forms.Form):
     }
     first_name = forms.CharField(label=_('First name'), required=True, widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('first name'))}))
     last_name = forms.CharField(label=_('Last name'), required=True, widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('last name'))}))
-    email = forms.EmailField(label=_('E-mail'), required=True, widget=bootstrap.EmailInput())
+    email = forms.EmailField(label=_('Email'), required=True, widget=bootstrap.EmailInput())
     known_person1_first_name = forms.CharField(label=_("First name"), max_length=100, widget=bootstrap.TextInput())
     known_person1_last_name = forms.CharField(label=_("Last name"), max_length=100, widget=bootstrap.TextInput())
     known_person2_first_name = forms.CharField(label=_("First name"), max_length=100, widget=bootstrap.TextInput())

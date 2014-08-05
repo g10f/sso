@@ -6,11 +6,10 @@
 
 {% block extrascript %}{{ media }}{% endblock extrascript %}
 
-
 {% block breadcrumb %}
 <ol class="breadcrumb">
     <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'organisations:adminregion_list' %}">{% trans 'Region List' %}</a></li>
+    <li><a href="{% url 'organisations:adminregion_list' %}">{% trans 'Regions' %}</a></li>
     <li class="active">{% trans 'Update Region' %}</li>
 </ol> 
 {% endblock breadcrumb %}
@@ -48,8 +47,9 @@
         <div class="tab-pane {% if not active or active == "object" %}active{% endif %}" id="object">         
            {% include 'include/_field.html' with field=form.name %}
            {% include 'include/_field.html' with field=form.country %}
-           {% include 'include/_field.html' with field=form.email %}
+           {% include 'include/_field.html' with field=form.email_value %}
            {% include 'include/_field.html' with field=form.homepage %}
+           {% include 'include/_field.html' with field=form.is_active %}            
         </div>
         
         {% for formset in formsets %}

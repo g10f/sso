@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class CountryGroup(AbstractBaseModel):
     name = models.CharField(_("name"), max_length=255)
-    email = models.ForeignKey(Email, verbose_name=_("e-mail address"), blank=True, null=True, unique=True, limit_choices_to={'email_type': COUNTRY_GROUP_EMAIL_TYPE})
+    email = models.ForeignKey(Email, verbose_name=_("email address"), blank=True, null=True, unique=True, limit_choices_to={'email_type': COUNTRY_GROUP_EMAIL_TYPE})
     homepage = models.URLField(_("homepage"), blank=True,)
     
     class Meta(AbstractBaseModel.Meta):
@@ -29,8 +29,10 @@ class OrganisationCountry(AbstractBaseModel):
     country = models.OneToOneField(Country, verbose_name=_("country"), null=True, limit_choices_to={'active': True})
     country_groups = models.ManyToManyField(CountryGroup, default="088620a08cf942deb88a5e31ebc8c7c8", blank=True, null=True)
     homepage = models.URLField(_("homepage"), blank=True,)
-    email = models.ForeignKey(Email, verbose_name=_("e-mail address"), blank=True, null=True, limit_choices_to={'email_type': COUNTRY_EMAIL_TYPE})
-    
+    email = models.ForeignKey(Email, verbose_name=_("email address"), blank=True, null=True, limit_choices_to={'email_type': COUNTRY_EMAIL_TYPE})
+    is_active = models.BooleanField(_('active'), default=True, help_text=_('Designates whether this country should be treated as '
+                                                                           'active. Unselect this instead of deleting the country.'))
+
     class Meta(AbstractBaseModel.Meta):
         verbose_name = _('Country')
         verbose_name_plural = _('Countries')
@@ -44,12 +46,29 @@ class OrganisationCountry(AbstractBaseModel):
         return ('organisations:organisationcountry_detail', (), {'uuid': self.uuid, })
 
 
-class AdminRegion(AbstractBaseModel):
+class ActiveAdminRegionManager(models.Manager):
+    """
+    custom manager for using in chained field
+    """
+    def get_queryset(self):
+        return super(ActiveAdminRegionManager, self).get_queryset().filter(is_active=True)
+
+
+class ExtraManager(models.Model):
+    active_objects = ActiveAdminRegionManager()
+
+    class Meta:
+        abstract = True
+
+
+class AdminRegion(AbstractBaseModel, ExtraManager):
     name = models.CharField(_("name"), max_length=255)
     homepage = models.URLField(_("homepage"), blank=True)
     country = models.ForeignKey(Country, verbose_name=_("country"), limit_choices_to={'active': True})
-    email = models.ForeignKey(Email, verbose_name=_("e-mail address"), blank=True, null=True, unique=True, limit_choices_to={'email_type': REGION_EMAIL_TYPE})
-
+    email = models.ForeignKey(Email, verbose_name=_("email address"), blank=True, null=True, unique=True, limit_choices_to={'email_type': REGION_EMAIL_TYPE})
+    is_active = models.BooleanField(_('active'), default=True, help_text=_('Designates whether this region should be treated as '
+                                                                           'active. Unselect this instead of deleting the region.'))
+    
     class Meta(AbstractBaseModel.Meta):
         verbose_name = _('Region')
         verbose_name_plural = _('Regions')
@@ -80,10 +99,11 @@ class Organisation(AbstractBaseModel):
 
     name = models.CharField(_("name"), max_length=255)
     country = models.ForeignKey(Country, verbose_name=_("country"), null=True, limit_choices_to={'active': True})
-    admin_region = ChainedForeignKey(AdminRegion, chained_field='country', chained_model_field="country", verbose_name=_("admin region"), blank=True, null=True)
+    admin_region = ChainedForeignKey(AdminRegion, chained_field='country', chained_model_field="country", verbose_name=_("admin region"), blank=True, null=True,
+                                     limit_choices_to={'is_active': True}) 
     # country = models.ForeignKey(Country, verbose_name=_("country"), null=True)
-    # email = models.EmailField(_('e-mail address'))
-    email = models.ForeignKey(Email, verbose_name=_("e-mail address"), blank=True, null=True, limit_choices_to={'email_type': CENTER_EMAIL_TYPE})
+    # email = models.EmailField(_('email address'))
+    email = models.ForeignKey(Email, verbose_name=_("email address"), blank=True, null=True, limit_choices_to={'email_type': CENTER_EMAIL_TYPE})
     homepage = models.URLField(_("homepage"), blank=True,)
     notes = models.TextField(_('notes'), blank=True, max_length=255)
     center_type = models.CharField(_('center type'), max_length=2, choices=CENTER_TYPE_CHOICES, db_index=True)    
@@ -161,8 +181,8 @@ class Organisation(AbstractBaseModel):
 
 class OrganisationAddress(AbstractBaseModel, AddressMixin):
     ADDRESSTYPE_CHOICES = (
-        ('post', _('Post')),
         ('meditation', _('Meditation')),
+        ('post', _('Post Only')),
     )        
     address_type = models.CharField(_("address type"), choices=ADDRESSTYPE_CHOICES, max_length=20)
     organisation = models.ForeignKey(Organisation)

@@ -3,12 +3,10 @@
     {% if user.is_staff %}
     <a class="list-group-item" href="{% url 'admin:index' %}"><i class="glyphicon glyphicon-wrench"></i> {% trans 'Administration' %}</a>
     {% endif %}
-    
-    {% comment %}   
-    {% if perms.emails.change_email %}
-    <a class="list-group-item" href="{% url 'emails:email_list' %}"><i class="glyphicon glyphicon-list"></i> {% trans 'Emails' %}</a>
+
+    {% if user.is_groupemail_admin %}
+    <a class="list-group-item" href="{% url 'emails:groupemail_list' %}"><i class="glyphicon glyphicon-list"></i> {% trans 'Group Emails' %}</a>
     {% endif %}
-    {% endcomment %}
 
     {% if perms.organisations.change_organisationcountry %}
     <a class="list-group-item" href="{% url 'organisations:organisationcountry_list' %}"><i class="glyphicon glyphicon-list"></i> {% trans 'Countries' %}</a>
@@ -30,19 +28,31 @@
     <a class="list-group-item" href="{% url 'accounts:user_list' %}"><i class="glyphicon glyphicon-list"></i> {% trans 'Users' %}</a>
     {% endif %}
     
+    {% if perms.emails.add_groupemail %}
+    <a class="list-group-item {% if active_navigation == "groupemail_create" %}active{% endif %}" href="{% url 'emails:groupemail_create' %}"><i class="glyphicon glyphicon-plus-sign"></i> {% trans 'Add Group Email' %}</a>
+    {% endif %}
+
+    {% if perms.organisations.add_organisationcountry %}
+    <a class="list-group-item {% if active_navigation == "organisationcountry_create" %}active{% endif %}" href="{% url 'organisations:organisationcountry_create' %}"><i class="glyphicon glyphicon-plus-sign"></i> {% trans 'Add Country' %}</a>
+    {% endif %}
+
+    {% if perms.organisations.add_adminregion %}
+    <a class="list-group-item {% if active_navigation == "adminregion_create" %}active{% endif %}" href="{% url 'organisations:adminregion_create' %}"><i class="glyphicon glyphicon-plus-sign"></i> {% trans 'Add Region' %}</a>
+    {% endif %}
+
     {% if perms.organisations.add_organisation %}
-    <a class="list-group-item {% block nav_organisations_organisation_create_class %}{% endblock %}" href="{% url 'organisations:organisation_create' %}"><i class="glyphicon glyphicon-plus-sign"></i> {% trans 'Add Center' %}</a>
+    <a class="list-group-item {% if active_navigation == "organisation_create" %}active{% endif %}" href="{% url 'organisations:organisation_create' %}"><i class="glyphicon glyphicon-plus-sign"></i> {% trans 'Add Center' %}</a>
     {% endif %}
     
     {% if perms.accounts.change_user and perms.accounts.add_user %}
-    <a class="list-group-item {% block nav_accounts_add_user_class %}{% endblock %}" href="{% url 'accounts:add_user' %}"><i class="glyphicon glyphicon-plus-sign"></i> {% trans 'Add User' %}</a>
+    <a class="list-group-item {% if active_navigation == "add_user" %}active{% endif %}" href="{% url 'accounts:add_user' %}"><i class="glyphicon glyphicon-plus-sign"></i> {% trans 'Add User' %}</a>
     {% endif %}
     
     {% if user.is_authenticated %}
     {% if user.organisations.exists %}
-    <a class="list-group-item {% block nav_accounts_center_class %}{% endblock %}" href="{% url 'organisations:my_organisation_detail' %}"><i class="glyphicon glyphicon-home"></i> {% trans 'My Center' %}</a>
+    <a class="list-group-item {% if active_navigation == "my_organisation" %}active{% endif %}" href="{% url 'organisations:my_organisation_detail' %}"><i class="glyphicon glyphicon-home"></i> {% trans 'My Center' %}</a>
     {% endif %}
-    <a class="list-group-item {% block nav_accounts_profile_class %}{% endblock %}" href="{% url 'accounts:profile' %}"><i class="glyphicon glyphicon-user"></i> {% trans 'My account' %}</a>
-    <a class="list-group-item {% block nav_accounts_password_change_class %}{% endblock %}" href="{% url 'accounts:password_change' %}"><i class="glyphicon glyphicon-edit"></i> {% trans 'Change my password ' %}</a>
+    <a class="list-group-item {% if active_navigation == "profile" %}active{% endif %}" href="{% url 'accounts:profile' %}"><i class="glyphicon glyphicon-user"></i> {% trans 'My Account' %}</a>
+    <a class="list-group-item {% if active_navigation == "password_change" %}active{% endif %}" href="{% url 'accounts:password_change' %}"><i class="glyphicon glyphicon-edit"></i> {% trans 'Change my password ' %}</a>
     {% endif %}
 </nav>

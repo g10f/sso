@@ -6,7 +6,7 @@
 {% block breadcrumb %}
 <ol class="breadcrumb">
     <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'organisations:adminregion_list' %}">{% trans 'Country List' %}</a></li>
+    <li><a href="{% url 'organisations:adminregion_list' %}">{% trans 'Countries' %}</a></li>
     <li class="active">{% trans 'Country Details' %}</li>
 </ol> 
 {% endblock breadcrumb %}
@@ -23,10 +23,20 @@
 {% endif %}
 
 <p>
-	<div class="row"><div class="dwbn-label">{% trans 'E-Mail' %}: </div><div class="dwbn-content">{{ object.email|default_if_none:"" }}</div></div>
 	<div class="row"><div class="dwbn-label">{% trans 'Country' %}: </div><div class="dwbn-content">{{ object.country }}</div></div>
 	<div class="row"><div class="dwbn-label">{% trans 'Homepage' %}: </div><div class="dwbn-content"><a href="{{ object.homepage }}">{{ object.homepage }}</a></div></div>
+    <div class="row"><div class="dwbn-label">{% trans 'Active' %}: </div><div class="dwbn-content"><span class="glyphicon glyphicon-{% if object.is_active %}ok-sign{% else %}minus-sign{% endif %}"></span></div></div>
+
+    <div class="row"><div class="dwbn-label">{% trans 'Email address' %}: </div><div class="dwbn-content">{{ object.email|default_if_none:"" }}</div></div>
+    
     {% if perms.organisations.change_organisationcountry and has_country_access %}
+    {% for emailforward in  object.email.emailforward_set.all %}
+    <div class="row"><div class="dwbn-label">{% trans 'Email forwarding address' %}: </div><div class="dwbn-content">{{ emailforward }}</div></div>
+    {% endfor %}
+    {% for emailalias in  object.email.emailalias_set.all %}
+    <div class="row"><div class="dwbn-label">{% trans 'Email alias address' %}: </div><div class="dwbn-content">{{ emailalias }}</div></div>
+    {% endfor %}
+    
     <div class="row"><div class="dwbn-label">{% trans 'Country Groups' %}: </div>
         <div class="dwbn-content">
             <ul>

@@ -1,0 +1,37 @@
+{% extends "base_form.html" %}
+{% load i18n admin_static %}
+
+{% block title %}{% trans 'Delete email fowarding' %}{% endblock %}
+
+{% block breadcrumb %}
+<ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+    <li><a href="{% url 'emails:groupemail_list' %}">{% trans 'Group Emails' %}</a></li>
+    <li><a href="{% url 'emails:groupemail_detail' uuid %}">{{ object.email.name }}</a></li>
+    <li class="active">{% trans 'Delete email forwarding' %}</li>
+</ol> 
+{% endblock breadcrumb %}
+
+
+{% block form %}
+
+
+{% block message %}
+<div class="alert alert-danger">
+{% trans "Please confirm deleting this email fowarding" %}
+</div>
+{% endblock %}
+
+<p>
+<div class="row"><div class="dwbn-label">{% trans 'Email forwarding address' %}: </div><div class="dwbn-content">{{ object }}</div></div>
+</p>
+
+{% block submit_group %}
+<form class="form-horizontal" method="post">{% csrf_token %}  
+    <button type="submit" class="btn btn-danger">{% trans 'Confirm Delete email fowarding' %}</button>
+    <a class="btn btn-primary" href="{% url 'emails:groupemail_detail' uuid %}">{% trans 'Cancel' %}</a>
+</form>
+{% endblock %}
+
+
+{% endblock %}

@@ -3,8 +3,6 @@
 
 {% block title %}{% trans 'Log in' %}{% endblock %}
 
-{% block accounts_login_class %}active{% endblock %}
-
 {% block form %}
 <form class="form-horizontal" method="post" id="login-form">{% csrf_token %}
     <h3>{% trans 'Profile Update' %}</h3>

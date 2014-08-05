@@ -1,14 +1,14 @@
 {% extends 'base_site.html' %}
 {% load i18n list tz static %}
 
-{% block title %}{% trans 'Emails' %}{% endblock %}
+{% block title %}{% trans 'Group Emails' %}{% endblock %}
 
-{% block nav_email_list_class %}active{% endblock %}
+{% block nav_organisations_region_list_class %}active{% endblock %}
 
 {% block breadcrumb %}
 <ol class="breadcrumb">
     <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li class="active">{% trans 'Emails' %}</li>
+    <li class="active">{% trans 'Group Emails' %}</li>
 </ol> 
 {% endblock breadcrumb %}
     
@@ -28,9 +28,9 @@
     </div>
 	
 	<div class="col-sm-9">
-        {% for filter in filters %} 
-        {% include 'include/_list_filter.html' with filter=filter %}
-        {% endfor %}
+        {% for filter in filters %}{% if filter %} 
+        {% include filter.template_name with filter=filter %}
+        {% endif %}{% endfor %}
     </div><!-- /.col-sm-9 -->
 </div>
 
@@ -41,10 +41,10 @@
 	       <tbody>
 	           {% for object in object_list %}
 	           <tr> 
-	               <td><a href="{% url 'emails:email_update' object.uuid %}">{{ object.email }}</a></td>
-	               <td>{{ object.name }}</td>
-                   <td>{{ object.get_email_type_display }}</td>
-                   <td>{{ object.get_permission_display }}</td>
+	               <td><a href="{% url 'emails:groupemail_detail' object.uuid %}">{{ object.email.name }}</a></td>
+	               <td>{{ object.email|default_if_none:"" }}</td>
+	               <td>{% if object.homepage %}<a href="{{ object.homepage }}">{{ object.homepage }}</a>{% endif %}</td>
+                   <td>{{ object.email.get_permission_display }}</td>
 	           </tr>
 	           {% endfor %}
 	       </tbody>

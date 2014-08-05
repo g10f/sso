@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db import models
+from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 from sso.models import AbstractBaseModel
@@ -15,6 +16,10 @@ COUNTRY_EMAIL_TYPE = 'country'
 COUNTRY_GROUP_EMAIL_TYPE = 'global_region'
 CLOSED_GROUP_EMAIL_TYPE = 'closed_group'
 
+PERM_EVERYBODY = '1'
+PERM_DWB = '2'
+PERM_VIP = '3'
+PERM_VIP_DWB = '4'
 
 class Email(AbstractBaseModel):
     EMAIL_TYPE_CHOICES = (
@@ -27,15 +32,17 @@ class Email(AbstractBaseModel):
         (CLOSED_GROUP_EMAIL_TYPE, _('Closed Group')),
     )
     PERMISSION_CHOICES = (
-        ('1', _('Everybody')),
-        ('2', _('Diamondway Buddhism')),
-        ('3', _('VIP')),
-        ('4', _('VIP + Diamondway Buddhism')),
+        (PERM_EVERYBODY, _('Everybody')),
+        (PERM_DWB, _('Diamondway Buddhism')),
+        (PERM_VIP, _('VIP')),
+        (PERM_VIP_DWB, _('VIP + Diamondway Buddhism')),
     )
     name = models.CharField(_("name"), max_length=255, blank=True)    
     email_type = models.CharField(_('email type'), max_length=20, choices=EMAIL_TYPE_CHOICES, db_index=True)
-    permission = models.CharField(_('access control'), max_length=20, choices=PERMISSION_CHOICES, db_index=True, default='1')
+    permission = models.CharField(_('access control'), max_length=20, choices=PERMISSION_CHOICES, db_index=True, default=PERM_EVERYBODY)
     email = models.EmailField(_('email address'), unique=True, max_length=254)
+    is_active = models.BooleanField(_('active'), default=True, help_text=_('Designates whether this email should be treated as '
+                                                                           'active. Unselect this instead of deleting the email.'))
     
     def primary_forward(self):
         return self.emailforward_set.filter(primary=True).first()
@@ -56,14 +63,14 @@ class Email(AbstractBaseModel):
 
 class EmailForward(AbstractBaseModel):
     email = models.ForeignKey(Email, verbose_name=_('email address'))
-    forward = models.EmailField(_('email forward address'), max_length=254)
+    forward = models.EmailField(_('email forwarding address'), max_length=254)
     primary = models.BooleanField(_("primary"), default=False)
     
     class Meta(AbstractBaseModel.Meta):
         unique_together = (("email", "forward"),)
         ordering = ['forward', 'email']
-        verbose_name = _('e-mail forward')
-        verbose_name_plural = _('e-mail forwards')
+        verbose_name = _('email forwarding')
+        verbose_name_plural = _('email forwardings')
 
     def __unicode__(self):
         return u"%s" % self.forward
@@ -76,8 +83,25 @@ class EmailAlias(AbstractBaseModel):
     class Meta(AbstractBaseModel.Meta):
         unique_together = (("email", "alias"),)
         ordering = ['alias', 'email']
-        verbose_name = _('e-mail alias')
-        verbose_name_plural = _('e-mail aliases')
+        verbose_name = _('email alias')
+        verbose_name_plural = _('email aliases')
 
     def __unicode__(self):
         return u"%s" % self.alias
+
+
+class GroupEmail(AbstractBaseModel):
+    homepage = models.URLField(_("homepage"), blank=True)
+    email = models.ForeignKey(Email, verbose_name=_("email address"), unique=True, limit_choices_to={'email_type': GROUP_EMAIL_TYPE})
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('emails:groupemail_detail', (), {'uuid': self.uuid, })
+
+
+class GroupEmailAdmin(models.Model):
+    group_email = models.ForeignKey(GroupEmail, verbose_name=_("group email"))
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+
+    class Meta:
+        unique_together = (("group_email", "user"),)

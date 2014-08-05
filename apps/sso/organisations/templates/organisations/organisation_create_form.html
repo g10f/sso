@@ -5,13 +5,12 @@
 
 {% block extrascript %}{{ form.media }}{% endblock extrascript %}
 
-{% block nav_organisations_organisation_create_class %}active{% endblock %}
-{% block nav_organisations_organisation_list_class %}{% endblock %}
+{% block left_content %}{% include navigation_template with active_navigation="organisation_create" %}{% endblock left_content %}
 
 {% block breadcrumb %}
 <ol class="breadcrumb">
     <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'organisations:organisation_list' %}">{% trans 'Center List' %}</a></li>
+    <li><a href="{% url 'organisations:organisation_list' %}">{% trans 'Centers' %}</a></li>
     <li class="active">{% trans 'Add Center' %}</li>
 </ol> 
 {% endblock breadcrumb %}

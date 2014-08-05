@@ -13,6 +13,7 @@ from sorl.thumbnail.shortcuts import get_thumbnail
 from django.utils.encoding import force_text
 from django.utils.html import format_html
 
+
 class Widget(forms.Widget):
     def __init__(self, attrs=None, **kwargs):
         # add form-control class
@@ -62,7 +63,7 @@ class StaticInput(forms.TextInput):
         return mark_safe(base + u'<p class="%s">%s</p>' % (klass, value))
 """
 
-class ReadOnlyWidget(forms.TextInput):
+class ReadOnlyWidget(forms.Widget):
     def render(self, name, value, attrs=None):
         if attrs is None:
             attrs = {}
@@ -73,11 +74,20 @@ class ReadOnlyWidget(forms.TextInput):
         return mark_safe(u'<p class="%s">%s</p>' % (klass, value))
 
 
+class YesNoWidget(ReadOnlyWidget):
+    def render(self, name, value, attrs=None):
+        if value:
+            value = '<span class="glyphicon glyphicon-ok-sign"></span>'
+        else:
+            value = '<span class="glyphicon glyphicon-minus-sign"></span>'
+        return super(YesNoWidget, self).render(name, value, attrs)
+            
+    
 class ReadOnlyField(forms.Field):
     widget = ReadOnlyWidget
 
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault("required", False)
+        kwargs.setdefault("required", False)        
         super(ReadOnlyField, self).__init__(*args, **kwargs)
 
     def bound_data(self, data, initial):
@@ -87,6 +97,10 @@ class ReadOnlyField(forms.Field):
 
     def _has_changed(self, initial, data):
         return False
+
+
+class ReadOnlyYesNoField(ReadOnlyField):
+    widget = YesNoWidget
 
 
 class ImageWidget(forms.ClearableFileInput):

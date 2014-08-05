@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
+from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required, permission_required
-from django.views.generic import DetailView
+from django.views.generic import DetailView, CreateView
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from l10n.models import Country
 from sso.views import main
-from sso.emails.models import EmailForward, EmailAlias
+from sso.emails.models import EmailForward, EmailAlias, Email
 from sso.organisations.models import AdminRegion
-from sso.views.generic import FormsetsUpdateView, ListView, SearchFilter, ViewQuerysetFilter, ViewButtonFilter
-from sso.emails.forms import AdminEmailForwardForm, EmailAliasForm
+from sso.views.generic import FormsetsUpdateView, ListView, SearchFilter, ViewQuerysetFilter, ViewButtonFilter, ViewChoicesFilter
+from sso.emails.forms import AdminEmailForwardInlineForm, EmailAliasInlineForm
 from sso.organisations.forms import AdminRegionForm
-from sso.organisations.views import get_optional_email_inline_formset
+from sso.forms.helpers import get_optional_inline_formset
 
 import logging
 logger = logging.getLogger(__name__)
@@ -34,6 +35,27 @@ class AdminRegionDetailView(AdminRegionBaseView, DetailView):
     pass
 
 
+class AdminRegionCreateView(AdminRegionBaseView, CreateView):
+    template_name_suffix = '_create_form'
+    form_class = AdminRegionForm
+    
+    def get_success_url(self):
+        return reverse('organisations:adminregion_update', args=[self.object.uuid])
+
+    @method_decorator(login_required)
+    @method_decorator(permission_required('organisations.add_adminregion', raise_exception=True))
+    def dispatch(self, request, *args, **kwargs): 
+        return super(AdminRegionCreateView, self).dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        """
+        add user to form kwargs for filtering the adminregions
+        """
+        kwargs = super(AdminRegionCreateView, self).get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+
 class AdminRegionUpdateView(AdminRegionBaseView, FormsetsUpdateView):
     form_class = AdminRegionForm
     
@@ -53,13 +75,29 @@ class AdminRegionUpdateView(AdminRegionBaseView, FormsetsUpdateView):
         kwargs['user'] = self.request.user
         return kwargs
 
+    def get_object(self, queryset=None):
+        """
+        check if the user is a center, region or country admin for the center and save 
+        the result in admin_type
+        """
+        user = self.request.user
+        obj = super(AdminRegionUpdateView, self).get_object(queryset)
+        if obj.country in user.get_assignable_organisation_countries():
+            self.admin_type = 'country'
+        else:
+            self.admin_type = 'region'
+        return obj
+
     def get_formsets(self):
         formsets = []
         if self.request.method == 'GET' or 'email' not in self.form.changed_data:
-            email_forward_inline_formset = get_optional_email_inline_formset(self.request, self.object.email, 
-                                                                             Model=EmailForward, Form=AdminEmailForwardForm, max_num=10)
-            email_alias_inline_formset = get_optional_email_inline_formset(self.request, self.object.email, 
-                                                                           Model=EmailAlias, Form=EmailAliasForm, max_num=6)
+            email_forward_inline_formset = get_optional_inline_formset(self.request, self.object.email, Email,
+                                                                       model=EmailForward, form=AdminEmailForwardInlineForm, max_num=10)
+            if self.admin_type in ['country']:    
+                email_alias_inline_formset = get_optional_inline_formset(self.request, self.object.email, Email, 
+                                                                         model=EmailAlias, form=EmailAliasInlineForm, max_num=6)
+            else:
+                email_alias_inline_formset = None
             
             if email_forward_inline_formset:
                 email_forward_inline_formset.forms += [email_forward_inline_formset.empty_form]
@@ -97,6 +135,17 @@ class MyRegionsFilter(ViewButtonFilter):
         else:
             return qs
 
+
+class IsActiveFilter(ViewChoicesFilter):
+    name = 'is_active'
+    choices = (('1', _('Active Regions')), ('2', _('Inactive Regions')))  
+    select_text = _('Select active/inactive')
+    select_all_text = _("All")
+    
+    def map_to_database(self, value):
+        return True if (value.pk == "1") else False
+
+
 class AdminRegionList(ListView):
     template_name = 'organisations/adminregion_list.html'
     model = AdminRegion
@@ -119,6 +168,10 @@ class AdminRegionList(ListView):
         qs = MyRegionsFilter().apply(self, qs)  
         qs = AdminRegionSearchFilter().apply(self, qs)  
         qs = CountryFilter().apply(self, qs)  
+        if self.request.user.is_organisation_admin:  
+            qs = IsActiveFilter().apply(self, qs)
+        else:
+            qs = qs.filter(is_active=True)
                     
         # Set ordering.
         ordering = self.cl.get_ordering(self.request, qs)
@@ -135,6 +188,9 @@ class AdminRegionList(ListView):
         my_regions_filter = MyRegionsFilter().get(self)
         country_filter = CountryFilter().get(self)
         filters = [my_regions_filter, country_filter]
+        # is_active filter is only for admins
+        if self.request.user.is_organisation_admin:  
+            filters.append(IsActiveFilter().get(self))
         
         context = {
             'result_headers': headers,

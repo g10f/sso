@@ -1,0 +1,21 @@
+{% extends "organisations/organisationcountry_form.html" %}
+{% load i18n %}
+
+{% block title %}{% trans 'Add Country' %}{% endblock %}
+
+{% block extrascript %}{{ form.media }}{% endblock extrascript %}
+
+{% block left_content %}{% include navigation_template with active_navigation="organisationcountry_create" %}{% endblock left_content %}
+
+{% block breadcrumb %}
+<ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+    <li><a href="{% url 'organisations:organisationcountry_list' %}">{% trans 'Countries' %}</a></li>
+    <li class="active">{% trans 'Add Country' %}</li>
+</ol> 
+{% endblock breadcrumb %}
+
+
+{% block submit_group %}
+<button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
+{% endblock %}
