@@ -2,7 +2,6 @@
 import datetime
 from django.utils.translation import ugettext_lazy as _
 from django.forms import ModelChoiceField, ModelMultipleChoiceField, ValidationError
-from django.contrib.auth import get_user_model
 from sso.forms import bootstrap, BaseForm, BaseTabularInlineForm
 from .models import OrganisationPhoneNumber, OrganisationAddress, Organisation, AdminRegion, OrganisationCountry, CountryGroup
 from sso.emails.models import Email, EmailForward, CENTER_EMAIL_TYPE, REGION_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, PERM_EVERYBODY, PERM_DWB
@@ -61,18 +60,6 @@ class OrganisationBaseForm(BaseForm):
             'is_active': bootstrap.CheckboxInput(),
             'can_publish': bootstrap.CheckboxInput(),
         }
-
-    def save(self, commit=True):
-        """
-        deactivate or activate the center account if the active status of the center changed 
-        """
-        if commit and self.instance.email:
-            for user in get_user_model().objects.filter(email__iexact=self.instance.email.email):
-                if self.instance.is_active != user.is_active:
-                    user.is_active = self.instance.is_active
-                    user.save()
-
-        return super(BaseForm, self).save(commit)
 
 
 class OrganisationCenterAdminForm(OrganisationBaseForm):

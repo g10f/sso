@@ -1,10 +1,14 @@
 from django.db import models
+from django.db.models.signals import post_delete, post_save
+from django.dispatch import receiver
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import pgettext_lazy, ugettext_lazy as _
+from django.contrib.auth import get_user_model
 from l10n.models import Country
 from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary
 from sso.emails.models import Email, CENTER_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, REGION_EMAIL_TYPE, COUNTRY_GROUP_EMAIL_TYPE
 from smart_selects.db_fields import ChainedForeignKey
+from utils.loaddata import disable_for_loaddata
 
 import logging
 
@@ -215,3 +219,36 @@ class OrganisationPhoneNumber(AbstractBaseModel, PhoneNumberMixin):
     @classmethod
     def ensure_single_primary(cls, organisation):
         ensure_single_primary(organisation.organisationphonenumber_set.all())
+        
+
+@receiver(post_delete, sender=Organisation)
+@disable_for_loaddata
+def post_delete_center_account(sender, instance, **kwargs):
+    deactivate_center_account(instance)
+
+
+@receiver(post_save, sender=Organisation)
+@disable_for_loaddata
+def post_save_center_account(sender, instance, **kwargs):
+    update_center_account(instance)
+
+
+def deactivate_center_account(organisation):
+    """
+    deactivate the center user account if the center was deleted
+    """
+    if organisation.email:
+        for user in get_user_model().objects.filter(email__iexact=organisation.email.email):
+            user.is_active = False
+            user.save()
+    
+
+def update_center_account(organisation):
+    """
+    deactivate or activate the center user account if the center account is activated or deactivated
+    """
+    if organisation.email:
+        for user in get_user_model().objects.filter(email__iexact=organisation.email.email):
+            if organisation.is_active != user.is_active:
+                user.is_active = organisation.is_active
+                user.save()
