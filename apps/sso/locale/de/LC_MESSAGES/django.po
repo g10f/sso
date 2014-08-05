@@ -1411,7 +1411,7 @@ msgstr "Diese E-Mail Adresse wird schon benutzt."
 #: organisations/templates/organisations/adminregion_detail.html:19
 #: organisations/templates/organisations/adminregion_form.html:25
 msgid "Region"
-msgstr "Regionen"
+msgstr "Region"
 
 #: emails/models.py:29 organisations/models.py:20
 msgid "Country group"
@@ -1550,7 +1550,7 @@ msgstr "E-Mail Weiterleitung hinzufügen"
 #: emails/templates/emails/groupemail_create_form.html:14
 #: templates/include/_navigation.html:32
 msgid "Add Group Email"
-msgstr ""
+msgstr "Gruppen E-Mail hinzufügen"
 
 #: emails/templates/emails/groupemail_detail.html:4
 msgid "Group Email Details"

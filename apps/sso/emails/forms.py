@@ -76,7 +76,7 @@ class EmailAdminInlineForm(BaseTabularInlineForm):
         except ObjectDoesNotExist:
             pass
 
-    def clean_user_name(self):
+    def clean_user_email(self):
         user_email = self.cleaned_data['user_email']
         if not get_user_model().objects.filter(email=user_email).exists():
             msg = _('The user does not exists')

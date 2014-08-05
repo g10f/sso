@@ -22,7 +22,7 @@
     {% endfor %}    
     
     <div class="">
-        <h3>{% trans 'Region' %} {{ object.name }}</h3>
+        <h3>{{ object.name }}</h3>
 
         {% if messages %}{% for message in messages %}
         <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
