@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 
 class ContactForm(forms.Form):
     name = forms.CharField(label=_("Name"), max_length=100, widget=bootstrap.TextInput())
-    email = forms.EmailField(label=_("E-mail address"), max_length=75, widget=bootstrap.TextInput())
+    email = forms.EmailField(label=_("Email address"), max_length=75, widget=bootstrap.TextInput())
     subject = forms.CharField(label=_("Subject"), widget=bootstrap.TextInput())
     message = forms.CharField(label=_("Message"), widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 5}))
 
@@ -174,7 +174,7 @@ class UserAddForm(forms.ModelForm):
         'password_mismatch': _("The two password fields didn't match."),
         'duplicate_email': _("A user with that email address already exists."),
     }
-    email = forms.EmailField(label=_('E-mail'), required=True, widget=bootstrap.EmailInput())
+    email = forms.EmailField(label=_('Email'), required=True, widget=bootstrap.EmailInput())
     first_name = forms.CharField(label=_('First name'), required=True, widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('first name'))}))
     last_name = forms.CharField(label=_('Last name'), required=True, widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('last name'))}))
     notes = forms.CharField(label=_("Notes"), required=False, max_length=1024, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
@@ -290,7 +290,7 @@ class UserSelfProfileForm(forms.Form):
     username = bootstrap.ReadOnlyField(label=_("Username"))
     first_name = forms.CharField(label=_('First name'), max_length=30, widget=bootstrap.TextInput())
     last_name = forms.CharField(label=_('Last name'), max_length=30, widget=bootstrap.TextInput())
-    email = forms.EmailField(label=_('E-mail address'), widget=bootstrap.EmailInput())
+    email = forms.EmailField(label=_('Email address'), widget=bootstrap.EmailInput())
     picture = forms.ImageField(label=_('Picture'), required=False, widget=bootstrap.ImageWidget())
     gender = forms.ChoiceField(label=_('Gender'), required=False, choices=(BLANK_CHOICE_DASH + User.GENDER_CHOICES), widget=bootstrap.Select())
     dob = forms.DateField(label=_('Date of birth'), required=False, 
@@ -382,7 +382,7 @@ class CenterSelfProfileForm(forms.Form):
     username = bootstrap.ReadOnlyField(label=_("Username"))
     first_name = bootstrap.ReadOnlyField(label=_('First name'))
     last_name = bootstrap.ReadOnlyField(label=_('Last name'))
-    email = bootstrap.ReadOnlyField(label=_('E-mail address'))
+    email = bootstrap.ReadOnlyField(label=_('Email address'))
     language = forms.ChoiceField(label=_("Language"), required=False, choices=(BLANK_CHOICE_DASH + sorted(list(settings.LANGUAGES), key=lambda x: x[1])), widget=bootstrap.Select())
     
     def __init__(self, *args, **kwargs):
@@ -547,7 +547,7 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
     username = forms.CharField(label=_("Username"), max_length=30, widget=bootstrap.TextInput())
     first_name = forms.CharField(label=_('First name'), max_length=30, widget=bootstrap.TextInput())
     last_name = forms.CharField(label=_('Last name'), max_length=30, widget=bootstrap.TextInput())
-    email = forms.EmailField(label=_('E-mail address'), widget=bootstrap.EmailInput())
+    email = forms.EmailField(label=_('Email address'), widget=bootstrap.EmailInput())
     is_active = forms.BooleanField(label=_('Active'), help_text=_('Designates whether this user should be treated as active. Unselect this instead of deleting accounts.'), 
                                    widget=bootstrap.CheckboxInput(), required=False)
     is_center = forms.BooleanField(label=_('Center'), help_text=_('Designates that this user is representing a center and not a private person.'), 

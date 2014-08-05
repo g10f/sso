@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 from django.utils.text import get_text_list
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.utils.encoding import force_unicode
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext as _
 from django.utils import six
+from django.forms.models import inlineformset_factory
 
 import logging
 logger = logging.getLogger(__name__)
@@ -15,6 +16,23 @@ try:
 except ImportError:  # django < 1.7 
     from django.forms.util import ErrorList as DjangoErrorList  # @UnusedImport
     
+
+def get_optional_inline_formset(request, instance, parent_model, model, form, max_num=6, extra=1, queryset=None):
+    InlineFormSet = inlineformset_factory(parent_model, model=model, form=form, extra=extra, max_num=max_num)
+    if not instance:
+        return None
+    if request.method == 'POST':
+        formset = InlineFormSet(request.POST, instance=instance, queryset=queryset)        
+        try:
+            # Check if there was a InlineFormSet in the request because
+            # InlineFormSet is only in the response when the organisation has an email
+            formset.initial_form_count()
+        except ValidationError:
+            formset = None  # there is no InlineFormSet in the request
+    else:
+        formset = InlineFormSet(instance=instance, queryset=queryset)
+    return formset
+        
 
 class ErrorList(DjangoErrorList):
     """

@@ -27,22 +27,24 @@ class OrganisationMixin(object):
             'country': obj.country.iso2_code,
             'last_modified': obj.last_modified,
         }
-        if obj.latitude and obj.longitude:
-            data['location'] = {'geo': {'latitude': obj.latitude, 'longitude': obj.longitude}},
+        if not obj.is_private:
+            if obj.latitude and obj.longitude:
+                data['location'] = {'geo': {'latitude': obj.latitude, 'longitude': obj.longitude}},
             
         if details:
-            data['addresses'] = {
-                address.uuid: {
-                    'address_type': address.address_type,
-                    'name': address.addressee,
-                    'street_address': address.street_address,
-                    'city': address.city,
-                    'postal_code': address.postal_code,
-                    'country': address.country.iso2_code,
-                    'region': address.region,
-                    'primary': address.primary
-                } for address in obj.organisationaddress_set.all()
-            }
+            if not obj.is_private:
+                data['addresses'] = {
+                    address.uuid: {
+                        'address_type': address.address_type,
+                        'name': address.addressee,
+                        'street_address': address.street_address,
+                        'city': address.city,
+                        'postal_code': address.postal_code,
+                        'country': address.country.iso2_code,
+                        'region': address.region,
+                        'primary': address.primary
+                    } for address in obj.organisationaddress_set.all()
+                }
             data['phone_numbers'] = {
                 phone_number.uuid: {
                     'phone_type': phone_number.phone_type,

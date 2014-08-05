@@ -22,5 +22,6 @@ urlpatterns = patterns(
     url(r'^.well-known/openid-configuration', 'sso.oauth2.views.openid_configuration', name='openid-configuration'),
     url(r'^api/', include('sso.api.urls', namespace="api")),
     url(r'^chained_filter/(?P<app>l10n)/(?P<model>[\w\-]+)/(?P<field>[\w\-]+)/(?P<value>[\w\-]+)/$', 'smart_selects.views.filterchain', name='chained_filter'),
-    url(r'^chained_filter/(?P<app>organisations)/(?P<model>AdminRegion)/(?P<field>[\w\-]+)/(?P<value>[\w\-]+)/$', 'smart_selects.views.filterchain', name='chained_filter'),
+    url(r'^chained_filter/(?P<app>organisations)/(?P<model>AdminRegion)/(?P<field>[\w\-]+)/(?P<value>[\w\-]+)/$', 'smart_selects.views.filterchain', 
+        kwargs={'manager': 'active_objects'}, name='chained_filter'),
 ) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

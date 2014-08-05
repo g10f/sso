@@ -1,86 +1,154 @@
 # -*- coding: utf-8 -*-
+from django.core.urlresolvers import reverse
+from django.db.models import Q
+from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required, permission_required
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
+from django.views.generic import DeleteView, DetailView, CreateView
 from sso.views import main
-from sso.emails.models import EmailForward, EmailAlias
+from sso.emails.models import Email, EmailForward, EmailAlias, GroupEmail, GroupEmailAdmin, PERM_EVERYBODY  # , PERM_DWB, PERM_VIP_DWB
 from sso.views.generic import FormsetsUpdateView, ListView, ViewChoicesFilter, SearchFilter
-from sso.emails.forms import AdminEmailForwardForm, EmailAliasForm, EmailForm
-from sso.organisations.views import get_optional_email_inline_formset
-
-from sso.emails.models import Email
+from sso.emails.forms import EmailAliasInlineForm, GroupEmailForm, EmailAdminInlineForm, EmailForwardForm
+from sso.forms.helpers import get_optional_inline_formset
 
 import logging
 logger = logging.getLogger(__name__)
 
 
-class EmailUpdateView(FormsetsUpdateView):
-    form_class = EmailForm
-    model = Email
-    slug_field = slug_url_kwarg = 'uuid'
+class GroupEmailForwardCreateView(CreateView):    
+    model = EmailForward
+    form_class = EmailForwardForm
+    template_name_suffix = '_create_form'
+    
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs): 
+        if not request.user.has_groupemail_access(self.kwargs['uuid']):
+            raise PermissionDenied        
+        return super(GroupEmailForwardCreateView, self).dispatch(request, *args, **kwargs)
+
+    def get_initial(self):
+        group_email = GroupEmail.objects.get_by_natural_key(self.kwargs['uuid'])
+        self.initial.update({'email': group_email.email})
+        return self.initial.copy()
+    
+    def get_success_url(self):
+        return reverse('emails:groupemail_detail', args=[self.kwargs['uuid']])
+
+    def get_context_data(self, **kwargs):
+        context = super(GroupEmailForwardCreateView, self).get_context_data(**kwargs)
+        context['uuid'] = self.kwargs['uuid']
+        return context
+
+
+class GroupEmailForwardDeleteView(DeleteView):
+    model = EmailForward
 
     @method_decorator(login_required)
-    @method_decorator(permission_required('emails.change_email', raise_exception=True))
     def dispatch(self, request, *args, **kwargs): 
-        return super(EmailUpdateView, self).dispatch(request, *args, **kwargs)
+        if not request.user.has_groupemail_access(self.kwargs['uuid']):
+            raise PermissionDenied        
+        return super(GroupEmailForwardDeleteView, self).dispatch(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return reverse('emails:groupemail_detail', args=[self.kwargs['uuid']])
+
+    def get_context_data(self, **kwargs):
+        context = super(GroupEmailForwardDeleteView, self).get_context_data(**kwargs)
+        context['uuid'] = self.kwargs['uuid']
+        return context
+
+
+class GroupEmailBaseView(object):
+    model = GroupEmail
+    slug_field = slug_url_kwarg = 'uuid'
+    
+    def get_context_data(self, **kwargs):
+        context = {}
+        if self.object and self.request.user.is_authenticated():
+            context['has_groupmail_access'] = self.request.user.has_groupemail_access(self.kwargs.get('uuid'))
+        
+        context.update(kwargs)
+        return super(GroupEmailBaseView, self).get_context_data(**context)
+
+
+class GroupEmailDetailView(GroupEmailBaseView, DetailView):
+    pass
+
+
+class GroupEmailCreateView(GroupEmailBaseView, CreateView):
+    form_class = GroupEmailForm
+    template_name_suffix = '_create_form'
+    
+    def get_success_url(self):
+        return reverse('emails:groupemail_detail', args=[self.object.uuid])
+
+    @method_decorator(login_required)
+    @method_decorator(permission_required('emails.add_groupemail', raise_exception=True))
+    def dispatch(self, request, *args, **kwargs): 
+        return super(GroupEmailCreateView, self).dispatch(request, *args, **kwargs)
+
+
+class GroupEmailUpdateView(GroupEmailBaseView, FormsetsUpdateView):
+    form_class = GroupEmailForm
+    
+    @method_decorator(login_required)
+    @method_decorator(permission_required('emails.change_groupemail', raise_exception=True))
+    def dispatch(self, request, *args, **kwargs): 
+        return super(GroupEmailUpdateView, self).dispatch(request, *args, **kwargs)
     
     def get_formsets(self):
-        email_forward_inline_formset = get_optional_email_inline_formset(self.request, self.object, 
-                                                                         Model=EmailForward, Form=AdminEmailForwardForm, max_num=10)
-        email_alias_inline_formset = get_optional_email_inline_formset(self.request, self.object, 
-                                                                       Model=EmailAlias, Form=EmailAliasForm, max_num=6)
-        
         formsets = []
-        if email_forward_inline_formset:
-            email_forward_inline_formset.forms += [email_forward_inline_formset.empty_form]
-            formsets += [email_forward_inline_formset]
+        admin_inline_formset = get_optional_inline_formset(self.request, self.object, parent_model=GroupEmail, 
+                                                           model=GroupEmailAdmin, form=EmailAdminInlineForm, max_num=10)
+        email_alias_inline_formset = get_optional_inline_formset(self.request, self.object.email, Email, 
+                                                                 model=EmailAlias, form=EmailAliasInlineForm, max_num=6)
+        
+        if admin_inline_formset:
+            admin_inline_formset.forms += [admin_inline_formset.empty_form]
+            formsets += [admin_inline_formset]
         if email_alias_inline_formset:
             email_alias_inline_formset.forms += [email_alias_inline_formset.empty_form]
             formsets += [email_alias_inline_formset]
-        
+    
         return formsets
-
-
-class EmailTypeFilter(ViewChoicesFilter):
-    name = 'email_type'
-    choices = Email.EMAIL_TYPE_CHOICES
-    select_text = _('Select Email Type')
-    select_all_text = _("All Email Types")
 
 
 class PermissionFilter(ViewChoicesFilter):
     name = 'permission'
+    qs_name = 'email__permission'
     choices = Email.PERMISSION_CHOICES
     select_text = _('Select Permission')
     select_all_text = _("All Permissions")
 
 
 class EmailSearchFilter(SearchFilter):
-    search_names = ['name__icontains', 'email__icontains']
+    search_names = ['email__name__icontains', 'email__email__icontains']
 
 
-class EmailList(ListView):
-    template_name = 'emails/email_list.html'
-    model = Email
-    list_display = ['email', 'name', 'email_type', 'permission']
+class GroupEmailList(ListView):
+    template_name = 'emails/groupemail_list.html'
+    model = GroupEmail
+    list_display = ['name', 'email', 'homepage', 'permission']
         
     @method_decorator(login_required)
-    @method_decorator(permission_required('emails.change_email', raise_exception=True))
     def dispatch(self, request, *args, **kwargs):
-        return super(EmailList, self).dispatch(request, *args, **kwargs)
+        return super(GroupEmailList, self).dispatch(request, *args, **kwargs)
         
     def get_queryset(self):
         """
         Get the list of items for this view. This must be an iterable, and may
         be a queryset (in which qs-specific behavior will be enabled).
         """
-        qs = super(EmailList, self).get_queryset()
+        user = self.request.user
+        qs = super(GroupEmailList, self).get_queryset()
+        if not user.has_perms(["emails.change_groupemail"]):
+            qs = qs.filter(Q(email__is_active=True) & (Q(groupemailadmin__user=user) | Q(email__permission=PERM_EVERYBODY)))          
             
         self.cl = main.ChangeList(self.request, self.model, self.list_display, default_ordering=['email'])
         
         # apply filters
         qs = EmailSearchFilter().apply(self, qs)  
-        qs = EmailTypeFilter().apply(self, qs)
         qs = PermissionFilter().apply(self, qs)
         
         # Set ordering.
@@ -95,9 +163,9 @@ class EmailList(ListView):
             if h['sortable'] and h['sorted']:
                 num_sorted_fields += 1
         
-        email_filter = EmailTypeFilter().get(self)
-        permission_filter = PermissionFilter().get(self)
-        filters = [email_filter, permission_filter]
+        filters = []
+        if self.request.user.has_perms(["emails.change_groupemail"]):
+            filters += [PermissionFilter().get(self)]
         
         context = {
             'result_headers': headers,
@@ -109,4 +177,4 @@ class EmailList(ListView):
             'filters': filters,
         }
         context.update(kwargs)
-        return super(EmailList, self).get_context_data(**context)
+        return super(GroupEmailList, self).get_context_data(**context)

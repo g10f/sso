@@ -6,7 +6,7 @@
 {% block breadcrumb %}
 <ol class="breadcrumb">
     <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'organisations:organisation_list' %}">{% trans 'Center List' %}</a></li>
+    <li><a href="{% url 'organisations:organisation_list' %}">{% trans 'Centers' %}</a></li>
     <li class="active">{% trans 'Center Details' %}</li>
 </ol> 
 {% endblock breadcrumb %}
@@ -23,7 +23,6 @@
 {% endif %}
 
 <p>
-	<div class="row"><div class="dwbn-label">{% trans 'E-Mail' %}: </div><div class="dwbn-content">{{ object.email }}</div></div>
 	<div class="row"><div class="dwbn-label">{% trans 'Country' %}: </div><div class="dwbn-content">{{ object.country }}</div></div>
 	{% comment %}
     <div class="row"><div class="dwbn-label">{% trans 'Active' %}: </div><div class="dwbn-content"><span class="glyphicon glyphicon-{% if object.is_active %}ok-sign{% else %}minus-sign{% endif %}"></span></div></div>
@@ -33,6 +32,17 @@
 	{% if object.founded %}<div class="row"><div class="dwbn-label">{% trans 'Founded' %}: </div><div class="dwbn-content">{{ object.founded }}</div></div>{% endif %}
 	<div class="row"><div class="dwbn-label">{% trans 'Homepage' %}: </div><div class="dwbn-content"><a href="{{ object.homepage }}">{{ object.homepage }}</a></div></div>
 	{% if object.google_maps_url %}<div class="row"><div class="dwbn-label">{% trans 'Google Maps' %}: </div><div class="dwbn-content"><a href="{{ object.google_maps_url }}">{% trans 'Google Maps' %} <span class="glyphicon glyphicon-map-marker"></span></a></div></div>{% endif %}
+    {% if object.email %}
+    <div class="row"><div class="dwbn-label">{% trans 'Email address' %}: </div><div class="dwbn-content">{{ object.email }}</div></div>
+    {% if perms.organisations.change_organisation and has_organisation_access %}
+    {% for emailforward in  object.email.emailforward_set.all %}
+    <div class="row"><div class="dwbn-label">{% trans 'Email forwarding address' %}: </div><div class="dwbn-content">{{ emailforward }}</div></div>
+    {% endfor %}
+    {% for emailalias in  object.email.emailalias_set.all %}
+    <div class="row"><div class="dwbn-label">{% trans 'Email alias address' %}: </div><div class="dwbn-content">{{ emailalias }}</div></div>
+    {% endfor %}
+    {% endif %}    
+    {% endif %}
 	
 	{% for address in object.organisationaddress_set.all %}
 	<h4>{{ address.get_address_type_display }} {% trans 'Address' %}</h4>
@@ -48,6 +58,7 @@
 	{% for phone_number in object.organisationphonenumber_set.all %}
 	<div class="row"><div class="dwbn-label">{{ phone_number.get_phone_type_display }} {% trans 'Phone' %}: </div><div class="dwbn-content">{{ phone_number.phone }}</div></div>
 	{% endfor %}{% endif %}
+    
 </p>
 
 <div class="form-group">

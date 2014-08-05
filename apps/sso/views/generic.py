@@ -229,11 +229,12 @@ class FormsetsUpdateView(generic.UpdateView):
         self.form = self.get_form(form_class)
 
         if self.is_valid:
-            self.form.save()  
+            # form_valid saves the form
+            response = self.form_valid(self.form)
+            
             for formset in self.formsets:
                 formset.save()
-
-            return self.form_valid(self.form)
+            return response
         else:
             return self.form_invalid(self.form)
 

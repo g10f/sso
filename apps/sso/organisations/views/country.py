@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required, permission_required
-from django.views.generic import DetailView
+from django.views.generic import DetailView, CreateView
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
+from django.core.urlresolvers import reverse
 from l10n.models import CONTINENTS
 from sso.views import main
-from sso.emails.models import EmailForward, EmailAlias
+from sso.emails.models import EmailForward, EmailAlias, Email
 from sso.organisations.models import OrganisationCountry, CountryGroup
 from sso.views.generic import FormsetsUpdateView, ListView, ViewChoicesFilter, SearchFilter, ViewQuerysetFilter, ViewButtonFilter
-from sso.emails.forms import AdminEmailForwardForm, EmailAliasForm
+from sso.emails.forms import AdminEmailForwardInlineForm, EmailAliasInlineForm
 from sso.organisations.forms import OrganisationCountryForm
-from sso.organisations.views import get_optional_email_inline_formset
+from sso.forms.helpers import get_optional_inline_formset
 
 import logging
 logger = logging.getLogger(__name__)
@@ -34,6 +35,19 @@ class OrganisationCountryDetailView(OrganisationCountryBaseView, DetailView):
     pass
 
 
+class OrganisationCountryCreateView(OrganisationCountryBaseView, CreateView):
+    template_name_suffix = '_create_form'
+    form_class = OrganisationCountryForm
+    
+    def get_success_url(self):
+        return reverse('organisations:organisationcountry_update', args=[self.object.uuid])
+
+    @method_decorator(login_required)
+    @method_decorator(permission_required('organisations.add_organisationcountry', raise_exception=True))
+    def dispatch(self, request, *args, **kwargs): 
+        return super(OrganisationCountryCreateView, self).dispatch(request, *args, **kwargs)
+
+
 class OrganisationCountryUpdateView(OrganisationCountryBaseView, FormsetsUpdateView):
     form_class = OrganisationCountryForm
     
@@ -48,10 +62,10 @@ class OrganisationCountryUpdateView(OrganisationCountryBaseView, FormsetsUpdateV
     def get_formsets(self):
         formsets = []
         if self.request.method == 'GET' or 'email' not in self.form.changed_data:
-            email_forward_inline_formset = get_optional_email_inline_formset(self.request, self.object.email, 
-                                                                             Model=EmailForward, Form=AdminEmailForwardForm, max_num=10)
-            email_alias_inline_formset = get_optional_email_inline_formset(self.request, self.object.email, 
-                                                                           Model=EmailAlias, Form=EmailAliasForm, max_num=6)
+            email_forward_inline_formset = get_optional_inline_formset(self.request, self.object.email, Email, 
+                                                                       model=EmailForward, form=AdminEmailForwardInlineForm, max_num=10)
+            email_alias_inline_formset = get_optional_inline_formset(self.request, self.object.email, Email, 
+                                                                     model=EmailAlias, form=EmailAliasInlineForm, max_num=6)
             
             if email_forward_inline_formset:
                 email_forward_inline_formset.forms += [email_forward_inline_formset.empty_form]
@@ -98,6 +112,16 @@ class MyCountriesFilter(ViewButtonFilter):
             return qs
 
 
+class IsActiveFilter(ViewChoicesFilter):
+    name = 'is_active'
+    choices = (('1', _('Active Countries')), ('2', _('Inactive Countries')))  
+    select_text = _('Select active/inactive')
+    select_all_text = _("All")
+    
+    def map_to_database(self, value):
+        return True if (value.pk == "1") else False
+
+
 class OrganisationCountryList(ListView):
     template_name = 'organisations/organisationcountry_list.html'
     model = OrganisationCountry
@@ -120,6 +144,10 @@ class OrganisationCountryList(ListView):
         qs = CountrySearchFilter().apply(self, qs)  
         qs = ContinentsFilter().apply(self, qs)
         qs = CountryGroupFilter().apply(self, qs)
+        if self.request.user.is_organisation_admin:  
+            qs = IsActiveFilter().apply(self, qs)
+        else:
+            qs = qs.filter(is_active=True)
         
         # Set ordering.
         ordering = self.cl.get_ordering(self.request, qs)
@@ -137,9 +165,10 @@ class OrganisationCountryList(ListView):
         continent_filter = ContinentsFilter().get(self)
         
         filters = [my_countries_filter, continent_filter]
-        # offer is_active filter only for admins
+        # offer is_active and CountryGroup filter only for admins
         if self.request.user.is_organisation_admin:  
             filters.append(CountryGroupFilter().get(self))
+            filters.append(IsActiveFilter().get(self))
         
         context = {
             'result_headers': headers,

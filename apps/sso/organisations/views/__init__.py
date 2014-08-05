@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.core.urlresolvers import reverse
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.utils.encoding import force_text
-from django.core.exceptions import ValidationError
 from django.contrib.auth.decorators import login_required, permission_required
 from django.views.generic import DeleteView, DetailView, CreateView
 from django.utils.decorators import method_decorator
@@ -18,9 +17,10 @@ from sso.emails.models import EmailForward, Email, EmailAlias
 from sso.organisations.models import AdminRegion, Organisation
 from sso.views.generic import FormsetsUpdateView, ListView, SearchFilter, ViewChoicesFilter, ViewQuerysetFilter, ViewButtonFilter
 from sso.organisations.models import OrganisationAddress, OrganisationPhoneNumber
-from sso.emails.forms import AdminEmailForwardForm, EmailForwardForm, EmailAliasForm
+from sso.emails.forms import AdminEmailForwardInlineForm, EmailForwardInlineForm, EmailAliasInlineForm
 from sso.organisations.forms import OrganisationAddressForm, OrganisationPhoneNumberForm, OrganisationCountryAdminForm, \
-    OrganisationRegionAdminForm, OrganisationCenterAdminForm, OrganisationRegionAdminCreateForm
+    OrganisationRegionAdminForm, OrganisationCenterAdminForm, OrganisationRegionAdminCreateForm, OrganisationCountryAdminCreateForm
+from sso.forms.helpers import get_optional_inline_formset
 
 
 import logging
@@ -98,7 +98,6 @@ class OrganisationDeleteView(OrganisationBaseView, DeleteView):
 
 
 class OrganisationCreateView(OrganisationBaseView, CreateView):
-    form_class = OrganisationRegionAdminCreateForm
     template_name_suffix = '_create_form'
     
     def get_success_url(self):
@@ -123,37 +122,27 @@ class OrganisationCreateView(OrganisationBaseView, CreateView):
         """
         user = self.request.user
         if user.get_assignable_organisation_countries().exists():
-            return OrganisationCountryAdminForm
+            return OrganisationCountryAdminCreateForm
         else:
-            return self.form_class
+            return OrganisationRegionAdminCreateForm
 
-
-def get_optional_email_inline_formset(request, email, Model, Form, max_num=6, extra=1, queryset=None):
-    InlineFormSet = inlineformset_factory(Email, Model, Form, extra=extra, max_num=max_num)
-    if not email:
-        return None
-    if request.method == 'POST':
-        formset = InlineFormSet(request.POST, instance=email, queryset=queryset)        
-        try:
-            # Check if there was a InlineFormSet in the request because
-            # InlineFormSet is only in the response when the organisation has an email
-            formset.initial_form_count()
-        except ValidationError:
-            formset = None  # there is no InlineFormSet in the request
-    else:
-        formset = InlineFormSet(instance=email, queryset=queryset)
-    return formset
-        
 
 class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
+    form_classes = {
+        'center': OrganisationCenterAdminForm,
+        'region': OrganisationRegionAdminForm,
+        'country': OrganisationCountryAdminForm
+    }
     form_class = OrganisationCenterAdminForm
     
     @method_decorator(login_required)
     @method_decorator(permission_required('organisations.change_organisation', raise_exception=True))
     def dispatch(self, request, *args, **kwargs): 
         # additionally check if the user is admin of the organisation       
-        if not request.user.has_organisation_access(kwargs.get('uuid')):
+        user = request.user
+        if not user.has_organisation_access(kwargs.get('uuid')):
             raise PermissionDenied
+
         return super(OrganisationUpdateView, self).dispatch(request, *args, **kwargs)
     
     def get_form_kwargs(self):
@@ -163,18 +152,27 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
         kwargs = super(OrganisationUpdateView, self).get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
+    
+    def get_object(self, queryset=None):
+        """
+        check if the user is a center, region or country admin for the center and save 
+        the result in admin_type
+        """
+        user = self.request.user
+        obj = super(OrganisationUpdateView, self).get_object(queryset)
+        if obj.country in user.get_assignable_organisation_countries():
+            self.admin_type = 'country'
+        elif obj.admin_region in user.get_assignable_organisation_regions():
+            self.admin_type = 'region'
+        else:
+            self.admin_type = 'center'
+        return obj
 
     def get_form_class(self):
         """
         Returns the form class to use in this view.
         """
-        user = self.request.user
-        if self.object.country in user.get_assignable_organisation_countries():
-            return OrganisationCountryAdminForm
-        elif self.object.admin_region in user.get_assignable_organisation_regions():
-            return OrganisationRegionAdminForm
-        else:
-            return self.form_class
+        return self.form_classes[self.admin_type]
         
     def get_formsets(self):
 
@@ -201,15 +199,18 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
         
         if self.request.method == 'GET' or 'email' not in self.form.changed_data:
             if self.request.user.has_perm('organisations.add_organisation'):
-                email_forward_inline_formset = get_optional_email_inline_formset(self.request, self.object.email, 
-                                                                                 Model=EmailForward, Form=AdminEmailForwardForm, max_num=10)
+                email_forward_inline_formset = get_optional_inline_formset(self.request, self.object.email, Email, 
+                                                                           model=EmailForward, form=AdminEmailForwardInlineForm, max_num=10)
             else:
-                email_forward_inline_formset = get_optional_email_inline_formset(self.request, self.object.email, 
-                                                                                 Model=EmailForward, Form=EmailForwardForm, max_num=10, 
-                                                                                 queryset=EmailForward.objects.filter(primary=False))
-                
-            email_alias_inline_formset = get_optional_email_inline_formset(self.request, self.object.email, 
-                                                                           Model=EmailAlias, Form=EmailAliasForm, max_num=6)
+                email_forward_inline_formset = get_optional_inline_formset(self.request, self.object.email, Email,
+                                                                           model=EmailForward, form=EmailForwardInlineForm, max_num=10, 
+                                                                           queryset=EmailForward.objects.filter(primary=False))
+            
+            if self.admin_type in ['region', 'country']:    
+                email_alias_inline_formset = get_optional_inline_formset(self.request, self.object.email, Email, 
+                                                                         model=EmailAlias, form=EmailAliasInlineForm, max_num=6)
+            else:
+                email_alias_inline_formset = None
             
             if email_forward_inline_formset:
                 email_forward_inline_formset.forms += [email_forward_inline_formset.empty_form]
@@ -255,6 +256,7 @@ class CountryFilter(ViewQuerysetFilter):
 class AdminRegionFilter(ViewQuerysetFilter):
     name = 'admin_region'
     model = AdminRegion
+    filter_list = AdminRegion.objects.filter(organisation__isnull=False).distinct()
     select_text = _('Select Region')
     select_all_text = _('All Regions')
     all_remove = 'region,center'
