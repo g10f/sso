@@ -237,18 +237,23 @@ def deactivate_center_account(organisation):
     """
     deactivate the center user account if the center was deleted
     """
-    if organisation.email:
-        for user in get_user_model().objects.filter(email__iexact=organisation.email.email):
-            user.is_active = False
-            user.save()
-    
+    try:
+        if organisation.email:
+            for user in get_user_model().objects.filter(email__iexact=organisation.email.email):
+                user.is_active = False
+                user.save()
+    except ObjectDoesNotExist:
+        pass
 
 def update_center_account(organisation):
     """
     deactivate or activate the center user account if the center account is activated or deactivated
     """
-    if organisation.email:
-        for user in get_user_model().objects.filter(email__iexact=organisation.email.email):
-            if organisation.is_active != user.is_active:
-                user.is_active = organisation.is_active
-                user.save()
+    try:
+        if organisation.email:
+            for user in get_user_model().objects.filter(email__iexact=organisation.email.email):
+                if organisation.is_active != user.is_active:
+                    user.is_active = organisation.is_active
+                    user.save()
+    except ObjectDoesNotExist:
+        pass
