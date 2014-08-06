@@ -50,3 +50,14 @@ class EmailForwardAdmin(admin.ModelAdmin):
     search_fields = ('email__email', 'forward', 'uuid')
     list_display = ('forward', 'email', 'last_modified', 'uuid')
     list_filter = ('email__email_type', 'email')
+
+
+class GroupEmailAdmin(admin.ModelAdmin):
+    list_select_related = ('email',)
+    list_display = ('email', 'homepage', 'uuid')
+
+
+class GroupEmailManagerAdmin(admin.ModelAdmin):
+    list_select_related = ('group_email',)
+    list_display = ('group_email', 'manager')
+    raw_id_fields = ('manager',)

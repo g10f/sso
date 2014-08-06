@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-08-05 09:53+0200\n"
+"POT-Creation-Date: 2014-08-06 11:34+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -45,8 +45,8 @@ msgstr "Stadt"
 msgid "postal code"
 msgstr "Postleitzahl"
 
-#: models.py:55 organisations/models.py:29 organisations/models.py:67
-#: organisations/models.py:101
+#: models.py:55 organisations/models.py:33 organisations/models.py:71
+#: organisations/models.py:105
 msgid "country"
 msgstr "Land"
 
@@ -62,7 +62,7 @@ msgstr "Bundesland oder Region"
 msgid "region"
 msgstr "Region"
 
-#: models.py:59 models.py:76 emails/models.py:67
+#: models.py:59 models.py:76 emails/models.py:70
 msgid "primary"
 msgstr "primär"
 
@@ -104,7 +104,7 @@ msgstr "angelegt von"
 msgid "associated system"
 msgstr "Assoziertes System"
 
-#: accounts/admin.py:120 organisations/forms.py:166 organisations/forms.py:233
+#: accounts/admin.py:120 organisations/forms.py:153 organisations/forms.py:220
 msgid "Admin Region"
 msgstr ""
 
@@ -180,7 +180,7 @@ msgstr ""
 #: accounts/forms.py:37
 #: accounts/templates/accounts/application/add_user_done.html:27
 #: emails/forms.py:64 emails/forms.py:100
-#: emails/templates/emails/groupemail_detail.html:26 organisations/forms.py:82
+#: emails/templates/emails/groupemail_detail.html:26 organisations/forms.py:69
 #: organisations/templates/organisations/adminregion_detail.html:26
 msgid "Name"
 msgstr ""
@@ -188,9 +188,9 @@ msgstr ""
 #: accounts/forms.py:38 accounts/forms.py:293 accounts/forms.py:385
 #: accounts/forms.py:550
 #: accounts/templates/accounts/user_confirm_delete.html:28 emails/forms.py:99
-#: emails/templates/emails/groupemail_detail.html:30 organisations/forms.py:79
-#: organisations/forms.py:104 organisations/forms.py:259
-#: organisations/forms.py:313
+#: emails/templates/emails/groupemail_detail.html:30 organisations/forms.py:66
+#: organisations/forms.py:91 organisations/forms.py:246
+#: organisations/forms.py:300
 #: organisations/templates/organisations/adminregion_detail.html:32
 #: organisations/templates/organisations/organisation_detail.html:37
 #: organisations/templates/organisations/organisationcountry_detail.html:30
@@ -239,7 +239,7 @@ msgstr ""
 
 #: accounts/forms.py:79 accounts/forms.py:177
 #: accounts/templates/accounts/application/add_user_done.html:36
-#: emails/forms.py:63 emails/models.py:57 registration/forms.py:160
+#: emails/forms.py:63 emails/models.py:60 registration/forms.py:160
 msgid "Email"
 msgstr ""
 
@@ -414,7 +414,7 @@ msgid "Incorrect, please try again."
 msgstr "Nicht richtig, bitte versuche es erneut."
 
 #: accounts/forms.py:551 emails/templates/emails/groupemail_detail.html:28
-#: organisations/forms.py:83
+#: organisations/forms.py:70
 #: organisations/templates/organisations/adminregion_detail.html:29
 #: organisations/templates/organisations/organisationcountry_detail.html:28
 msgid "Active"
@@ -449,8 +449,8 @@ msgid ""
 "bar."
 msgstr ""
 
-#: accounts/models.py:55 emails/models.py:44 organisations/models.py:33
-#: organisations/models.py:69 organisations/models.py:114
+#: accounts/models.py:55 emails/models.py:44 organisations/models.py:37
+#: organisations/models.py:73 organisations/models.py:118
 #: registration/admin.py:29 registration/admin.py:63
 msgid "active"
 msgstr "aktiv"
@@ -468,8 +468,8 @@ msgid "applications"
 msgstr "Anwendungen"
 
 #: accounts/models.py:83 accounts/models.py:126 emails/models.py:40
-#: oauth2/models.py:72 organisations/models.py:15 organisations/models.py:65
-#: organisations/models.py:100
+#: oauth2/models.py:72 organisations/models.py:19 organisations/models.py:69
+#: organisations/models.py:104
 msgid "name"
 msgstr ""
 
@@ -584,9 +584,9 @@ msgstr ""
 msgid "date of birth"
 msgstr ""
 
-#: accounts/models.py:171 emails/models.py:94 organisations/models.py:17
-#: organisations/models.py:31 organisations/models.py:66
-#: organisations/models.py:107 organisations/models.py:165
+#: accounts/models.py:171 emails/models.py:97 organisations/models.py:21
+#: organisations/models.py:35 organisations/models.py:70
+#: organisations/models.py:111 organisations/models.py:169
 msgid "homepage"
 msgstr ""
 
@@ -603,24 +603,24 @@ msgstr "Zuhause"
 msgid "Business"
 msgstr "Geschäftlich"
 
-#: accounts/models.py:550 accounts/models.py:571 organisations/models.py:205
+#: accounts/models.py:550 accounts/models.py:571 organisations/models.py:209
 msgid "Other"
 msgstr "Andere"
 
-#: accounts/models.py:553 organisations/models.py:187
+#: accounts/models.py:553 organisations/models.py:191
 msgid "address type"
 msgstr "Adressart"
 
-#: accounts/models.py:566 organisations/models.py:201
+#: accounts/models.py:566 organisations/models.py:205
 msgctxt "phone number"
 msgid "Home"
 msgstr "Privat"
 
-#: accounts/models.py:567 organisations/models.py:202
+#: accounts/models.py:567 organisations/models.py:206
 msgid "Mobile"
 msgstr "Handy"
 
-#: accounts/models.py:569 organisations/models.py:204
+#: accounts/models.py:569 organisations/models.py:208
 msgid "Fax"
 msgstr ""
 
@@ -628,11 +628,11 @@ msgstr ""
 msgid "Pager"
 msgstr ""
 
-#: accounts/models.py:573 organisations/models.py:208
+#: accounts/models.py:573 organisations/models.py:212
 msgid "phone type"
 msgstr "Telefontyp"
 
-#: accounts/models.py:573 organisations/models.py:208
+#: accounts/models.py:573 organisations/models.py:212
 msgid "Mobile, home, office, etc."
 msgstr "Handy, privat, Büro, etc."
 
@@ -1066,10 +1066,10 @@ msgid "Delete user"
 msgstr "Benutzer löschen"
 
 #: accounts/templates/accounts/user_confirm_delete.html:47 emails/models.py:28
-#: organisations/admin.py:11 organisations/forms.py:15
-#: organisations/forms.py:80 organisations/forms.py:167
-#: organisations/forms.py:261 organisations/forms.py:318
-#: organisations/forms.py:336 organisations/models.py:37
+#: organisations/admin.py:11 organisations/forms.py:14
+#: organisations/forms.py:67 organisations/forms.py:154
+#: organisations/forms.py:248 organisations/forms.py:305
+#: organisations/forms.py:323 organisations/models.py:41
 #: organisations/templates/organisations/adminregion_detail.html:27
 #: organisations/templates/organisations/organisation_detail.html:26
 #: organisations/templates/organisations/organisationcountry_detail.html:19
@@ -1251,32 +1251,32 @@ msgstr "Aktive Benutzer"
 msgid "Inactive Users"
 msgstr "Inaktive Benutzer"
 
-#: accounts/views/application.py:53 organisations/views/__init__.py:239
+#: accounts/views/application.py:53 organisations/views/__init__.py:255
 #: organisations/views/country.py:118 organisations/views/region.py:142
 msgid "Select active/inactive"
 msgstr "Nach aktiv/inaktiv filtern"
 
-#: accounts/views/application.py:54 organisations/views/__init__.py:240
+#: accounts/views/application.py:54 organisations/views/__init__.py:256
 #: organisations/views/country.py:119 organisations/views/region.py:143
 #: registration/views.py:61 registration/views.py:71 registration/views.py:81
 msgid "All"
 msgstr ""
 
-#: accounts/views/application.py:65 organisations/views/__init__.py:250
+#: accounts/views/application.py:65 organisations/views/__init__.py:266
 #: organisations/views/region.py:120 registration/views.py:52
 msgid "Select Country"
 msgstr "Land filtern"
 
-#: accounts/views/application.py:66 organisations/views/__init__.py:251
+#: accounts/views/application.py:66 organisations/views/__init__.py:267
 #: organisations/views/region.py:121 registration/views.py:53
 msgid "All Countries"
 msgstr "Alle Länder"
 
-#: accounts/views/application.py:75 organisations/views/__init__.py:260
+#: accounts/views/application.py:75 organisations/views/__init__.py:276
 msgid "Select Region"
 msgstr "Region filtern"
 
-#: accounts/views/application.py:76 organisations/views/__init__.py:261
+#: accounts/views/application.py:76 organisations/views/__init__.py:277
 msgid "All Regions"
 msgstr "Alle Regionen"
 
@@ -1383,7 +1383,7 @@ msgstr ""
 
 #: emails/forms.py:12 emails/forms.py:30 emails/forms.py:41
 #: emails/templates/emails/emailforward_confirm_delete.html:26
-#: organisations/forms.py:194
+#: organisations/forms.py:181
 #: organisations/templates/organisations/adminregion_detail.html:35
 #: organisations/templates/organisations/organisation_detail.html:40
 #: organisations/templates/organisations/organisationcountry_detail.html:34
@@ -1402,18 +1402,16 @@ msgstr "Der Benutzer existiert nicht"
 msgid "Permission"
 msgstr "Berechtigung"
 
-#: emails/forms.py:126 organisations/forms.py:124 organisations/forms.py:291
-#: organisations/forms.py:351
+#: emails/forms.py:126 organisations/forms.py:111 organisations/forms.py:278
+#: organisations/forms.py:338
 msgid "The email address already exists"
 msgstr "Diese E-Mail Adresse wird schon benutzt."
 
-#: emails/models.py:27 organisations/models.py:73
-#: organisations/templates/organisations/adminregion_detail.html:19
-#: organisations/templates/organisations/adminregion_form.html:25
+#: emails/models.py:27 organisations/models.py:77
 msgid "Region"
 msgstr "Region"
 
-#: emails/models.py:29 organisations/models.py:20
+#: emails/models.py:29 organisations/models.py:24
 msgid "Country group"
 msgstr "Ländergruppe"
 
@@ -1423,10 +1421,6 @@ msgstr ""
 
 #: emails/models.py:31
 msgid "Group"
-msgstr ""
-
-#: emails/models.py:32
-msgid "Closed Group"
 msgstr ""
 
 #: emails/models.py:35
@@ -1453,10 +1447,10 @@ msgstr "Email Typ"
 msgid "access control"
 msgstr "Berechtigung"
 
-#: emails/models.py:43 emails/models.py:65 emails/models.py:80
-#: emails/models.py:95 forms/fields.py:16 organisations/models.py:16
-#: organisations/models.py:32 organisations/models.py:68
-#: organisations/models.py:106
+#: emails/models.py:43 emails/models.py:68 emails/models.py:83
+#: emails/models.py:98 forms/fields.py:16 organisations/models.py:20
+#: organisations/models.py:36 organisations/models.py:72
+#: organisations/models.py:110
 msgid "email address"
 msgstr "E-Mail Adresse"
 
@@ -1468,38 +1462,50 @@ msgstr ""
 "Legt fest, ob diese E-Mmail aktiv ist. Kann deaktiviert werden, anstatt die "
 "E-Mmail zu löschen."
 
-#: emails/models.py:58
+#: emails/models.py:61
 msgid "Emails"
 msgstr "E-Mail Adressen"
 
-#: emails/models.py:66
+#: emails/models.py:69
 msgid "email forwarding address"
 msgstr "E-Mail Weiterleitungsadresse"
 
-#: emails/models.py:72
+#: emails/models.py:75
 #: emails/templates/emails/emailforward_create_form.html:27
 msgid "email forwarding"
 msgstr "E-Mail Weiterleitung"
 
-#: emails/models.py:73
+#: emails/models.py:76
 msgid "email forwardings"
 msgstr "E-Mail Weiterleitungen"
 
-#: emails/models.py:81
+#: emails/models.py:84
 msgid "email alias address"
 msgstr "E-Mail Alias"
 
-#: emails/models.py:86
+#: emails/models.py:89
 msgid "email alias"
 msgstr "E-Mail Alias"
 
-#: emails/models.py:87
+#: emails/models.py:90
 msgid "email aliases"
 msgstr "E-Mail Aliase"
 
-#: emails/models.py:103
+#: emails/models.py:101 emails/models.py:113
 msgid "group email"
-msgstr ""
+msgstr "Gruppen E-Mail"
+
+#: emails/models.py:102
+msgid "group emails"
+msgstr "Gruppen E-Mails"
+
+#: emails/models.py:118
+msgid "group email manager"
+msgstr "Gruppen E-Mail Manager"
+
+#: emails/models.py:119
+msgid "group email managers"
+msgstr "Gruppen E-Mail Manager"
 
 #: emails/views.py:121
 msgid "Select Permission"
@@ -1508,6 +1514,10 @@ msgstr "Berechtigung filtern"
 #: emails/views.py:122
 msgid "All Permissions"
 msgstr "Alle Berechtigungen"
+
+#: emails/views.py:131
+msgid "Select My Group Emails"
+msgstr "Meine Gruppen E-Mails"
 
 #: emails/templates/emails/email_forward_tabular.html:9
 msgid "Primary forwarding address"
@@ -1731,57 +1741,57 @@ msgstr ""
 msgid "There's been an OAuth 2 error: %(error)s"
 msgstr ""
 
-#: organisations/admin.py:121 organisations/models.py:108
+#: organisations/admin.py:121 organisations/models.py:112
 msgid "notes"
 msgstr "Notizen"
 
-#: organisations/forms.py:45
+#: organisations/forms.py:44
 #: organisations/templates/organisations/organisation_detail.html:35
 #: organisations/templates/organisations/organisation_list.html:46
 #: templates/include/_static_google_maps_field.html:6
 msgid "Google Maps"
 msgstr ""
 
-#: organisations/forms.py:81
+#: organisations/forms.py:68
 msgid "Center type"
 msgstr "Zentrumstyp"
 
-#: organisations/forms.py:84
+#: organisations/forms.py:71
 msgid "Publish"
 msgstr ""
 
-#: organisations/forms.py:91
+#: organisations/forms.py:78
 msgid "Admin region"
 msgstr "Region"
 
-#: organisations/forms.py:120 organisations/forms.py:287
-#: organisations/forms.py:347
+#: organisations/forms.py:107 organisations/forms.py:274
+#: organisations/forms.py:334
 msgid ""
 "The email address of the center must be ending with @diamondway-center.org"
 msgstr ""
 
-#: organisations/forms.py:184 organisations/forms.py:251
+#: organisations/forms.py:171 organisations/forms.py:238
 msgid "The admin region is not valid for the selected country."
 msgstr ""
 
-#: organisations/forms.py:194
+#: organisations/forms.py:181
 msgid "The primary email forwarding address for the center"
 msgstr "Die primäre E-Mail Weiterleitungsadresse für das Zentrum"
 
-#: organisations/forms.py:206
+#: organisations/forms.py:193
 msgid "The email forward address and email address must be different"
 msgstr ""
 
-#: organisations/forms.py:316
+#: organisations/forms.py:303
 #: organisations/templates/organisations/organisationcountry_detail.html:40
 msgid "Country Groups"
 msgstr "Länder Gruppen"
 
-#: organisations/models.py:21
+#: organisations/models.py:25
 msgid "Country groups"
 msgstr "Länder Gruppen"
 
-#: organisations/models.py:33
+#: organisations/models.py:37
 msgid ""
 "Designates whether this country should be treated as active. Unselect this "
 "instead of deleting the country."
@@ -1789,7 +1799,7 @@ msgstr ""
 "Legt fest, ob dieses Land aktiv ist. Kann deaktiviert werden, anstatt das "
 "Land zu löschen."
 
-#: organisations/models.py:38
+#: organisations/models.py:42
 #: organisations/templates/organisations/organisationcountry_create_form.html:13
 #: organisations/templates/organisations/organisationcountry_detail.html:9
 #: organisations/templates/organisations/organisationcountry_form.html:13
@@ -1798,7 +1808,7 @@ msgstr ""
 msgid "Countries"
 msgstr "Länder"
 
-#: organisations/models.py:69
+#: organisations/models.py:73
 msgid ""
 "Designates whether this region should be treated as active. Unselect this "
 "instead of deleting the region."
@@ -1806,7 +1816,7 @@ msgstr ""
 "Legt fest, ob diese Region aktiv ist. Kann deaktiviert werden, anstatt die "
 "Region zu löschen."
 
-#: organisations/models.py:74
+#: organisations/models.py:78
 #: organisations/templates/organisations/adminregion_create_form.html:13
 #: organisations/templates/organisations/adminregion_detail.html:9
 #: organisations/templates/organisations/adminregion_form.html:12
@@ -1817,47 +1827,47 @@ msgstr ""
 msgid "Regions"
 msgstr "Regionen"
 
-#: organisations/models.py:87 organisations/models.py:134
+#: organisations/models.py:91 organisations/models.py:138
 msgid "Buddhist Center"
 msgstr ""
 
-#: organisations/models.py:88
+#: organisations/models.py:92
 msgid "Buddhist Group"
 msgstr ""
 
-#: organisations/models.py:89
+#: organisations/models.py:93
 msgid "Buddhist Retreat"
 msgstr ""
 
-#: organisations/models.py:90
+#: organisations/models.py:94
 msgid "Buddhist Center & Retreat"
 msgstr ""
 
-#: organisations/models.py:91
+#: organisations/models.py:95
 msgid "Buddhist Group & Retreat"
 msgstr ""
 
-#: organisations/models.py:102
+#: organisations/models.py:106
 msgid "admin region"
 msgstr "Region"
 
-#: organisations/models.py:109
+#: organisations/models.py:113
 msgid "center type"
 msgstr "Art des Zentrums"
 
-#: organisations/models.py:111
+#: organisations/models.py:115
 msgid "founded"
 msgstr "gegründet"
 
-#: organisations/models.py:112
+#: organisations/models.py:116
 msgid "latitude"
 msgstr ""
 
-#: organisations/models.py:113
+#: organisations/models.py:117
 msgid "longitude"
 msgstr ""
 
-#: organisations/models.py:116
+#: organisations/models.py:120
 msgid ""
 "Designates whether this buddhist center should be treated as active. "
 "Unselect this instead of deleting buddhist center."
@@ -1865,11 +1875,11 @@ msgstr ""
 "Legt fest, ob dieses Zentrum aktiv ist. Kann deaktiviert werden, anstatt das "
 "Zentrum zu löschen."
 
-#: organisations/models.py:118
+#: organisations/models.py:122
 msgid "private"
 msgstr "privat"
 
-#: organisations/models.py:119
+#: organisations/models.py:123
 msgid ""
 "Designates whether this buddhist center data should be treated as private "
 "and only a telephone number should be displayed on public sites."
@@ -1877,40 +1887,40 @@ msgstr ""
 "Legt fest, ob die Daten diese Zentrums privat sind und nur die Telefonnummer "
 "auf öffentlichen Seiten angezeigt werden soll."
 
-#: organisations/models.py:122
+#: organisations/models.py:126
 msgid "publish"
 msgstr ""
 
-#: organisations/models.py:123
+#: organisations/models.py:127
 msgid "Designates whether this buddhist center data can be published."
 msgstr ""
 "Gibt an, ob dieses Zentrum auf öffentlichen Seiten publiziert werden kann."
 
-#: organisations/models.py:135
+#: organisations/models.py:139
 msgid "Buddhist Centers"
 msgstr ""
 
-#: organisations/models.py:157
+#: organisations/models.py:161
 msgid "Maps"
 msgstr ""
 
-#: organisations/models.py:184
+#: organisations/models.py:188
 msgid "Meditation"
 msgstr "Meditation"
 
-#: organisations/models.py:185
+#: organisations/models.py:189
 msgid "Post Only"
 msgstr ""
 
-#: organisations/models.py:189
+#: organisations/models.py:193
 msgid "care of (c/o)"
 msgstr ""
 
-#: organisations/models.py:203
+#: organisations/models.py:207
 msgid "Mobile#2"
 msgstr "Handy#2"
 
-#: organisations/models.py:206
+#: organisations/models.py:210
 msgid "Other#2"
 msgstr "Andere#2"
 
@@ -2034,23 +2044,23 @@ msgstr "Land aktualisieren"
 msgid "Country Data"
 msgstr "Landesdaten"
 
-#: organisations/views/__init__.py:232
+#: organisations/views/__init__.py:248
 msgid "Select Center Type"
 msgstr "Zentrumstyp filtern"
 
-#: organisations/views/__init__.py:233
+#: organisations/views/__init__.py:249
 msgid "All Center Types"
 msgstr "Alle Zentren"
 
-#: organisations/views/__init__.py:238
+#: organisations/views/__init__.py:254
 msgid "Active Centers"
 msgstr "Aktive Zentren"
 
-#: organisations/views/__init__.py:238
+#: organisations/views/__init__.py:254
 msgid "Inactive Centers"
 msgstr "inaktive Zentren"
 
-#: organisations/views/__init__.py:268
+#: organisations/views/__init__.py:284
 msgid "Select My Centers"
 msgstr "Meine Zentren"
 

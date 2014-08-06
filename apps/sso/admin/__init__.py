@@ -12,8 +12,8 @@ from sso.accounts.models import *
 from sso.organisations import models as org_models
 from sso.organisations import admin as org_admin
 
-from sso.emails.models import Email, EmailForward, EmailAlias
-from sso.emails.admin import EmailAdmin, EmailAliasAdmin, EmailForwardAdmin
+from sso.emails.models import Email, EmailForward, EmailAlias, GroupEmail, GroupEmailManager
+from sso.emails.admin import EmailAdmin, EmailAliasAdmin, EmailForwardAdmin, GroupEmailAdmin, GroupEmailManagerAdmin
 
 from l10n.admin import *
 from streaming.admin import *
@@ -56,3 +56,5 @@ sso_admin_site.register(org_models.CountryGroup, org_admin.CountryGroupAdmin)
 sso_admin_site.register(Email, EmailAdmin)
 sso_admin_site.register(EmailAlias, EmailAliasAdmin)
 sso_admin_site.register(EmailForward, EmailForwardAdmin)
+sso_admin_site.register(GroupEmail, GroupEmailAdmin)
+sso_admin_site.register(GroupEmailManager, GroupEmailManagerAdmin)

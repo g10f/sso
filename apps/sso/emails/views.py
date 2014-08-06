@@ -7,9 +7,9 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import DeleteView, DetailView, CreateView
 from sso.views import main
-from sso.emails.models import Email, EmailForward, EmailAlias, GroupEmail, GroupEmailAdmin, PERM_EVERYBODY  # , PERM_DWB, PERM_VIP_DWB
-from sso.views.generic import FormsetsUpdateView, ListView, ViewChoicesFilter, SearchFilter
-from sso.emails.forms import EmailAliasInlineForm, GroupEmailForm, EmailAdminInlineForm, EmailForwardForm
+from sso.emails.models import Email, EmailForward, EmailAlias, GroupEmail, GroupEmailManager, PERM_EVERYBODY  # , PERM_DWB, PERM_VIP_DWB
+from sso.views.generic import FormsetsUpdateView, ListView, ViewChoicesFilter, SearchFilter, ViewButtonFilter
+from sso.emails.forms import EmailAliasInlineForm, GroupEmailForm, EmailManagerInlineForm, EmailForwardForm
 from sso.forms.helpers import get_optional_inline_formset
 
 import logging
@@ -100,7 +100,7 @@ class GroupEmailUpdateView(GroupEmailBaseView, FormsetsUpdateView):
     def get_formsets(self):
         formsets = []
         admin_inline_formset = get_optional_inline_formset(self.request, self.object, parent_model=GroupEmail, 
-                                                           model=GroupEmailAdmin, form=EmailAdminInlineForm, max_num=10)
+                                                           model=GroupEmailManager, form=EmailManagerInlineForm, max_num=10)
         email_alias_inline_formset = get_optional_inline_formset(self.request, self.object.email, Email, 
                                                                  model=EmailAlias, form=EmailAliasInlineForm, max_num=6)
         
@@ -126,6 +126,21 @@ class EmailSearchFilter(SearchFilter):
     search_names = ['email__name__icontains', 'email__email__icontains']
 
 
+class MyGroupEmailsFilter(ViewButtonFilter):
+    name = 'my_emails'
+    select_text = _('Select My Group Emails')
+    
+    def apply(self, view, qs, default=''):
+        if not view.request.user.has_perms(["emails.change_groupemail"]):
+            value = self.get_value_from_query_param(view, default)
+            if value:
+                qs = qs.filter(groupemailmanager__manager=view.request.user)
+            setattr(view, self.name, value)
+            return qs
+        else:
+            return qs
+
+
 class GroupEmailList(ListView):
     template_name = 'emails/groupemail_list.html'
     model = GroupEmail
@@ -141,13 +156,14 @@ class GroupEmailList(ListView):
         be a queryset (in which qs-specific behavior will be enabled).
         """
         user = self.request.user
-        qs = super(GroupEmailList, self).get_queryset()
+        qs = super(GroupEmailList, self).get_queryset().select_related()
         if not user.has_perms(["emails.change_groupemail"]):
-            qs = qs.filter(Q(email__is_active=True) & (Q(groupemailadmin__user=user) | Q(email__permission=PERM_EVERYBODY)))          
+            qs = qs.filter(Q(email__is_active=True) & (Q(groupemailmanager__manager=user) | Q(email__permission=PERM_EVERYBODY)))          
             
         self.cl = main.ChangeList(self.request, self.model, self.list_display, default_ordering=['email'])
         
         # apply filters
+        qs = MyGroupEmailsFilter().apply(self, qs) 
         qs = EmailSearchFilter().apply(self, qs)  
         qs = PermissionFilter().apply(self, qs)
         
@@ -164,6 +180,7 @@ class GroupEmailList(ListView):
                 num_sorted_fields += 1
         
         filters = []
+        filters += [MyGroupEmailsFilter().get(self)]
         if self.request.user.has_perms(["emails.change_groupemail"]):
             filters += [PermissionFilter().get(self)]
         

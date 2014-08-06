@@ -24,7 +24,7 @@ from l10n.models import Country
 from sso.fields import UUIDField
 from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary
 from sso.organisations.models import AdminRegion, Organisation
-from sso.emails.models import GroupEmailAdmin
+from sso.emails.models import GroupEmailManager
 from sso.decorators import memoize
 from utils.loaddata import disable_for_loaddata
 from current_user.models import CurrentUserField
@@ -480,13 +480,13 @@ class User(AbstractUser):
 
     @property
     def is_groupemail_admin(self):
-        if self.has_perm('emails.change_groupemail') or GroupEmailAdmin.objects.filter(user=self).exists():
+        if self.has_perm('emails.change_groupemail') or GroupEmailManager.objects.filter(manager=self).exists():
             return True
         else:
             return False 
 
     def has_groupemail_access(self, uuid):
-        if self.has_perm('emails.change_groupemail') or GroupEmailAdmin.objects.filter(group_email__uuid=uuid, user=self).exists():
+        if self.has_perm('emails.change_groupemail') or GroupEmailManager.objects.filter(group_email__uuid=uuid, manager=self).exists():
             return True
         else:
             return False 
