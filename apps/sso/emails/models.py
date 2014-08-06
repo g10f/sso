@@ -29,7 +29,7 @@ class Email(AbstractBaseModel):
         (COUNTRY_GROUP_EMAIL_TYPE, _('Country group')),
         (PERSON_EMAIL_TYPE, _('Person')),
         (GROUP_EMAIL_TYPE, _('Group')),
-        (CLOSED_GROUP_EMAIL_TYPE, _('Closed Group')),
+        # (CLOSED_GROUP_EMAIL_TYPE, _('Closed Group')),
     )
     PERMISSION_CHOICES = (
         (PERM_EVERYBODY, _('Everybody')),
@@ -97,14 +97,23 @@ class GroupEmail(AbstractBaseModel):
     homepage = models.URLField(_("homepage"), blank=True)
     email = models.ForeignKey(Email, verbose_name=_("email address"), unique=True, limit_choices_to={'email_type': GROUP_EMAIL_TYPE})
 
+    class Meta(AbstractBaseModel.Meta):
+        verbose_name = _('group email')
+        verbose_name_plural = _('group emails')
+
     @models.permalink
     def get_absolute_url(self):
         return ('emails:groupemail_detail', (), {'uuid': self.uuid, })
 
+    def __unicode__(self):
+        return u"%s" % self.email
 
-class GroupEmailAdmin(models.Model):
+
+class GroupEmailManager(models.Model):
     group_email = models.ForeignKey(GroupEmail, verbose_name=_("group email"))
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    manager = models.ForeignKey(settings.AUTH_USER_MODEL)
 
     class Meta:
-        unique_together = (("group_email", "user"),)
+        unique_together = (("group_email", "manager"),)
+        verbose_name = _('group email manager')
+        verbose_name_plural = _('group email managers')

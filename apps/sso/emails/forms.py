@@ -2,7 +2,7 @@
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django import forms
 from django.contrib.auth import get_user_model
-from sso.emails.models import EmailForward, EmailAlias, GroupEmail, GroupEmailAdmin, Email, GROUP_EMAIL_TYPE
+from sso.emails.models import EmailForward, EmailAlias, GroupEmail, GroupEmailManager, Email, GROUP_EMAIL_TYPE
 from sso.forms.fields import EmailFieldLower
 from sso.forms import bootstrap, BaseForm, BaseTabularInlineForm
 from django.utils.translation import ugettext_lazy as _
@@ -56,41 +56,41 @@ class EmailAliasInlineForm(BaseTabularInlineForm):
         fields = ('alias', ) 
 
 
-class EmailAdminInlineForm(BaseTabularInlineForm):
+class EmailManagerInlineForm(BaseTabularInlineForm):
     """
     inline form for the adminstrating the admins
     """
-    user_email = forms.CharField(max_length=254, label=_('Email'), widget=bootstrap.TextInput(attrs={'size': 50}))
+    manager_email = forms.CharField(max_length=254, label=_('Email'), widget=bootstrap.TextInput(attrs={'size': 50}))
     name = bootstrap.ReadOnlyField(label=_('Name'), initial='')
     
     class Meta:
-        model = GroupEmailAdmin
+        model = GroupEmailManager
         fields = ()
 
     def __init__(self, *args, **kwargs):
-        super(EmailAdminInlineForm, self).__init__(*args, **kwargs)
+        super(EmailManagerInlineForm, self).__init__(*args, **kwargs)
         try:
-            user = self.instance.user
-            self.fields['user_email'].initial = user.email
-            self.fields['name'].initial = u"%s %s" % (user.first_name, user.last_name)
+            manager = self.instance.manager
+            self.fields['manager_email'].initial = manager.email
+            self.fields['name'].initial = u"%s %s" % (manager.first_name, manager.last_name)
         except ObjectDoesNotExist:
             pass
 
-    def clean_user_email(self):
-        user_email = self.cleaned_data['user_email']
-        if not get_user_model().objects.filter(email=user_email).exists():
+    def clean_manager_email(self):
+        manager_email = self.cleaned_data['manager_email']
+        if not get_user_model().objects.filter(email=manager_email).exists():
             msg = _('The user does not exists')
             raise ValidationError(msg)
             
-        return user_email
+        return manager_email
 
     def save(self, commit=True):
-        if 'user_email' in self.changed_data:
-            user_email = self.cleaned_data['user_email']
-            user = get_user_model().objects.get(email=user_email)
-            self.instance.user = user
+        if 'manager_email' in self.changed_data:
+            manager_email = self.cleaned_data['manager_email']
+            manager = get_user_model().objects.get(email=manager_email)
+            self.instance.manager = manager
 
-        instance = super(EmailAdminInlineForm, self).save(commit)
+        instance = super(EmailManagerInlineForm, self).save(commit)
                 
         return instance
 
