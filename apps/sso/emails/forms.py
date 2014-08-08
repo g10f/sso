@@ -96,7 +96,7 @@ class EmailManagerInlineForm(BaseTabularInlineForm):
 
 
 class GroupEmailForm(BaseForm):    
-    email_value = EmailFieldLower(required=True, label=_("Email address"), widget=bootstrap.EmailInput(attrs={'placeholder': 'name@diamondway-center.org'}))
+    email_value = EmailFieldLower(required=True, label=_("Email address"), widget=bootstrap.EmailInput())
     name = forms.CharField(max_length=254, label=_("Name"), widget=bootstrap.TextInput(attrs={'size': 50}))
     permission = forms.ChoiceField(label=_('Permission'), choices=Email.PERMISSION_CHOICES, widget=bootstrap.Select())
     
