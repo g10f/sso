@@ -2,7 +2,7 @@
 {% load i18n admin_static %}
 {% load thumbnail %}
 
-{% block title %}{% trans 'Group Email Update' %}{% endblock %}
+{% block title %}{% trans 'Email Update' %}{% endblock %}
 
 {% block extrascript %}{{ media }}{% endblock extrascript %}
 
@@ -10,9 +10,9 @@
 {% block breadcrumb %}
 <ol class="breadcrumb">
     <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'emails:groupemail_list' %}">{% trans 'Group Emails' %}</a></li>
-    <li><a href="{% url 'emails:groupemail_detail' object.uuid %}">{{ object.email.name }}</a></li>
-    <li class="active">{% trans 'Update Group Email' %}</li>
+    <li><a href="{% url 'emails:groupemail_list' %}">{% trans 'Emails' %}</a></li>
+    <li><a href="{% url 'emails:groupemail_detail' object.uuid %}">{{ object.name }}</a></li>
+    <li class="active">{% trans 'Update Email' %}</li>
 </ol> 
 {% endblock breadcrumb %}
 
@@ -24,7 +24,7 @@
     {% endfor %}    
     
     <div class="">
-        <h3>{{ object.email.name }} {% trans 'Group Email' %}</h3>
+        <h3>{{ object.name }} {% trans 'Email' %}</h3>
 
         {% if messages %}{% for message in messages %}
         <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
@@ -39,7 +39,7 @@
     </div>
 
      <ul class="nav nav-tabs dwbn-nav-tabs" id="myTab">
-       <li class="{% if not active or active == "object" %}active{% endif %}" ><a data-toggle="tab" href="#object">{% trans 'Group Email Data' %}</a></li>
+       <li class="{% if not active or active == "object" %}active{% endif %}" ><a data-toggle="tab" href="#object">{% trans 'Email Data' %}</a></li>
        {% for formset in formsets %}
        <li class="{% if active == formset.prefix %}active{% endif %}"><a data-toggle="tab" href="#{{ formset.prefix }}">{{ formset.form.opts.verbose_name_plural|title }}</a></li>
        {% endfor %}

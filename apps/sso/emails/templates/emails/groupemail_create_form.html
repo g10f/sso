@@ -1,7 +1,7 @@
 {% extends "emails/groupemail_form.html" %}
 {% load i18n %}
 
-{% block title %}{% trans 'Add Group Email' %}{% endblock %}
+{% block title %}{% trans 'Add Email' %}{% endblock %}
 
 {% block extrascript %}{{ form.media }}{% endblock extrascript %}
 
@@ -10,8 +10,8 @@
 {% block breadcrumb %}
 <ol class="breadcrumb">
     <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'emails:groupemail_list' %}">{% trans 'Group Emails' %}</a></li>
-    <li class="active">{% trans 'Add Group Email' %}</li>
+    <li><a href="{% url 'emails:groupemail_list' %}">{% trans 'Emails' %}</a></li>
+    <li class="active">{% trans 'Add Email' %}</li>
 </ol> 
 {% endblock breadcrumb %}
 

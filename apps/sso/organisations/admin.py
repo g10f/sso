@@ -51,8 +51,8 @@ class CountryGroupAdmin(admin.ModelAdmin):
 
 
 class OrganisationCountryAdmin(admin.ModelAdmin):
-    list_select_related = ('country', )
-    list_display = ('country', 'homepage', 'last_modified')
+    list_select_related = ('country', 'email')
+    list_display = ('country', 'homepage', 'email', 'last_modified')
     list_filter = ('country__continent', 'country__active', 'country_groups')
     filter_horizontal = ('country_groups', )
     date_hierarchy = 'last_modified'
@@ -109,13 +109,13 @@ class OrganisationAdmin(admin.ModelAdmin):
     inlines = [PhoneNumber_Inline, Address_Inline]
     readonly_fields = ['uuid', 'last_modified', 'google_maps_link']
     date_hierarchy = 'founded'
-    list_filter = ('is_active', 'is_private', 'admin_region', 'country__continent', CountryListFilter, 'center_type',
+    list_filter = ('is_active', 'is_private', 'coordinates_type', 'admin_region', 'country__continent', CountryListFilter, 'center_type',
                    'organisationaddress__address_type', 'organisationphonenumber__phone_type')
     list_display = ('id', 'name', 'email', 'last_modified', 'homepage_link', 'google_maps_link', )
     fieldsets = [
         (None,
          {'fields':
-          ['uuid', 'centerid', 'name', 'center_type', 'country', 'admin_region', 'founded', ('latitude', 'longitude', 'google_maps_link'),
+          ['uuid', 'centerid', 'name', 'center_type', 'country', 'admin_region', 'founded', ('coordinates_type', 'latitude', 'longitude', 'google_maps_link'),
            'email', 'homepage', 'is_active', 'is_private', 'last_modified'], 
           'classes': ['wide', 'wide_ex']}),
         (_('notes'),
