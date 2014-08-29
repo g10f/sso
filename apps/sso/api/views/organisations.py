@@ -29,7 +29,7 @@ class OrganisationMixin(object):
         }
         if not obj.is_private:
             if obj.latitude and obj.longitude:
-                data['location'] = {'geo': {'latitude': obj.latitude, 'longitude': obj.longitude}},
+                data['location'] = {'geo': {'latitude': obj.latitude, 'longitude': obj.longitude}}
             
         if details:
             if not obj.is_private:

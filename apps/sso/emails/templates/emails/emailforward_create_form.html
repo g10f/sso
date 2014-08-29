@@ -10,8 +10,8 @@
 {% block breadcrumb %}
 <ol class="breadcrumb">
     <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'emails:groupemail_list' %}">{% trans 'Group Emails' %}</a></li>
-    <li><a href="{% url 'emails:groupemail_detail' uuid %}">{{ form.initial.email.name }}</a></li>
+    <li><a href="{% url 'emails:groupemail_list' %}">{% trans 'Emails' %}</a></li>
+    <li><a href="{% url 'emails:groupemail_detail' uuid %}">{{ form.initial.email.groupemail_set.first.name }}</a></li>
     <li class="active">{% trans 'Add email forwarding' %}</li>
 </ol> 
 {% endblock breadcrumb %}

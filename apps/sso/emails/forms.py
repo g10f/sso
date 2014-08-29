@@ -2,10 +2,10 @@
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django import forms
 from django.contrib.auth import get_user_model
-from sso.emails.models import EmailForward, EmailAlias, GroupEmail, GroupEmailManager, Email, GROUP_EMAIL_TYPE
+from django.utils.translation import ugettext_lazy as _
 from sso.forms.fields import EmailFieldLower
 from sso.forms import bootstrap, BaseForm, BaseTabularInlineForm
-from django.utils.translation import ugettext_lazy as _
+from sso.emails.models import EmailForward, EmailAlias, GroupEmail, GroupEmailManager, Email, GROUP_EMAIL_TYPE
 
 
 class EmailForwardForm(BaseForm):
@@ -97,25 +97,26 @@ class EmailManagerInlineForm(BaseTabularInlineForm):
 
 class GroupEmailForm(BaseForm):    
     email_value = EmailFieldLower(required=True, label=_("Email address"), widget=bootstrap.EmailInput())
-    name = forms.CharField(max_length=254, label=_("Name"), widget=bootstrap.TextInput(attrs={'size': 50}))
     permission = forms.ChoiceField(label=_('Permission'), choices=Email.PERMISSION_CHOICES, widget=bootstrap.Select())
+    is_active = forms.BooleanField(required=False, label=_("Active"), widget=bootstrap.CheckboxInput())
     
     class Meta:
         model = GroupEmail
-        fields = ['homepage']
+        fields = ['homepage', 'name', 'is_guide_email']
         widgets = {
             'homepage': bootstrap.TextInput(attrs={'size': 50}),
+            'name': bootstrap.TextInput(attrs={'size': 50}),
         }
         
     def __init__(self, *args, **kwargs):
         super(GroupEmailForm, self).__init__(*args, **kwargs)
         try:
             email = self.instance.email
+            self.fields['is_active'].initial = email.is_active
             self.fields['email_value'].initial = str(email)
             self.fields['permission'].initial = email.permission
-            self.fields['name'].initial = email.name
         except ObjectDoesNotExist:
-            pass
+            self.fields['is_active'].initial = True
         
     def clean_email_value(self):
         """
@@ -130,7 +131,7 @@ class GroupEmailForm(BaseForm):
 
     def save(self, commit=True):
         cd = self.changed_data
-        if 'email_value' in cd or 'name' in cd or 'permission' in cd:
+        if 'email_value' in cd or 'permission' in cd or 'is_active' in cd:
             created = False 
             try:
                 email = self.instance.email
@@ -138,8 +139,8 @@ class GroupEmailForm(BaseForm):
                 email = Email(email_type=GROUP_EMAIL_TYPE)
                 created = True
             
+            email.is_active = self.cleaned_data['is_active']
             email.email = self.cleaned_data['email_value']
-            email.name = self.cleaned_data['name']
             email.permission = self.cleaned_data['permission']
             email.save()
             if created:

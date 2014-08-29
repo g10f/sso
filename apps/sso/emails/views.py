@@ -7,10 +7,10 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import DeleteView, DetailView, CreateView
 from sso.views import main
-from sso.emails.models import Email, EmailForward, EmailAlias, GroupEmail, GroupEmailManager, PERM_EVERYBODY  # , PERM_DWB, PERM_VIP_DWB
 from sso.views.generic import FormsetsUpdateView, ListView, ViewChoicesFilter, SearchFilter, ViewButtonFilter
-from sso.emails.forms import EmailAliasInlineForm, GroupEmailForm, EmailManagerInlineForm, EmailForwardForm
 from sso.forms.helpers import get_optional_inline_formset
+from sso.emails.models import Email, EmailForward, EmailAlias, GroupEmail, GroupEmailManager, PERM_EVERYBODY  # , PERM_DWB, PERM_VIP_DWB
+from sso.emails.forms import EmailAliasInlineForm, GroupEmailForm, EmailManagerInlineForm, EmailForwardForm
 
 import logging
 logger = logging.getLogger(__name__)
@@ -123,12 +123,12 @@ class PermissionFilter(ViewChoicesFilter):
 
 
 class EmailSearchFilter(SearchFilter):
-    search_names = ['email__name__icontains', 'email__email__icontains']
+    search_names = ['name__icontains', 'email__email__icontains']
 
 
 class MyGroupEmailsFilter(ViewButtonFilter):
     name = 'my_emails'
-    select_text = _('Select My Group Emails')
+    select_text = _('Select My Emails')
     
     def apply(self, view, qs, default=''):
         if not view.request.user.has_perms(["emails.change_groupemail"]):
@@ -139,6 +139,16 @@ class MyGroupEmailsFilter(ViewButtonFilter):
             return qs
         else:
             return qs
+
+
+class IsActiveFilter(ViewChoicesFilter):
+    name = 'email__is_active'
+    choices = (('1', _('Active emails')), ('2', _('Inactive emails')))  
+    select_text = _('Select active/inactive')
+    select_all_text = _("All")
+    
+    def map_to_database(self, value):
+        return True if (value.pk == "1") else False
 
 
 class GroupEmailList(ListView):
@@ -166,7 +176,7 @@ class GroupEmailList(ListView):
         qs = MyGroupEmailsFilter().apply(self, qs) 
         qs = EmailSearchFilter().apply(self, qs)  
         qs = PermissionFilter().apply(self, qs)
-        
+        qs = IsActiveFilter().apply(self, qs)
         # Set ordering.
         ordering = self.cl.get_ordering(self.request, qs)
         qs = qs.order_by(*ordering)
@@ -183,6 +193,7 @@ class GroupEmailList(ListView):
         filters += [MyGroupEmailsFilter().get(self)]
         if self.request.user.has_perms(["emails.change_groupemail"]):
             filters += [PermissionFilter().get(self)]
+        filters.append(IsActiveFilter().get(self))
         
         context = {
             'result_headers': headers,

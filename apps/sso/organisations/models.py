@@ -5,10 +5,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import pgettext_lazy, ugettext_lazy as _
 from django.contrib.auth import get_user_model
 from l10n.models import Country
-from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary
-from sso.emails.models import Email, CENTER_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, REGION_EMAIL_TYPE, COUNTRY_GROUP_EMAIL_TYPE
 from smart_selects.db_fields import ChainedForeignKey
 from utils.loaddata import disable_for_loaddata
+from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary
+from sso.emails.models import Email, CENTER_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, REGION_EMAIL_TYPE, COUNTRY_GROUP_EMAIL_TYPE
 
 import logging
 
@@ -27,13 +27,14 @@ class CountryGroup(AbstractBaseModel):
 
     def __unicode__(self):
         return u"%s" % (self.name)
-    
-    
+
+
 class OrganisationCountry(AbstractBaseModel):
     country = models.OneToOneField(Country, verbose_name=_("country"), null=True, limit_choices_to={'active': True})
-    country_groups = models.ManyToManyField(CountryGroup, default="088620a08cf942deb88a5e31ebc8c7c8", blank=True, null=True)
+    country_groups = models.ManyToManyField(CountryGroup, blank=True, null=True)
     homepage = models.URLField(_("homepage"), blank=True,)
-    email = models.ForeignKey(Email, verbose_name=_("email address"), blank=True, null=True, limit_choices_to={'email_type': COUNTRY_EMAIL_TYPE})
+    email = models.ForeignKey(Email, verbose_name=_("email address"), blank=True, null=True, limit_choices_to={'email_type': COUNTRY_EMAIL_TYPE},
+                              on_delete=models.SET_NULL)
     is_active = models.BooleanField(_('active'), default=True, help_text=_('Designates whether this country should be treated as '
                                                                            'active. Unselect this instead of deleting the country.'))
 
@@ -69,7 +70,8 @@ class AdminRegion(AbstractBaseModel, ExtraManager):
     name = models.CharField(_("name"), max_length=255)
     homepage = models.URLField(_("homepage"), blank=True)
     country = models.ForeignKey(Country, verbose_name=_("country"), limit_choices_to={'active': True})
-    email = models.ForeignKey(Email, verbose_name=_("email address"), blank=True, null=True, unique=True, limit_choices_to={'email_type': REGION_EMAIL_TYPE})
+    email = models.ForeignKey(Email, verbose_name=_("email address"), blank=True, null=True, unique=True, limit_choices_to={'email_type': REGION_EMAIL_TYPE},
+                              on_delete=models.SET_NULL)
     is_active = models.BooleanField(_('active'), default=True, help_text=_('Designates whether this region should be treated as '
                                                                            'active. Unselect this instead of deleting the region.'))
     
@@ -94,6 +96,13 @@ class Organisation(AbstractBaseModel):
         ('7', _('Buddhist Center & Retreat')),            
         ('16', _('Buddhist Group & Retreat')),            
     )
+    COORDINATES_TYPE_CHOICES = (
+        ('1', _('Unknown')),
+        ('2', _('City/Village')),
+        ('3', _('Exact')),
+        ('4', _('Nearby')),
+        # ('5', _('Others')) is not included in legacy data and seems to be redundent 
+    )
     _center_type_choices = {}
     for choice in CENTER_TYPE_CHOICES:
         _center_type_choices[choice[0]] = choice[1]
@@ -107,12 +116,14 @@ class Organisation(AbstractBaseModel):
                                      limit_choices_to={'is_active': True}) 
     # country = models.ForeignKey(Country, verbose_name=_("country"), null=True)
     # email = models.EmailField(_('email address'))
-    email = models.ForeignKey(Email, verbose_name=_("email address"), blank=True, null=True, limit_choices_to={'email_type': CENTER_EMAIL_TYPE})
+    email = models.ForeignKey(Email, verbose_name=_("email address"), blank=True, null=True, limit_choices_to={'email_type': CENTER_EMAIL_TYPE},
+                              on_delete=models.SET_NULL)
     homepage = models.URLField(_("homepage"), blank=True,)
     notes = models.TextField(_('notes'), blank=True, max_length=255)
     center_type = models.CharField(_('center type'), max_length=2, choices=CENTER_TYPE_CHOICES, db_index=True)    
     centerid = models.IntegerField(blank=True, null=True)
     founded = models.DateField(_("founded"), blank=True, null=True)
+    coordinates_type = models.CharField(_('coordinates type'), max_length=1, choices=COORDINATES_TYPE_CHOICES, default='3', db_index=True)    
     latitude = models.DecimalField(_("latitude"), max_digits=9, decimal_places=6, blank=True, null=True)
     longitude = models.DecimalField(_("longitude"), max_digits=9, decimal_places=6, blank=True, null=True)
     is_active = models.BooleanField(_('active'), 

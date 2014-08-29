@@ -37,7 +37,7 @@ class Email(AbstractBaseModel):
         (PERM_VIP, _('VIP')),
         (PERM_VIP_DWB, _('VIP + Diamondway Buddhism')),
     )
-    name = models.CharField(_("name"), max_length=255, blank=True)    
+    # name = models.CharField(_("name"), max_length=255, blank=True)    
     email_type = models.CharField(_('email type'), max_length=20, choices=EMAIL_TYPE_CHOICES, db_index=True)
     permission = models.CharField(_('access control'), max_length=20, choices=PERMISSION_CHOICES, db_index=True, default=PERM_EVERYBODY)
     email = models.EmailField(_('email address'), unique=True, max_length=254)
@@ -94,9 +94,13 @@ class EmailAlias(AbstractBaseModel):
 
 
 class GroupEmail(AbstractBaseModel):
-    homepage = models.URLField(_("homepage"), blank=True)
+    name = models.CharField(_("name"), blank=True, default='', max_length=255)
     email = models.ForeignKey(Email, verbose_name=_("email address"), unique=True, limit_choices_to={'email_type': GROUP_EMAIL_TYPE})
-
+    homepage = models.URLField(_("homepage"), blank=True, default='')
+    is_guide_email = models.BooleanField(_('guide email'), default=False)
+    is_active = models.BooleanField(_('active'), default=True, help_text=_('Designates whether this email should be treated as '
+                                                                           'active. Unselect this instead of deleting the email.'))
+    
     class Meta(AbstractBaseModel.Meta):
         verbose_name = _('group email')
         verbose_name_plural = _('group emails')

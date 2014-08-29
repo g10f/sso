@@ -5,7 +5,7 @@
     {% endif %}
 
     {% if user.is_groupemail_admin %}
-    <a class="list-group-item" href="{% url 'emails:groupemail_list' %}"><i class="glyphicon glyphicon-list"></i> {% trans 'Group Emails' %}</a>
+    <a class="list-group-item" href="{% url 'emails:groupemail_list' %}"><i class="glyphicon glyphicon-list"></i> {% trans 'Emails' %}</a>
     {% endif %}
 
     {% if perms.organisations.change_organisationcountry %}
@@ -29,7 +29,7 @@
     {% endif %}
     
     {% if perms.emails.add_groupemail %}
-    <a class="list-group-item {% if active_navigation == "groupemail_create" %}active{% endif %}" href="{% url 'emails:groupemail_create' %}"><i class="glyphicon glyphicon-plus-sign"></i> {% trans 'Add Group Email' %}</a>
+    <a class="list-group-item {% if active_navigation == "groupemail_create" %}active{% endif %}" href="{% url 'emails:groupemail_create' %}"><i class="glyphicon glyphicon-plus-sign"></i> {% trans 'Add Email' %}</a>
     {% endif %}
 
     {% if perms.organisations.add_organisationcountry %}

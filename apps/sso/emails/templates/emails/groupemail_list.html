@@ -1,14 +1,14 @@
 {% extends 'base_site.html' %}
 {% load i18n list tz static %}
 
-{% block title %}{% trans 'Group Emails' %}{% endblock %}
+{% block title %}{% trans 'Emails' %}{% endblock %}
 
 {% block nav_organisations_region_list_class %}active{% endblock %}
 
 {% block breadcrumb %}
 <ol class="breadcrumb">
     <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li class="active">{% trans 'Group Emails' %}</li>
+    <li class="active">{% trans 'Emails' %}</li>
 </ol> 
 {% endblock breadcrumb %}
     
@@ -41,7 +41,7 @@
 	       <tbody>
 	           {% for object in object_list %}
 	           <tr> 
-	               <td><a href="{% url 'emails:groupemail_detail' object.uuid %}">{{ object.email.name }}</a></td>
+	               <td><a href="{% url 'emails:groupemail_detail' object.uuid %}">{{ object.name }}</a></td>
 	               <td>{{ object.email|default_if_none:"" }}</td>
 	               <td>{% if object.homepage %}<a href="{{ object.homepage }}">{{ object.homepage }}</a>{% endif %}</td>
                    <td>{{ object.email.get_permission_display }}</td>

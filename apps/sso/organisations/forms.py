@@ -2,11 +2,11 @@
 import datetime
 from django.utils.translation import ugettext_lazy as _
 from django.forms import ModelChoiceField, ModelMultipleChoiceField, ValidationError
-from sso.forms import bootstrap, BaseForm, BaseTabularInlineForm
-from .models import OrganisationPhoneNumber, OrganisationAddress, Organisation, AdminRegion, OrganisationCountry, CountryGroup
-from sso.emails.models import Email, EmailForward, CENTER_EMAIL_TYPE, REGION_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, PERM_EVERYBODY, PERM_DWB
-from sso.forms.fields import EmailFieldLower
 from l10n.models import Country 
+from sso.forms import bootstrap, BaseForm, BaseTabularInlineForm
+from sso.forms.fields import EmailFieldLower
+from sso.emails.models import Email, EmailForward, CENTER_EMAIL_TYPE, REGION_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, PERM_EVERYBODY, PERM_DWB
+from .models import OrganisationPhoneNumber, OrganisationAddress, Organisation, AdminRegion, OrganisationCountry, CountryGroup
 
 
 class OrganisationAddressForm(BaseForm):
@@ -46,13 +46,14 @@ class OrganisationBaseForm(BaseForm):
     class Meta:
         model = Organisation
         
-        fields = ('homepage', 'founded', 'latitude', 'longitude', 'is_private')
+        fields = ('homepage', 'founded', 'coordinates_type', 'latitude', 'longitude', 'is_private')
         years_to_display = range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1)
         widgets = {
             'homepage': bootstrap.TextInput(attrs={'size': 50}),
             'country': bootstrap.Select(),
             'name': bootstrap.TextInput(attrs={'size': 50}), 
             'founded': bootstrap.SelectDateWidget(years=years_to_display, required=False),
+            'coordinates_type': bootstrap.Select(),
             'latitude': bootstrap.TextInput(attrs={'size': 50}),
             'longitude': bootstrap.TextInput(attrs={'size': 50}),
             'center_type': bootstrap.Select(),
@@ -322,8 +323,6 @@ class OrganisationCountryForm(BaseForm):
             # readonly field for the update form
             self.fields['country_text'] = bootstrap.ReadOnlyField(initial=str(self.instance.country), label=_("Country"))
             del self.fields['country']
-        if not self.instance.pk:  # create form
-            self.fields['country_groups'].initial = CountryGroup.objects.filter(uuid="088620a08cf942deb88a5e31ebc8c7c8")
             
     def clean_email_value(self):
         """
