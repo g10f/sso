@@ -14,3 +14,4 @@ sorl-thumbnail
 pillow
 django-recaptcha
 pytz
+geopy

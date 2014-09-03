@@ -47,7 +47,7 @@ DEFAULT_FROM_EMAIL = 'webmaster@g10f.de'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',  # 'django.db.backends.postgresql_psycopg2',
         'NAME': 'sso',
         'USER': 'sso',
         'PASSWORD': 'sso',
@@ -137,6 +137,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.formtools',
     'django.contrib.admin',
+    'django.contrib.gis',
     'sorl.thumbnail',
     'captcha',
     'passwords',
@@ -310,14 +311,14 @@ except:
     SECRET_KEY = '&+!e83r6z$#s(^l^0im#+*7y0s%1#kz%b3qfief)%msrzid-_n'
     CERTS = {
         'default': {
-        'uuid': 'f1aafae7b7764055926078b32fe81e5b',
-        'public_key': """-----BEGIN PUBLIC KEY-----
+            'uuid': 'f1aafae7b7764055926078b32fe81e5b',
+            'public_key': """-----BEGIN PUBLIC KEY-----
 MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC6B4KKFYlfMCM236RqBAs7pR+6
 TtyYicTRJv/amdUSWC3LwMkZhneFx/NflaRR24DwLjoYAiVoNDFn7NEfUCyqzo0u
 6daXmT95axOl7xUCpIC6TJB4kg5sZXiatvAmYURGIDC9DvbDcfpj0mAd4iVqpggw
 F1xFEy/YPkMMHSqQ4wIDAQAB
 -----END PUBLIC KEY-----""",
-        'private_key': """-----BEGIN PRIVATE KEY-----
+            'private_key': """-----BEGIN PRIVATE KEY-----
 MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBALoHgooViV8wIzbf
 pGoECzulH7pO3JiJxNEm/9qZ1RJYLcvAyRmGd4XH81+VpFHbgPAuOhgCJWg0MWfs
 0R9QLKrOjS7p1peZP3lrE6XvFQKkgLpMkHiSDmxleJq28CZhREYgML0O9sNx+mPS
@@ -333,7 +334,7 @@ uQXS2auZqpo405wiWJxgxRl+9CKRbKVmmjUiwAXZ4bBk9RQHgCjdAkEAxBosr42t
 0f4HxvKywdHMBvDqDzUulOmiEYFBi2D3iCXhJywTIeTTy1wdY5L+KciRvoAujrjJ
 71Ejrx9zYuIiEQ==
 -----END PRIVATE KEY-----""",
-        'certificate': """-----BEGIN CERTIFICATE-----
+            'certificate': """-----BEGIN CERTIFICATE-----
 MIIB7DCCAVWgAwIBAgIRALPILBkCAk5ikXGBjE2OcTEwDQYJKoZIhvcNAQEFBQAw
 FzEVMBMGA1UEAxMMc3NvLmR3Ym4ub3JnMB4XDTEzMDUwNTA5MTExMloXDTE0MDUw
 NTA5MTExMlowFzEVMBMGA1UEAxMMc3NvLmR3Ym4ub3JnMIGfMA0GCSqGSIb3DQEB

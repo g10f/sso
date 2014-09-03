@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.contrib import admin
+from django.contrib.gis import admin as gis_admin
 from django.contrib.admin import SimpleListFilter
 from django.utils.translation import ugettext_lazy as _
 from django.conf.urls import *  # @UnusedWildImport
@@ -97,7 +98,7 @@ class PhoneNumber_Inline(admin.TabularInline):
     ]
 
 
-class OrganisationAdmin(admin.ModelAdmin):
+class OrganisationAdmin(gis_admin.OSMGeoAdmin):
     class Media:
         css = {
             "all": ("css/adminstyle.css",)
@@ -116,6 +117,7 @@ class OrganisationAdmin(admin.ModelAdmin):
         (None,
          {'fields':
           ['uuid', 'centerid', 'name', 'center_type', 'country', 'admin_region', 'founded', ('coordinates_type', 'latitude', 'longitude', 'google_maps_link'),
+           'location',
            'email', 'homepage', 'is_active', 'is_private', 'last_modified'], 
           'classes': ['wide', 'wide_ex']}),
         (_('notes'),

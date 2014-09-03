@@ -3,7 +3,7 @@ from django.core.urlresolvers import reverse
 from django.db.models import Q
 from utils.url import base_url
 from utils.parse import parse_datetime_with_timezone_support
-from sso.organisations.models import Organisation
+from sso.organisations.models import Organisation, get_near_organisations
 from sso.api.views.generic import JsonListView, JsonDetailView
 
 import logging
@@ -27,6 +27,11 @@ class OrganisationMixin(object):
             'country': obj.country.iso2_code,
             'last_modified': obj.last_modified,
         }
+        try:
+            # if we have a gis query
+            data['distance'] = "%.1f m" % obj.distance.m
+        except AttributeError:
+            pass
         if not obj.is_private:
             if obj.latitude and obj.longitude:
                 data['location'] = {'geo': {'latitude': obj.latitude, 'longitude': obj.longitude}}
@@ -93,5 +98,22 @@ class OrganisationList(OrganisationMixin, JsonListView):
             if parsed is None:
                 raise ValueError("can not parse %s" % modified_since)
             qs = qs.filter(Q(last_modified__gte=parsed) | Q(organisationaddress__last_modified__gte=parsed) | Q(organisationphonenumber__last_modified__gte=parsed))
+         
+        latlng = self.request.GET.get('latlng', None) 
+        
+        if (latlng):
+            (lat, lng) = tuple(latlng.split(','))
+            from django.contrib.gis import geos
+            dlt = self.request.GET.get('dlt', None)
+            if dlt:
+                dlt = dlt.split()
+                if len(dlt) < 2:
+                    dlt.append('km')
+                distance = {dlt[1]: dlt[0]}
+            else:
+                distance = None
             
+            point = geos.fromstr("POINT(%s %s)" % (lng, lat))
+            qs = get_near_organisations(point, distance, qs)
+
         return qs
