@@ -208,6 +208,7 @@ def createsuperuser(server_name='', virtualenv='sso'):
     
 @task
 def update_debian():
+    # sudo apt-add-repository ppa:ubuntugis/ppa
     fabtools.deb.update_index()
     fabtools.deb.upgrade(safe=False)
     sudo('reboot')
@@ -217,6 +218,11 @@ def deploy_debian():
     require.deb.package('libmysqlclient-dev')
     require.deb.package('libjpeg62')
     require.deb.package('libjpeg62-dev')
+    # Geospatial libraries
+    require.deb.package('binutils')
+    require.deb.package('libproj-dev')
+    require.deb.package('gdal-bin')
+    require.deb.package('postgresql-9.1-postgis-2.0')
     
 def deploy_database(db_name):
     # Require a PostgreSQL server

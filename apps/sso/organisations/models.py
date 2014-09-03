@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.gis.db import models as gis_models
+from django.contrib.gis import measure
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 from django.core.exceptions import ObjectDoesNotExist
@@ -88,6 +90,21 @@ class AdminRegion(AbstractBaseModel, ExtraManager):
         return ('organisations:adminregion_detail', (), {'uuid': self.uuid, })
 
 
+def get_near_organisations(current_point, distance_from_point=None, qs=None):
+    """
+    get all centers with the distance from current_point 
+    where the distance is less than distance_from_point
+    """
+    if qs:
+        organisations = qs
+    else:
+        organisations = Organisation.gis.all()
+    if distance_from_point:
+        organisations = organisations.filter(location__distance_lt=(current_point, measure.D(**distance_from_point)))
+    organisations = organisations.distance(current_point)
+    return organisations.distance(current_point)
+
+
 class Organisation(AbstractBaseModel):
     CENTER_TYPE_CHOICES = (
         ('1', _('Buddhist Center')),
@@ -126,6 +143,7 @@ class Organisation(AbstractBaseModel):
     coordinates_type = models.CharField(_('coordinates type'), max_length=1, choices=COORDINATES_TYPE_CHOICES, default='3', db_index=True)    
     latitude = models.DecimalField(_("latitude"), max_digits=9, decimal_places=6, blank=True, null=True)
     longitude = models.DecimalField(_("longitude"), max_digits=9, decimal_places=6, blank=True, null=True)
+    location = gis_models.PointField(u"longitude/latitude", geography=True, blank=True, null=True)
     is_active = models.BooleanField(_('active'), 
                                     default=True,
                                     help_text=_('Designates whether this buddhist center should be treated as '
@@ -139,6 +157,7 @@ class Organisation(AbstractBaseModel):
                                       default=True)
     # admin_region = models.ForeignKey(AdminRegion, verbose_name=_("admin region"), blank=True, null=True)
     # history = HistoricalRecords()
+    gis = gis_models.GeoManager()
     
     class Meta:
         permissions = (
@@ -154,6 +173,9 @@ class Organisation(AbstractBaseModel):
             return u'%s (%s)' % (self.name, self.country.iso2_code)
         else:
             return u'%s' % self.name
+
+    def get_near_organisations(self):
+        return get_near_organisations(self.location).exclude(pk=self.pk).order_by('distance')[:10]
 
     @models.permalink
     def get_absolute_url(self):

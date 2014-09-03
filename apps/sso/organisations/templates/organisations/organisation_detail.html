@@ -60,6 +60,11 @@
 	{% for phone_number in object.organisationphonenumber_set.all %}
 	<div class="row"><div class="dwbn-label">{{ phone_number.get_phone_type_display }} {% trans 'Phone' %}: </div><div class="dwbn-content">{{ phone_number.phone }}</div></div>
 	{% endfor %}{% endif %}
+	
+    <h4>{% trans 'Nearest Centers' %}</h4>
+	{% for organisation in object.get_near_organisations %}
+    <div class="row"><div class="dwbn-label">{{ organisation.name }}: </div><div class="dwbn-content">{{ organisation.distance.km|floatformat }} km</div></div>
+	{% endfor %} 
     
 </p>
 
