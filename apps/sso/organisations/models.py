@@ -95,6 +95,8 @@ def get_near_organisations(current_point, distance_from_point=None, qs=None):
     get all centers with the distance from current_point 
     where the distance is less than distance_from_point
     """
+    if current_point is None:
+        return Organisation.gis.none()
     if qs:
         organisations = qs
     else:
@@ -102,7 +104,7 @@ def get_near_organisations(current_point, distance_from_point=None, qs=None):
     if distance_from_point:
         organisations = organisations.filter(location__distance_lt=(current_point, measure.D(**distance_from_point)))
     organisations = organisations.distance(current_point)
-    return organisations.distance(current_point)
+    return organisations.distance(current_point).order_by('distance')
 
 
 class Organisation(AbstractBaseModel):
@@ -178,7 +180,7 @@ class Organisation(AbstractBaseModel):
             return u'%s' % self.name
 
     def get_near_organisations(self):
-        return get_near_organisations(self.location).exclude(pk=self.pk).order_by('distance')[:10]
+        return get_near_organisations(self.location).exclude(pk=self.pk)[:10]
 
     @models.permalink
     def get_absolute_url(self):
