@@ -180,6 +180,7 @@ PASSWORD_HASHERS = (
     'sso.auth.hashers.MoinSha1PasswordHasher',
     'sso.auth.hashers.OsCommerceMD5PasswordHasher',
 )
+POSTGIS_VERSION = (2, 0, 3)
 
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/accounts/login/'
