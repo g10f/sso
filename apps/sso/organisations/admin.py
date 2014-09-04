@@ -116,7 +116,7 @@ class OrganisationAdmin(gis_admin.OSMGeoAdmin):
     fieldsets = [
         (None,
          {'fields':
-          ['uuid', 'centerid', 'name', 'center_type', 'country', 'admin_region', 'founded', ('coordinates_type', 'latitude', 'longitude', 'google_maps_link'),
+          ['uuid', 'centerid', 'name', 'center_type', 'country', 'admin_region', 'founded', ('coordinates_type', 'google_maps_link'),
            'location',
            'email', 'homepage', 'is_active', 'is_private', 'last_modified'], 
           'classes': ['wide', 'wide_ex']}),

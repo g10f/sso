@@ -9,7 +9,7 @@ from django.contrib.auth import get_user_model
 from l10n.models import Country
 from smart_selects.db_fields import ChainedForeignKey
 from utils.loaddata import disable_for_loaddata
-from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary
+from sso.models import AbstractBaseModel, AbstractBaseModelManager, AddressMixin, PhoneNumberMixin, ensure_single_primary
 from sso.emails.models import Email, CENTER_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, REGION_EMAIL_TYPE, COUNTRY_GROUP_EMAIL_TYPE
 
 import logging
@@ -157,9 +157,12 @@ class Organisation(AbstractBaseModel):
                                       default=True)
     # admin_region = models.ForeignKey(AdminRegion, verbose_name=_("admin region"), blank=True, null=True)
     # history = HistoricalRecords()
-    gis = gis_models.GeoManager()
     
-    class Meta:
+    # important: first define the default manager (see: django.db.models.manager line 80)
+    objects = AbstractBaseModelManager()
+    gis = gis_models.GeoManager()
+
+    class Meta(AbstractBaseModel.Meta):
         permissions = (
             ("access_all_organisations", "Can access all organisations"),
             # ("read_organisation", "Can read organisation data"),
@@ -183,8 +186,8 @@ class Organisation(AbstractBaseModel):
     
     @property
     def google_maps_url(self):
-        if self.latitude and self.longitude:
-            return "http://maps.google.de/maps?q=%f,+%f&iwloc=A" % (self.latitude, self.longitude)
+        if self.location:
+            return "http://maps.google.de/maps?q=%f,+%f&iwloc=A" % (self.location.y, self.location.x)
         else:
             ""
         

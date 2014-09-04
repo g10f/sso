@@ -29,12 +29,12 @@ class OrganisationMixin(object):
         }
         try:
             # if we have a gis query
-            data['distance'] = "%.1f m" % obj.distance.m
+            data['distance'] = "%.1f km" % obj.distance.km
         except AttributeError:
             pass
         if not obj.is_private:
-            if obj.latitude and obj.longitude:
-                data['location'] = {'geo': {'latitude': obj.latitude, 'longitude': obj.longitude}}
+            if obj.location:
+                data['location'] = {'geo': {'latitude': obj.location.y, 'longitude': obj.location.x}}
             
         if details:
             if not obj.is_private:

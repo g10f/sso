@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 import datetime
 from django.utils.translation import ugettext_lazy as _
-from django.forms import ModelChoiceField, ModelMultipleChoiceField, ValidationError
+# from django.contrib.gis import geos
+from django.contrib.gis.forms.widgets import OSMWidget
+from django.forms import ModelChoiceField, ModelMultipleChoiceField, ValidationError  # , CharField
 from l10n.models import Country 
 from sso.forms import bootstrap, BaseForm, BaseTabularInlineForm
 from sso.forms.fields import EmailFieldLower
@@ -46,7 +48,7 @@ class OrganisationBaseForm(BaseForm):
     class Meta:
         model = Organisation
         
-        fields = ('homepage', 'founded', 'coordinates_type', 'latitude', 'longitude', 'is_private')
+        fields = ('homepage', 'founded', 'coordinates_type', 'is_private', 'location')
         years_to_display = range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1)
         widgets = {
             'homepage': bootstrap.TextInput(attrs={'size': 50}),
@@ -54,13 +56,18 @@ class OrganisationBaseForm(BaseForm):
             'name': bootstrap.TextInput(attrs={'size': 50}), 
             'founded': bootstrap.SelectDateWidget(years=years_to_display, required=False),
             'coordinates_type': bootstrap.Select(),
-            'latitude': bootstrap.TextInput(attrs={'size': 50}),
-            'longitude': bootstrap.TextInput(attrs={'size': 50}),
             'center_type': bootstrap.Select(),
             'is_private': bootstrap.CheckboxInput(),
             'is_active': bootstrap.CheckboxInput(),
             'can_publish': bootstrap.CheckboxInput(),
+            'location': OSMWidget()
         }
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')  # remove custom user keyword      
+        super(OrganisationBaseForm, self).__init__(*args, **kwargs)
+        if self.instance.location:
+            self.fields['google_maps_url'].initial = self.instance.google_maps_url
 
 
 class OrganisationCenterAdminForm(OrganisationBaseForm):
@@ -72,7 +79,6 @@ class OrganisationCenterAdminForm(OrganisationBaseForm):
     can_publish = bootstrap.ReadOnlyYesNoField(label=_("Publish"))
 
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user')  # remove custom user keyword      
         super(OrganisationCenterAdminForm, self).__init__(*args, **kwargs)
         
         if self.instance.admin_region:
@@ -92,7 +98,6 @@ class OrganisationEmailAdminForm(OrganisationBaseForm):
     email_value = EmailFieldLower(required=True, label=_("Email address"), widget=bootstrap.EmailInput(attrs={'placeholder': 'name@diamondway-center.org'}))
 
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user')  # remove custom user keyword      
         super(OrganisationEmailAdminForm, self).__init__(*args, **kwargs)
         if self.instance.pk:
             self.fields['email_value'].initial = str(self.instance.email)
@@ -258,7 +263,7 @@ class AdminRegionForm(BaseForm):
         }
         
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user')  # remove custom user keyword      
+        # self.user = kwargs.pop('user')  # remove custom user keyword      
         super(AdminRegionForm, self).__init__(*args, **kwargs)
         self.fields['country'].queryset = self.user.get_administrable_region_countries()
         if self.instance.email:
