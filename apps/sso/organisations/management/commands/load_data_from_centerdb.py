@@ -6,7 +6,7 @@ from django.utils.dateparse import parse_date
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import NoArgsCommand
 from ...models import Organisation, OrganisationAddress, OrganisationPhoneNumber, OrganisationCountry
-from sso.emails.models import Email
+from sso.emails.models import Email, CENTER_EMAIL_TYPE
 
 from l10n.models import Country  # , AdminArea
 from sso.models import update_object_from_dict
@@ -97,7 +97,7 @@ def load_buddhistcenters(url):
     def get_email(value):
         email = Email.objects.filter(email__iexact=value).first()
         if not email:
-            email = Email(email=value.lower())
+            email = Email(email=value.lower(), email_type=CENTER_EMAIL_TYPE)
             email.save()
         return email
         
