@@ -96,17 +96,22 @@ def get_near_organisations(current_point, distance_from_point=None, qs=None):
     where the distance is less than distance_from_point
     """
     if current_point is None:
-        return Organisation.gis.none()
+        return Organisation.objects.none()
     if qs:
         organisations = qs
     else:
-        organisations = Organisation.gis.all()
+        organisations = Organisation.objects.all()
     if distance_from_point:
         organisations = organisations.filter(location__distance_lt=(current_point, measure.D(**distance_from_point)))
     organisations = organisations.distance(current_point)
     return organisations.distance(current_point).order_by('distance')
 
 
+class GeoManager(gis_models.GeoManager):
+    def get_by_natural_key(self, uuid):
+        return self.get(uuid=uuid)
+
+    
 class Organisation(AbstractBaseModel):
     CENTER_TYPE_CHOICES = (
         ('1', _('Buddhist Center')),
@@ -161,8 +166,7 @@ class Organisation(AbstractBaseModel):
     # history = HistoricalRecords()
     
     # important: first define the default manager (see: django.db.models.manager line 80)
-    objects = AbstractBaseModelManager()
-    gis = gis_models.GeoManager()
+    objects = GeoManager()
 
     class Meta(AbstractBaseModel.Meta):
         permissions = (

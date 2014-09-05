@@ -11,7 +11,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 FIND_USER_EXPRESSION = "{?q,org_id,per_page,app_id,modified_since}"
-FIND_ORGANISATION_EXPRESSION = "{?q,per_page,country,modified_since}"
+FIND_ORGANISATION_EXPRESSION = "{?q,per_page,country,latlng,dlt,modified_since}"
 
 
 @cache_page(60 * 60)
