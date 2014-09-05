@@ -263,7 +263,7 @@ class AdminRegionForm(BaseForm):
         }
         
     def __init__(self, *args, **kwargs):
-        # self.user = kwargs.pop('user')  # remove custom user keyword      
+        self.user = kwargs.pop('user')  # remove custom user keyword      
         super(AdminRegionForm, self).__init__(*args, **kwargs)
         self.fields['country'].queryset = self.user.get_administrable_region_countries()
         if self.instance.email:

@@ -37,6 +37,7 @@ def update_location():
                     if location:
                         point = geos.fromstr("POINT(%s %s)" % (location.longitude, location.latitude))
                         organisation.location = point
+                        organisation.coordinates_type = '3'  # Exact
                         organisation.save()
         else:
             point = geos.fromstr("POINT(%s %s)" % (organisation.longitude, organisation.latitude))

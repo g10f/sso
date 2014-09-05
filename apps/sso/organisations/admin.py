@@ -99,6 +99,8 @@ class PhoneNumber_Inline(admin.TabularInline):
 
 
 class OrganisationAdmin(gis_admin.OSMGeoAdmin):
+    openlayers_url = '//cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js'
+    
     class Media:
         css = {
             "all": ("css/adminstyle.css",)
