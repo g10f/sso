@@ -333,3 +333,38 @@ class SelectDateWidget(Widget):
             data = datetime_safe.datetime.strptime(data, input_format).date()
         return super(SelectDateWidget, self)._has_changed(initial, data)
     """
+
+from django.contrib.gis.forms.widgets import BaseGeometryWidget
+from django.contrib.gis import gdal
+class OSMWidget(BaseGeometryWidget):
+    """
+    An OpenLayers/OpenStreetMap-based widget.
+    """
+    template_name = 'gis/openlayers-osm.html'
+    default_lon = 5
+    default_lat = 47
+
+    class Media:
+        js = (
+            'js/gis/OpenLayers.js',
+            'js/gis/OpenStreetMap.js',
+            'gis/js/OLMapWidget.js',
+        )
+
+    @property
+    def map_srid(self):
+        # Use the official spherical mercator projection SRID on versions
+        # of GDAL that support it; otherwise, fallback to 900913.
+        if gdal.HAS_GDAL and gdal.GDAL_VERSION >= (1, 7):
+            return 3857
+        else:
+            return 900913
+
+    def render(self, name, value, attrs=None):
+        default_attrs = {
+            'default_lon': self.default_lon,
+            'default_lat': self.default_lat,
+        }
+        if attrs:
+            default_attrs.update(attrs)
+        return super(OSMWidget, self).render(name, value, default_attrs)
