@@ -63,7 +63,7 @@
 	
     <h4>{% trans 'Nearest Centers' %}</h4>
 	{% for organisation in object.get_near_organisations %}
-    <div class="row"><div class="dwbn-label">{{ organisation.name }}: </div><div class="dwbn-content">{{ organisation.distance.km|floatformat }} km</div></div>
+    <div class="row"><div class="dwbn-label"><a href="{% url 'organisations:organisation_detail' organisation.uuid %}">{{ organisation.name }}:</a> </div><div class="dwbn-content">{{ organisation.distance.km|floatformat }} km</div></div>
 	{% endfor %} 
     
 </p>
