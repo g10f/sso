@@ -218,9 +218,7 @@ class JsonListView(PermissionMixin, ListView):
 
     def render_to_response(self, context, **response_kwargs):
         content = {
-            'member': {
-                obj.uuid: self.get_object_data(self.request, obj) for obj in context['object_list']
-            },
+            'member': [self.get_object_data(self.request, obj) for obj in context['object_list']],
         }
         page_base_url = "%s%s" % (base_url(self.request), self.request.path)
         self_url = build_url(page_base_url, self.request.GET)
