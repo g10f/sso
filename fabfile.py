@@ -208,7 +208,7 @@ def createsuperuser(server_name='', virtualenv='sso'):
     
 @task
 def update_debian():
-    # sudo apt-add-repository ppa:ubuntugis/ppa
+    sudo('apt-add-repository ppa:ubuntugis/ppa')  # add gis repository
     fabtools.deb.update_index()
     fabtools.deb.upgrade(safe=False)
     sudo('reboot')

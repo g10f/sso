@@ -9,7 +9,7 @@ from django.contrib.auth import get_user_model
 from l10n.models import Country
 from smart_selects.db_fields import ChainedForeignKey
 from utils.loaddata import disable_for_loaddata
-from sso.models import AbstractBaseModel, AbstractBaseModelManager, AddressMixin, PhoneNumberMixin, ensure_single_primary
+from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary
 from sso.emails.models import Email, CENTER_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, REGION_EMAIL_TYPE, COUNTRY_GROUP_EMAIL_TYPE
 
 import logging
@@ -165,7 +165,6 @@ class Organisation(AbstractBaseModel):
     # admin_region = models.ForeignKey(AdminRegion, verbose_name=_("admin region"), blank=True, null=True)
     # history = HistoricalRecords()
     
-    # important: first define the default manager (see: django.db.models.manager line 80)
     objects = GeoManager()
 
     class Meta(AbstractBaseModel.Meta):
