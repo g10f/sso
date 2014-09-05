@@ -2,7 +2,7 @@
 import datetime
 from django.utils.translation import ugettext_lazy as _
 # from django.contrib.gis import geos
-from django.contrib.gis.forms.widgets import OSMWidget
+# from django.contrib.gis.forms.widgets import OSMWidget
 from django.forms import ModelChoiceField, ModelMultipleChoiceField, ValidationError  # , CharField
 from l10n.models import Country 
 from sso.forms import bootstrap, BaseForm, BaseTabularInlineForm
@@ -60,7 +60,7 @@ class OrganisationBaseForm(BaseForm):
             'is_private': bootstrap.CheckboxInput(),
             'is_active': bootstrap.CheckboxInput(),
             'can_publish': bootstrap.CheckboxInput(),
-            'location': OSMWidget()
+            'location': bootstrap.OSMWidget()
         }
 
     def __init__(self, *args, **kwargs):
