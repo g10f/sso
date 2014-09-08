@@ -28,9 +28,10 @@
     </div>
 	
 	<div class="col-sm-9">
-        {% for filter in filters %}{% if filter %} 
-        {% include filter.template_name with filter=filter %}
-        {% endif %}{% endfor %}
+       {% for filter in filters %}{% if filter %} 
+       {% include filter.template_name with filter=filter %}
+       {% endif %}{% endfor %}
+       {#<button type="button" class="btn btn-default geo-location" data-href="{% query_string cl 'latlng' '' %}"><span class="glyphicon glyphicon-globe"></span> {% trans 'Distance' %}</button>#}
     </div><!-- /.col-sm-9 -->
 </div>
 
@@ -46,6 +47,7 @@
 	               <td>{% if object.google_maps_url %}<a href="{{ object.google_maps_url }}">{% trans 'Google Maps' %} <span class="glyphicon glyphicon-map-marker"></span></a>{% endif %}</td>
 	               <td>{{ object.country.iso2_code }}</td>
                    <td>{{ object.founded|date:"Y-m-d" }}</td>
+                   {#<td>{{ object.distance.km|floatformat }} km</td>#}
 	           </tr>
 	           {% endfor %}
 	       </tbody>

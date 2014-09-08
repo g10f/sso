@@ -20,7 +20,7 @@ def emails(request, type):  # @ReservedAssignment
     """
     rows = []
     # World 
-    for country in OrganisationCountry.objects.filter(email__isnull=False, is_active=True):
+    for country in OrganisationCountry.objects.filter(email__isnull=False, is_active=True).prefetch_related('email'):
         rows.append(['world@diamondway-center.org', str(country.email), '', PERM_VIP_DWB])
     
     # Country Groups
