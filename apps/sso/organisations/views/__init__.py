@@ -17,7 +17,7 @@ from sso.views.main import FilterItem
 from sso.emails.models import EmailForward, Email, EmailAlias
 from sso.organisations.models import AdminRegion, Organisation
 from sso.views.generic import FormsetsUpdateView, ListView, SearchFilter, ViewChoicesFilter, ViewQuerysetFilter, ViewButtonFilter
-from sso.organisations.models import OrganisationAddress, OrganisationPhoneNumber
+from sso.organisations.models import OrganisationAddress, OrganisationPhoneNumber, get_near_organisations
 from sso.emails.forms import AdminEmailForwardInlineForm, EmailForwardInlineForm, EmailAliasInlineForm
 from sso.organisations.forms import OrganisationAddressForm, OrganisationPhoneNumberForm, OrganisationCountryAdminForm, \
     OrganisationRegionAdminForm, OrganisationCenterAdminForm, OrganisationRegionAdminCreateForm, OrganisationCountryAdminCreateForm
@@ -338,7 +338,14 @@ class OrganisationList(ListView):
             qs = IsActiveFilter().apply(self, qs)
         else:
             qs = qs.filter(is_active=True)
-            
+
+        latlng = self.request.GET.get('latlng', '')
+        if latlng:
+            from django.contrib.gis import geos
+            (lat, lng) = tuple(latlng.split(','))
+            point = geos.fromstr("POINT(%s %s)" % (lng, lat))
+            qs = get_near_organisations(point, None, qs)            
+
         # Set ordering.
         ordering = self.cl.get_ordering(self.request, qs)
         qs = qs.order_by(*ordering)

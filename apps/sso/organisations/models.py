@@ -90,7 +90,7 @@ class AdminRegion(AbstractBaseModel, ExtraManager):
         return ('organisations:adminregion_detail', (), {'uuid': self.uuid, })
 
 
-def get_near_organisations(current_point, distance_from_point=None, qs=None):
+def get_near_organisations(current_point, distance_from_point=None, qs=None, order=True):
     """
     get all centers with the distance from current_point 
     where the distance is less than distance_from_point
@@ -104,7 +104,10 @@ def get_near_organisations(current_point, distance_from_point=None, qs=None):
     if distance_from_point:
         organisations = organisations.filter(location__distance_lt=(current_point, measure.D(**distance_from_point)))
     organisations = organisations.distance(current_point)
-    return organisations.distance(current_point).order_by('distance')
+    if order:
+        return organisations.distance(current_point).order_by('distance')
+    else:
+        return organisations.distance(current_point)
 
 
 class GeoManager(gis_models.GeoManager):
