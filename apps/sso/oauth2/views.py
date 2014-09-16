@@ -112,19 +112,8 @@ def openid_configuration(request):
     return JsonHttpResponse(configuration, request)
 
 
-def get_last_modified_and_etag_for_me(request, *args, **kwargs):
-    if request.user.is_authenticated():
-        last_modified = request.user.last_login
-        etag = "%s/%s" % (request.user.uuid, last_modified)
-        return last_modified, etag
-    else:
-        return None, None
-
-
 class SessionView(TemplateView):
-    # TODO: enable caching
-    # @method_decorator(condition(last_modified_and_etag_func=get_last_modified_and_etag_for_me))
-    # @method_decorator(cache_control(must_revalidate=True, max_age=60 * 5)) 
+    @method_decorator(cache_control(max_age=60 * 5)) 
     @method_decorator(xframe_options_exempt)
     def dispatch(self, request, *args, **kwargs):
         return super(SessionView, self).dispatch(request, *args, **kwargs)       
