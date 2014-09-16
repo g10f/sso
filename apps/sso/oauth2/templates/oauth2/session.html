@@ -1,0 +1,71 @@
+<!DOCTYPE html>{% load static %}
+<html>
+<body data-session_cookie_name="{{ session_cookie_name }}">
+<script src="{% static "js/vendor/sha256.js" %}"></script>
+<script>
+// the script needs to be at the end of the body, because we use the document.body 
+(function() {
+	var pluses = /\+/g;
+	function parseCookieValue(s) {
+	    if (s.indexOf('"') === 0) {
+	        // This is a quoted cookie as according to RFC2068, unescape...
+	        s = s.slice(1, -1).replace(/\\"/g, '"').replace(/\\\\/g, '\\');
+	    }
+	    try {
+	        // Replace server-side written pluses with spaces.
+	        // If we can't decode the cookie, ignore it, it's unusable.
+	        // If we can't parse the cookie, ignore it, it's unusable.
+	        return decodeURIComponent(s.replace(pluses, ' '));
+	    } catch(e) {}
+	}
+	function readCookie(key) {
+	    // To prevent the for loop in the first place assign an empty array
+	    // in case there are no cookies at all.
+	    var cookies = document.cookie ? document.cookie.split('; ') : [];       
+	    for (var i = 0, l = cookies.length; i < l; i++) {
+	        var parts = cookies[i].split('=');
+	        var name = parts.shift();
+	        var cookie = parts.join('=');
+	        if (key === name) {
+	            return parseCookieValue(cookie);
+	        }
+	    }
+	}
+    function get_op_browser_state() {
+        var session_cookie_name = document.body.getAttribute("data-session_cookie_name");
+        return readCookie(session_cookie_name);
+    }
+	function receiveMessage(e) {
+		// the e.data contains a message in the following format: "{client_id} {session_state}.{salt}"
+        var client_id, rp_session_state, salt;
+        var message_parts = e.data.split(' ');
+        
+        if (message_parts.length == 2) {
+        	client_id = message_parts[0];
+        	rp_session_state = message_parts[1];
+        	salt = rp_session_state.split('.')[1];
+        	if (typeof salt === "undefined") {
+        		console.log("error: wrong message format");
+        		return;
+        	}
+ 	    } else {
+ 	    	console.log("error: wrong message format");
+ 	        e.source.postMessage("error", e.origin);
+            return;
+ 	    } 
+        // create the session_state from the op browser state and compare with the session_state from rp 
+	    var browser_state = get_op_browser_state();
+	    var op_session_state = CryptoJS.SHA256(client_id + ' ' + browser_state + ' ' + salt) + "." + salt;
+	
+	    if (rp_session_state === op_session_state) {
+	        stat = 'unchanged';
+	    } else {
+	        stat = 'changed';
+	    }
+	    e.source.postMessage(stat, e.origin);
+	}
+    window.addEventListener("message", receiveMessage, false);
+})();
+</script>
+</body>
+</html>

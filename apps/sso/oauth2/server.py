@@ -339,6 +339,15 @@ class OpenIDConnectAuthorizationCodeGrant(oauth2.AuthorizationCodeGrant):
         self.request_validator.invalidate_authorization_code(request.client_id, request.code, request)
         return headers, json.dumps(token), 200
 
+    def create_authorization_code(self, request):
+        """
+        add a session_state to the response 
+        http://openid.net/specs/openid-connect-session-1_0.html#CreatingUpdatingSessions
+        """
+        grant = super(OpenIDConnectAuthorizationCodeGrant, self).create_authorization_code(request)
+        grant['session_state'] = request.session_state
+        return grant
+
 
 class OpenIDConnectImplicitGrant(oauth2.ImplicitGrant):
 

@@ -10,5 +10,6 @@
 .project
 .pydevproject
 .settings
+.idea
 *.pyc
-
+/docs
