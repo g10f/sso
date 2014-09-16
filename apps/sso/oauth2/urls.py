@@ -11,4 +11,5 @@ urlpatterns = patterns(
     url(r'^tokeninfo/$', views.tokeninfo, name='tokeninfo'),
     url(r'^approval/$', views.approval, name='approval'),
     url(r'^error/$', views.ErrorView.as_view(), name='oauth2_error'),
+    url(r'^session/$', views.SessionView.as_view(template_name="oauth2/session.html"), name='session'),
 )
