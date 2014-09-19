@@ -67,18 +67,24 @@ class ChangeList(object):
     def label_for_field(self, field_name):
         """
         if the field is from the model it's sortable otherwise not.
-        TODO: make this more useful, ..
         """
         try:
             field = self.lookup_opts.get_field(field_name)
-            return field.verbose_name, None
+            return field.verbose_name, {"sortable": True}
         except models.FieldDoesNotExist:
-            # TODO: translation  
-            return field_name, {"sortable": False} 
+            label = [field_name, {"sortable": False}]
+            if hasattr(field_name, 'verbose_name'):
+                label[0] = field_name.verbose_name
+            if hasattr(field_name, 'sortable'):
+                label[1] = {"sortable": field_name.sortable}
+            
+            return tuple(label) 
             
     def get_ordering_field(self, field_name):
-        # TODO: ?
-        return field_name
+        if hasattr(field_name, 'ordering_field'):
+            return field_name.ordering_field
+        else:
+            return str(field_name)
 
     def get_ordering(self, request, queryset):
         """
@@ -182,8 +188,11 @@ class ChangeList(object):
             o_list_primary = []  # URL for making this field the primary sort
             o_list_remove = []  # URL for removing this field from sort
             o_list_toggle = []  # URL for toggling order type for this field
-            make_qs_param = lambda t, n: ('-' if t == 'desc' else '') + str(n)
-    
+            # make_qs_param =  lambda t, n: ('-' if t == 'desc' else '') + str(n)
+            
+            def make_qs_param(t, n):
+                return ('-' if t == 'desc' else '') + str(n)
+            
             for j, ot in ordering_field_columns.items():
                 if j == i:  # Same column
                     param = make_qs_param(new_order_type, j)

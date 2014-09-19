@@ -293,12 +293,35 @@ class MyOrganisationsFilter(ViewButtonFilter):
             return qs
         else:
             return qs
+        
+
+class Distance(object):
+    verbose_name = _('distance')
+    sortable = True
+    
+    def __str__(self):
+        return 'distance'
 
 
 class OrganisationList(ListView):
     template_name = 'organisations/organisation_list.html'
     model = Organisation
     list_display = ['name', 'email', 'google maps', 'country', 'founded']
+    
+    def get_list_display(self):
+        latlng = self.request.GET.get('latlng', '')
+        if latlng:
+            list_display = self.list_display + [Distance()]
+        else:
+            list_display = self.list_display
+        return list_display
+    
+    def get_default_ordering(self):
+        latlng = self.request.GET.get('latlng', '')
+        if latlng:
+            return ['distance']
+        else:
+            return ['name']
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
@@ -309,22 +332,8 @@ class OrganisationList(ListView):
         Get the list of items for this view. This must be an iterable, and may
         be a queryset (in which qs-specific behavior will be enabled).
         """
-        
-        """
-        # apply my_organisations filter only for admins
-        my_organisations = None
-        if self.request.user.is_user_admin:
-            my_organisations = self.request.GET.get('my_organisations', '')
-        
-        if my_organisations:
-            self.my_organisations = my_organisations
-            qs = self.request.user.get_administrable_organisations()
-        else:
-            self.my_organisations = None
-            qs = super(OrganisationList, self).get_queryset().select_related('country', 'email')
-        """
-         
-        self.cl = main.ChangeList(self.request, self.model, self.list_display, default_ordering=['name'])
+          
+        self.cl = main.ChangeList(self.request, self.model, self.get_list_display(), default_ordering=self.get_default_ordering())
         qs = super(OrganisationList, self).get_queryset().select_related('country', 'email')
         
         # apply filters
@@ -344,7 +353,7 @@ class OrganisationList(ListView):
             from django.contrib.gis import geos
             (lat, lng) = tuple(latlng.split(','))
             point = geos.fromstr("POINT(%s %s)" % (lng, lat))
-            qs = get_near_organisations(point, None, qs)            
+            qs = get_near_organisations(point, None, qs, False)            
 
         # Set ordering.
         ordering = self.cl.get_ordering(self.request, qs)
