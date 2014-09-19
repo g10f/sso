@@ -31,7 +31,7 @@
        {% for filter in filters %}{% if filter %} 
        {% include filter.template_name with filter=filter %}
        {% endif %}{% endfor %}
-       <button type="button" class="btn btn-default geo-location {% if cl.params.latlng %}active{% endif %}" data-href="{% query_string cl 'latlng' '' %}"><span class="glyphicon glyphicon-globe"></span> {% trans 'Location' %}</button>
+       <button type="button" class="btn btn-default geo-location {% if cl.params.latlng %}active{% endif %}" data-href="{% query_string cl 'latlng' '' %}"><span class="glyphicon glyphicon-globe"></span> {% trans 'Distance' %}</button>
     </div><!-- /.col-sm-9 -->
 </div>
 
