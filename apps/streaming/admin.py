@@ -4,10 +4,10 @@ from models import StreamingUser, Logging
 
 
 class StreamingUserAdmin(admin.ModelAdmin):
-    #date_hierarchy = 'created'
+    # date_hierarchy = 'created'
     list_display = ('id_nr', 'email', 'password_clear', 'center', 'admin', 'ip', 'registrar', 'mailsent', 'created', 'subscriber',)
     search_fields = ('email',)
-    list_filter = ('center', 'admin', 'mailsent', 'created', 'subscriber', 'logging__date')
+    list_filter = ('center', 'admin', 'mailsent', 'created', 'subscriber')  # , 'logging__date')
     readonly_fields = ('id_nr', 'email', 'password', 'password_clear', 'center', 'admin', 'ip', 'registrar', 'mailsent', 'created', 'subscriber',)
     actions = None
     
@@ -22,7 +22,7 @@ class StreamingUserAdmin(admin.ModelAdmin):
 
 
 class LoggingAdmin(admin.ModelAdmin):
-    #date_hierarchy = 'date'
+    # date_hierarchy = 'date'
     list_display = ('id', 'user', 'action', 'date', 'ip',)
     search_fields = ('user__email',)
     list_filter = ('date', 'action')
