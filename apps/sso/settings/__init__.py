@@ -72,7 +72,7 @@ STATIC_ROOT = os.path.join(DIRNAME, '../../../static/htdocs/sso/static')
 MEDIA_ROOT = os.path.join(DIRNAME, '../../../static/htdocs/sso/media')
 
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
+    # os.path.join(BASE_DIR, 'static'),
 )
 
 STATICFILES_FINDERS = (
