@@ -1,408 +1,201 @@
 # -*- coding: utf-8 -*-
-from south.utils import datetime_utils as datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+from __future__ import unicode_literals
+
+from django.db import models, migrations
+import sorl.thumbnail.fields
+import smart_selects.db_fields
+import sso.fields
+import django.utils.timezone
+from django.conf import settings
+import sso.accounts.models
+import django.core.validators
 
 
-class Migration(SchemaMigration):
-    depends_on = (
-        ("organisations", "0001_initial"),
-    )
+class Migration(migrations.Migration):
 
-    def forwards(self, orm):
-        # Adding model 'Application'
-        db.create_table(u'accounts_application', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('order', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('title', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('url', self.gf('django.db.models.fields.URLField')(max_length=2047, blank=True)),
-            ('uuid', self.gf('sso.fields.UUIDField')(version=4, max_length=36, blank=True, unique=True, name='uuid')),
-            ('global_navigation', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('is_active', self.gf('django.db.models.fields.BooleanField')(default=True)),
-        ))
-        db.send_create_signal(u'accounts', ['Application'])
+    dependencies = [
+        ('auth', '0001_initial'),
+        ('l10n', '__first__'),
+    ]
 
-        # Adding model 'Role'
-        db.create_table(u'accounts_role', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(unique=True, max_length=255)),
-            ('order', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('group', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.Group'], null=True, blank=True)),
-        ))
-        db.send_create_signal(u'accounts', ['Role'])
-
-        # Adding model 'ApplicationRole'
-        db.create_table(u'accounts_applicationrole', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('application', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['accounts.Application'])),
-            ('role', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['accounts.Role'])),
-            ('is_inheritable_by_org_admin', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('is_inheritable_by_global_admin', self.gf('django.db.models.fields.BooleanField')(default=True)),
-        ))
-        db.send_create_signal(u'accounts', ['ApplicationRole'])
-
-        # Adding unique constraint on 'ApplicationRole', fields ['application', 'role']
-        db.create_unique(u'accounts_applicationrole', ['application_id', 'role_id'])
-
-        # Adding model 'RoleProfile'
-        db.create_table(u'accounts_roleprofile', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('uuid', self.gf('sso.fields.UUIDField')(version=4, max_length=36, blank=True, unique=True, name='uuid')),
-            ('last_modified', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now=True, blank=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('order', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('is_inheritable_by_org_admin', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('is_inheritable_by_global_admin', self.gf('django.db.models.fields.BooleanField')(default=True)),
-        ))
-        db.send_create_signal(u'accounts', ['RoleProfile'])
-
-        # Adding M2M table for field application_roles on 'RoleProfile'
-        m2m_table_name = db.shorten_name(u'accounts_roleprofile_application_roles')
-        db.create_table(m2m_table_name, (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('roleprofile', models.ForeignKey(orm[u'accounts.roleprofile'], null=False)),
-            ('applicationrole', models.ForeignKey(orm[u'accounts.applicationrole'], null=False))
-        ))
-        db.create_unique(m2m_table_name, ['roleprofile_id', 'applicationrole_id'])
-
-        # Adding model 'User'
-        db.create_table(u'accounts_user', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('password', self.gf('django.db.models.fields.CharField')(max_length=128)),
-            ('last_login', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
-            ('is_superuser', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('username', self.gf('django.db.models.fields.CharField')(unique=True, max_length=30)),
-            ('first_name', self.gf('django.db.models.fields.CharField')(max_length=30, blank=True)),
-            ('last_name', self.gf('django.db.models.fields.CharField')(max_length=30, blank=True)),
-            ('email', self.gf('django.db.models.fields.EmailField')(max_length=75, blank=True)),
-            ('is_staff', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('is_active', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('date_joined', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
-            ('uuid', self.gf('sso.fields.UUIDField')(version=4, max_length=36, blank=True, unique=True, name='uuid')),
-            ('last_modified_by_user', self.gf('django.db.models.fields.related.ForeignKey')(related_name='+', null=True, to=orm['accounts.User'])),
-            ('last_modified', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
-            ('created_by_user', self.gf('django.db.models.fields.related.ForeignKey')(related_name='+', null=True, to=orm['accounts.User'])),
-            ('is_center', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('is_subscriber', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('picture', self.gf(u'sorl.thumbnail.fields.ImageField')(max_length=100, blank=True)),
-            ('notes', self.gf('django.db.models.fields.TextField')(max_length=1024, blank=True)),
-            ('gender', self.gf('django.db.models.fields.CharField')(max_length=255, blank=True)),
-            ('dob', self.gf('django.db.models.fields.DateField')(null=True, blank=True)),
-            ('homepage', self.gf('django.db.models.fields.URLField')(max_length=512, blank=True)),
-            ('language', self.gf('django.db.models.fields.CharField')(max_length=254, blank=True)),
-        ))
-        db.send_create_signal(u'accounts', ['User'])
-
-        # Adding M2M table for field groups on 'User'
-        m2m_table_name = db.shorten_name(u'accounts_user_groups')
-        db.create_table(m2m_table_name, (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('user', models.ForeignKey(orm[u'accounts.user'], null=False)),
-            ('group', models.ForeignKey(orm[u'auth.group'], null=False))
-        ))
-        db.create_unique(m2m_table_name, ['user_id', 'group_id'])
-
-        # Adding M2M table for field user_permissions on 'User'
-        m2m_table_name = db.shorten_name(u'accounts_user_user_permissions')
-        db.create_table(m2m_table_name, (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('user', models.ForeignKey(orm[u'accounts.user'], null=False)),
-            ('permission', models.ForeignKey(orm[u'auth.permission'], null=False))
-        ))
-        db.create_unique(m2m_table_name, ['user_id', 'permission_id'])
-
-        # Adding M2M table for field organisations on 'User'
-        m2m_table_name = db.shorten_name(u'accounts_user_organisations')
-        db.create_table(m2m_table_name, (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('user', models.ForeignKey(orm[u'accounts.user'], null=False)),
-            ('organisation', models.ForeignKey(orm[u'organisations.organisation'], null=False))
-        ))
-        db.create_unique(m2m_table_name, ['user_id', 'organisation_id'])
-
-        # Adding M2M table for field application_roles on 'User'
-        m2m_table_name = db.shorten_name(u'accounts_user_application_roles')
-        db.create_table(m2m_table_name, (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('user', models.ForeignKey(orm[u'accounts.user'], null=False)),
-            ('applicationrole', models.ForeignKey(orm[u'accounts.applicationrole'], null=False))
-        ))
-        db.create_unique(m2m_table_name, ['user_id', 'applicationrole_id'])
-
-        # Adding M2M table for field role_profiles on 'User'
-        m2m_table_name = db.shorten_name(u'accounts_user_role_profiles')
-        db.create_table(m2m_table_name, (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('user', models.ForeignKey(orm[u'accounts.user'], null=False)),
-            ('roleprofile', models.ForeignKey(orm[u'accounts.roleprofile'], null=False))
-        ))
-        db.create_unique(m2m_table_name, ['user_id', 'roleprofile_id'])
-
-        # Adding model 'UserAddress'
-        db.create_table(u'accounts_useraddress', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('uuid', self.gf('sso.fields.UUIDField')(version=4, max_length=36, blank=True, unique=True, name='uuid')),
-            ('last_modified', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now=True, blank=True)),
-            ('addressee', self.gf('django.db.models.fields.CharField')(max_length=80)),
-            ('street_address', self.gf('django.db.models.fields.TextField')(max_length=512, blank=True)),
-            ('city', self.gf('django.db.models.fields.CharField')(max_length=100)),
-            ('postal_code', self.gf('django.db.models.fields.CharField')(max_length=30, blank=True)),
-            ('country', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['l10n.Country'])),
-            ('state', self.gf('smart_selects.db_fields.ChainedForeignKey')(to=orm['l10n.AdminArea'], null=True, blank=True)),
-            ('primary', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('address_type', self.gf('django.db.models.fields.CharField')(max_length=20)),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['accounts.User'])),
-        ))
-        db.send_create_signal(u'accounts', ['UserAddress'])
-
-        # Adding unique constraint on 'UserAddress', fields ['user', 'address_type']
-        db.create_unique(u'accounts_useraddress', ['user_id', 'address_type'])
-
-        # Adding model 'UserPhoneNumber'
-        db.create_table(u'accounts_userphonenumber', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('uuid', self.gf('sso.fields.UUIDField')(version=4, max_length=36, blank=True, unique=True, name='uuid')),
-            ('last_modified', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, auto_now=True, blank=True)),
-            ('phone', self.gf('django.db.models.fields.CharField')(max_length=30)),
-            ('primary', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('phone_type', self.gf('django.db.models.fields.CharField')(max_length=20)),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['accounts.User'])),
-        ))
-        db.send_create_signal(u'accounts', ['UserPhoneNumber'])
-
-        # Adding model 'UserAssociatedSystem'
-        db.create_table(u'accounts_userassociatedsystem', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['accounts.User'])),
-            ('application', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['accounts.Application'])),
-            ('userid', self.gf('django.db.models.fields.CharField')(max_length=255)),
-        ))
-        db.send_create_signal(u'accounts', ['UserAssociatedSystem'])
-
-        # Adding unique constraint on 'UserAssociatedSystem', fields ['application', 'userid']
-        db.create_unique(u'accounts_userassociatedsystem', ['application_id', 'userid'])
-
-
-    def backwards(self, orm):
-        # Removing unique constraint on 'UserAssociatedSystem', fields ['application', 'userid']
-        db.delete_unique(u'accounts_userassociatedsystem', ['application_id', 'userid'])
-
-        # Removing unique constraint on 'UserAddress', fields ['user', 'address_type']
-        db.delete_unique(u'accounts_useraddress', ['user_id', 'address_type'])
-
-        # Removing unique constraint on 'ApplicationRole', fields ['application', 'role']
-        db.delete_unique(u'accounts_applicationrole', ['application_id', 'role_id'])
-
-        # Deleting model 'Application'
-        db.delete_table(u'accounts_application')
-
-        # Deleting model 'Role'
-        db.delete_table(u'accounts_role')
-
-        # Deleting model 'ApplicationRole'
-        db.delete_table(u'accounts_applicationrole')
-
-        # Deleting model 'RoleProfile'
-        db.delete_table(u'accounts_roleprofile')
-
-        # Removing M2M table for field application_roles on 'RoleProfile'
-        db.delete_table(db.shorten_name(u'accounts_roleprofile_application_roles'))
-
-        # Deleting model 'User'
-        db.delete_table(u'accounts_user')
-
-        # Removing M2M table for field groups on 'User'
-        db.delete_table(db.shorten_name(u'accounts_user_groups'))
-
-        # Removing M2M table for field user_permissions on 'User'
-        db.delete_table(db.shorten_name(u'accounts_user_user_permissions'))
-
-        # Removing M2M table for field organisations on 'User'
-        db.delete_table(db.shorten_name(u'accounts_user_organisations'))
-
-        # Removing M2M table for field application_roles on 'User'
-        db.delete_table(db.shorten_name(u'accounts_user_application_roles'))
-
-        # Removing M2M table for field role_profiles on 'User'
-        db.delete_table(db.shorten_name(u'accounts_user_role_profiles'))
-
-        # Deleting model 'UserAddress'
-        db.delete_table(u'accounts_useraddress')
-
-        # Deleting model 'UserPhoneNumber'
-        db.delete_table(u'accounts_userphonenumber')
-
-        # Deleting model 'UserAssociatedSystem'
-        db.delete_table(u'accounts_userassociatedsystem')
-
-
-    models = {
-        u'accounts.application': {
-            'Meta': {'ordering': "['order', 'title']", 'object_name': 'Application'},
-            'global_navigation': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'order': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'url': ('django.db.models.fields.URLField', [], {'max_length': '2047', 'blank': 'True'}),
-            'uuid': ('sso.fields.UUIDField', [], {'version': '4', 'max_length': '36', 'blank': 'True', 'unique': 'True', 'name': "'uuid'"})
-        },
-        u'accounts.applicationrole': {
-            'Meta': {'ordering': "['application', 'role']", 'unique_together': "(('application', 'role'),)", 'object_name': 'ApplicationRole'},
-            'application': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['accounts.Application']"}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_inheritable_by_global_admin': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'is_inheritable_by_org_admin': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'role': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['accounts.Role']"})
-        },
-        u'accounts.role': {
-            'Meta': {'ordering': "['order', 'name']", 'object_name': 'Role'},
-            'group': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.Group']", 'null': 'True', 'blank': 'True'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255'}),
-            'order': ('django.db.models.fields.IntegerField', [], {'default': '0'})
-        },
-        u'accounts.roleprofile': {
-            'Meta': {'ordering': "['order', 'name']", 'object_name': 'RoleProfile'},
-            'application_roles': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['accounts.ApplicationRole']", 'symmetrical': 'False'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_inheritable_by_global_admin': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'is_inheritable_by_org_admin': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'last_modified': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'order': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'uuid': ('sso.fields.UUIDField', [], {'version': '4', 'max_length': '36', 'blank': 'True', 'unique': 'True', 'name': "'uuid'"})
-        },
-        u'accounts.user': {
-            'Meta': {'object_name': 'User'},
-            'application_roles': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': u"orm['accounts.ApplicationRole']", 'null': 'True', 'blank': 'True'}),
-            'created_by_user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'+'", 'null': 'True', 'to': u"orm['accounts.User']"}),
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'dob': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
-            'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
-            'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'gender': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
-            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "u'user_set'", 'blank': 'True', 'to': u"orm['auth.Group']"}),
-            'homepage': ('django.db.models.fields.URLField', [], {'max_length': '512', 'blank': 'True'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'is_center': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'is_subscriber': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'language': ('django.db.models.fields.CharField', [], {'max_length': '254', 'blank': 'True'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'last_modified': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
-            'last_modified_by_user': ('current_user.models.CurrentUserField', [], {'related_name': "'+'", 'null': 'True', 'to': u"orm['accounts.User']"}),
-            'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'notes': ('django.db.models.fields.TextField', [], {'max_length': '1024', 'blank': 'True'}),
-            'organisations': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': u"orm['organisations.Organisation']", 'null': 'True', 'blank': 'True'}),
-            'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'picture': (u'sorl.thumbnail.fields.ImageField', [], {'max_length': '100', 'blank': 'True'}),
-            'role_profiles': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': u"orm['accounts.RoleProfile']", 'null': 'True', 'blank': 'True'}),
-            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "u'user_set'", 'blank': 'True', 'to': u"orm['auth.Permission']"}),
-            'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'}),
-            'uuid': ('sso.fields.UUIDField', [], {'version': '4', 'max_length': '36', 'blank': 'True', 'unique': 'True', 'name': "'uuid'"})
-        },
-        u'accounts.useraddress': {
-            'Meta': {'ordering': "['addressee']", 'unique_together': "(('user', 'address_type'),)", 'object_name': 'UserAddress'},
-            'address_type': ('django.db.models.fields.CharField', [], {'max_length': '20'}),
-            'addressee': ('django.db.models.fields.CharField', [], {'max_length': '80'}),
-            'city': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'country': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['l10n.Country']"}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'last_modified': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'}),
-            'postal_code': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'primary': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'state': ('smart_selects.db_fields.ChainedForeignKey', [], {'to': u"orm['l10n.AdminArea']", 'null': 'True', 'blank': 'True'}),
-            'street_address': ('django.db.models.fields.TextField', [], {'max_length': '512', 'blank': 'True'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['accounts.User']"}),
-            'uuid': ('sso.fields.UUIDField', [], {'version': '4', 'max_length': '36', 'blank': 'True', 'unique': 'True', 'name': "'uuid'"})
-        },
-        u'accounts.userassociatedsystem': {
-            'Meta': {'unique_together': "(('application', 'userid'),)", 'object_name': 'UserAssociatedSystem'},
-            'application': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['accounts.Application']"}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['accounts.User']"}),
-            'userid': ('django.db.models.fields.CharField', [], {'max_length': '255'})
-        },
-        u'accounts.userphonenumber': {
-            'Meta': {'ordering': "['-primary']", 'object_name': 'UserPhoneNumber'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'last_modified': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'}),
-            'phone': ('django.db.models.fields.CharField', [], {'max_length': '30'}),
-            'phone_type': ('django.db.models.fields.CharField', [], {'max_length': '20'}),
-            'primary': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['accounts.User']"}),
-            'uuid': ('sso.fields.UUIDField', [], {'version': '4', 'max_length': '36', 'blank': 'True', 'unique': 'True', 'name': "'uuid'"})
-        },
-        u'auth.group': {
-            'Meta': {'object_name': 'Group'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '80'}),
-            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
-        },
-        u'auth.permission': {
-            'Meta': {'ordering': "(u'content_type__app_label', u'content_type__model', u'codename')", 'unique_together': "((u'content_type', u'codename'),)", 'object_name': 'Permission'},
-            'codename': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['contenttypes.ContentType']"}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
-        },
-        u'contenttypes.contenttype': {
-            'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
-            'app_label': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
-        },
-        u'l10n.adminarea': {
-            'Meta': {'ordering': "('name',)", 'object_name': 'AdminArea'},
-            'abbrev': ('django.db.models.fields.CharField', [], {'max_length': '3', 'null': 'True', 'blank': 'True'}),
-            'active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'country': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['l10n.Country']"}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '60'})
-        },
-        u'l10n.country': {
-            'Meta': {'ordering': "('name',)", 'object_name': 'Country'},
-            'active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'admin_area': ('django.db.models.fields.CharField', [], {'max_length': '2', 'null': 'True', 'blank': 'True'}),
-            'continent': ('django.db.models.fields.CharField', [], {'max_length': '2'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'iso2_code': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '2'}),
-            'iso3_code': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '3'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'numcode': ('django.db.models.fields.PositiveSmallIntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'printable_name': ('django.db.models.fields.CharField', [], {'max_length': '128'})
-        },
-        u'organisations.adminregion': {
-            'Meta': {'ordering': "['name']", 'object_name': 'AdminRegion'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'last_modified': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
-            'uuid': ('sso.fields.UUIDField', [], {'version': '4', 'max_length': '36', 'blank': 'True', 'unique': 'True', 'name': "'uuid'"})
-        },
-        u'organisations.organisation': {
-            'Meta': {'ordering': "['name']", 'object_name': 'Organisation'},
-            'admin_region': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['organisations.AdminRegion']", 'null': 'True', 'blank': 'True'}),
-            'center_type': ('django.db.models.fields.CharField', [], {'max_length': '2', 'db_index': 'True'}),
-            'centerid': ('django.db.models.fields.IntegerField', [], {'null': 'True', 'blank': 'True'}),
-            'country': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['l10n.Country']", 'null': 'True', 'blank': 'True'}),
-            'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
-            'founded': ('django.db.models.fields.DateField', [], {'null': 'True', 'blank': 'True'}),
-            'homepage': ('django.db.models.fields.URLField', [], {'max_length': '200', 'blank': 'True'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'is_private': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_modified': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'auto_now': 'True', 'blank': 'True'}),
-            'latitude': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '9', 'decimal_places': '6', 'blank': 'True'}),
-            'longitude': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '9', 'decimal_places': '6', 'blank': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '255', 'blank': 'True'}),
-            'notes': ('django.db.models.fields.TextField', [], {'max_length': '255', 'blank': 'True'}),
-            'uuid': ('sso.fields.UUIDField', [], {'version': '4', 'max_length': '36', 'blank': 'True', 'unique': 'True', 'name': "'uuid'"})
-        }
-    }
-
-    complete_apps = ['accounts']
+    operations = [
+        migrations.CreateModel(
+            name='User',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('password', models.CharField(max_length=128, verbose_name='password')),
+                ('last_login', models.DateTimeField(default=django.utils.timezone.now, verbose_name='last login')),
+                ('is_superuser', models.BooleanField(default=False, help_text='Designates that this user has all permissions without explicitly assigning them.', verbose_name='superuser status')),
+                ('username', models.CharField(help_text='Required. 30 characters or fewer. Letters, digits and @/./+/-/_ only.', unique=True, max_length=30, verbose_name='username', validators=[django.core.validators.RegexValidator('^[\\w.@+-]+$', 'Enter a valid username.', 'invalid')])),
+                ('first_name', models.CharField(max_length=30, verbose_name='first name', blank=True)),
+                ('last_name', models.CharField(max_length=30, verbose_name='last name', blank=True)),
+                ('email', models.EmailField(max_length=75, verbose_name='email address', blank=True)),
+                ('is_staff', models.BooleanField(default=False, help_text='Designates whether the user can log into this admin site.', verbose_name='staff status')),
+                ('is_active', models.BooleanField(default=True, help_text='Designates whether this user should be treated as active. Unselect this instead of deleting accounts.', verbose_name='active')),
+                ('date_joined', models.DateTimeField(default=django.utils.timezone.now, verbose_name='date joined')),
+                ('uuid', sso.fields.UUIDField(unique=True, max_length=36, editable=False, blank=True)),
+                ('last_modified', models.DateTimeField(auto_now=True, verbose_name='last modified')),
+                ('is_center', models.BooleanField(default=False, help_text='Designates that this user is representing a center and not a private person.', verbose_name='center')),
+                ('is_subscriber', models.BooleanField(default=False, help_text='Designates whether this user is a DWBN News subscriber.', verbose_name='subscriber')),
+                ('picture', sorl.thumbnail.fields.ImageField(upload_to=sso.accounts.models.generate_filename, verbose_name='picture', blank=True)),
+                ('notes', models.TextField(max_length=1024, verbose_name='Notes', blank=True)),
+                ('gender', models.CharField(blank=True, max_length=255, verbose_name='gender', choices=[(b'm', 'male'), (b'f', 'female')])),
+                ('dob', models.DateField(null=True, verbose_name='date of birth', blank=True)),
+                ('homepage', models.URLField(max_length=512, verbose_name='homepage', blank=True)),
+                ('language', models.CharField(blank=True, max_length=254, verbose_name='language', choices=[(b'af', b'Afrikaans'), (b'ar', b'Arabic'), (b'ast', b'Asturian'), (b'az', b'Azerbaijani'), (b'bg', b'Bulgarian'), (b'be', b'Belarusian'), (b'bn', b'Bengali'), (b'br', b'Breton'), (b'bs', b'Bosnian'), (b'ca', b'Catalan'), (b'cs', b'Czech'), (b'cy', b'Welsh'), (b'da', b'Danish'), (b'de', b'German'), (b'el', b'Greek'), (b'en', b'English'), (b'en-au', b'Australian English'), (b'en-gb', b'British English'), (b'eo', b'Esperanto'), (b'es', b'Spanish'), (b'es-ar', b'Argentinian Spanish'), (b'es-mx', b'Mexican Spanish'), (b'es-ni', b'Nicaraguan Spanish'), (b'es-ve', b'Venezuelan Spanish'), (b'et', b'Estonian'), (b'eu', b'Basque'), (b'fa', b'Persian'), (b'fi', b'Finnish'), (b'fr', b'French'), (b'fy', b'Frisian'), (b'ga', b'Irish'), (b'gl', b'Galician'), (b'he', b'Hebrew'), (b'hi', b'Hindi'), (b'hr', b'Croatian'), (b'hu', b'Hungarian'), (b'ia', b'Interlingua'), (b'id', b'Indonesian'), (b'io', b'Ido'), (b'is', b'Icelandic'), (b'it', b'Italian'), (b'ja', b'Japanese'), (b'ka', b'Georgian'), (b'kk', b'Kazakh'), (b'km', b'Khmer'), (b'kn', b'Kannada'), (b'ko', b'Korean'), (b'lb', b'Luxembourgish'), (b'lt', b'Lithuanian'), (b'lv', b'Latvian'), (b'mk', b'Macedonian'), (b'ml', b'Malayalam'), (b'mn', b'Mongolian'), (b'mr', b'Marathi'), (b'my', b'Burmese'), (b'nb', b'Norwegian Bokmal'), (b'ne', b'Nepali'), (b'nl', b'Dutch'), (b'nn', b'Norwegian Nynorsk'), (b'os', b'Ossetic'), (b'pa', b'Punjabi'), (b'pl', b'Polish'), (b'pt', b'Portuguese'), (b'pt-br', b'Brazilian Portuguese'), (b'ro', b'Romanian'), (b'ru', b'Russian'), (b'sk', b'Slovak'), (b'sl', b'Slovenian'), (b'sq', b'Albanian'), (b'sr', b'Serbian'), (b'sr-latn', b'Serbian Latin'), (b'sv', b'Swedish'), (b'sw', b'Swahili'), (b'ta', b'Tamil'), (b'te', b'Telugu'), (b'th', b'Thai'), (b'tr', b'Turkish'), (b'tt', b'Tatar'), (b'udm', b'Udmurt'), (b'uk', b'Ukrainian'), (b'ur', b'Urdu'), (b'vi', b'Vietnamese'), (b'zh-cn', b'Simplified Chinese'), (b'zh-hans', b'Simplified Chinese'), (b'zh-hant', b'Traditional Chinese'), (b'zh-tw', b'Traditional Chinese')])),
+                ('admin_countries', models.ManyToManyField(to='l10n.Country', null=True, verbose_name='admin countries', blank=True)),
+            ],
+            options={
+                'abstract': False,
+                'verbose_name': 'user',
+                'verbose_name_plural': 'users',
+                'permissions': (('read_user', 'Can read user data'), ('access_all_users', 'Can access all users')),
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Application',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('order', models.IntegerField(default=0, help_text='Overwrites the alphabetic order.')),
+                ('title', models.CharField(max_length=255)),
+                ('url', models.URLField(max_length=2047, blank=True)),
+                ('uuid', sso.fields.UUIDField(unique=True, max_length=36, editable=False, blank=True)),
+                ('global_navigation', models.BooleanField(default=True, help_text='Designates whether this application should be shown in the global navigation bar.', verbose_name='global navigation')),
+                ('is_active', models.BooleanField(default=True, help_text='Designates whether this application should be provided.', verbose_name='active')),
+            ],
+            options={
+                'ordering': ['order', 'title'],
+                'verbose_name': 'application',
+                'verbose_name_plural': 'applications',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='ApplicationRole',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('is_inheritable_by_org_admin', models.BooleanField(default=True, help_text='Designates that the role can inherited by a organisation admin.', verbose_name='inheritable by center admin')),
+                ('is_inheritable_by_global_admin', models.BooleanField(default=True, help_text='Designates that the role can inherited by a global admin.', verbose_name='inheritable by global admin')),
+                ('application', models.ForeignKey(to='accounts.Application')),
+            ],
+            options={
+                'ordering': ['application', 'role'],
+                'verbose_name': 'application role',
+                'verbose_name_plural': 'application roles',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Role',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(unique=True, max_length=255, verbose_name='name')),
+                ('order', models.IntegerField(default=0, help_text='Overwrites the alphabetic order.')),
+                ('group', models.ForeignKey(blank=True, to='auth.Group', help_text='Associated group for SSO internal permission management.', null=True)),
+            ],
+            options={
+                'ordering': ['order', 'name'],
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='RoleProfile',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('uuid', sso.fields.UUIDField(unique=True, max_length=36, editable=False, blank=True)),
+                ('last_modified', models.DateTimeField(default=django.utils.timezone.now, verbose_name='last modified', auto_now=True)),
+                ('name', models.CharField(max_length=255, verbose_name='name')),
+                ('order', models.IntegerField(default=0, help_text='Overwrites the alphabetic order.')),
+                ('is_inheritable_by_org_admin', models.BooleanField(default=True, help_text='Designates that the role profile can inherited by a organisation admin.', verbose_name='inheritable by center admin')),
+                ('is_inheritable_by_global_admin', models.BooleanField(default=True, help_text='Designates that the role profile can inherited by a global admin.', verbose_name='inheritable by global admin')),
+                ('application_roles', models.ManyToManyField(help_text='Associates a group of application roles that are usually assigned together.', to='accounts.ApplicationRole')),
+            ],
+            options={
+                'ordering': ['order', 'name'],
+                'abstract': False,
+                'get_latest_by': 'last_modified',
+                'verbose_name': 'role profile',
+                'verbose_name_plural': 'role profiles',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='UserAddress',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('uuid', sso.fields.UUIDField(unique=True, max_length=36, editable=False, blank=True)),
+                ('last_modified', models.DateTimeField(default=django.utils.timezone.now, verbose_name='last modified', auto_now=True)),
+                ('addressee', models.CharField(max_length=80, verbose_name='addressee')),
+                ('street_address', models.TextField(help_text='Full street address, with house number, street name, P.O. box, and extended street address information.', max_length=512, verbose_name='street address', blank=True)),
+                ('city', models.CharField(max_length=100, verbose_name='city')),
+                ('postal_code', models.CharField(max_length=30, verbose_name='postal code', blank=True)),
+                ('region', models.CharField(help_text='State or region', max_length=100, verbose_name='region', blank=True)),
+                ('primary', models.BooleanField(default=False, verbose_name='primary')),
+                ('address_type', models.CharField(max_length=20, verbose_name='address type', choices=[(b'home', 'Home'), (b'work', 'Business'), (b'other', 'Other')])),
+                ('country', models.ForeignKey(verbose_name='country', to='l10n.Country')),
+                ('state', smart_selects.db_fields.ChainedForeignKey(blank=True, to='l10n.AdminArea', help_text='State or region', null=True, verbose_name='State')),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+            ],
+            options={
+                'get_latest_by': 'last_modified',
+                'ordering': ['addressee'],
+                'abstract': False,
+                'verbose_name_plural': 'addresses',
+                'verbose_name': 'address',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='UserAssociatedSystem',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('userid', models.CharField(max_length=255)),
+                ('application', models.ForeignKey(to='accounts.Application')),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+            ],
+            options={
+                'verbose_name': 'associated system',
+                'verbose_name_plural': 'associated systems',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='UserPhoneNumber',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('uuid', sso.fields.UUIDField(unique=True, max_length=36, editable=False, blank=True)),
+                ('last_modified', models.DateTimeField(default=django.utils.timezone.now, verbose_name='last modified', auto_now=True)),
+                ('phone', models.CharField(max_length=30, verbose_name='phone number')),
+                ('primary', models.BooleanField(default=False, verbose_name='primary')),
+                ('phone_type', models.CharField(help_text='Mobile, home, office, etc.', max_length=20, verbose_name='phone type', choices=[(b'home', 'Home'), (b'mobile', 'Mobile'), (b'work', 'Business'), (b'fax', 'Fax'), (b'pager', 'Pager'), (b'other', 'Other')])),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+            ],
+            options={
+                'ordering': ['-primary'],
+                'abstract': False,
+                'get_latest_by': 'last_modified',
+                'verbose_name': 'phone number',
+                'verbose_name_plural': 'phone numbers',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.AlterUniqueTogether(
+            name='userassociatedsystem',
+            unique_together=set([('application', 'userid')]),
+        ),
+        migrations.AlterUniqueTogether(
+            name='useraddress',
+            unique_together=set([('user', 'address_type')]),
+        ),
+        migrations.AddField(
+            model_name='applicationrole',
+            name='role',
+            field=models.ForeignKey(to='accounts.Role'),
+            preserve_default=True,
+        ),
+        migrations.AlterUniqueTogether(
+            name='applicationrole',
+            unique_together=set([('application', 'role')]),
+        ),
+    ]

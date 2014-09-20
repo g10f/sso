@@ -11,7 +11,7 @@ from django.core.urlresolvers import reverse
 from sso.registration import default_username_generator
 
 class RegistrationTest(TestCase):
-    fixtures = ['initial_data.json', 'app_roles.json', 'test_l10n_data.xml', 'test_organisation_data.json', 'test_app_roles.json', 'test_user_data.json']
+    fixtures = ['roles.json', 'app_roles.json', 'test_l10n_data.xml', 'test_organisation_data.json', 'test_app_roles.json', 'test_user_data.json']
 
     def setUp(self):
         os.environ['RECAPTCHA_TESTING'] = 'True'

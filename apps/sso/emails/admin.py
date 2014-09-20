@@ -97,6 +97,6 @@ class GroupEmailAdmin(admin.ModelAdmin):
 
 
 class GroupEmailManagerAdmin(admin.ModelAdmin):
-    list_select_related = ('group_email',)
+    list_select_related = ('group_email', )
     list_display = ('group_email', 'manager')
     raw_id_fields = ('manager',)

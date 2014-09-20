@@ -8,74 +8,75 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-06-01 15:43+0200\n"
+"POT-Creation-Date: 2014-09-20 17:13+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
 
-#: .\validators.py:30
+#: passwords/validators.py:30
 #, python-format
 msgid "Invalid Length (%s)."
 msgstr "Ungültige Länge (%s)."
 
-#: .\validators.py:40
+#: passwords/validators.py:40
 #, python-format
 msgid "Must be %s characters or more"
 msgstr "Muss %s oder mehr Zeichen enthalten"
 
-#: .\validators.py:44
+#: passwords/validators.py:44
 #, python-format
 msgid "Must be %s characters or less"
 msgstr "Darf höchstens %s Zeichen enthalten"
 
-#: .\validators.py:48
+#: passwords/validators.py:48
 #, python-format
 msgid "Must be more complex (%s)."
 msgstr "Muss komplexer sein (%s)."
 
-#: .\validators.py:78
+#: passwords/validators.py:78
 #, python-format
 msgid "Must contain %(UPPER)s or more uppercase characters"
 msgstr "Muss %(UPPER)s oder mehr Großbuchstaben enthalten"
 
-#: .\validators.py:82
+#: passwords/validators.py:82
 #, python-format
 msgid "Must contain %(LOWER)s or more lowercase characters"
 msgstr "Muss %(LOWER)s oder mehr Kleinbuchstaben enthalten"
 
-#: .\validators.py:86
+#: passwords/validators.py:86
 #, python-format
 msgid "Must contain %(DIGITS)s or more digits"
 msgstr "Muss %(DIGITS)s oder mehr Ziffern enthalten"
 
-#: .\validators.py:90
+#: passwords/validators.py:90
 #, python-format
 msgid "Must contain %(PUNCTUATION)s or more punctuation character"
 msgstr "Muss %(PUNCTUATION)s oder mehr Satzzeichen enthalten"
 
-#: .\validators.py:94
+#: passwords/validators.py:94
 #, python-format
 msgid "Must contain %(NON ASCII)s or more non ascii characters"
 msgstr "Muss %(NON ASCII)s oder nicht ASCII Zeichen enthalten"
 
-#: .\validators.py:98
+#: passwords/validators.py:98
 #, python-format
 msgid "Must contain %(WORDS)s or more unique words"
 msgstr "Muss %(WORDS)s oder mehr eindeutige Wörter enthalten"
 
-#: .\validators.py:103
+#: passwords/validators.py:103
 #, python-format
 msgid "Too Similar to [%(haystacks)s]."
 msgstr ""
 
-#: .\validators.py:139
+#: passwords/validators.py:139
 msgid "Based on a dictionary word."
 msgstr ""
 
-#: .\validators.py:155
+#: passwords/validators.py:155
 msgid "Based on a common sequence of characters."
 msgstr "Basiert auf einer geläufigen Folge von Zeichen."

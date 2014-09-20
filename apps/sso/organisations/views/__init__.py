@@ -332,7 +332,7 @@ class OrganisationList(ListView):
         Get the list of items for this view. This must be an iterable, and may
         be a queryset (in which qs-specific behavior will be enabled).
         """
-          
+        
         self.cl = main.ChangeList(self.request, self.model, self.get_list_display(), default_ordering=self.get_default_ordering())
         qs = super(OrganisationList, self).get_queryset().select_related('country', 'email')
         

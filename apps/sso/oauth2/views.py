@@ -20,7 +20,6 @@ from django.contrib.auth.decorators import permission_required, login_required
 from django.shortcuts import render, get_object_or_404, resolve_url
 from oauthlib import oauth2
 from oauthlib.common import urlencode
-from sso.api.decorators import condition
 from http.http_status import *  # @UnusedWildImport
 from utils.url import base_url
 from utils.convert import pack_bigint

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-03-21 08:45+0100\n"
+"POT-Creation-Date: 2014-09-20 17:13+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,10 +18,30 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
 
-#: .\email_auth.py:39
-msgid "Username or E-mail"
-msgstr "Benutzername oder E-mail"
+#: sso/auth/forms.py:11
+msgid "Please enter your Email address or Username."
+msgstr "Bitte trage Deine E-Mail Adresse oder Deinen Benutzername ein."
 
-#: .\email_auth.py:39
-msgid "Please use your username or email."
-msgstr "Verwende bitte Deinen Benutzernamen oder E-mail Adresse"
+#: sso/auth/forms.py:12 sso/auth/forms.py:13
+msgid "Email address or Username"
+msgstr "E-Mail Adresse oder Benutzername"
+
+#: sso/auth/forms.py:15 sso/auth/forms.py:17
+msgid "Password"
+msgstr "Passwort"
+
+#: sso/auth/forms.py:16
+msgid "Please enter your Password."
+msgstr "Bitte trage Dein Passwort ein."
+
+#: sso/auth/hashers.py:35 sso/auth/hashers.py:74
+msgid "algorithm"
+msgstr ""
+
+#: sso/auth/hashers.py:36 sso/auth/hashers.py:75
+msgid "salt"
+msgstr ""
+
+#: sso/auth/hashers.py:37 sso/auth/hashers.py:76
+msgid "hash"
+msgstr ""
