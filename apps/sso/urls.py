@@ -9,6 +9,7 @@ from sso.admin import sso_admin_site
 
 registration_site = RegistrationSite(form_cls=UserSelfRegistrationForm2)
 
+
 urlpatterns = patterns(
     '',
     url(r'^admin/', include(sso_admin_site.urls)),

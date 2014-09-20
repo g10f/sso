@@ -8,73 +8,74 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-06-01 15:43+0200\n"
+"POT-Creation-Date: 2014-09-20 17:13+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: .\validators.py:30
+#: passwords/validators.py:30
 #, python-format
 msgid "Invalid Length (%s)."
 msgstr ""
 
-#: .\validators.py:40
+#: passwords/validators.py:40
 #, python-format
 msgid "Must be %s characters or more"
 msgstr ""
 
-#: .\validators.py:44
+#: passwords/validators.py:44
 #, python-format
 msgid "Must be %s characters or less"
 msgstr ""
 
-#: .\validators.py:48
+#: passwords/validators.py:48
 #, python-format
 msgid "Must be more complex (%s)."
 msgstr ""
 
-#: .\validators.py:78
+#: passwords/validators.py:78
 #, python-format
 msgid "Must contain %(UPPER)s or more uppercase characters"
 msgstr ""
 
-#: .\validators.py:82
+#: passwords/validators.py:82
 #, python-format
 msgid "Must contain %(LOWER)s or more lowercase characters"
 msgstr ""
 
-#: .\validators.py:86
+#: passwords/validators.py:86
 #, python-format
 msgid "Must contain %(DIGITS)s or more digits"
 msgstr ""
 
-#: .\validators.py:90
+#: passwords/validators.py:90
 #, python-format
 msgid "Must contain %(PUNCTUATION)s or more punctuation character"
 msgstr ""
 
-#: .\validators.py:94
+#: passwords/validators.py:94
 #, python-format
 msgid "Must contain %(NON ASCII)s or more non ascii characters"
 msgstr ""
 
-#: .\validators.py:98
+#: passwords/validators.py:98
 #, python-format
 msgid "Must contain %(WORDS)s or more unique words"
 msgstr ""
 
-#: .\validators.py:103
+#: passwords/validators.py:103
 #, python-format
 msgid "Too Similar to [%(haystacks)s]."
 msgstr ""
 
-#: .\validators.py:139
+#: passwords/validators.py:139
 msgid "Based on a dictionary word."
 msgstr ""
 
-#: .\validators.py:155
+#: passwords/validators.py:155
 msgid "Based on a common sequence of characters."
 msgstr ""

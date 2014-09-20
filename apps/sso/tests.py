@@ -2,10 +2,11 @@
 import os
 from django.core.urlresolvers import reverse
 
-from django.test import LiveServerTestCase 
+# from django.test import LiveServerTestCase 
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium.webdriver.firefox.webdriver import WebDriver
 
-class SSOSeleniumTests(LiveServerTestCase):
+class SSOSeleniumTests(StaticLiveServerTestCase):
     # fixtures = ['user_data.json']
 
     @classmethod

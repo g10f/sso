@@ -33,7 +33,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-SUPERUSER_ROLE = 'Superuser'
+# SUPERUSER_ROLE = 'Superuser'
 # STAFF_ROLE = 'Staff'
 # USER_ROLE = 'User'
 
@@ -143,15 +143,15 @@ class RoleProfile(AbstractBaseModel):
 def get_filename(filename):
     return os.path.normpath(get_valid_filename(os.path.basename(filename)))
 
+def generate_filename(instance, filename):
+    return u'image/%s/%s' % (instance.uuid, get_filename(filename.encode('ascii', 'replace'))) 
+
 
 class User(AbstractUser):
     GENDER_CHOICES = [
         ('m', _('male')),
         ('f', _('female'))
-    ]
-    
-    def generate_filename(self, filename):
-        return u'image/%s/%s' % (self.uuid, get_filename(filename.encode('ascii', 'replace'))) 
+    ]    
 
     uuid = UUIDField(version=4, editable=True, unique=True)
     organisations = models.ManyToManyField(Organisation, verbose_name=_('organisations'), blank=True, null=True)

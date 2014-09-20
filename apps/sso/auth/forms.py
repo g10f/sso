@@ -6,7 +6,8 @@ from django.utils.text import capfirst
 from sso.forms import bootstrap
 
 class EmailAuthenticationForm(AuthenticationForm):
-    username = forms.CharField(max_length=75,
+    username = forms.CharField(
+        max_length=75,
         error_messages={'required': _('Please enter your Email address or Username.')}, 
         label=_("Email address or Username"), 
         widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('Email address or Username')), 'autofocus': ''}))

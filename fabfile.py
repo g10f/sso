@@ -9,7 +9,8 @@ from fabtools import require
 import fabtools
 
 env.use_ssh_config = True
-env.apps = ['sso']
+# env.apps = ['sso']  # no longer used
+
 # map valid  server names to enviroments, to ensure we deploy accurately
 valid_server_names = {
     'g10f': ['dwbn-sso.g10f.de', 'sso.g10f.de', 'sso.elsapro.com'],
@@ -158,15 +159,13 @@ def compileless(version='1.0.6'):
 
 @task
 def compilemessages():
-    for app in env.apps:
-        with lcd('apps/%s' % app):
-            local('django-admin.py compilemessages')
+    with lcd('apps'):
+        local('~/envs/sso/bin/python ./manage.py compilemessages')
 
 @task
 def makemessages():
-    for app in env.apps:
-        with lcd('apps/%s' % app):
-            local('django-admin.py makemessages -a')
+    with lcd('apps'):
+        local('~/envs/sso/bin/python ./manage.py makemessages -a')
 
 @task 
 def test():
@@ -229,6 +228,7 @@ def deploy_database(db_name):
     require.postgres.server()
     require.postgres.user(db_name, db_name)
     require.postgres.database(db_name, db_name)
+    fabtools.postgres._run_as_pg("SET ROLE sso; CREATE EXTENSION IF NOT EXISTS postgis;")
 
 def deploy_webserver(code_dir, server_name):
     # Require an nginx server proxying to our app
