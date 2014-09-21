@@ -97,7 +97,7 @@ def get_near_organisations(current_point, distance_from_point=None, qs=None, ord
     """
     if current_point is None:
         return Organisation.objects.none()
-    if qs:
+    if qs is not None:
         organisations = qs
     else:
         organisations = Organisation.objects.all()

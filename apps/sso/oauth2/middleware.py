@@ -4,6 +4,8 @@ from django.contrib import auth
 from django.contrib.auth import get_user_model
 from django.core import signing
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils.crypto import constant_time_compare
+
 from .crypt import loads_jwt
 from .models import Client
 
@@ -23,8 +25,16 @@ def get_user_and_client_from_token(access_token):
         if not access_token:
             return (auth.models.AnonymousUser(), None, set())
         data = loads_jwt(access_token)
-        user = get_user_model().objects.get(uuid=data['sub'])
         client = Client.objects.get(uuid=data['aud'])
+        
+        session_hash = data.get('sa_hash')
+        session_hash_verified = session_hash and \
+            constant_time_compare(session_hash, client.get_session_auth_hash())
+        if not session_hash_verified:
+            logger.error('session_ hash verification failed. jwt data: %s', data)
+            return (auth.models.AnonymousUser(), None, set())
+        
+        user = get_user_model().objects.get(uuid=data['sub'])
         scopes = set()
         if data.get('scope'):
             scopes = set(data['scope'].split())
@@ -60,14 +70,31 @@ def get_auth_data(request):
         if not hasattr(request, '_cached_auth_data'):
             # try django auth session
             try:
-                # A client id for the Browser
+                # A client id for using the API in the Browser
                 client = Client.objects.get(uuid='ca96cd88bc2740249d0def68221cba88') 
                 scopes = set(client.scopes.split())
             except ObjectDoesNotExist:
                 client = None
                 scopes = set()
-                
-            request._cached_auth_data = auth.get_user(request), client, scopes
+            
+            user = auth.get_user(request)
+            
+            # from 'django.contrib.auth.middleware.SessionAuthenticationMiddleware'
+            # Invalidating a user's sessions that don't correspond to the
+            # user's current session authentication hash (generated based on the user's
+            # password for AbstractUser).
+            if user and hasattr(user, 'get_session_auth_hash'):
+                session_hash = request.session.get(auth.HASH_SESSION_KEY)
+                session_hash_verified = session_hash and constant_time_compare(
+                    session_hash,
+                    user.get_session_auth_hash()
+                )
+                if not session_hash_verified:
+                    from django.contrib.auth.models import AnonymousUser
+                    request.session.flush()
+                    user = AnonymousUser()
+            
+            request._cached_auth_data = user, client, scopes
     return request._cached_auth_data
 
 

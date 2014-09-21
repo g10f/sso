@@ -3,12 +3,10 @@ import os
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.utils.dateformat import format
-from django.contrib.auth.hashers import check_password
 
 from utils.ucsv import UnicodeReader, UnicodeWriter, dic_from_csv
 
-from sso.accounts.models import User, UserAssociatedSystem, Application, RoleProfile
-from streaming.models import StreamingUser
+from sso.accounts.models import User, RoleProfile
 
 import logging
 
@@ -36,27 +34,7 @@ def remove_profile():
     for user in user_list:
         user.role_profiles.remove(centerprofile)
         print user
-        
-    
-def testpwd():
-    streaming_app = Application.objects.get(uuid='c362bea58c67457fa32234e3178285c4')
-    # user_list = User.objects.filter(is_center=True) #, userassociatedsystem__isnull=True)
-    user_list = User.objects.filter(is_center=True, userassociatedsystem__application=streaming_app)
-    print(len(user_list))
-    for user in user_list:
-        email = UserAssociatedSystem.objects.get(user=user, application=streaming_app).userid
-        # email = user.email
-        try:
-            sql = "SELECT * FROM streaming_user WHERE LOWER(email) LIKE LOWER(%(email)s)"
-            streaminguser = StreamingUser.objects.raw(sql, {'email': email})[0]
-            # streaminguser = StreamingUser.objects.get(email__iexact=email)
-            if streaminguser:
-                raw_password = streaminguser.password.decode("base64")                
-                if not check_password(raw_password, user.password):
-                    print user, user.last_login
-        except IndexError:
-            pass
-  
+
 
 def cleanup():
     file_name = os.path.join(settings.BASE_DIR, '../data/dharmashop_user.csv')

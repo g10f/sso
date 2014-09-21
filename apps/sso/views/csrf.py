@@ -1,6 +1,6 @@
+from django.shortcuts import render
 from django.template import Context
 from django.utils.translation import ugettext as _
-from django.shortcuts import render
 
 
 def csrf_failure(request, reason="", template='csrf_failure.html'):
@@ -12,4 +12,4 @@ def csrf_failure(request, reason="", template='csrf_failure.html'):
         'no_referer': reason == REASON_NO_REFERER,
         'no_cookie': reason == REASON_NO_CSRF_COOKIE,
     })
-    return render(request, template, c, status=403)
+    return render(request, template, context_instance=c, status=403)
