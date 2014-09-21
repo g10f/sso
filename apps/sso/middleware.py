@@ -21,9 +21,9 @@ class CookieProlongationMiddleware(object):
             # for process_request methods and begins to run process_response methods.
             return response
         
-        if (settings.SESSION_ENGINE in ['django.contrib.sessions.backends.signed_cookies', 'sso.sessions.backends'])\
-        and (settings.SESSION_SAVE_EVERY_REQUEST == False)\
-        and (auth.SESSION_KEY in session):
+        if (settings.SESSION_ENGINE in ['django.contrib.sessions.backends.signed_cookies', 'sso.sessions.backends']) \
+                and not settings.SESSION_SAVE_EVERY_REQUEST \
+                and (auth.SESSION_KEY in session):
             last_modified = session.get('last_modified')
             now = int(time.time())
             

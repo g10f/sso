@@ -24,7 +24,7 @@ def get_iss_from_absolute_uri(abs_uri):
     (scheme, netloc, path, query, fragment) = urlparse.urlsplit(abs_uri)  # @UnusedVariable
     return "%s://%s" % (scheme, netloc)
 
-    
+ 
 def default_token_generator(request, max_age=MAX_AGE, refresh_token=False):
     if refresh_token:
         return random_token_generator(request, refresh_token=True)
@@ -37,6 +37,9 @@ def default_token_generator(request, max_age=MAX_AGE, refresh_token=False):
             'exp': int(time.time()) + max_age,  # required
             'iat': int(time.time()),  # required
             'scope': ' '.join(request.scopes),  # custom, required
+            # session authentication hash, 
+            # see django.contrib.auth.middleware.SessionAuthenticationMiddleware
+            'sa_hash': request.client.get_session_auth_hash(),  # custom, required
         }
         return make_jwt(claim_set)
 

@@ -9,7 +9,7 @@ from django.http import QueryDict
 from django.utils.translation import ugettext_lazy as _
 from sso.accounts.models import Application
 from sso.models import AbstractBaseModel
-from django.utils.crypto import get_random_string
+from django.utils.crypto import get_random_string, salted_hmac
 
 import logging
 logger = logging.getLogger(__name__)
@@ -94,6 +94,10 @@ class Client(AbstractBaseModel):
     def client_id(self):
         return self.uuid
 
+    def get_session_auth_hash(self):
+        key_salt = "sso.oauth2.models.Client"
+        return salted_hmac(key_salt, self.client_secret).hexdigest()
+        
     def get_absolute_url(self):
         return reverse('oauth2:client.details.json', args=[str(self.id)])
 

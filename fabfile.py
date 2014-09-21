@@ -9,7 +9,7 @@ from fabtools import require
 import fabtools
 
 env.use_ssh_config = True
-# env.apps = ['sso']  # no longer used
+env.apps = ['sso']
 
 # map valid  server names to enviroments, to ensure we deploy accurately
 valid_server_names = {
@@ -159,13 +159,15 @@ def compileless(version='1.0.6'):
 
 @task
 def compilemessages():
-    with lcd('apps'):
-        local('~/envs/sso/bin/python ./manage.py compilemessages')
+    for app in env.apps:
+        with lcd('apps/%s' % app):
+            local('django-admin.py compilemessages')
 
 @task
 def makemessages():
-    with lcd('apps'):
-        local('~/envs/sso/bin/python ./manage.py makemessages -a')
+    for app in env.apps:
+        with lcd('apps/%s' % app):
+            local('django-admin.py makemessages -a')
 
 @task 
 def test():
@@ -179,23 +181,16 @@ def prepare_deploy():
     local("git commit -a")
     local("git push -u origin master")
 
+
 @task
 def perms():
     django.manage.run(command="update_permissions")
 
-def migrate_data(python, server_name, code_dir, app):
-    #sudo("%s ./src/apps/manage.py syncdb --noinput" % python, user='www-data', group='www-data')
-    sudo("%s ./src/apps/manage.py migrate emails" % python, user='www-data', group='www-data')
-    sudo("%s ./src/apps/manage.py migrate organisations" % python, user='www-data', group='www-data')
-    sudo("%s ./src/apps/manage.py migrate accounts" % python, user='www-data', group='www-data')
-    #sudo("%s ./src/apps/manage.py migrate accounts 0001 --fake" % python, user='www-data', group='www-data')
-    #sudo("%s ./src/apps/manage.py migrate accounts" % python, user='www-data', group='www-data')
-    #sudo("%s ./src/apps/manage.py migrate registration 0001 --fake" % python, user='www-data', group='www-data')
-    #sudo("%s ./src/apps/manage.py migrate registration" % python, user='www-data', group='www-data')
-    #sudo("%s ./src/apps/manage.py migrate oauth2 0001 --fake" % python, user='www-data', group='www-data')
-    #sudo("%s ./src/apps/manage.py migrate oauth2" % python, user='www-data', group='www-data')
 
-    #sudo("%s ./src/apps/manage.py loaddata l10n_data.xml" % python, user='www-data', group='www-data')
+def migrate_data(python, server_name, code_dir, app):
+    pass
+    # sudo("%s ./src/apps/manage.py migrate" % python, user='www-data', group='www-data')
+    # sudo("%s ./src/apps/manage.py loaddata l10n_data.xml" % python, user='www-data', group='www-data')
 
 @task
 def createsuperuser(server_name='', virtualenv='sso'): 
