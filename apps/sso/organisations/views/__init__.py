@@ -49,13 +49,6 @@ class OrganisationBaseView(object):
         if return_url and is_safe_url(return_url):
             return return_url        
         return ""
-    """
-    def get_initial(self):
-        initial = self.initial.copy()
-        if self.object:  # update view
-            initial['google_maps_url'] = self.object.google_maps_url
-        return initial           
-    """
     
     def get_context_data(self, **kwargs):
         """

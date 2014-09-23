@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 from django.utils.translation import ugettext_lazy as _
-# from django.contrib.gis import geos
-# from django.contrib.gis.forms.widgets import OSMWidget
-from django.forms import ModelChoiceField, ModelMultipleChoiceField, ValidationError  # , CharField
+from django.forms import ModelChoiceField, ModelMultipleChoiceField, ValidationError
 from l10n.models import Country 
 from sso.forms import bootstrap, BaseForm, BaseTabularInlineForm
 from sso.forms.fields import EmailFieldLower

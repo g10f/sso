@@ -28,14 +28,15 @@ class Command(NoArgsCommand):
         cee_dharmashop_guest = ApplicationRole.objects.get_or_create(application=application, role=guest_role)[0]
         cee_app_roles += [cee_dharmashop_user, cee_dharmashop_guest]
 
-        users = User.objects.filter(organisations__iso2_code__in=['CZ', 'SK', 'PL', 'RU', 'UA', 'RO', 'RS', 'HR', 'GR', 'BG', 'EE', 'LV']).\
-                                            exclude(application_roles__in=[cee_dharmashop_user, cee_dharmashop_guest])
+        users = User.objects.filter(
+            organisations__iso2_code__in=['CZ', 'SK', 'PL', 'RU', 'UA', 'RO', 'RS', 'HR', 'GR', 'BG', 'EE', 'LV']).\
+            exclude(application_roles__in=[cee_dharmashop_user, cee_dharmashop_guest])
         for user in users:
             print user.get_full_name()
             for app_role in cee_app_roles:
                 user.application_roles.add(app_role)
-                #pass
+                # pass
                        
             for app_role in eu_app_roles:
-                #pass
+                # pass
                 user.application_roles.remove(app_role)

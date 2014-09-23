@@ -141,8 +141,6 @@ class Organisation(AbstractBaseModel):
     country = models.ForeignKey(Country, verbose_name=_("country"), null=True, limit_choices_to={'active': True})
     admin_region = ChainedForeignKey(AdminRegion, chained_field='country', chained_model_field="country", verbose_name=_("admin region"), blank=True, null=True,
                                      limit_choices_to={'is_active': True}) 
-    # country = models.ForeignKey(Country, verbose_name=_("country"), null=True)
-    # email = models.EmailField(_('email address'))
     email = models.ForeignKey(Email, verbose_name=_("email address"), blank=True, null=True, limit_choices_to={'email_type': CENTER_EMAIL_TYPE},
                               on_delete=models.SET_NULL)
     homepage = models.URLField(_("homepage"), blank=True,)
@@ -153,7 +151,7 @@ class Organisation(AbstractBaseModel):
     coordinates_type = models.CharField(_('coordinates type'), max_length=1, choices=COORDINATES_TYPE_CHOICES, default='3', db_index=True)    
     latitude = models.DecimalField(_("latitude"), max_digits=9, decimal_places=6, blank=True, null=True)
     longitude = models.DecimalField(_("longitude"), max_digits=9, decimal_places=6, blank=True, null=True)
-    location = gis_models.PointField(u"longitude/latitude", geography=True, blank=True, null=True)
+    location = gis_models.PointField(_("longitude/latitude"), geography=True, blank=True, null=True)
     is_active = models.BooleanField(_('active'), 
                                     default=True,
                                     help_text=_('Designates whether this buddhist center should be treated as '
@@ -165,7 +163,6 @@ class Organisation(AbstractBaseModel):
     can_publish = models.BooleanField(_("publish"), 
                                       help_text=_('Designates whether this buddhist center data can be published.'), 
                                       default=True)
-    # admin_region = models.ForeignKey(AdminRegion, verbose_name=_("admin region"), blank=True, null=True)
     # history = HistoricalRecords()
     
     objects = GeoManager()
