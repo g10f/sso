@@ -107,7 +107,7 @@ class OrganisationEmailAdminForm(OrganisationBaseForm):
         the new email address must be ending with @diamondway-center.org
         """
         email_value = self.cleaned_data['email_value']
-        if (email_value[-22:] != '@diamondway-center.org'):
+        if email_value[-22:] != '@diamondway-center.org':
             msg = _('The email address of the center must be ending with @diamondway-center.org')
             raise ValidationError(msg)
         
@@ -274,7 +274,7 @@ class AdminRegionForm(BaseForm):
         the new email address must be ending with @diamondway-center.org
         """
         email_value = self.cleaned_data['email_value']
-        if (email_value[-22:] != '@diamondway-center.org'):
+        if email_value[-22:] != '@diamondway-center.org':
             msg = _('The email address of the center must be ending with @diamondway-center.org')
             raise ValidationError(msg)
         
@@ -332,7 +332,7 @@ class OrganisationCountryForm(BaseForm):
         the new email address must be ending with @diamondway-center.org
         """
         email_value = self.cleaned_data['email_value']
-        if (email_value[-22:] != '@diamondway-center.org'):
+        if email_value[-22:] != '@diamondway-center.org':
             msg = _('The email address of the center must be ending with @diamondway-center.org')
             raise ValidationError(msg)
         

@@ -181,7 +181,7 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
         # You did save the redirect uri with the authorization code right?
         try:
             authorization_code = AuthorizationCode.objects.get(code=code, client__uuid=client_id, is_valid=True)
-            if (authorization_code.redirect_uri == redirect_uri):
+            if authorization_code.redirect_uri == redirect_uri:
                 return True
             else:
                 return False

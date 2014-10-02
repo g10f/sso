@@ -13,7 +13,7 @@ def unicode_sorter(sorter_input):
     
     # key2: sort the lowercase word before the uppercase word and sort
     # the word with umlaut after the word without umlaut
-    #key2=sorter_input.swapcase()
+    # key2=sorter_input.swapcase()
     
     # in case two words are the same according to key1, sort the words
     # according to key2. 

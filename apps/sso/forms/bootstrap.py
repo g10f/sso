@@ -25,12 +25,14 @@ class Widget(forms.Widget):
         super(Widget, self).__init__(attrs, **kwargs)
     
     def add_required(self):
-        return  # does not work with inline formsets
+        # does not work with inline formsets
+        """
         if self.is_required:
             if self.attrs is None:
                 self.attrs = {}
             self.attrs['required'] = ''
-        
+        """
+
     
 def add_to_css_class(classes, new_class):
     new_class = new_class.strip()
@@ -283,7 +285,7 @@ class SelectDateWidget(Widget):
         output.append('</div>')
         return mark_safe(u'\n'.join(output))
 
-    def id_for_label(self, id_):
+    def id_for_label(cls, id_):
         first_select = None
         field_list = _parse_date_fmt()
         if field_list:

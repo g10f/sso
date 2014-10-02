@@ -1,7 +1,7 @@
 from smart_selects.widgets import ChainedSelect
 from django.forms.models import ModelChoiceField
 from django.forms import ChoiceField
-from django.db.models import get_model
+from django.db.models.loading import get_model
 
 
 class ChainedModelChoiceField(ModelChoiceField):
@@ -51,6 +51,6 @@ class GroupedModelSelect(ModelChoiceField):
         return final
 
     def make_choice(self, obj):
-        return (obj.pk, "   " + self.label_from_instance(obj))
+        return obj.pk, "   " + self.label_from_instance(obj)
 
     choices = property(_get_choices, ChoiceField._set_choices)

@@ -23,7 +23,7 @@ class IterableLazyObject(SimpleLazyObject):
 def get_user_and_client_from_token(access_token):
     try:
         if not access_token:
-            return (auth.models.AnonymousUser(), None, set())
+            return auth.models.AnonymousUser(), None, set()
         data = loads_jwt(access_token)
         client = Client.objects.get(uuid=data['aud'])
         
@@ -32,15 +32,15 @@ def get_user_and_client_from_token(access_token):
             constant_time_compare(session_hash, client.get_session_auth_hash())
         if not session_hash_verified:
             logger.error('session_ hash verification failed. jwt data: %s', data)
-            return (auth.models.AnonymousUser(), None, set())
+            return auth.models.AnonymousUser(), None, set()
         
         user = get_user_model().objects.get(uuid=data['sub'])
         scopes = set()
         if data.get('scope'):
             scopes = set(data['scope'].split())
     except (ObjectDoesNotExist, signing.BadSignature, ValueError):
-        return (auth.models.AnonymousUser(), None, set())
-    return (user, client, scopes)
+        return auth.models.AnonymousUser(), None, set()
+    return user, client, scopes
 
 
 def get_auth_data(request):

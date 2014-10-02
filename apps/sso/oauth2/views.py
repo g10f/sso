@@ -19,7 +19,7 @@ from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth.decorators import permission_required, login_required
 from django.shortcuts import render, get_object_or_404, resolve_url
 from oauthlib import oauth2
-from oauthlib.common import urlencode
+from oauthlib.common import urlencode, urlencoded, quote
 from http.http_status import *  # @UnusedWildImport
 from utils.url import base_url
 from utils.convert import pack_bigint
@@ -32,9 +32,23 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
+def _get_escaped_full_path(request):
+    """
+    Django considers "safe" some characters that aren't so for oauthlib. We have to search for
+    them and properly escape.
+    """
+    uri = request.build_absolute_uri()
+    parsed = list(urlparse(uri))
+    unsafe = set(c for c in parsed[4]).difference(urlencoded)
+    for c in unsafe:
+        parsed[4] = parsed[4].replace(c, quote(c, safe=''))
+    return urlunparse(parsed)
+
+
 def extract_params(request):
     logger.debug('Extracting parameters from request.')
-    uri = request.build_absolute_uri()
+    uri = _get_escaped_full_path(request)
     http_method = request.method
     headers = request.META
     if 'wsgi.input' in headers:

@@ -64,7 +64,8 @@ def index(request):
     """
     return HttpResponse("Test view")
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(r'^$', throttle()(index), name='test_default'),
     url(r'^method/$', throttle(method='GET')(index), name='test_method'),
     url(r'^duration/$', throttle(duration=0)(index), name='test_duration'),

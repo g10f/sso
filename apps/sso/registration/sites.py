@@ -20,11 +20,12 @@ class RegistrationSite(object):
         self.username_generator = username_generator
     
     def get_urls(self):
-        urlpatterns = patterns('',
+        urlpatterns = patterns(
+            '',
             # registration
             url(r'^register/validate/complete/$', TemplateView.as_view(template_name='registration/validation_complete.html'), name='validation_complete'),
             url(r'^register/validate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', validation_confirm, name='validation_confirm'),
-            #url(r'^register/$', register, {'form_cls': self.form_cls}, name='registration_register'),
+            # url(r'^register/$', register, {'form_cls': self.form_cls}, name='registration_register'),
             url(r'^register/$', UserSelfRegistrationFormPreview(self.form_cls), name='registration_register'),
             url(r'^register/done/$', TemplateView.as_view(template_name='registration/registration_done.html'), name='registration_done'),
             url(r'^register/closed/$', TemplateView.as_view(template_name='registration/registration_closed.html'), name='registration_disallowed'),

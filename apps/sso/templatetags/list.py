@@ -1,5 +1,4 @@
 from django.utils.html import format_html
-#from django.utils.safestring import mark_safe
 from django.template import Library
 from sso.views.main import PAGE_VAR
 

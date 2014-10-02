@@ -6,7 +6,7 @@
         <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" role="menu">
-        {% if filter.selected %}<li><a tabindex="-1" href="{% query_string cl filter.param_name '' filter.all_remove %}"">{{ filter.select_all_text }}</a></li>{% endif %}
+        {% if filter.selected %}<li><a tabindex="-1" href="{% query_string cl filter.param_name '' filter.all_remove %}">{{ filter.select_all_text }}</a></li>{% endif %}
         {% for item in filter.list %}
             <li><a tabindex="-1" href="{% query_string cl filter.param_name item.pk filter.remove %}">{{ item }}</a></li>
         {% endfor %}

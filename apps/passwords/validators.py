@@ -111,7 +111,7 @@ class BaseSimilarityValidator(object):
         m, n = len(needle), len(haystack)
 
         if m == 1:
-            if not needle in haystack:
+            if needle not in haystack:
                 return -1
         if not n:
             return m

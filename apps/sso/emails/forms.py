@@ -19,7 +19,7 @@ class EmailForwardForm(BaseForm):
         }
         
     def __init__(self, *args, **kwargs):
-        return super(EmailForwardForm, self).__init__(*args, **kwargs)
+        super(EmailForwardForm, self).__init__(*args, **kwargs)
 
 
 class EmailForwardInlineForm(BaseTabularInlineForm):

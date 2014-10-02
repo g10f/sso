@@ -43,7 +43,7 @@ def lookup_translation(obj, attr, language_code=None, version=-1):
     trans = None
     has_key = language_code in obj._translationcache
     if has_key:
-        if obj._translationcache[language_code] == None and short_code != language_code:
+        if obj._translationcache[language_code] is None and short_code != language_code:
             return lookup_translation(obj, attr, short_code)
 
     if not has_key:

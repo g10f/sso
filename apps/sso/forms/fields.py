@@ -14,4 +14,4 @@ class EmailFieldLower(fields.EmailField):
     def __init__(self, max_length=None, min_length=None, *args, **kwargs):
         if 'label' not in kwargs:
             kwargs['label'] = _('email address')
-        return super(EmailFieldLower, self).__init__(max_length=None, min_length=None, *args, **kwargs)
+        super(EmailFieldLower, self).__init__(max_length=max_length, min_length=min_length, *args, **kwargs)

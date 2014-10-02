@@ -36,16 +36,16 @@ def throttle(method='POST', duration=15, max_calls=1, response=None):
     """
     def decorator(func):
         if response:
-            if not isinstance(response, HttpResponse) and  not callable(response):
-                raise TypeError("The `response` keyword argument must " + \
-                                 "be a either HttpResponse instance or " + \
-                                 "callable with `request` argument.    ")
+            if not isinstance(response, HttpResponse) and not callable(response):
+                raise TypeError("The `response` keyword argument must " + 
+                                "be a either HttpResponse instance or " + 
+                                "callable with `request` argument.    ")
         
         @wraps(func, assigned=available_attrs(func))
         def inner(request, *args, **kwargs):
             if request.method == method and (os.environ.get('THROTTELING_DISABLED', None) != 'True'):
                 remote_addr = request.META.get('HTTP_X_FORWARDED_FOR') or \
-                              request.META.get('REMOTE_ADDR')
+                    request.META.get('REMOTE_ADDR')
                 path = request.get_full_path()
                 key = hashlib.md5('{addr}.{path}'.format(addr=remote_addr, path=path)).hexdigest()
                 

@@ -25,7 +25,7 @@ def csv_map(reader, key_row=0):
                 print "Warning: empty row"
                 continue
             try:
-                n = n + 1
+                n += 1
                 if n == 1:
                     first_row = row
                     continue

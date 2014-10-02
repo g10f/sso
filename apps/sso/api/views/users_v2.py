@@ -92,11 +92,9 @@ class UserMixin(object):
                 applicationroles = obj.get_applicationroles()
                      
                 for application in obj.get_apps():
-                    application_data = {
-                        'order': application.order, 
-                        'link': {'href': application.url, 'title': application.title, 'global_navigation': application.global_navigation}
-                    }
-                    application_data['roles'] = []
+                    application_data = {'order': application.order,
+                                        'link': {'href': application.url, 'title': application.title,
+                                                 'global_navigation': application.global_navigation}, 'roles': []}
                     for applicationrole in applicationroles:
                         if applicationrole.application == application:
                             application_data['roles'].append(applicationrole.role.name)
@@ -201,9 +199,15 @@ class UserDetailView(UserMixin, JsonDetailView):
         first update existing objects and then delete the missing objects, before adding new,
         because of database constrains (i.e. (user, address_type) is unique) 
         """
+
+        # when there is no user detail we change nothing
+        # to delete the address for example, you must send an empty addresses dictionary  
+        if name not in data:
+            return
+        
         new_object_keys = []
         changed_object_keys = []
-        # update existing 
+        # update existing
         for key, value in data[name].items():
             try:
                 cls_obj = cls.objects.get(uuid=key, user=self.object)
@@ -212,12 +216,12 @@ class UserDetailView(UserMixin, JsonDetailView):
                 changed_object_keys.append(key)
             except ObjectDoesNotExist:
                 new_object_keys.append(key)
-        
         # delete 
         cls.objects.filter(user=self.object).exclude(uuid__in=changed_object_keys).delete()
         
         # add new 
         for key in new_object_keys:
+            value = data[name][key]
             obj_data = map_dict2dict(mapping, value)
             obj_data['uuid'] = key
             obj_data['user'] = self.object

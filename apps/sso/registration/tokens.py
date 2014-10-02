@@ -56,7 +56,7 @@ class RegistrationTokenGenerator(object):
         registered_timestamp = profile.date_registered.replace(microsecond=0, tzinfo=None)
 
         value = (unicode(profile.id) + unicode(profile.is_validated) +
-                unicode(registered_timestamp) + unicode(timestamp))
+                 unicode(registered_timestamp) + unicode(timestamp))
         hash = salted_hmac(key_salt, value).hexdigest()[::2]  # @ReservedAssignment
         return "%s-%s" % (ts_b36, hash)
 
