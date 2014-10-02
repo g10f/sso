@@ -321,6 +321,7 @@ class MyGlobalNavigationView(GlobalNavigationView):
     @method_decorator(csrf_exempt)
     @method_decorator(catch_errors)  
     @method_decorator(condition(last_modified_and_etag_func=get_last_modified_and_etag_for_me))
+    @method_decorator(cache_control(must_revalidate=True, max_age=60 * 5)) 
     def dispatch(self, request, *args, **kwargs):
         return super(JsonDetailView, self).dispatch(request, *args, **kwargs)       
 
