@@ -25,7 +25,8 @@ def home(request):
         "users": "%s%s%s" % (base_uri, reverse('api:v2_users'), FIND_USER_EXPRESSION),
         "user": "%s%s%s" % (base_uri, reverse('api:v2_users'), "{user_id}/"),
         "me": "%s%s" % (base_uri, reverse('api:v2_users_me')),
-        "navigation": "%s%s" % (base_uri, reverse('api:v2_navigation')),
+        "navigation_me": "%s%s" % (base_uri, reverse('api:v2_navigation_me')),
+        "navigation": "%s%s" % (base_uri, reverse('api:v2_navigation_me').replace('/me/', '/{user_id}/', 1)),
         # "emails": "%s%s" % (base_uri, reverse('api:emails', kwargs={'type': 'txt'}))
     }
     return JsonHttpResponse(content=resources, request=request)

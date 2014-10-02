@@ -272,10 +272,6 @@ class UserDetailView(UserMixin, JsonDetailView):
 
 class MyDetailView(UserDetailView):
     
-    permissions_tests = {
-        'get': lambda u, obj: u.is_authenticated(),
-        'put': lambda u, obj: u.is_authenticated(),
-    }
     operation = {
         'put': {'@type': 'ReplaceResourceOperation', 'method': 'PUT'},
     }
@@ -290,7 +286,7 @@ class MyDetailView(UserDetailView):
         return self.request.user
     
 
-class GlobalNavigationView(MyDetailView):
+class GlobalNavigationView(UserDetailView):
     operation = {}
     
     @method_decorator(cache_control(must_revalidate=True, max_age=60 * 5)) 
@@ -317,6 +313,19 @@ class GlobalNavigationView(MyDetailView):
         if obj.picture:
             data['picture_30x30'] = {'href': absolute_url(request, get_thumbnail(obj.picture, "30x30").url)}
         return data
+
+
+class MyGlobalNavigationView(GlobalNavigationView):
+    operation = {}
+
+    @method_decorator(csrf_exempt)
+    @method_decorator(catch_errors)  
+    @method_decorator(condition(last_modified_and_etag_func=get_last_modified_and_etag_for_me))
+    def dispatch(self, request, *args, **kwargs):
+        return super(JsonDetailView, self).dispatch(request, *args, **kwargs)       
+
+    def get_object(self, queryset=None):
+        return self.request.user
     
 
 class UserList(UserMixin, JsonListView):
