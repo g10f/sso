@@ -23,9 +23,9 @@ class SessionStore(SessionBase):
         """
         try:
             return signing.loads(self.session_key,
-                # This doesn't handle non-default expiry dates, see #19201
-                max_age=settings.SESSION_COOKIE_AGE,
-                salt='sso.sessions.backends.signed_cookies')
+                                 # This doesn't handle non-default expiry dates, see #19201
+                                 max_age=settings.SESSION_COOKIE_AGE,
+                                 salt='sso.sessions.backends.signed_cookies')
         except (signing.BadSignature, ValueError):
             self.create()
         return {}
@@ -81,7 +81,7 @@ class SessionStore(SessionBase):
         """
         session_cache = getattr(self, '_session_cache', {})
         return signing.dumps(session_cache, compress=True,
-            salt='sso.sessions.backends.signed_cookies')
+                             salt='sso.sessions.backends.signed_cookies')
 
     @classmethod
     def clear_expired(cls):

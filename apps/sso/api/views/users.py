@@ -129,9 +129,12 @@ def get_userinfo(user, request, show_details=False):
         for application in user.get_apps():
             application_data = {
                 'order': application.order, 
-                'links': {'app': {'href': application.url, 'title': application.title, 'global_navigation': application.global_navigation}}
-            }
-            application_data['roles'] = []
+                'links': {
+                    'app': {
+                        'href': application.url, 
+                        'title': application.title,
+                        'global_navigation': application.global_navigation}}, 
+                'roles': []}
             for applicationrole in applicationroles:
                 if applicationrole.application == application:
                     application_data['roles'].append(applicationrole.role.name)

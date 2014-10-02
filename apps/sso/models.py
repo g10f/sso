@@ -24,7 +24,7 @@ class AbstractBaseModel(models.Model):
         get_latest_by = 'last_modified'
 
     def natural_key(self):
-        return (self.uuid, )
+        return self.uuid,
 
 
 def ensure_single_primary(queryset):
@@ -32,7 +32,7 @@ def ensure_single_primary(queryset):
     ensure that at most one item of the queryset is primary
     """
     primary_items = queryset.filter(primary=True)
-    if (primary_items.count() > 1):
+    if primary_items.count() > 1:
         for item in primary_items[1:]:
             item.primary = False
             item.save()
@@ -68,7 +68,7 @@ class AddressMixin(models.Model):
         ordering = ['addressee']
 
     def __unicode__(self):
-        return u"%s" % (self.addressee)
+        return u"%s" % self.addressee
     
 
 class PhoneNumberMixin(models.Model): 
@@ -86,7 +86,7 @@ class PhoneNumberMixin(models.Model):
         return u'%s: %s' % (self.get_phone_type_display(), self.phone)
     
 
-def update_object_from_dict(destination, source_dict, key_mapping={}):
+def update_object_from_dict(destination, source_dict, key_mapping=None):
     """
     check if the values in the destination object differ from
     the values in the source_dict and update if needed
@@ -96,6 +96,7 @@ def update_object_from_dict(destination, source_dict, key_mapping={}):
     for the value, 
     for example {'key': ('new_key', lambda x : x + 2), ..}
     """
+    if not key_mapping: key_mapping = {}
     field_names = [f.name for f in destination._meta.fields]
     new_object = True if destination.pk is None else False
     updated = False
@@ -162,6 +163,7 @@ def map_dict2dict(mapping, source_dict):
     return new_dict
 
 
-def update_object_from_object(destination, source, exclude=['id']):
+def update_object_from_object(destination, source, exclude=None):
+    if not exclude: exclude = ['id']
     source_dict = model_to_dict(source, exclude=exclude)
     update_object_from_dict(destination, source_dict)

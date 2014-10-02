@@ -88,7 +88,7 @@ class Client(AbstractBaseModel):
         ordering = ['name']
         
     def __unicode__(self):
-        return u"%s" % (self.name)
+        return u"%s" % self.name
             
     @property
     def client_id(self):
@@ -149,7 +149,7 @@ class RefreshToken(models.Model):
     
     @property
     def user(self):
-        self.bearer_token.user
+        return self.bearer_token.user
         
     def __unicode__(self):
         return self.token

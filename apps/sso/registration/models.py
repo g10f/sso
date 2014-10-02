@@ -179,7 +179,7 @@ class RegistrationProfile(models.Model):
         verbose_name_plural = _('registration profiles')
     
     def __unicode__(self):
-        return u"%s" % (self.user)
+        return u"%s" % self.user
     
     def token_valid(self):
         token_expiration_date = RegistrationManager.token_expiration_date()

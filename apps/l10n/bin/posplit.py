@@ -145,7 +145,7 @@ class Rule(object):
             f.write("\n\n")
 
     def __str__(self):
-        return("Rule: %s=(%s) %s" % (self.key, self.option, self.dest))
+        return "Rule: %s=(%s) %s" % (self.key, self.option, self.dest)
 
 class Section(object):
     

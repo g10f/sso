@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
 import urlparse
-import urllib
+
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.views.decorators.debug import sensitive_post_parameters
-from django.views.decorators.csrf import csrf_protect, csrf_exempt
+from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login as auth_login, REDIRECT_FIELD_NAME, logout as auth_logout
-from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
-from django.http import HttpResponse, HttpResponseRedirect, QueryDict
+from django.http import HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.template.loader import render_to_string
 from django.contrib.sites.models import get_current_site
@@ -18,18 +17,17 @@ from django.core.urlresolvers import reverse
 from django.core.cache import cache
 from django.core.mail import mail_managers
 from django.utils.html import strip_tags
-from django.db.models import ObjectDoesNotExist
 from django.utils.translation import ugettext as _
 from django.forms.models import inlineformset_factory
 
 from throttle.decorators import throttle
 from sso.auth.forms import EmailAuthenticationForm
 from sso.oauth2.models import get_oauth2_cancel_url
-from sso.forms.helpers import ErrorList, ChangedDataList, log_change 
-
+from sso.forms.helpers import ErrorList, ChangedDataList, log_change
 from ..models import Application, User, UserAddress, UserPhoneNumber
 from ..forms import PasswordResetForm, SetPasswordForm, PasswordChangeForm, ContactForm, AddressForm, PhoneNumberForm
 from ..forms import UserSelfProfileForm, UserSelfProfileDeleteForm, CenterSelfProfileForm
+
 
 LOGIN_FORM_KEY = 'login_form_key'
 
@@ -342,7 +340,7 @@ def password_reset(request, is_admin_site=False,
                 opts = dict(opts, domain_override=request.get_host())
             form.save(**opts)
             
-            if (not form.password):            
+            if not form.password:
                 post_reset_redirect = reverse('accounts:password_reset_done')
             else:
                 # special case for streaming accounts, where there is no account in the sso database.

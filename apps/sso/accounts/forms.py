@@ -23,7 +23,7 @@ from django.contrib.auth.tokens import default_token_generator
 
 from captcha.fields import ReCaptchaField
 from passwords.fields import PasswordField
-from .models import User, UserAddress, UserPhoneNumber, UserAssociatedSystem
+from .models import User, UserAddress, UserPhoneNumber
 from sso.organisations.models import Organisation
 from sso.registration import default_username_generator
 from sso.registration.forms import UserSelfRegistrationForm
@@ -89,21 +89,6 @@ class PasswordResetForm(DjangoPasswordResetForm):
         email = self.cleaned_data["email"]
         self.users_cache = get_user_model().objects.filter(email__iexact=email, is_active=True)
         if not len(self.users_cache):
-            if ('streaming.backends.StreamingBackend' in settings.AUTHENTICATION_BACKENDS):
-                # check if the user was already imported from the streaming DB
-                streaming_user_exists = UserAssociatedSystem.objects.filter(userid__iexact=email, application__uuid=settings.SSO_CUSTOM['STREAMING_UUID']).exists()
-                if not streaming_user_exists:
-                    # check if the user exist in the streaming db
-                    from streaming.models import StreamingUser
-                    try:
-                        streaming_user = StreamingUser.objects.get_by_email(email)
-                        self.password = streaming_user.password.decode("base64")
-                        return email
-                    except ObjectDoesNotExist:
-                        pass
-                    except Exception, e:
-                        logger.exception(e)
-                
             raise forms.ValidationError(self.error_messages['unknown'])
         else:
             for user in self.users_cache:
@@ -122,7 +107,7 @@ class PasswordResetForm(DjangoPasswordResetForm):
         site_name = settings.SSO_CUSTOM['SITE_NAME']
         domain = current_site.domain
 
-        if (not self.password):
+        if not self.password:
             # use parent method
             UserModel = get_user_model()
             active_users = UserModel._default_manager.filter(email__iexact=email, is_active=True)
@@ -314,7 +299,6 @@ class UserSelfProfileForm(forms.Form):
         # if the user is already in at least 1 organisation, 
         # the organisation field is readonly
         # otherwise a required select field is displayed 
-        organisation_field = None   
         if self.user.organisations.exists():
             organisation = u', '.join([x.__unicode__() for x in self.user.organisations.all()])
             organisation_field = bootstrap.ReadOnlyField(initial=organisation, label=_("Center"), help_text=_('Please use the contact form for a request to change this value.'))

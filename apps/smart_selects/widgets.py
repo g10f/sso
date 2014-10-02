@@ -1,7 +1,7 @@
 from django.forms.widgets import Select
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
-from django.db.models import get_model
+from django.db.models.loading import get_model
 from django.contrib.admin.templatetags.admin_static import static
 from django import forms
 import locale
@@ -79,9 +79,9 @@ class ChainedSelect(Select):
             except IndexError:
                 pass
         if len(final_choices) > 1:
-            final_choices = [("", (empty_label))] + final_choices
+            final_choices = [("", empty_label)] + final_choices
         if self.show_all:
-            final_choices.append(("", (empty_label)))
+            final_choices.append(("", empty_label))
             self.choices = list(self.choices)
             self.choices.sort(cmp=locale.strcoll, key=lambda x: unicode_sorter(x[1]))
             for ch in self.choices:

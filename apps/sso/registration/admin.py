@@ -126,7 +126,7 @@ class RegistrationAdmin(admin.ModelAdmin):
         changecount = 0
         for profile in queryset:
             send_validation_email(profile, request)
-            #profile.send_validation_email(request)
+            # profile.send_validation_email(request)
             changecount += 1
         self.user_message(request, changecount, _('an email sent'))
     resend_validation_email.short_description = _("Re-send validation emails")

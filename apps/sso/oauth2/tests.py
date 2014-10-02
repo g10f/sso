@@ -31,7 +31,7 @@ def load_jwt(jwt, audience=None):
     """
     segments = jwt.split('.')
 
-    if (len(segments) != 3):
+    if len(segments) != 3:
         raise Exception('id_token_error: Wrong number of segments in token: %s' % jwt)
     
     # signed = '%s.%s' % (segments[0], segments[1])

@@ -68,10 +68,10 @@ class Application(models.Model):
     link.allow_tags = True
 
     def natural_key(self):
-        return (self.uuid, )
+        return self.uuid,
 
     def __unicode__(self):
-        return u"%s" % (self.title)
+        return u"%s" % self.title
 
 
 class RoleManager(models.Manager):
@@ -89,10 +89,10 @@ class Role(models.Model):
         ordering = ['order', 'name']    
 
     def natural_key(self):
-        return (self.name, )
+        return self.name,
 
     def __unicode__(self):
-        return u"%s" % (self.name)
+        return u"%s" % self.name
     
 
 class ApplicationRoleManager(models.Manager):
@@ -116,7 +116,7 @@ class ApplicationRole(models.Model):
         verbose_name_plural = _('application roles')
     
     def natural_key(self):
-        return (self.application.natural_key(), self.role.natural_key())
+        return self.application.natural_key(), self.role.natural_key()
 
     def __unicode__(self):
         return u"%s - %s" % (self.application, self.role)
@@ -137,7 +137,7 @@ class RoleProfile(AbstractBaseModel):
         verbose_name_plural = _('role profiles')
 
     def __unicode__(self):
-        return u"%s" % (self.name)
+        return u"%s" % self.name
 
 
 def get_filename(filename):

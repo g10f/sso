@@ -101,7 +101,7 @@ class OrganisationList(OrganisationMixin, JsonListView):
          
         latlng = self.request.GET.get('latlng', None) 
         
-        if (latlng):
+        if latlng:
             (lat, lng) = tuple(latlng.split(','))
             from django.contrib.gis import geos
             dlt = self.request.GET.get('dlt', None)

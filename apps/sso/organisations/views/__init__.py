@@ -1,19 +1,18 @@
 # -*- coding: utf-8 -*-
+import logging
+
 from django.core.urlresolvers import reverse
-from django.core.exceptions import PermissionDenied, ValidationError
-from django.utils.encoding import force_text
+from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required, permission_required
 from django.views.generic import DeleteView, DetailView, CreateView
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
-from django.db.models import Q
 from django.http import HttpResponseRedirect
 from django.forms.models import inlineformset_factory
-from django.contrib import messages
+
 from l10n.models import Country
 from utils.url import is_safe_url
 from sso.views import main
-from sso.views.main import FilterItem
 from sso.emails.models import EmailForward, Email, EmailAlias
 from sso.organisations.models import AdminRegion, Organisation
 from sso.views.generic import FormsetsUpdateView, ListView, SearchFilter, ViewChoicesFilter, ViewQuerysetFilter, ViewButtonFilter
@@ -23,8 +22,6 @@ from sso.organisations.forms import OrganisationAddressForm, OrganisationPhoneNu
     OrganisationRegionAdminForm, OrganisationCenterAdminForm, OrganisationRegionAdminCreateForm, OrganisationCountryAdminCreateForm
 from sso.forms.helpers import get_optional_inline_formset
 
-
-import logging
 logger = logging.getLogger(__name__)
 
 

@@ -1,5 +1,5 @@
 import json
-from django.db.models import get_model
+from django.db.models.loading import get_model
 from django.http import HttpResponse
 from django.views.decorators.cache import cache_page
 

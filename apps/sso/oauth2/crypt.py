@@ -107,7 +107,7 @@ def loads_jwt(jwt):
     """
     segments = jwt.split('.')
 
-    if (len(segments) != 3):
+    if len(segments) != 3:
         raise BadSignature('Wrong number of segments in token: %s' % jwt)
     signed = '%s.%s' % (segments[0], segments[1])
 

@@ -25,11 +25,11 @@ def default_username_generator(first_name, last_name):
     except ObjectDoesNotExist:
         return username
     
-    username_pattern = r'^%s([0-9]+)$' % (username)
+    username_pattern = r'^%s([0-9]+)$' % username
     users = get_user_model().objects.filter(username__regex=username_pattern)
     
     existing = set()
-    username_pattern = r'%s(?P<no>[0-9]+)' % (username)
+    username_pattern = r'%s(?P<no>[0-9]+)' % username
     prog = re.compile(username_pattern)
     for user in users:
         m = prog.match(user.username)  # we should alway find a match, because of the filter

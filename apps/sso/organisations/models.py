@@ -28,7 +28,7 @@ class CountryGroup(AbstractBaseModel):
         ordering = ['name']
 
     def __unicode__(self):
-        return u"%s" % (self.name)
+        return u"%s" % self.name
 
 
 class OrganisationCountry(AbstractBaseModel):
@@ -46,11 +46,11 @@ class OrganisationCountry(AbstractBaseModel):
         ordering = ['country']
 
     def __unicode__(self):
-        return u"%s" % (self.country)
+        return u"%s" % self.country
 
     @models.permalink
     def get_absolute_url(self):
-        return ('organisations:organisationcountry_detail', (), {'uuid': self.uuid, })
+        return 'organisations:organisationcountry_detail', (), {'uuid': self.uuid, }
 
 
 class ActiveAdminRegionManager(models.Manager):
@@ -83,11 +83,11 @@ class AdminRegion(AbstractBaseModel, ExtraManager):
         ordering = ['name']
 
     def __unicode__(self):
-        return u"%s" % (self.name)
+        return u"%s" % self.name
 
     @models.permalink
     def get_absolute_url(self):
-        return ('organisations:adminregion_detail', (), {'uuid': self.uuid, })
+        return 'organisations:adminregion_detail', (), {'uuid': self.uuid, }
 
 
 def get_near_organisations(current_point, distance_from_point=None, qs=None, order=True):
@@ -187,7 +187,7 @@ class Organisation(AbstractBaseModel):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('organisations:organisation_detail', (), {'uuid': self.uuid, })
+        return 'organisations:organisation_detail', (), {'uuid': self.uuid, }
     
     @property
     def google_maps_url(self):

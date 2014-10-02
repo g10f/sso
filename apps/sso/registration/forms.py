@@ -229,7 +229,7 @@ class UserSelfRegistrationFormPreview(FormPreview):
     preview_template = 'registration/registration_preview.html'
 
     def get_context(self, request, form):
-        "Context for template rendering."
+        """Context for template rendering."""
         context = super(UserSelfRegistrationFormPreview, self).get_context(request, form)
         context.update({'site_name': settings.SSO_CUSTOM['SITE_NAME'], 'title': _('User registration')})
         return context

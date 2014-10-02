@@ -50,7 +50,7 @@ class Email(AbstractBaseModel):
     @models.permalink
     def get_absolute_url(self):
         # return  ('emails:email_update', (), {'uuid': self.uuid, })
-        return ('emails:email_list', (), {})
+        return 'emails:email_list', (), {}
 
     class Meta(AbstractBaseModel.Meta):
         permissions = (
@@ -107,7 +107,7 @@ class GroupEmail(AbstractBaseModel):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('emails:groupemail_detail', (), {'uuid': self.uuid, })
+        return 'emails:groupemail_detail', (), {'uuid': self.uuid, }
 
     def __unicode__(self):
         return u"%s" % self.email
