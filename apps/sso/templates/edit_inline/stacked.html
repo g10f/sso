@@ -28,16 +28,3 @@
 	</div>
 	{% endfor %}
 </div>
-
-{% comment %}
-<script type="text/javascript">
-(function($) {
-  $("#{{ formset.prefix }}-group .inline-related").stackedFormset({
-    prefix: '{{ formset.prefix }}',
-    staticPrefix: '{% static "/" %}',
-    deleteText: '{% trans "Remove" %}',
-    addText: '{% blocktrans with verbose_name=formset.form.opts.verbose_name|title %}Add another {{ verbose_name }}{% endblocktrans %}'
-  });
-})(jQuery);
-</script>
-{% endcomment %}

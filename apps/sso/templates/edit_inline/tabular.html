@@ -62,17 +62,3 @@
 	   </table>
   	</div>
 </div>
-
-
-{% comment %}
-<script type="text/javascript">
-(function() {
-  $("#{{ formset.prefix }}-group .tabular.inline-related tbody tr").tabularFormset({
-    prefix: "{{ formset.prefix }}",
-    staticPrefix: '{% static "/" %}',
-    addText: '{% blocktrans with verbose_name=formset.form.opts.verbose_name|title %}Add another {{ verbose_name }}{% endblocktrans %}',
-    deleteText: '{% trans 'Remove' %}'
-  });
-})(jQuery);
-</script>
-{% endcomment %}
