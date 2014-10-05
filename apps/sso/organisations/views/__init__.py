@@ -190,7 +190,7 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
         if address_count == 0: 
             address_extra = 1
         
-        AddressInlineFormSet = inlineformset_factory(self.model, OrganisationAddress, OrganisationAddressForm, extra=address_extra, max_num=3)
+        AddressInlineFormSet = inlineformset_factory(self.model, OrganisationAddress, OrganisationAddressForm, extra=address_extra, max_num=2)
         PhoneNumberInlineFormSet = inlineformset_factory(self.model, OrganisationPhoneNumber, OrganisationPhoneNumberForm, max_num=6, extra=phone_number_extra)
 
         if self.request.method == 'POST':
