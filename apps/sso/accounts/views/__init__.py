@@ -321,39 +321,24 @@ def delete_profile(request):
     return render(request, 'accounts/delete_profile_form.html', dictionary)
 
 
+# 4 views for password reset:
+# - password_reset sends the mail
+# - password_reset_done shows a success message for the above
+# - password_reset_confirm checks the link the user clicked and
+#   prompts for a new password
+# - password_reset_complete shows a success message for the above
+
 @csrf_protect
-def password_reset(request, is_admin_site=False,
-                   template_name='accounts/password_reset_form.html',
-                   email_template_name='accounts/password_reset_email.html',
-                   subject_template_name='registration/password_reset_subject.txt',
-                   password_reset_form=PasswordResetForm):
-    if request.method == "POST":
-        form = PasswordResetForm(request.POST)
-        if form.is_valid():
-            opts = {
-                'use_https': request.is_secure(),
-                'email_template_name': email_template_name,
-                'subject_template_name': subject_template_name,
-                'request': request,
-            }
-            if is_admin_site:
-                opts = dict(opts, domain_override=request.get_host())
-            form.save(**opts)
-            
-            if not form.password:
-                post_reset_redirect = reverse('accounts:password_reset_done')
-            else:
-                # special case for streaming accounts, where there is no account in the sso database.
-                # these accounts get the password directly send
-                post_reset_redirect = reverse('accounts:password_resend_done')
-                
-            return HttpResponseRedirect(post_reset_redirect)
-    else:
-        form = password_reset_form()
-    context = {
-        'form': form,
+def password_reset(request, is_admin_site=False):
+    from django.contrib.auth.views import password_reset
+    defaults = {
+        'post_reset_redirect': reverse('accounts:password_reset_done'),
+        'template_name': 'accounts/password_reset_form.html',
+        'email_template_name': 'accounts/password_reset_email.html',
+        'subject_template_name': 'registration/password_reset_subject.txt',
+        'password_reset_form': PasswordResetForm
     }
-    return TemplateResponse(request, template_name, context)
+    return password_reset(request, is_admin_site=False, **defaults)
 
 
 def password_reset_confirm(request, uidb64=None, token=None):

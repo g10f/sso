@@ -63,7 +63,7 @@ class OrganisationMixin(object):
 class OrganisationDetailView(OrganisationMixin, JsonDetailView):
     http_method_names = ['get', 'options']
     permissions_tests = {
-        'get': lambda u, obj: u.is_authenticated(),
+        'get': lambda request, obj: request.user.is_authenticated(),
     }
     operation = {}
     
@@ -80,7 +80,7 @@ class OrganisationDetailView(OrganisationMixin, JsonDetailView):
 
 class OrganisationList(OrganisationMixin, JsonListView):
     permissions_tests = {
-        'get': lambda u, x: u.is_authenticated()
+        'get': lambda request, x: request.user.is_authenticated()
     }
 
     def get_queryset(self):
