@@ -19,10 +19,10 @@ logger = logging.getLogger(__name__)
 class PermissionMixin(object):
     """
     permissions_tests = {
-        'get': lambda user, obj: True,
-        'put': lambda user, obj: True,
-        'delete': lambda user, obj: True,
-        'add': lambda user: True,
+        'get': lambda request, obj: True,
+        'put': lambda request, obj: True,
+        'delete': lambda request, obj: True,
+        'add': lambda request: True,
     }
     
     operation = {
@@ -40,9 +40,9 @@ class PermissionMixin(object):
         permission_check = self.permissions_tests.get(method_name, None)
         if permission_check:
             if method_name in ['get', 'put', 'delete']:
-                is_allowed = permission_check(self.request.user, obj)
+                is_allowed = permission_check(self.request, obj)
             else:
-                is_allowed = permission_check(self.request.user)
+                is_allowed = permission_check(self.request)
                 
             if not is_allowed and raise_exception:
                 raise PermissionDenied

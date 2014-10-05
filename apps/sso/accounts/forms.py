@@ -69,18 +69,15 @@ PasswordChangeForm.base_fields.keyOrder = ['old_password', 'new_password1', 'new
 
 class PasswordResetForm(DjangoPasswordResetForm):
     """
-    allow unusable passwords, because we want to create a user with no password
-    and the user has to change the password with the password reset feature
+    changes from django default PasswordResetForm:
+     * validates that the email exists and shows an error message if not. 
+     * adds an expiration_date to the rendering context
     """
     error_messages = {
         'unknown': _("That email address doesn't have an associated user account. Are you sure you've registered?"),
         'unusable': _("The user account associated with this email address cannot reset the password."),
     }
     email = forms.EmailField(label=_("Email"), max_length=254, widget=bootstrap.EmailInput())
-
-    def __init__(self, *args, **kwargs):
-        self.password = None
-        super(PasswordResetForm, self).__init__(*args, **kwargs)       
     
     def clean_email(self):
         """
@@ -100,50 +97,36 @@ class PasswordResetForm(DjangoPasswordResetForm):
     def save(self, subject_template_name='registration/password_reset_subject.txt',
              email_template_name='registration/password_reset_email.html',
              use_https=False, token_generator=default_token_generator,
-             from_email=None, request=None):
+             from_email=None, request=None, html_email_template_name=None):
         from django.core.mail import send_mail
         email = self.cleaned_data["email"]
         current_site = get_current_site(request)
         site_name = settings.SSO_CUSTOM['SITE_NAME']
         domain = current_site.domain
 
-        if not self.password:
-            # use parent method
-            UserModel = get_user_model()
-            active_users = UserModel._default_manager.filter(email__iexact=email, is_active=True)
-            for user in active_users:
-                # Make sure that no email is sent to a user that actually has
-                # a password marked as unusable
-                if not user.has_usable_password():
-                    continue
-                expiration_date = now() + datetime.timedelta(settings.PASSWORD_RESET_TIMEOUT_DAYS)
-                c = {
-                    'email': user.email,
-                    'domain': domain,
-                    'site_name': site_name,
-                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                    'user': user,
-                    'token': token_generator.make_token(user),
-                    'protocol': 'https' if use_https else 'http',
-                    'expiration_date': expiration_date
-                }
-                subject = loader.render_to_string(subject_template_name, c)
-                # Email subject *must not* contain newlines
-                subject = ''.join(subject.splitlines())
-                email = loader.render_to_string(email_template_name, c)
-                send_mail(subject, email, from_email, [user.email])            
-        else:
+        UserModel = get_user_model()
+        active_users = UserModel._default_manager.filter(email__iexact=email, is_active=True)
+        for user in active_users:
+            # Make sure that no email is sent to a user that actually has
+            # a password marked as unusable
+            if not user.has_usable_password():
+                continue
+            expiration_date = now() + datetime.timedelta(settings.PASSWORD_RESET_TIMEOUT_DAYS)
             c = {
-                'email': email,
-                'password': self.password,
+                'email': user.email,
                 'domain': domain,
                 'site_name': site_name,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'user': user,
+                'token': token_generator.make_token(user),
+                'protocol': 'https' if use_https else 'http',
+                'expiration_date': expiration_date
             }
-            subject = loader.render_to_string('streaming/password_resend_subject.txt', c)
+            subject = loader.render_to_string(subject_template_name, c)
             # Email subject *must not* contain newlines
             subject = ''.join(subject.splitlines())
-            message = loader.render_to_string('streaming/password_resend_email.html', c)
-            send_mail(subject, message, from_email, [email])
+            email = loader.render_to_string(email_template_name, c)
+            send_mail(subject, email, from_email, [user.email])            
 
 
 class UserAddForm(forms.ModelForm):

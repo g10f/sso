@@ -146,11 +146,12 @@ def get_last_modified_and_etag_for_me(request, *args, **kwargs):
         return None, None
 
 
-def get_permission(user, obj):
+def get_permission(request, obj):
     """
     user is the authenticted user
     permission to read the obj data
     """
+    user = request.user
     if user.is_authenticated():
         if user.uuid == obj.uuid:
             return True
@@ -159,11 +160,12 @@ def get_permission(user, obj):
     return False
 
 
-def put_permission(user, obj):
+def put_permission(request, obj):
     """
     user is the authenticted user
     permission to change user the obj
     """
+    user = request.user
     if user.is_authenticated():
         if user.uuid == obj.uuid:
             return True
@@ -330,11 +332,14 @@ class MyGlobalNavigationView(GlobalNavigationView):
     
 
 class UserList(UserMixin, JsonListView):
-    permissions_tests = {
-        'get': lambda u, x: u.has_perm('accounts.read_user'),
-        'add': lambda u: u.has_perm('accounts.add_user'),
-    }
+    @classmethod
+    def getpermission(cls, request, obj):
+        return request.user.has_perm('accounts.read_user') and 'users' in request.scopes
 
+    @classmethod
+    def addpermission(cls, request):
+        return request.user.has_perm('accounts.add_user') and 'users' in request.scopes
+    
     def get_operation(self):
         base_uri = base_url(self.request)
         return {
@@ -363,3 +368,9 @@ class UserList(UserMixin, JsonListView):
             qs = qs.filter(Q(last_modified__gte=parsed) | Q(useraddress__last_modified__gte=parsed) | Q(userphonenumber__last_modified__gte=parsed))
             
         return qs
+
+
+UserList.permissions_tests = {
+    'get': UserList.getpermission,
+    'add': UserList.addpermission,
+}
