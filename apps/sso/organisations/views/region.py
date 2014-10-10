@@ -117,13 +117,13 @@ class CountryFilter(ViewQuerysetFilter):
     name = 'country'
     model = Country
     filter_list = Country.objects.filter(organisation__isnull=False).distinct()
-    select_text = _('Select Country')
+    select_text = _('Country')
     select_all_text = _('All Countries')
 
 
 class MyRegionsFilter(ViewButtonFilter):
     name = 'my_regions'
-    select_text = _('Select My Regions')
+    select_text = _('My Regions')
     
     def apply(self, view, qs, default=''):
         if not view.request.user.is_superuser and view.request.user.get_administrable_regions().exists():
@@ -139,7 +139,7 @@ class MyRegionsFilter(ViewButtonFilter):
 class IsActiveFilter(ViewChoicesFilter):
     name = 'is_active'
     choices = (('1', _('Active Regions')), ('2', _('Inactive Regions')))  
-    select_text = _('Select active/inactive')
+    select_text = _('active/inactive')
     select_all_text = _("All")
     
     def map_to_database(self, value):

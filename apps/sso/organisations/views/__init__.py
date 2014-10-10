@@ -236,14 +236,14 @@ class OrganisationSearchFilter(SearchFilter):
 class CenterTypeFilter(ViewChoicesFilter):
     name = 'center_type'
     choices = Organisation.CENTER_TYPE_CHOICES
-    select_text = _('Select Center Type')
+    select_text = _('Center Type')
     select_all_text = _("All Center Types")
 
 
 class IsActiveFilter(ViewChoicesFilter):
     name = 'is_active'
     choices = (('1', _('Active Centers')), ('2', _('Inactive Centers')))  
-    select_text = _('Select active/inactive')
+    select_text = _('active/inactive')
     select_all_text = _("All")
     
     def map_to_database(self, value):
@@ -254,7 +254,7 @@ class CountryFilter(ViewQuerysetFilter):
     name = 'country'
     model = Country
     filter_list = Country.objects.filter(organisation__isnull=False).distinct()
-    select_text = _('Select Country')
+    select_text = _('Country')
     select_all_text = _('All Countries')
     all_remove = 'center'
     remove = 'center,app_role,role_profile,p'
@@ -264,7 +264,7 @@ class AdminRegionFilter(ViewQuerysetFilter):
     name = 'admin_region'
     model = AdminRegion
     filter_list = AdminRegion.objects.filter(organisation__isnull=False).distinct()
-    select_text = _('Select Region')
+    select_text = _('Region')
     select_all_text = _('All Regions')
     all_remove = 'region,center'
     remove = 'region,center,app_role,role_profile,p'
@@ -272,7 +272,7 @@ class AdminRegionFilter(ViewQuerysetFilter):
 
 class MyOrganisationsFilter(ViewButtonFilter):
     name = 'my_organisations'
-    select_text = _('Select My Centers')
+    select_text = _('My Centers')
     
     def apply(self, view, qs, default=''):
         if not view.request.user.is_superuser and view.request.user.get_administrable_organisations().exists():

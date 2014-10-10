@@ -50,7 +50,7 @@ class UserSearchFilter(SearchFilter):
 class IsActiveFilter(ViewChoicesFilter):
     name = 'is_active'
     choices = (('1', _('Active Users')), ('2', _('Inactive Users')))
-    select_text = _('Select active/inactive')
+    select_text = _('active/inactive')
     select_all_text = _("All")
     
     def map_to_database(self, value):
@@ -62,7 +62,7 @@ class CountryFilter(ViewQuerysetFilter):
     qs_name = 'organisations__country'
     model = Country
     filter_list = Country.objects.filter(organisation__isnull=False).distinct()
-    select_text = _('Select Country')
+    select_text = _('Country')
     select_all_text = _('All Countries')
     all_remove = 'region,center'
     remove = 'region,center,app_role,role_profile,p'
@@ -72,7 +72,7 @@ class AdminRegionFilter(ViewQuerysetFilter):
     name = 'admin_region'
     qs_name = 'organisations__admin_region'
     model = AdminRegion
-    select_text = _('Select Region')
+    select_text = _('Region')
     select_all_text = _('All Regions')
     all_remove = 'center'
     remove = 'center,app_role,role_profile,p'
@@ -82,7 +82,7 @@ class CenterFilter(ViewQuerysetFilter):
     name = 'center'
     qs_name = 'organisations'
     model = Organisation
-    select_text = _('Select Center')
+    select_text = _('Center')
     select_all_text = _('All Centers')
     remove = 'app_role,p'
 
@@ -90,7 +90,7 @@ class CenterFilter(ViewQuerysetFilter):
 class ApplicationRoleFilter(ViewQuerysetFilter):
     name = 'app_role'
     model = ApplicationRole
-    select_text = _('Select Role')
+    select_text = _('Role')
     select_all_text = _('All Roles')
 
     def apply(self, view, qs, default=''):
@@ -110,7 +110,7 @@ class RoleProfileFilter(ViewQuerysetFilter):
     name = 'role_profile'
     qs_name = 'role_profiles'
     model = RoleProfile
-    select_text = _('Select Profile')
+    select_text = _('Profile')
     select_all_text = _('All Profiles')
 
 

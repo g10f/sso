@@ -81,7 +81,7 @@ class ContinentsFilter(ViewChoicesFilter):
     name = 'continent'
     qs_name = 'country__continent'
     choices = CONTINENTS
-    select_text = _('Select Continent')
+    select_text = _('Continent')
     select_all_text = _("All Continents")
 
 
@@ -93,13 +93,13 @@ class CountryGroupFilter(ViewQuerysetFilter):
     name = 'country_group'
     qs_name = 'country_groups'
     model = CountryGroup
-    select_text = _('Select Group')
+    select_text = _('Group')
     select_all_text = _('All Groups')
 
 
 class MyCountriesFilter(ViewButtonFilter):
     name = 'my_countries'
-    select_text = _('Select My Countries')
+    select_text = _('My Countries')
     
     def apply(self, view, qs, default=''):
         if not view.request.user.is_superuser and view.request.user.get_administrable_countries().exists():
@@ -115,7 +115,7 @@ class MyCountriesFilter(ViewButtonFilter):
 class IsActiveFilter(ViewChoicesFilter):
     name = 'is_active'
     choices = (('1', _('Active Countries')), ('2', _('Inactive Countries')))  
-    select_text = _('Select active/inactive')
+    select_text = _('active/inactive')
     select_all_text = _("All")
     
     def map_to_database(self, value):

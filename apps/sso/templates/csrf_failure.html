@@ -19,7 +19,7 @@
 </head>
 <body>
   <div class="container">
-    <h1>Forbidden <span>:(</span></h1>
+    <h1>{% trans 'Forbidden' %} <span>:(</span></h1>
 	  <p>{{ main }}</p>
 	{% if no_referer %}
 	  <p>
@@ -38,7 +38,7 @@
       </p>
 	{% endif %}  
 	
-    <p><a href="{{ request.path }}">{% trans "Continue" %}</a></p>
+    <p><a href="{{ request.path }}">{% trans "Try again" %}</a></p>
 	  
   </div>
 </body>
