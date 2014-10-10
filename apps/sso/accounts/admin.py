@@ -205,11 +205,8 @@ class UserAssociatedSystemInline(admin.StackedInline):
             return False
 
 class GroupAdmin(DjangoGroupAdmin):
-    """
-    display wide_ex select widgets
-    """
     fieldsets = (
-        (None, {'fields': ('name', 'permissions'), 'classes': ['wide', 'wide_ex']}),
+        (None, {'fields': ('name', 'permissions'), 'classes': ['wide']}),
     )
     list_filter = ('role', )
 
@@ -261,8 +258,8 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         (_('Personal info'), {
             'fields': ('first_name', 'last_name', 'email', 'gender', 'dob', 'homepage', 'uuid', 'is_center', 'is_subscriber', 'picture'), 
             'classes': ['wide']}),
-        (_('AppRoles'), {'fields': ('admin_countries', 'admin_regions', 'assigned_organisations', 'organisations', 'application_roles', 'role_profiles'), 'classes': ['wide', 'wide_ex']}),
-        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'), 'classes': ['wide', 'wide_ex']}),
+        (_('AppRoles'), {'fields': ('admin_countries', 'admin_regions', 'assigned_organisations', 'organisations', 'application_roles', 'role_profiles'), 'classes': ['wide']}),
+        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'), 'classes': ['wide']}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user'), 'classes': ['wide']}),
         (_('Notes'), {'fields': ('notes', ), 'classes': ['wide']}),
         
@@ -270,7 +267,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
     non_su_fieldsets = (
         (None, {'fields': ('username', ), 'classes': ['wide']}),
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'email', 'uuid', 'is_center', 'is_subscriber'), 'classes': ['wide']}),
-        (_('AppRoles'), {'fields': ('is_active', 'assigned_organisations', 'organisations', 'application_roles', 'role_profiles'), 'classes': ['wide', 'wide_ex']}),
+        (_('AppRoles'), {'fields': ('is_active', 'assigned_organisations', 'organisations', 'application_roles', 'role_profiles'), 'classes': ['wide']}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user'), 'classes': ['wide']}),
     )
     readonly_fields = ['assigned_organisations', 'is_subscriber', 'get_last_modified_by_user', 'last_modified', 'get_created_by_user']

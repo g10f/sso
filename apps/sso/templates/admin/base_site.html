@@ -4,8 +4,6 @@
 
 {% block extrahead %}<link rel="shortcut icon" id="favicon" href="{{ STATIC_URL }}{{ favicon }}" />{% endblock %}
 
-{% block extrastyle %}<link rel="stylesheet" type="text/css" href="{% static "admin/css/mybase.css" %}" />{% endblock %}
-
 {% block title %}{% blocktrans %}{{ brand }} SSO{% endblocktrans %} | {{ title }}{% endblock %}
 
 {% block branding %}
@@ -13,7 +11,7 @@
 {% endblock %}
 
 {% block userlinks %}
-    <strong><a href="{% url 'home' %}">{% trans 'Home' %}</a></strong> /
+    <strong><a href="{% url 'home' %}">{% trans 'Front-End Home Page' %}</a></strong> /
     {% url 'django-admindocs-docroot' as docsroot %}
     {% if docsroot %}
         <a href="{{ docsroot }}">{% trans 'Documentation' %}</a> /
