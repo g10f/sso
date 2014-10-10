@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-10-10 11:41+0200\n"
+"POT-Creation-Date: 2014-10-10 13:22+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,12 +26,12 @@ msgstr ""
 msgid "Organisation"
 msgstr "Center"
 
-#: accounts/admin.py:82 accounts/admin.py:345 accounts/models.py:162
+#: accounts/admin.py:82 accounts/admin.py:342 accounts/models.py:162
 #: registration/models.py:160
 msgid "last modified by"
 msgstr ""
 
-#: accounts/admin.py:93 accounts/admin.py:354 accounts/models.py:164
+#: accounts/admin.py:93 accounts/admin.py:351 accounts/models.py:164
 msgid "created by"
 msgstr ""
 
@@ -70,23 +70,23 @@ msgstr ""
 msgid "No"
 msgstr ""
 
-#: accounts/admin.py:261 accounts/admin.py:272
+#: accounts/admin.py:258 accounts/admin.py:269
 msgid "Personal info"
 msgstr ""
 
-#: accounts/admin.py:264 accounts/admin.py:273
+#: accounts/admin.py:261 accounts/admin.py:270
 msgid "AppRoles"
 msgstr ""
 
-#: accounts/admin.py:265
+#: accounts/admin.py:262
 msgid "Permissions"
 msgstr ""
 
-#: accounts/admin.py:266 accounts/admin.py:274
+#: accounts/admin.py:263 accounts/admin.py:271
 msgid "Important dates"
 msgstr ""
 
-#: accounts/admin.py:267 accounts/forms.py:148 accounts/forms.py:525
+#: accounts/admin.py:264 accounts/forms.py:148 accounts/forms.py:525
 #: accounts/models.py:168
 #: accounts/templates/accounts/application/add_user_done.html:54
 #: accounts/templates/accounts/user_confirm_delete.html:33
@@ -94,22 +94,22 @@ msgstr ""
 msgid "Notes"
 msgstr ""
 
-#: accounts/admin.py:429
+#: accounts/admin.py:426
 #, python-format
 msgid "%s SSO Information"
 msgstr ""
 
-#: accounts/admin.py:439
+#: accounts/admin.py:436
 #, python-format
 msgid "Successfully send information email to %(count)d %(items)s."
 msgstr ""
 
-#: accounts/admin.py:453
+#: accounts/admin.py:450
 #: accounts/templates/admin/accounts/send_mail_selected_confirmation.html:13
 msgid "Send information mail to selected users"
 msgstr ""
 
-#: accounts/admin.py:462
+#: accounts/admin.py:459
 msgid "Send info email"
 msgstr ""
 
@@ -656,8 +656,7 @@ msgstr ""
 #: organisations/templates/organisations/organisationcountry_list.html:10
 #: registration/templates/registration/change_user_registration_form.html:6
 #: registration/templates/registration/user_registration_list.html:10
-#: templates/admin/base_site.html:16 templates/base.html:49
-#: templates/home.html:13 views/__init__.py:16
+#: templates/base.html:46 templates/home.html:13 views/__init__.py:16
 msgid "Home"
 msgstr ""
 
@@ -823,7 +822,7 @@ msgstr ""
 #: accounts/templates/accounts/contact_form.html:9
 #: accounts/templates/accounts/contact_form.html:15
 #: accounts/templates/accounts/contact_thanks.html:9
-#: accounts/templates/accounts/contact_thanks.html:15 templates/base.html:60
+#: accounts/templates/accounts/contact_thanks.html:15 templates/base.html:57
 msgid "Feedback"
 msgstr ""
 
@@ -1245,7 +1244,7 @@ msgid "More"
 msgstr ""
 
 #: api/views/users.py:95 api/views/users_v2.py:313
-#: templates/admin/base_site.html:22
+#: templates/admin/base_site.html:20
 #: templates/include/global_navigation.html:43
 msgid "Log out"
 msgstr ""
@@ -1703,7 +1702,7 @@ msgstr ""
 msgid "There's been an OAuth 2 error: %(error)s"
 msgstr ""
 
-#: organisations/admin.py:125 organisations/models.py:147
+#: organisations/admin.py:121 organisations/models.py:147
 msgid "notes"
 msgstr ""
 
@@ -2508,29 +2507,33 @@ msgid ""
 "email and should be fixed shortly. Thanks for your patience."
 msgstr ""
 
-#: templates/admin/base_site.html:9
+#: templates/admin/base_site.html:7
 #, python-format
 msgid "%(brand)s SSO"
 msgstr ""
 
-#: templates/admin/base_site.html:12
+#: templates/admin/base_site.html:10
 #, python-format
 msgid "%(brand)s Single Sign-On"
 msgstr ""
 
-#: templates/admin/base_site.html:12
+#: templates/admin/base_site.html:10
 msgid "Site administration"
 msgstr ""
 
-#: templates/admin/base_site.html:19
+#: templates/admin/base_site.html:14
+msgid "Front-End Home Page"
+msgstr ""
+
+#: templates/admin/base_site.html:17
 msgid "Documentation"
 msgstr ""
 
-#: templates/admin/base_site.html:21
+#: templates/admin/base_site.html:19
 msgid "Change password"
 msgstr ""
 
-#: templates/base.html:58
+#: templates/base.html:55
 msgid "About us"
 msgstr ""
 

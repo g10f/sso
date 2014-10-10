@@ -101,10 +101,6 @@ class PhoneNumber_Inline(admin.TabularInline):
 class OrganisationAdmin(gis_admin.OSMGeoAdmin):
     openlayers_url = '//cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js'
     
-    class Media:
-        css = {
-            "all": ("css/adminstyle.css",)
-        }
     list_select_related = ('email',)
     ordering = ['name']
     save_on_top = True
@@ -121,7 +117,7 @@ class OrganisationAdmin(gis_admin.OSMGeoAdmin):
           ['uuid', 'centerid', 'name', 'center_type', 'country', 'admin_region', 'founded', ('coordinates_type', 'google_maps_link'),
            'location',
            'email', 'homepage', 'is_active', 'is_private', 'last_modified'], 
-          'classes': ['wide', 'wide_ex']}),
+          'classes': ['wide']}),
         (_('notes'),
          {'fields':
           ['notes'],
