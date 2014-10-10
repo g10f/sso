@@ -15,6 +15,9 @@
     {% endblock style %}
     {% block extrastyle %}{% endblock %}
     {% block extrahead %}{% endblock %}
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="{% static "js/vendor/ie10-viewport-bug-workaround.js" %}"></script>
+
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
       <script src="{% static "js/vendor/html5shiv-3.7.2.min.js" %}"></script>
