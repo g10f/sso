@@ -118,7 +118,7 @@ class PermissionFilter(ViewChoicesFilter):
     name = 'permission'
     qs_name = 'email__permission'
     choices = Email.PERMISSION_CHOICES
-    select_text = _('Select Permission')
+    select_text = _('Permission')
     select_all_text = _("All Permissions")
 
 
@@ -128,7 +128,7 @@ class EmailSearchFilter(SearchFilter):
 
 class MyGroupEmailsFilter(ViewButtonFilter):
     name = 'my_emails'
-    select_text = _('Select My Emails')
+    select_text = _('My Emails')
     
     def apply(self, view, qs, default=''):
         if not view.request.user.has_perms(["emails.change_groupemail"]):
@@ -144,7 +144,7 @@ class MyGroupEmailsFilter(ViewButtonFilter):
 class IsActiveFilter(ViewChoicesFilter):
     name = 'email__is_active'
     choices = (('1', _('Active emails')), ('2', _('Inactive emails')))  
-    select_text = _('Select active/inactive')
+    select_text = _('active/inactive')
     select_all_text = _("All")
     
     def map_to_database(self, value):

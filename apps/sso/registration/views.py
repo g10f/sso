@@ -49,7 +49,7 @@ class CountryFilter(ViewQuerysetFilter):
     name = 'country'
     qs_name = 'user__organisations__country'
     model = Country
-    select_text = _('Select Country')
+    select_text = _('Country')
     select_all_text = _('All Countries')
 
 
@@ -57,7 +57,7 @@ class IsVerifiedFilter(ViewChoicesFilter):
     name = 'is_verified'
     qs_name = 'verified_by_user__isnull'
     choices = (('1', _('Verified Users')), ('2', _('Unverified Users')))  
-    select_text = _('Select verified filter')
+    select_text = _('verified filter')
     select_all_text = _("All")
     
     def map_to_database(self, value):
@@ -67,7 +67,7 @@ class IsVerifiedFilter(ViewChoicesFilter):
 class CheckBackFilter(ViewChoicesFilter):
     name = 'check_back'
     choices = (('1', _('Check Back Required')), ('2', _('No Check Back Required')))  
-    select_text = _('Select check back filter')
+    select_text = _('check back filter')
     select_all_text = _("All")
     
     def map_to_database(self, value):
@@ -77,7 +77,7 @@ class CheckBackFilter(ViewChoicesFilter):
 class IsAccessDeniedFilter(ViewChoicesFilter):
     name = 'is_access_denied'
     choices = (('1', _('Access Denied')), ('2', _('Access Not Denied')))  
-    select_text = _('Select access denied filter')
+    select_text = _('access denied filter')
     select_all_text = _("All")
     
     def map_to_database(self, value):
