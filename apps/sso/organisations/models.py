@@ -4,6 +4,8 @@ from django.contrib.gis import measure
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils.crypto import get_random_string
+from django.utils.text import capfirst
 from django.utils.translation import pgettext_lazy, ugettext_lazy as _
 from django.contrib.auth import get_user_model
 from l10n.models import Country
@@ -11,6 +13,7 @@ from smart_selects.db_fields import ChainedForeignKey
 from utils.loaddata import disable_for_loaddata
 from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary
 from sso.emails.models import Email, CENTER_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, REGION_EMAIL_TYPE, COUNTRY_GROUP_EMAIL_TYPE
+from sso.registration import default_username_generator
 
 import logging
 
@@ -286,15 +289,32 @@ def deactivate_center_account(organisation):
     except ObjectDoesNotExist:
         pass
 
+
+def create_center_account(center):
+    first_name = 'BuddhistCenter'
+    last_name = capfirst(center.name)
+    username = default_username_generator(first_name, last_name)
+    user = get_user_model()(first_name='BuddhistCenter', last_name=last_name, username=username, email=center.email.email, is_center=True)
+    user.set_password(get_random_string(40))
+    user.save()
+    user.organisations = [center]
+    user.add_default_roles()
+
+
 def update_center_account(organisation):
     """
     deactivate or activate the center user account if the center account is activated or deactivated
     """
     try:
         if organisation.email:
-            for user in get_user_model().objects.filter(email__iexact=organisation.email.email):
-                if organisation.is_active != user.is_active:
-                    user.is_active = organisation.is_active
-                    user.save()
+            qs = get_user_model().objects.filter(email__iexact=organisation.email.email)
+            if not qs.exists():
+                if organisation.is_active:
+                    create_center_account(organisation)
+            else:
+                for user in get_user_model().objects.filter(email__iexact=organisation.email.email):
+                    if organisation.is_active != user.is_active:
+                        user.is_active = organisation.is_active
+                        user.save()
     except ObjectDoesNotExist:
         pass

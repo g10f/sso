@@ -96,10 +96,11 @@ class OrganisationDeleteView(OrganisationBaseView, DeleteView):
         self.object = self.get_object()
         success_url = self.get_success_url()
         
-        self.object.email.delete() 
-        #  self.object.email.delete() already deletes the center because of the foreign key in organisation
-        # https://docs.djangoproject.com/en/dev/topics/db/queries/#deleting-objects
-        # self.object.delete()
+        email = self.object.email
+        self.object.delete()
+        
+        if email:
+            email.delete() 
         
         return HttpResponseRedirect(success_url)
 

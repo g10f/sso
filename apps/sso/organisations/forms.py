@@ -97,7 +97,7 @@ class OrganisationEmailAdminForm(OrganisationBaseForm):
 
     def __init__(self, *args, **kwargs):
         super(OrganisationEmailAdminForm, self).__init__(*args, **kwargs)
-        if self.instance.pk:
+        if self.instance.email:
             self.fields['email_value'].initial = str(self.instance.email)
         else:
             self.fields['email_value'].initial = "@diamondway-center.org"

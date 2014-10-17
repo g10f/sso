@@ -26,6 +26,7 @@ from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure
 from sso.organisations.models import AdminRegion, Organisation
 from sso.emails.models import GroupEmailManager
 from sso.decorators import memoize
+
 from utils.loaddata import disable_for_loaddata
 from current_user.models import CurrentUserField
 import logging
