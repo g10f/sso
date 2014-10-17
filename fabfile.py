@@ -148,7 +148,7 @@ workers = multiprocessing.cpu_count() + 2
 pythonpath = '%(code_dir)s/src/apps'
 errorlog = '%(code_dir)s/logs/gunicorn-error.log'
 os.environ['DEBUG'] = ""
-os.environ['THROTTELING_DISABLED'] = "False"
+os.environ['THROTTELING_DISABLED'] = "True"
 """
 
 @task
