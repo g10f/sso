@@ -297,7 +297,7 @@ def create_center_account(center):
     user = get_user_model()(first_name='BuddhistCenter', last_name=last_name, username=username, email=center.email.email, is_center=True)
     user.set_password(get_random_string(40))
     user.save()
-    user.organisations = [center]
+    user.organisations.add(center)
     user.add_default_roles()
 
 
