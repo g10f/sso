@@ -158,20 +158,18 @@ def compileless(version='1.0.6'):
 
 @task
 def compilemessages():
-    for app in env.apps:
-        with lcd('apps/%s' % app):
-            local('django-admin.py compilemessages')
+    with lcd('apps'):
+        local('~/envs/sso/bin/python manage.py compilemessages')
 
 @task
 def makemessages():
-    for app in env.apps:
-        with lcd('apps/%s' % app):
-            local('django-admin.py makemessages -a')
+    with lcd('apps'):
+        local('~/envs/sso/bin/python manage.py makemessages -a')
 
 @task 
 def test():
     with lcd('apps'):	
-        local("~/envs/sso/bin/python ./manage.py test streaming accounts oauth2")
+        local("~/envs/sso/bin/python manage.py test streaming accounts oauth2")
 
 @task 
 def prepare_deploy():

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-09-21 11:28+0200\n"
+"POT-Creation-Date: 2014-10-23 21:25+0200\n"
 "PO-Revision-Date: 2010-03-01 16:59+0100\n"
 "Last-Translator: Martin Bornhold <mb@bo-tech.de>\n"
 "Language-Team: \n"
@@ -251,7 +251,7 @@ msgstr "Sprache ändern"
 msgid "Change"
 msgstr "Ändern"
 
-#: l10n/validators/aupostcode.py:13
+#: l10n/validators/aupostcode.py:11
 msgid "Invalid Australian postal code"
 msgstr "Ungültige australische PLZ"
 
