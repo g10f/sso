@@ -1,6 +1,5 @@
 [
  {
-	 "pk" : 1,
 	 "model" : "accounts.user",
 	 "fields" : {
 		 "username" : "GlobalAdmin",
@@ -23,7 +22,6 @@
 	 }
  },
  {
-	 "pk" : 2,
 	 "model" : "accounts.user",
 	 "fields" : {
 		 "username" : "GunnarScherf",
@@ -41,6 +39,73 @@
 		 "uuid" : "a8992f0348634f76b0dac2de4e4c83ee",
 		 "organisations" : [ ["31664dd38ca4454e916e55fe8b1f0745"] ],
 		 "application_roles" : [ ["bc0ee635a536491eb8e7fbe5749e8111", "Staff"], ["bc0ee635a536491eb8e7fbe5749e8111", "Admin"] ],
+		 "is_subscriber" : false,
+		 "is_center" : false,
+		 "last_modified" : "2012-03-23T07:00:46.076Z"
+	 }
+ }, {
+	 "model" : "accounts.user",
+	 "fields" : {
+		 "username" : "CenterAdmin",
+		 "first_name" : "Center",
+		 "last_name" : "Admin",
+		 "is_active" : true,
+		 "is_superuser" : false,
+		 "is_staff" : false,
+		 "last_login" : "2012-03-23T07:18:33.143Z",
+		 "groups" : [],
+		 "user_permissions" : [],
+		 "password" : "pbkdf2_sha256$10000$JuM5NUO9HJ7e$61H65Og8koE7TCu37DfS1AqshlDiqmL1skZ6EzjrrGg=",
+		 "email" : "center@g10f.de",
+		 "date_joined" : "2012-03-23T07:02:04Z",
+		 "uuid" : "f601b1b2bc934b45920ab3addc105faf",
+		 "organisations" : [ ["31664dd38ca4454e916e55fe8b1f0745"] ],
+		 "application_roles" : [ ["fa467234b81e4838a009e38d9e655d18", "Center"] ],
+		 "is_subscriber" : false,
+		 "is_center" : false,
+		 "last_modified" : "2012-03-23T07:00:46.076Z"
+	 }
+ }, {
+	 "model" : "accounts.user",
+	 "fields" : {
+		 "username" : "RegionAdmin",
+		 "first_name" : "Region",
+		 "last_name" : "Admin",
+		 "is_active" : true,
+		 "is_superuser" : false,
+		 "is_staff" : false,
+		 "last_login" : "2012-03-23T07:18:33.143Z",
+		 "groups" : [],
+		 "user_permissions" : [],
+		 "password" : "pbkdf2_sha256$10000$JuM5NUO9HJ7e$61H65Og8koE7TCu37DfS1AqshlDiqmL1skZ6EzjrrGg=",
+		 "email" : "region@g10f.de",
+		 "date_joined" : "2012-03-23T07:02:04Z",
+		 "uuid" : "c02d6a3d1a634c269a7f10c147d480c2",
+		 "organisations" : [ ["31664dd38ca4454e916e55fe8b1f0745"] ],
+		 "application_roles" : [ ["fa467234b81e4838a009e38d9e655d18", "Region"] ],
+		 "is_subscriber" : false,
+		 "is_center" : false,
+		 "last_modified" : "2012-03-23T07:00:46.076Z"
+	 }
+ }, {
+	 "model" : "accounts.user",
+	 "fields" : {
+		 "username" : "CountryAdmin",
+		 "admin_countries" : [ 81 ],
+		 "first_name" : "Country",
+		 "last_name" : "Admin",
+		 "is_active" : true,
+		 "is_superuser" : false,
+		 "is_staff" : false,
+		 "last_login" : "2012-03-23T07:18:33.143Z",
+		 "groups" : [],
+		 "user_permissions" : [],
+		 "password" : "pbkdf2_sha256$10000$JuM5NUO9HJ7e$61H65Og8koE7TCu37DfS1AqshlDiqmL1skZ6EzjrrGg=",
+		 "email" : "country@g10f.de",
+		 "date_joined" : "2012-03-23T07:02:04Z",
+		 "uuid" : "b3a8a5bb86704bca89bb4425ec618e9c",
+		 "organisations" : [ ["31664dd38ca4454e916e55fe8b1f0745"] ],
+		 "application_roles" : [ ["fa467234b81e4838a009e38d9e655d18", "Country"] ],
 		 "is_subscriber" : false,
 		 "is_center" : false,
 		 "last_modified" : "2012-03-23T07:00:46.076Z"

@@ -1,5 +1,4 @@
 [ {
-	"pk" : 1,
 	"model" : "oauth2.client",
 	"fields" : {
 		"uuid" : "ec1e39cbe3e746c787b770ace4165d13",
@@ -11,7 +10,6 @@
 		"type" : "web"
 	}
 }, {
-	"pk" : 2,
 	"model" : "oauth2.client",
 	"fields" : {
 		"uuid" : "68bfae12a58541548def243e223053fb",
@@ -23,7 +21,6 @@
 		"type" : "web"
 	}
 }, {
-	"pk" : 3,
 	"model" : "oauth2.client",
 	"fields" : {
 		"uuid" : "92d7d9d71d5d41caa652080c19aaa6d8",

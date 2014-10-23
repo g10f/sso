@@ -1,6 +1,5 @@
 [
  {
-	 "pk" : 1,
 	 "model" : "accounts.role",
 	 "fields" : {
 		 "name" : "Superuser",
@@ -8,7 +7,6 @@
 	 }
  },
  {
-	 "pk" : 2,
 	 "model" : "accounts.role",
 	 "fields" : {
 		 "name" : "Staff",
@@ -16,7 +14,6 @@
 	 }
  },
  {
-	 "pk" : 3,
 	 "model" : "accounts.role",
 	 "fields" : {
 		 "name" : "User",
@@ -24,7 +21,6 @@
 	 }
  },
  {
-	 "pk" : 4,
 	 "model" : "accounts.role",
 	 "fields" : {
 		 "name" : "Guest",

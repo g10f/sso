@@ -10,7 +10,7 @@ from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException
 from sso.tests import SSOSeleniumTests 
 from sso.accounts.models import ApplicationRole
-from sso.organisations.models import AdminRegion
+from sso.organisations.models import AdminRegion, Organisation
 
 class AccountsSeleniumTests(SSOSeleniumTests):
     fixtures = ['roles.json', 'test_l10n_data.xml', 'app_roles.json', 'test_organisation_data.json', 'test_app_roles.json', 'test_user_data.json']
@@ -139,16 +139,20 @@ class AccountsSeleniumTests(SSOSeleniumTests):
 
     def test_add_user_as_admin(self):
         applicationrole = ApplicationRole.objects.get(application__uuid=settings.SSO_CUSTOM['APP_UUID'], role__name="Admin")
-        self.add_user(applicationrole=applicationrole, allowed_orgs=["1", "2"])
+        allowed_orgs = Organisation.objects.filter(uuid__in=['31664dd38ca4454e916e55fe8b1f0745', '31664dd38ca4454e916e55fe8b1f0746'])
+        self.add_user(applicationrole=applicationrole, allowed_orgs=allowed_orgs)
     
     def test_add_user_as_region(self):
         applicationrole = ApplicationRole.objects.get(application__uuid=settings.SSO_CUSTOM['APP_UUID'], role__name="Region")
         region = AdminRegion.objects.get_by_natural_key('0ebf2537fc664b7db285ea773c981404')
-        self.add_user(applicationrole=applicationrole, allowed_orgs=["1", "2"], region=region)
+        allowed_orgs = Organisation.objects.filter(uuid__in=['31664dd38ca4454e916e55fe8b1f0745', '31664dd38ca4454e916e55fe8b1f0746'])
+        self.add_user(applicationrole=applicationrole, allowed_orgs=allowed_orgs, region=region)
 
     def test_add_user_as_center(self):
         applicationrole = ApplicationRole.objects.get(application__uuid=settings.SSO_CUSTOM['APP_UUID'], role__name="Center")
-        self.add_user(applicationrole=applicationrole, allowed_orgs=["1"], denied_orgs=["2"])
+        allowed_orgs = Organisation.objects.filter(uuid__in=['31664dd38ca4454e916e55fe8b1f0745'])
+        denied_orgs = Organisation.objects.filter(uuid__in=['31664dd38ca4454e916e55fe8b1f0746'])
+        self.add_user(applicationrole=applicationrole, allowed_orgs=allowed_orgs, denied_orgs=denied_orgs)
     
     def add_user(self, applicationrole, allowed_orgs, denied_orgs=None, region=None):
         if denied_orgs is None:
@@ -182,13 +186,13 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         # test error case
         for org in denied_orgs:
             try:
-                organisation.select_by_value(org)
+                organisation.select_by_value(str(org.pk))
                 raise Exception("Organisation with pk=%s should not be a possible option" % org)
             except NoSuchElementException:
                 pass                
         
         for org in allowed_orgs:
-            organisation.select_by_value(org)            
+            organisation.select_by_value(str(org.pk))            
 
         self.selenium.find_element_by_xpath('//a[@href="#app_roles"]').click()
         self.selenium.find_element_by_id("id_application_roles_1").click()
