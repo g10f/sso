@@ -1,30 +1,5 @@
 [
- {
-	 "pk" : 5,
-	 "model" : "accounts.role",
-	 "fields" : {
-		 "name" : "Admin",
-		 "group" : [ "GlobalAdmin" ],
-		 "order" : 11
-	 }
- }, {
-	 "pk" : 6,
-	 "model" : "accounts.role", 
-	 "fields" : {
-		 "name" : "Region",
-		 "group" : [ "RegionAdmin" ],
-		 "order" : 12
-	 }
- }, {
-	 "pk" : 7,
-	 "model" : "accounts.role",
-	 "fields" : {
-		 "name" : "Center",
-		 "group" : [ "CenterAdmin" ],
-		 "order" : 13
-	 }
- }, {
-	 "pk" : 2,
+{
 	 "model" : "accounts.application",
 	 "fields" : {
 		 "uuid": "bc0ee635a536491eb8e7fbe5749e8111",
@@ -32,7 +7,6 @@
 		 "url" : "http://test.example.com"
 	 }
 }, {
-	 "pk" : 3,
 	 "model" : "accounts.application",
 	 "fields" : {
 		 "uuid" : "e4a281ef13e1484b93fe4b7cc66374c8",
@@ -40,7 +14,6 @@
 		 "url" : "http://ds108.example.com"
 	 }
  }, {
-	 "pk" : 4,
 	 "model" : "accounts.application",
 	 "fields" : {
 		 "uuid" : "35efc492b8f54f1f86df9918e8cc2b3d",
@@ -48,7 +21,6 @@
 		 "url" : "http://ds108eu.example.com"
 	 }
  }, {
-	 "pk" : 5,
 	 "model" : "accounts.application",
 	 "fields" : {
 		 "uuid" : "2139dc55af8b42ec84a1ce9fd25fdf18",
@@ -56,14 +28,12 @@
 		 "url" : "http://ds108cee.example.com"
 	 }
  }, {
-	 "pk" : 14,
 	 "model" : "accounts.applicationrole",
 	 "fields" : {
 		 "application" : ["bc0ee635a536491eb8e7fbe5749e8111"],
 		 "role" : ["Admin"]
 	 }
 }, {
-	 "pk" : 15,
 	 "model" : "accounts.applicationrole",
 	 "fields" : {
 		 "application" : ["bc0ee635a536491eb8e7fbe5749e8111"],

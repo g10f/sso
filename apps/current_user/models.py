@@ -5,7 +5,7 @@ import registration
 
 class CurrentUserField(models.ForeignKey):
     def __init__(self, created_by_only=False, **kwargs):
-        # remove kwargs for south migration, because we have fixed values below
+        # remove kwargs for migration, because we have fixed values below
         # and otherwise get multiple keywords error
         kwargs.pop('null', None)
         kwargs.pop('to', None)

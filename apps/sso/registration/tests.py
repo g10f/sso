@@ -9,6 +9,7 @@ from django.test.client import Client
 from django.core.urlresolvers import reverse
 
 from sso.registration import default_username_generator
+from sso.organisations.models import Organisation
 
 class RegistrationTest(TestCase):
     fixtures = ['roles.json', 'app_roles.json', 'test_l10n_data.xml', 'test_organisation_data.json', 'test_app_roles.json', 'test_user_data.json']
@@ -38,7 +39,7 @@ class RegistrationTest(TestCase):
     def test_registration_register_by_bot(self):
         """
         User self registration with email validation
-        """        
+        """
         data = {
             'email': 'test2@g10f.de',
             'email2': 'test2@g10f.de',
@@ -61,7 +62,8 @@ class RegistrationTest(TestCase):
         """        
         response = self.client.get(reverse('registration:registration_register'))
         self.assertEqual(response.status_code, 200)
-
+        organisation = Organisation.objects.filter(is_active=True).first()
+        
         data = {
             'email': 'test2@g10f.de',
             'email2': 'test2@g10f.de',
@@ -74,7 +76,7 @@ class RegistrationTest(TestCase):
             'about_me': 'Test',
             'country': 81,
             'city': 'Megacity',
-            'organisation': 1,
+            'organisation': organisation.pk,
             'recaptcha_response_field': 'PASSED'
       
         }
@@ -108,8 +110,7 @@ class RegistrationTest(TestCase):
         
         # data['is_verified'] = 'on'
         data['username'] = "TestUser"
-        data['verified_by_user'] = 1
-        data['organisations'] = 1
+        data['organisations'] = organisation.pk
         
         response = self.client.post(path, data=data)
         self.assertEqual(response.status_code, 302)

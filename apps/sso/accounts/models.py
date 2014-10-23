@@ -18,7 +18,6 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.timezone import now
 from django.utils.translation import get_language, activate, pgettext_lazy, ugettext_lazy as _
 from django.utils.text import get_valid_filename
-from south.modelsinspector import add_introspection_rules
 from sorl import thumbnail
 from l10n.models import Country
 from sso.fields import UUIDField
@@ -118,7 +117,7 @@ class ApplicationRole(models.Model):
     
     def natural_key(self):
         return self.application.natural_key(), self.role.natural_key()
-
+    
     def __unicode__(self):
         return u"%s - %s" % (self.application, self.role)
 
@@ -136,7 +135,7 @@ class RoleProfile(AbstractBaseModel):
         ordering = ['order', 'name']
         verbose_name = _('role profile')
         verbose_name_plural = _('role profiles')
-
+    
     def __unicode__(self):
         return u"%s" % self.name
 
@@ -598,31 +597,6 @@ class UserAssociatedSystem(models.Model):
 
     def __unicode__(self):
         return u"%s - %s" % (self.application, self.userid)    
-
-
-add_introspection_rules([
-    (
-        [UUIDField],  # Class(es) these apply to
-        [],         # Positional arguments (not used)
-        {           # Keyword argument 
-            "verbose_name": ["verbose_name", {"default": None}],
-            "name": ["name", {"default": None}],
-            "auto": ["auto", {"default": True}],
-            "version": ["version", {"default": 1}],
-        },
-    ),
-], ["^sso\.fields\.UUIDField"])  
-
-from current_user import models as current_user
-add_introspection_rules([
-    (
-        [current_user.CurrentUserField],  # Class(es) these apply to
-        [],         # Positional arguments (not used)
-        {           # Keyword argument 
-            "related_name": ["rel.related_name", {"default": None}],
-        },
-    ),
-], ["^current_user\.models\.CurrentUserField"])    
 
 
 def send_account_created_email(user, request, token_generator=default_pwd_reset_token_generator,

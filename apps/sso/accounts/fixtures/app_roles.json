@@ -1,78 +1,100 @@
 [
  {
-	 "pk" : 1,
 	 "model" : "auth.group",
 	 "fields" : {
 		 "name" : "GlobalAdmin",
-		 "permissions" : [ 
-               [ "access_all_users", "accounts", "user" ],
-               [ "read_user", "accounts", "user" ],
-               [ "add_user", "accounts", "user" ],
-               [ "change_user", "accounts", "user" ],
-               [ "add_useraddress", "accounts", "useraddress" ],
-               [ "change_useraddress", "accounts", "useraddress" ], 
-               [ "delete_useraddress", "accounts", "useraddress" ],
-               [ "add_userphonenumber", "accounts", "userphonenumber" ],
-               [ "change_userphonenumber", "accounts", "userphonenumber" ], 
-               [ "delete_userphonenumber", "accounts", "userphonenumber" ]
-          ]
+		 "permissions" : [ [ "access_all_users", "accounts", "user" ],
+		                   [ "read_user", "accounts", "user" ], [ "add_user", "accounts", "user" ],
+		                   [ "change_user", "accounts", "user" ],
+		                   [ "add_useraddress", "accounts", "useraddress" ],
+		                   [ "change_useraddress", "accounts", "useraddress" ],
+		                   [ "delete_useraddress", "accounts", "useraddress" ],
+		                   [ "add_userphonenumber", "accounts", "userphonenumber" ],
+		                   [ "change_userphonenumber", "accounts", "userphonenumber" ],
+		                   [ "delete_userphonenumber", "accounts", "userphonenumber" ],
+		                   [ "access_all_organisations", "organisations", "organisation" ],
+		                   [ "add_organisation", "organisations", "organisation" ],
+		                   [ "change_organisation", "organisations", "organisation" ],
+		                   [ "delete_organisation", "organisations", "organisation" ],
+		                   [ "change_registrationprofile", "registration", "registrationprofile" ] ]
 	 }
  },
  {
-	 "pk" : 2,
 	 "model" : "auth.group",
 	 "fields" : {
 		 "name" : "CenterAdmin",
-		 "permissions" : [ 
-               [ "read_user", "accounts", "user" ],
-               [ "add_user", "accounts", "user" ],
-               [ "change_user", "accounts", "user" ],
-               [ "add_useraddress", "accounts", "useraddress" ],
-               [ "change_useraddress", "accounts", "useraddress" ], 
-               [ "delete_useraddress", "accounts", "useraddress" ],
-               [ "add_userphonenumber", "accounts", "userphonenumber" ],
-               [ "change_userphonenumber", "accounts", "userphonenumber" ], 
-               [ "delete_userphonenumber", "accounts", "userphonenumber" ]
-          ]
+		 "permissions" : [ [ "read_user", "accounts", "user" ],
+		                   [ "add_user", "accounts", "user" ], [ "change_user", "accounts", "user" ],
+		                   [ "add_useraddress", "accounts", "useraddress" ],
+		                   [ "change_useraddress", "accounts", "useraddress" ],
+		                   [ "delete_useraddress", "accounts", "useraddress" ],
+		                   [ "add_userphonenumber", "accounts", "userphonenumber" ],
+		                   [ "change_userphonenumber", "accounts", "userphonenumber" ],
+		                   [ "delete_userphonenumber", "accounts", "userphonenumber" ],
+		                   [ "change_organisation", "organisations", "organisation" ] ]
 	 }
  },
  {
-	 "pk" : 3,
 	 "model" : "auth.group",
 	 "fields" : {
 		 "name" : "RegionAdmin",
-		 "permissions" : [ 
-               [ "read_user", "accounts", "user" ],
-               [ "add_user", "accounts", "user" ],
-               [ "change_user", "accounts", "user" ],
-               [ "add_useraddress", "accounts", "useraddress" ],
-               [ "change_useraddress", "accounts", "useraddress" ], 
-               [ "delete_useraddress", "accounts", "useraddress" ],
-               [ "add_userphonenumber", "accounts", "userphonenumber" ],
-               [ "change_userphonenumber", "accounts", "userphonenumber" ], 
-               [ "delete_userphonenumber", "accounts", "userphonenumber" ]
-		 ]
+		 "permissions" : [ [ "read_user", "accounts", "user" ],
+		                   [ "add_user", "accounts", "user" ], [ "change_user", "accounts", "user" ],
+		                   [ "add_useraddress", "accounts", "useraddress" ],
+		                   [ "change_useraddress", "accounts", "useraddress" ],
+		                   [ "delete_useraddress", "accounts", "useraddress" ],
+		                   [ "add_userphonenumber", "accounts", "userphonenumber" ],
+		                   [ "change_userphonenumber", "accounts", "userphonenumber" ],
+		                   [ "delete_userphonenumber", "accounts", "userphonenumber" ],
+		                   [ "change_adminregion", "organisations", "adminregion" ],
+		                   [ "add_organisation", "organisations", "organisation" ],
+		                   [ "change_organisation", "organisations", "organisation" ],
+		                   [ "delete_organisation", "organisations", "organisation" ] ]
 	 }
- }, {
-	 "pk" : 4,
+ },
+ {
+	 "model" : "auth.group",
+	 "fields" : {
+		 "name" : "CountryAdmin",
+		 "permissions" : [ [ "read_user", "accounts", "user" ],
+		                   [ "add_user", "accounts", "user" ], [ "change_user", "accounts", "user" ],
+		                   [ "add_useraddress", "accounts", "useraddress" ],
+		                   [ "change_useraddress", "accounts", "useraddress" ],
+		                   [ "delete_useraddress", "accounts", "useraddress" ],
+		                   [ "add_userphonenumber", "accounts", "userphonenumber" ],
+		                   [ "change_userphonenumber", "accounts", "userphonenumber" ],
+		                   [ "delete_userphonenumber", "accounts", "userphonenumber" ],
+		                   [ "add_adminregion", "organisations", "adminregion" ],
+		                   [ "change_adminregion", "organisations", "adminregion" ],
+		                   [ "add_organisation", "organisations", "organisation" ],
+		                   [ "change_organisation", "organisations", "organisation" ],
+		                   [ "change_organisationcountry", "organisations", "organisationcountry" ] ]
+	 }
+ },
+ {
 	 "model" : "auth.group",
 	 "fields" : {
 		 "name" : "RegistrationAdmin",
 		 "permissions" : [
-              [ "add_registrationprofile", "registration", "registrationprofile" ],
-              [ "change_registrationprofile", "registration", "registrationprofile" ],
-              [ "delete_registrationprofile", "registration", "registrationprofile" ] ]
+		                  [ "add_registrationprofile", "registration", "registrationprofile" ],
+		                  [ "change_registrationprofile", "registration", "registrationprofile" ],
+		                  [ "delete_registrationprofile", "registration", "registrationprofile" ] ]
 	 }
  }, {
-	 "pk" : 5,
 	 "model" : "accounts.role",
 	 "fields" : {
 		 "name" : "Admin",
 		 "group" : [ "GlobalAdmin" ],
+		 "order" : 10
+	 }
+ }, {
+	 "model" : "accounts.role",
+	 "fields" : {
+		 "name" : "Country",
+		 "group" : [ "CountryAdmin" ],
 		 "order" : 11
 	 }
  }, {
-	 "pk" : 6,
 	 "model" : "accounts.role",
 	 "fields" : {
 		 "name" : "Region",
@@ -80,7 +102,6 @@
 		 "order" : 12
 	 }
  }, {
-	 "pk" : 7,
 	 "model" : "accounts.role",
 	 "fields" : {
 		 "name" : "Center",
@@ -88,7 +109,6 @@
 		 "order" : 13
 	 }
  }, {
-	 "pk" : 1,
 	 "model" : "accounts.application",
 	 "fields" : {
 		 "uuid" : "fa467234b81e4838a009e38d9e655d18",
@@ -96,39 +116,40 @@
 		 "url" : "http://sso.example.com"
 	 }
  }, {
-	 "pk" : 1,
 	 "model" : "accounts.applicationrole",
 	 "fields" : {
 		 "application" : [ "fa467234b81e4838a009e38d9e655d18" ],
 		 "role" : [ "Admin" ]
 	 }
  }, {
-	 "pk" : 2,
+	 "model" : "accounts.applicationrole",
+	 "fields" : {
+		 "application" : [ "fa467234b81e4838a009e38d9e655d18" ],
+		 "role" : [ "Country" ]
+	 }
+ }, {
 	 "model" : "accounts.applicationrole",
 	 "fields" : {
 		 "application" : [ "fa467234b81e4838a009e38d9e655d18" ],
 		 "role" : [ "Region" ]
 	 }
  }, {
-	 "pk" : 3,
 	 "model" : "accounts.applicationrole",
 	 "fields" : {
 		 "application" : [ "fa467234b81e4838a009e38d9e655d18" ],
 		 "role" : [ "Center" ]
 	 }
  }, {
-	 "pk" : 1,
 	 "model" : "accounts.roleprofile",
 	 "fields" : {
-		 "name": "Diamondway Member",
-		 "uuid": "b4caab335bbc4c90a6f552f7f13aa410"
+		 "name" : "Diamondway Member",
+		 "uuid" : "b4caab335bbc4c90a6f552f7f13aa410"
 	 }
  }, {
-	 "pk" : 2,
 	 "model" : "accounts.roleprofile",
 	 "fields" : {
-		 "name": "Center Admin",
-		 "uuid": "1593284b238c4a1cabf291e573205508"
+		 "name" : "Center Admin",
+		 "uuid" : "1593284b238c4a1cabf291e573205508",
+		 "application_roles" : [ [ "fa467234b81e4838a009e38d9e655d18", "Center" ] ]
 	 }
- } 
-]
+ } ]
