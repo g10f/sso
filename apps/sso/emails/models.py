@@ -44,9 +44,9 @@ class Email(AbstractBaseModel):
     is_active = models.BooleanField(_('active'), default=True, help_text=_('Designates whether this email should be treated as '
                                                                            'active. Unselect this instead of deleting the email.'))
     
-    def primary_forward(self):
-        return self.emailforward_set.filter(primary=True).first()
-    
+    def primary_forward_set(self):
+        return self.emailforward_set.filter(primary=True)
+
     @models.permalink
     def get_absolute_url(self):
         # return  ('emails:email_update', (), {'uuid': self.uuid, })
