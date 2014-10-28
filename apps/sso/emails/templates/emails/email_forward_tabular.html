@@ -1,7 +1,7 @@
 {% extends "edit_inline/tabular.html" %}
 {% load i18n %}
 
-{% block formset_extra_row %}
+{% block formset_extra_rows %}
 {% for primary_forward in formset.instance.primary_forward_set %}
 <tr class="text-danger">
     <td colspan="3">          

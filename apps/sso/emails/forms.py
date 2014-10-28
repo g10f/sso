@@ -24,8 +24,8 @@ class EmailForwardForm(BaseForm):
 
 class EmailForwardInlineForm(BaseTabularInlineForm):
     """
-    - the primary email is readonly
-    - without the primary field
+    form without a primary field and with 
+    a list of readonly primary emails
     """
     forward = EmailFieldLower(max_length=254, label=_('Email forwarding address'))
     
@@ -36,6 +36,17 @@ class EmailForwardInlineForm(BaseTabularInlineForm):
     def template(self):
         return 'emails/email_forward_tabular.html'
     
+
+class EmailForwardOnlyInlineForm(BaseTabularInlineForm):
+    """
+    form without a primary field
+    """
+    forward = EmailFieldLower(max_length=254, label=_('Email forwarding address'))
+    
+    class Meta:
+        model = EmailForward
+        fields = ('forward', ) 
+
 
 class AdminEmailForwardInlineForm(BaseTabularInlineForm):
     forward = EmailFieldLower(max_length=254, label=_('Email forwarding address'))

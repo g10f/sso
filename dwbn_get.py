@@ -65,8 +65,7 @@ def main():
     parser.add_argument('client_secret')
     parser.add_argument('-b', '--base_uri', help='The base_uri of the API ..', default='https://sso.dwbn.org')
     parser.add_argument('-r', '--resource', help='the resource name from the API EntryPoint (see https://<host>/api/ )', default='organisations')
-    parser.add_argument('--disable_ssl_certificate_validation', dest='disable_ssl_certificate_validation', action='store_true', default=False)
-    parser.add_argument('--show_vars', dest='show_vars', action='store_true', default=False)
+    parser.add_argument('--disable_ssl_certificate_validation', dest='disable_ssl_certificate_validation', action='store_true', default=True)
     
     # uri template parameters
     parser.add_argument('--q', help='text search parameter for name, email, ..')
