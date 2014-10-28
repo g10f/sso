@@ -123,6 +123,7 @@ class Organisation(AbstractBaseModel):
         ('1', _('Buddhist Center')),
         ('2', _('Buddhist Group')),
         ('3', _('Buddhist Retreat')),            
+        ('4', _('Buddhist Contact')),
         ('7', _('Buddhist Center & Retreat')),            
         ('16', _('Buddhist Group & Retreat')),            
     )

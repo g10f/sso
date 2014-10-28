@@ -7,7 +7,6 @@ psycopg2
 #selenium
 python-memcached
 docutils
-south
 pycrypto
 oauthlib
 sorl-thumbnail

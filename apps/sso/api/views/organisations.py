@@ -37,6 +37,9 @@ class OrganisationMixin(object):
                 data['location'] = {'geo': {'latitude': obj.location.y, 'longitude': obj.location.x}}
             
         if details:
+            if ('users' in request.scopes) and (obj in request.user.get_administrable_user_organisations()):
+                data['users'] = "%s%s?org_id=%s" % (base, reverse('api:v2_users'), obj.uuid)
+            
             if not obj.is_private:
                 data['addresses'] = {
                     address.uuid: {
@@ -88,10 +91,19 @@ class OrganisationList(OrganisationMixin, JsonListView):
         name = self.request.GET.get('q', None)
         if name:
             qs = qs.filter(name__icontains=name)
+
+        country_group_id = self.request.GET.get('country_group_id', None)
+        if country_group_id:
+            qs = qs.filter(country__organisationcountry__country_groups__uuid=country_group_id)
+
         country = self.request.GET.get('country', None)
         if country:
             qs = qs.filter(country__iso2_code__iexact=country)
             
+        region_id = self.request.GET.get('region_id', None)
+        if region_id:
+            qs = qs.filter(admin_region__uuid=region_id)
+
         modified_since = self.request.GET.get('modified_since', None)
         if modified_since:  # parse modified_since
             parsed = parse_datetime_with_timezone_support(modified_since)

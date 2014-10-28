@@ -10,8 +10,11 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-FIND_USER_EXPRESSION = "{?q,org_id,per_page,app_id,modified_since}"
-FIND_ORGANISATION_EXPRESSION = "{?q,per_page,country,latlng,dlt,modified_since}"
+FIND_USER_EXPRESSION = "{?q,per_page,app_id,modified_since,country_group_id,country,region_id,org_id}"
+FIND_ORGANISATION_EXPRESSION = "{?q,per_page,modified_since,country_group_id,country,region_id,latlng,dlt}"
+FIND_COUNTRY_EXPRESSION = "{?q,per_page,modified_since,country_group_id}"
+FIND_REGION_EXPRESSION = "{?q,per_page,modified_since,country_group_id,country}"
+FIND_COUNTRY_GROUP_EXPRESSION = "{?q,per_page,modified_since}"
 
 
 @cache_page(60 * 60)
@@ -20,6 +23,12 @@ def home(request):
     resources = {
         "@id": "%s%s" % (base_uri, reverse('api:home')),
         "@type": "EntryPoint",
+        "country_groups": "%s%s%s" % (base_uri, reverse('api:v2_country_groups'), FIND_COUNTRY_GROUP_EXPRESSION),
+        "country_group": "%s%s%s" % (base_uri, reverse('api:v2_country_groups'), "{country_group_id}/"),
+        "countries": "%s%s%s" % (base_uri, reverse('api:v2_countries'), FIND_COUNTRY_EXPRESSION),
+        "country": "%s%s%s" % (base_uri, reverse('api:v2_countries'), "{iso2_code}/"),
+        "regions": "%s%s%s" % (base_uri, reverse('api:v2_regions'), FIND_REGION_EXPRESSION),
+        "region": "%s%s%s" % (base_uri, reverse('api:v2_regions'), "{region_id}/"),
         "organisations": "%s%s%s" % (base_uri, reverse('api:v2_organisations'), FIND_ORGANISATION_EXPRESSION),
         "organisation": "%s%s%s" % (base_uri, reverse('api:v2_organisations'), "{org_id}/"),
         "users": "%s%s%s" % (base_uri, reverse('api:v2_users'), FIND_USER_EXPRESSION),

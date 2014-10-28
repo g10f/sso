@@ -10,7 +10,7 @@ from sso.views import main
 from sso.emails.models import EmailForward, EmailAlias, Email
 from sso.organisations.models import OrganisationCountry, CountryGroup
 from sso.views.generic import FormsetsUpdateView, ListView, ViewChoicesFilter, SearchFilter, ViewQuerysetFilter, ViewButtonFilter
-from sso.emails.forms import AdminEmailForwardInlineForm, EmailAliasInlineForm
+from sso.emails.forms import EmailForwardOnlyInlineForm, EmailAliasInlineForm
 from sso.organisations.forms import OrganisationCountryForm
 from sso.forms.helpers import get_optional_inline_formset
 
@@ -63,7 +63,7 @@ class OrganisationCountryUpdateView(OrganisationCountryBaseView, FormsetsUpdateV
         formsets = []
         if self.request.method == 'GET' or 'email' not in self.form.changed_data:
             email_forward_inline_formset = get_optional_inline_formset(self.request, self.object.email, Email, 
-                                                                       model=EmailForward, form=AdminEmailForwardInlineForm, max_num=10)
+                                                                       model=EmailForward, form=EmailForwardOnlyInlineForm, max_num=10)
             email_alias_inline_formset = get_optional_inline_formset(self.request, self.object.email, Email, 
                                                                      model=EmailAlias, form=EmailAliasInlineForm, max_num=6)
             

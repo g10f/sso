@@ -24,7 +24,7 @@
 	     	</tr>
 	     </thead>
 	     <tbody>
-	     {% block formset_extra_row %}{% endblock %}
+	     {% block formset_extra_rows %}{% endblock %}
 	     {% for form in formset.forms %}
             {% if form.non_field_errors %}
             <tr class="text-danger"><td colspan="{{ form.visible_fields|length|add:"1" }}">            
