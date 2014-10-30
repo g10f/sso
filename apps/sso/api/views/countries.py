@@ -19,12 +19,15 @@ class CountryMixin(object):
         data = {
             '@id': "%s%s" % (base, reverse('api:v2_country', kwargs={'iso2_code': obj.country.iso2_code})),
             'id': u'%s' % obj.uuid,
+            'code': obj.country.iso2_code,
             'name': u'%s' % str(obj),
             'email': u'%s' % obj.email,
             'homepage': obj.homepage,
-            'continent_code': obj.country.continent,
-            'continent_name': obj.country.get_continent_display(),
             'last_modified': obj.last_modified,
+            'continent': {
+                'code': obj.country.continent,
+                'name': obj.country.get_continent_display(),
+            }
         }
         if details:
             if ('users' in request.scopes) and (obj.country in request.user.get_administrable_user_countries()):
@@ -33,8 +36,10 @@ class CountryMixin(object):
                 data['organisations'] = "%s%s?country=%s" % (base, reverse('api:v2_organisations'), obj.country.iso2_code)
             if obj.country.adminregion_set.exists():
                 data['regions'] = "%s%s?country=%s" % (base, reverse('api:v2_regions'), obj.country.iso2_code)
+            if obj.country_groups.all().exists():
+                data['country_groups'] = "%s%s?country=%s" % (base, reverse('api:v2_country_groups'), obj.country.iso2_code)
         return data
-    
+  
 
 class CountryDetailView(CountryMixin, JsonDetailView):
     slug_field = 'country__iso2_code'

@@ -1,8 +1,6 @@
 django
 gunicorn
 psycopg2
-# for streaming app only
-#MySQL-python
 # for local testing only
 #selenium
 python-memcached
