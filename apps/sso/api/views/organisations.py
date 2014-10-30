@@ -24,9 +24,18 @@ class OrganisationMixin(object):
             'founded': obj.founded,
             'center_type': obj.center_type,
             'homepage': obj.homepage,
-            'country': obj.country.iso2_code,
             'last_modified': obj.last_modified,
+            'country': {
+                'code': obj.country.iso2_code,
+                '@id': "%s%s" % (base, reverse('api:v2_country', kwargs={'iso2_code': obj.country.iso2_code})),
+            }
         }
+        if obj.admin_region is not None:
+            data['region'] = {
+                'id': obj.admin_region.uuid,
+                '@id': "%s%s" % (base, reverse('api:v2_region', kwargs={'uuid': obj.admin_region.uuid})),
+            }
+
         try:
             # if we have a gis query
             data['distance'] = "%.1f km" % obj.distance.km
@@ -87,7 +96,7 @@ class OrganisationList(OrganisationMixin, JsonListView):
     }
 
     def get_queryset(self):
-        qs = super(OrganisationList, self).get_queryset().filter(is_active=True).prefetch_related('country', 'email')
+        qs = super(OrganisationList, self).get_queryset().filter(is_active=True).prefetch_related('country', 'admin_region', 'email')
         name = self.request.GET.get('q', None)
         if name:
             qs = qs.filter(name__icontains=name)

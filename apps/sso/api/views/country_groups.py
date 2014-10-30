@@ -66,6 +66,10 @@ class CountryGroupList(CountryGroupMixin, JsonListView):
         if name:
             qs = qs.filter(name__icontains=name)
 
+        country = self.request.GET.get('country', None)
+        if country:
+            qs = qs.filter(organisationcountry__country__iso2_code__iexact=country)
+
         modified_since = self.request.GET.get('modified_since', None)
         if modified_since:  # parse modified_since
             parsed = parse_datetime_with_timezone_support(modified_since)

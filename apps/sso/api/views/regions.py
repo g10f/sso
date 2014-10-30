@@ -21,9 +21,12 @@ class RegionMixin(object):
             'id': u'%s' % obj.uuid,
             'name': u'%s' % str(obj),
             'email': u'%s' % obj.email if obj.email else "",
-            'country': obj.country.iso2_code,
             'homepage': obj.homepage,
             'last_modified': obj.last_modified,
+            'country': {
+                'code': obj.country.iso2_code,
+                '@id': "%s%s" % (base, reverse('api:v2_country', kwargs={'iso2_code': obj.country.iso2_code})),
+            }
         }
         if details:
             if ('users' in request.scopes) and (obj in request.user.get_administrable_user_regions()):
