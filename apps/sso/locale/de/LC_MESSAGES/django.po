@@ -1799,7 +1799,7 @@ msgstr "Zentrumstyp"
 
 #: sso/organisations/forms.py:77
 msgid "Publish"
-msgstr ""
+msgstr "Veröffentlichen"
 
 #: sso/organisations/forms.py:83
 msgid "Admin region"
