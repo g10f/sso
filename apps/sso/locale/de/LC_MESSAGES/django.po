@@ -1959,7 +1959,7 @@ msgstr ""
 
 #: sso/organisations/models.py:167
 msgid "publish"
-msgstr ""
+msgstr "veröffentlichen"
 
 #: sso/organisations/models.py:168
 msgid "Designates whether this buddhist center data can be published."
