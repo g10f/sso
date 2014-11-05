@@ -3,6 +3,14 @@
 
 {% block title %}{% trans 'Center Details' %}{% endblock %}
 
+{% block extrascript %}
+<script type="text/javascript">
+$(function() {
+	$('.dwbn-label').tooltip();
+});
+</script>
+{% endblock extrascript %}
+
 {% block breadcrumb %}
 <ol class="breadcrumb">
     <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
@@ -40,12 +48,14 @@
     {% endif %}    
     {% endif %}
     
+	{% if perms.organisations.change_organisation %}
     {% if object.country.organisationcountry.country_groups.exists %}
 	<div class="row"><div class="dwbn-label">{% trans 'Country groups' %}: </div><div class="dwbn-content">
 		{% for country_group in object.country.organisationcountry.country_groups.all %}
 			{% if country_group.homepage %}<a href="{{ country_group.homepage }}">{{ country_group }}</a>{% else %}{{ country_group }}{% endif %}{% if not forloop.last %}, {% endif %}
 		{% endfor %}
 	</div></div>
+	{% endif %}
 	{% endif %}
 	
 	<div class="row"><div class="dwbn-label">{% trans 'Country' %}: </div><div class="dwbn-content">
@@ -58,7 +68,7 @@
 	{% endif %}
 	
 	{% if perms.organisations.change_organisation %}
-    <div class="row"><div class="dwbn-label">{% trans 'Active/Private/Publish' %}: </div>
+    <div class="row"><div class="dwbn-label" data-toggle="tooltip" title="{% trans 'Private: Address is private. Publish: publish on public Web Sites or only internal.' %}">{% trans 'Active/Private/Publish' %}: </div>
     	<div class="dwbn-content">
     		<span class="glyphicon glyphicon-{% if object.is_active %}ok-sign{% else %}minus-sign{% endif %}"></span> /
     		<span class="glyphicon glyphicon-{% if object.is_private %}ok-sign{% else %}minus-sign{% endif %}"></span> /
