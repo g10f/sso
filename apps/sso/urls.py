@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import patterns, url, include
 from django.conf import settings
-from django.views.generic import RedirectView
+from django.views.generic import RedirectView, TemplateView
 from django.conf.urls.static import static
 from sso.accounts.forms import UserSelfRegistrationForm2
 from sso.registration.sites import RegistrationSite
@@ -14,6 +14,7 @@ urlpatterns = patterns(
     '',
     url(r'^admin/', include(sso_admin_site.urls)),
     url(r'^$', 'sso.views.home', name='home'),
+    url(r'^privacy/$', TemplateView.as_view(template_name="privacy.html"), name='privacy'),
     url(r'^about/$', RedirectView.as_view(url=settings.SSO_CUSTOM['ABOUT']), name='about'),
     url(r'^accounts/', include('sso.accounts.urls', namespace="accounts")),
     url(r'^accounts/', include(registration_site.urls)),
