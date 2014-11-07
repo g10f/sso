@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-07 17:21+0100\n"
+"POT-Creation-Date: 2014-11-07 18:11+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2720,9 +2720,11 @@ msgid "Toggle sorting"
 msgstr ""
 
 #: sso/templates/privacy.html:18
+#, python-format
 msgid ""
-"Your data will be stored and used by us for the provision of DWBN services. "
-"Under no circumstances will we give your information to third parties!"
+"Your data will be stored and used by us for the provision of %(brand)s "
+"services. Under no circumstances will we give your information to third "
+"parties!"
 msgstr ""
 
 #: sso/views/csrf.py:10
