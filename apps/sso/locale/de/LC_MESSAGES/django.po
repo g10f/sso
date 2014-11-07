@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-11-05 22:50+0100\n"
+"POT-Creation-Date: 2014-11-07 17:21+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -696,7 +696,7 @@ msgstr "Benutzer hinzufügen"
 #: sso/registration/templates/registration/change_user_registration_form.html:6
 #: sso/registration/templates/registration/user_registration_list.html:10
 #: sso/templates/base.html:46 sso/templates/home.html:13
-#: sso/views/__init__.py:16
+#: sso/templates/privacy.html:9 sso/views/__init__.py:16
 msgid "Home"
 msgstr ""
 
@@ -866,7 +866,7 @@ msgstr "Kontakt Information"
 #: sso/accounts/templates/accounts/contact_form.html:15
 #: sso/accounts/templates/accounts/contact_thanks.html:9
 #: sso/accounts/templates/accounts/contact_thanks.html:15
-#: sso/templates/base.html:57
+#: sso/templates/base.html:59
 msgid "Feedback"
 msgstr ""
 
@@ -2062,8 +2062,9 @@ msgstr "Gegründet"
 msgid ""
 "Private: Address is private. Publish: publish on public Web Sites or only "
 "internal."
-msgstr "Privat: Addresse ist privat und wird nicht veröffentlicht. "
-"Veröffentlichen: Zentrum auf öffentlichen Webseiten anzeigen oder nur intern."
+msgstr ""
+"Privat: Addresse ist privat und wird nicht veröffentlicht. Veröffentlichen: "
+"Zentrum auf öffentlichen Webseiten anzeigen oder nur intern."
 
 #: sso/organisations/templates/organisations/organisation_detail.html:71
 msgid "Active/Private/Publish"
@@ -2647,6 +2648,11 @@ msgstr ""
 msgid "About us"
 msgstr ""
 
+#: sso/templates/base.html:57 sso/templates/privacy.html:5
+#: sso/templates/privacy.html.py:10 sso/templates/privacy.html:16
+msgid "Privacy"
+msgstr "Datenschutz"
+
 #: sso/templates/base_site.html:4 sso/templates/base_site.html.py:5
 #, python-format
 msgid "%(brand)s"
@@ -2770,48 +2776,15 @@ msgstr ""
 msgid "Toggle sorting"
 msgstr "Sortierung ändern"
 
+#: sso/templates/privacy.html:18
+msgid ""
+"Your data will be stored and used by us for the provision of DWBN services. "
+"Under no circumstances will we give your information to third parties!"
+msgstr ""
+"Eure Daten werden von uns nur für die Bereitstellung des DWBN-Services "
+"gespeichert und genutzt. Unter keinen Umständen geben wir Eure Daten an "
+"Dritte weiter!"
+
 #: sso/views/csrf.py:10
 msgid "CSRF verification failed. Request aborted."
 msgstr ""
-
-#~ msgid "Continue"
-#~ msgstr "Weiter"
-
-#~ msgid "Select Country"
-#~ msgstr "Land filtern"
-
-#~ msgid "Select Region"
-#~ msgstr "Region filtern"
-
-#~ msgid "Select Center"
-#~ msgstr "Zentrum filtern"
-
-#~ msgid "Select Role"
-#~ msgstr "Rolle filtern"
-
-#~ msgid "Select Profile"
-#~ msgstr "Profil filtern"
-
-#~ msgid "Select Permission"
-#~ msgstr "Berechtigung filtern"
-
-#~ msgid "Select My Emails"
-#~ msgstr "Meine E-Mails"
-
-#~ msgid "Select Center Type"
-#~ msgstr "Zentrumstyp filtern"
-
-#~ msgid "Select My Centers"
-#~ msgstr "Meine Zentren"
-
-#~ msgid "Select Continent"
-#~ msgstr "Kontinent filtern"
-
-#~ msgid "Select Group"
-#~ msgstr "Gruppe filtern"
-
-#~ msgid "Select My Countries"
-#~ msgstr "Meine Länder"
-
-#~ msgid "Select My Regions"
-#~ msgstr "Meine Regionen"

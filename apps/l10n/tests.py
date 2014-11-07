@@ -99,7 +99,6 @@ class MoneyFmtTest(TestCase):
 
         self.assertEqual(moneyfmt(val, currency_code='USD'), '$10.00')
 
-
     def testGBP(self):
         l10n_settings.set_l10n_setting('default_currency', 'GBP')
 
@@ -114,7 +113,7 @@ class MoneyFmtTest(TestCase):
 
     def testFake(self):
         currencies = l10n_settings.get_l10n_setting('currency_formats')
-        currencies['FAKE'] = {'symbol': '^ ', 'positive' : "%(val)0.2f ^", 'negative': "(%(val)0.2f) ^", 'decimal' : ','}
+        currencies['FAKE'] = {'symbol': '^ ', 'positive': "%(val)0.2f ^", 'negative': "(%(val)0.2f) ^", 'decimal': ','}
         
         l10n_settings.set_l10n_setting('currency_formats', currencies)
         
@@ -123,7 +122,3 @@ class MoneyFmtTest(TestCase):
 
         val = Decimal('-50.00')
         self.assertEqual(moneyfmt(val, currency_code='FAKE'), '(50,00) ^')
-
-
-        
-        
