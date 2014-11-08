@@ -428,11 +428,7 @@ class UserSelfRegistrationForm2(UserSelfRegistrationForm):
     """
     Overwritten UserSelfRegistrationForm Form with additional  organisation field
     """
-    UserSelfRegistrationForm.error_messages.update({
-        'email_mismatch': _("The two email fields didn't match."),
-    })
     organisation = forms.ModelChoiceField(queryset=Organisation.objects.all().select_related('country'), cache_choices=True, required=False, label=_("Center"), widget=bootstrap.Select())
-    email2 = forms.EmailField(label=_('Repeat your Email'), required=True, widget=bootstrap.EmailInput())
     # for Bots. If you enter anything in this field you will be treated as a robot
     state = forms.CharField(label=_('State'), required=False, widget=bootstrap.HiddenInput())
     
@@ -467,17 +463,6 @@ class UserSelfRegistrationForm2(UserSelfRegistrationForm):
             self.data = data
             del self.fields['captcha']
         return super(UserSelfRegistrationForm2, self).clean()
-
-    def clean_email2(self):
-        email = self.cleaned_data.get('email')
-        email2 = self.cleaned_data.get('email2')
-        if email and email2:
-            if email != email2:
-                raise forms.ValidationError(
-                    self.error_messages['email_mismatch'],
-                    code='email_mismatch',
-                )
-        return email2
     
     """
     def clean_state(self):
