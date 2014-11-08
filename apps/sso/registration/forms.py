@@ -155,8 +155,8 @@ class UserSelfRegistrationForm(forms.Form):
         'duplicate_username': _("A user with that username already exists."),
         'duplicate_email': _("A user with that email address already exists."),
     }
-    first_name = forms.CharField(label=_('First name'), required=True, widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('first name'))}))
-    last_name = forms.CharField(label=_('Last name'), required=True, widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('last name'))}))
+    first_name = forms.CharField(label=_('First name'), required=True, max_length=30, widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('first name'))}))
+    last_name = forms.CharField(label=_('Last name'), required=True, max_length=30, widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('last name'))}))
     email = forms.EmailField(label=_('Email'), required=True, widget=bootstrap.EmailInput())
     known_person1_first_name = forms.CharField(label=_("First name"), max_length=100, widget=bootstrap.TextInput())
     known_person1_last_name = forms.CharField(label=_("Last name"), max_length=100, widget=bootstrap.TextInput())
