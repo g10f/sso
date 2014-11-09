@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis import measure
-from django.db.models.signals import post_delete, post_save
+from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.crypto import get_random_string
@@ -269,53 +269,49 @@ class OrganisationPhoneNumber(AbstractBaseModel, PhoneNumberMixin):
 @receiver(post_delete, sender=Organisation)
 @disable_for_loaddata
 def post_delete_center_account(sender, instance, **kwargs):
-    deactivate_center_account(instance)
+    if instance.email:
+        deactivate_center_account(instance.email)
 
 
-@receiver(post_save, sender=Organisation)
-@disable_for_loaddata
-def post_save_center_account(sender, instance, **kwargs):
-    update_center_account(instance)
-
-
-def deactivate_center_account(organisation):
+def deactivate_center_account(email):
     """
     deactivate the center user account if the center was deleted
     """
     try:
-        if organisation.email:
-            for user in get_user_model().objects.filter(email__iexact=organisation.email.email):
-                user.is_active = False
-                user.save()
+        for user in get_user_model().objects.filter(email__iexact=email.email):
+            user.is_active = False
+            user.save()
     except ObjectDoesNotExist:
         pass
 
 
-def create_center_account(center):
+def update_or_create_organisation_account(organisation, old_email_value, new_email_value):
     first_name = 'BuddhistCenter'
-    last_name = capfirst(center.name)
+    last_name = capfirst(organisation.name)
     username = default_username_generator(first_name, last_name)
-    user = get_user_model()(first_name='BuddhistCenter', last_name=last_name, username=username, email=center.email.email, is_center=True)
-    user.set_password(get_random_string(40))
-    user.save()
-    user.organisations.add(center)
-    user.add_default_roles()
+    is_active = organisation.is_active
 
-
-def update_center_account(organisation):
-    """
-    deactivate or activate the center user account if the center account is activated or deactivated
-    """
     try:
-        if organisation.email:
-            qs = get_user_model().objects.filter(email__iexact=organisation.email.email)
-            if not qs.exists():
-                if organisation.is_active:
-                    create_center_account(organisation)
-            else:
-                for user in get_user_model().objects.filter(email__iexact=organisation.email.email):
-                    if organisation.is_active != user.is_active:
-                        user.is_active = organisation.is_active
-                        user.save()
+        if old_email_value:
+            organisation_account = get_user_model().objects.get(email__iexact=old_email_value)
+        else:
+            organisation_account = get_user_model().objects.get(email__iexact=new_email_value)
     except ObjectDoesNotExist:
-        pass
+        if is_active:
+            organisation_account = get_user_model()()
+            organisation_account.set_password(get_random_string(40))
+        else:
+            # organisation is not activ and no user account exists, so don't create one
+            pass
+        
+    if organisation_account:
+        organisation_account.first_name = first_name
+        organisation_account.last_name = last_name
+        organisation_account.username = username
+        organisation_account.email = new_email_value
+        organisation_account.is_center = True
+        organisation_account.is_active = organisation.is_active
+        organisation_account.save()
+        
+        organisation_account.organisations = [organisation]
+        organisation_account.add_default_roles()
