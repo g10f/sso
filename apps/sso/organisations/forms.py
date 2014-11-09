@@ -7,6 +7,7 @@ from sso.forms import bootstrap, BaseForm, BaseTabularInlineForm
 from sso.forms.fields import EmailFieldLower
 from sso.emails.models import Email, EmailForward, CENTER_EMAIL_TYPE, REGION_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, PERM_EVERYBODY, PERM_DWB
 from .models import OrganisationPhoneNumber, OrganisationAddress, Organisation, AdminRegion, OrganisationCountry, CountryGroup
+from .models import update_or_create_organisation_account
 
 
 class OrganisationAddressForm(BaseForm):
@@ -91,6 +92,9 @@ class OrganisationCenterAdminForm(OrganisationBaseForm):
 
 
 class OrganisationEmailAdminForm(OrganisationBaseForm):
+    """
+    A Form for Admins of Organisations. The Form includes an additional Email Field for creating an Email objects
+    """
     email_type = CENTER_EMAIL_TYPE
     permission = PERM_EVERYBODY
     email_value = EmailFieldLower(required=True, label=_("Email address"), widget=bootstrap.EmailInput(attrs={'placeholder': 'name@diamondway-center.org'}))
@@ -121,18 +125,25 @@ class OrganisationEmailAdminForm(OrganisationBaseForm):
         """
         save the email address or create a new email object if it does not exist 
         """
-        instance = super(OrganisationEmailAdminForm, self).save(commit)
-        if 'email_value' in self.changed_data: 
+        if self.instance.email:
+            old_email_value = self.instance.email.email
+        else:
+            old_email_value = None
+
+        new_email_value = self.cleaned_data['email_value']
+        
+        if 'email_value' in self.changed_data:
             if self.instance.email:
-                self.instance.email.email = self.cleaned_data['email_value']
+                self.instance.email.email = new_email_value
                 self.instance.email.save()
             else:
                 # create email object
-                email = Email(email_type=self.email_type, permission=self.permission, email=self.cleaned_data['email_value'])
+                email = Email(email_type=self.email_type, permission=self.permission, email=new_email_value)
                 email.save()
-                instance.email = email
-                instance.save()      
+                self.instance.email = email
                 
+        instance = super(OrganisationEmailAdminForm, self).save(commit)
+        update_or_create_organisation_account(self.instance, old_email_value, new_email_value) 
         return instance
 
 
@@ -179,7 +190,7 @@ class OrganisationRegionAdminForm(OrganisationEmailAdminForm):
 
 class OrganisationCountryAdminCreateForm(OrganisationCountryAdminForm):
     """
-    A form for a country admin for create and update oragnisations with 
+    A form for a country admin for create and update organisations with 
     additionally email_forward field  
     """
     email_forward = EmailFieldLower(required=True, label=_("Email forwarding address"), help_text=_('The primary email forwarding address for the center'), 
