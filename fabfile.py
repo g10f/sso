@@ -110,6 +110,7 @@ server {
 
     location @proxied {
         add_header X-UA-Compatible IE=edge;
+        add_header Strict-Transport-Security max-age=31536000;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -136,9 +137,11 @@ NGINX_SSL_TEMPLATE = """\
 #ssl                       on;
 ssl_certificate           %(certroot)s/certificate.crt;
 ssl_certificate_key       %(certroot)s/certificate.key;
-#ssl_ciphers               RC4:HIGH:!aNULL:!MD5;
+ssl_dhparam               %(certroot)s/dh2048.pem;
+ssl_session_cache         builtin:1000  shared:SSL:10m;
 ssl_prefer_server_ciphers on;
-ssl_session_cache         shared:SSL:10m;
+add_header                Strict-Transport-Security "max-age=63072000;";
+ssl_protocols             TLSv1 TLSv1.1 TLSv1.2;
 """
 
 GUNICORN_TEMPLATE = """\
@@ -187,7 +190,7 @@ def perms():
 
 def migrate_data(python, server_name, code_dir, app):
     sudo("%s ./src/apps/manage.py migrate" % python, user='www-data', group='www-data')
-    sudo("%s ./src/apps/manage.py loaddata l10n_data.xml" % python, user='www-data', group='www-data')
+    # sudo("%s ./src/apps/manage.py loaddata l10n_data.xml" % python, user='www-data', group='www-data')
 
 @task
 def createsuperuser(server_name='', virtualenv='sso'): 
@@ -239,6 +242,7 @@ def deploy_webserver(code_dir, server_name):
     require.files.template_file('/etc/nginx/conf.d/ssl.nginx.conf', template_contents=NGINX_SSL_TEMPLATE, context=context, use_sudo=True)
     require.file('%(certroot)s/certificate.crt' % context, source='certs/%(server_name)s.certificate.crt' % context, use_sudo=True, owner='www-data', group='www-data')
     require.file('%(certroot)s/certificate.key' % context, source='certs/%(server_name)s.certificate.key' % context, use_sudo=True, owner='www-data', group='www-data')
+    require.file('%(certroot)s/dh2048.pem' % context, source='certs/%(server_name)s.dh2048.pem' % context, use_sudo=True, owner='www-data', group='www-data')
     require.files.template_file('%s/config/nginx.expired.conf' % code_dir, template_contents=NGINX_EXPIRED_TEMPLATE, use_sudo=True, owner='www-data', group='www-data')
     require.files.template_file('%s/config/nginx.webfonts.conf' % code_dir, template_contents=NGINX_WEBFONTS_TEMPLATE, use_sudo=True, owner='www-data', group='www-data')
     
@@ -277,7 +281,7 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
     # setup_user(user)
     # require.files.directory(code_dir)
     # deploy_debian()
-    # deploy_webserver(code_dir, server_name)
+    deploy_webserver(code_dir, server_name)
     # fabtools.user.modify(name=user, extra_groups=['www-data'])
     # deploy_database(db_name)
 
