@@ -186,9 +186,8 @@ def perms():
 
 
 def migrate_data(python, server_name, code_dir, app):
-    pass
-    # sudo("%s ./src/apps/manage.py migrate" % python, user='www-data', group='www-data')
-    # sudo("%s ./src/apps/manage.py loaddata l10n_data.xml" % python, user='www-data', group='www-data')
+    sudo("%s ./src/apps/manage.py migrate" % python, user='www-data', group='www-data')
+    sudo("%s ./src/apps/manage.py loaddata l10n_data.xml" % python, user='www-data', group='www-data')
 
 @task
 def createsuperuser(server_name='', virtualenv='sso'): 
@@ -218,11 +217,11 @@ def deploy_debian():
     
 def deploy_database(db_name):
     # Require a PostgreSQL server
-    require.postgres.server()
+    # require.postgres.server()
     require.postgres.user(db_name, db_name)
     require.postgres.database(db_name, db_name)
-    fabtools.postgres._run_as_pg('''psql -c "CREATE EXTENSION IF NOT EXISTS postgis;" sso''')
-    fabtools.postgres._run_as_pg('''psql -c "ALTER TABLE spatial_ref_sys OWNER TO sso;" sso''')
+    fabtools.postgres._run_as_pg('''psql -c "CREATE EXTENSION IF NOT EXISTS postgis;" %(db_name)s''' % {'db_name': db_name})
+    fabtools.postgres._run_as_pg('''psql -c "ALTER TABLE spatial_ref_sys OWNER TO %(db_name)s;" %(db_name)s''' % {'db_name': db_name})
 
 
 def deploy_webserver(code_dir, server_name):
@@ -294,13 +293,15 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
     
     
     # python enviroment
+    """
     require.python.virtualenv('/envs/sso')
     with fabtools.python.virtualenv('/envs/sso'):
         with cd(code_dir):
             require.python.requirements('src/requirements.txt')
     
     require.file('/envs/%(virtualenv)s/lib/python2.7/sitecustomize.py' % {'virtualenv': virtualenv}, source='apps/sitecustomize.py')
-
+    """
+    
     # configure gunicorn
     require.directory('%(code_dir)s/config' % {'code_dir': code_dir}, use_sudo=True, owner="www-data", mode='770')
     config_filename = '%(code_dir)s/config/gunicorn_%(server_name)s.py' % {'code_dir': code_dir, 'server_name': server_name}
