@@ -7,7 +7,8 @@ python-memcached
 docutils
 pycrypto
 oauthlib
-sorl-thumbnail
+simplejson
+sorl-thumbnail==12.1.c
 pillow
 django-recaptcha
 pytz
