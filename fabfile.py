@@ -13,6 +13,7 @@ env.apps = ['sso']
 
 # map valid  server names to enviroments, to ensure we deploy accurately
 valid_server_names = {
+    'sso-dev': ['sso-dev.dwbn.org'],
     'g10f': ['dwbn-sso.g10f.de', 'sso.g10f.de', 'sso.elsapro.com'],
     'elsapro': ['sso.elsapro.com'],
     'dwbn001': ['sso.dwbn.org'],
@@ -206,7 +207,7 @@ def update_debian():
     
 def deploy_debian():    
     require.deb.package('libpq-dev')
-    require.deb.package('libmysqlclient-dev')
+    # require.deb.package('libmysqlclient-dev')
     require.deb.package('libjpeg62')
     require.deb.package('libjpeg62-dev')
     # Geospatial libraries
@@ -220,12 +221,14 @@ def deploy_database(db_name):
     require.postgres.server()
     require.postgres.user(db_name, db_name)
     require.postgres.database(db_name, db_name)
-    fabtools.postgres._run_as_pg("SET ROLE sso; CREATE EXTENSION IF NOT EXISTS postgis;")
+    fabtools.postgres._run_as_pg('''psql -c "CREATE EXTENSION IF NOT EXISTS postgis;" sso''')
+    fabtools.postgres._run_as_pg('''psql -c "ALTER TABLE spatial_ref_sys OWNER TO sso;" sso''')
+
 
 def deploy_webserver(code_dir, server_name):
     # Require an nginx server proxying to our app
     docroot = '/proj/static/htdocs/%(server_name)s' % {'server_name': server_name}
-    """
+    
     require.directory('%(code_dir)s/logs' % {'code_dir': code_dir}, use_sudo=True, owner="www-data", mode='770')
     require.directory('%(code_dir)s/config' % {'code_dir': code_dir}, use_sudo=True, owner="www-data", mode='770')
     require.directory(docroot, use_sudo=True, owner="www-data", mode='770')
@@ -241,7 +244,7 @@ def deploy_webserver(code_dir, server_name):
     require.files.template_file('%s/config/nginx.webfonts.conf' % code_dir, template_contents=NGINX_WEBFONTS_TEMPLATE, use_sudo=True, owner='www-data', group='www-data')
     
     require.nginx.site(server_name, template_contents=PROXIED_SITE_TEMPLATE, docroot=docroot)
-    """
+    
     if server_name in ['sso.dwbn.org', 'dwbn-sso.g10f.de']:
         require.nginx.site('register.diamondway-buddhism.org', template_contents=REGISTRATION_TEMPLATE, docroot=docroot, target_name=server_name)
         
@@ -272,14 +275,13 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
     code_dir = '/proj/%s' % server_name
     
     user = 'ubuntu'
-    """
-    setup_user(user)
-    require.files.directory(code_dir)
-    deploy_debian()
-    deploy_webserver(code_dir, server_name)
-    fabtools.user.modify(name=user, extra_groups=['www-data'])
-    deploy_database(db_name)
-    """
+    # setup_user(user)
+    # require.files.directory(code_dir)
+    # deploy_debian()
+    # deploy_webserver(code_dir, server_name)
+    # fabtools.user.modify(name=user, extra_groups=['www-data'])
+    # deploy_database(db_name)
+
     with cd(code_dir):
         require.git.working_copy('git@bitbucket.org:dwbn/sso.git', path='src')
         sudo("chown www-data:www-data -R  ./src")
@@ -290,7 +292,7 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
                  source='apps/%(app)s/settings/local_%(server_name)s.py' % {'server_name': server_name, 'app': app},
                  use_sudo=True, owner='www-data', group='www-data')
     
-    """
+    
     # python enviroment
     require.python.virtualenv('/envs/sso')
     with fabtools.python.virtualenv('/envs/sso'):
@@ -298,8 +300,7 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
             require.python.requirements('src/requirements.txt')
     
     require.file('/envs/%(virtualenv)s/lib/python2.7/sitecustomize.py' % {'virtualenv': virtualenv}, source='apps/sitecustomize.py')
-    
-    """
+
     # configure gunicorn
     require.directory('%(code_dir)s/config' % {'code_dir': code_dir}, use_sudo=True, owner="www-data", mode='770')
     config_filename = '%(code_dir)s/config/gunicorn_%(server_name)s.py' % {'code_dir': code_dir, 'server_name': server_name}
@@ -313,12 +314,11 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
         directory=code_dir + '/src/apps',
         user='www-data'
         )
-    """
+
     # configure logrotate 
     config_filename = '/etc/logrotate.d/%(server_name)s' % {'server_name': server_name}
     context = {'code_dir': code_dir}
     require.files.template_file(config_filename, template_contents=LOGROTATE_TEMPLATE, context=context, use_sudo=True)
-    """
     
     python = '/envs/%(virtualenv)s/bin/python' % {'virtualenv': virtualenv}
     with cd(code_dir):
