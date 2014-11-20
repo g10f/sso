@@ -543,6 +543,12 @@ class User(AbstractUser):
                 logger.warning("Application %s does not exist" % app_roles_dict_item['uuid'])
 
 
+class OneTimeMessage(AbstractBaseModel):
+    user = models.ForeignKey(User)
+    title = models.CharField(_("title"), max_length=255, default='')
+    message = models.TextField(_("message"), blank=True, max_length=2048, default='')
+
+
 class UserAddress(AbstractBaseModel, AddressMixin):
     ADDRESSTYPE_CHOICES = (
         ('home', pgettext_lazy('address', 'Home')),
