@@ -23,6 +23,31 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+class OneTimeMessageAdmin(admin.ModelAdmin):
+    list_display = ('user', 'last_modified', 'uuid')
+    date_hierarchy = 'last_modified'
+    raw_id_fields = ("user",)
+    readonly_fields = ['message_link']
+    fieldsets = [
+        (None, 
+         {'fields': 
+          ['user', 'title', 'message', 'message_link'], 
+          'classes': ['wide']}),
+    ]
+    
+    def message_link(self, obj):
+        if obj.uuid:
+            url = urlresolvers.reverse('accounts:view_message', args=[obj.uuid])
+            link = u'<div class="field-box"><a class="deletelink" href="%s">%s</a></div>' % (url, obj.title)
+            
+            return mark_safe(u'%s' % link)
+        else:
+            return ''
+    
+    message_link.allow_tags = True
+    message_link.short_description = _('Link')
+
+
 class ApplicationAdmin(admin.ModelAdmin):
     list_display = ('order', 'link', 'url', 'is_active', 'global_navigation', 'uuid')
     list_filter = ('global_navigation', 'is_active')
@@ -261,7 +286,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         (_('AppRoles'), {'fields': ('admin_countries', 'admin_regions', 'assigned_organisations', 'organisations', 'application_roles', 'role_profiles'), 'classes': ['wide']}),
         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'), 'classes': ['wide']}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user'), 'classes': ['wide']}),
-        (_('Notes'), {'fields': ('notes', ), 'classes': ['wide']}),
+        (_('Notes'), {'fields': ('notes',), 'classes': ['wide']}),
         
     )
     non_su_fieldsets = (

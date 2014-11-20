@@ -25,6 +25,8 @@ class SSOAdminSite(admin.AdminSite):
 sso_admin_site = SSOAdminSite()
 
 sso_admin_site.register(Group, GroupAdmin)
+sso_admin_site.register(OneTimeMessage, OneTimeMessageAdmin)
+
 # sso_admin_site.register(Permission, PermissionAdmin)
 # sso_admin_site.register(ContentType)
 

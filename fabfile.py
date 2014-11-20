@@ -19,7 +19,7 @@ valid_server_names = {
     'dwbn001': ['sso.dwbn.org'],
     'idp': ['idp.g10f.de']  # test instanz
 }
-    
+
 def check_server_name(server_name):
     if (not server_name) and (len(env.hosts) == 1) and (env.hosts[0] in valid_server_names) and \
             (len(valid_server_names[env.hosts[0]]) == 1):
@@ -229,26 +229,26 @@ def deploy_database(db_name):
 
 def deploy_webserver(code_dir, server_name):
     # Require an nginx server proxying to our app
-    docroot = '/proj/static/htdocs/%(server_name)s' % {'server_name': server_name}
+    docroot = '/proj/static/htdocs/%(server_name)s' % {'server_name': server_name}    
+    context = {'certroot': '/proj/g10f/certs', 'server_name': server_name, 'host_string': env.host_string, 'code_dir': code_dir}
     
-    require.directory('%(code_dir)s/logs' % {'code_dir': code_dir}, use_sudo=True, owner="www-data", mode='770')
-    require.directory('%(code_dir)s/config' % {'code_dir': code_dir}, use_sudo=True, owner="www-data", mode='770')
+    require.directory('%(code_dir)s/logs' % context, use_sudo=True, owner="www-data", mode='770')
+    require.directory('%(code_dir)s/config' % context, use_sudo=True, owner="www-data", mode='770')
     require.directory(docroot, use_sudo=True, owner="www-data", mode='770')
     
     require.nginx.server()
     
-    context = {'certroot': '/proj/g10f/certs', 'server_name': server_name}
     require.files.directory(context['certroot'], use_sudo=True, owner='www-data', group='www-data')
     require.files.template_file('/etc/nginx/conf.d/ssl.nginx.conf', template_contents=NGINX_SSL_TEMPLATE, context=context, use_sudo=True)
-    require.file('%(certroot)s/certificate.crt' % context, source='certs/%(server_name)s.certificate.crt' % context, use_sudo=True, owner='www-data', group='www-data')
-    require.file('%(certroot)s/certificate.key' % context, source='certs/%(server_name)s.certificate.key' % context, use_sudo=True, owner='www-data', group='www-data')
-    require.file('%(certroot)s/dh2048.pem' % context, source='certs/%(server_name)s.dh2048.pem' % context, use_sudo=True, owner='www-data', group='www-data')
-    require.files.template_file('%s/config/nginx.expired.conf' % code_dir, template_contents=NGINX_EXPIRED_TEMPLATE, use_sudo=True, owner='www-data', group='www-data')
-    require.files.template_file('%s/config/nginx.webfonts.conf' % code_dir, template_contents=NGINX_WEBFONTS_TEMPLATE, use_sudo=True, owner='www-data', group='www-data')
+    require.file('%(certroot)s/certificate.crt' % context, source='certs/%(host_string)s.certificate.crt' % context, use_sudo=True, owner='www-data', group='www-data')
+    require.file('%(certroot)s/certificate.key' % context, source='certs/%(host_string)s.certificate.key' % context, use_sudo=True, owner='www-data', group='www-data')
+    require.file('%(certroot)s/dh2048.pem' % context, source='certs/%(host_string)s.dh2048.pem' % context, use_sudo=True, owner='www-data', group='www-data')
+    require.files.template_file('%(code_dir)s/config/nginx.expired.conf' % context, template_contents=NGINX_EXPIRED_TEMPLATE, use_sudo=True, owner='www-data', group='www-data')
+    require.files.template_file('%(code_dir)s/config/nginx.webfonts.conf' % context, template_contents=NGINX_WEBFONTS_TEMPLATE, use_sudo=True, owner='www-data', group='www-data')
     
     require.nginx.site(server_name, template_contents=PROXIED_SITE_TEMPLATE, docroot=docroot)
     
-    if server_name in ['sso.dwbn.org', 'dwbn-sso.g10f.de']:
+    if env.host_string in ['dwbn']:
         require.nginx.site('register.diamondway-buddhism.org', template_contents=REGISTRATION_TEMPLATE, docroot=docroot, target_name=server_name)
         
 
@@ -271,17 +271,30 @@ def update_dir_settings(directory):
     sudo("chown www-data:www-data -R %s" % directory)  
     sudo("chmod 0660 -R %s" % directory)
     sudo("chmod +X %s" % directory)
-    
+
+configurations = {
+    'dev': {'host_string': 'sso.dwbn.org', 'server_name': 'sso-dev.dwbn.org', 'app': 'sso', 'virtualenv': 'sso-dev', 'db_name': 'sso_dev'},
+    'prod': {'host_string': 'sso.dwbn.org', 'server_name': 'sso.dwbn.org', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'sso'},
+    'g10f': {'host_string': 'g10f', 'server_name': 'sso.g10f.de', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'sso'},
+    'elsapro': {'host_string': 'g10f', 'server_name': 'sso.elsapro.com', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'vw_sso'},
+}
+
 @task 
-def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
-    server_name = check_server_name(server_name)
+def deploy(conf='dev'):
+    configuration = configurations.get(conf)
+    server_name = configuration['server_name']
+    app = configuration['app']
+    virtualenv = configuration['virtualenv']
+    db_name = configuration['db_name']
+    env.host_string = configuration['host_string']
+    
     code_dir = '/proj/%s' % server_name
     
     user = 'ubuntu'
     # setup_user(user)
     # require.files.directory(code_dir)
     # deploy_debian()
-    deploy_webserver(code_dir, server_name)
+    # deploy_webserver(code_dir, server_name)
     # fabtools.user.modify(name=user, extra_groups=['www-data'])
     # deploy_database(db_name)
 
@@ -296,15 +309,14 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
                  use_sudo=True, owner='www-data', group='www-data')
     
     
-    # python enviroment
     """
-    require.python.virtualenv('/envs/sso')
-    with fabtools.python.virtualenv('/envs/sso'):
+    # python enviroment
+    require.python.virtualenv('/envs/%s' % virtualenv)
+    with fabtools.python.virtualenv('/envs/%s' % virtualenv):
         with cd(code_dir):
             require.python.requirements('src/requirements.txt')
     
     require.file('/envs/%(virtualenv)s/lib/python2.7/sitecustomize.py' % {'virtualenv': virtualenv}, source='apps/sitecustomize.py')
-    """
     
     # configure gunicorn
     require.directory('%(code_dir)s/config' % {'code_dir': code_dir}, use_sudo=True, owner="www-data", mode='770')
@@ -324,6 +336,7 @@ def deploy(server_name='', app='sso', virtualenv='sso', db_name='sso'):
     config_filename = '/etc/logrotate.d/%(server_name)s' % {'server_name': server_name}
     context = {'code_dir': code_dir}
     require.files.template_file(config_filename, template_contents=LOGROTATE_TEMPLATE, context=context, use_sudo=True)
+    """
     
     python = '/envs/%(virtualenv)s/bin/python' % {'virtualenv': virtualenv}
     with cd(code_dir):

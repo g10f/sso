@@ -1,6 +1,7 @@
 from django.conf.urls import patterns, url
 from django.views.generic import TemplateView
 from .views import application
+from .views import onetimemessage
 from .views import password_change, password_change_done, login, logout, profile, contact, delete_profile
 from .views import password_reset, password_reset_confirm, password_reset_done, password_reset_complete
  
@@ -25,4 +26,5 @@ urlpatterns = patterns(
     url(r'^application/users/add/done/(?P<uuid>[^/]+)/$', application.add_user_done, name="add_user_done"),
     url(r'^application/users/(?P<uuid>[^/]+)/$', application.update_user, name="update_user"), 
     url(r'^application/users/delete/(?P<uuid>[^/]+)/$', application.UserDeleteView.as_view(), name="delete_user"),
+    url(r'^messages/(?P<uuid>[^/]+)/$', onetimemessage.OneTimeMessageView.as_view(), name="view_message"), 
 )
