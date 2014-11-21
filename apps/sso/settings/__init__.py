@@ -25,14 +25,13 @@ SSO_CUSTOM = {
     'ABOUT': 'http://g10f.de/',
     'APP_UUID': 'fa467234b81e4838a009e38d9e655d18',
     'STREAMING_UUID': 'c362bea58c67457fa32234e3178285c4',
-    'STYLESHEET': 'css/default-1.0.6.css',
+    'STYLESHEET': 'css/default-1.0.7.css',
     'SYLE_LESS': 'less/default.less',
     'FAVICON': 'ico/favicon.ico'
 }
 
 EMAIL_SUBJECT_PREFIX = '[SSO] '
 
-DIRNAME = os.path.join(os.path.dirname(__file__), '..')
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))  # django 1.7 settings
 
 hostname = socket.gethostname().upper()
@@ -68,16 +67,11 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-STATIC_ROOT = os.path.join(DIRNAME, '../../../static/htdocs/sso/static')
-MEDIA_ROOT = os.path.join(DIRNAME, '../../../static/htdocs/sso/media')
+STATIC_ROOT = os.path.join(BASE_DIR, '../../static/htdocs/sso/static')
+MEDIA_ROOT = os.path.join(BASE_DIR, '../../static/htdocs/sso/media')
 
 STATICFILES_DIRS = (
-    # os.path.join(BASE_DIR, 'static'),
-)
-
-STATICFILES_FINDERS = (
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    os.path.join(BASE_DIR, 'sso/static'),
 )
 
 MEDIA_URL = '/media/'
@@ -126,7 +120,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 ROOT_URLCONF = 'sso.urls'
 
 TEMPLATE_DIRS = (
-    os.path.join(DIRNAME, 'templates'),
+    os.path.join(BASE_DIR, 'sso/templates'),
 )
 
 INSTALLED_APPS = (
@@ -164,7 +158,7 @@ L10N_SETTINGS = {
 }
 
 LOCALE_PATHS = (
-    os.path.join(DIRNAME, 'locale'),
+    os.path.join(BASE_DIR, 'sso/locale'),
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -228,8 +222,8 @@ LOGGING_HANDLERS = ['mail_admins', 'error', ]
 if DEBUG:
     LOGGING_HANDLERS += ['debug', 'console']
 
-ERROR_LOGFILE = "../../../logs/sso-django-error.log"
-INFO_LOGFILE = "../../../logs/sso-django-info.log"
+ERROR_LOGFILE = "../../logs/sso-django-error.log"
+INFO_LOGFILE = "../../logs/sso-django-info.log"
 
 LOGGING = {
     'version': 1,
@@ -261,7 +255,7 @@ LOGGING = {
         'error': {
             'level': 'WARNING',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(DIRNAME, ERROR_LOGFILE),
+            'filename': os.path.join(BASE_DIR, ERROR_LOGFILE),
             'maxBytes': 1024 * 1024 * 5,  # 5 MB
             'backupCount': 5,
             'formatter': 'verbose',
@@ -269,7 +263,7 @@ LOGGING = {
         'debug': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(DIRNAME, INFO_LOGFILE),
+            'filename': os.path.join(BASE_DIR, INFO_LOGFILE),
             'maxBytes': 1024 * 1024 * 5,  # 5 MB
             'backupCount': 5,
             'formatter': 'verbose',
