@@ -75,7 +75,10 @@ class UserMixin(object):
             'last_modified': obj.last_modified,
         } 
         if obj.picture:
-            data['picture'] = absolute_url(request, obj.picture.url)
+            data['picture'] = {
+                '@id': "%s%s" % (base, reverse('api:v2_picture', kwargs={'uuid': obj.uuid})),
+                'original': absolute_url(request, obj.picture.url)
+            }
         
         if details:
             data['organisations'] = {
