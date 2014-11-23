@@ -148,6 +148,7 @@ def generate_filename(instance, filename):
 
 
 class User(AbstractUser):
+    MAX_PICTURE_SIZE = 5242880  # 5 MB
     GENDER_CHOICES = [
         ('m', _('male')),
         ('f', _('female'))
