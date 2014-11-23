@@ -237,8 +237,11 @@ class UserDetailView(UserMixin, JsonDetailView):
             raise ValueError(_("A user with that email already exists."))
         
         update_object_from_dict(obj, object_data)
-        self.save_user_details(data, 'addresses', API_ADDRESS_MAP, UserAddress)
-        self.save_user_details(data, 'phone_numbers', API_PHONE_MAP, UserPhoneNumber)
+        scopes = request.scopes
+        if 'address' in scopes:
+            self.save_user_details(data, 'addresses', API_ADDRESS_MAP, UserAddress)
+        if 'phone' in scopes:
+            self.save_user_details(data, 'phone_numbers', API_PHONE_MAP, UserPhoneNumber)
         
     def create_object(self, request, data):
         """
@@ -282,7 +285,7 @@ class MyDetailView(UserDetailView):
     @method_decorator(catch_errors)  
     @method_decorator(condition(last_modified_and_etag_func=get_last_modified_and_etag_for_me))
     def dispatch(self, request, *args, **kwargs):
-        return super(JsonDetailView, self).dispatch(request, *args, **kwargs)       
+        return super(UserDetailView, self).dispatch(request, *args, **kwargs)       
 
     def get_object(self, queryset=None):
         return self.request.user

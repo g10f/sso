@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.http import HttpResponse, Http404
 from django.db import transaction
@@ -16,6 +17,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+    
 class PermissionMixin(object):
     """
     permissions_tests = {
@@ -28,8 +30,8 @@ class PermissionMixin(object):
     operation = {
         'put': {'@type': 'ReplaceResourceOperation', 'method': 'PUT'},
         'delete': {'@type': 'DeleteResourceOperation', 'method': 'DELETE'},
-        'post': {'@type': 'DeleteResourceOperation', 'method': 'POST'},
-        'add': {'@type': 'DeleteResourceOperation', 'method': 'PUT', 'template': '{id}'},
+        'post': {'@type': 'CreateResourceOperation', 'method': 'POST'},
+        'add': {'@type': 'CreateResourceOperation', 'method': 'PUT', 'template': '{id}'},
     }
     """
     
@@ -112,14 +114,18 @@ class JsonDetailView(PermissionMixin, DetailView):
         
             response = HttpResponse()
             response['Access-Control-Allow-Methods'] = ', '.join(self._allowed_methods())
-            response['Access-Control-Allow-Headers'] = 'Authorization'
+            response['Access-Control-Allow-Headers'] = 'Authorization, Content-Type'
             response['Access-Control-Max-Age'] = 60 * 60
         else:
             #  expose headers to client (optional)
             response = HttpResponse()
             response['Access-Control-Expose-Headers'] = 'Authorization'
-            
-        response['Access-Control-Allow-Origin'] = '*'        
+
+        # Because here the client is not authenticated if the browser makes an OPTION request
+        # we need Access-Control-Allow-Origin: '*'
+        # later in the JsonHttpResponse we check if the origin is from some registered client and
+        # set the Access-Control-Allow-Origin more restrictive
+        response['Access-Control-Allow-Origin'] = '*'
         return response        
         
     @method_decorator(vary_on_headers('Access-Control-Allow-Origin', 'Authorization'))
@@ -174,7 +180,9 @@ class JsonDetailView(PermissionMixin, DetailView):
             self.delete_object(request, self.object)
         except ObjectDoesNotExist:
             pass
-        return HttpResponse(status=204)
+        response = HttpResponse(status=204)
+        response['Access-Control-Allow-Origin'] = self.request.META.get('HTTP_ORIGIN')
+        return response
     
     def create_object(self, request, data):
         """

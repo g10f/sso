@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import re
 import datetime
+from mimetypes import guess_extension
 
 from django.utils.timezone import now
 from django import forms 
@@ -307,14 +308,16 @@ class UserSelfProfileForm(forms.Form):
 
     def clean_picture(self):
         from django.template.defaultfilters import filesizeformat
-        MAX_UPLOAD_SIZE = 5242880  # 5 MB
+        MAX_UPLOAD_SIZE = User.MAX_PICTURE_SIZE  # 5 MB
         picture = self.cleaned_data["picture"]
         if picture and hasattr(picture, 'content_type'):
-            content_type = picture.content_type.split('/')[0]
-            if content_type in ['image']:
+            base_content_type = picture.content_type.split('/')[0]
+            if base_content_type in ['image']:
                 if picture._size > MAX_UPLOAD_SIZE:
                     raise forms.ValidationError(_('Please keep filesize under %(filesize)s. Current filesize %(current_filesize)s') %
                                                 {'filesize': filesizeformat(MAX_UPLOAD_SIZE), 'current_filesize': filesizeformat(picture._size)})
+                file_ext = guess_extension(picture.content_type)
+                picture.name = "%s%s" % (get_random_string(7, allowed_chars='abcdefghijklmnopqrstuvwxyz0123456789'), file_ext)
             else:
                 raise forms.ValidationError(_('File type is not supported'))
         return picture
@@ -329,7 +332,11 @@ class UserSelfProfileForm(forms.Form):
         self.user.email = cd['email']
         self.user.first_name = cd['first_name']
         self.user.last_name = cd['last_name']
+
+        if 'picture' in self.changed_data:
+            self.user.picture.delete(save=False)
         self.user.picture = cd['picture'] if cd['picture'] else None
+            
         self.user.dob = cd.get('dob', None)
         self.user.gender = cd['gender']
         self.user.homepage = cd['homepage']
