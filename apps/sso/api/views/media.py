@@ -75,7 +75,7 @@ class UserPictureDetailView(JsonDetailView):
             'max_size': User.MAX_PICTURE_SIZE
         }
         if obj.picture:
-            data['picture'] = absolute_url(request, obj.picture.url)
+            data['original'] = absolute_url(request, obj.picture.url)
         return data
 
     def delete_object(self, request, obj):
