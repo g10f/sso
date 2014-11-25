@@ -100,7 +100,11 @@ class UserPictureDetailView(JsonDetailView):
         if not content_type.startswith("image"):
             raise ValueError("unsupported content type %s. content type must be of type image/*" % request.META['CONTENT_TYPE'])
         
-        file_ext = guess_extension(content_type)
+        # mimetypes.guess_extension return jpe which is quite uncommon for jpeg
+        if content_type == 'image/jpeg':
+            file_ext = '.jpg'
+        else:
+            file_ext = guess_extension(content_type)
         if not file_ext:
             raise ValueError("unsupported content type %s" % request.META['CONTENT_TYPE'])
         
