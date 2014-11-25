@@ -36,6 +36,8 @@ def home(request):
         "me": "%s%s" % (base_uri, reverse('api:v2_users_me')),
         "navigation_me": "%s%s" % (base_uri, reverse('api:v2_navigation_me')),
         "navigation": "%s%s" % (base_uri, reverse('api:v2_navigation_me').replace('/me/', '/{user_id}/', 1)),
+        "picture_me": "%s%s" % (base_uri, reverse('api:v2_picture_me')),
+        "picture": "%s%s" % (base_uri, reverse('api:v2_picture_me').replace('/me/', '/{user_id}/', 1)),
         # "emails": "%s%s" % (base_uri, reverse('api:emails', kwargs={'type': 'txt'}))
     }
     return JsonHttpResponse(content=resources, request=request)

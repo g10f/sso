@@ -316,7 +316,11 @@ class UserSelfProfileForm(forms.Form):
                 if picture._size > MAX_UPLOAD_SIZE:
                     raise forms.ValidationError(_('Please keep filesize under %(filesize)s. Current filesize %(current_filesize)s') %
                                                 {'filesize': filesizeformat(MAX_UPLOAD_SIZE), 'current_filesize': filesizeformat(picture._size)})
-                file_ext = guess_extension(picture.content_type)
+                # mimetypes.guess_extension return jpe which is quite uncommon for jpeg
+                if picture.content_type == 'image/jpeg':
+                    file_ext = '.jpg'
+                else:
+                    file_ext = guess_extension(picture.content_type)
                 picture.name = "%s%s" % (get_random_string(7, allowed_chars='abcdefghijklmnopqrstuvwxyz0123456789'), file_ext)
             else:
                 raise forms.ValidationError(_('File type is not supported'))

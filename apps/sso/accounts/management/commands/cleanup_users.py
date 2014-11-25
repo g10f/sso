@@ -17,9 +17,14 @@ class Command(BaseCommand):
     help = 'Cleanup Users'  # @ReservedAssignment
     
     def handle(self, *args, **options):
-        update_center_usernames()
+        clean_pictures()
 
 
+def clean_pictures():
+    for user in User.objects.all().exclude(picture__exact=''):
+        print user
+
+    
 def update_center_usernames():
     centers = User.objects.filter(is_center=True, username__endswith='@diamondway-center.org')
     for center in centers:
