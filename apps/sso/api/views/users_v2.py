@@ -319,7 +319,7 @@ class GlobalNavigationView(UserDetailView):
             'logout': {'href': absolute_url(request, reverse('accounts:logout')), 'title': _('Log out')}
         }
         if obj.picture:
-            data['picture_30x30'] = {'href': absolute_url(request, get_thumbnail(obj.picture, "30x30").url)}
+            data['picture_30x30'] = {'href': absolute_url(request, get_thumbnail(obj.picture, "30x30", options={'crop': 'center'}).url)}
         return data
 
 
