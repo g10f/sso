@@ -97,7 +97,7 @@ def get_userapps(user, request):
                   'logout': {'href': reverse('accounts:logout')}}
     }
     if user.picture:
-        userinfo['links']['picture_30x30'] = {'href': absolute_url(request, get_thumbnail(user.picture, "30x30").url)}
+        userinfo['links']['picture_30x30'] = {'href': absolute_url(request, get_thumbnail(user.picture, "30x30", crop="center").url)}
     return userinfo
 
 
