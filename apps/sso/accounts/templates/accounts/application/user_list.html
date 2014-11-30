@@ -1,5 +1,5 @@
 {% extends 'base_site.html' %}
-{% load i18n list tz static %}
+{% load i18n list tz static thumbnail %}
 
 {% block title %}{% trans 'User List' %}{% endblock %}
 
@@ -44,6 +44,9 @@
 	               {% if perms.accounts.change_user %}
 	               <a class="" href="{% url 'accounts:update_user' user.uuid %}{{ cl.get_query_string }}">{{ user.username }}</a>
 	               {% else %}{{ user.username }}{% endif %}
+	               </td>
+	               <td>
+	               {% if user.picture %}<a href="{{ user.picture.url }}">{% thumbnail user.picture "30x30" crop="center" as im %}<img class="dwbn-icon-user" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="">{% endthumbnail %}</a>{% endif %}
 	               </td>
 	               <td>{{ user.first_name }}</td>
 	               <td>{{ user.last_name }}</td>
