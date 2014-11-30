@@ -9,6 +9,7 @@ from utils.ucsv import UnicodeReader, UnicodeWriter, dic_from_csv
 from sso.accounts.models import User, RoleProfile
 
 import logging
+from django.core.exceptions import ObjectDoesNotExist
 
 logger = logging.getLogger(__name__)
 
@@ -21,9 +22,21 @@ class Command(BaseCommand):
 
 
 def clean_pictures():
-    for user in User.objects.all().exclude(picture__exact=''):
-        print user
-
+    for basedir, dirs, files in os.walk(os.path.join(settings.MEDIA_ROOT, 'image')):
+        for d in dirs:
+            try:
+                picture = User.objects.get(uuid=d).picture
+            except ObjectDoesNotExist:
+                continue
+               
+            for subdir, _, files in os.walk(os.path.join(basedir, d)):
+                for f in files:
+                    fname1 = os.path.join(subdir, f)
+                    fname2 = os.path.join(settings.MEDIA_ROOT, str(picture))
+                    if not os.path.samefile(fname1, fname2):
+                        print fname1
+                        os.remove(fname1)
+            
     
 def update_center_usernames():
     centers = User.objects.filter(is_center=True, username__endswith='@diamondway-center.org')
