@@ -117,7 +117,7 @@ class RoleProfileFilter(ViewQuerysetFilter):
 class UserList(ListView):
     template_name = 'accounts/application/user_list.html'
     model = get_user_model()
-    list_display = ['username', 'first_name', 'last_name', 'email', 'last_login', 'date_joined']
+    list_display = ['username', 'picture', 'first_name', 'last_name', 'email', 'last_login', 'date_joined']
     IS_ACTIVE_CHOICES = (('1', _('Active Users')), ('2', _('Inactive Users')))
     
     @method_decorator(login_required)
