@@ -104,7 +104,7 @@ def openid_configuration(request):
         "userinfo_endpoint": '%s%s' % (base_uri, reverse('api:v2_users_me')),
         "jwks_uri": '%s%s' % (base_uri, reverse('oauth2:jwks')),
         "scopes_supported": 
-            ["openid", "profile", "email", "address", "phone", "offline_access"],
+            ['openid', 'profile', 'email', 'role', 'offline_access', 'address', 'phone', 'users', 'picture'],
         "response_types_supported":
             ["code", "token", "id_token token", "id_token"],
         "id_token_signing_alg_values_supported":

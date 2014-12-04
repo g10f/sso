@@ -156,7 +156,7 @@ os.environ['THROTTELING_DISABLED'] = "True"
 """
 
 @task
-def compileless(version='1.0.7'):
+def compileless(version='1.0.8'):
     for style in ['default', 'dwbn', 'cerulean', 'slate', 'vw']:
         local('lessc ./apps/sso/static/less/%(style)s.less ./apps/sso/static/css/%(style)s-%(version)s.css' %{'style': style, 'version': version})
 
