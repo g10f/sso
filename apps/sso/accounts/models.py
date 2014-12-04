@@ -165,7 +165,7 @@ class User(AbstractUser):
     created_by_user = models.ForeignKey('self', verbose_name=_('created by'), related_name='+', null=True)
     is_center = models.BooleanField(_('center'), default=False, help_text=_('Designates that this user is representing a center and not a private person.'))
     is_subscriber = models.BooleanField(_('subscriber'), default=False, help_text=_('Designates whether this user is a DWBN News subscriber.'))
-    picture = thumbnail.ImageField(_('picture'), upload_to=generate_filename, blank=True)
+    picture = thumbnail.ImageField(_('picture'), upload_to=generate_filename, blank=True)  # , storage=MediaStorage())
     notes = models.TextField(_("Notes"), blank=True, max_length=1024)
     gender = models.CharField(_('gender'), max_length=255, choices=GENDER_CHOICES, blank=True)
     dob = models.DateField(_("date of birth"), blank=True, null=True)

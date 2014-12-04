@@ -54,6 +54,16 @@ API_PHONE_MAP = {
     'primary': 'primary'
 }
 
+
+def get_last_modified(obj):
+    last_modified_list = [obj.last_modified]
+    last_modified_list += [addr.last_modified for addr in obj.useraddress_set.all()]
+    last_modified_list += [phone.last_modified for phone in obj.userphonenumber_set.all()]
+    
+    last_modified = max(last_modified_list)
+    return last_modified
+
+
 class UserMixin(object):
     model = User
     
@@ -72,7 +82,7 @@ class UserMixin(object):
             'homepage': obj.homepage,
             'language': obj.language,
             'is_center': obj.is_center,
-            'last_modified': obj.last_modified,
+            'last_modified': get_last_modified(obj),
         } 
         if obj.picture:
             data['picture'] = {
@@ -353,10 +363,15 @@ class UserList(UserMixin, JsonListView):
         }
 
     def get_queryset(self):
-        qs = super(UserList, self).get_queryset()
-        qs = qs.filter(is_active=True).order_by('username')
+        qs = super(UserList, self).get_queryset().prefetch_related('useraddress_set', 'userphonenumber_set')
+        qs = qs.order_by('username')
         qs = self.request.user.filter_administrable_users(qs)
     
+        is_active = self.request.GET.get('is_active', None)
+        if is_active:
+            is_active = is_active in ['True', 'true', '1', 'yes', 'Yes', 'Y', 'y']
+            qs = qs.filter(is_active=is_active)
+
         username = self.request.GET.get('q', None)
         if username:
             qs = qs.filter(username__icontains=username)

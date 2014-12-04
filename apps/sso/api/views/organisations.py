@@ -11,6 +11,15 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+def get_last_modified(obj):
+    last_modified_list = [obj.last_modified]
+    last_modified_list += [addr.last_modified for addr in obj.organisationaddress_set.all()]
+    last_modified_list += [phone.last_modified for phone in obj.organisationphonenumber_set.all()]
+    
+    last_modified = max(last_modified_list)
+    return last_modified
+
+
 class OrganisationMixin(object):
     model = Organisation
 
@@ -19,12 +28,13 @@ class OrganisationMixin(object):
         data = {
             '@id': "%s%s" % (base, reverse('api:v2_organisation', kwargs={'uuid': obj.uuid})),
             'id': u'%s' % obj.uuid,
+            'is_active': obj.is_active,
             'name': u'%s' % obj.name,
             'email': u'%s' % obj.email,
             'founded': obj.founded,
             'center_type': obj.center_type,
             'homepage': obj.homepage,
-            'last_modified': obj.last_modified,
+            'last_modified': get_last_modified(obj),
             'country': {
                 'code': obj.country.iso2_code,
                 '@id': "%s%s" % (base, reverse('api:v2_country', kwargs={'iso2_code': obj.country.iso2_code})),
@@ -96,7 +106,13 @@ class OrganisationList(OrganisationMixin, JsonListView):
     }
 
     def get_queryset(self):
-        qs = super(OrganisationList, self).get_queryset().filter(is_active=True).prefetch_related('country', 'admin_region', 'email')
+        qs = super(OrganisationList, self).get_queryset().prefetch_related('country', 'admin_region', 'email', 'organisationaddress_set', 'organisationphonenumber_set').distinct()
+        
+        is_active = self.request.GET.get('is_active', None)
+        if is_active:
+            is_active = is_active in ['True', 'true', '1', 'yes', 'Yes', 'Y', 'y']
+            qs = qs.filter(is_active=is_active)
+
         name = self.request.GET.get('q', None)
         if name:
             qs = qs.filter(name__icontains=name)
