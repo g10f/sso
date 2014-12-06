@@ -4,7 +4,8 @@ import json
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.http import HttpResponse, Http404
 from django.db import transaction
-from django.views.generic import ListView, DetailView
+from django.views.generic.detail import BaseDetailView
+from django.views.generic.list import BaseListView
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.vary import vary_on_headers
@@ -64,14 +65,19 @@ class PermissionMixin(object):
                 result.append(operation[method_name])
         return result
 
-    
-class JsonDetailView(PermissionMixin, DetailView):
-    slug_field = 'uuid'
-    slug_url_kwarg = 'uuid'
-    # supported method names from View class
-    # http_method_names = ['get', 'post', 'put', 'patch', 'delete', 'head', 'options', 'trace']
 
-    def render_to_response(self, context, **response_kwargs):
+class JSONResponseMixin(object):
+    """
+    A mixin that can be used to render a JSON response.
+    """
+    def render_to_json_response(self, context, **response_kwargs):
+        """
+        Returns a JSON response
+        """
+        content = self.get_data(context)
+        return JsonHttpResponse(content=content, request=self.request, **response_kwargs)        
+    
+    def get_data(self, context):
         content = self.get_object_data(self.request, context['object'])
         
         if '@id' not in content:
@@ -80,21 +86,23 @@ class JsonDetailView(PermissionMixin, DetailView):
             content['@id'] = build_url(page_base_url, self.request.GET)
 
         content['operation'] = self.get_allowed_operation(context['object'])
-        return JsonHttpResponse(content=content, request=self.request, **response_kwargs)        
+        return content
+        
+
+class JsonDetailView(JSONResponseMixin, PermissionMixin, BaseDetailView):
+    slug_field = 'uuid'
+    slug_url_kwarg = 'uuid'
+    # supported method names from View class
+    # http_method_names = ['get', 'post', 'put', 'patch', 'delete', 'head', 'options', 'trace']
+
+    def render_to_response(self, context, **response_kwargs):
+        return self.render_to_json_response(context, **response_kwargs)
 
     @method_decorator(csrf_exempt)
-    @method_decorator(catch_errors)  
+    @method_decorator(catch_errors)
     def dispatch(self, request, *args, **kwargs):
-        # Try to dispatch to the right method; if a method doesn't exist,
-        # defer to the error handler. Also defer to the error handler if the
-        # request method isn't on the approved list.
-        if request.method.lower() in self.http_method_names:
-            handler = getattr(self, request.method.lower(), self.http_method_not_allowed)
-        else:
-            handler = self.http_method_not_allowed
-            
-        return handler(request, *args, **kwargs)
-
+        return super(JsonDetailView, self).dispatch(request, *args, **kwargs)
+        
     def options(self, request, *args, **kwargs):
         """
         check for cors Preflight Request
@@ -128,7 +136,7 @@ class JsonDetailView(PermissionMixin, DetailView):
         response['Access-Control-Allow-Origin'] = '*'
         return response        
         
-    @method_decorator(vary_on_headers('Access-Control-Allow-Origin', 'Authorization'))
+    @method_decorator(vary_on_headers('Access-Control-Allow-Origin', 'Authorization', 'Cookie'))
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()        
         # get_object is needed before check_permission
@@ -209,7 +217,7 @@ class JsonDetailView(PermissionMixin, DetailView):
         raise NotImplementedError
         
 
-class JsonListView(PermissionMixin, ListView):
+class JsonListView(JSONResponseMixin, PermissionMixin, BaseListView):
     paginate_by = 100
     max_per_page = 1000
     
@@ -225,6 +233,9 @@ class JsonListView(PermissionMixin, ListView):
         return paginate_by
 
     def render_to_response(self, context, **response_kwargs):
+        return self.render_to_json_response(context, **response_kwargs)
+
+    def get_data(self, context):
         content = {
             'member': [self.get_object_data(self.request, obj) for obj in context['object_list']],
         }
@@ -241,14 +252,13 @@ class JsonListView(PermissionMixin, ListView):
                 content['prev_page'] = build_url(self_url, {'page': page.previous_page_number()})
 
         content['@id'] = self_url
-        
         content['operation'] = self.get_allowed_operation(None)
-        return JsonHttpResponse(content=content, request=self.request)        
+        return content
 
-    @method_decorator(vary_on_headers('Access-Control-Allow-Origin', 'Authorization'))
+    @method_decorator(vary_on_headers('Access-Control-Allow-Origin', 'Authorization', 'Cookie'))
     def get(self, request, *args, **kwargs):
         # permission check
-        self.check_permission('get')        
+        self.check_permission('get')
 
         self.object_list = self.get_queryset()
 
