@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import cache_control
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
@@ -16,7 +15,7 @@ from sso.accounts.models import UserAddress, UserPhoneNumber, User, send_account
 from sso.registration import default_username_generator
 from sso.models import update_object_from_dict, map_dict2dict
 from sso.api.views.generic import JsonListView, JsonDetailView
-from sso.api.decorators import catch_errors, condition
+from sso.api.decorators import condition
 
 import logging
 
@@ -73,6 +72,7 @@ class UserMixin(object):
         data = {
             '@id': "%s%s" % (base, reverse('api:v2_user', kwargs={'uuid': obj.uuid})),
             'id': u'%s' % obj.uuid,
+            'is_active': obj.is_active,
             'name': u'%s' % obj,
             'given_name': u'%s' % obj.first_name,
             'family_name': u'%s' % obj.last_name,
@@ -137,24 +137,24 @@ class UserMixin(object):
                         'primary': phone_number.primary
                     } for phone_number in obj.userphonenumber_set.all()
                 }
-        return data          
+        return data
 
 
 def get_last_modified_and_etag(request, uuid):
-    obj = User.objects.get(uuid=uuid)
-    lm_list = [obj.last_modified]
-    for address in obj.useraddress_set.all():
-        lm_list.append(address.last_modified)
-    for phone in obj.userphonenumber_set.all():
-        lm_list.append(phone.last_modified)
-    last_modified = max(lm_list)
-    etag = "%s/%s" % (uuid, last_modified)
-    return last_modified, etag       
+    if request.user.is_authenticated():
+        obj = User.objects.prefetch_related('useraddress_set', 'userphonenumber_set').get(uuid=uuid)
+        last_modified = get_last_modified(obj)
+        etag = "%s/%s" % (uuid, last_modified)
+        return last_modified, etag
+    else:
+        return None, None
 
 
 def get_last_modified_and_etag_for_me(request, *args, **kwargs):
     if request.user.is_authenticated():
-        return get_last_modified_and_etag(request, request.user.uuid)
+        last_modified = get_last_modified(request.user)
+        etag = "%s/%s" % (request.user.uuid, last_modified)
+        return last_modified, etag
     else:
         return None, None
 
@@ -197,8 +197,6 @@ class UserDetailView(UserMixin, JsonDetailView):
         'put': {'@type': 'ReplaceResourceOperation', 'method': 'PUT'},
     }
             
-    @method_decorator(csrf_exempt)
-    @method_decorator(catch_errors)  
     @method_decorator(condition(last_modified_and_etag_func=get_last_modified_and_etag))
     def dispatch(self, request, *args, **kwargs):
         return super(UserDetailView, self).dispatch(request, *args, **kwargs)       
@@ -294,8 +292,6 @@ class MyDetailView(UserDetailView):
         'put': {'@type': 'ReplaceResourceOperation', 'method': 'PUT'},
     }
 
-    @method_decorator(csrf_exempt)
-    @method_decorator(catch_errors)  
     @method_decorator(condition(last_modified_and_etag_func=get_last_modified_and_etag_for_me))
     def dispatch(self, request, *args, **kwargs):
         return super(UserDetailView, self).dispatch(request, *args, **kwargs)       
@@ -336,8 +332,6 @@ class GlobalNavigationView(UserDetailView):
 class MyGlobalNavigationView(GlobalNavigationView):
     operation = {}
 
-    @method_decorator(csrf_exempt)
-    @method_decorator(catch_errors)  
     @method_decorator(condition(last_modified_and_etag_func=get_last_modified_and_etag_for_me))
     @method_decorator(cache_control(must_revalidate=True, max_age=60 * 5)) 
     def dispatch(self, request, *args, **kwargs):
@@ -363,7 +357,7 @@ class UserList(UserMixin, JsonListView):
         }
 
     def get_queryset(self):
-        qs = super(UserList, self).get_queryset().prefetch_related('useraddress_set', 'userphonenumber_set')
+        qs = super(UserList, self).get_queryset().prefetch_related('useraddress_set', 'userphonenumber_set').distinct()
         qs = qs.order_by('username')
         qs = self.request.user.filter_administrable_users(qs)
     

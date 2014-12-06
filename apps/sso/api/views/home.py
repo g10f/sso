@@ -10,8 +10,8 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-FIND_USER_EXPRESSION = "{?q,per_page,app_id,modified_since,country_group_id,country,region_id,org_id}"
-FIND_ORGANISATION_EXPRESSION = "{?q,per_page,modified_since,country_group_id,country,region_id,latlng,dlt}"
+FIND_USER_EXPRESSION = "{?q,per_page,app_id,modified_since,is_active,country_group_id,country,region_id,org_id}"
+FIND_ORGANISATION_EXPRESSION = "{?q,per_page,modified_since,is_active,country_group_id,country,region_id,latlng,dlt}"
 FIND_COUNTRY_EXPRESSION = "{?q,per_page,modified_since,country_group_id}"
 FIND_REGION_EXPRESSION = "{?q,per_page,modified_since,country_group_id,country}"
 FIND_COUNTRY_GROUP_EXPRESSION = "{?q,per_page,modified_since}"
