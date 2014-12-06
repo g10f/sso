@@ -74,19 +74,19 @@ class JSONResponseMixin(object):
         """
         Returns a JSON response
         """
-        content = self.get_data(context)
-        return JsonHttpResponse(content=content, request=self.request, **response_kwargs)        
+        data = self.get_data(context)
+        return JsonHttpResponse(data=data, request=self.request, **response_kwargs)        
     
     def get_data(self, context):
-        content = self.get_object_data(self.request, context['object'])
+        data = self.get_object_data(self.request, context['object'])
         
-        if '@id' not in content:
+        if '@id' not in data:
             # if no @id is there we use the current url as the default
             page_base_url = "%s%s" % (base_url(self.request), self.request.path)
-            content['@id'] = build_url(page_base_url, self.request.GET)
+            data['@id'] = build_url(page_base_url, self.request.GET)
 
-        content['operation'] = self.get_allowed_operation(context['object'])
-        return content
+        data['operation'] = self.get_allowed_operation(context['object'])
+        return data
         
 
 class JsonDetailView(JSONResponseMixin, PermissionMixin, BaseDetailView):
@@ -236,24 +236,24 @@ class JsonListView(JSONResponseMixin, PermissionMixin, BaseListView):
         return self.render_to_json_response(context, **response_kwargs)
 
     def get_data(self, context):
-        content = {
+        data = {
             'member': [self.get_object_data(self.request, obj) for obj in context['object_list']],
         }
         page_base_url = "%s%s" % (base_url(self.request), self.request.path)
         self_url = build_url(page_base_url, self.request.GET)
-        content['total_items'] = context['paginator'].count
+        data['total_items'] = context['paginator'].count
         if context['is_paginated']:
-            content['items_per_page'] = context['paginator'].per_page
+            data['items_per_page'] = context['paginator'].per_page
             
             page = context['page_obj']
             if page.has_next():
-                content['next_page'] = build_url(self_url, {'page': page.next_page_number()})
+                data['next_page'] = build_url(self_url, {'page': page.next_page_number()})
             if page.has_previous():
-                content['prev_page'] = build_url(self_url, {'page': page.previous_page_number()})
+                data['prev_page'] = build_url(self_url, {'page': page.previous_page_number()})
 
-        content['@id'] = self_url
-        content['operation'] = self.get_allowed_operation(None)
-        return content
+        data['@id'] = self_url
+        data['operation'] = self.get_allowed_operation(None)
+        return data
 
     @method_decorator(vary_on_headers('Access-Control-Allow-Origin', 'Authorization', 'Cookie'))
     def get(self, request, *args, **kwargs):

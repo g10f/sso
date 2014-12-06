@@ -196,7 +196,10 @@ class UserDetailView(UserMixin, JsonDetailView):
     operation = {
         'put': {'@type': 'ReplaceResourceOperation', 'method': 'PUT'},
     }
-            
+    
+    # TODO: performance optimisation: object gets queried twice, 
+    # 1. get_last_modified_and_etag
+    # 2. in View
     @method_decorator(condition(last_modified_and_etag_func=get_last_modified_and_etag))
     def dispatch(self, request, *args, **kwargs):
         return super(UserDetailView, self).dispatch(request, *args, **kwargs)       
