@@ -301,7 +301,7 @@ def jwks(request):
 @permission_required("oauth2.change_client")
 def client_details(request, object_id):
     client = get_object_or_404(Client, pk=object_id)
-    content = {
+    data = {
         "auth_uri": request.build_absolute_uri(reverse('oauth2:authorize')),
         "client_secret": client.client_secret,
         "token_uri": request.build_absolute_uri(reverse('oauth2:token')),
@@ -312,7 +312,7 @@ def client_details(request, object_id):
         "userinfo_uri": request.build_absolute_uri(reverse('api:v1_users_me')),
         "logout_uri": request.build_absolute_uri(reverse('accounts:logout')),
     }
-    return JsonHttpResponse(content, request)
+    return JsonHttpResponse(data, request)
 
 class ErrorView(TemplateView):
     template_name = "oauth2/error.html"
