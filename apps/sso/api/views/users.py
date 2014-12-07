@@ -194,7 +194,7 @@ def get_user_list(request):
         },
         'links': links
     }
-    return JsonHttpResponse(request=request, content=userinfo)
+    return JsonHttpResponse(request=request, data=userinfo)
         
 
 class UserDetailView(View):
@@ -249,7 +249,7 @@ class UserDetailView(View):
         else:
             userinfo = get_userinfo(selected_user, request, show_details=True)
         
-        return JsonHttpResponse(content=userinfo, request=request)
+        return JsonHttpResponse(data=userinfo, request=request)
 
     @method_decorator(client_required(['68bfae12a58541548def243e223053fb']))
     @method_decorator(api_user_passes_test(lambda u: u.is_authenticated()))
@@ -293,7 +293,7 @@ class UserDetailView(View):
             send_account_created_email(user, request)
         
         userinfo = get_userinfo(user, request, show_details=True)
-        return JsonHttpResponse(content=userinfo, request=request)
+        return JsonHttpResponse(data=userinfo, request=request)
 
     @method_decorator(client_required(['68bfae12a58541548def243e223053fb']))
     @method_decorator(api_user_passes_test(lambda u: u.is_authenticated()))   
