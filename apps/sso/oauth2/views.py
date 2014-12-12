@@ -214,10 +214,10 @@ def authorize(request):
         headers, body, status = server.create_authorization_response(uri, http_method, body, headers, scopes, credentials)  # @UnusedVariable
         return HttpOAuth2ResponseRedirect(headers['Location'])
     except oauth2.FatalClientError as e:
-        logger.debug('Fatal client error, redirecting to error page.')
+        logger.warning('Fatal client error, redirecting to error page.')
         return HttpOAuth2ResponseRedirect(e.in_uri(error_uri))
     except oauth2.OAuth2Error as e:
-        logger.debug('Client error, redirecting back to client.')
+        logger.warning('Client error, redirecting back to client.')
         if not redirect_uri:          
             if getattr(e, 'redirect_uri'):
                 redirect_uri = e.redirect_uri
