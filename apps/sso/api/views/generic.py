@@ -48,7 +48,7 @@ class PermissionMixin(object):
                 is_allowed = permission_check(self.request)
                 
             if not is_allowed and raise_exception:
-                raise PermissionDenied
+                raise PermissionDenied("method '%s' not allowed for user '%s'" % (method_name, self.request.user))
             else:
                 return is_allowed
         else:

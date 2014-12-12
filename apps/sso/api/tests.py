@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import json
 from django.core.urlresolvers import reverse
+from uritemplate import expand
+
 from http.http_status import *  # @UnusedWildImport
 
 from sso.oauth2.tests import OAuth2BaseTestCase
@@ -13,7 +15,17 @@ class ApiTests(OAuth2BaseTestCase):
         'organisations': {'31664dd38ca4454e916e55fe8b1f0746': {}}
     })
     
-    def test_put_and_delete_user(self):
+    def test_v2_userlist(self):
+        response = self.client.get(reverse('api:home'))
+        home = json.loads(response.content)
+        users_url = expand(home['users'], {})
+        
+        authorization = self.get_authorization(scope="openid profile email users")
+        response = self.client.get(users_url, HTTP_AUTHORIZATION=authorization)
+        users = json.loads(response.content)
+        self.assertNotIn('error', users)        
+
+    def test_v1_put_and_delete_user(self):
         authorization = self.get_authorization()
         uri = reverse('api:v1_user', kwargs={'uuid': 'a8992f0348634f76b0dac2de4e4c83ee'})        
         response = self.client.put(uri, data=self.data, HTTP_AUTHORIZATION=authorization)
@@ -38,7 +50,7 @@ class ApiTests(OAuth2BaseTestCase):
         response = self.client.delete(uri, HTTP_AUTHORIZATION=authorization)
         self.assertEqual(response.status_code, HTTP_204_NO_CONTENT)
 
-    def test_put_user_failure(self):
+    def test_v1_put_user_failure(self):
         self.client.login(username='GunnarScherf', password='gsf')
         uri = reverse('api:v1_user', kwargs={'uuid': 'a8992f0348634f76b0dac2de4e4c83ee'})
         response = self.client.get(uri)
@@ -47,7 +59,7 @@ class ApiTests(OAuth2BaseTestCase):
         response = self.client.put(uri, data=self.data)
         self.assertEqual(response.status_code, HTTP_401_UNAUTHORIZED) 
 
-    def test_get_user_list(self):
+    def test_v1_get_user_list(self):
         authorization = self.get_authorization()
         uri = reverse('api:v1_users')        
         response = self.client.get(uri, HTTP_AUTHORIZATION=authorization)
