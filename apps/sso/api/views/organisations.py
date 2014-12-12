@@ -84,9 +84,6 @@ class OrganisationMixin(object):
 
 class OrganisationDetailView(OrganisationMixin, JsonDetailView):
     http_method_names = ['get', 'options']
-    permissions_tests = {
-        'get': lambda request, obj: request.user.is_authenticated(),
-    }
     operation = {}
     
     def get_queryset(self):
@@ -101,9 +98,6 @@ class OrganisationDetailView(OrganisationMixin, JsonDetailView):
 
 
 class OrganisationList(OrganisationMixin, JsonListView):
-    permissions_tests = {
-        'get': lambda request, x: request.user.is_authenticated()
-    }
 
     def get_queryset(self):
         qs = super(OrganisationList, self).get_queryset().prefetch_related('country', 'admin_region', 'email', 'organisationaddress_set', 'organisationphonenumber_set').distinct()

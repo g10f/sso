@@ -167,10 +167,15 @@ def get_permission(request, obj):
     user = request.user
     if user.is_authenticated():
         if user.uuid == obj.uuid:
-            return True
+            return True, None
         else:
-            return user.has_perm('accounts.read_user') and user.has_user_access(obj.uuid)
-    return False
+            if (not user.has_perm('accounts.read_user')):
+                return False, "User has no permission '%s" % 'accounts.read_user'
+            elif (not user.has_user_access(obj.uuid)):
+                return False, "User has no access to object"
+            else:
+                return True, None
+    return False, 'User not authenticated'
 
 
 def put_permission(request, obj):
@@ -181,10 +186,15 @@ def put_permission(request, obj):
     user = request.user
     if user.is_authenticated():
         if user.uuid == obj.uuid:
-            return True
+            return True, None
         else:
-            return user.has_perm('accounts.change_user') and user.has_user_access(obj.uuid)
-    return False
+            if (not user.has_perm('accounts.change_user')):
+                return False, "User has no permission '%s" % 'accounts.change_user'
+            elif (not user.has_user_access(obj.uuid)):
+                return False, "User has no access to object"
+            else:
+                return True, None
+    return False, 'User not authenticated'
 
 
 class UserDetailView(UserMixin, JsonDetailView):
@@ -347,11 +357,23 @@ class MyGlobalNavigationView(GlobalNavigationView):
 class UserList(UserMixin, JsonListView):
     @classmethod
     def getpermission(cls, request, obj):
-        return request.user.has_perm('accounts.read_user') and 'users' in request.scopes
+        user = request.user
+        if (not user.has_perm('accounts.read_user')):
+            return False, "User has no permission '%s" % 'accounts.read_user'
+        elif ('users' not in request.scopes):
+            return False, "users not in scope '%s'" % request.scopes
+        else:
+            return True, None
 
     @classmethod
     def addpermission(cls, request):
-        return request.user.has_perm('accounts.add_user') and 'users' in request.scopes
+        user = request.user
+        if (not user.has_perm('accounts.add_user')):
+            return False, "User has no permission '%s" % 'accounts.add_user'
+        elif ('users' not in request.scopes):
+            return False, "users not in scope '%s'" % request.scopes
+        else:
+            return True, None
     
     def get_operation(self):
         base_uri = base_url(self.request)

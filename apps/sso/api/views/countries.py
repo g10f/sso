@@ -45,9 +45,6 @@ class CountryDetailView(CountryMixin, JsonDetailView):
     slug_field = 'country__iso2_code'
     slug_url_kwarg = 'iso2_code'
     http_method_names = ['get', 'options']
-    permissions_tests = {
-        'get': lambda request, obj: request.user.is_authenticated(),
-    }
     operation = {}
     
     def get_queryset(self):
@@ -58,9 +55,6 @@ class CountryDetailView(CountryMixin, JsonDetailView):
 
 
 class CountryList(CountryMixin, JsonListView):
-    permissions_tests = {
-        'get': lambda request, x: request.user.is_authenticated()
-    }
 
     def get_queryset(self):
         qs = super(CountryList, self).get_queryset().filter(is_active=True).prefetch_related('country', 'email')

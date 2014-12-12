@@ -39,12 +39,19 @@ def modify_permission(request, obj):
     """
     if 'picture' in request.scopes:
         user = request.user
-        if user.is_authenticated():
+        if (not user.is_authenticated()):
+            return False, 'User not authenticated'
+        else:
             if user.uuid == obj.uuid:
-                return True
+                return True, None
             else:
-                return user.has_perm('accounts.change_user') and user.has_user_access(obj.uuid)
-    return False
+                if (not user.has_perm('accounts.change_user')):
+                    return False, "User has no permission '%s" % 'accounts.change_user'
+                elif (not user.has_user_access(obj.uuid)):
+                    return False, "User has no access to object"
+                else:
+                    return True, None
+    return False, "picture not in scope '%s'" % request.scopes 
 
 
 class UserPictureDetailView(JsonDetailView):
