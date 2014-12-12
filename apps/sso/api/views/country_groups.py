@@ -43,9 +43,6 @@ class CountryGroupMixin(object):
 
 class CountryGroupDetailView(CountryGroupMixin, JsonDetailView):
     http_method_names = ['get', 'options']
-    permissions_tests = {
-        'get': lambda request, obj: request.user.is_authenticated(),
-    }
     operation = {}
     
     def get_queryset(self):
@@ -56,9 +53,6 @@ class CountryGroupDetailView(CountryGroupMixin, JsonDetailView):
 
 
 class CountryGroupList(CountryGroupMixin, JsonListView):
-    permissions_tests = {
-        'get': lambda request, x: request.user.is_authenticated()
-    }
 
     def get_queryset(self):
         qs = super(CountryGroupList, self).get_queryset().prefetch_related('email')

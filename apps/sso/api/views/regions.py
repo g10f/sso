@@ -39,9 +39,6 @@ class RegionMixin(object):
 
 class RegionDetailView(RegionMixin, JsonDetailView):
     http_method_names = ['get', 'options']
-    permissions_tests = {
-        'get': lambda request, obj: request.user.is_authenticated(),
-    }
     operation = {}
     
     def get_queryset(self):
@@ -52,9 +49,6 @@ class RegionDetailView(RegionMixin, JsonDetailView):
 
 
 class RegionList(RegionMixin, JsonListView):
-    permissions_tests = {
-        'get': lambda request, x: request.user.is_authenticated()
-    }
 
     def get_queryset(self):
         qs = super(RegionList, self).get_queryset().filter(is_active=True).prefetch_related('country', 'email')

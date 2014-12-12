@@ -31,4 +31,16 @@
 		"user" : null,
 		"type" : "javascript"
 	}
-} ]
+}, {
+	"model" : "oauth2.client",
+	"fields" : {
+		"uuid" : "1811f02ed81b43b5bee1afe031e6198e",
+		"name" : "Test Client2 - web",
+		"application" : ["bc0ee635a536491eb8e7fbe5749e8111"],
+		"redirect_uris" : "http://localhost",
+		"client_secret" : "geheim",
+		"scopes" : "openid profile email users",
+		"user" : null,
+		"type" : "web"
+	}
+}  ]

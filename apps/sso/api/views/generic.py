@@ -18,14 +18,21 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+def is_authenticated(request, obj=None):
+    if (not request.user.is_authenticated()):
+        return False, 'User not authenticated'
+    else:
+        return True, None
+
     
 class PermissionMixin(object):
     """
+    # the result is of type (boolean, string) where string contains the reason if the result is false
     permissions_tests = {
-        'get': lambda request, obj: True,
-        'put': lambda request, obj: True,
-        'delete': lambda request, obj: True,
-        'add': lambda request: True,
+        'get': lambda request, obj: (True, None),
+        'put': lambda request, obj: (True, None),
+        'delete': lambda request, obj: (True, None),
+        'add': lambda request: (True, None),
     }
     
     operation = {
@@ -36,19 +43,21 @@ class PermissionMixin(object):
     }
     """
     
-    permissions_tests = {}
+    permissions_tests = {
+        'get': is_authenticated,
+    }
     operation = {}
     
     def check_permission(self, method_name, obj=None, raise_exception=True):
         permission_check = self.permissions_tests.get(method_name, None)
         if permission_check:
             if method_name in ['get', 'put', 'delete']:
-                is_allowed = permission_check(self.request, obj)
+                is_allowed, reason = permission_check(self.request, obj)
             else:
-                is_allowed = permission_check(self.request)
+                is_allowed, reason = permission_check(self.request)
                 
             if not is_allowed and raise_exception:
-                raise PermissionDenied("method '%s' not allowed for user '%s'" % (method_name, self.request.user))
+                raise PermissionDenied("method '%s' not allowed, user: '%s', reason '%s'" % (method_name, self.request.user, reason))
             else:
                 return is_allowed
         else:

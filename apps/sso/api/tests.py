@@ -20,10 +20,11 @@ class ApiTests(OAuth2BaseTestCase):
         home = json.loads(response.content)
         users_url = expand(home['users'], {})
         
-        authorization = self.get_authorization(scope="openid profile email users")
+        authorization = self.get_authorization(client_id="1811f02ed81b43b5bee1afe031e6198e", username="CountryAdmin", scope="users")
         response = self.client.get(users_url, HTTP_AUTHORIZATION=authorization)
         users = json.loads(response.content)
-        self.assertNotIn('error', users)        
+        self.assertNotIn('error', users)
+        # users['member'][0]
 
     def test_v1_put_and_delete_user(self):
         authorization = self.get_authorization()
