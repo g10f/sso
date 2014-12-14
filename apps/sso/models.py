@@ -7,6 +7,9 @@ from django.forms.models import model_to_dict
 from l10n.models import Country, AdminArea
 from smart_selects.db_fields import ChainedForeignKey
 from sso.fields import UUIDField
+import logging
+
+logger = logging.getLogger(__name__)
 
 class AbstractBaseModelManager(models.Manager):
     def get_by_natural_key(self, uuid):
@@ -147,7 +150,11 @@ def map_dict2dict(mapping, source_dict):
                 new_key = value['name']
                 parser = value.get('parser', None)
                 if parser is not None:
-                    new_value = parser(source_dict[key])
+                    try:
+                        new_value = parser(source_dict[key])
+                    except Exception, e:
+                        logger.exception('could not parse value: %s' % source_dict[key])
+                        raise e
                 else:
                     new_value = source_dict[key]
                 

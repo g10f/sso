@@ -39,7 +39,7 @@ class RegionMixin(object):
 
 class RegionDetailView(RegionMixin, JsonDetailView):
     http_method_names = ['get', 'options']
-    operation = {}
+    operations = {}
     
     def get_queryset(self):
         return super(RegionDetailView, self).get_queryset().prefetch_related('country', 'email')

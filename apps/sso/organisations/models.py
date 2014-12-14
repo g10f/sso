@@ -184,8 +184,16 @@ class Organisation(AbstractBaseModel):
     @memoize
     def get_last_modified_deep(self):
         last_modified_list = [self.last_modified]
-        last_modified_list += self.organisationaddress_set.values_list("last_modified", flat=True)
-        last_modified_list += self.organisationphonenumber_set.values_list("last_modified", flat=True)
+        if hasattr(self, '_prefetched_objects_cache') and ('organisationaddress' in self._prefetched_objects_cache):
+            last_modified_list += [obj.last_modified for obj in self.organisationaddress_set.all()]
+        else:
+            last_modified_list += self.organisationaddress_set.values_list("last_modified", flat=True)
+            
+        if hasattr(self, '_prefetched_objects_cache') and ('organisationphonenumber' in self._prefetched_objects_cache):
+            last_modified_list += [obj.last_modified for obj in self.organisationphonenumber_set.all()]
+        else:
+            last_modified_list += self.organisationphonenumber_set.values_list("last_modified", flat=True)
+        
         last_modified = max(last_modified_list)
         return last_modified
 

@@ -75,7 +75,7 @@ class OrganisationMixin(object):
 
 class OrganisationDetailView(OrganisationMixin, JsonDetailView):
     http_method_names = ['get', 'options']
-    operation = {}
+    operations = {}
     
     def get_queryset(self):
         return super(OrganisationDetailView, self).get_queryset().prefetch_related('country', 'email', 'organisationaddress_set', 'organisationphonenumber_set')

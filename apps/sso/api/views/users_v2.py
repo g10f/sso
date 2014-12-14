@@ -29,14 +29,22 @@ mapping consist of key values, where
 2. the value is a dictionary with the name of the django object field and optional a parser and validate function
 
 """
+
+def _parse_date(value):
+    if value:
+        return parse_date(value)
+    else:
+        return None
+    
+    
 API_USER_MAPPING = {
     'given_name': {'name': 'first_name', 'validate': lambda x: len(x) > 0},
     'family_name': {'name': 'last_name', 'validate': lambda x: len(x) > 0},
     'email': {'name': 'email', 'validate': lambda x: len(x) > 0},
     'gender': 'gender',
-    'birth_date': {'name': 'dob', 'parser': parse_date},
+    'birth_date': {'name': 'dob', 'parser': _parse_date},
     'homepage': 'homepage',
-    'language': 'language',
+    'language': 'language'
 }
 API_ADDRESS_MAP = {
     'address_type': {'name': 'address_type', 'validate': lambda x: len(x) > 0}, 
@@ -134,10 +142,13 @@ class UserMixin(object):
 
 def get_last_modified_and_etag(request, uuid):
     if request.user.is_authenticated():
-        obj = User.objects.only('last_modified').get(uuid=uuid)
-        last_modified = obj.get_last_modified_deep()
-        etag = "%s/%s" % (uuid, last_modified)
-        return last_modified, etag
+        try:
+            obj = User.objects.only('last_modified').get(uuid=uuid)
+            last_modified = obj.get_last_modified_deep()
+            etag = "%s/%s" % (uuid, last_modified)
+            return last_modified, etag
+        except ObjectDoesNotExist:
+            return None, None
     else:
         return None, None
 
@@ -151,7 +162,7 @@ def get_last_modified_and_etag_for_me(request, *args, **kwargs):
         return None, None
 
 
-def get_permission(request, obj):
+def read_permission(request, obj):
     """
     user is the authenticted user
     permission to read the obj data
@@ -170,7 +181,7 @@ def get_permission(request, obj):
     return False, 'User not authenticated'
 
 
-def put_permission(request, obj):
+def replace_permission(request, obj):
     """
     user is the authenticted user
     permission to change user the obj
@@ -189,17 +200,27 @@ def put_permission(request, obj):
     return False, 'User not authenticated'
 
 
+def create_permission(request, obj=None):
+    user = request.user
+    if user.has_perm('accounts.add_user'):
+        return True, None
+    else:
+        False, 'You have no \'accounts.add_user\' permission'
+
+
 class UserDetailView(UserMixin, JsonDetailView):
-    http_method_names = ['get', 'put', 'options']  # , 'add', 'delete'
+    http_method_names = ['get', 'put', 'options']  # , 'delete'
+    create_object_with_put = True
     permissions_tests = {
-        'get': get_permission,
-        'put': put_permission,
+        'read': read_permission,
+        'replace': replace_permission,
+        'create': create_permission,
     }
-    operation = {
-        'put': {'@type': 'ReplaceResourceOperation', 'method': 'PUT'},
+    operations = {
+        'replace': {'@type': 'ReplaceResourceOperation', 'method': 'PUT'},
     }
     
-    @method_decorator(csrf_exempt)  # required here because the middleware wille be executed before the view function
+    @method_decorator(csrf_exempt)  # required here because the middleware will be executed before the view function
     @method_decorator(condition(last_modified_and_etag_func=get_last_modified_and_etag))
     def dispatch(self, request, *args, **kwargs):
         return super(UserDetailView, self).dispatch(request, *args, **kwargs)       
@@ -265,25 +286,27 @@ class UserDetailView(UserMixin, JsonDetailView):
         if User.objects.filter(email__iexact=object_data['email']).exists():
             raise ValueError(_("A user with that email address already exists."))
         
-        if not object_data['username']:
+        if 'username' not in object_data:
             object_data['username'] = default_username_generator(capfirst(object_data['first_name']), capfirst(object_data['last_name']))
         
         obj = self.model(**object_data)
         obj.save()
         
-        for key, value in data['addresses'].items():
-            address_data = map_dict2dict(API_ADDRESS_MAP, value)
-            if not address_data['address_type']:
-                address_data['address_type'] = UserAddress.ADDRESSTYPE_CHOICES[0]  # home
-            address = UserAddress(uuid=key, user=obj, **address_data)
-            address.save()
-                    
-        for key, value in data['phone_numbers'].items():
-            phone_data = map_dict2dict(API_PHONE_MAP, value)
-            if not phone_data['phone_type']:
-                phone_data['phone_type'] = UserPhoneNumber.PHONE_CHOICES[0]  # home
-            phone = UserPhoneNumber(uuid=key, user=obj, **phone_data)
-            phone.save()
+        if 'addresses' in data:
+            for key, value in data['addresses'].items():
+                address_data = map_dict2dict(API_ADDRESS_MAP, value)
+                if not address_data['address_type']:
+                    address_data['address_type'] = UserAddress.ADDRESSTYPE_CHOICES[0]  # home
+                address = UserAddress(uuid=key, user=obj, **address_data)
+                address.save()
+
+        if 'phone_numbers' in data:
+            for key, value in data['phone_numbers'].items():
+                phone_data = map_dict2dict(API_PHONE_MAP, value)
+                if not phone_data['phone_type']:
+                    phone_data['phone_type'] = UserPhoneNumber.PHONE_CHOICES[0]  # home
+                phone = UserPhoneNumber(uuid=key, user=obj, **phone_data)
+                phone.save()
         
         send_account_created_email(obj, request)
         return obj
@@ -292,7 +315,7 @@ class UserDetailView(UserMixin, JsonDetailView):
 class MyDetailView(UserDetailView):
     
     operation = {
-        'put': {'@type': 'ReplaceResourceOperation', 'method': 'PUT'},
+        'replace': {'@type': 'ReplaceResourceOperation', 'method': 'PUT'},
     }
 
     @method_decorator(condition(last_modified_and_etag_func=get_last_modified_and_etag_for_me))
@@ -346,7 +369,7 @@ class MyGlobalNavigationView(GlobalNavigationView):
 
 class UserList(UserMixin, JsonListView):
     @classmethod
-    def getpermission(cls, request, obj):
+    def read_permission(cls, request, obj):
         user = request.user
         if (not user.has_perm('accounts.read_user')):
             return False, "User has no permission '%s" % 'accounts.read_user'
@@ -356,7 +379,7 @@ class UserList(UserMixin, JsonListView):
             return True, None
 
     @classmethod
-    def addpermission(cls, request):
+    def create_permission(cls, request, obj=None):
         user = request.user
         if (not user.has_perm('accounts.add_user')):
             return False, "User has no permission '%s" % 'accounts.add_user'
@@ -365,12 +388,12 @@ class UserList(UserMixin, JsonListView):
         else:
             return True, None
     
-    def get_operation(self):
+    def get_operations(self):
         base_uri = base_url(self.request)
         return {
-            'add': {'@type': ' CreateResourceOperation', 'method': 'PUT', 'template': "%s%s%s" % (base_uri, reverse('api:v2_users'), '{uuid}/')}
+            'create': {'@type': 'CreateResourceOperation', 'method': 'PUT', 'template': "%s%s%s" % (base_uri, reverse('api:v2_users'), '{uuid}/')}
         }
-
+    
     def get_queryset(self):
         qs = super(UserList, self).get_queryset().prefetch_related('useraddress_set', 'userphonenumber_set').distinct()
         qs = qs.order_by('username')
@@ -416,6 +439,6 @@ class UserList(UserMixin, JsonListView):
 
 
 UserList.permissions_tests = {
-    'get': UserList.getpermission,
-    'add': UserList.addpermission,
+    'read': UserList.read_permission,
+    'create': UserList.create_permission,
 }

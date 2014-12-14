@@ -45,7 +45,7 @@ class CountryDetailView(CountryMixin, JsonDetailView):
     slug_field = 'country__iso2_code'
     slug_url_kwarg = 'iso2_code'
     http_method_names = ['get', 'options']
-    operation = {}
+    operations = {}
     
     def get_queryset(self):
         return super(CountryDetailView, self).get_queryset().prefetch_related('country', 'email')

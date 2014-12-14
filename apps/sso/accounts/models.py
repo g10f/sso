@@ -180,9 +180,21 @@ class User(AbstractUser):
 
     @memoize
     def get_last_modified_deep(self):
+        """
+        get the max date of last_modified from user and corresponding address and phones
+        and use _prefetched_objects_cache if available for performance in api lists
+        """
         last_modified_list = [self.last_modified]
-        last_modified_list += self.useraddress_set.values_list("last_modified", flat=True)
-        last_modified_list += self.userphonenumber_set.values_list("last_modified", flat=True)
+        if hasattr(self, '_prefetched_objects_cache') and ('useraddress' in self._prefetched_objects_cache):
+            last_modified_list += [obj.last_modified for obj in self.useraddress_set.all()]
+        else:
+            last_modified_list += self.useraddress_set.values_list("last_modified", flat=True)
+            
+        if hasattr(self, '_prefetched_objects_cache') and ('userphonenumber' in self._prefetched_objects_cache):
+            last_modified_list += [obj.last_modified for obj in self.userphonenumber_set.all()]
+        else:
+            last_modified_list += self.userphonenumber_set.values_list("last_modified", flat=True)
+        
         last_modified = max(last_modified_list)
         return last_modified
 

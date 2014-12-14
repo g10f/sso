@@ -10,7 +10,7 @@ from sso.api.decorators import catch_errors
 from sso.api.views.generic import JsonDetailView
 from sso.accounts.models import User
 from sso.api.decorators import condition
-from sso.api.views.users_v2 import get_permission
+from sso.api.views.users_v2 import read_permission
 from utils.url import base_url, absolute_url
 
 import logging
@@ -56,14 +56,14 @@ def modify_permission(request, obj):
 
 class UserPictureDetailView(JsonDetailView):
     model = User
-    http_method_names = ['get', 'post', 'delete', 'options']  # , 'add', 'delete'
+    http_method_names = ['get', 'post', 'delete', 'options']  # , 'delete'
     permissions_tests = {
-        'get': get_permission,
-        'put': modify_permission,
+        'read': read_permission,
+        'create': modify_permission,
         'delete': modify_permission,
     }
-    operation = {
-        'put': {'@type': 'CreateResourceOperation', 'method': 'POST'},
+    operations = {
+        'create': {'@type': 'CreateResourceOperation', 'method': 'POST'},
         'delete': {'@type': 'DeleteResourceOperation', 'method': 'DELETE'},
     }
             
@@ -92,10 +92,7 @@ class UserPictureDetailView(JsonDetailView):
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        # because we have an user object which is updated
-        # and the put permission test takes an object as argument.
-        # TODO: Cleanup design 
-        self.check_permission('put', self.object) 
+        self.check_permission('create', self.object) 
         
         content_length = int(request.META['CONTENT_LENGTH'])
         if (content_length <= 0):
@@ -131,8 +128,8 @@ class UserPictureDetailView(JsonDetailView):
 
 class MyUserPictureDetailView(UserPictureDetailView):
     
-    operation = {
-        'put': {'@type': 'CreateResourceOperation', 'method': 'POST'},
+    operations = {
+        'create': {'@type': 'CreateResourceOperation', 'method': 'POST'},
         'delete': {'@type': 'DeleteResourceOperation', 'method': 'DELETE'},
     }
 
