@@ -11,15 +11,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-def get_last_modified(obj):
-    last_modified_list = [obj.last_modified]
-    last_modified_list += [addr.last_modified for addr in obj.organisationaddress_set.all()]
-    last_modified_list += [phone.last_modified for phone in obj.organisationphonenumber_set.all()]
-    
-    last_modified = max(last_modified_list)
-    return last_modified
-
-
 class OrganisationMixin(object):
     model = Organisation
 
@@ -34,7 +25,7 @@ class OrganisationMixin(object):
             'founded': obj.founded,
             'center_type': obj.center_type,
             'homepage': obj.homepage,
-            'last_modified': get_last_modified(obj),
+            'last_modified': obj.get_last_modified_deep(),
             'country': {
                 'code': obj.country.iso2_code,
                 '@id': "%s%s" % (base, reverse('api:v2_country', kwargs={'iso2_code': obj.country.iso2_code})),

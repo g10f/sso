@@ -14,6 +14,7 @@ from utils.loaddata import disable_for_loaddata
 from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary
 from sso.emails.models import Email, CENTER_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, REGION_EMAIL_TYPE, COUNTRY_GROUP_EMAIL_TYPE
 from sso.registration import default_username_generator
+from sso.decorators import memoize
 
 import logging
 
@@ -179,6 +180,14 @@ class Organisation(AbstractBaseModel):
         ordering = ['name']
         verbose_name = _('Buddhist Center')
         verbose_name_plural = _('Buddhist Centers')
+
+    @memoize
+    def get_last_modified_deep(self):
+        last_modified_list = [self.last_modified]
+        last_modified_list += self.organisationaddress_set.values_list("last_modified", flat=True)
+        last_modified_list += self.organisationphonenumber_set.values_list("last_modified", flat=True)
+        last_modified = max(last_modified_list)
+        return last_modified
 
     def __unicode__(self):
         if self.country:

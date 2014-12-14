@@ -12,7 +12,7 @@ class ClientAdmin(admin.ModelAdmin):
     raw_id_fields = ("user",)
     fields = ('application', 'type', 'name', 'uuid', 'client_secret', 'redirect_uris', 'scopes', 'user', 'last_modified')
     readonly_fields = ('last_modified', )
-
+    list_select_related = ('application', )
 
 class BearerTokenAdmin(admin.ModelAdmin):
     list_display = ('client', 'user', 'created_at')

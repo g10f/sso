@@ -11,7 +11,7 @@ except ImportError:  # Python 2
 
 
 OAUTH2_CLIENT = {
-    'host': 'https://sso.dwbn.org',
+    'host': 'http://localhost:8000',
     'grant_type': 'authorization_code',
     'scope': 'openid profile email',
     'response_type': 'code',
