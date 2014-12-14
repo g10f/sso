@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import cache_control
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
@@ -54,15 +55,6 @@ API_PHONE_MAP = {
 }
 
 
-def get_last_modified(obj):
-    last_modified_list = [obj.last_modified]
-    last_modified_list += [addr.last_modified for addr in obj.useraddress_set.all()]
-    last_modified_list += [phone.last_modified for phone in obj.userphonenumber_set.all()]
-    
-    last_modified = max(last_modified_list)
-    return last_modified
-
-
 class UserMixin(object):
     model = User
     
@@ -82,7 +74,7 @@ class UserMixin(object):
             'homepage': obj.homepage,
             'language': obj.language,
             'is_center': obj.is_center,
-            'last_modified': get_last_modified(obj),
+            'last_modified': obj.get_last_modified_deep(),
         } 
         if obj.picture:
             data['picture'] = {
@@ -142,8 +134,8 @@ class UserMixin(object):
 
 def get_last_modified_and_etag(request, uuid):
     if request.user.is_authenticated():
-        obj = User.objects.prefetch_related('useraddress_set', 'userphonenumber_set').get(uuid=uuid)
-        last_modified = get_last_modified(obj)
+        obj = User.objects.only('last_modified').get(uuid=uuid)
+        last_modified = obj.get_last_modified_deep()
         etag = "%s/%s" % (uuid, last_modified)
         return last_modified, etag
     else:
@@ -152,7 +144,7 @@ def get_last_modified_and_etag(request, uuid):
 
 def get_last_modified_and_etag_for_me(request, *args, **kwargs):
     if request.user.is_authenticated():
-        last_modified = get_last_modified(request.user)
+        last_modified = request.user.get_last_modified_deep()
         etag = "%s/%s" % (request.user.uuid, last_modified)
         return last_modified, etag
     else:
@@ -207,9 +199,7 @@ class UserDetailView(UserMixin, JsonDetailView):
         'put': {'@type': 'ReplaceResourceOperation', 'method': 'PUT'},
     }
     
-    # TODO: performance optimisation: object gets queried twice, 
-    # 1. get_last_modified_and_etag
-    # 2. in View
+    @method_decorator(csrf_exempt)  # required here because the middleware wille be executed before the view function
     @method_decorator(condition(last_modified_and_etag_func=get_last_modified_and_etag))
     def dispatch(self, request, *args, **kwargs):
         return super(UserDetailView, self).dispatch(request, *args, **kwargs)       

@@ -225,9 +225,7 @@ class UserAssociatedSystemInline(admin.StackedInline):
     extra = 0
     fieldsets = ((None, {'fields': (('application', 'userid'),), 'classes': ['wide']}),)
     readonly_fields = ('application', 'userid')
-    
-    def has_add_permission(self, request):
-            return False
+
 
 class GroupAdmin(DjangoGroupAdmin):
     fieldsets = (

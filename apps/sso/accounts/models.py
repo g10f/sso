@@ -178,6 +178,14 @@ class User(AbstractUser):
             ("access_all_users", "Can access all users"),
         )
 
+    @memoize
+    def get_last_modified_deep(self):
+        last_modified_list = [self.last_modified]
+        last_modified_list += self.useraddress_set.values_list("last_modified", flat=True)
+        last_modified_list += self.userphonenumber_set.values_list("last_modified", flat=True)
+        last_modified = max(last_modified_list)
+        return last_modified
+
     @classmethod
     def get_primary_or_none(cls, queryset):
         # iterate through all uses the prefetch_related cache

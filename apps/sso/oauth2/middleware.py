@@ -20,7 +20,18 @@ class IterableLazyObject(SimpleLazyObject):
         return self._wrapped.__iter__()
 
 
-def get_user_and_client_from_token(access_token):
+def get_access_token(request):
+    http_authorization = request.META.get('HTTP_AUTHORIZATION')
+    if http_authorization:
+        http_authorization = http_authorization.split()
+        if http_authorization[0] == 'Bearer':
+            return http_authorization[1]
+    else:
+        # TODO: Deprecated since version 1.7: Use the more explicit GET and POST instead
+        return request.REQUEST.get('access_token', None)
+    
+    
+def get_auth_data_from_token(access_token):
     try:
         if not access_token:
             return auth.models.AnonymousUser(), None, set()
@@ -43,6 +54,36 @@ def get_user_and_client_from_token(access_token):
     return user, client, scopes
 
 
+def get_auth_data_from_cookie(request, with_client_and_scopes=False):
+        client = None
+        scopes = set()
+        if with_client_and_scopes:  # get a client id for using the API in the Browser
+            try:                    
+                client = Client.objects.get(uuid='ca96cd88bc2740249d0def68221cba88') 
+                scopes = set(client.scopes.split())
+            except ObjectDoesNotExist:
+                pass
+            
+        user = auth.get_user(request)
+        
+        # from 'django.contrib.auth.middleware.SessionAuthenticationMiddleware'
+        # Invalidating a user's sessions that don't correspond to the
+        # user's current session authentication hash (generated based on the user's
+        # password for AbstractUser).
+        if user and hasattr(user, 'get_session_auth_hash'):
+            session_hash = request.session.get(auth.HASH_SESSION_KEY)
+            session_hash_verified = session_hash and constant_time_compare(
+                session_hash,
+                user.get_session_auth_hash()
+            )
+            if not session_hash_verified:
+                from django.contrib.auth.models import AnonymousUser
+                request.session.flush()
+                user = AnonymousUser()
+        
+        return user, client, scopes
+
+
 def get_auth_data(request):
     """
     Look for
@@ -56,45 +97,14 @@ def get_auth_data(request):
     """
     if not hasattr(request, '_cached_auth_data'):
         if request.path[:5] == '/api/':
-            access_token = None
-            http_authorization = request.META.get('HTTP_AUTHORIZATION')
-            if http_authorization:
-                http_authorization = http_authorization.split()
-                if http_authorization[0] == 'Bearer':
-                    access_token = http_authorization[1]
-            else:
-                access_token = request.REQUEST.get('access_token')
+            access_token = get_access_token(request)
             if access_token:
-                request._cached_auth_data = get_user_and_client_from_token(access_token)
-        
-        if not hasattr(request, '_cached_auth_data'):
-            # try django auth session
-            try:
-                # A client id for using the API in the Browser
-                client = Client.objects.get(uuid='ca96cd88bc2740249d0def68221cba88') 
-                scopes = set(client.scopes.split())
-            except ObjectDoesNotExist:
-                client = None
-                scopes = set()
-            
-            user = auth.get_user(request)
-            
-            # from 'django.contrib.auth.middleware.SessionAuthenticationMiddleware'
-            # Invalidating a user's sessions that don't correspond to the
-            # user's current session authentication hash (generated based on the user's
-            # password for AbstractUser).
-            if user and hasattr(user, 'get_session_auth_hash'):
-                session_hash = request.session.get(auth.HASH_SESSION_KEY)
-                session_hash_verified = session_hash and constant_time_compare(
-                    session_hash,
-                    user.get_session_auth_hash()
-                )
-                if not session_hash_verified:
-                    from django.contrib.auth.models import AnonymousUser
-                    request.session.flush()
-                    user = AnonymousUser()
-            
-            request._cached_auth_data = user, client, scopes
+                auth_data = get_auth_data_from_token(access_token)
+            else:
+                auth_data = get_auth_data_from_cookie(request, with_client_and_scopes=True)
+        else:
+            auth_data = get_auth_data_from_cookie(request, with_client_and_scopes=False)
+        request._cached_auth_data = auth_data
     return request._cached_auth_data
 
 

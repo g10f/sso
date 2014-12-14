@@ -144,7 +144,7 @@ class JsonDetailView(JSONResponseMixin, PermissionMixin, BaseDetailView):
         # set the Access-Control-Allow-Origin more restrictive
         response['Access-Control-Allow-Origin'] = '*'
         return response        
-        
+
     @method_decorator(vary_on_headers('Access-Control-Allow-Origin', 'Authorization', 'Cookie'))
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()        
@@ -162,6 +162,7 @@ class JsonDetailView(JSONResponseMixin, PermissionMixin, BaseDetailView):
             data = json.loads(request.body)
             self.save_object_data(request, data)
             status_code = 200
+            self.object = self.get_object()  # update object
             context = self.get_context_data(object=self.object)
             return self.render_to_response(context, status=status_code)
         except Http404, e:

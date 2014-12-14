@@ -4,6 +4,7 @@
 /temp
 /logs
 /data
+*/data
 /apps/sso/settings/local_*.py
 /erm
 /sql
