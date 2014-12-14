@@ -29,49 +29,46 @@ class PermissionMixin(object):
     """
     # the result is of type (boolean, string) where string contains the reason if the result is false
     permissions_tests = {
-        'get': lambda request, obj: (True, None),
-        'put': lambda request, obj: (True, None),
+        'read': lambda request, obj: (True, None),
+        'replace': lambda request, obj: (True, None),
         'delete': lambda request, obj: (True, None),
-        'add': lambda request: (True, None),
+        'create': lambda request: (True, None),
     }
     
-    operation = {
-        'put': {'@type': 'ReplaceResourceOperation', 'method': 'PUT'},
+
+    operations = {
+        'replace': {'@type': 'ReplaceResourceOperation', 'method': 'PUT'},
         'delete': {'@type': 'DeleteResourceOperation', 'method': 'DELETE'},
-        'post': {'@type': 'CreateResourceOperation', 'method': 'POST'},
-        'add': {'@type': 'CreateResourceOperation', 'method': 'PUT', 'template': '{id}'},
+        'create': {'@type': 'CreateResourceOperation', 'method': 'POST'},
+        'create': {'@type': 'CreateResourceOperation', 'method': 'PUT', 'template': '{id}'},
     }
     """
     
     permissions_tests = {
-        'get': is_authenticated,
+        'read': is_authenticated,
     }
-    operation = {}
+    operations = {}
     
-    def check_permission(self, method_name, obj=None, raise_exception=True):
-        permission_check = self.permissions_tests.get(method_name, None)
+    def check_permission(self, operation_name, obj=None, raise_exception=True):
+        permission_check = self.permissions_tests.get(operation_name, None)
         if permission_check:
-            if method_name in ['get', 'put', 'delete']:
-                is_allowed, reason = permission_check(self.request, obj)
-            else:
-                is_allowed, reason = permission_check(self.request)
-                
+            is_allowed, reason = permission_check(self.request, obj)
             if not is_allowed and raise_exception:
-                raise PermissionDenied("method '%s' not allowed, user: '%s', reason '%s'" % (method_name, self.request.user, reason))
+                raise PermissionDenied("operation '%s' not allowed, user: '%s', reason '%s'" % (operation_name, self.request.user, reason))
             else:
                 return is_allowed
         else:
-            return True
+            return False
        
-    def get_operation(self):
-        return self.operation
+    def get_operations(self):
+        return self.operations
 
-    def get_allowed_operation(self, obj=None):
+    def get_allowed_operations(self, obj=None):
         result = []
-        operation = self.get_operation()
-        for method_name in operation:
-            if self.check_permission(method_name, obj, False):
-                result.append(operation[method_name])
+        operations = self.get_operations()
+        for operation_name in operations:
+            if self.check_permission(operation_name, obj, False):
+                result.append(operations[operation_name])
         return result
 
 
@@ -94,13 +91,14 @@ class JSONResponseMixin(object):
             page_base_url = "%s%s" % (base_url(self.request), self.request.path)
             data['@id'] = build_url(page_base_url, self.request.GET)
 
-        data['operation'] = self.get_allowed_operation(context['object'])
+        data['operation'] = self.get_allowed_operations(context['object'])
         return data
         
 
 class JsonDetailView(JSONResponseMixin, PermissionMixin, BaseDetailView):
     slug_field = 'uuid'
     slug_url_kwarg = 'uuid'
+    create_object_with_put = False
     # supported method names from View class
     # http_method_names = ['get', 'post', 'put', 'patch', 'delete', 'head', 'options', 'trace']
 
@@ -149,7 +147,7 @@ class JsonDetailView(JSONResponseMixin, PermissionMixin, BaseDetailView):
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()        
         # get_object is needed before check_permission
-        self.check_permission('get', self.object)        
+        self.check_permission('read', self.object)        
         context = self.get_context_data(object=self.object)
         return self.render_to_response(context)
     
@@ -158,7 +156,7 @@ class JsonDetailView(JSONResponseMixin, PermissionMixin, BaseDetailView):
         try:
             self.object = self.get_object()
             # get_object is needed before check_permission
-            self.check_permission('put', self.object)            
+            self.check_permission('replace', self.object)            
             data = json.loads(request.body)
             self.save_object_data(request, data)
             status_code = 200
@@ -166,16 +164,15 @@ class JsonDetailView(JSONResponseMixin, PermissionMixin, BaseDetailView):
             context = self.get_context_data(object=self.object)
             return self.render_to_response(context, status=status_code)
         except Http404, e:
-            # add isn't a http method, it is used here as a put for a new resource
-            if 'add' in self.http_method_names:   
-                handler = getattr(self, 'add', None)
+            if self.create_object_with_put:
+                handler = getattr(self, 'create', None)
                 if handler:
                     return handler(request, *args, **kwargs)
             raise ObjectDoesNotExist(str(e))
 
     @transaction.atomic
-    def add(self, request, *args, **kwargs):
-        self.check_permission('add')
+    def create(self, request, *args, **kwargs):
+        self.check_permission('create')
         data = json.loads(request.body)
         
         # get the new id for the object
@@ -262,13 +259,13 @@ class JsonListView(JSONResponseMixin, PermissionMixin, BaseListView):
                 data['prev_page'] = build_url(self_url, {'page': page.previous_page_number()})
 
         data['@id'] = self_url
-        data['operation'] = self.get_allowed_operation(None)
+        data['operation'] = self.get_allowed_operations(None)
         return data
 
     @method_decorator(vary_on_headers('Access-Control-Allow-Origin', 'Authorization', 'Cookie'))
     def get(self, request, *args, **kwargs):
         # permission check
-        self.check_permission('get')
+        self.check_permission('read')
 
         self.object_list = self.get_queryset()
 

@@ -43,7 +43,7 @@ class CountryGroupMixin(object):
 
 class CountryGroupDetailView(CountryGroupMixin, JsonDetailView):
     http_method_names = ['get', 'options']
-    operation = {}
+    operations = {}
     
     def get_queryset(self):
         return super(CountryGroupDetailView, self).get_queryset().prefetch_related('email')
