@@ -91,7 +91,7 @@ server {
     return 301 https://$server_name$request_uri;
 }
 server {
-    listen 443 ssl;
+    listen 443 ssl default_server;
     server_name %(server_name)s;
 
     # path for static files

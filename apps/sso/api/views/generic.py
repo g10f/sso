@@ -165,9 +165,7 @@ class JsonDetailView(JSONResponseMixin, PermissionMixin, BaseDetailView):
             return self.render_to_response(context, status=status_code)
         except Http404, e:
             if self.create_object_with_put:
-                handler = getattr(self, 'create', None)
-                if handler:
-                    return handler(request, *args, **kwargs)
+                return self.create(request, *args, **kwargs)
             raise ObjectDoesNotExist(str(e))
 
     @transaction.atomic

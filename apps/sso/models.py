@@ -142,11 +142,11 @@ def filter_dict_from_kls(destination, source_dict, prefix=''):
     return filtered_dict
 
   
-def map_dict2dict(mapping, source_dict):
+def map_dict2dict(mapping, source_dict, with_defaults=False):
     new_dict = {}    
     for key, value in mapping.items():
         if key in source_dict:
-            try:
+            if isinstance(value, dict):
                 new_key = value['name']
                 parser = value.get('parser', None)
                 if parser is not None:
@@ -162,11 +162,21 @@ def map_dict2dict(mapping, source_dict):
                 if validate is not None:
                     if not validate(new_value):
                         raise ValueError("\"%s\" is not valid for %s" % (new_value, new_key))
-            except TypeError:
+            else:
                 new_key = value
                 new_value = source_dict[key]
                 
             new_dict[new_key] = new_value
+        elif with_defaults:
+            # use default if no value in source_dict
+            try:
+                if isinstance(value, dict):
+                    new_key = value['name']
+                    new_value = value['default']
+                    new_dict[new_key] = new_value
+            except KeyError:
+                pass
+                
     return new_dict
 
 

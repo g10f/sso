@@ -34,3 +34,8 @@ Changelog
 1.0.0: OAuth2 and OpenID Connect Support
 1.1.0: JSONLD/Hydra Api 
 1.2.0: Organisation Data Management
+
+TODOs
+-----------
+1. User API 
+1.1 check if organisation is correct when adding or changing users
