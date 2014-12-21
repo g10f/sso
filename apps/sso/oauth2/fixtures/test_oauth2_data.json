@@ -43,4 +43,16 @@
 		"user" : null,
 		"type" : "web"
 	}
-}  ]
+}, {
+	"model" : "oauth2.client",
+	"fields" : {
+		"uuid" : "81062e2af4db4669a721d37d1ed7c058",
+		"name" : "Test Client2 - web",
+		"application" : ["bc0ee635a536491eb8e7fbe5749e8111"],
+		"redirect_uris" : "http://localhost",
+		"client_secret" : "geheim",
+		"scopes" : "openid profile email users address phone",
+		"user" : null,
+		"type" : "web"
+	}
+}   ]

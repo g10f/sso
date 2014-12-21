@@ -13,12 +13,14 @@ from utils.url import base_url, absolute_url
 from utils.parse import parse_datetime_with_timezone_support
 from l10n.models import Country
 from sso.accounts.models import UserAddress, UserPhoneNumber, User, send_account_created_email
+from sso.organisations.models import Organisation
 from sso.registration import default_username_generator
 from sso.models import update_object_from_dict, map_dict2dict
 from sso.api.views.generic import JsonListView, JsonDetailView
 from sso.api.decorators import condition
 
 import logging
+# from sso.oauth2.decorators import scopes_required
 
 logger = logging.getLogger(__name__)
 
@@ -35,8 +37,13 @@ def _parse_date(value):
         return parse_date(value)
     else:
         return None
-    
-    
+
+
+SCOPE_MAPPING = {
+    'addresses': 'address',
+    'phone_numbers': 'phone'
+}
+
 API_USER_MAPPING = {
     'given_name': {'name': 'first_name', 'validate': lambda x: len(x) > 0},
     'family_name': {'name': 'last_name', 'validate': lambda x: len(x) > 0},
@@ -44,10 +51,11 @@ API_USER_MAPPING = {
     'gender': 'gender',
     'birth_date': {'name': 'dob', 'parser': _parse_date},
     'homepage': 'homepage',
-    'language': 'language'
+    'language': 'language',
+    'uuid': 'uuid'  # this value is created  JsonDetailView.create from the url
 }
 API_ADDRESS_MAP = {
-    'address_type': {'name': 'address_type', 'validate': lambda x: len(x) > 0}, 
+    'address_type': {'name': 'address_type', 'validate': lambda x: len(x) > 0, 'default': UserAddress.ADDRESSTYPE_CHOICES[0][0]}, 
     'addressee': {'name': 'addressee', 'validate': lambda x: len(x) > 0},
     'street_address': 'street_address',
     'city': {'name': 'city', 'validate': lambda x: len(x) > 0},
@@ -57,7 +65,7 @@ API_ADDRESS_MAP = {
     'primary': 'primary'
 }
 API_PHONE_MAP = {
-    'phone_type': 'phone_type',
+    'phone_type': {'name': 'phone_type', 'default': UserPhoneNumber.PHONE_CHOICES[0][0]},
     'phone': 'phone',
     'primary': 'primary'
 }
@@ -98,7 +106,6 @@ class UserMixin(object):
                     '@id': "%s%s" % (base, reverse('api:v2_organisation', kwargs={'uuid': organisation.uuid}))
                 } for organisation in obj.organisations.all().prefetch_related('country')
             }
-            # data['roles'] = [role.name for role in obj.get_roles_by_app(request.client.application.uuid)]
 
             if 'role' in scopes:
                 applications = {}
@@ -209,15 +216,17 @@ def create_permission(request, obj=None):
 
 
 class UserDetailView(UserMixin, JsonDetailView):
-    http_method_names = ['get', 'put', 'options']  # , 'delete'
+    http_method_names = ['get', 'put', 'delete', 'options']  #
     create_object_with_put = True
     permissions_tests = {
         'read': read_permission,
         'replace': replace_permission,
+        'delete': replace_permission,
         'create': create_permission,
     }
     operations = {
         'replace': {'@type': 'ReplaceResourceOperation', 'method': 'PUT'},
+        'delete': {'@type': 'DeleteResourceOperation', 'method': 'DELETE'},
     }
     
     @method_decorator(csrf_exempt)  # required here because the middleware will be executed before the view function
@@ -231,7 +240,18 @@ class UserDetailView(UserMixin, JsonDetailView):
     def get_object_data(self, request, obj):
         return super(UserDetailView, self).get_object_data(request, obj, details=True)
     
-    def save_user_details(self, data, name, mapping, cls):
+    def _update_user_organisation(self, data):
+        request = self.request
+        if 'organisations' in data:
+            allowed_organisations = request.user.get_administrable_user_organisations().filter(uuid__in=data['organisations'].keys())
+            organisations = Organisation.objects.filter(uuid__in=data['organisations'].keys())
+            if (len(allowed_organisations) < len(organisations)):
+                denied_organisations = organisations.exclude(id__in=allowed_organisations.values_list('id', flat=True))
+                raise ValueError(_("You are not allowed to add users to %s.") % denied_organisations)
+
+            self.object.organisations = organisations
+
+    def _save_user_details(self, data, name, mapping, cls, update_existing=True):
         """
         first update existing objects and then delete the missing objects, before adding new,
         because of database constrains (i.e. (user, address_type) is unique) 
@@ -241,25 +261,31 @@ class UserDetailView(UserMixin, JsonDetailView):
         # to delete the address for example, you must send an empty addresses dictionary  
         if name not in data:
             return
-        
+        scopes = self.request.scopes
+        if SCOPE_MAPPING[name] not in scopes:
+            raise ValueError(_("required scope \"%s\" is missing in %s." % (SCOPE_MAPPING[name], scopes)))
+            
         new_object_keys = []
         changed_object_keys = []
         # update existing
-        for key, value in data[name].items():
-            try:
-                cls_obj = cls.objects.get(uuid=key, user=self.object)
-                obj_data = map_dict2dict(mapping, value)
-                update_object_from_dict(cls_obj, obj_data)
-                changed_object_keys.append(key)
-            except ObjectDoesNotExist:
-                new_object_keys.append(key)
-        # delete 
-        cls.objects.filter(user=self.object).exclude(uuid__in=changed_object_keys).delete()
-        
+        if update_existing:
+            for key, value in data[name].items():
+                try:
+                    cls_obj = cls.objects.get(uuid=key, user=self.object)
+                    obj_data = map_dict2dict(mapping, value)
+                    update_object_from_dict(cls_obj, obj_data)
+                    changed_object_keys.append(key)
+                except ObjectDoesNotExist:
+                    new_object_keys.append(key)
+            # delete 
+            cls.objects.filter(user=self.object).exclude(uuid__in=changed_object_keys).delete()
+        else:
+            new_object_keys = data[name].keys()
+            
         # add new 
         for key in new_object_keys:
             value = data[name][key]
-            obj_data = map_dict2dict(mapping, value)
+            obj_data = map_dict2dict(mapping, value, with_defaults=True)
             obj_data['uuid'] = key
             obj_data['user'] = self.object
             cls.objects.create(**obj_data)        
@@ -268,48 +294,49 @@ class UserDetailView(UserMixin, JsonDetailView):
         obj = self.object
         object_data = map_dict2dict(API_USER_MAPPING, data)
         
+        if 'email' not in object_data:
+            raise ValueError(_("E-mail value is missing"))
+            
         if User.objects.filter(email__iexact=object_data['email']).exclude(pk=obj.pk).exists():
             raise ValueError(_("A user with that email already exists."))
         
         update_object_from_dict(obj, object_data)
-        scopes = request.scopes
-        if 'address' in scopes:
-            self.save_user_details(data, 'addresses', API_ADDRESS_MAP, UserAddress)
-        if 'phone' in scopes:
-            self.save_user_details(data, 'phone_numbers', API_PHONE_MAP, UserPhoneNumber)
+        
+        self._update_user_organisation(data)
+        self._save_user_details(data, 'addresses', API_ADDRESS_MAP, UserAddress)
+        self._save_user_details(data, 'phone_numbers', API_PHONE_MAP, UserPhoneNumber)
         
     def create_object(self, request, data):
         """
-        to make add available add "add" to http_method_names 
-        """
+        set create_object_with_put=True
+        """        
         object_data = map_dict2dict(API_USER_MAPPING, data)
+        if 'email' not in object_data:
+            raise ValueError(_("E-mail value is missing"))
         if User.objects.filter(email__iexact=object_data['email']).exists():
             raise ValueError(_("A user with that email address already exists."))
         
         if 'username' not in object_data:
             object_data['username'] = default_username_generator(capfirst(object_data['first_name']), capfirst(object_data['last_name']))
         
-        obj = self.model(**object_data)
-        obj.save()
-        
-        if 'addresses' in data:
-            for key, value in data['addresses'].items():
-                address_data = map_dict2dict(API_ADDRESS_MAP, value)
-                if not address_data['address_type']:
-                    address_data['address_type'] = UserAddress.ADDRESSTYPE_CHOICES[0]  # home
-                address = UserAddress(uuid=key, user=obj, **address_data)
-                address.save()
+        self.object = self.model(**object_data)
+        self.object.save()
+        self.object.role_profiles = [User.get_default_role_profile()]
 
-        if 'phone_numbers' in data:
-            for key, value in data['phone_numbers'].items():
-                phone_data = map_dict2dict(API_PHONE_MAP, value)
-                if not phone_data['phone_type']:
-                    phone_data['phone_type'] = UserPhoneNumber.PHONE_CHOICES[0]  # home
-                phone = UserPhoneNumber(uuid=key, user=obj, **phone_data)
-                phone.save()
+        if 'organisations' in data:
+            self._update_user_organisation(data)
+        else:
+            raise ValueError(_("Organisation is missing."))
         
-        send_account_created_email(obj, request)
-        return obj
+        self._save_user_details(data, 'addresses', API_ADDRESS_MAP, UserAddress, update_existing=False)
+        self._save_user_details(data, 'phone_numbers', API_PHONE_MAP, UserPhoneNumber, update_existing=False)
+        
+        send_account_created_email(self.object, request)
+        return self.object
+
+    def delete_object(self, request, obj):
+        obj.is_active = False
+        obj.save()
 
 
 class MyDetailView(UserDetailView):
@@ -406,7 +433,7 @@ class UserList(UserMixin, JsonListView):
 
         username = self.request.GET.get('q', None)
         if username:
-            qs = qs.filter(username__icontains=username)
+            qs = qs.filter(Q(first_name__icontains=username) | Q(last_name__icontains=username)) 
 
         country_group_id = self.request.GET.get('country_group_id', None)
         if country_group_id:
