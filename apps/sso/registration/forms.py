@@ -163,7 +163,7 @@ class UserSelfRegistrationForm(forms.Form):
     known_person2_first_name = forms.CharField(label=_("First name"), max_length=100, widget=bootstrap.TextInput())
     known_person2_last_name = forms.CharField(label=_("Last name"), max_length=100, widget=bootstrap.TextInput())
     about_me = forms.CharField(label=_('About me'), required=False, help_text=_('If you would like to tell us something about yourself or your involvement with buddhism please do so in this box.'), widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 5}))
-    country = forms.ModelChoiceField(queryset=Country.objects.all(), cache_choices=True, label=_("Country"), widget=bootstrap.Select())
+    country = forms.ModelChoiceField(queryset=Country.objects.all(), label=_("Country"), widget=bootstrap.Select())
     city = forms.CharField(label=_("City"), max_length=100, widget=bootstrap.TextInput())
     language = forms.ChoiceField(label=_("Language"), required=False, choices=(BLANK_CHOICE_DASH + sorted(list(settings.LANGUAGES), key=lambda x: x[1])), widget=bootstrap.Select())
     gender = forms.ChoiceField(label=_('Gender'), required=False, choices=(BLANK_CHOICE_DASH + User.GENDER_CHOICES), widget=bootstrap.Select())

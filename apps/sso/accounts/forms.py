@@ -439,7 +439,7 @@ class UserSelfRegistrationForm2(UserSelfRegistrationForm):
     """
     Overwritten UserSelfRegistrationForm Form with additional  organisation field
     """
-    organisation = forms.ModelChoiceField(queryset=Organisation.objects.all().select_related('country'), cache_choices=True, required=False, label=_("Center"), widget=bootstrap.Select())
+    organisation = forms.ModelChoiceField(queryset=Organisation.objects.all().select_related('country'), required=False, label=_("Center"), widget=bootstrap.Select())
     # for Bots. If you enter anything in this field you will be treated as a robot
     state = forms.CharField(label=_('State'), required=False, widget=bootstrap.HiddenInput())
     

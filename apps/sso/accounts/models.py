@@ -395,7 +395,7 @@ class User(AbstractUser):
         return a list of countries from the administrable regions the user has 
         """        
         if self.has_perms(["organisations.change_adminregion", "organisations.access_all_organisations"]):
-            return Country.objects.filter(organisation__isnull=False).distinct()
+            return Country.objects.filter(organisationcountry__isnull=False).distinct()
         elif self.has_perm("organisations.change_adminregion"):
             return Country.objects.filter(Q(adminregion__user=self) | Q(user=self)).distinct()
         else:

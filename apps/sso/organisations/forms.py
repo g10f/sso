@@ -11,7 +11,7 @@ from .models import update_or_create_organisation_account
 
 
 class OrganisationAddressForm(BaseForm):
-    country = ModelChoiceField(queryset=Country.objects.filter(organisationcountry__isnull=False, organisationcountry__is_active=True), cache_choices=True, required=True, 
+    country = ModelChoiceField(queryset=Country.objects.filter(organisationcountry__isnull=False, organisationcountry__is_active=True), required=True, 
                                label=_("Country"), widget=bootstrap.Select())
     
     class Meta:
@@ -149,7 +149,7 @@ class OrganisationEmailAdminForm(OrganisationBaseForm):
 
 class OrganisationCountryAdminForm(OrganisationEmailAdminForm):
     """
-    A form for a country admin for update oragnisations
+    A form for a country admin for update organisations
     """
     class Meta(OrganisationBaseForm.Meta):
         fields = OrganisationBaseForm.Meta.fields + ('country', 'admin_region', 'name', 'center_type', 'is_active', 'can_publish')
@@ -232,7 +232,7 @@ class OrganisationRegionAdminCreateForm(OrganisationCountryAdminCreateForm):
     """
     # don't use the default ChainedModelChoiceField, because the regions are restricted to the administrable_organisation_regions
     # of the region admin
-    admin_region = ModelChoiceField(queryset=AdminRegion.objects.none(), cache_choices=True, required=True, label=_("Admin Region"), widget=bootstrap.Select())
+    admin_region = ModelChoiceField(queryset=AdminRegion.objects.none(), required=True, label=_("Admin Region"), widget=bootstrap.Select())
     
     def __init__(self, *args, **kwargs):
         super(OrganisationRegionAdminCreateForm, self).__init__(*args, **kwargs)
@@ -260,7 +260,7 @@ class OrganisationRegionAdminCreateForm(OrganisationCountryAdminCreateForm):
 class AdminRegionForm(BaseForm):
     email_value = EmailFieldLower(required=True, label=_("Email address"), widget=bootstrap.EmailInput(attrs={'placeholder': 'name@diamondway-center.org'}))
     # cache_choices performance optimisation and filter for organisation countries
-    country = ModelChoiceField(queryset=Country.objects.filter(organisationcountry__isnull=False), cache_choices=True, required=True, label=_("Country"), widget=bootstrap.Select())
+    country = ModelChoiceField(queryset=None, required=True, label=_("Country"), widget=bootstrap.Select())
     
     class Meta:
         model = AdminRegion        
@@ -316,7 +316,7 @@ class OrganisationCountryForm(BaseForm):
     # cache_choices performance optimisation 
     country_groups = ModelMultipleChoiceField(queryset=CountryGroup.objects.all(), cache_choices=True, required=False, 
                                               widget=bootstrap.CheckboxSelectMultiple(), label=_("Country Groups"))
-    country = ModelChoiceField(queryset=Country.objects.filter(organisationcountry__isnull=True), cache_choices=True, required=True, 
+    country = ModelChoiceField(queryset=Country.objects.filter(organisationcountry__isnull=True), required=True, 
                                label=_("Country"), widget=bootstrap.Select())
 
     class Meta:
