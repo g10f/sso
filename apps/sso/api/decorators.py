@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
 from functools import wraps
 from calendar import timegm
+import logging
 
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.utils.decorators import available_attrs
 from django.utils.http import http_date, parse_http_date_safe, parse_etags, quote_etag
 from django.http import HttpResponseNotModified, HttpResponse
 
-from http.http_status import *  # @UnusedWildImport
 from sso.api.response import HttpApiResponseNotAuthorized, HttpApiErrorResponse
 
-import logging
 
 logger = logging.getLogger(__name__)
 

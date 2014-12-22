@@ -3,10 +3,11 @@ from django.contrib import admin
 from django.contrib.gis import admin as gis_admin
 from django.contrib.admin import SimpleListFilter
 from django.utils.translation import ugettext_lazy as _
-from django.conf.urls import *  # @UnusedWildImport
+
 from l10n.models import Country
 from .models import OrganisationAddress, OrganisationPhoneNumber
 from sso.emails.models import Email, CENTER_EMAIL_TYPE
+
 
 class CountryListFilter(SimpleListFilter):
     title = _('Country')

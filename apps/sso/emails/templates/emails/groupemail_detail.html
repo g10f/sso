@@ -4,72 +4,91 @@
 {% block title %}{% trans 'Email Details' %}{% endblock %}
 
 {% block breadcrumb %}
-<ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'emails:groupemail_list' %}">{% trans 'Emails' %}</a></li>
-    <li class="active">{{ object.name }}</li>
-</ol> 
+    <ol class="breadcrumb">
+        <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+        <li><a href="{% url 'emails:groupemail_list' %}">{% trans 'Emails' %}</a></li>
+        <li class="active">{{ object.name }}</li>
+    </ol>
 {% endblock breadcrumb %}
 
 
 {% block form %}
 
-{% block message %}{% endblock %}
+    {% block message %}{% endblock %}
 
-<h3>{% trans 'Email' %}</h3>
+    <h3>{% trans 'Email' %}</h3>
 
-{% if messages %}{% for message in messages %}
-<div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
-{% endif %}
+    {% if messages %}{% for message in messages %}
+        <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
+    {% endif %}
 
-<p>
-	<div class="row"><div class="dwbn-label">{% trans 'Name' %}: </div><div class="dwbn-content">{{ object.name }}</div></div>
-	<div class="row"><div class="dwbn-label">{% trans 'Homepage' %}: </div><div class="dwbn-content"><a href="{{ object.homepage }}">{{ object.homepage }}</a></div></div>
-    <div class="row"><div class="dwbn-label">{% trans 'Active' %}: </div><div class="dwbn-content"><span class="glyphicon glyphicon-{% if object.email.is_active %}ok-sign{% else %}minus-sign{% endif %}"></span></div></div>
-
-    <div class="row"><div class="dwbn-label">{% trans 'Email address' %}: </div><div class="dwbn-content">{{ object.email|default_if_none:"" }}</div></div>
-    {% if has_groupmail_access %}
-    {% for emailalias in  object.email.emailalias_set.all %}
-    <div class="row"><div class="dwbn-label">{% trans 'Email alias address' %}: </div><div class="dwbn-content">{{ emailalias }}</div></div>
-    {% endfor %}
-    {% endif %}    
-</p>
-<div class="form-group">
-    <div class="dwbn-form-control_lg">
-        {% block submit_group %}
-        {% if return_url %}<a class="btn btn-default" href="{{ return_url }}">{% trans 'Back' %}</a>{% endif %}
-        
-        {% if perms.emails.change_groupemail %}
-        <a class="btn btn-default" href="{% url 'emails:groupemail_update' object.uuid %}">{% trans 'Update' %}</a>
-        {% endif %}
-        {% if has_groupmail_access %}
-        <a class="btn btn-primary" href="{% url 'emails:emailforward_create' object.uuid %}"><i class="glyphicon glyphicon-plus-sign"></i> {% trans 'Add email forwarding' %}</a>
-        {% endif %}
-        
-        {% endblock %}
+    <div class="row">
+        <div class="dwbn-label">{% trans 'Name' %}:</div>
+        <div class="dwbn-content">{{ object.name }}</div>
     </div>
-</div>
-<br><br>
-<p>
-   <h4>{% trans 'Email forwardings' %}</h4>
+    <div class="row">
+        <div class="dwbn-label">{% trans 'Homepage' %}:</div>
+        <div class="dwbn-content"><a href="{{ object.homepage }}">{{ object.homepage }}</a></div>
+    </div>
+    <div class="row">
+        <div class="dwbn-label">{% trans 'Active' %}:</div>
+        <div class="dwbn-content"><span
+                class="glyphicon glyphicon-{% if object.email.is_active %}ok-sign{% else %}minus-sign{% endif %}"></span>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="dwbn-label">{% trans 'Email address' %}:</div>
+        <div class="dwbn-content">{{ object.email|default_if_none:"" }}</div>
+    </div>
+    {% if has_groupmail_access %}
+        {% for emailalias in  object.email.emailalias_set.all %}
+            <div class="row">
+                <div class="dwbn-label">{% trans 'Email alias address' %}:</div>
+                <div class="dwbn-content">{{ emailalias }}</div>
+            </div>
+        {% endfor %}
+    {% endif %}
+    <br>
+    <div class="form-group">
+        <div class="dwbn-form-control_lg">
+            {% block submit_group %}
+                {% if return_url %}<a class="btn btn-default" href="{{ return_url }}">{% trans 'Back' %}</a>{% endif %}
+
+                {% if perms.emails.change_groupemail %}
+                    <a class="btn btn-default"
+                       href="{% url 'emails:groupemail_update' object.uuid %}">{% trans 'Update' %}</a>
+                {% endif %}
+                {% if has_groupmail_access %}
+                    <a class="btn btn-primary" href="{% url 'emails:emailforward_create' object.uuid %}"><i
+                            class="glyphicon glyphicon-plus-sign"></i> {% trans 'Add email forwarding' %}</a>
+                {% endif %}
+
+            {% endblock %}
+        </div>
+    </div>
+    <br><br>
+    <h4>{% trans 'Email forwardings' %}</h4>
 
     <table class="table table-condensed">
         <thead>
+        <tr>
+            <th scope="col">{% trans 'Email forwarding' %}</th>
+            <th scope="col">{% trans 'Action' %}</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {% for email in object.email.emailforward_set.all %}
             <tr>
-                <th scope="col">{% trans 'Email forwarding' %}</th>
-                <th scope="col">{% trans 'Action' %}</th>
-			</tr>
-		</thead>
-     
-    <tbody>
-         {% for email in object.email.emailforward_set.all %}
-         <tr> 
-             <td>{{ email.forward|default_if_none:"" }}</td>
-             <td>{% if has_groupmail_access %}<a class="btn btn-default" href="{% url 'emails:emailforward_confirm_delete' object.uuid email.pk %}" title="{% trans 'Delete' %}"><i class="glyphicon glyphicon-trash"></i> {% trans 'Delete' %}</a>{% endif %}</td>
-         </tr>
-         {% endfor %}
-     </tbody>
-     </table>
-</p>
+                <td>{{ email.forward|default_if_none:"" }}</td>
+                <td>{% if has_groupmail_access %}<a class="btn btn-default"
+                                                    href="{% url 'emails:emailforward_confirm_delete' object.uuid email.pk %}"
+                                                    title="{% trans 'Delete' %}"><i
+                        class="glyphicon glyphicon-trash"></i> {% trans 'Delete' %}</a>{% endif %}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 {% endblock %}
 

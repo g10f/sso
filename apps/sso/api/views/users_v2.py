@@ -212,7 +212,7 @@ def create_permission(request, obj=None):
     if user.has_perm('accounts.add_user'):
         return True, None
     else:
-        False, 'You have no \'accounts.add_user\' permission'
+        return False, 'You have no \'accounts.add_user\' permission'
 
 
 class UserDetailView(UserMixin, JsonDetailView):

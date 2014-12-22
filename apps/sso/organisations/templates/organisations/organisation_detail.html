@@ -30,7 +30,7 @@ $(function() {
 <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
 {% endif %}
 
-<p>
+
 	<div class="row"><div class="dwbn-label">{% trans 'Homepage' %}: </div><div class="dwbn-content"><a href="{{ object.homepage }}">{{ object.homepage }}</a></div></div>
 	{% if object.google_maps_url %}
 	<div class="row"><div class="dwbn-label">{% trans 'Google Maps' %}: </div><div class="dwbn-content"><a href="{{ object.google_maps_url }}">{% trans 'Google Maps' %} ({{ object.get_coordinates_type_display }}) <span class="glyphicon glyphicon-map-marker"></span></a></div></div>
@@ -97,7 +97,7 @@ $(function() {
     <div class="row"><div class="dwbn-label"><a href="{% url 'organisations:organisation_detail' organisation.uuid %}">{{ organisation.name }}:</a> </div><div class="dwbn-content">{{ organisation.distance.km|floatformat }} km</div></div>
 	{% endfor %} 
     
-</p>
+<br>
 
 <div class="form-group">
     <div class="dwbn-form-control_lg">

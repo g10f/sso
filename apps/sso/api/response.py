@@ -12,7 +12,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 class JsonHttpResponse(HttpResponse):
-    def __init__(self, data="", request=None, status=None, *args, **kwargs):
+    def __init__(self, data=None, request=None, status=None, *args, **kwargs):
         callback = ""
         if request:
             callback = request.GET.get('callback', "")

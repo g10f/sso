@@ -4,7 +4,7 @@ import json
 import sys
 import os
 import argparse
-from datetime import datetime, timedelta
+from datetime import datetime
 from base64 import b64encode
 from urllib import urlencode
 from uritemplate import expand
@@ -70,7 +70,7 @@ class ApiClient(object):
         """
         authorization header
         """
-        if (self.base_uri not in self.cache.get('token_endpoint', {})):
+        if self.base_uri not in self.cache.get('token_endpoint', {}):
             self.get_token()
         token_endpoint = self.cache.get('token_endpoint')[self.base_uri]
         
@@ -89,7 +89,7 @@ class ApiClient(object):
         headers = {'Content-Type': 'application/x-www-form-urlencoded', 'authorization': '%s %s' % ('Basic', b64encode(auth).decode("ascii"))}
         json_response = self._post(token_endpoint, headers=headers, body=body)
         if 'error' in json_response:
-            logger.error(content)
+            logger.error(json_response)
             raise Exception('authorization', json_response)
         else:
             self.cache.set('token_endpoint',  {self.base_uri: json_response})
@@ -116,7 +116,7 @@ class ApiClient(object):
         data =  self._get(uri, headers)
         if ('error' in data) and (data['code'] == 401):
             # try with fresh access token
-            self.refresh()
+            self.get_token()
             headers = self.auth_header
             data = self._get(uri, headers)
         return data
@@ -124,7 +124,7 @@ class ApiClient(object):
     def _get_cached(self, uri):
         # performance optimisation helper
         cached_uris = self.cache.get('cached_uris', {})
-        if (uri not in cached_uris):
+        if uri not in cached_uris:
             json_response = self._get(uri)
             cached_uris[uri] = json_response
             self.cache.set('cached_uris', cached_uris)      
@@ -185,7 +185,7 @@ class ApiClient(object):
                     center_data = json.load(f)
                     
                 last_modified_item = datetime.strptime(item['last_modified'], date_fmt)
-                if (center_data and 'last_modified' in center_data):
+                if center_data and 'last_modified' in center_data:
                     last_modified_center_data = datetime.strptime(center_data['last_modified'], date_fmt)
                     return last_modified_item > last_modified_center_data    
                 return True

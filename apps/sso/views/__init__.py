@@ -2,7 +2,6 @@
 from django.conf import settings
 from django.shortcuts import render
 from django.core.urlresolvers import reverse
-from django.contrib.sites.models import get_current_site
 from django.utils.translation import ugettext as _
 
 

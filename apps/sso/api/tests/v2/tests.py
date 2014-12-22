@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 import json
 from uuid import uuid4
+
 from django.core.urlresolvers import reverse
 from uritemplate import expand
 
-from http.http_status import *  # @UnusedWildImport
-
 from sso.oauth2.tests import OAuth2BaseTestCase
+
 
 def new_address(addressee, country='DE', street_address='', region='', address_type='home'):
     return {
