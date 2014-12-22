@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.db.models import CharField
-
-try:
-    import uuid
-except ImportError:
-    from django.utils import uuid
+import uuid
 
 class UUIDVersionError(Exception):
     pass

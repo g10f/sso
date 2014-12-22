@@ -307,6 +307,7 @@ def update_or_create_organisation_account(organisation, old_email_value, new_ema
     last_name = capfirst(organisation.name)
     username = default_username_generator(first_name, last_name)
     is_active = organisation.is_active
+    organisation_account = None
 
     try:
         if old_email_value:
@@ -320,6 +321,7 @@ def update_or_create_organisation_account(organisation, old_email_value, new_ema
         else:
             # organisation is not activ and no user account exists, so don't create one
             pass
+
         
     if organisation_account:
         organisation_account.first_name = first_name

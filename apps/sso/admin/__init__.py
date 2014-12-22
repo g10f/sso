@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.conf import settings
-from django.contrib import admin
 from sso.auth.forms import EmailAuthenticationForm
-from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth.models import Permission
 
 from sso.accounts.admin import *
 from sso.oauth2.admin import *

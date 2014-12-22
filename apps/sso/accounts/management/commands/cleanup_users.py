@@ -22,7 +22,7 @@ class Command(BaseCommand):
 
 
 def clean_pictures():
-    for basedir, dirs, files in os.walk(os.path.join(settings.MEDIA_ROOT, 'image')):
+    for basedir, dirs, _ in os.walk(os.path.join(settings.MEDIA_ROOT, 'image')):
         for d in dirs:
             try:
                 picture = User.objects.get(uuid=d).picture

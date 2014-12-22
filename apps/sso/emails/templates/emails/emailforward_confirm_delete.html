@@ -22,10 +22,8 @@
 </div>
 {% endblock %}
 
-<p>
 <div class="row"><div class="dwbn-label">{% trans 'Email forwarding address' %}: </div><div class="dwbn-content">{{ object }}</div></div>
-</p>
-
+<br>
 {% block submit_group %}
 <form class="form-horizontal" method="post">{% csrf_token %}  
     <button type="submit" class="btn btn-danger">{% trans 'Confirm Delete email fowarding' %}</button>

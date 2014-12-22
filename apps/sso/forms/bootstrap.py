@@ -23,8 +23,9 @@ class Widget(forms.Widget):
         css_classes.append('form-control')
         attrs['class'] = ' '.join(css_classes)
         super(Widget, self).__init__(attrs, **kwargs)
-    
+
     def add_required(self):
+        pass
         # does not work with inline formsets
         """
         if self.is_required:
