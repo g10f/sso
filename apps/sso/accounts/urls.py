@@ -20,7 +20,6 @@ urlpatterns = patterns(
     url(r'^password_resend/done/$', TemplateView.as_view(template_name="accounts/password_resend_done.html"), name='password_resend_done'),
     url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', password_reset_confirm, name='password_reset_confirm'),
     url(r'^reset/done/$', password_reset_complete, name='password_reset_complete'),
-    url(r'^settings/', TemplateView.as_view(template_name="accounts/settings.html"), name="settings"),
     url(r'^application/users/$', application.UserList.as_view(), name='user_list'),
     url(r'^application/users/add/$', application.add_user, name='add_user'),
     url(r'^application/users/add/done/(?P<uuid>[^/]+)/$', application.add_user_done, name="add_user_done"),

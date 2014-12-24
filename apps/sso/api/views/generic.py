@@ -19,7 +19,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 def is_authenticated(request, obj=None):
-    if (not request.user.is_authenticated()):
+    if not request.user.is_authenticated():
         return False, 'User not authenticated'
     else:
         return True, None
@@ -278,7 +278,7 @@ class JsonListView(JSONResponseMixin, PermissionMixin, BaseListView):
             else:
                 is_empty = len(self.object_list) == 0
             if is_empty:
-                raise Http404(_("Empty list and '%(class_name)s.allow_empty' is False.") % {'class_name': self.__class__.__name__})
+                raise Http404("Empty list and '%(class_name)s.allow_empty' is False." % {'class_name': self.__class__.__name__})
         context = self.get_context_data()
         return self.render_to_response(context)
     
