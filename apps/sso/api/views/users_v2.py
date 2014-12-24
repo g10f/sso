@@ -91,7 +91,9 @@ class UserMixin(object):
             'language': obj.language,
             'is_center': obj.is_center,
             'last_modified': obj.get_last_modified_deep(),
-        } 
+        }
+        if obj.is_center:
+            data['email_verified'] = True
         if obj.picture:
             data['picture'] = {
                 '@id': "%s%s" % (base, reverse('api:v2_picture', kwargs={'uuid': obj.uuid})),
