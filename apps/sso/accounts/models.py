@@ -143,8 +143,20 @@ class RoleProfile(AbstractBaseModel):
 def get_filename(filename):
     return os.path.normpath(get_valid_filename(os.path.basename(filename)))
 
+
 def generate_filename(instance, filename):
     return u'image/%s/%s' % (instance.uuid, get_filename(filename.encode('ascii', 'replace'))) 
+
+
+class UserEmail(AbstractBaseModel):
+    email = models.EmailField(_('email address'), max_length=254)
+    is_confirmed = models.BooleanField(_('is confirmed'), default=False)
+    is_primary = models.BooleanField(_('is_primary'), default=False)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    confirmation_code = models.CharField(_('confirmation code'), max_length=32, blank=True)
+
+    def __unicode__(self):
+        return u"%s" % self.email
 
 
 class User(AbstractUser):
