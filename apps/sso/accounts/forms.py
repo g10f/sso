@@ -320,18 +320,20 @@ class SelfUserEmailForm(forms.Form):
 
 
 class UserEmailForm(BaseForm):
-    confirmed = bootstrap.ReadOnlyYesNoField(label=_('confirmed'))
+    # confirmed = bootstrap.ReadOnlyYesNoField(label=_('confirmed'))
 
     class Meta:
         model = UserEmail
-        fields = ('email', 'primary')
+        fields = ('email', 'primary', 'confirmed')
         widgets = {
             'email': bootstrap.EmailInput(),
             'primary': bootstrap.CheckboxInput(),
+            'confirmed': bootstrap.CheckboxInput()
         }
 
     def __init__(self, *args, **kwargs):
         # initialize the readonly field
+        """
         initial = kwargs.get('initial', {})
         instance = kwargs.get('instance', None)
         if instance:
@@ -339,15 +341,19 @@ class UserEmailForm(BaseForm):
         else:
             initial['confirmed'] = False
         kwargs['initial'] = initial
+        """
         super(UserEmailForm, self).__init__(*args, **kwargs)
 
     def save(self, commit=True):
+        return super(UserEmailForm, self).save(commit=commit)
+        """
         instance = super(UserEmailForm, self).save(commit=False)
-        if 'email' in self.changed_data:
+        if (not instance.user.is_center) and ('email' in self.changed_data):
             instance.confirmed = False
         if commit:
             instance.save()
         return instance
+        """
 
     @staticmethod
     def template():
