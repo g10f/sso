@@ -1,113 +1,182 @@
 [
- {
-	 "model" : "accounts.user",
-	 "fields" : {
-		 "username" : "GlobalAdmin",
-		 "first_name" : "Gunnar",
-		 "last_name" : "Scherf",
-		 "is_active" : true,
-		 "is_superuser" : true,
-		 "is_staff" : true,
-		 "last_login" : "2012-03-23T07:19:02.736Z",
-		 "groups" : [],
-		 "user_permissions" : [],
-		 "password" : "pbkdf2_sha1$10000$tW4pBVoq45Dk$gP0qOqRozGKtx9oAWbnWyL5pe+0=",
-		 "email" : "admin@g10f.de",
-		 "date_joined" : "2012-03-23T07:00:46.076Z",
-		 "uuid" : "cf904d34c00447689d163a62730a5b99",
-		 "organisations" : [ ["31664dd38ca4454e916e55fe8b1f0745"] ],
-		 "is_subscriber" : false,
-		 "is_center" : false,
-		 "last_modified" : "2012-03-23T07:00:46.076Z"
-	 }
- },
- {
-	 "model" : "accounts.user",
-	 "fields" : {
-		 "username" : "GunnarScherf",
-		 "first_name" : "Gunnar",
-		 "last_name" : "Scherf",
-		 "is_active" : true,
-		 "is_superuser" : false,
-		 "is_staff" : false,
-		 "last_login" : "2012-03-23T07:18:33.143Z",
-		 "groups" : [],
-		 "user_permissions" : [],
-		 "password" : "pbkdf2_sha256$10000$JuM5NUO9HJ7e$61H65Og8koE7TCu37DfS1AqshlDiqmL1skZ6EzjrrGg=",
-		 "email" : "gunnar@g10f.de",
-		 "date_joined" : "2012-03-23T07:02:04Z",
-		 "uuid" : "a8992f0348634f76b0dac2de4e4c83ee",
-		 "organisations" : [ ["31664dd38ca4454e916e55fe8b1f0745"] ],
-		 "application_roles" : [ ["bc0ee635a536491eb8e7fbe5749e8111", "Staff"], ["bc0ee635a536491eb8e7fbe5749e8111", "Admin"] ],
-		 "is_subscriber" : false,
-		 "is_center" : false,
-		 "last_modified" : "2012-03-23T07:00:46.076Z"
-	 }
- }, {
-	 "model" : "accounts.user",
-	 "fields" : {
-		 "username" : "CenterAdmin",
-		 "first_name" : "Center",
-		 "last_name" : "Admin",
-		 "is_active" : true,
-		 "is_superuser" : false,
-		 "is_staff" : false,
-		 "last_login" : "2012-03-23T07:18:33.143Z",
-		 "groups" : [],
-		 "user_permissions" : [],
-		 "password" : "pbkdf2_sha256$10000$JuM5NUO9HJ7e$61H65Og8koE7TCu37DfS1AqshlDiqmL1skZ6EzjrrGg=",
-		 "email" : "center@g10f.de",
-		 "date_joined" : "2012-03-23T07:02:04Z",
-		 "uuid" : "f601b1b2bc934b45920ab3addc105faf",
-		 "organisations" : [ ["31664dd38ca4454e916e55fe8b1f0745"] ],
-		 "application_roles" : [ ["fa467234b81e4838a009e38d9e655d18", "Center"] ],
-		 "is_subscriber" : false,
-		 "is_center" : false,
-		 "last_modified" : "2012-03-23T07:00:46.076Z"
-	 }
- }, {
-	 "model" : "accounts.user",
-	 "fields" : {
-		 "username" : "RegionAdmin",
-		 "first_name" : "Region",
-		 "last_name" : "Admin",
-		 "is_active" : true,
-		 "is_superuser" : false,
-		 "is_staff" : false,
-		 "last_login" : "2012-03-23T07:18:33.143Z",
-		 "groups" : [],
-		 "user_permissions" : [],
-		 "password" : "pbkdf2_sha256$10000$JuM5NUO9HJ7e$61H65Og8koE7TCu37DfS1AqshlDiqmL1skZ6EzjrrGg=",
-		 "email" : "region@g10f.de",
-		 "date_joined" : "2012-03-23T07:02:04Z",
-		 "uuid" : "c02d6a3d1a634c269a7f10c147d480c2",
-		 "organisations" : [ ["31664dd38ca4454e916e55fe8b1f0745"] ],
-		 "application_roles" : [ ["fa467234b81e4838a009e38d9e655d18", "Region"] ],
-		 "is_subscriber" : false,
-		 "is_center" : false,
-		 "last_modified" : "2012-03-23T07:00:46.076Z"
-	 }
- }, {
-	 "model" : "accounts.user",
-	 "fields" : {
-		 "username" : "CountryAdmin",
-		 "admin_countries" : [ 81 ],
-		 "first_name" : "Country",
-		 "last_name" : "Admin",
-		 "is_active" : true,
-		 "is_superuser" : false,
-		 "is_staff" : false,
-		 "last_login" : "2012-03-23T07:18:33.143Z",
-		 "groups" : [],
-		 "user_permissions" : [],
-		 "password" : "pbkdf2_sha256$10000$JuM5NUO9HJ7e$61H65Og8koE7TCu37DfS1AqshlDiqmL1skZ6EzjrrGg=",
-		 "email" : "country@g10f.de",
-		 "date_joined" : "2012-03-23T07:02:04Z",
-		 "uuid" : "b3a8a5bb86704bca89bb4425ec618e9c",
-		 "organisations" : [ ["31664dd38ca4454e916e55fe8b1f0745"] ],
-		 "application_roles" : [ ["fa467234b81e4838a009e38d9e655d18", "Country"] ],
-		 "is_subscriber" : false,
-		 "is_center" : false,
-		 "last_modified" : "2012-03-23T07:00:46.076Z"
-	 }
- } ]
+  {
+    "model": "accounts.user",
+    "fields": {
+      "username": "GlobalAdmin",
+      "first_name": "Gunnar",
+      "last_name": "Scherf",
+      "is_active": true,
+      "is_superuser": true,
+      "is_staff": true,
+      "last_login": "2012-03-23T07:19:02.736Z",
+      "groups": [],
+      "user_permissions": [],
+      "password": "pbkdf2_sha1$10000$tW4pBVoq45Dk$gP0qOqRozGKtx9oAWbnWyL5pe+0=",
+      "date_joined": "2012-03-23T07:00:46.076Z",
+      "uuid": "cf904d34c00447689d163a62730a5b99",
+      "organisations": [["31664dd38ca4454e916e55fe8b1f0745"]],
+      "is_subscriber": false,
+      "is_center": false,
+      "last_modified": "2012-03-23T07:00:46.076Z"
+    }
+  },
+  {
+    "model": "accounts.user",
+    "fields": {
+      "username": "GunnarScherf",
+      "first_name": "Gunnar",
+      "last_name": "Scherf",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "last_login": "2012-03-23T07:18:33.143Z",
+      "groups": [],
+      "user_permissions": [],
+      "password": "pbkdf2_sha256$10000$JuM5NUO9HJ7e$61H65Og8koE7TCu37DfS1AqshlDiqmL1skZ6EzjrrGg=",
+      "date_joined": "2012-03-23T07:02:04Z",
+      "uuid": "a8992f0348634f76b0dac2de4e4c83ee",
+      "organisations": [["31664dd38ca4454e916e55fe8b1f0745"]],
+      "application_roles": [
+        [
+          "bc0ee635a536491eb8e7fbe5749e8111",
+          "Staff"
+        ],
+        [
+          "bc0ee635a536491eb8e7fbe5749e8111",
+          "Admin"
+        ]
+      ],
+      "is_subscriber": false,
+      "is_center": false,
+      "last_modified": "2012-03-23T07:00:46.076Z"
+    }
+  },
+  {
+    "model": "accounts.user",
+    "fields": {
+      "username": "CenterAdmin",
+      "first_name": "Center",
+      "last_name": "Admin",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "last_login": "2012-03-23T07:18:33.143Z",
+      "groups": [],
+      "user_permissions": [],
+      "password": "pbkdf2_sha256$10000$JuM5NUO9HJ7e$61H65Og8koE7TCu37DfS1AqshlDiqmL1skZ6EzjrrGg=",
+      "date_joined": "2012-03-23T07:02:04Z",
+      "uuid": "f601b1b2bc934b45920ab3addc105faf",
+      "organisations": [["31664dd38ca4454e916e55fe8b1f0745"]],
+      "application_roles": [
+        [
+          "fa467234b81e4838a009e38d9e655d18",
+          "Center"
+        ]
+      ],
+      "is_subscriber": false,
+      "is_center": false,
+      "last_modified": "2012-03-23T07:00:46.076Z"
+    }
+  },
+  {
+    "model": "accounts.user",
+    "fields": {
+      "username": "RegionAdmin",
+      "first_name": "Region",
+      "last_name": "Admin",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "last_login": "2012-03-23T07:18:33.143Z",
+      "groups": [],
+      "user_permissions": [],
+      "password": "pbkdf2_sha256$10000$JuM5NUO9HJ7e$61H65Og8koE7TCu37DfS1AqshlDiqmL1skZ6EzjrrGg=",
+      "date_joined": "2012-03-23T07:02:04Z",
+      "uuid": "c02d6a3d1a634c269a7f10c147d480c2",
+      "organisations": [["31664dd38ca4454e916e55fe8b1f0745"]],
+      "application_roles": [
+        [
+          "fa467234b81e4838a009e38d9e655d18",
+          "Region"
+        ]
+      ],
+      "is_subscriber": false,
+      "is_center": false,
+      "last_modified": "2012-03-23T07:00:46.076Z"
+    }
+  },
+  {
+    "model": "accounts.user",
+    "fields": {
+      "username": "CountryAdmin",
+      "admin_countries": [81],
+      "first_name": "Country",
+      "last_name": "Admin",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "last_login": "2012-03-23T07:18:33.143Z",
+      "groups": [],
+      "user_permissions": [],
+      "password": "pbkdf2_sha256$10000$JuM5NUO9HJ7e$61H65Og8koE7TCu37DfS1AqshlDiqmL1skZ6EzjrrGg=",
+      "date_joined": "2012-03-23T07:02:04Z",
+      "uuid": "b3a8a5bb86704bca89bb4425ec618e9c",
+      "organisations": [["31664dd38ca4454e916e55fe8b1f0745"]],
+      "application_roles": [
+        [
+          "fa467234b81e4838a009e38d9e655d18",
+          "Country"
+        ]
+      ],
+      "is_subscriber": false,
+      "is_center": false,
+      "last_modified": "2012-03-23T07:00:46.076Z"
+    }
+  },
+  {
+    "model": "accounts.useremail",
+    "fields": {
+      "uuid": "bf41ad534b954237b53670c609db7951",
+      "email": "admin@g10f.de",
+      "primary": true,
+      "user": ["GlobalAdmin"]
+    }
+  },
+  {
+    "model": "accounts.useremail",
+    "fields": {
+      "uuid": "7019cb5526f04f559f8d467efdeec1b3",
+      "email": "gunnar@g10f.de",
+      "primary": true,
+      "confirmed": true,
+      "user": ["GunnarScherf"]
+    }
+  },
+  {
+    "model": "accounts.useremail",
+    "fields": {
+      "uuid": "63aff8ae13d54988b66b3cd09828bf17",
+      "email": "center@g10f.de",
+      "primary": true,
+      "user": ["CenterAdmin"]
+    }
+  },
+  {
+    "model": "accounts.useremail",
+    "fields": {
+      "uuid": "a1fb383d07fb4fd6a524bffd4f4cef24",
+      "email": "region@g10f.de",
+      "primary": true,
+      "user": ["RegionAdmin"]
+    }
+  },
+  {
+    "model": "accounts.useremail",
+    "fields": {
+      "uuid": "e3151f48295f4bdaba193d9c26c4e698",
+      "email": "country@g10f.de",
+      "primary": true,
+      "user": ["CountryAdmin"]
+    }
+  }
+]

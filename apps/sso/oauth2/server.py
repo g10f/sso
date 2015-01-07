@@ -61,7 +61,7 @@ def default_idtoken_generator(request, max_age=MAX_AGE, refresh_token=False):
             'exp': int(time.time()) + max_age,
             'iat': int(time.time()),
             'auth_time': auth_time,  # required when max_age is in the request
-            'email': user.email,  # custom
+            'email': str(user.primary_email()),  # custom
             'name': user.username,  # custom
             'given_name': user.first_name,  # custom
             'family_name': user.last_name,  # custom

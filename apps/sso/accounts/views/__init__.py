@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 import urlparse
+from datetime import timedelta
+from django.utils.http import urlsafe_base64_decode
 
 from django.conf import settings
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, resolve_url
+from django.utils.timezone import now
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.cache import never_cache
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import login as auth_login, REDIRECT_FIELD_NAME, logout as auth_logout
 from django.contrib import messages
 from django.http import HttpResponseRedirect
@@ -19,17 +22,20 @@ from django.core.mail import mail_managers
 from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
 from django.forms.models import inlineformset_factory
-
+from sso.accounts.tokens import email_confirm_token_generator
 from throttle.decorators import throttle
 from sso.auth.forms import EmailAuthenticationForm
 from sso.oauth2.models import get_oauth2_cancel_url
 from sso.forms.helpers import ErrorList, ChangedDataList, log_change
-from ..models import Application, User, UserAddress, UserPhoneNumber
-from ..forms import PasswordResetForm, SetPasswordForm, PasswordChangeForm, ContactForm, AddressForm, PhoneNumberForm
+from ..models import Application, User, UserAddress, UserPhoneNumber, UserEmail
+from ..email import send_useremail_confirmation
+from ..forms import PasswordResetForm, SetPasswordForm, PasswordChangeForm, ContactForm, AddressForm, PhoneNumberForm, \
+    SelfUserEmailForm
 from ..forms import UserSelfProfileForm, UserSelfProfileDeleteForm, CenterSelfProfileForm
 
 
 LOGIN_FORM_KEY = 'login_form_key'
+
 
 def contact(request):
     if request.method == 'POST':
@@ -42,7 +48,7 @@ def contact(request):
     else:
         initial = {}
         if request.user.is_authenticated():
-            initial['email'] = request.user.email
+            initial['email'] = request.user.primary_email()
             initial['name'] = request.user.get_full_name()            
         form = ContactForm(initial=initial)
         
@@ -101,8 +107,8 @@ def logout(request, next_page=None,
     if redirect_to:
         netloc = urlparse.urlparse(redirect_to)[1]
         # Security check -- don't allow redirection to a different host.
-        allowed_hosts = get_allowed_hosts()
-        if not(netloc and not (netloc in set([request.get_host()]) | set(allowed_hosts))):
+        allowed_hosts = set(get_allowed_hosts())
+        if not(netloc and not (netloc in {request.get_host()} | allowed_hosts)):
             return HttpResponseRedirect(redirect_to)
 
     if next_page is None:
@@ -199,6 +205,71 @@ def login(request):
 
 
 @login_required
+def confirm_email(request, uidb64, token, post_reset_redirect=None):
+    if post_reset_redirect is None:
+        post_reset_redirect = reverse('accounts:emails')
+    else:
+        post_reset_redirect = resolve_url(post_reset_redirect)
+    try:
+        uid = urlsafe_base64_decode(uidb64)
+        user_email = UserEmail.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, UserEmail.DoesNotExist):
+        messages.error(request, _('The confirmation was not succesfull, please resend the confirmation.'))
+        user_email = None
+
+    if user_email is not None and user_email.confirmed:
+        messages.info(request, _('Your email address \"%(email)s\" was already confirmed successfully.') % {'email': user_email})
+    elif user_email is not None and email_confirm_token_generator.check_token(user_email, token):
+        user_email.confirmed = True
+        user_email.save()
+        messages.success(request, _('Your email address \"%(email)s\" was confirmed successfully.') % {'email': user_email})
+    elif user_email is not None:
+        messages.error(request, _('The confirmation message has probably already expired, please resend the confirmation.'))
+
+    return HttpResponseRedirect(post_reset_redirect)
+
+
+@login_required
+@user_passes_test(lambda user: not user.is_center)
+def emails(request):
+    user = request.user
+    if request.method == 'POST':
+        if 'send_confirmation' in request.POST:
+            user_email = UserEmail.objects.get(id=request.POST['send_confirmation'])
+            send_useremail_confirmation(user_email, request)
+            messages.success(request, _('Confirmation email was sent to \"%(email)s\".') % {'email': user_email})
+            return redirect('accounts:emails')
+        elif 'delete' in request.POST:
+            user_email = UserEmail.objects.get(id=request.POST['delete'])
+            user_email.delete()
+            messages.success(request, _('The email \"%(email)s\" was deleted successfully.') % {'email': user_email})
+            return redirect('accounts:emails')
+        elif 'set_primary' in request.POST:
+            user_email = UserEmail.objects.get(id=request.POST['set_primary'])
+            user_email.primary = True
+            user_email.save()
+            UserEmail.objects.filter(user=user_email.user, primary=True).exclude(pk=user_email.pk).update(primary=False)
+            messages.success(request, _("The email \"%(email)s\" was changed successfully.") % {'email': user_email})
+            return redirect('accounts:emails')
+        else:
+            form = SelfUserEmailForm(request.POST)
+            if form.is_valid():
+                user_email = form.save()
+                change_message = ChangedDataList(form, []).change_message()
+                log_change(request, user, change_message)
+                msg = _('Thank you. Your settings were saved.') + '\n'
+                msg += _('Confirmation email was sent to \"%(email)s\".') % {'email': user_email}
+                messages.success(request, msg)
+                send_useremail_confirmation(user_email, request)
+                return redirect('accounts:emails')
+    else:
+        form = SelfUserEmailForm(initial={'user': user.id})
+
+    dictionary = {'form': form, 'max_email_adresses': UserEmail.MAX_EMAIL_ADRESSES}
+    return render(request, 'accounts/user_email_detail.html', dictionary)
+
+
+@login_required
 def profile(request):
     if getattr(request.user, 'is_center', False):
         return profile_center_account(request)        
@@ -263,14 +334,14 @@ def profile_with_address_and_phone(request):
         phonenumber_inline_formset = PhoneNumberInlineFormSet(request.POST, instance=user)
         
         if form.is_valid() and address_inline_formset.is_valid() and phonenumber_inline_formset.is_valid():
-            form.save()            
-            address_inline_formset.save()                        
+            form.save()
+            address_inline_formset.save()
             phonenumber_inline_formset.save()
             
             UserAddress.ensure_single_primary(user)
             UserPhoneNumber.ensure_single_primary(user)
                         
-            formsets = [address_inline_formset, phonenumber_inline_formset] 
+            formsets = [address_inline_formset, phonenumber_inline_formset]
             change_message = ChangedDataList(form, formsets).change_message() 
             log_change(request, user, change_message)
             
@@ -282,10 +353,10 @@ def profile_with_address_and_phone(request):
         phonenumber_inline_formset = PhoneNumberInlineFormSet(instance=user)
         form = UserSelfProfileForm(instance=user)
 
-    phonenumber_inline_formset.forms += [phonenumber_inline_formset.empty_form]    
+    phonenumber_inline_formset.forms += [phonenumber_inline_formset.empty_form]
     address_inline_formset.forms += [address_inline_formset.empty_form]    
         
-    formsets = [address_inline_formset, phonenumber_inline_formset] 
+    formsets = [address_inline_formset, phonenumber_inline_formset]
     
     media = form.media
     for fs in formsets:

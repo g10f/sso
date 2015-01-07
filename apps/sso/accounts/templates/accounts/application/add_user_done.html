@@ -33,7 +33,7 @@
 	         <th>{% trans 'Last name' %}: </th><td>{{ new_user.last_name }}</td>
 	     </tr>
 	     <tr>
-	         <th>{% trans 'Email' %}: </th><td>{{ new_user.email }}</td>
+	         <th>{% trans 'Email' %}: </th><td>{{ new_user.primary_email }}</td>
 	     </tr>
 	     <tr>
 	         <th>{% trans 'Organisations' %}: </th><td>{% for organisation in new_user.organisations.all %}{{ organisation }}{%if not forloop.last %}, {% endif %}{% endfor %}</td>

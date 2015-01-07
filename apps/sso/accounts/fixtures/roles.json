@@ -1,30 +1,30 @@
 [
- {
-	 "model" : "accounts.role",
-	 "fields" : {
-		 "name" : "Superuser",
-		 "order" : 10
-	 }
- },
- {
-	 "model" : "accounts.role",
-	 "fields" : {
-		 "name" : "Staff",
-		 "order" : 20
-	 }
- },
- {
-	 "model" : "accounts.role",
-	 "fields" : {
-		 "name" : "User",
-		 "order" : 30
-	 }
- },
- {
-	 "model" : "accounts.role",
-	 "fields" : {
-		 "name" : "Guest",
-		 "order" : 40
-	 }
- }
+  {
+    "model": "accounts.role",
+    "fields": {
+      "name": "Superuser",
+      "order": 10
+    }
+  },
+  {
+    "model": "accounts.role",
+    "fields": {
+      "name": "Staff",
+      "order": 20
+    }
+  },
+  {
+    "model": "accounts.role",
+    "fields": {
+      "name": "User",
+      "order": 30
+    }
+  },
+  {
+    "model": "accounts.role",
+    "fields": {
+      "name": "Guest",
+      "order": 40
+    }
+  }
 ]

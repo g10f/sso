@@ -13,7 +13,7 @@ from l10n.models import Country
 from django.utils.encoding import force_text
 from django.core.urlresolvers import reverse, reverse_lazy
 from sso.views import main
-from sso.views.generic import SearchFilter, ViewChoicesFilter, ViewQuerysetFilter
+from sso.views.generic import SearchFilter, ViewChoicesFilter, ViewQuerysetFilter, ListView
 from .models import RegistrationProfile, RegistrationManager, send_user_validated_email
 from .forms import RegistrationProfileForm
 from .tokens import default_token_generator
@@ -42,7 +42,7 @@ class UserRegistrationDeleteView(DeleteView):
 
 class RegistrationSearchFilter(SearchFilter):
     search_names = ['user__username__icontains', 'user__first_name__icontains', 
-                    'user__last_name__icontains', 'user__email__icontains']
+                    'user__last_name__icontains', 'user__useremail__email__icontains']
 
 
 class CountryFilter(ViewQuerysetFilter):
@@ -84,11 +84,9 @@ class IsAccessDeniedFilter(ViewChoicesFilter):
         return True if (value.pk == "1") else False
 
 
-class UserRegistrationList(main.ListView):
+class UserRegistrationList(ListView):
     template_name = 'registration/user_registration_list.html'
     model = RegistrationProfile
-    paginate_by = 20
-    page_kwarg = main.PAGE_VAR
     list_display = ['user', 'email', 'center', 'date_registered', 'verified_by_user', 'check_back', 'is_access_denied']
     
     @method_decorator(login_required)
@@ -96,14 +94,9 @@ class UserRegistrationList(main.ListView):
     def dispatch(self, request, *args, **kwargs):
         return super(UserRegistrationList, self).dispatch(request, *args, **kwargs)
 
-    def get_paginate_by(self, queryset):
-        try:
-            return int(self.request.GET.get(main.PAGE_SIZE_VAR, self.paginate_by))
-        except ValueError:
-            return self.paginate_by
-
     def get_queryset(self):
-        qs = super(UserRegistrationList, self).get_queryset().prefetch_related('user__organisations', 'user__organisations__country', 'user__useraddress_set', 'user__useraddress_set__country')\
+        qs = super(UserRegistrationList, self).get_queryset()\
+            .prefetch_related('user__organisations', 'user__organisations__country', 'user__useraddress_set', 'user__useraddress_set__country', 'user__useremail_set')\
             .select_related('user', 'user__useraddress__country__printable_name').filter(user__is_active=False, is_validated=True)
         
         # display only users from centers where the logged in user has admin rights
@@ -214,11 +207,12 @@ def validation_confirm(request, uidb64=None, token=None, token_generator=default
             if request.method == 'POST':
                 profile.is_validated = True
                 profile.save()
+                profile.user.confirm_primary_email_if_no_confirmed()
                 send_user_validated_email(profile, request)
                 return redirect('registration:validation_complete')
             
     context = {
-        'email': profile.user.email if profile else None,
+        'email': profile.user.primary_email() if profile else None,
         'validlink': validlink,
     }
     return TemplateResponse(request, template, context)

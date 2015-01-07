@@ -1,34 +1,35 @@
 # -*- coding: utf-8 -*-
 import os
-import datetime
 from itertools import chain
+import re
+import logging
+
+from sorl import thumbnail
+
+from django.utils.crypto import get_random_string
+from django.core import validators
 from django.db import models
 from django.db.models import Q
 from django.conf import settings
 from django.dispatch import receiver
 from django.db.models import signals
-from django.template import loader
-from django.contrib.auth.models import AbstractUser, Group, Permission
-from django.contrib.auth.tokens import default_token_generator as default_pwd_reset_token_generator
-from django.contrib.sites.models import get_current_site
+from django.contrib.auth.models import Group, Permission, UserManager as DjangoUserManager, \
+    PermissionsMixin, AbstractBaseUser
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
-from django.utils.encoding import force_bytes
-from django.utils.http import urlsafe_base64_encode
-from django.utils.timezone import now
-from django.utils.translation import get_language, activate, pgettext_lazy, ugettext_lazy as _
-from django.utils.text import get_valid_filename
-from sorl import thumbnail
+from django.utils import timezone
+from django.utils.translation import pgettext_lazy, ugettext_lazy as _
+from django.utils.text import get_valid_filename, capfirst
 from l10n.models import Country
 from sso.fields import UUIDField
 from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary
 from sso.organisations.models import AdminRegion, Organisation
 from sso.emails.models import GroupEmailManager
 from sso.decorators import memoize
-
+from sso.registration import default_username_generator
 from utils.loaddata import disable_for_loaddata
 from current_user.models import CurrentUserField
-import logging
+
 
 logger = logging.getLogger(__name__)
 
@@ -149,23 +150,48 @@ def generate_filename(instance, filename):
 
 
 class UserEmail(AbstractBaseModel):
-    email = models.EmailField(_('email address'), max_length=254)
-    is_confirmed = models.BooleanField(_('is confirmed'), default=False)
-    is_primary = models.BooleanField(_('is_primary'), default=False)
+    DEFAULT_EMAIL_CONFIRM_TIMEOUT_MINUTES = 60
+    MAX_EMAIL_ADRESSES = 2
+    email = models.EmailField(_('email address'), max_length=254, unique=True)
+    confirmed = models.BooleanField(_('confirmed'), default=False)
+    primary = models.BooleanField(_('primary'), default=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
-    confirmation_code = models.CharField(_('confirmation code'), max_length=32, blank=True)
+
+    class Meta(AbstractBaseModel.Meta):
+        verbose_name = _('email address')
+        verbose_name_plural = _('email addresses')
+        ordering = ['email']
 
     def __unicode__(self):
         return u"%s" % self.email
 
 
-class User(AbstractUser):
+class UserManager(DjangoUserManager):
+    def get_by_confirmed_or_primary_email(self, email):
+        q = Q(useremail__email__iexact=email) & (Q(useremail__confirmed=True) | Q(useremail__primary=True))
+        return self.filter(q).prefetch_related('useremail_set').get()
+
+    def get_by_email(self, email):
+        return self.filter(useremail__email__iexact=email).prefetch_related('useremail_set').get()
+
+
+class User(AbstractBaseUser, PermissionsMixin):
+
     MAX_PICTURE_SIZE = 5242880  # 5 MB
     GENDER_CHOICES = [
         ('m', _('male')),
         ('f', _('female'))
     ]    
 
+    username = models.CharField(_('username'), max_length=30, unique=True, help_text=_('Required. 30 characters or fewer. Letters, digits and @/./+/-/_ only.'),
+                                validators=[validators.RegexValidator(re.compile(r"^[\w.@+-]+$", flags=re.UNICODE), _('Enter a valid username.'), 'invalid')])
+    first_name = models.CharField(_('first name'), max_length=30, blank=True)
+    last_name = models.CharField(_('last name'), max_length=30, blank=True)
+    # email = models.EmailField(_('email address'), blank=True)
+    is_staff = models.BooleanField(_('staff status'), default=False, help_text=_('Designates whether the user can log into this admin site.'))
+    is_active = models.BooleanField(_('active'), default=True, help_text=_('Designates whether this user should be treated as active. Unselect this instead of deleting accounts.'))
+    date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
+    # extension
     uuid = UUIDField(version=4, editable=True, unique=True)
     organisations = models.ManyToManyField(Organisation, verbose_name=_('organisations'), blank=True, null=True)
     admin_regions = models.ManyToManyField(AdminRegion, verbose_name=_('admin regions'), blank=True, null=True)
@@ -183,12 +209,90 @@ class User(AbstractUser):
     dob = models.DateField(_("date of birth"), blank=True, null=True)
     homepage = models.URLField(_("homepage"), max_length=512, blank=True)
     language = models.CharField(_('language'), max_length=254, choices=settings.LANGUAGES, blank=True)
-    
-    class Meta(AbstractUser.Meta):
+
+    objects = UserManager()
+
+    USERNAME_FIELD = 'username'
+    REQUIRED_FIELDS = []
+
+    class Meta(AbstractBaseUser.Meta):
+        verbose_name = _('user')
+        verbose_name_plural = _('users')
         permissions = (
             ("read_user", "Can read user data"),
             ("access_all_users", "Can access all users"),
         )
+
+    def get_full_name(self):
+        """
+        Returns the first_name plus the last_name, with a space in between.
+        """
+        full_name = '%s %s' % (self.first_name, self.last_name)
+        return full_name.strip()
+
+    def get_short_name(self):
+        """Returns the short name for the user."""
+        return self.first_name
+
+    def email_user(self, subject, message, from_email=None, **kwargs):
+        """
+        Sends an email to this User.
+        """
+        email = self.primary_email()
+        assert(email is not None)
+
+        send_mail(subject, message, from_email, [email.email], **kwargs)
+
+    def primary_email(self):
+        # iterate thru useremail_set.all because useremail_set is cached
+        # if we use prefetch_related('useremail_set')
+        for user_mail in self.useremail_set.all():
+            if user_mail.primary:
+                return user_mail
+        return None
+
+    def create_primary_email(self, email, confirmed=None, delete_others=False):
+        """
+        make email as the primary email and all other emails non primary
+        if the user email does not exist, it is created
+        the other user emails are marked as not primary or deleted
+        """
+        email = UserManager.normalize_email(email)
+        user_email = None
+        for l_user_email in self.useremail_set.all():
+            if email.lower() == l_user_email.email.lower():
+                l_user_email.primary = True
+                l_user_email.email = email
+                if confirmed is not None:
+                    l_user_email.confirmed = confirmed
+                l_user_email.save()
+
+                user_email = l_user_email
+            else:
+                if delete_others:
+                    l_user_email.delete()
+                else:
+                    if l_user_email.primary:
+                        l_user_email.primary = False
+                        l_user_email.save(update_fields=['primary'])
+        if not user_email:
+            kwargs = {'email': email, 'user': self, 'primary': True}
+            if confirmed is not None:
+                kwargs['confirmed'] = confirmed
+            user_email = UserEmail.objects.create(**kwargs)
+        return user_email
+
+    def confirm_primary_email_if_no_confirmed(self):
+        if not UserEmail.objects.filter(confirmed=True, user=self).exists():
+            # no confirmed email addresses for this user, then the password reset
+            # must be send to the primary email and we can mark this email as confirmed
+            user_email = UserEmail.objects.get(primary=True, user=self)
+            assert(not user_email.confirmed)
+            user_email.confirmed = True
+            user_email.save(update_fields=['confirmed'])
+
+    def ensure_single_primary_email(self):
+        ensure_single_primary(self.useremail_set.all())
 
     @memoize
     def get_last_modified_deep(self):
@@ -638,42 +742,44 @@ class UserAssociatedSystem(models.Model):
         return u"%s - %s" % (self.application, self.userid)    
 
 
-def send_account_created_email(user, request, token_generator=default_pwd_reset_token_generator,
-                               from_email=None,
-                               email_template_name='accounts/account_created_email.txt',
-                               subject_template_name='accounts/account_created_email_subject.txt'
-                               ):
-    
-    use_https = request.is_secure()
-    current_site = get_current_site(request)
-    site_name = settings.SSO_CUSTOM['SITE_NAME']
-    domain = current_site.domain
-    expiration_date = now() + datetime.timedelta(settings.PASSWORD_RESET_TIMEOUT_DAYS)
-    
-    c = {
-        'email': user.email,
-        'username': user.username,
-        'domain': domain,
-        'site_name': site_name,
-        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-        'token': token_generator.make_token(user),
-        'protocol': use_https and 'https' or 'http',
-        'expiration_date': expiration_date
-    }
+def update_or_create_organisation_account(organisation, old_email_value, new_email_value):
+    """
+    If a organisation was created or updated, we create or update a user account (the 'organisation' user)
+    with the same email address.
+    old_email_value can be None if there was no email for the organisation before or the organisation was just created
+    """
+    first_name = 'BuddhistCenter'
+    last_name = capfirst(organisation.name)
 
-    cur_language = get_language()
-        
+    is_active = organisation.is_active
+    organisation_account = None
+
     try:
-        language = user.language if user.language else settings.LANGUAGE_CODE
-        activate(language)
-        subject = loader.render_to_string(subject_template_name, c)
-        # Email subject *must not* contain newlines
-        subject = ''.join(subject.splitlines())
-        email = loader.render_to_string(email_template_name, c)
-    finally:
-        activate(cur_language)
+        if old_email_value:
+            organisation_account = User.objects.get_by_email(old_email_value)
+        else:
+            organisation_account = User.objects.get_by_email(new_email_value)
+    except ObjectDoesNotExist:
+        if is_active:
+            organisation_account = User()
+            organisation_account.set_password(get_random_string(40))
+        else:
+            # organisation is not activ and no user account exists, so don't create one
+            pass
 
-    send_mail(subject, email, from_email, [user.email], fail_silently=settings.DEBUG)
+    if organisation_account:
+        username = default_username_generator(first_name, last_name, user=organisation_account)
+        organisation_account.first_name = first_name
+        organisation_account.last_name = last_name
+        organisation_account.username = username
+        organisation_account.is_center = True
+        organisation_account.is_active = organisation.is_active
+        organisation_account.save()
+
+        organisation_account.create_primary_email(new_email_value, confirmed=True, delete_others=True)
+
+        organisation_account.organisations = [organisation]
+        organisation_account.add_default_roles()
 
 
 @receiver(signals.m2m_changed, sender=User.organisations.through)

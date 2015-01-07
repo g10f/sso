@@ -8,27 +8,27 @@
  * @author Gunnar Scherf
  * @requires jQuery 
  */
-(function($) {
-	$(function() { 
-		var active = $("form").data("active");
-		if ($.type(active) === "string") {
-			if (active === "") {
-				// client side handling of active tab
-			    if (location.hash.substr(0, 6) == "#!tab!") {
-			        $("a[href='#" + location.hash.substr(6) + "']").tab("show");
-			    }    
-			} else {
-				// server has set active tab, adjust the uri fragment 
-				location.replace("#!tab!" + active)
-			}	
-			$("a[data-toggle='tab']").on("shown.bs.tab", function (e) {
-			    var hash = $(e.target).attr("href");
-				if (hash.substr(0,1) == "#") {
-				    location.replace("#!tab!" + hash.substr(1));
-				}
-			});
-		}
-	});
+(function ($) {
+  $(function () {
+    var active = $("form").data("active");
+    if ($.type(active) === "string") {
+      if (active === "") {
+        // client side handling of active tab
+        if (location.hash.substr(0, 6) == "#!tab!") {
+          $("a[href='#" + location.hash.substr(6) + "']").tab("show");
+        }
+      } else {
+        // server has set active tab, adjust the uri fragment
+        location.replace("#!tab!" + active)
+      }
+      $("a[data-toggle='tab']").on("shown.bs.tab", function (e) {
+        var hash = $(e.target).attr("href");
+        if (hash.substr(0, 1) == "#") {
+          location.replace("#!tab!" + hash.substr(1));
+        }
+      });
+    }
+  });
 })(jQuery);
 
 /**

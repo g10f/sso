@@ -2,12 +2,12 @@
 import datetime
 from django.utils.translation import ugettext_lazy as _
 from django.forms import ModelChoiceField, ModelMultipleChoiceField, ValidationError
-from l10n.models import Country 
+from l10n.models import Country
+from sso.accounts.models import update_or_create_organisation_account
 from sso.forms import bootstrap, BaseForm, BaseTabularInlineForm
 from sso.forms.fields import EmailFieldLower
 from sso.emails.models import Email, EmailForward, CENTER_EMAIL_TYPE, REGION_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, PERM_EVERYBODY, PERM_DWB
 from .models import OrganisationPhoneNumber, OrganisationAddress, Organisation, AdminRegion, OrganisationCountry, CountryGroup
-from .models import update_or_create_organisation_account
 
 
 class OrganisationAddressForm(BaseForm):

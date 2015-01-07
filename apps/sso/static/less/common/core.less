@@ -41,7 +41,6 @@ div.form-group {
 .dwbn-form-control div.checkbox > input[type="checkbox"] {
   margin-left: 0px;
 }
-
 noscript div {
     margin-top: -20px;
 }
@@ -70,4 +69,8 @@ html.no-js .no-js-hide {
     .make-md-column(10);
     .make-lg-column-offset(2);
     .make-lg-column(8);
+}
+// same as alert-danger for fit with django message.tags
+.alert-error {
+  .alert-variant(@alert-danger-bg; @alert-danger-border; @alert-danger-text);
 }

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.db.models import Q
 from django.core.exceptions import PermissionDenied
+from django.forms import inlineformset_factory
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse, reverse_lazy
@@ -15,9 +16,11 @@ from django.utils.encoding import force_text
 from l10n.models import Country
 from sso.views import main
 from sso.views.generic import ListView, SearchFilter, ViewChoicesFilter, ViewQuerysetFilter
-from sso.accounts.models import ApplicationRole, RoleProfile, User, send_account_created_email 
+from sso.accounts.models import ApplicationRole, RoleProfile, User, UserEmail
+from sso.accounts.email import send_account_created_email
 from sso.organisations.models import AdminRegion, Organisation
-from sso.accounts.forms import UserAddFormExt, UserProfileForm
+from sso.accounts.forms import UserAddForm, UserProfileForm, UserEmailForm
+from sso.forms.helpers import ChangedDataList, log_change, ErrorList
 
 import logging
 
@@ -44,7 +47,7 @@ class UserDeleteView(DeleteView):
 
 
 class UserSearchFilter(SearchFilter):
-    search_names = ['username__icontains', 'first_name__icontains', 'last_name__icontains', 'email__icontains']
+    search_names = ['username__icontains', 'first_name__icontains', 'last_name__icontains', 'useremail__email__icontains']
 
 
 class IsActiveFilter(ViewChoicesFilter):
@@ -114,10 +117,14 @@ class RoleProfileFilter(ViewQuerysetFilter):
     select_all_text = _('All Profiles')
 
 
+class UserEmailHeadingl(object):
+    verbose_name = _('primary email')
+
+
 class UserList(ListView):
     template_name = 'accounts/application/user_list.html'
     model = get_user_model()
-    list_display = ['username', 'picture', 'first_name', 'last_name', 'email', 'last_login', 'date_joined']
+    list_display = ['username', 'picture', 'first_name', 'last_name', UserEmailHeadingl(), 'last_login', 'date_joined']
     IS_ACTIVE_CHOICES = (('1', _('Active Users')), ('2', _('Inactive Users')))
     
     @method_decorator(login_required)
@@ -131,7 +138,8 @@ class UserList(ListView):
         be a queryset (in which qs-specific behavior will be enabled).
         """
         user = self.request.user
-        qs = super(UserList, self).get_queryset()
+        # q = Q(useremail__is_primary=True) | Q(useremail__isnull=True)
+        qs = super(UserList, self).get_queryset().prefetch_related('useremail_set')
         qs = user.filter_administrable_users(qs)
             
         self.cl = main.ChangeList(self.request, self.model, self.list_display, default_ordering=['-last_login'])
@@ -202,7 +210,7 @@ class UserList(ListView):
 @permission_required('accounts.add_user', raise_exception=True)
 def add_user(request, template='accounts/application/add_user_form.html'):
     if request.method == 'POST':
-        form = UserAddFormExt(request.user, request.POST)
+        form = UserAddForm(request.user, request.POST)
         if form.is_valid():
             user = form.save()                
             send_account_created_email(user, request)
@@ -210,7 +218,7 @@ def add_user(request, template='accounts/application/add_user_form.html'):
             return HttpResponseRedirect(reverse('accounts:add_user_done', args=[user.uuid]))
     else:
         default_role_profile = User.get_default_role_profile()
-        form = UserAddFormExt(request.user, initial={'role_profiles': [default_role_profile]})
+        form = UserAddForm(request.user, initial={'role_profiles': [default_role_profile]})
 
     data = {'form': form, 'title': _('Add user')}
     return render(request, template, data)
@@ -230,12 +238,32 @@ def update_user(request, uuid, template='accounts/application/change_user_form.h
     if not request.user.has_user_access(uuid):
         raise PermissionDenied
     user = get_object_or_404(get_user_model(), uuid=uuid)
-    
+
+    if user.useremail_set.count() == 0:
+        useremail_extra = 1
+    else:
+        useremail_extra = 0
+
+    UserEmailInlineFormSet = inlineformset_factory(User, UserEmail, UserEmailForm, extra=useremail_extra, max_num=UserEmail.MAX_EMAIL_ADRESSES)
+
     if request.method == 'POST':
-        userprofile_form = UserProfileForm(request.POST, instance=user, request=request)
-        if userprofile_form.is_valid():
-            success_url = ""
-            user = userprofile_form.save()
+        form = UserProfileForm(request.POST, instance=user, request=request)
+        user_email_inline_formset = UserEmailInlineFormSet(request.POST, instance=user)
+
+        if form.is_valid() and user_email_inline_formset.is_valid():
+            user = form.save()
+            user_email_inline_formset.save()
+
+            if not user.useremail_set.exists():
+                msg = _('The account %(username)s has no email address!') % {'username': force_text(user)}
+                messages.add_message(request, level=messages.ERROR, message=msg, fail_silently=True)
+            else:
+                user.ensure_single_primary_email()
+
+            formsets = [user_email_inline_formset]
+            change_message = ChangedDataList(form, formsets).change_message()
+            log_change(request, user, change_message)
+
             msg_dict = {'name': force_text(get_user_model()._meta.verbose_name), 'obj': force_text(user)}
             if "_addanother" in request.POST:
                 msg = _('The %(name)s "%(obj)s" was changed successfully. You may add another %(name)s below.') % msg_dict
@@ -250,7 +278,26 @@ def update_user(request, uuid, template='accounts/application/change_user_form.h
             return HttpResponseRedirect(success_url)
 
     else:
-        userprofile_form = UserProfileForm(instance=user, request=request)
+        user_email_inline_formset = UserEmailInlineFormSet(instance=user)
+        form = UserProfileForm(instance=user, request=request)
 
-    data = {'form': userprofile_form, 'title': _('Change user')}
-    return render(request, template, data)
+    user_email_inline_formset.forms += [user_email_inline_formset.empty_form]
+    formsets = [user_email_inline_formset]
+
+    media = form.media
+    for fs in formsets:
+        media = media + fs.media
+
+    errors = ErrorList(form, formsets)
+    active = ''
+    if errors:
+        if not form.is_valid():
+            active = 'object'
+        else:  # set the first formset with an error as active
+            for formset in formsets:
+                if not formset.is_valid():
+                    active = formset.prefix
+                    break
+
+    dictionary = {'form': form, 'errors': errors, 'formsets': formsets, 'media': media, 'active': active, 'title': _('Change user')}
+    return render(request, template, dictionary)

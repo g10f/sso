@@ -12,7 +12,8 @@ from sso.registration import default_username_generator
 from sso.organisations.models import Organisation
 
 class RegistrationTest(TestCase):
-    fixtures = ['roles.json', 'app_roles.json', 'test_l10n_data.xml', 'test_organisation_data.json', 'test_app_roles.json', 'test_user_data.json']
+    fixtures = ['roles.json', 'app_roles.json', 'test_l10n_data.xml', 'test_organisation_data.json', 'test_app_roles.json',
+                'test_user_data.json']
 
     def setUp(self):
         os.environ['RECAPTCHA_TESTING'] = 'True'
@@ -105,6 +106,10 @@ class RegistrationTest(TestCase):
         """
         Admin activates the registered user
         """
+        outbox = getattr(mail, 'outbox')
+        fullname = 'first_name' + ' ' + 'last_name'
+        self.assertNotEqual(outbox[-1].subject.find('Validation for %s completed' % fullname), -1)
+
         path = self.get_url_path_from_mail()
         self.client.login(username='GlobalAdmin', password='secret007')
         

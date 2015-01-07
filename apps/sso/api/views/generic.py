@@ -191,7 +191,7 @@ class JsonDetailView(JSONResponseMixin, PermissionMixin, BaseDetailView):
             self.check_permission('delete', self.object)
             
             self.delete_object(request, self.object)
-        except ObjectDoesNotExist:
+        except Http404:
             pass
         response = HttpResponse(status=204)
         response['Access-Control-Allow-Origin'] = self.request.META.get('HTTP_ORIGIN')

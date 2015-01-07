@@ -4,6 +4,7 @@ from .views import application
 from .views import onetimemessage
 from .views import password_change, password_change_done, login, logout, profile, contact, delete_profile
 from .views import password_reset, password_reset_confirm, password_reset_done, password_reset_complete
+from .views import emails, confirm_email
  
 urlpatterns = patterns(
     '',
@@ -12,6 +13,8 @@ urlpatterns = patterns(
     url(r'^contact/$', contact, name='contact'),
     url(r'^contact_thanks/$', TemplateView.as_view(template_name="accounts/contact_thanks.html"), name='contact_thanks'),
     url(r'^profile/$', profile, name='profile'),
+    url(r'^email/confirm/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', confirm_email, name='confirm_email'),
+    url(r'^emails/$', emails, name='emails'),
     url(r'^profile/delete/$', delete_profile, name='delete_profile'),
     url(r'^password_change/$', password_change, name='password_change'),
     url(r'^password_change/done/$', password_change_done, name='password_change_done'),

@@ -9,16 +9,20 @@ from django.contrib.auth import get_user_model
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException
 from sso.tests import SSOSeleniumTests 
-from sso.accounts.models import ApplicationRole
+from sso.accounts.models import ApplicationRole, UserEmail
 from sso.organisations.models import AdminRegion, Organisation
+
 
 class AccountsSeleniumTests(SSOSeleniumTests):
     fixtures = ['roles.json', 'test_l10n_data.xml', 'app_roles.json', 'test_organisation_data.json', 'test_app_roles.json', 'test_user_data.json']
     
-    def login_test(self, username, password):
+    def login_test(self, username, password, test_success=True):
         self.login(username=username, password=password)
-        self.selenium.find_element_by_xpath('//a[@href="%s"]' % reverse('accounts:logout'))        
-        
+        if test_success:
+            self.selenium.find_element_by_xpath('//a[@href="%s"]' % reverse('accounts:logout'))
+        else:
+            self.selenium.find_element_by_xpath('//form[@id="login-form"]')
+
     def get_url_path_from_mail(self):
         outbox = getattr(mail, 'outbox')
         self.assertEqual(len(outbox), 1)
@@ -40,7 +44,77 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         username = 'GlobalAdmin'
         password = 'secret007'
         self.login_test(username, password)
-        
+
+    def test_admin_add_usermail(self):
+        self.login(username='CenterAdmin', password='gsf')
+        new_email = "test@g10f.de"
+
+        # add new email
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('accounts:update_user', kwargs={'uuid': 'a8992f0348634f76b0dac2de4e4c83ee'})))
+        # click tab user mails
+        self.selenium.find_element_by_xpath('//a[@href="#useremail_set"]').click()
+        # enter new email address
+        email_element = self.selenium.find_element_by_name("useremail_set-0-email")
+        email_element.clear()
+        email_element.send_keys(new_email)
+        self.selenium.find_element_by_xpath('//button[@name="_continue"]').click()
+        self.wait_page_loaded()
+
+        self.selenium.find_element_by_xpath('//div[@class="alert alert-success"]')
+
+        user_email = UserEmail.objects.get(email=new_email)
+        # check that the changed Email has status not confirmed
+        self.assertEqual(user_email.confirmed, False)
+        # check that the changed Email has still status primary
+        self.assertEqual(user_email.primary, True)
+        # check that login with new_mail is possible
+        self.login_test(username='test@g10f.de', password='gsf')
+
+    def test_self_add_useremail(self):
+        self.login(username='GunnarScherf', password='gsf')
+        new_email = "test@g10f.de"
+
+        # add new email
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('accounts:emails')))
+        self.selenium.find_element_by_name("email").send_keys(new_email)
+        self.selenium.find_element_by_xpath('//button[@type="submit"]').click()
+        self.wait_page_loaded()
+
+        self.selenium.find_element_by_xpath('//div[@class="alert alert-success"]')
+
+        # check that login with new email is not possible (because there is another primary email and the
+        # new email is not confirmed
+        self.logout()
+        self.login_test(username='test@g10f.de', password='gsf', test_success=False)
+
+        # login with existing primary email
+        self.login(username='gunnar@g10f.de', password='gsf')
+
+        # confirm email
+        confirmation_url = self.get_url_path_from_mail()
+        self.selenium.get('%s%s' % (self.live_server_url, confirmation_url))
+        self.wait_page_loaded()
+        response = self.selenium.find_element_by_xpath('//div[@class="alert alert-success"]')
+        self.assertIn(new_email, response.text)
+
+        # check that login with new_mail and old email is possible
+        self.logout()
+        self.login_test(username='test@g10f.de', password='gsf')
+        self.logout()
+        self.login_test(username='gunnar@g10f.de', password='gsf')
+
+        # set email as primary
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('accounts:emails')))
+        self.selenium.find_element_by_xpath('//button[@name="set_primary"]').click()
+        response = self.selenium.find_element_by_xpath('//div[@class="alert alert-success"]')
+        self.assertIn(new_email, response.text)
+
+        # delete email
+        self.selenium.find_element_by_xpath('//button[@name="delete"]').click()
+        self.wait_page_loaded()
+        response = self.selenium.find_element_by_xpath('//div[@class="alert alert-success"]')
+        self.assertIn("gunnar@g10f.de", response.text)
+
     def test_delete_user(self):
         self.login(username='GunnarScherf', password='gsf')
         self.selenium.get('%s%s' % (self.live_server_url, reverse('accounts:delete_profile')))
@@ -94,7 +168,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         new_email = 'mail@g10f.de'
         
         self.login(username='GunnarScherf', password='gsf')
-        
+
         self.selenium.get('%s%s' % (self.live_server_url, reverse('accounts:profile')))
         
         first_name = self.selenium.find_element_by_name("first_name")
@@ -105,9 +179,9 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         last_name.clear()
         last_name.send_keys(new_last_name)
         
-        email = self.selenium.find_element_by_name("email")
-        email.clear()
-        email.send_keys(new_email)
+        # email = self.selenium.find_element_by_name("email")
+        # email.clear()
+        # email.send_keys(new_email)
 
         self.selenium.find_element_by_xpath('//button[@type="submit"]').click()
         self.wait_page_loaded()
@@ -118,19 +192,19 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         last_name = self.selenium.find_element_by_name("last_name")
         self.assertEqual(last_name.get_attribute("value"), new_last_name)
 
-        email = self.selenium.find_element_by_name("email")
-        self.assertEqual(email.get_attribute("value"), new_email)
+        # email = self.selenium.find_element_by_name("email")
+        # self.assertEqual(email.get_attribute("value"), new_email)
 
     def test_change_profile_failure(self):
-        new_email = 'admin@g10f.de'
+        new_homepage = 'http:/home'  # wrong url format
         
         self.login(username='GunnarScherf', password='gsf')
         
         self.selenium.get('%s%s' % (self.live_server_url, reverse('accounts:profile')))
                 
-        email = self.selenium.find_element_by_name("email")
-        email.clear()
-        email.send_keys(new_email)
+        homepage = self.selenium.find_element_by_name("homepage")
+        homepage.clear()
+        homepage.send_keys(new_homepage)
 
         self.selenium.find_element_by_xpath('//button[@type="submit"]').click()
         self.wait_page_loaded()

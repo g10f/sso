@@ -1,22 +1,20 @@
+import logging
+
 from django.db import models
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis import measure
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
-from django.core.exceptions import ObjectDoesNotExist
-from django.utils.crypto import get_random_string
-from django.utils.text import capfirst
-from django.utils.translation import pgettext_lazy, ugettext_lazy as _
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ObjectDoesNotExist
+from django.utils.translation import pgettext_lazy, ugettext_lazy as _
 from l10n.models import Country
 from smart_selects.db_fields import ChainedForeignKey
 from utils.loaddata import disable_for_loaddata
 from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary
 from sso.emails.models import Email, CENTER_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, REGION_EMAIL_TYPE, COUNTRY_GROUP_EMAIL_TYPE
-from sso.registration import default_username_generator
 from sso.decorators import memoize
 
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -295,42 +293,8 @@ def deactivate_center_account(email):
     deactivate the center user account if the center was deleted
     """
     try:
-        for user in get_user_model().objects.filter(email__iexact=email.email):
-            user.is_active = False
-            user.save()
+        user = get_user_model().objects.get_by_email(email.email)
+        user.is_active = False
+        user.save()
     except ObjectDoesNotExist:
         pass
-
-
-def update_or_create_organisation_account(organisation, old_email_value, new_email_value):
-    first_name = 'BuddhistCenter'
-    last_name = capfirst(organisation.name)
-    username = default_username_generator(first_name, last_name)
-    is_active = organisation.is_active
-    organisation_account = None
-
-    try:
-        if old_email_value:
-            organisation_account = get_user_model().objects.get(email__iexact=old_email_value)
-        else:
-            organisation_account = get_user_model().objects.get(email__iexact=new_email_value)
-    except ObjectDoesNotExist:
-        if is_active:
-            organisation_account = get_user_model()()
-            organisation_account.set_password(get_random_string(40))
-        else:
-            # organisation is not activ and no user account exists, so don't create one
-            pass
-
-        
-    if organisation_account:
-        organisation_account.first_name = first_name
-        organisation_account.last_name = last_name
-        organisation_account.username = username
-        organisation_account.email = new_email_value
-        organisation_account.is_center = True
-        organisation_account.is_active = organisation.is_active
-        organisation_account.save()
-        
-        organisation_account.organisations = [organisation]
-        organisation_account.add_default_roles()

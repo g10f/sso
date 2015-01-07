@@ -151,6 +151,7 @@ class SearchFilter(object):
             qs = qs.filter(q)
         return qs
 
+
 class ListView(generic.ListView):
     paginate_by = 20
     page_kwarg = main.PAGE_VAR

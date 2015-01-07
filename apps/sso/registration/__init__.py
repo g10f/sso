@@ -9,7 +9,8 @@ def remove(name, *args):
         name = name.replace(arg, "")
     return name
 
-def default_username_generator(first_name, last_name):
+
+def default_username_generator(first_name, last_name, user=None):
     """
     search for existing usernames and create a new one with a not existing number
     after first_name if necessary
@@ -20,9 +21,12 @@ def default_username_generator(first_name, last_name):
     last_name = capfirst(remove(last_name, *remove_chars))
     username = u"%s%s" % (first_name, last_name)
     username = username[:29]  # max 30 chars
-    try:
-        get_user_model().objects.get(username=username)
-    except ObjectDoesNotExist:
+
+    if user is not None:
+        exists = get_user_model().objects.filter(username=username).exclude(pk=user.pk).exists()
+    else:
+        exists = get_user_model().objects.filter(username=username).exists()
+    if not exists:
         return username
     
     username_pattern = r'^%s([0-9]+)$' % username

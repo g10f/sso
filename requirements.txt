@@ -8,7 +8,7 @@ docutils
 pycrypto
 oauthlib
 simplejson
-sorl-thumbnail==12.1.c
+sorl-thumbnail
 pillow
 django-recaptcha
 pytz

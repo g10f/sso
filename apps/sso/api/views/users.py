@@ -7,7 +7,6 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import cache_control
 from django.core.urlresolvers import reverse
-from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import HttpResponse
@@ -17,7 +16,8 @@ from django.utils.translation import ugettext as _
 from django.template.defaultfilters import date
 from sorl.thumbnail import get_thumbnail
 
-from sso.accounts.models import ApplicationRole, send_account_created_email
+from sso.accounts.models import ApplicationRole, User
+from sso.accounts.email import send_account_created_email
 from sso.organisations.models import Organisation
 from sso.registration import default_username_generator
 from http.http_status import *  # @UnusedWildImport
@@ -104,13 +104,13 @@ def get_userapps(user, request):
 def get_userinfo(user, request, show_details=False):
     scopes = request.scopes
     base = base_url(request)
+    email = user.primary_email()
     userinfo = {
         'id': u'%s' % user.uuid,
         # 'sub': u'%s' % user.uuid,  # remove after all clients migrated to id
         'name': u'%s' % user,
         'given_name': u'%s' % user.first_name,
         'family_name': u'%s' % user.last_name,
-        'email': u'%s' % user.email,
         'gender': user.gender,
         'birth_date': date(user.dob, "c"),
         'homepage': user.homepage,
@@ -120,6 +120,8 @@ def get_userinfo(user, request, show_details=False):
         'links': {'self': {'href': "%s%s" % (base, reverse('api:v1_user', kwargs={'uuid': user.uuid}))},
                   'apps': {'href': "%s%s" % (base, reverse('api:v1_users_apps', kwargs={'uuid': user.uuid}))}}
     } 
+    if email is not None:
+        userinfo['email'] = email.email
     if user.picture:
         userinfo['picture'] = absolute_url(request, user.picture.url)
     if show_details:
@@ -170,7 +172,7 @@ def get_userinfo(user, request, show_details=False):
 @catch_errors
 @api_user_passes_test(lambda u: u.has_perm("accounts.access_all_users"))
 def get_user_list(request):
-    qs = get_user_model().objects.filter(is_active=True).order_by('username').prefetch_related('organisations', 'useraddress_set', 'userphonenumber_set')
+    qs = User.objects.filter(is_active=True).order_by('username').prefetch_related('organisations', 'useraddress_set', 'userphonenumber_set')
     username = request.GET.get('q', None)
     if username:
         qs = qs.filter(username__icontains=username)
@@ -212,12 +214,12 @@ class UserDetailView(View):
         See http://www.html5rocks.com/static/images/cors_server_flowchart.png
         """
         # origin is mandatory
-        origin = self.request.META.get('HTTP_ORIGIN')
+        origin = request.META.get('HTTP_ORIGIN')
         if not origin:
             return super(UserDetailView, self).options(request, *args, **kwargs)
         
         # ACCESS_CONTROL_REQUEST_METHOD is optional
-        acrm = self.request.META.get('HTTP_ACCESS_CONTROL_REQUEST_METHOD')  
+        acrm = request.META.get('HTTP_ACCESS_CONTROL_REQUEST_METHOD')
         if acrm:
             if acrm not in self._allowed_methods():
                 logger.warning('ACCESS_CONTROL_REQUEST_METHOD %s not allowed' % acrm)
@@ -242,7 +244,7 @@ class UserDetailView(View):
         if uuid == 'me':
             selected_user = request.user
         else:
-            selected_user = get_object_or_404(get_user_model(), uuid=uuid)
+            selected_user = get_object_or_404(User, uuid=uuid)
         
         if self.is_apps_only:
             userinfo = get_userapps(selected_user, request)
@@ -258,7 +260,7 @@ class UserDetailView(View):
         userinfo = json.loads(request.body)
         user = None
         try:
-            user = get_user_model().objects.get(uuid=uuid)
+            user = User.objects.get(uuid=uuid)
         except ObjectDoesNotExist: 
             pass
         
@@ -275,8 +277,8 @@ class UserDetailView(View):
         else:
             # new user            
             username = default_username_generator(first_name, last_name)
-            user = get_user_model()(first_name=first_name, last_name=last_name, email=email, username=username)
-            user.set_password("")                            
+            user = User(first_name=first_name, last_name=last_name, username=username)
+            user.set_password("")
             
             application_roles = []
             for application_uuid, application_data in userinfo.get('applications', {}).items():
@@ -285,6 +287,8 @@ class UserDetailView(View):
             
             user.uuid = uuid
             user.save()
+
+            user.create_primary_email(email)
 
             user.application_roles = application_roles
             user.organisations = organisations
@@ -300,7 +304,7 @@ class UserDetailView(View):
     @transaction.atomic   
     def delete(self, request, uuid, *args, **kwargs):
         try:
-            self.object = get_user_model().objects.get(uuid=uuid)
+            self.object = User.objects.get(uuid=uuid)
             self.object.is_active = False
             self.object.save()      
         except ObjectDoesNotExist: 

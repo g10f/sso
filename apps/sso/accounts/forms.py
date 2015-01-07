@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
+from collections import OrderedDict
 import re
 import datetime
 from mimetypes import guess_extension
+import logging
+
+from captcha.fields import ReCaptchaField
 
 from django.utils.timezone import now
-from django import forms 
+from django import forms
 from django.conf import settings
 from django.utils.crypto import get_random_string
 from django.utils.encoding import force_bytes
@@ -21,16 +25,16 @@ from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.forms import PasswordResetForm as DjangoPasswordResetForm
 from django.contrib.auth.forms import SetPasswordForm as DjangoSetPasswordForm
 from django.contrib.auth.tokens import default_token_generator
-
-from captcha.fields import ReCaptchaField
 from passwords.fields import PasswordField
-from .models import User, UserAddress, UserPhoneNumber
+from .models import User, UserAddress, UserPhoneNumber, UserEmail
+from sso.forms.bootstrap import ReadOnlyField, ReadOnlyWidget
+from sso.forms.fields import EmailFieldLower
 from sso.organisations.models import Organisation
 from sso.registration import default_username_generator
 from sso.registration.forms import UserSelfRegistrationForm
 from sso.forms import bootstrap, mixins, BLANK_CHOICE_DASH, BaseForm
 
-import logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -42,19 +46,34 @@ class ContactForm(forms.Form):
 
 
 class SetPasswordForm(DjangoSetPasswordForm):
+    """
+    A form that lets a user change set their password without entering the old
+    password.
+
+    When the user has no confirmed emails, then the primary email will be confirmed by save
+    """
     new_password1 = PasswordField(label=_("New password"), widget=bootstrap.PasswordInput())
     new_password2 = forms.CharField(label=_("New password confirmation"), widget=bootstrap.PasswordInput())
 
+    def save(self, commit=True):
+        self.user = super(SetPasswordForm, self).save(commit)
+        self.user.confirm_primary_email_if_no_confirmed()
 
-class PasswordChangeForm(SetPasswordForm):
+        return self.user
+
+
+class PasswordChangeForm(DjangoSetPasswordForm):
     """
     A form that lets a user change his/her password by entering
     their old password.
     """
+    old_password = forms.CharField(label=_("Old password"), widget=bootstrap.PasswordInput())
+    new_password1 = PasswordField(label=_("New password"), widget=bootstrap.PasswordInput())
+    new_password2 = forms.CharField(label=_("New password confirmation"), widget=bootstrap.PasswordInput())
+
     error_messages = dict(SetPasswordForm.error_messages, **{
         'password_incorrect': _("Your old password was entered incorrectly. Please enter it again."),
     })
-    old_password = forms.CharField(label=_("Old password"), widget=bootstrap.PasswordInput())
 
     def clean_old_password(self):
         """
@@ -65,7 +84,11 @@ class PasswordChangeForm(SetPasswordForm):
             raise forms.ValidationError(
                 self.error_messages['password_incorrect'])
         return old_password
-PasswordChangeForm.base_fields.keyOrder = ['old_password', 'new_password1', 'new_password2']
+
+PasswordChangeForm.base_fields = OrderedDict(
+    (k, PasswordChangeForm.base_fields[k])
+    for k in ['old_password', 'new_password1', 'new_password2']
+)
 
 
 class PasswordResetForm(DjangoPasswordResetForm):
@@ -85,145 +108,164 @@ class PasswordResetForm(DjangoPasswordResetForm):
         Validates that an active user exists with the given email address.
         """
         email = self.cleaned_data["email"]
-        self.users_cache = get_user_model().objects.filter(email__iexact=email, is_active=True)
-        if not len(self.users_cache):
+        try:
+            user = User.objects.get_by_confirmed_or_primary_email(email)
+            if user.has_usable_password() and user.is_active:
+                return email
+            # no user with this email and a usable password found
+            raise forms.ValidationError(self.error_messages['unusable'])
+        except ObjectDoesNotExist:
             raise forms.ValidationError(self.error_messages['unknown'])
-        else:
-            for user in self.users_cache:
-                if user.has_usable_password():
-                    return email
-        # no user with this email and a usable password found
-        raise forms.ValidationError(self.error_messages['unusable'])
-    
-    def save(self, subject_template_name='registration/password_reset_subject.txt',
+
+    def save(self, domain_override=None,
+             subject_template_name='registration/password_reset_subject.txt',
              email_template_name='registration/password_reset_email.html',
              use_https=False, token_generator=default_token_generator,
              from_email=None, request=None, html_email_template_name=None):
-        from django.core.mail import send_mail
         email = self.cleaned_data["email"]
         current_site = get_current_site(request)
         site_name = settings.SSO_CUSTOM['SITE_NAME']
         domain = current_site.domain
 
-        UserModel = get_user_model()
-        active_users = UserModel._default_manager.filter(email__iexact=email, is_active=True)
-        for user in active_users:
-            # Make sure that no email is sent to a user that actually has
-            # a password marked as unusable
-            if not user.has_usable_password():
-                continue
-            expiration_date = now() + datetime.timedelta(settings.PASSWORD_RESET_TIMEOUT_DAYS)
-            c = {
-                'email': user.email,
-                'domain': domain,
-                'site_name': site_name,
-                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-                'user': user,
-                'token': token_generator.make_token(user),
-                'protocol': 'https' if use_https else 'http',
-                'expiration_date': expiration_date
-            }
-            subject = loader.render_to_string(subject_template_name, c)
-            # Email subject *must not* contain newlines
-            subject = ''.join(subject.splitlines())
-            email = loader.render_to_string(email_template_name, c)
-            send_mail(subject, email, from_email, [user.email])            
+        user = User.objects.get_by_confirmed_or_primary_email(email)
+
+        # Make sure that no email is sent to a user that actually has
+        # a password marked as unusable
+        if not user.has_usable_password():
+            logger.error("user has unusable password")
+        expiration_date = now() + datetime.timedelta(settings.PASSWORD_RESET_TIMEOUT_DAYS)
+        c = {
+            'email': user.primary_email(),
+            'domain': domain,
+            'site_name': site_name,
+            'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+            'user': user,
+            'token': token_generator.make_token(user),
+            'protocol': 'https' if use_https else 'http',
+            'expiration_date': expiration_date
+        }
+        subject = loader.render_to_string(subject_template_name, c)
+        # Email subject *must not* contain newlines
+        subject = ''.join(subject.splitlines())
+        message = loader.render_to_string(email_template_name, c)
+        user.email_user(subject, message, from_email)
 
 
-class UserAddForm(forms.ModelForm):
+class AdminUserCreationForm(forms.ModelForm):
     """
-    UserAddForm where no password is required
-    If the password is empty, an empty password is created
+    Django Admin Site UserCreationForm where no password is required and the username is created from first_name and last_name
+    If the password is empty, an random password is created
     """
-    password1 = PasswordField(label=_("Password"), required=False, widget=bootstrap.PasswordInput())
-    password2 = forms.CharField(label=_("Password confirmation"), required=False, widget=bootstrap.PasswordInput(),
-                                help_text=_("Enter the same password as above, for verification."))
+    password1 = forms.CharField(label=_("Password"), required=False, widget=forms.PasswordInput)
+    password2 = forms.CharField(label=_("Password confirmation"), required=False, widget=forms.PasswordInput, help_text=_("Enter the same password as above, for verification."))
+    first_name = forms.CharField(label=_('First name'), required=True)
+    last_name = forms.CharField(label=_('Last name'), required=True)
+
     error_messages = {
-        'duplicate_username': _("A user with that username already exists."),
         'password_mismatch': _("The two password fields didn't match."),
-        'duplicate_email': _("A user with that email address already exists."),
     }
-    email = forms.EmailField(label=_('Email'), required=True, widget=bootstrap.EmailInput())
-    first_name = forms.CharField(label=_('First name'), required=True, widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('first name'))}))
-    last_name = forms.CharField(label=_('Last name'), required=True, widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('last name'))}))
-    notes = forms.CharField(label=_("Notes"), required=False, max_length=1024, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
 
     class Meta:
-        model = get_user_model()
-        fields = ("first_name", "last_name", "email", 'notes')
+        model = User
+        fields = ("first_name", "last_name")
 
-    def clean_username(self):
-        # Since User.username is unique, this check is redundant,
-        # but it sets a nicer error message than the ORM. See #13147.
-        username = self.cleaned_data["username"]
-        try:
-            get_user_model().objects.get(username=username)
-        except ObjectDoesNotExist:
-            return username
-        raise forms.ValidationError(self.error_messages['duplicate_username'])
-
-    def clean_email(self):
-        # Check if email is unique,
-        email = self.cleaned_data["email"]
-        try:
-            get_user_model().objects.get(email__iexact=email)
-        except ObjectDoesNotExist:
-            return email
-        raise forms.ValidationError(self.error_messages['duplicate_email'])
-
-    def clean_password2(self):
-        password1 = self.cleaned_data.get("password1", "")
-        password2 = self.cleaned_data["password2"]
-        if password1 and password2:
+    def clean(self):
+        cleaned_data = super(AdminUserCreationForm, self).clean()
+        password1 = cleaned_data.get("password1")
+        password2 = cleaned_data.get("password2")
+        if password1 or password2:
             if password1 != password2:
-                raise forms.ValidationError(
-                    self.error_messages['password_mismatch'])
-        return password2
+                raise forms.ValidationError(self.error_messages['password_mismatch'])
 
     def save(self, commit=True):
-        user = super(UserAddForm, self).save(commit=False)
+        user = super(AdminUserCreationForm, self).save(commit=False)
         password = self.cleaned_data.get("password1", "")
         if password == "":
             password = get_random_string(40)
         user.set_password(password)
-        
+
         user.username = default_username_generator(capfirst(self.cleaned_data.get('first_name')), capfirst(self.cleaned_data.get('last_name')))
+
         if commit:
             user.save()
         return user
 
 
-class UserAddFormExt(UserAddForm):
+class AdminUserChangeForm(UserChangeForm):
     """
-    UserAddForm with organisations, roles and notes element
+    extensions to the default form:
+    - allow also unicode characters in the username
     """
+    username = forms.RegexField(
+        label=_("Username"), max_length=30, regex=re.compile(r"^[\w.@+-]+$", flags=re.UNICODE),
+        help_text=_("Required. 30 characters or fewer. Letters, digits and "
+                    "@/./+/-/_ only."),
+        error_messages={
+            'invalid': _("This value may contain only letters, numbers and "
+                         "@/./+/-/_ characters.")})
+
+
+class UserAddForm(forms.ModelForm):
+    """
+    form for SSO User Admins for adding users in the frontend
+    """
+    email = forms.EmailField(label=_('Email'), required=True, widget=bootstrap.EmailInput())
+    first_name = forms.CharField(label=_('First name'), required=True, widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('first name'))}))
+    last_name = forms.CharField(label=_('Last name'), required=True, widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('last name'))}))
+    notes = forms.CharField(label=_("Notes"), required=False, max_length=1024, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
     organisation = forms.ModelChoiceField(queryset=None, cache_choices=True, required=False, label=_("Organisation"), widget=bootstrap.Select())
     application_roles = forms.ModelMultipleChoiceField(queryset=None, cache_choices=True, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
     role_profiles = forms.ModelMultipleChoiceField(queryset=None, cache_choices=True, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
                                                    help_text=_('Groups of application roles that are assigned together.'))
-   
+
+    error_messages = {
+        'duplicate_email': _("A user with that email address already exists."),
+    }
+
+    class Meta:
+        model = User
+        fields = ("first_name", "last_name", 'notes')
+
     def __init__(self, user, *args, **kwargs):
-        super(UserAddFormExt, self).__init__(*args, **kwargs)
+        super(UserAddForm, self).__init__(*args, **kwargs)
         self.fields['application_roles'].queryset = user.get_administrable_application_roles()
         self.fields['role_profiles'].queryset = user.get_administrable_role_profiles()
         self.fields['organisation'].queryset = user.get_administrable_user_organisations()
         if not user.has_perm("accounts.access_all_users"):
             self.fields['organisation'].required = True
 
-    def save(self):
-        user = super(UserAddFormExt, self).save()
+
+    def clean_email(self):
+        # Check if email is unique,
+        email = self.cleaned_data["email"]
+        try:
+            User.objects.get_by_email(email)
+            raise forms.ValidationError(self.error_messages['duplicate_email'])
+        except ObjectDoesNotExist:
+            pass
+
+        return email
+
+    def save(self, commit=True):
+        user = super(UserAddForm, self).save(commit=False)
+        user.set_password(get_random_string(40))
+        user.username = default_username_generator(capfirst(self.cleaned_data.get('first_name')), capfirst(self.cleaned_data.get('last_name')))
+        user.save()
+
         user.application_roles = self.cleaned_data["application_roles"]
         user.role_profiles = self.cleaned_data["role_profiles"]
         organisation = self.cleaned_data["organisation"]
         if organisation:
             user.organisations.add(organisation)
+
+        user.create_primary_email(email=self.cleaned_data["email"])
         return user
-    
+
 
 class AddressForm(BaseForm):
     class Meta:
         model = UserAddress
-        fields = ('primary', 'address_type', 'addressee', 'street_address', 'city', 'postal_code', 'country', 'region') 
+        fields = ('primary', 'address_type', 'addressee', 'street_address', 'city', 'postal_code', 'country', 'region')
         widgets = {
             'primary': bootstrap.CheckboxInput(),
             'address_type': bootstrap.Select(),
@@ -249,7 +291,66 @@ class PhoneNumberForm(BaseForm):
             'primary': bootstrap.CheckboxInput()
         }
     
-    def template(self):
+    @staticmethod
+    def template():
+        return 'edit_inline/tabular.html'
+
+
+class SelfUserEmailForm(forms.Form):
+    email = EmailFieldLower(max_length=254, label=_('Email address'), required=True)
+    user = forms.IntegerField(widget=forms.HiddenInput())
+
+    error_messages = {
+        'duplicate_email': _("The email address \"%(email)s\" is already in use."),
+    }
+
+    def clean(self):
+        cleaned_data = super(SelfUserEmailForm, self).clean()
+        if 'email' in cleaned_data:
+            email = cleaned_data["email"]
+            qs = UserEmail.objects.filter(email__iexact=email)
+            if qs.exists():
+                raise forms.ValidationError(self.error_messages['duplicate_email'] % {'email': email})
+
+    def save(self):
+        cd = self.cleaned_data
+        user_email = UserEmail(email=cd['email'], user_id=cd['user'])
+        user_email.save()
+        return user_email
+
+
+class UserEmailForm(BaseForm):
+    confirmed = bootstrap.ReadOnlyYesNoField(label=_('confirmed'))
+
+    class Meta:
+        model = UserEmail
+        fields = ('email', 'primary')
+        widgets = {
+            'email': bootstrap.EmailInput(),
+            'primary': bootstrap.CheckboxInput(),
+        }
+
+    def __init__(self, *args, **kwargs):
+        # initialize the readonly field
+        initial = kwargs.get('initial', {})
+        instance = kwargs.get('instance', None)
+        if instance:
+            initial['confirmed'] = instance.confirmed
+        else:
+            initial['confirmed'] = False
+        kwargs['initial'] = initial
+        super(UserEmailForm, self).__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        instance = super(UserEmailForm, self).save(commit=False)
+        if 'email' in self.changed_data:
+            instance.confirmed = False
+        if commit:
+            instance.save()
+        return instance
+
+    @staticmethod
+    def template():
         return 'edit_inline/tabular.html'
 
 
@@ -260,7 +361,6 @@ class UserSelfProfileForm(forms.Form):
     username = bootstrap.ReadOnlyField(label=_("Username"))
     first_name = forms.CharField(label=_('First name'), max_length=30, widget=bootstrap.TextInput())
     last_name = forms.CharField(label=_('Last name'), max_length=30, widget=bootstrap.TextInput())
-    email = forms.EmailField(label=_('Email address'), widget=bootstrap.EmailInput())
     picture = forms.ImageField(label=_('Picture'), required=False, widget=bootstrap.ImageWidget())
     gender = forms.ChoiceField(label=_('Gender'), required=False, choices=(BLANK_CHOICE_DASH + User.GENDER_CHOICES), widget=bootstrap.Select())
     dob = forms.DateField(label=_('Date of birth'), required=False, 
@@ -270,7 +370,6 @@ class UserSelfProfileForm(forms.Form):
 
     error_messages = {
         'duplicate_username': _("A user with that username already exists."),
-        'duplicate_email': _("A user with that email address already exists."),
     }
 
     def __init__(self, *args, **kwargs):
@@ -292,13 +391,6 @@ class UserSelfProfileForm(forms.Form):
                                                         help_text=_('You can set this value only once.'), required=False)
         self.fields['organisation'] = organisation_field
 
-    def clean_email(self):
-        email = self.cleaned_data["email"]
-        qs = get_user_model().objects.filter(email__iexact=email).exclude(pk=self.user.pk)
-        if qs.exists():
-            raise forms.ValidationError(self.error_messages['duplicate_email'])
-        return email
-    
     def clean_organisation(self):
         if self.user.organisations.exists():
             # if already assigned to an organisation return None, (readonly use case)
@@ -308,14 +400,14 @@ class UserSelfProfileForm(forms.Form):
 
     def clean_picture(self):
         from django.template.defaultfilters import filesizeformat
-        MAX_UPLOAD_SIZE = User.MAX_PICTURE_SIZE  # 5 MB
+        max_upload_size = User.MAX_PICTURE_SIZE  # 5 MB
         picture = self.cleaned_data["picture"]
         if picture and hasattr(picture, 'content_type'):
             base_content_type = picture.content_type.split('/')[0]
             if base_content_type in ['image']:
-                if picture._size > MAX_UPLOAD_SIZE:
+                if picture._size > max_upload_size:
                     raise forms.ValidationError(_('Please keep filesize under %(filesize)s. Current filesize %(current_filesize)s') %
-                                                {'filesize': filesizeformat(MAX_UPLOAD_SIZE), 'current_filesize': filesizeformat(picture._size)})
+                                                {'filesize': filesizeformat(max_upload_size), 'current_filesize': filesizeformat(picture._size)})
                 # mimetypes.guess_extension return jpe which is quite uncommon for jpeg
                 if picture.content_type == 'image/jpeg':
                     file_ext = '.jpg'
@@ -333,7 +425,6 @@ class UserSelfProfileForm(forms.Form):
             # we create the new username because the streaming user has his email as username
             self.user.username = default_username_generator(capfirst(cd.get('first_name')), capfirst(cd.get('last_name')))
             
-        self.user.email = cd['email']
         self.user.first_name = cd['first_name']
         self.user.last_name = cd['last_name']
 
@@ -368,6 +459,7 @@ class CenterSelfProfileForm(forms.Form):
         self.user = kwargs.pop('instance')
         object_data = model_to_dict(self.user)
         object_data['account_type'] = _('Center Account') if self.user.is_center else _('Member Account')
+        object_data['email'] = str(self.user.primary_email())
         initial = kwargs.get('initial', {})
         object_data.update(initial)
         kwargs['initial'] = object_data
@@ -395,46 +487,6 @@ class UserSelfProfileDeleteForm(forms.Form):
         self.user.save()
             
     
-class BasicUserChangeForm(forms.ModelForm):
-    class Meta:
-        model = get_user_model()
-        fields = '__all__'
-
-    error_messages = {
-        'duplicate_email': _("That email address is already in use."),
-    }
-    
-    def clean_email(self):
-        email = self.cleaned_data["email"]
-        qs = get_user_model().objects.filter(email__iexact=email).exclude(pk=self.instance.pk)
-        if qs.exists():
-            raise forms.ValidationError(self.error_messages['duplicate_email'])
-        return email
-
-
-class AdminUserChangeForm(UserChangeForm, BasicUserChangeForm):
-    """
-    extensions to the default form:
-    - allow also unicode characters in the username
-    - check if email is unique
-    """
-    username = forms.RegexField(
-        label=_("Username"), max_length=30, regex=re.compile(r"^[\w.@+-]+$", flags=re.UNICODE),
-        help_text=_("Required. 30 characters or fewer. Letters, digits and "
-                    "@/./+/-/_ only."),
-        error_messages={
-            'invalid': _("This value may contain only letters, numbers and "
-                         "@/./+/-/_ characters.")})
-    
-    def _get_validation_exclusions(self):
-        """
-        exclude username from model validation, because the model does not allow unicode chars
-        """
-        exclude = super(AdminUserChangeForm, self)._get_validation_exclusions()
-        exclude.append('username')
-        return exclude    
-
-
 class UserSelfRegistrationForm2(UserSelfRegistrationForm):
     """
     Overwritten UserSelfRegistrationForm Form with additional  organisation field
@@ -511,8 +563,7 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
     username = forms.CharField(label=_("Username"), max_length=30, widget=bootstrap.TextInput())
     first_name = forms.CharField(label=_('First name'), max_length=30, widget=bootstrap.TextInput())
     last_name = forms.CharField(label=_('Last name'), max_length=30, widget=bootstrap.TextInput())
-    email = forms.EmailField(label=_('Email address'), widget=bootstrap.EmailInput())
-    is_active = forms.BooleanField(label=_('Active'), help_text=_('Designates whether this user should be treated as active. Unselect this instead of deleting accounts.'), 
+    is_active = forms.BooleanField(label=_('Active'), help_text=_('Designates whether this user should be treated as active. Unselect this instead of deleting accounts.'),
                                    widget=bootstrap.CheckboxInput(), required=False)
     is_center = forms.BooleanField(label=_('Center'), help_text=_('Designates that this user is representing a center and not a private person.'), 
                                    widget=bootstrap.CheckboxInput(), required=False)
@@ -551,19 +602,11 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
             return username
         raise forms.ValidationError(self.error_messages['duplicate_username'])
 
-    def clean_email(self):
-        email = self.cleaned_data["email"]
-        qs = get_user_model().objects.filter(email__iexact=email).exclude(pk=self.user.pk)
-        if qs.exists():
-            raise forms.ValidationError(self.error_messages['duplicate_email'])
-        return email
-    
     def save(self):
         cd = self.cleaned_data
         current_user = self.request.user
         
         self.user.username = cd['username']
-        self.user.email = cd['email']
         self.user.first_name = cd['first_name']
         self.user.last_name = cd['last_name']
         self.user.is_active = cd['is_active']

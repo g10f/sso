@@ -26,6 +26,7 @@ sso_admin_site.register(OneTimeMessage, OneTimeMessageAdmin)
 # sso_admin_site.register(Permission, PermissionAdmin)
 # sso_admin_site.register(ContentType)
 
+sso_admin_site.register(UserEmail, UserEmailAdmin)
 sso_admin_site.register(get_user_model(), UserAdmin)
 sso_admin_site.register(ApplicationRole, ApplicationRoleAdmin)
 sso_admin_site.register(RoleProfile, RoleProfileAdmin)

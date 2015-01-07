@@ -50,7 +50,7 @@
 	               </td>
 	               <td>{{ user.first_name }}</td>
 	               <td>{{ user.last_name }}</td>
-	               <td>{{ user.email }}</td>
+	               <td>{{ user.primary_email|default_if_none:"" }}</td>
 	               <td>{{ user.last_login|utc|date:"Y-m-d H:i" }}</td>
 	               <td>{{ user.date_joined|utc|date:"Y-m-d H:i" }}</td>
 	           </tr>

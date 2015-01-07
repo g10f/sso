@@ -25,9 +25,10 @@ SSO_CUSTOM = {
     'ABOUT': 'http://g10f.de/',
     'APP_UUID': 'fa467234b81e4838a009e38d9e655d18',
     'STREAMING_UUID': 'c362bea58c67457fa32234e3178285c4',
-    'STYLESHEET': 'css/default-1.0.7.css',
+    'STYLESHEET': 'css/default-1.0.10.css',
     'SYLE_LESS': 'less/default.less',
-    'FAVICON': 'ico/favicon.ico'
+    'FAVICON': 'ico/favicon.ico',
+    'EMAIL_CONFIRM_TIMEOUT_MINUTES': 60
 }
 
 EMAIL_SUBJECT_PREFIX = '[SSO] '
@@ -60,7 +61,7 @@ TIME_ZONE = 'Europe/Berlin'
 LANGUAGE_CODE = 'en-us'
 
 ABSOLUTE_URL_OVERRIDES = {
-    'accounts.user': lambda u: "/api/v1/users/%s/" % u.uuid,
+    'accounts.user': lambda u: "/api/v2/users/%s/" % u.uuid,
 }
 
 USE_I18N = True

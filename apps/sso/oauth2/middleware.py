@@ -27,9 +27,8 @@ def get_access_token(request):
         if http_authorization[0] == 'Bearer':
             return http_authorization[1]
     else:
-        # TODO: Deprecated since version 1.7: Use the more explicit GET and POST instead
-        return request.REQUEST.get('access_token', None)
-    
+        return request.POST.get('access_token', request.GET.get('access_token', None))
+
     
 def get_auth_data_from_token(access_token):
     try:

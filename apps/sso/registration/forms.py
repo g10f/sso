@@ -20,8 +20,7 @@ from .models import RegistrationProfile, send_set_password_email, send_validatio
 from . import default_username_generator
 
 from sso.forms import bootstrap, mixins, BLANK_CHOICE_DASH
-from sso.accounts.models import UserAddress, User
-
+from sso.accounts.models import UserAddress, User, UserEmail
 
 import logging
 logger = logging.getLogger(__name__)
@@ -96,7 +95,8 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
         initial.update(registrationprofile_data)
         initial.update(user_data)
         initial.update(address_data)
-        
+
+        initial['email'] = self.user.primary_email()
         last_modified_by_user = self.registrationprofile.last_modified_by_user
         initial['last_modified_by_user'] = last_modified_by_user if last_modified_by_user else ''   
         initial['is_verified'] = True if self.registrationprofile.verified_by_user else False
@@ -174,7 +174,7 @@ class UserSelfRegistrationForm(forms.Form):
         # Check if email is unique,
         email = self.cleaned_data["email"]
         try:
-            get_user_model().objects.get(email__iexact=email)
+            get_user_model().objects.get_by_email(email)
         except ObjectDoesNotExist:
             return email
         raise forms.ValidationError(self.error_messages['duplicate_email'])
@@ -195,7 +195,6 @@ class UserSelfRegistrationForm(forms.Form):
 
         new_user = get_user_model()()
         new_user.username = username_generator(data.get('first_name'), data.get('last_name'))
-        new_user.email = data.get('email')
         new_user.first_name = data.get('first_name')
         new_user.last_name = data.get('last_name')        
         new_user.language = data.get('language')        
@@ -204,7 +203,9 @@ class UserSelfRegistrationForm(forms.Form):
         new_user.is_active = False
         new_user.set_unusable_password()
         new_user.save()
-        
+
+        new_user.create_primary_email(email=data.get('email'))
+
         user_address = UserAddress()
         user_address.primary = True
         user_address.user = new_user

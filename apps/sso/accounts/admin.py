@@ -15,12 +15,18 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 from sorl.thumbnail.admin import AdminImageMixin
 
-from models import Application, UserAssociatedSystem, UserAddress, UserPhoneNumber  # , Organisation, Region
+from models import Application, UserAssociatedSystem, UserAddress, UserPhoneNumber, UserEmail
 from sso.organisations.models import Organisation, AdminRegion
-from .forms import UserAddForm, BasicUserChangeForm, AdminUserChangeForm
+from .forms import AdminUserChangeForm, AdminUserCreationForm
 import logging
 
 logger = logging.getLogger(__name__)
+
+
+class UserEmailAdmin(admin.ModelAdmin):
+    list_display = ('user', 'email', 'primary', 'confirmed')
+    raw_id_fields = ("user",)
+    search_fields = ('user__username', 'email')
 
 
 class OneTimeMessageAdmin(admin.ModelAdmin):
@@ -72,6 +78,7 @@ class RoleProfileAdmin(admin.ModelAdmin):
     
 
 class BaseFilter(SimpleListFilter):
+    field_path = ''
     def get_lookup_qs(self, request, model_admin):
         """ Return the queryset for the filter"""
         raise NotImplementedError
@@ -175,6 +182,7 @@ class ExcludeApplicationRolesFilter(ApplicationRolesFilter):
             return queryset.all()
 """
 
+
 class RoleProfilesFilter(BaseFilter):
     title = _('Role profiles')
     parameter_name = 'role_profiles'
@@ -237,8 +245,20 @@ class GroupAdmin(DjangoGroupAdmin):
 class PermissionAdmin(admin.ModelAdmin):
     list_filter = ('content_type', )
     
-    
-class Address_Inline(admin.StackedInline):
+
+class UserEmailInline(admin.TabularInline):
+    model = UserEmail
+    extra = 0
+    max_num = UserEmail.MAX_EMAIL_ADRESSES
+    fieldsets = [
+        (None,
+         {'fields':
+          ['email', 'confirmed', 'primary', ],
+          'classes': ['wide'], }),
+    ]
+
+
+class AddressInline(admin.StackedInline):
     model = UserAddress
     extra = 0
     max_num = 2
@@ -250,7 +270,7 @@ class Address_Inline(admin.StackedInline):
     ]
 
 
-class PhoneNumber_Inline(admin.TabularInline):
+class PhoneNumberInline(admin.TabularInline):
     model = UserPhoneNumber
     extra = 1
     max_num = 6
@@ -265,41 +285,40 @@ class PhoneNumber_Inline(admin.TabularInline):
 
 class UserAdmin(AdminImageMixin, DjangoUserAdmin):
     form = AdminUserChangeForm
-    add_form = UserAddForm
+    add_form = AdminUserCreationForm
     save_on_top = True
-    list_display = ('id',) + DjangoUserAdmin.list_display + ('last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user')
-    search_fields = ('username', 'first_name', 'last_name', 'email', 'uuid')
+    list_display = ('id', 'username', 'primary_email', 'first_name', 'last_name', 'is_staff', 'last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user')
+    search_fields = ('username', 'first_name', 'last_name', 'useremail__email', 'uuid')
     list_filter = (SuperuserFilter, ) + ('is_staff', 'is_center', 'is_active', 'groups', UserAssociatedSystemFilter, UserRegionListFilter,
                                          RoleProfilesFilter, ExcludeRoleProfilesFilter, ApplicationRolesFilter)  # ,UserOrganisationsListFilter, CreatedByUserFilter, LastModifiedUserFilter
     filter_horizontal = DjangoUserAdmin.filter_horizontal + ('admin_countries', 'admin_regions', 'groups', 'application_roles', 'role_profiles', 'organisations')
     ordering = ['-last_login', '-first_name', '-last_name']
     actions = ['mark_info_mail']
-    inlines = [PhoneNumber_Inline, Address_Inline, UserAssociatedSystemInline]
+    inlines = [UserEmailInline, PhoneNumberInline, AddressInline, UserAssociatedSystemInline]
     
     fieldsets = (
         (None, {'fields': ('username', 'password'), 'classes': ['wide']}),
         (_('Personal info'), {
-            'fields': ('first_name', 'last_name', 'email', 'gender', 'dob', 'homepage', 'uuid', 'is_center', 'is_subscriber', 'picture'), 
+            'fields': ('first_name', 'last_name', 'gender', 'dob', 'homepage', 'uuid', 'is_center', 'is_subscriber', 'picture'),
             'classes': ['wide']}),
-        (_('AppRoles'), {'fields': ('admin_countries', 'admin_regions', 'assigned_organisations', 'organisations', 'application_roles', 'role_profiles'), 'classes': ['wide']}),
-        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'), 'classes': ['wide']}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user'), 'classes': ['wide']}),
-        (_('Notes'), {'fields': ('notes',), 'classes': ['wide']}),
-        
+        (_('AppRoles'), {'fields': ('admin_countries', 'admin_regions', 'assigned_organisations', 'organisations', 'application_roles', 'role_profiles'), 'classes': ['collapse', 'wide']}),
+        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'), 'classes': ['collapse', 'wide']}),
+        (_('Notes'), {'fields': ('notes',), 'classes': ['collapse', 'wide']}),
     )
     non_su_fieldsets = (
         (None, {'fields': ('username', ), 'classes': ['wide']}),
-        (_('Personal info'), {'fields': ('first_name', 'last_name', 'email', 'uuid', 'is_center', 'is_subscriber'), 'classes': ['wide']}),
-        (_('AppRoles'), {'fields': ('is_active', 'assigned_organisations', 'organisations', 'application_roles', 'role_profiles'), 'classes': ['wide']}),
+        (_('Personal info'), {'fields': ('first_name', 'last_name', 'uuid', 'is_center', 'is_subscriber'), 'classes': ['wide']}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user'), 'classes': ['wide']}),
+        (_('AppRoles'), {'fields': ('is_active', 'assigned_organisations', 'organisations', 'application_roles', 'role_profiles'), 'classes': ['collapse', 'wide']}),
     )
     readonly_fields = ['assigned_organisations', 'is_subscriber', 'get_last_modified_by_user', 'last_modified', 'get_created_by_user']
     non_su_readonly_fields = ['uuid', 'assigned_organisations', 'is_subscriber', 'username', 'last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user']
-    
+
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('first_name', 'last_name', 'email', 'password1', 'password2')}
+            'fields': ('first_name', 'last_name', 'password1', 'password2')}
          ),
     )
 
@@ -323,7 +342,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         if obj:
             return u', '.join([x.__unicode__() for x in obj.organisations.all()])
 
-    def formfield_for_manytomany(self, db_field, request, **kwargs):
+    def formfield_for_manytomany(self, db_field, request=None, **kwargs):
         user = request.user
         # use the application_roles from application_roles of the authenticated user        
         if db_field.name == "application_roles":
@@ -386,17 +405,14 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         if not user.has_perm('auth.delete_user'):
             actions.pop('delete_selected')
         return actions
-    
+
     def get_formsets(self, request, obj=None):
-        """
-        return no inline formsets in the add_view, because the UserProfile is created by
-        the post_save signal
-        """
+        # return no inline formsets in the add_view
         if obj is None:
             return []
         else:
             return super(UserAdmin, self).get_formsets(request, obj)
-        
+
     def get_fieldsets(self, request, obj=None):
         """
         removed user_permissions and is_superuser for normal admins,
@@ -411,11 +427,9 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         if request.user.is_superuser or obj is None:
             return super(UserAdmin, self).get_form(request, obj, **kwargs)
         else:
-            defaults = {}
-            defaults.update({
-                'form': BasicUserChangeForm,
+            defaults = {
                 'fields': admin.util.flatten_fieldsets(self.non_su_fieldsets),
-            })
+            }
             defaults.update(kwargs)
             return super(UserAdmin, self).get_form(request, obj, **defaults)
 
@@ -429,7 +443,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         """
         display no superusers in the changelist for non superusers
         """
-        qs = super(UserAdmin, self).get_queryset(request).select_related('last_modified_by_user', 'created_by_user')
+        qs = super(UserAdmin, self).get_queryset(request).prefetch_related('last_modified_by_user', 'created_by_user', 'useremail_set')
         user = request.user
         if user.is_superuser:
             return qs
@@ -443,7 +457,6 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
                 return qs.filter(q).distinct()
                         
     def mark_info_mail(self, request, queryset):
-        
         if request.POST.get('post') and request.POST.get('body'):
             n = queryset.count()
             subject = request.POST.get('subject', _('%s SSO Information') % settings.SSO_CUSTOM['BRAND'])
@@ -453,7 +466,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
                 from django.core.mail import get_connection
                 connection = get_connection()
                 for user in queryset:
-                    msg = EmailMessage(subject, body, to=[user.email], from_email=from_email, connection=connection)
+                    msg = EmailMessage(subject, body, to=[user.primary_email()], from_email=from_email, connection=connection)
                     # msg.content_subtype = "html"
                     msg.send(fail_silently=True)
                 self.message_user(request, _("Successfully send information email to %(count)d %(items)s.") % {

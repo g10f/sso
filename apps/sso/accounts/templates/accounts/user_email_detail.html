@@ -1,0 +1,119 @@
+{% extends "base_form.html" %}
+{% load i18n admin_static %}
+
+{% block title %}{% trans 'Email Details' %}{% endblock %}
+
+{% block breadcrumb %}
+    <ol class="breadcrumb">
+        <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+        <li><a href="{% url 'accounts:profile' %}">{% trans 'My Account' %}</a></li>
+        <li class="active">{% trans 'Email addresses' %}</li>
+    </ol>
+{% endblock breadcrumb %}
+
+{% block left_content %}{% include navigation_template with active_navigation="emails" %}{% endblock left_content %}
+
+{% block form %}
+
+    {% block message %}{% endblock %}
+
+    <h3>{% trans 'Email addresses' %}</h3>
+
+    {% if messages %}{% for message in messages %}
+        <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
+    {% endif %}
+
+    <div class="row">
+        <div class="col-sm-12">
+            <p>
+                {% trans 'If you would like to add another email address to your account, enter it below. Once you confirm the address, you can login with that email address and make the address to your primary contact email address.' %}
+            </p>
+            <p>
+                {% blocktrans %}You can enter up to {{ max_email_adresses }} email addresses.{% endblocktrans %}
+
+            </p>
+        </div>
+    </div>
+
+    <form method="post">{% csrf_token %}
+        {% for hidden in form.hidden_fields %}
+            {{ hidden }}
+        {% endfor %}
+
+        {% if form.errors and not form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% if form.errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}
+                    {% trans "Please correct the errors below." %}{% endif %}
+            </div>
+        {% endif %}
+
+        {% if form.non_field_errors %}
+            {% for error in form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+
+        <table class="table table-condensed">
+            <thead>
+            <tr>
+                <th scope="col" colspan="2">{% trans 'Email address' %}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% if user.useremail_set.all|length < max_email_adresses %}
+                <tr>
+                    {% with field=form.email %}
+                        <td class="col-xs-8 {% if field.errors %}has-error{% endif %}" >
+                            <label class="sr-only" for="email">{% trans 'Email address' %}</label>
+                            {{ field }}{% if field.help_text or field.errors %}
+                                <span class="help-block">{{ field.help_text }} {% for error in field.errors %}
+                                    {{ error }} {% endfor %}</span>{% endif %}
+                        </td>
+                    {% endwith %}
+                    <td class="col-xs-4">
+                        <button type="submit" class="btn btn-primary">{% trans 'Add' %}</button>
+                    </td>
+                </tr>
+            {% endif %}
+            {% for email in user.useremail_set.all %}
+                <tr>
+                    <td class="col-xs-8">
+                        <p class="form-control-static">{{ email }}
+                            {% if email.primary %}
+                                <span class="label label-success">{% trans 'primary' %}</span>{% endif %}
+                            {% if not email.confirmed %}
+                                <span class="label label-warning">{% trans 'unconfirmed' %}</span>{% endif %}
+                        </p>
+                    </td>
+                    <td>
+                        {% if not email.primary and email.confirmed %}
+                            <button name="set_primary" type="submit" class="btn btn-default" value="{{ email.id }}">
+                                <span class="glyphicon glyphicon-check"
+                                      aria-hidden="true"></span> {% trans 'Set as primary' %}
+                            </button>
+                        {% endif %}
+                        {% if not email.confirmed %}
+                            <button name="send_confirmation" type="submit" class="btn btn-default"
+                                    value="{{ email.id }}">
+                                <span class="glyphicon glyphicon-send"
+                                      aria-hidden="true"></span> {% trans 'Resend confirmation email' %}
+                            </button>
+                        {% endif %}
+                    </td>
+                    <td class="col-xs-4">
+                        {% if not email.primary %}
+                            <button name="delete" type="submit" class="btn btn-danger" value="{{ email.id }}">
+                                <span class="glyphicon glyphicon-trash" aria-hidden="true"></span> {% trans 'Delete' %}
+                            </button>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </form>
+{% endblock %}
+
