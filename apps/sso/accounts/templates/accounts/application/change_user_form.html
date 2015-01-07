@@ -4,104 +4,135 @@
 
 {% block title %}{% trans 'Change User' %}{% endblock %}
 
+{% block extrascript %}
+    {{ media }}
+    <script src="{% static "js/formsets-1.1.js" %}"></script>
+{% endblock extrascript %}
 
 {% block breadcrumb %}
-<ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'accounts:user_list' %}">{% trans 'User List' %}</a></li>
-    <li class="active">{% trans 'Change User' %}</li>
-</ol> 
+    <ol class="breadcrumb">
+        <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+        <li><a href="{% url 'accounts:user_list' %}">{% trans 'User List' %}</a></li>
+        <li class="active">{% trans 'Change User' %}</li>
+    </ol>
 {% endblock breadcrumb %}
 
 {% block form %}
-<form class="form-horizontal" method="post">{% csrf_token %} 
-    {# Include the hidden fields in the form #}
-    {% for hidden in form.hidden_fields %}
-    {{ hidden }}
-    {% endfor %}    
-    
-    <div class="">
-	    <h3>{{ title }} - {{ form.user.first_name }} {{ form.user.last_name }}</h3>
+    <form class="form-horizontal" method="post" data-active="{{ active }}">{% csrf_token %}
+        {# Include the hidden fields in the form #}
+        {% for hidden in form.hidden_fields %}
+            {{ hidden }}
+        {% endfor %}
 
-	    {% if messages %}{% for message in messages %}
-	       <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
-	    {% endif %}
-	    
-	    {% if form.errors %}
-	        <div class="alert alert-danger">
-	        {% if form.errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
-	        </div>
-	    {% endif %}
-    </div>
+        <div class="">
+            <h3>{{ title }} - {{ form.user.first_name }} {{ form.user.last_name }}</h3>
 
-     <ul class="nav nav-tabs dwbn-nav-tabs" id="myTab">
-       <li class="active"><a data-toggle="tab" href="#user">{% trans 'User data' %}</a></li>
-       <li><a data-toggle="tab" href="#app_roles">{{ form.application_roles.label }}</a></li>
-       <li><a data-toggle="tab" href="#notes" >{{ form.notes.label }}</a></li>
-     </ul>
-    
-     <div class="tab-content">
-		<div class="tab-pane active" id="user"> 
-		   <div class="form-group">
-		     <label class="control-label">{% trans 'picture' %}</label>    
-		     <div class="dwbn-form-control">
-		      {% thumbnail form.user.picture "108x108" as im %}<img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">{% endthumbnail %}          
-		     </div>
-		   </div>
-		 
-           {% include 'include/_field.html' with field=form.username %}
-		   {% include 'include/_field.html' with field=form.first_name %}
-		   {% include 'include/_field.html' with field=form.last_name %}
-		   {% include 'include/_field.html' with field=form.organisations %}
-           {% include 'include/_email_field.html' with field=form.email %} 
-           {% include 'include/_field.html' with field=form.is_center %}            
-		   {% include 'include/_field.html' with field=form.is_active %}            
-		   {% include 'accounts/includes/_profiles_field.html' with field=form.role_profiles %}
-		
-		   {% if perms.registration.change_registrationprofile %}
-		   {% with registrationprofile=form.user.registrationprofile %}
-		   {% if registrationprofile %}        
-		   <div class="form-group">
-		     <label class="control-label"></label>    
-		     <div class="dwbn-form-control">
-		        <a href="{% url 'registration:update_user_registration' registrationprofile.pk %}" >{% trans 'Registration' %}</a>
-		     </div>
-		   </div>
-		   {% endif %}
-		   {% endwith %}
-		   {% endif %}
-		   
-		</div>
-	    <div class="tab-pane" id="app_roles">
-	        {% with field=form.application_roles %}
-	        <div class="form-group {% if field.errors %}has-error{% endif %}">
-	          <div class="dwbn-form-control_lg">
-	            {{ field }}{% if field.help_text or field.errors %}<span class="help-inline">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
-	          </div>
-	        </div>
-	        {% endwith %}
-	    </div>
-		<div class="tab-pane" id="notes">
-	         {% with field=form.notes %}
-	           <div class="form-group {% if field.errors %}has-error{% endif %}">
-	             <div class="dwbn-form-control_lg">
-	                {{ field }}{% if field.help_text or field.errors %}<span class="help-inline">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
-	              </div>
-	           </div>
-	         {% endwith %}
-		</div>
-     
- 
-    </div><!-- /.tab-content -->
+            {% if messages %}{% for message in messages %}
+                <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
 
-     <div class="form-group">
-      <div class="dwbn-form-control_lg">
-         {% if perms.accounts.delete_user %}<a class="btn btn-default" href="{% url 'accounts:delete_user' form.user.uuid %}">{% trans 'Delete' %}</a>{% endif %}
-         {% if perms.accounts.add_user %}<button type="submit" class="btn btn-default" name="_addanother" >{% trans 'Save and add another' %}</button>{% endif %}
-         <button type="submit" class="btn btn-default" name="_continue" >{% trans 'Save and continue editing' %}</button>
-         <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
-      </div>
-     </div>
-			
-</form>
+            {% if errors %}
+                <div class="alert alert-danger">
+                    {% if errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}
+                        {% trans "Please correct the errors below." %}{% endif %}
+                </div>
+            {% endif %}
+        </div>
+
+        <ul class="nav nav-tabs dwbn-nav-tabs" id="myTab">
+            <li class="{% if not active or active == "object" %}active{% endif %}">
+                <a data-toggle="tab"
+                   href="#object">{% trans 'User data' %}</a>
+            </li>
+            {% for formset in formsets %}
+                <li class="{% if active == formset.prefix %}active{% endif %}">
+                    <a data-toggle="tab"
+                       href="#{{ formset.prefix }}">{{ formset.form.opts.verbose_name_plural|title }}</a>
+                </li>
+            {% endfor %}
+            <li><a data-toggle="tab" href="#app_roles">{{ form.application_roles.label }}</a></li>
+            <li><a data-toggle="tab" href="#notes">{{ form.notes.label }}</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane {% if not active or active == "object" %}active{% endif %}" id="object">
+                <div class="form-group">
+                    <label class="control-label">{% trans 'picture' %}</label>
+
+                    <div class="dwbn-form-control">
+                        {% thumbnail form.user.picture "108x108" as im %}
+                            <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">{% endthumbnail %}
+                    </div>
+                </div>
+
+                {% include 'include/_field.html' with field=form.username %}
+                {% include 'include/_field.html' with field=form.first_name %}
+                {% include 'include/_field.html' with field=form.last_name %}
+                {% include 'include/_field.html' with field=form.organisations %}
+                {% include 'include/_field.html' with field=form.is_center %}
+                {% include 'include/_field.html' with field=form.is_active %}
+                {% include 'accounts/includes/_profiles_field.html' with field=form.role_profiles %}
+
+                {% if perms.registration.change_registrationprofile %}
+                    {% with registrationprofile=form.user.registrationprofile %}
+                        {% if registrationprofile %}
+                            <div class="form-group">
+                                <label class="control-label"></label>
+
+                                <div class="dwbn-form-control">
+                                    <a href="{% url 'registration:update_user_registration' registrationprofile.pk %}">{% trans 'Registration' %}</a>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+                {% endif %}
+
+            </div>
+            <div class="tab-pane" id="app_roles">
+                {% with field=form.application_roles %}
+                    <div class="form-group {% if field.errors %}has-error{% endif %}">
+                        <div class="dwbn-form-control_lg">
+                            {{ field }}{% if field.help_text or field.errors %}
+                                <span class="help-inline">{{ field.help_text }} {% for error in field.errors %}
+                                    {{ error }} {% endfor %}</span>{% endif %}
+                        </div>
+                    </div>
+                {% endwith %}
+            </div>
+            <div class="tab-pane" id="notes">
+                {% with field=form.notes %}
+                    <div class="form-group {% if field.errors %}has-error{% endif %}">
+                        <div class="dwbn-form-control_lg">
+                            {{ field }}{% if field.help_text or field.errors %}
+                                <span class="help-inline">{{ field.help_text }} {% for error in field.errors %}
+                                    {{ error }} {% endfor %}</span>{% endif %}
+                        </div>
+                    </div>
+                {% endwith %}
+            </div>
+            {% for formset in formsets %}
+                <div class="tab-pane {% if active == formset.prefix %}active{% endif %}" id="{{ formset.prefix }}">
+                    {% include formset.form.template %}
+                </div>
+            {% endfor %}
+
+        </div>
+        <!-- /.tab-content -->
+
+        <div class="form-group">
+            <div class="dwbn-form-control_lg">
+                {% if perms.accounts.delete_user %}
+                    <a class="btn btn-default"
+                       href="{% url 'accounts:delete_user' form.user.uuid %}">{% trans 'Delete' %}</a>{% endif %}
+                {% if perms.accounts.add_user %}
+                    <button type="submit" class="btn btn-default"
+                            name="_addanother">{% trans 'Save and add another' %}</button>{% endif %}
+                <button type="submit" class="btn btn-default"
+                        name="_continue">{% trans 'Save and continue editing' %}</button>
+                <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
+            </div>
+        </div>
+
+    </form>
 {% endblock %}

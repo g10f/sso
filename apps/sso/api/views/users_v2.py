@@ -12,7 +12,8 @@ from sorl.thumbnail import get_thumbnail
 from utils.url import base_url, absolute_url
 from utils.parse import parse_datetime_with_timezone_support
 from l10n.models import Country
-from sso.accounts.models import UserAddress, UserPhoneNumber, User, send_account_created_email
+from sso.accounts.models import UserAddress, UserPhoneNumber, User, UserEmail
+from sso.accounts.email import send_account_created_email
 from sso.organisations.models import Organisation
 from sso.registration import default_username_generator
 from sso.models import update_object_from_dict, map_dict2dict
@@ -47,7 +48,7 @@ SCOPE_MAPPING = {
 API_USER_MAPPING = {
     'given_name': {'name': 'first_name', 'validate': lambda x: len(x) > 0},
     'family_name': {'name': 'last_name', 'validate': lambda x: len(x) > 0},
-    'email': {'name': 'email', 'validate': lambda x: len(x) > 0},
+    # 'email': {'name': 'email', 'validate': lambda x: len(x) > 0},
     'gender': 'gender',
     'birth_date': {'name': 'dob', 'parser': _parse_date},
     'homepage': 'homepage',
@@ -77,6 +78,7 @@ class UserMixin(object):
     def get_object_data(self, request, obj, details=False):
         scopes = request.scopes
         base = base_url(request)
+        email = obj.primary_email()
         data = {
             '@id': "%s%s" % (base, reverse('api:v2_user', kwargs={'uuid': obj.uuid})),
             'id': u'%s' % obj.uuid,
@@ -84,16 +86,17 @@ class UserMixin(object):
             'name': u'%s' % obj,
             'given_name': u'%s' % obj.first_name,
             'family_name': u'%s' % obj.last_name,
-            'email': u'%s' % obj.email,
             'gender': obj.gender,
             'birth_date': obj.dob,
             'homepage': obj.homepage,
             'language': obj.language,
             'is_center': obj.is_center,
-            'last_modified': obj.get_last_modified_deep(),
+            'last_modified': obj.get_last_modified_deep()
         }
-        if obj.is_center:
-            data['email_verified'] = True
+        if email is not None:
+            data['email'] = email.email
+            data['email_verified'] = email.confirmed
+
         if obj.picture:
             data['picture'] = {
                 '@id': "%s%s" % (base, reverse('api:v2_picture', kwargs={'uuid': obj.uuid})),
@@ -181,9 +184,9 @@ def read_permission(request, obj):
         if user.uuid == obj.uuid:
             return True, None
         else:
-            if (not user.has_perm('accounts.read_user')):
+            if not user.has_perm('accounts.read_user'):
                 return False, "User has no permission '%s" % 'accounts.read_user'
-            elif (not user.has_user_access(obj.uuid)):
+            elif not user.has_user_access(obj.uuid):
                 return False, "User has no access to object"
             else:
                 return True, None
@@ -200,9 +203,9 @@ def replace_permission(request, obj):
         if user.uuid == obj.uuid:
             return True, None
         else:
-            if (not user.has_perm('accounts.change_user')):
+            if not user.has_perm('accounts.change_user'):
                 return False, "User has no permission '%s" % 'accounts.change_user'
-            elif (not user.has_user_access(obj.uuid)):
+            elif not user.has_user_access(obj.uuid):
                 return False, "User has no access to object"
             else:
                 return True, None
@@ -265,7 +268,7 @@ class UserDetailView(UserMixin, JsonDetailView):
             return
         scopes = self.request.scopes
         if SCOPE_MAPPING[name] not in scopes:
-            raise ValueError(_("required scope \"%s\" is missing in %s." % (SCOPE_MAPPING[name], scopes)))
+            raise ValueError("required scope \"%s\" is missing in %s." % (SCOPE_MAPPING[name], scopes))
             
         new_object_keys = []
         changed_object_keys = []
@@ -296,11 +299,11 @@ class UserDetailView(UserMixin, JsonDetailView):
         obj = self.object
         object_data = map_dict2dict(API_USER_MAPPING, data)
         
-        if 'email' not in object_data:
-            raise ValueError(_("E-mail value is missing"))
-            
-        if User.objects.filter(email__iexact=object_data['email']).exclude(pk=obj.pk).exists():
-            raise ValueError(_("A user with that email already exists."))
+        # if 'email' not in object_data:
+        #    raise ValueError(_("E-mail value is missing"))
+        # TODO: redesign email handling
+        # if User.objects.by_email(object_data['email']).exclude(pk=obj.pk).exists():
+        #     raise ValueError(_("A user with that email already exists."))
         
         update_object_from_dict(obj, object_data)
         
@@ -312,18 +315,24 @@ class UserDetailView(UserMixin, JsonDetailView):
         """
         set create_object_with_put=True
         """        
-        object_data = map_dict2dict(API_USER_MAPPING, data)
-        if 'email' not in object_data:
+        if 'email' not in data:
             raise ValueError(_("E-mail value is missing"))
-        if User.objects.filter(email__iexact=object_data['email']).exists():
+        try:
+            User.objects.get_by_email(data['email'])
             raise ValueError(_("A user with that email address already exists."))
-        
+        except ObjectDoesNotExist:
+            pass
+
+        object_data = map_dict2dict(API_USER_MAPPING, data)
+
         if 'username' not in object_data:
             object_data['username'] = default_username_generator(capfirst(object_data['first_name']), capfirst(object_data['last_name']))
         
         self.object = self.model(**object_data)
         self.object.save()
         self.object.role_profiles = [User.get_default_role_profile()]
+
+        self.object.create_primary_email(email=data['email'])
 
         if 'organisations' in data:
             self._update_user_organisation(data)
@@ -400,9 +409,9 @@ class UserList(UserMixin, JsonListView):
     @classmethod
     def read_permission(cls, request, obj):
         user = request.user
-        if (not user.has_perm('accounts.read_user')):
+        if not user.has_perm('accounts.read_user'):
             return False, "User has no permission '%s" % 'accounts.read_user'
-        elif ('users' not in request.scopes):
+        elif 'users' not in request.scopes:
             return False, "users not in scope '%s'" % request.scopes
         else:
             return True, None
@@ -410,9 +419,9 @@ class UserList(UserMixin, JsonListView):
     @classmethod
     def create_permission(cls, request, obj=None):
         user = request.user
-        if (not user.has_perm('accounts.add_user')):
+        if not user.has_perm('accounts.add_user'):
             return False, "User has no permission '%s" % 'accounts.add_user'
-        elif ('users' not in request.scopes):
+        elif 'users' not in request.scopes:
             return False, "users not in scope '%s'" % request.scopes
         else:
             return True, None
@@ -424,7 +433,7 @@ class UserList(UserMixin, JsonListView):
         }
     
     def get_queryset(self):
-        qs = super(UserList, self).get_queryset().prefetch_related('useraddress_set', 'userphonenumber_set').distinct()
+        qs = super(UserList, self).get_queryset().prefetch_related('useraddress_set', 'userphonenumber_set', 'useremail_set').distinct()
         qs = qs.order_by('username')
         qs = self.request.user.filter_administrable_users(qs)
     

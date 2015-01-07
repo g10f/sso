@@ -152,13 +152,13 @@ class CheckboxSelectMultiple(forms.widgets.CheckboxSelectMultiple):
     renderer = CheckboxFieldRenderer
 
 
-class HiddenInput(Widget, forms.TextInput):
+class HiddenInput(Widget, forms.HiddenInput):
     """
     Hidden field, can be used as honey pot for bots. 
     The field is hidden with a css class and not with type="hidden" 
     """
-    is_hidden = True
-        
+    pass
+
 
 class TextInput(Widget, forms.TextInput):
     

@@ -52,31 +52,3 @@ def remove_profile():
     for user in user_list:
         user.role_profiles.remove(centerprofile)
         print user
-
-
-def cleanup():
-    file_name = os.path.join(settings.BASE_DIR, '../data/dharmashop_user.csv')
-    with open(file_name, 'rb') as csvfile:
-        reader = UnicodeReader(csvfile, encoding="utf-8")      
-        user_dict = dic_from_csv(reader)
-        
-    user_rows = [['uuid', 'email', 'first_name', 'last_name', 'last_login']]
-    user_list = User.objects.all()
-    for user in user_list:
-        encoded = user.password
-        algorithm = encoded.split('$')[0]
-        if algorithm in ['osc_md5']:  # , 'moin_sha1'
-            if user.uuid not in user_dict:
-                user_rows.append([user.uuid, user.email, user.first_name, user.last_name, format(user.last_login, 'Y-m-d')])
-                print user, user.last_login
-                user.delete()
-
-    file_name = os.path.join(settings.BASE_DIR, '../data/sso_deleted_user.csv')
-    with open(file_name, 'wb') as csvfile1:        
-        writer = UnicodeWriter(csvfile1)
-        writer.writerows(user_rows)
-        
-    user_list = User.objects.filter(email__icontains='diamondway-center.org', is_center=False)
-    for user in user_list:
-        user.is_center = True
-        user.save()

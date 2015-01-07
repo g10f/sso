@@ -56,7 +56,7 @@ class OrganisationssTest(TestCase):
         self.assertIsNotNone(organisation.uuid)
         
         # check that a new center account was created
-        user = User.objects.get(email='newcenter@diamondway-center.org')
+        user = User.objects.get_by_email('newcenter@diamondway-center.org')
         self.assertTrue(user.is_center)
         
         self.assertIn(organisation, user.organisations.all())

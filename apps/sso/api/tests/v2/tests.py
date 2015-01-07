@@ -20,6 +20,7 @@ def new_address(addressee, country='DE', street_address='', region='', address_t
         }
     }
 
+
 def new_phone(phone, phone_type='home', primary=True):
     return {
         uuid4().hex: 
@@ -38,11 +39,29 @@ class ApiTests(OAuth2BaseTestCase):
         'email': 'new@g10f.de',
         'organisations': {'31664dd38ca4454e916e55fe8b1f0746': {}}
     })
-    
-    def test_userlist(self):
+
+    def get_url_from_api_home(self, name, kwargs=None):
+        if kwargs is None:
+            kwargs = {}
         response = self.client.get(reverse('api:home'))
         home = json.loads(response.content)
-        users_url = expand(home['users'], {})
+        return expand(home[name], kwargs)
+
+    def test_organisation_list(self):
+        organisations_url = self.get_url_from_api_home('organisations')
+        authorization = self.get_authorization(client_id="1811f02ed81b43b5bee1afe031e6198e", username="CountryAdmin", scope="users")
+        response = self.client.get(organisations_url, HTTP_AUTHORIZATION=authorization)
+        organisations = json.loads(response.content)
+        self.assertNotIn('error', organisations)
+
+        # get the details url of the first member of the collection
+        details_url = organisations['member'][0]['@id']
+        response = self.client.get(details_url, HTTP_AUTHORIZATION=authorization)
+        organisation = json.loads(response.content)
+        self.assertNotIn('error', organisations)
+
+    def test_user_list(self):
+        users_url = self.get_url_from_api_home('users')
         
         authorization = self.get_authorization(client_id="1811f02ed81b43b5bee1afe031e6198e", username="CountryAdmin", scope="users")
         # get user list

@@ -45,7 +45,7 @@ class UserRolesMixin(object):
             new_value_set = set(cd.values_list('id', flat=True))
         except AttributeError:
             # should be a single object instead of queryset
-            new_value_set = set([cd.id]) if cd else set()
+            new_value_set = {cd.id} if cd else set()
                                 
         administrable_values = set(getattr(current_user, 'get_administrable_%s' % attribute_name)().values_list('id', flat=True))  
         self._update_user_m2m(new_value_set, administrable_values, attribute_name)

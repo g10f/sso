@@ -1,0 +1,14 @@
+{% load i18n %}{% autoescape off %}
+
+{% blocktrans %}You recently entered a new email address into {{ site_name }}.
+To confirm your email, follow the link below:{% endblocktrans %}
+{% block reset_link %}
+{{ protocol }}://{{ domain }}{% url 'accounts:confirm_email' uidb64=uid token=token %}
+{% endblock %}
+
+{% blocktrans with date=expiration_date|date:"r" %}This page will expire on {{ date }}.{% endblocktrans %}
+
+
+{% blocktrans %}The {{ site_name }} team{% endblocktrans %}
+
+{% endautoescape %}

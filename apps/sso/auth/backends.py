@@ -1,7 +1,9 @@
 from django.core.exceptions import ObjectDoesNotExist
+# from django.db.models import Q
+# from django.contrib.auth import get_user_model
+from sso.accounts.models import User
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.models import Permission
-from django.contrib.auth import get_user_model
 import re
 
 EMAIL_RE = re.compile(
@@ -27,21 +29,21 @@ class SSOBackend(ModelBackend):
             perms = perms.values_list('content_type__app_label', 'codename').order_by()
             user_obj._sso_group_perm_cache = set(["%s.%s" % (ct, name) for ct, name in perms])
         return user_obj._sso_group_perm_cache
-    
+
 
 class EmailBackend(SSOBackend):
     """Authenticate using email or username"""
     def authenticate(self, username=None, password=None):
         # If username is an email address, then try to pull it up
-        user_model = get_user_model()
         if EMAIL_RE.search(username):
-            user = user_model.objects.filter(email__iexact=username)
-            if user.count() > 0:
-                user = user[0]
+            try:
+                user = User.objects.get_by_confirmed_or_primary_email(username)
                 if user.check_password(password):
                     return user
+            except ObjectDoesNotExist:
+                pass
         try:  # username
-            user = user_model.objects.get(username=username)
+            user = User.objects.get(username=username)
             if user.check_password(password):
                 return user
         except ObjectDoesNotExist:

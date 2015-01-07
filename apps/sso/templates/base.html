@@ -6,17 +6,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="OpenID Connect Identity Provider">
     <meta name="author" content="">
-    <link rel="shortcut icon" href="{% static favicon  %}" type="image/ico"/>
+    <link rel="shortcut icon" href="{% static favicon %}" type="image/ico"/>
     {% block style %}{% with less=False %}{% if debug and less %}
-    <link rel="stylesheet/less" href="{% static stylesheet_less %}">
-    <script src="{% static "js/vendor/less-1.7.5.min.js" %}"></script>
-    <script>less.modifyVars({'@icon-font-path': '"/static/fonts/"'});</script>{% else %}
-    <link rel="stylesheet" href="{% static stylesheet %}">{% endif %}{% endwith %}
+        <link rel="stylesheet/less" href="{% static stylesheet_less %}">
+        <script src="{% static "js/vendor/less-1.7.5.min.js" %}"></script>
+        <script>less.modifyVars({'@icon-font-path': '"/static/fonts/"'});</script>{% else %}
+        <link rel="stylesheet" href="{% static stylesheet %}">{% endif %}{% endwith %}
     {% endblock style %}
     {% block extrastyle %}{% endblock %}
     {% block extrahead %}{% endblock %}
-    <script type="text/javascript">window.__media_prefix__ = "{% filter escapejs %}{% static "" %}{% endfilter %}";</script>
-    <script>(function(H){H.className=H.className.replace(/\bno-js\b/,'js')})(document.documentElement)</script>
+    <script>window.__media_prefix__ = "{% filter escapejs %}{% static "" %}{% endfilter %}";</script>
+    <script>(function (H) {H.className = H.className.replace(/\bno-js\b/, 'js')})(document.documentElement)</script>
     <script src="{% static "js/vendor/jquery-1.11.2.min.js" %}"></script>
     <script src="{% static "js/plugins-1.0.3.js" %}"></script>
     {% block extrascript %}{% endblock extrascript %}
@@ -27,50 +27,55 @@
     <!--[if lt IE 9]>
       <script src="{% static "js/vendor/html5shiv-3.7.2.min.js" %}"></script>
       <script src="{% static "js/vendor/respond-1.4.2.min.js" %}"></script>
-    <![endif]-->        
+    <![endif]-->
 </head>
 <body class="{% block bodyclass %}{% endblock %}">
-    {% block body %}
-    <!--[if lt IE 8]><p class=alert alert-warning>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
-    
-    {% block navbar %}
-    {% include "include/global_navigation.html" %}
-	{% if brand == "DWBN" %}
-    <div id="dwbn-logo-header"><div class=" container"><div id="dwbn-diamondway-logo">&nbsp;</div></div></div>
-	{% endif %}
-    {% endblock navbar %}
-    
-    <div class="{% block containerclass %}container{% endblock %}">      
-	    {% block breadcrumb %}{% endblock %}
-        
-        {% block content %}
-        <main role="main">
-		    <aside>
-		        {% block left_content %}
-		        {% include navigation_template %}
-				{% endblock left_content %}
-		    </aside>
-		    <section>
-		        {% block right_content %}<h2>{% trans 'Home' %}</h2>{% endblock %}
-		    </section>
-	    </main>
-        {% endblock content %}      
+{% block body %}
+    <!--[if lt IE 8]><p class=alert alert-warning>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p>
+    <![endif]-->
 
-      <hr>
-      {% block footer %}
-      <footer>
-        <ul>
-            <li><a href="{% url 'about' %}">{% trans 'About us' %}</a></li>
-            <li class="text-muted">·</li>
-            <li><a href="{% url 'privacy' %}">{% trans 'Privacy' %}</a></li>
-            <li class="text-muted">·</li>
-            <li><a href="{% url 'accounts:contact' %}">{% trans 'Feedback' %}</a></li>
-        </ul>
-      </footer>
-      {% endblock footer %}
-      
-    </div> <!-- /container -->    
-    {% endblock body %}  
-	{% show_tracker %}
+    {% block navbar %}
+        {% include "include/global_navigation.html" %}
+        {% if brand == "DWBN" %}
+            <div id="dwbn-logo-header">
+                <div class=" container">
+                    <div id="dwbn-diamondway-logo">&nbsp;</div>
+                </div>
+            </div>
+        {% endif %}
+    {% endblock navbar %}
+
+    <div class="{% block containerclass %}container{% endblock %}">
+        {% block breadcrumb %}{% endblock %}
+
+        {% block content %}
+            <main role="main">
+                <aside>
+                    {% block left_content %}
+                        {% include navigation_template %}
+                    {% endblock left_content %}
+                </aside>
+                <section>
+                    {% block right_content %}<h2>{% trans 'Home' %}</h2>{% endblock %}
+                </section>
+            </main>
+        {% endblock content %}
+
+        <hr>
+        {% block footer %}
+            <footer>
+                <ul>
+                    <li><a href="{% url 'about' %}">{% trans 'About us' %}</a></li>
+                    <li class="text-muted">·</li>
+                    <li><a href="{% url 'privacy' %}">{% trans 'Privacy' %}</a></li>
+                    <li class="text-muted">·</li>
+                    <li><a href="{% url 'accounts:contact' %}">{% trans 'Feedback' %}</a></li>
+                </ul>
+            </footer>
+        {% endblock footer %}
+
+    </div> <!-- /container -->
+{% endblock body %}
+{% show_tracker %}
 </body>
 </html>

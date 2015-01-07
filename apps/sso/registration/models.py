@@ -26,8 +26,14 @@ def send_user_validated_email(registration_profile, request):
     email_recipient_list = settings.REGISTRATION.get('EMAIL_RECIPIENT_LIST', None)
     if not email_recipient_list:
         return
-    
-    recipient_list = User.objects.filter(email__in=email_recipient_list)
+
+    # case insensitive search
+    q_list = map(lambda email: Q(useremail__email__iexact=email), email_recipient_list)
+    q_list = reduce(lambda a, b: a | b, q_list)
+
+    recipient_list = User.objects.filter(q_list)
+
+    # recipient_list = User.objects.filter(useremail__email__in=email_recipient_list)
     user_organisations = registration_profile.user.organisations.all()
     
     # add only admins of the new registered user to the final recipient list
@@ -35,7 +41,7 @@ def send_user_validated_email(registration_profile, request):
     for user in recipient_list:
         for organisation in user_organisations:
             if user.has_organisation_user_access(organisation.uuid):
-                final_recipient_list.append(user.email)
+                final_recipient_list.append(str(user.primary_email()))
                 break
 
     if len(final_recipient_list) > 0:
@@ -43,7 +49,7 @@ def send_user_validated_email(registration_profile, request):
         current_site = get_current_site(request)
         domain = current_site.domain
         
-        subject = u"Validation for %s completed" % registration_profile.user
+        subject = u"Validation for %s completed" % registration_profile.user.get_full_name()
         admin_url = urlresolvers.reverse("registration:update_user_registration", args=(registration_profile.pk,))
         email = subject + u"\n %s://%s%s" % (protocol, domain, admin_url)
         send_mail(subject, email, None, final_recipient_list)
@@ -61,7 +67,7 @@ def send_set_password_email(user, request, token_generator=default_pwd_reset_tok
     expiration_date = now() + datetime.timedelta(settings.PASSWORD_RESET_TIMEOUT_DAYS)
 
     c = {
-        'email': user.email,
+        'email': user.primary_email(),
         'username': user.username,
         'domain': domain,
         'site_name': site_name,
@@ -81,7 +87,7 @@ def send_set_password_email(user, request, token_generator=default_pwd_reset_tok
     finally:
         activate(cur_language)
 
-    send_mail(subject, email, from_email, [user.email])
+    user.email_user(subject, email, from_email)
 
 
 def send_validation_email(registration_profile, request, token_generator=default_token_generator):
@@ -103,7 +109,7 @@ def send_validation_email(registration_profile, request, token_generator=default
     # Email subject *must not* contain newlines
     subject = ''.join(subject.splitlines())
     message = render_to_string('registration/validation_email.txt', c)
-    send_mail(subject, message, None, [registration_profile.user.email])
+    registration_profile.user.email_user(subject, message, None)
 
 
 class RegistrationManager(models.Manager):
