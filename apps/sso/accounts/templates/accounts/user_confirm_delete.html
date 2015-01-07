@@ -16,22 +16,22 @@
     
 	<div class="form-group">
 	  <label class="control-label">{% trans 'First name' %}</label> 
-	  <div class="dwbn-form-control"><p class="form-control-static">{{ object.first_name  }}</p></div>
+	  <div class="dwbn-form-control"><p class="form-control-static">{{ object.first_name }}</p></div>
 	</div>
 
     <div class="form-group">
       <label class="control-label">{% trans 'Last name' %}</label> 
-      <div class="dwbn-form-control"><p class="form-control-static">{{ object.last_name  }}</p></div>
+      <div class="dwbn-form-control"><p class="form-control-static">{{ object.last_name }}</p></div>
     </div>
 
     <div class="form-group">
       <label class="control-label">{% trans 'Email address' %}</label> 
-      <div class="dwbn-form-control"><p class="form-control-static">{{ object.email  }}</p></div>
+      <div class="dwbn-form-control"><p class="form-control-static">{{ object.primary_email }}</p></div>
     </div>
     
     <div class="form-group">
       <label class="control-label">{% trans 'Notes' %}</label> 
-      <div class="dwbn-form-control"><p class="form-control-static">{{ object.notes  }}</p></div>
+      <div class="dwbn-form-control"><p class="form-control-static">{{ object.notes }}</p></div>
     </div>
 
     {% for organisation in object.organisations.all %}
@@ -45,12 +45,12 @@
     {% with registrationprofile=object.registrationprofile %}
     <div class="form-group">
       <label class="control-label">{% trans 'Country' %}</label> 
-      <div class="dwbn-form-control"><p class="form-control-static">{{ registrationprofile.country   }}</p></div>
+      <div class="dwbn-form-control"><p class="form-control-static">{{ registrationprofile.country }}</p></div>
     </div>
 
     <div class="form-group">
       <label class="control-label">{% trans 'City' %}</label> 
-      <div class="dwbn-form-control"><p class="form-control-static">{{ registrationprofile.city  }}</p></div>
+      <div class="dwbn-form-control"><p class="form-control-static">{{ registrationprofile.city }}</p></div>
     </div>
     {% endwith %}
     {% endif %}

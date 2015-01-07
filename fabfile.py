@@ -20,6 +20,7 @@ valid_server_names = {
     'idp': ['idp.g10f.de']  # test instanz
 }
 
+
 def check_server_name(server_name):
     if (not server_name) and (len(env.hosts) == 1) and (env.hosts[0] in valid_server_names) and \
             (len(valid_server_names[env.hosts[0]]) == 1):
@@ -155,32 +156,38 @@ os.environ['DEBUG'] = ""
 os.environ['THROTTELING_DISABLED'] = "True"
 """
 
+
 @task
 def compileless(version='1.0.10'):
     for style in ['default', 'dwbn', 'cerulean', 'slate', 'vw']:
         local('lessc ./apps/sso/static/less/%(style)s.less ./apps/sso/static/css/%(style)s-%(version)s.css' %{'style': style, 'version': version})
+
 
 @task
 def compilemessages():
     with lcd('apps'):
         local('~/envs/sso/bin/python manage.py compilemessages')
 
+
 @task
 def makemessages():
     with lcd('apps'):
         local('~/envs/sso/bin/python manage.py makemessages -a')
 
-@task 
+
+@task
 def test():
     with lcd('apps'):	
         local("~/envs/sso/bin/python manage.py test streaming accounts oauth2")
 
-@task 
+
+@task
 def prepare_deploy():
     compilemessages()
     #test()
     local("git commit -a")
     local("git push -u origin master")
+
 
 
 @task
@@ -192,6 +199,7 @@ def migrate_data(python, server_name, code_dir, app):
     sudo("%s ./src/apps/manage.py migrate" % python, user='www-data', group='www-data')
     # sudo("%s ./src/apps/manage.py loaddata l10n_data.xml" % python, user='www-data', group='www-data')
 
+
 @task
 def createsuperuser(server_name='', virtualenv='sso'): 
     server_name = check_server_name(server_name)
@@ -200,6 +208,7 @@ def createsuperuser(server_name='', virtualenv='sso'):
     with cd(code_dir):
         run("%s ./src/apps/manage.py createsuperuser --username=admin --email=admin@g10f.de" % python)
     
+
 @task
 def update_debian():
     sudo('apt-add-repository ppa:ubuntugis/ppa')  # add gis repository
@@ -207,7 +216,8 @@ def update_debian():
     fabtools.deb.upgrade(safe=False)
     sudo('reboot')
     
-def deploy_debian():    
+
+def deploy_debian():
     require.deb.package('libpq-dev')
     # require.deb.package('libmysqlclient-dev')
     require.deb.package('libjpeg62')
@@ -254,7 +264,8 @@ def deploy_webserver(code_dir, server_name):
 
 def deploy_app():
     pass
-    
+
+
 def setup_user(user):
     # add the id_rsa files for accessing the bitbucket repository 
     ssh_dir = posixpath.join(fabtools.user.home_directory(user), '.ssh')
@@ -266,7 +277,8 @@ def setup_user(user):
     
     require.files.directory('/proj', use_sudo=True, owner=user)
     require.files.directory('/envs', use_sudo=True, owner=user)    
-    
+
+
 def update_dir_settings(directory):
     sudo("chown www-data:www-data -R %s" % directory)  
     sudo("chmod 0660 -R %s" % directory)
@@ -279,7 +291,8 @@ configurations = {
     'elsapro': {'host_string': 'g10f', 'server_name': 'sso.elsapro.com', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'vw_sso'},
 }
 
-@task 
+
+@task
 def deploy(conf='dev'):
     configuration = configurations.get(conf)
     server_name = configuration['server_name']
@@ -299,7 +312,7 @@ def deploy(conf='dev'):
     # deploy_database(db_name)
 
     with cd(code_dir):
-        require.git.working_copy('git@bitbucket.org:dwbn/sso.git', path='src')
+        require.git.working_copy('git@bitbucket.org:dwbn/sso.git', path='src', branch='usermail')
         sudo("chown www-data:www-data -R  ./src")
         sudo("chmod g+w -R  ./src")
     
