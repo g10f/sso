@@ -59,14 +59,14 @@
         <table class="table table-condensed">
             <thead>
             <tr>
-                <th scope="col" colspan="2">{% trans 'Email address' %}</th>
+                <th scope="col" colspan="3">{% trans 'Email address' %}</th>
             </tr>
             </thead>
             <tbody>
             {% if user.useremail_set.all|length < max_email_adresses %}
                 <tr>
                     {% with field=form.email %}
-                        <td class="col-xs-8 {% if field.errors %}has-error{% endif %}" >
+                        <td class="col-xs-8 {% if field.errors %}has-error{% endif %}" colspan="2">
                             <label class="sr-only" for="email">{% trans 'Email address' %}</label>
                             {{ field }}{% if field.help_text or field.errors %}
                                 <span class="help-block">{{ field.help_text }} {% for error in field.errors %}
