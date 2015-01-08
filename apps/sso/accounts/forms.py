@@ -27,7 +27,6 @@ from django.contrib.auth.forms import SetPasswordForm as DjangoSetPasswordForm
 from django.contrib.auth.tokens import default_token_generator
 from passwords.fields import PasswordField
 from .models import User, UserAddress, UserPhoneNumber, UserEmail
-from sso.forms.bootstrap import ReadOnlyField, ReadOnlyWidget
 from sso.forms.fields import EmailFieldLower
 from sso.organisations.models import Organisation
 from sso.registration import default_username_generator
@@ -234,7 +233,6 @@ class UserAddForm(forms.ModelForm):
         if not user.has_perm("accounts.access_all_users"):
             self.fields['organisation'].required = True
 
-
     def clean_email(self):
         # Check if email is unique,
         email = self.cleaned_data["email"]
@@ -277,7 +275,8 @@ class AddressForm(BaseForm):
             'region': bootstrap.TextInput(attrs={'size': 50}),
         }
     
-    def template(self):
+    @staticmethod
+    def template():
         return 'edit_inline/stacked.html'
 
 
@@ -320,7 +319,6 @@ class SelfUserEmailForm(forms.Form):
 
 
 class UserEmailForm(BaseForm):
-    # confirmed = bootstrap.ReadOnlyYesNoField(label=_('confirmed'))
 
     class Meta:
         model = UserEmail
@@ -330,30 +328,6 @@ class UserEmailForm(BaseForm):
             'primary': bootstrap.CheckboxInput(),
             'confirmed': bootstrap.CheckboxInput()
         }
-
-    def __init__(self, *args, **kwargs):
-        # initialize the readonly field
-        """
-        initial = kwargs.get('initial', {})
-        instance = kwargs.get('instance', None)
-        if instance:
-            initial['confirmed'] = instance.confirmed
-        else:
-            initial['confirmed'] = False
-        kwargs['initial'] = initial
-        """
-        super(UserEmailForm, self).__init__(*args, **kwargs)
-
-    def save(self, commit=True):
-        return super(UserEmailForm, self).save(commit=commit)
-        """
-        instance = super(UserEmailForm, self).save(commit=False)
-        if (not instance.user.is_center) and ('email' in self.changed_data):
-            instance.confirmed = False
-        if commit:
-            instance.save()
-        return instance
-        """
 
     @staticmethod
     def template():

@@ -56,15 +56,15 @@ class RegistrationTest(TestCase):
         }
         response = self.client.post(reverse('registration:registration_register'), data=data)
         self.assertFormError(response, 'form', 'captcha', ['Incorrect, please try again.'])
-    
-    def test_registration_register(self):
+
+    def registration(self):
         """
         User self registration with email validation
-        """        
+        """
         response = self.client.get(reverse('registration:registration_register'))
         self.assertEqual(response.status_code, 200)
         organisation = Organisation.objects.filter(is_active=True).first()
-        
+
         data = {
             'email': 'test2@g10f.de',
             'email2': 'test2@g10f.de',
@@ -79,19 +79,19 @@ class RegistrationTest(TestCase):
             'city': 'Megacity',
             'organisation': organisation.pk,
             'recaptcha_response_field': 'PASSED'
-      
+
         }
         response = self.client.post(reverse('registration:registration_register'), data=data)
         self.assertNotContains(response, 'has-error')
-        
+
         # captcha is only displayed once.
         # the second time a signed value is used
-        del data['recaptcha_response_field']        
+        del data['recaptcha_response_field']
         data['state'] = response.context['form'].data['state']
-        
+
         data[response.context['stage_field']] = "2"
         data[response.context['hash_field']] = response.context['hash_value']
-        
+
         response = self.client.post(reverse('registration:registration_register'), data=data)
         print response.content
         self.assertEqual(response.status_code, 302)
@@ -99,26 +99,45 @@ class RegistrationTest(TestCase):
         path = self.get_url_path_from_mail()
         response = self.client.post(path)
         self.assertEqual(response.status_code, 302)
-        
+
         response = self.client.get(response['Location'])
         self.assertEqual(response.status_code, 200)
 
-        """
-        Admin activates the registered user
-        """
+        # admin reads his mail box
         outbox = getattr(mail, 'outbox')
         fullname = 'first_name' + ' ' + 'last_name'
         self.assertNotEqual(outbox[-1].subject.find('Validation for %s completed' % fullname), -1)
-
         path = self.get_url_path_from_mail()
+
+        return path, data
+
+    def test_registration_delete(self):
+        path, data = self.registration()
+
+        # admin logs in
         self.client.login(username='GlobalAdmin', password='secret007')
-        
-        # data['is_verified'] = 'on'
+
+        # get the registration form
+        response = self.client.get(path)
+
+        # get the delete form url
+        pk = re.findall(r'registrations/delete/(?P<pk>\d+)/', response.content)[0]
+        # post the delete form
+        path = reverse('registration:delete_user_registration', args=[pk])
+        response = self.client.post(path)
+        self.assertEqual(response.status_code, 302)
+
+    def test_registration_register(self):
+        path, data = self.registration()
+
+        # admin logs in
+        self.client.login(username='GlobalAdmin', password='secret007')
+
+        # admin activates the account
         data['username'] = "TestUser"
-        data['organisations'] = organisation.pk
-        
         response = self.client.post(path, data=data)
         self.assertEqual(response.status_code, 302)
-        # check if the user got an email for creating the password
+
+        # the user got an email for creating the password
         outbox = getattr(mail, 'outbox')
         self.assertNotEqual(outbox[-1].subject.find('Set your password'), -1) 

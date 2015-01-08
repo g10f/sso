@@ -126,7 +126,7 @@ class UserList(ListView):
     model = get_user_model()
     list_display = ['username', 'picture', 'first_name', 'last_name', UserEmailHeadingl(), 'last_login', 'date_joined']
     IS_ACTIVE_CHOICES = (('1', _('Active Users')), ('2', _('Inactive Users')))
-    
+
     @method_decorator(login_required)
     @method_decorator(permission_required('accounts.change_user', raise_exception=True))
     def dispatch(self, request, *args, **kwargs):
