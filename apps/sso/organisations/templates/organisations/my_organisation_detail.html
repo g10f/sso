@@ -7,3 +7,5 @@
     <li class="active">{% trans 'My Center' %}</li>
 </ol> 
 {% endblock breadcrumb %}
+
+{% block left_content %}{% include navigation_template with active_navigation="my_organisation" %}{% endblock left_content %}

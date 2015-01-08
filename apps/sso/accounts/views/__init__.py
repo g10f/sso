@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 import urlparse
-from datetime import timedelta
-from django.utils.http import urlsafe_base64_decode
 
+from django.utils.http import urlsafe_base64_decode
 from django.conf import settings
 from django.shortcuts import render, redirect, resolve_url
-from django.utils.timezone import now
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.cache import never_cache
