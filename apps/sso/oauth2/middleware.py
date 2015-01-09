@@ -29,7 +29,7 @@ def get_access_token(request):
     else:
         return request.POST.get('access_token', request.GET.get('access_token', None))
 
-    
+
 def get_auth_data_from_token(access_token):
     try:
         if not access_token:
@@ -54,33 +54,33 @@ def get_auth_data_from_token(access_token):
 
 
 def get_auth_data_from_cookie(request, with_client_and_scopes=False):
-        client = None
-        scopes = set()
-        if with_client_and_scopes:  # get a client id for using the API in the Browser
-            try:                    
-                client = Client.objects.get(uuid='ca96cd88bc2740249d0def68221cba88') 
-                scopes = set(client.scopes.split())
-            except ObjectDoesNotExist:
-                pass
-            
-        user = auth.get_user(request)
-        
-        # from 'django.contrib.auth.middleware.SessionAuthenticationMiddleware'
-        # Invalidating a user's sessions that don't correspond to the
-        # user's current session authentication hash (generated based on the user's
-        # password for AbstractUser).
-        if user and hasattr(user, 'get_session_auth_hash'):
-            session_hash = request.session.get(auth.HASH_SESSION_KEY)
-            session_hash_verified = session_hash and constant_time_compare(
-                session_hash,
-                user.get_session_auth_hash()
-            )
-            if not session_hash_verified:
-                from django.contrib.auth.models import AnonymousUser
-                request.session.flush()
-                user = AnonymousUser()
-        
-        return user, client, scopes
+    client = None
+    scopes = set()
+    if with_client_and_scopes:  # get a client id for using the API in the Browser
+        try:
+            client = Client.objects.get(uuid='ca96cd88bc2740249d0def68221cba88')
+            scopes = set(client.scopes.split())
+        except ObjectDoesNotExist:
+            pass
+
+    user = auth.get_user(request)
+
+    # from 'django.contrib.auth.middleware.SessionAuthenticationMiddleware'
+    # Invalidating a user's sessions that don't correspond to the
+    # user's current session authentication hash (generated based on the user's
+    # password for AbstractUser).
+    if user and hasattr(user, 'get_session_auth_hash'):
+        session_hash = request.session.get(auth.HASH_SESSION_KEY)
+        session_hash_verified = session_hash and constant_time_compare(
+            session_hash,
+            user.get_session_auth_hash()
+        )
+        if not session_hash_verified:
+            from django.contrib.auth.models import AnonymousUser
+            request.session.flush()
+            user = AnonymousUser()
+
+    return user, client, scopes
 
 
 def get_auth_data(request):

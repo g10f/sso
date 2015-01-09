@@ -24,9 +24,11 @@ logger = logging.getLogger(__name__)
 
 
 class UserEmailAdmin(admin.ModelAdmin):
-    list_display = ('user', 'email', 'primary', 'confirmed')
+    list_display = ('user', 'email', 'primary', 'confirmed', 'last_modified')
     raw_id_fields = ("user",)
     search_fields = ('user__username', 'email')
+    ordering = ['-last_modified']
+    list_filter = ('confirmed', 'primary')
 
 
 class OneTimeMessageAdmin(admin.ModelAdmin):

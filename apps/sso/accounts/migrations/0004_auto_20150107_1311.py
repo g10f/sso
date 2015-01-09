@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import UserManager
 
 from django.db import models, migrations
@@ -18,7 +19,14 @@ def code(apps, schema_editor):
     user_email_model = apps.get_model("accounts", "UserEmail")
 
     for user in user_model.objects.filter(email__isnull=False).exclude(email=''):
-        confirmed = True if user.is_center else False
+        if user.is_center:
+            confirmed = True
+        else:
+            try:
+                confirmed = user.registrationprofile.is_validated
+            except ObjectDoesNotExist:
+                confirmed = False
+
         email = UserManager.normalize_email(user.email)
         user_email = user_email_model(
             email=email,
@@ -37,6 +45,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('accounts', '0003_onetimemessage'),
+        ('registration', '0001_initial')
     ]
 
     operations = [

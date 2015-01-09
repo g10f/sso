@@ -15,7 +15,7 @@ def reverse_code(apps, schema_editor):
     for user_email in user_email_model.objects.filter(primary=True):
         user = user_email.user
         user.email = user_email.email
-        user.save()
+        user.save(update_fields=['email'])
 
 
 class Migration(migrations.Migration):

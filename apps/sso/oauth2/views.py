@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 import base64
+import hashlib
 try:
     from urllib.parse import urlparse, urlunparse, urlsplit, urlunsplit
 except ImportError:     # Python 2
@@ -10,6 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.generic import TemplateView
 from django.utils import timezone
+from django.utils.crypto import get_random_string
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_str
 from django.core.urlresolvers import reverse
@@ -20,7 +22,6 @@ from django.contrib.auth.decorators import permission_required, login_required
 from django.shortcuts import render, get_object_or_404, resolve_url
 from oauthlib import oauth2
 from oauthlib.common import urlencode, urlencoded, quote
-from http.http_status import *  # @UnusedWildImport
 from utils.url import base_url
 from utils.convert import pack_bigint
 from sso.api.response import JsonHttpResponse 
@@ -168,8 +169,6 @@ def redirect_to_login(request, redirect_field_name=REDIRECT_FIELD_NAME):  # @Res
     return HttpResponseRedirect(urlunparse(login_url_parts))
 
 
-import hashlib
-from django.utils.crypto import get_random_string
 def get_session_state(client_id, browser_state):
     salt = get_random_string()
     if browser_state is None:
@@ -192,14 +191,14 @@ def authorize(request):
         prompt = get_param(request, 'prompt', '').split()
         
         # check if the user must login
-        login_required = True
+        is_login_required = True
         if request.user.is_authenticated() and ('login' not in prompt):
             max_age = get_param(request, 'max_age')
             if not max_age or (int(max_age) > (timezone.now() - request.user.last_login).total_seconds()):
-                login_required = False
+                is_login_required = False
         
         if 'none' in prompt:
-            if login_required:
+            if is_login_required:
                 raise LoginRequiredError(state=credentials.get('state'))
             else:
                 id_token = get_param(request, 'id_token_hint', '')
@@ -207,7 +206,7 @@ def authorize(request):
                 if parsed['sub'] != request.user.uuid:
                     raise LoginRequiredError(state=credentials.get('state'))
                 
-        if login_required: 
+        if is_login_required: 
             return redirect_to_login(request)
             
         # if we are here, the user is already logged in does not need to login again          
@@ -242,15 +241,15 @@ def tokeninfo(request):
     max_length = 2048
     try:
         if 'access_token' in request.GET:
-            token = request.GET.get('access_token')
+            oauth2_token = request.GET.get('access_token')
         elif 'id_token' in request.GET:
-            token = request.GET.get('id_token')
+            oauth2_token = request.GET.get('id_token')
         else:
             raise oauth2.InvalidRequestError("either access_token or id_token required")
-        if len(token) > max_length:
-            raise oauth2.InvalidRequestError("token length excceded %d" % max_length)
+        if len(oauth2_token) > max_length:
+            raise oauth2.InvalidRequestError("oauth2_token length excceded %d" % max_length)
             
-        parsed = loads_jwt(token)
+        parsed = loads_jwt(oauth2_token)
         content = json.dumps(parsed) 
         return HttpResponse(content=content, content_type='application/json')
 
@@ -298,6 +297,7 @@ def jwks(request):
     }
     return JsonHttpResponse(data, request)
 
+
 @permission_required("oauth2.change_client")
 def client_details(request, object_id):
     client = get_object_or_404(Client, pk=object_id)
@@ -313,6 +313,7 @@ def client_details(request, object_id):
         "logout_uri": request.build_absolute_uri(reverse('accounts:logout')),
     }
     return JsonHttpResponse(data, request)
+
 
 class ErrorView(TemplateView):
     template_name = "oauth2/error.html"

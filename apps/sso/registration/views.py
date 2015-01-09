@@ -156,6 +156,9 @@ class UserRegistrationList(ListView):
 @login_required
 @permission_required('registration.change_registrationprofile', raise_exception=True)
 def update_user_registration(request, pk, template='registration/change_user_registration_form.html'):
+    """
+    registration admin view to activate or update user registrations
+    """
     registrationprofile = get_object_or_404(RegistrationProfile, pk=pk)
     if not request.user.has_user_access(registrationprofile.user.uuid):
         raise PermissionDenied
@@ -190,6 +193,9 @@ def update_user_registration(request, pk, template='registration/change_user_reg
 
 def validation_confirm(request, uidb64=None, token=None, token_generator=default_token_generator,
                        template='registration/validation_confirm.html'):
+    """
+    view to confirm the email in the registration process
+    """
     try:
         from django.utils.http import urlsafe_base64_decode
         uid = urlsafe_base64_decode(uidb64)

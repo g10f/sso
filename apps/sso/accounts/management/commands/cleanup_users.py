@@ -3,6 +3,7 @@ import os
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from django.utils.dateformat import format
+from sso.registration.models import RegistrationProfile
 
 from utils.ucsv import UnicodeReader, UnicodeWriter, dic_from_csv
 
@@ -18,7 +19,16 @@ class Command(BaseCommand):
     help = 'Cleanup Users'  # @ReservedAssignment
     
     def handle(self, *args, **options):
-        clean_pictures()
+        update_email_confirmed_flag()
+
+
+def update_email_confirmed_flag():
+    for registration_profile in RegistrationProfile.objects.filter(is_validated=True).prefetch_related('user__useremail_set'):
+        user_email = registration_profile.user.primary_email()
+        if not user_email.confirmed:
+            user_email.confirmed = True
+            user_email.save(update_fields=['confirmed'])
+            print user_email
 
 
 def clean_pictures():

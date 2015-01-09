@@ -42,7 +42,7 @@ class IsActiveFilter(SimpleListFilter):
 
 class RegistrationAdmin(admin.ModelAdmin):
     actions = ['activate', 'validate_users', 'resend_validation_email', 'delete_expired']
-    list_display = ('user', 'email', 'date_registered', 'about_me', 'is_validated', 'token_valid', 'activation_valid', 'is_access_denied', 'is_active')
+    list_display = ('user', 'primary_email', 'date_registered', 'about_me', 'is_validated', 'token_valid', 'activation_valid', 'is_access_denied', 'is_active')
     raw_id_fields = ['user', 'verified_by_user']
     search_fields = ('user__username', 'user__email', 'user__first_name', 'user__last_name')
     date_hierarchy = 'date_registered'
@@ -57,13 +57,17 @@ class RegistrationAdmin(admin.ModelAdmin):
            'check_back', 'is_access_denied', 'verified_by_user'],
           'classes': ['wide']}), ]
 
+    def get_queryset(self, request):
+        return super(RegistrationAdmin, self).get_queryset(request).prefetch_related('user__useremail_set')
+
+
     def is_active(self, obj):
         return obj.user.is_active
     is_active.boolean = True
     is_active.short_description = _('active')
      
-    def email(self, obj):
-        return obj.user.email        
+    def primary_email(self, obj):
+        return obj.user.primary_email()
         
     def user_link(self, obj):
         user = obj.user

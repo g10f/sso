@@ -19,6 +19,7 @@ DHARMASHOPS_UUIDS = [
     'bcae7e305ba24095bcb0cbc6ffc33944'
 ]
 
+
 class Command(NoArgsCommand):
     help = '...'  # @ReservedAssignment
     

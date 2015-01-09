@@ -801,21 +801,6 @@ def update_user(sender, instance, created, **kwargs):
         instance.created_by_user = instance.last_modified_by_user
         instance.save()
 
-"""
-from django.contrib.admin.models import LogEntry
-@receiver(signals.post_save, sender=LogEntry)
-def send_notification_email(sender, instance, **kwargs):
-    from django.core.mail.message import EmailMessage
-    if settings.LOCAL_DEV:
-        return
-    change = instance
-    subject = u"model %(model)s has been changed by %(user)s" % {'model': change.content_type, 'user': change.user}
-    subject = ''.join(subject.splitlines())
-    body = loader.render_to_string('accounts/email/change_email.html', {'change': change})
-    msg = EmailMessage(subject, body, to=settings.USER_CHANGE_EMAIL_RECIPIENT_LIST)
-    msg.content_subtype = "html"  # Main content is now text/html
-    msg.send(fail_silently=settings.DEBUG)
-"""
 
 """
 @receiver(user_logged_in)

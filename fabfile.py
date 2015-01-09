@@ -1,43 +1,21 @@
 from __future__ import with_statement
 import posixpath
+
 from fabric.api import *
-from fabric.api import local, settings, abort, run, cd
-from fabric.contrib.console import confirm
-from fabric.contrib import files
-from fabric.colors import red
+from fabric.api import local, run, cd
 from fabtools import require
 import fabtools
+
 
 env.use_ssh_config = True
 env.apps = ['sso']
 
-# map valid  server names to enviroments, to ensure we deploy accurately
-valid_server_names = {
-    'sso-dev': ['sso-dev.dwbn.org'],
-    'g10f': ['dwbn-sso.g10f.de', 'sso.g10f.de', 'sso.elsapro.com'],
-    'elsapro': ['sso.elsapro.com'],
-    'dwbn001': ['sso.dwbn.org'],
-    'idp': ['idp.g10f.de']  # test instanz
+configurations = {
+    'dev': {'host_string': 'sso.dwbn.org', 'server_name': 'sso-dev.dwbn.org', 'app': 'sso', 'virtualenv': 'sso-dev', 'db_name': 'sso_dev'},
+    'prod': {'host_string': 'sso.dwbn.org', 'server_name': 'sso.dwbn.org', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'sso'},
+    'g10f': {'host_string': 'g10f', 'server_name': 'sso.g10f.de', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'sso'},
+    'elsapro': {'host_string': 'g10f', 'server_name': 'sso.elsapro.com', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'vw_sso'},
 }
-
-
-def check_server_name(server_name):
-    if (not server_name) and (len(env.hosts) == 1) and (env.hosts[0] in valid_server_names) and \
-            (len(valid_server_names[env.hosts[0]]) == 1):
-        server_name = valid_server_names[env.hosts[0]][0]
-        return server_name
-    else:
-        for host in env.hosts:
-            if not (server_name in valid_server_names[host]):
-                print red('***********************************************')
-                print red('Please check server name and host combination')
-                print red('(%s, %s)' % (server_name, env.hosts))
-                print red('Deployment was aborted.')
-                print red('***********************************************')
-                raise Exception("check_server_name failed")
-        
-        return server_name
-
 
 LOGROTATE_TEMPLATE = """\
 %(code_dir)s/logs/*.log {
@@ -189,20 +167,16 @@ def prepare_deploy():
     local("git push -u origin master")
 
 
-
-@task
-def perms():
-    django.manage.run(command="update_permissions")
-
-
 def migrate_data(python, server_name, code_dir, app):
     sudo("%s ./src/apps/manage.py migrate" % python, user='www-data', group='www-data')
     # sudo("%s ./src/apps/manage.py loaddata l10n_data.xml" % python, user='www-data', group='www-data')
 
 
 @task
-def createsuperuser(server_name='', virtualenv='sso'): 
-    server_name = check_server_name(server_name)
+def createsuperuser(conf='dev'):
+    configuration = configurations.get(conf)
+    server_name = configuration['server_name']
+    virtualenv = configuration['virtualenv']
     code_dir = '/proj/%s' % server_name
     python = '/envs/%(virtualenv)s/bin/python' % {'virtualenv': virtualenv}
     with cd(code_dir):
@@ -284,13 +258,6 @@ def update_dir_settings(directory):
     sudo("chmod 0660 -R %s" % directory)
     sudo("chmod +X %s" % directory)
 
-configurations = {
-    'dev': {'host_string': 'sso.dwbn.org', 'server_name': 'sso-dev.dwbn.org', 'app': 'sso', 'virtualenv': 'sso-dev', 'db_name': 'sso_dev'},
-    'prod': {'host_string': 'sso.dwbn.org', 'server_name': 'sso.dwbn.org', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'sso'},
-    'g10f': {'host_string': 'g10f', 'server_name': 'sso.g10f.de', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'sso'},
-    'elsapro': {'host_string': 'g10f', 'server_name': 'sso.elsapro.com', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'vw_sso'},
-}
-
 
 @task
 def deploy(conf='dev'):
@@ -320,8 +287,7 @@ def deploy(conf='dev'):
     require.file('%(code_dir)s/src/apps/%(app)s/settings/local_settings.py' % {'code_dir': code_dir, 'app': app}, 
                  source='apps/%(app)s/settings/local_%(server_name)s.py' % {'server_name': server_name, 'app': app},
                  use_sudo=True, owner='www-data', group='www-data')
-    
-    
+
     """
     # python enviroment
     require.python.virtualenv('/envs/%s' % virtualenv)
@@ -354,8 +320,8 @@ def deploy(conf='dev'):
     python = '/envs/%(virtualenv)s/bin/python' % {'virtualenv': virtualenv}
     with cd(code_dir):
         update_dir_settings(code_dir + '/logs')
+        sudo("supervisorctl stop %(server_name)s" % {'server_name': server_name})
         migrate_data(python, server_name, code_dir, app)
+        sudo("supervisorctl start %(server_name)s" % {'server_name': server_name})
         sudo("%s ./src/apps/manage.py collectstatic --noinput" % python)
-        sudo("supervisorctl restart %(server_name)s" % {'server_name': server_name})
         update_dir_settings(code_dir + '/logs')
-    
