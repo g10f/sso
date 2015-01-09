@@ -4,6 +4,7 @@ from django.conf import settings
 
 from sso.accounts import models
 
+
 def get_app_roles(app_roles_dict):
     app_roles = []
     for _app_role in app_roles_dict:
@@ -12,13 +13,15 @@ def get_app_roles(app_roles_dict):
             role = models.Role.objects.get(name=roles_name)
             app_roles += [models.ApplicationRole.objects.get(application=application, role=role)]
     return app_roles
-    
+
+
 def remove_redundant_app_roles(role_profile):
     user_list = models.User.objects.filter(role_profiles=role_profile, is_active=True)
     
     for user in user_list:
         application_roles = list(role_profile.application_roles.all())
         user.application_roles.remove(*application_roles)
+
 
 class Command(NoArgsCommand):
     help = '...'  # @ReservedAssignment
