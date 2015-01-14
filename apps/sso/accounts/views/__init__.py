@@ -238,9 +238,12 @@ def emails(request):
             messages.success(request, _('Confirmation email was sent to \"%(email)s\".') % {'email': user_email})
             return redirect('accounts:emails')
         elif 'delete' in request.POST:
-            user_email = UserEmail.objects.get(id=request.POST['delete'])
-            user_email.delete()
-            messages.success(request, _('The email \"%(email)s\" was deleted successfully.') % {'email': user_email})
+            try:
+                user_email = UserEmail.objects.get(id=request.POST['delete'])
+                user_email.delete()
+                messages.success(request, _('The email \"%(email)s\" was deleted successfully.') % {'email': user_email})
+            except UserEmail.DoesNotExist:
+                pass
             return redirect('accounts:emails')
         elif 'set_primary' in request.POST:
             user_email = UserEmail.objects.get(id=request.POST['set_primary'])
