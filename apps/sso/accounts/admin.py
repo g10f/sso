@@ -24,11 +24,19 @@ logger = logging.getLogger(__name__)
 
 
 class UserEmailAdmin(admin.ModelAdmin):
-    list_display = ('user', 'email', 'primary', 'confirmed', 'last_modified')
+    list_display = ('email', 'user_link', 'primary', 'confirmed', 'last_modified')
     raw_id_fields = ("user",)
     search_fields = ('user__username', 'email')
     ordering = ['-last_modified']
     list_filter = ('confirmed', 'primary')
+    list_select_related = ('user', )
+
+    def user_link(self, obj):
+        url = urlresolvers.reverse('admin:accounts_user_change', args=(obj.user.pk,), current_app=self.admin_site.name)
+        return mark_safe(u'<a href="%s">%s</a>' % (url, obj.user))
+    user_link.allow_tags = True
+    user_link.short_description = _('user')
+    user_link.admin_order_field = 'user'
 
 
 class OneTimeMessageAdmin(admin.ModelAdmin):
@@ -81,6 +89,7 @@ class RoleProfileAdmin(admin.ModelAdmin):
 
 class BaseFilter(SimpleListFilter):
     field_path = ''
+
     def get_lookup_qs(self, request, model_admin):
         """ Return the queryset for the filter"""
         raise NotImplementedError
