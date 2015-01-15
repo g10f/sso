@@ -104,6 +104,7 @@ class Client(AbstractBaseModel):
     def get_absolute_url(self):
         return reverse('oauth2:client.details.json', args=[str(self.id)])
 
+
 class AuthorizationCode(models.Model):
     """
     OAuth2 Authorization Code

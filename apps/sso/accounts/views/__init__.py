@@ -243,6 +243,7 @@ def emails(request):
                 user_email.delete()
                 messages.success(request, _('The email \"%(email)s\" was deleted successfully.') % {'email': user_email})
             except UserEmail.DoesNotExist:
+                # may be a double click on the delete button
                 pass
             return redirect('accounts:emails')
         elif 'set_primary' in request.POST:
