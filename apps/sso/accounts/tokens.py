@@ -38,7 +38,7 @@ class EmailConfirmationTokenGenerator(object):
             return False
 
         # Check the timestamp is within limit
-        timeout = settings.SSO_CUSTOM.get('EMAIL_CONFIRM_TIMEOUT_MINUTES', UserEmail.DEFAULT_EMAIL_CONFIRM_TIMEOUT_MINUTES)
+        timeout = settings.SSO_EMAIL_CONFIRM_TIMEOUT_MINUTES
         if (self._num_minutes(self._today()) - ts) > timeout:
             return False
 

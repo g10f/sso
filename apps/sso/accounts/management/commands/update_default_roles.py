@@ -35,7 +35,7 @@ class Command(NoArgsCommand):
         for user in user_list:
             user.role_profiles.add(default_role_profile)
         
-        sso_center = models.ApplicationRole.objects.get(application__uuid=settings.SSO_CUSTOM['APP_UUID'], role__name='Center')
+        sso_center = models.ApplicationRole.objects.get(application__uuid=settings.SSO_APP_UUID, role__name='Center')
         user_list = models.User.objects.filter(application_roles=sso_center, is_active=True)
         for user in user_list:
             user.role_profiles.add(center_admin_profile)

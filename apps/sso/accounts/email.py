@@ -44,7 +44,7 @@ def send_account_created_email(user, request, token_generator=default_pwd_reset_
 
     use_https = request.is_secure()
     current_site = get_current_site(request)
-    site_name = settings.SSO_CUSTOM['SITE_NAME']
+    site_name = settings.SSO_SITE_NAME
     domain = current_site.domain
     expiration_date = now() + datetime.timedelta(settings.PASSWORD_RESET_TIMEOUT_DAYS)
     email = user.primary_email()
@@ -73,9 +73,9 @@ def send_useremail_confirmation(user_email, request, token_generator=email_confi
 
     use_https = request.is_secure()
     current_site = get_current_site(request)
-    site_name = settings.SSO_CUSTOM['SITE_NAME']
+    site_name = settings.SSO_SITE_NAME
     domain = current_site.domain
-    expiration_date = now() + datetime.timedelta(minutes=settings.SSO_CUSTOM.get('EMAIL_CONFIRM_TIMEOUT_MINUTES', UserEmail.DEFAULT_EMAIL_CONFIRM_TIMEOUT_MINUTES))
+    expiration_date = now() + datetime.timedelta(minutes=settings.SSO_EMAIL_CONFIRM_TIMEOUT_MINUTES)
     user = user_email.user
     c = {
         'user_email': user_email.email,

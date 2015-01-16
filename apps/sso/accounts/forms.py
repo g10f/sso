@@ -123,7 +123,7 @@ class PasswordResetForm(DjangoPasswordResetForm):
              from_email=None, request=None, html_email_template_name=None):
         email = self.cleaned_data["email"]
         current_site = get_current_site(request)
-        site_name = settings.SSO_CUSTOM['SITE_NAME']
+        site_name = settings.SSO_SITE_NAME
         domain = current_site.domain
 
         user = User.objects.get_by_confirmed_or_primary_email(email)

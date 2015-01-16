@@ -144,7 +144,7 @@ def logout(request, next_page=None,
 
     if next_page is None:
         current_site = get_current_site(request)
-        site_name = settings.SSO_CUSTOM['SITE_NAME']
+        site_name = settings.SSO_SITE_NAME
         context = {
             'site': current_site,
             'site_name': site_name,
@@ -167,7 +167,7 @@ def login(request):
     Displays the login form for the given HttpRequest.
     """
     current_site = get_current_site(request)
-    site_name = settings.SSO_CUSTOM['SITE_NAME']
+    site_name = settings.SSO_SITE_NAME
     redirect_to = request.REQUEST.get(REDIRECT_FIELD_NAME, '')
     # hidden field in the template to check from which form the post request comes
     login_form_key = request.REQUEST.get(LOGIN_FORM_KEY)  
@@ -290,7 +290,7 @@ def emails(request):
 def profile(request):
     if getattr(request.user, 'is_center', False):
         return profile_center_account(request)        
-    if ('SHOW_ADDRESS_AND_PHONE_FORM' in settings.SSO_CUSTOM) and settings.SSO_CUSTOM['SHOW_ADDRESS_AND_PHONE_FORM']: 
+    if settings.SSO_SHOW_ADDRESS_AND_PHONE_FORM:
         return profile_with_address_and_phone(request)
     else:
         return profile_core(request)

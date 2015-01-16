@@ -19,17 +19,20 @@ else:
 
 TEMPLATE_DEBUG = DEBUG
 
-SSO_CUSTOM = {
-    'BRAND': 'G10F',
-    'SITE_NAME': 'G10F',
-    'ABOUT': 'http://g10f.de/',
-    'APP_UUID': 'fa467234b81e4838a009e38d9e655d18',
-    'STREAMING_UUID': 'c362bea58c67457fa32234e3178285c4',
-    'STYLESHEET': 'css/default-1.0.10.css',
-    'SYLE_LESS': 'less/default.less',
-    'FAVICON': 'ico/favicon.ico',
-    'EMAIL_CONFIRM_TIMEOUT_MINUTES': 60
-}
+SSO_BRAND = 'G10F'
+SSO_SITE_NAME = 'G10F'
+SSO_ABOUT = 'http://g10f.de/'
+SSO_APP_UUID = 'fa467234b81e4838a009e38d9e655d18'
+SSO_STREAMING_UUID = 'c362bea58c67457fa32234e3178285c4'
+SSO_STYLESHEET = 'css/default-1.0.10.css'
+SSO_SYLE_LESS = 'less/default.less'
+SSO_FAVICON = 'ico/favicon.ico'
+SSO_NAVIGATION_TEMPLATE = 'include/_navigation.html'
+SSO_EMAIL_CONFIRM_TIMEOUT_MINUTES = 60
+SSO_DEFAULT_ROLE_PROFILE_UUID = 'b4caab335bbc4c90a6f552f7f13aa410'
+SSO_DEFAULT_ADMIN_PROFILE_UUID = '1593284b238c4a1cabf291e573205508'
+SSO_SHOW_ADDRESS_AND_PHONE_FORM = True  # Address and Phone number in profile form
+SSO_ADD_DHARMASHOP_ROLE = False
 
 EMAIL_SUBJECT_PREFIX = '[SSO] '
 
