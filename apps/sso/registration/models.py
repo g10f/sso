@@ -23,15 +23,8 @@ def send_user_validated_email(registration_profile, request):
     """
     Information for registration admins, that a new user registered.
     """
-    email_recipient_list = settings.REGISTRATION.get('EMAIL_RECIPIENT_LIST', None)
-    if not email_recipient_list:
-        return
-
-    # case insensitive search
-    q_list = map(lambda email: Q(useremail__email__iexact=email), email_recipient_list)
-    q_list = reduce(lambda a, b: a | b, q_list)
-
-    recipient_list = User.objects.filter(q_list)
+    registration_admin_group = settings.REGISTRATION.get('REGISTRATION_ADMIN_GROUP', 'RegistrationAdmin')
+    recipient_list = User.objects.filter(groups__name=registration_admin_group)
 
     # recipient_list = User.objects.filter(useremail__email__in=email_recipient_list)
     user_organisations = registration_profile.user.organisations.all()

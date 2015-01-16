@@ -44,7 +44,7 @@ class RegistrationAdmin(admin.ModelAdmin):
     actions = ['activate', 'validate_users', 'resend_validation_email', 'delete_expired']
     list_display = ('user', 'primary_email', 'date_registered', 'about_me', 'is_validated', 'token_valid', 'activation_valid', 'is_access_denied', 'is_active')
     raw_id_fields = ['user', 'verified_by_user']
-    search_fields = ('user__username', 'user__email', 'user__first_name', 'user__last_name')
+    search_fields = ('user__username', 'user__first_name', 'user__last_name', 'user__useremail__email')
     date_hierarchy = 'date_registered'
     list_filter = ['is_validated', ExpiredFilter, IsActiveFilter, 'check_back']
     list_select_related = True    
@@ -59,7 +59,6 @@ class RegistrationAdmin(admin.ModelAdmin):
 
     def get_queryset(self, request):
         return super(RegistrationAdmin, self).get_queryset(request).prefetch_related('user__useremail_set')
-
 
     def is_active(self, obj):
         return obj.user.is_active
