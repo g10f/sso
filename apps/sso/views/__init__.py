@@ -6,7 +6,7 @@ from django.utils.translation import ugettext as _
 
 
 def home(request, template="home.html"):
-    site_name = settings.SSO_CUSTOM['SITE_NAME']
+    site_name = settings.SSO_SITE_NAME
     
     apps = None
     if request.user.is_authenticated():

@@ -150,7 +150,6 @@ def generate_filename(instance, filename):
 
 
 class UserEmail(AbstractBaseModel):
-    DEFAULT_EMAIL_CONFIRM_TIMEOUT_MINUTES = 60
     MAX_EMAIL_ADRESSES = 2
     email = models.EmailField(_('email address'), max_length=254, unique=True)
     confirmed = models.BooleanField(_('confirmed'), default=False)
@@ -324,20 +323,20 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @classmethod
     def get_default_role_profile(cls):
-        if 'DEFAULT_ROLE_PROFILE_UUID' in settings.SSO_CUSTOM:
+        if settings.SSO_DEFAULT_ROLE_PROFILE_UUID:
             role_profile = RoleProfile.objects.none()
             try:
-                role_profile = RoleProfile.objects.get(uuid=settings.SSO_CUSTOM['DEFAULT_ROLE_PROFILE_UUID'])
+                role_profile = RoleProfile.objects.get(uuid=settings.SSO_DEFAULT_ROLE_PROFILE_UUID)
             except ObjectDoesNotExist:
                 pass
             return role_profile                
 
     @classmethod
     def get_default_admin_profile(cls):
-        if 'DEFAULT_ADMIN_PROFILE_UUID' in settings.SSO_CUSTOM:
+        if settings.SSO_DEFAULT_ADMIN_PROFILE_UUID:
             role_profile = RoleProfile.objects.none()
             try:
-                role_profile = RoleProfile.objects.get(uuid=settings.SSO_CUSTOM['DEFAULT_ADMIN_PROFILE_UUID'])
+                role_profile = RoleProfile.objects.get(uuid=settings.SSO_DEFAULT_ADMIN_PROFILE_UUID)
             except ObjectDoesNotExist:
                 pass
             return role_profile                
@@ -370,7 +369,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_permissions(self):
         applicationroles = self.get_applicationroles()
         q = Q(group__role__applicationrole__in=applicationroles, 
-              group__role__applicationrole__application__uuid=settings.SSO_CUSTOM['APP_UUID']) | Q(group__user=self)  
+              group__role__applicationrole__application__uuid=settings.SSO_APP_UUID) | Q(group__user=self)
         return Permission.objects.distinct().filter(q)
         
     @memoize
@@ -788,7 +787,7 @@ def user_organisation_changed(sender, instance, action, **kwargs):
     """
     Add regional dharmashop role if the user has no dharmashop role
     """
-    if action == 'post_add' and settings.SSO_CUSTOM.get('ADD_DHARMASHOP_ROLE', False):
+    if action == 'post_add' and settings.SSO_ADD_DHARMASHOP_ROLE:
         app_roles_dict_array = instance.default_dharmashop_roles
         if not instance.application_roles.filter(application__uuid__in=[DS108_CEE, DS108_EU]).exists():
             instance.add_roles(app_roles_dict_array)

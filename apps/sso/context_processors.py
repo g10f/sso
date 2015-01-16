@@ -12,10 +12,10 @@ def get_base_url(request):
 
 def settings(request):
     
-    return {'navigation_template': site_settings.SSO_CUSTOM.get('NAVIGATION_TEMPLATE', "include/_navigation.html"),
-            'brand': site_settings.SSO_CUSTOM['BRAND'],
+    return {'navigation_template': site_settings.SSO_NAVIGATION_TEMPLATE,
+            'brand': site_settings.SSO_BRAND,
             'base_url': get_base_url(request),
-            'stylesheet': site_settings.SSO_CUSTOM['STYLESHEET'],
-            'stylesheet_less': site_settings.SSO_CUSTOM['SYLE_LESS'],
-            'favicon': site_settings.SSO_CUSTOM['FAVICON']
+            'stylesheet': site_settings.SSO_STYLESHEET,
+            'stylesheet_less': site_settings.SSO_SYLE_LESS,
+            'favicon': site_settings.SSO_FAVICON
             }

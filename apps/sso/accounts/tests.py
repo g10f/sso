@@ -2,6 +2,7 @@
 import urlparse
 import re
 
+from django.test import override_settings
 from django.conf import settings
 from django.core import mail
 from django.core.urlresolvers import reverse
@@ -69,6 +70,26 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.assertEqual(user_email.primary, True)
         # check that login with new_mail is possible
         self.login_test(username='test@g10f.de', password='gsf')
+
+    @override_settings(SSO_EMAIL_CONFIRM_TIMEOUT_MINUTES=-1)  # immideate timeout
+    def test_self_failing_confirmation(self):
+        self.login(username='GunnarScherf', password='gsf')
+        new_email = "test@g10f.de"
+
+        # add new email
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('accounts:emails')))
+        self.selenium.find_element_by_name("email").send_keys(new_email)
+        self.selenium.find_element_by_xpath('//button[@type="submit"]').click()
+        self.wait_page_loaded()
+
+        self.selenium.find_element_by_xpath('//div[@class="alert alert-success"]')
+
+        # try to confirm email
+        confirmation_url = self.get_url_path_from_mail()
+        self.selenium.get('%s%s' % (self.live_server_url, confirmation_url))
+        self.wait_page_loaded()
+        # we should find an error
+        self.selenium.find_element_by_xpath('//div[@class="alert alert-error"]')
 
     def test_self_add_useremail(self):
         self.login(username='GunnarScherf', password='gsf')
@@ -212,18 +233,18 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.assertEqual(len(self.selenium.find_elements_by_class_name("alert-danger")), 1)
 
     def test_add_user_as_admin(self):
-        applicationrole = ApplicationRole.objects.get(application__uuid=settings.SSO_CUSTOM['APP_UUID'], role__name="Admin")
+        applicationrole = ApplicationRole.objects.get(application__uuid=settings.SSO_APP_UUID, role__name="Admin")
         allowed_orgs = Organisation.objects.filter(uuid__in=['31664dd38ca4454e916e55fe8b1f0745', '31664dd38ca4454e916e55fe8b1f0746'])
         self.add_user(applicationrole=applicationrole, allowed_orgs=allowed_orgs)
     
     def test_add_user_as_region(self):
-        applicationrole = ApplicationRole.objects.get(application__uuid=settings.SSO_CUSTOM['APP_UUID'], role__name="Region")
+        applicationrole = ApplicationRole.objects.get(application__uuid=settings.SSO_APP_UUID, role__name="Region")
         region = AdminRegion.objects.get_by_natural_key('0ebf2537fc664b7db285ea773c981404')
         allowed_orgs = Organisation.objects.filter(uuid__in=['31664dd38ca4454e916e55fe8b1f0745', '31664dd38ca4454e916e55fe8b1f0746'])
         self.add_user(applicationrole=applicationrole, allowed_orgs=allowed_orgs, region=region)
 
     def test_add_user_as_center(self):
-        applicationrole = ApplicationRole.objects.get(application__uuid=settings.SSO_CUSTOM['APP_UUID'], role__name="Center")
+        applicationrole = ApplicationRole.objects.get(application__uuid=settings.SSO_APP_UUID, role__name="Center")
         allowed_orgs = Organisation.objects.filter(uuid__in=['31664dd38ca4454e916e55fe8b1f0745'])
         denied_orgs = Organisation.objects.filter(uuid__in=['31664dd38ca4454e916e55fe8b1f0746'])
         self.add_user(applicationrole=applicationrole, allowed_orgs=allowed_orgs, denied_orgs=denied_orgs)

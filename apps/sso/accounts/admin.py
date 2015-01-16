@@ -470,7 +470,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
     def mark_info_mail(self, request, queryset):
         if request.POST.get('post') and request.POST.get('body'):
             n = queryset.count()
-            subject = request.POST.get('subject', _('%s SSO Information') % settings.SSO_CUSTOM['BRAND'])
+            subject = request.POST.get('subject', _('%s SSO Information') % settings.SSO_BRAND)
             body = request.POST.get('body')
             from_email = request.POST.get('from_email', None)
             if n:

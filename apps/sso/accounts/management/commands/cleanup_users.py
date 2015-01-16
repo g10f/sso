@@ -57,7 +57,7 @@ def update_center_usernames():
         
     
 def remove_profile():
-    centerprofile = RoleProfile.objects.get(uuid=settings.SSO_CUSTOM['DEFAULT_ADMIN_PROFILE_UUID'])
+    centerprofile = RoleProfile.objects.get(uuid=settings.SSO_DEFAULT_ADMIN_PROFILE_UUID)
     user_list = User.objects.filter(is_center=False, role_profiles=centerprofile)
     for user in user_list:
         user.role_profiles.remove(centerprofile)
