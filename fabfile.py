@@ -321,7 +321,7 @@ def deploy(conf='dev'):
     with cd(code_dir):
         update_dir_settings(code_dir + '/logs')
         sudo("supervisorctl stop %(server_name)s" % {'server_name': server_name})
-        migrate_data(python, server_name, code_dir, app)
+        # migrate_data(python, server_name, code_dir, app)
         sudo("supervisorctl start %(server_name)s" % {'server_name': server_name})
         sudo("%s ./src/apps/manage.py collectstatic --noinput" % python)
         update_dir_settings(code_dir + '/logs')

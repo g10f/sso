@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import urlparse
+from urlparse import urlparse
 
 from django.utils.http import urlsafe_base64_decode, is_safe_url
 from django.conf import settings
@@ -84,7 +84,7 @@ def get_allowed_hosts():
     allowed_hosts = cache.get('allowed_hosts', [])
     if not allowed_hosts:
         for app in Application.objects.all():
-            netloc = urlparse.urlparse(app.url)[1]
+            netloc = urlparse(app.url)[1]
             if netloc:
                 allowed_hosts.append(netloc)
         cache.set('allowed_hosts', allowed_hosts)
