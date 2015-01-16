@@ -279,7 +279,7 @@ def deploy(conf='dev'):
     # deploy_database(db_name)
 
     with cd(code_dir):
-        require.git.working_copy('git@bitbucket.org:dwbn/sso.git', path='src', branch='useremail')
+        require.git.working_copy('git@bitbucket.org:dwbn/sso.git', path='src', branch='master')
         sudo("chown www-data:www-data -R  ./src")
         sudo("chmod g+w -R  ./src")
     
