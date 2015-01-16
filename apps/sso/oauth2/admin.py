@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
+import logging
+
 from django.core import urlresolvers
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from models import AuthorizationCode, BearerToken, RefreshToken, Client
 
-import logging
 logger = logging.getLogger(__name__)
    
 
@@ -21,7 +22,7 @@ class ClientAdmin(admin.ModelAdmin):
 class BearerTokenAdmin(admin.ModelAdmin):
     list_display = ('id', 'client_link', 'user_link', 'created_at')
     list_filter = ('client__application', 'client')
-    search_fields = ('user__username', 'user__first_name', 'user__last_name', 'user__email', 'user__uuid')
+    search_fields = ('user__username', 'user__first_name', 'user__last_name', 'user__uuid', 'user__useremail__email')
     raw_id_fields = ("user",)
     readonly_fields = ('created_at', )
     list_select_related = ('user', 'client')
@@ -44,7 +45,7 @@ class BearerTokenAdmin(admin.ModelAdmin):
 class AuthorizationCodeAdmin(admin.ModelAdmin):
     list_display = ('id', 'client_link', 'user_link', 'code', 'created_at', 'redirect_uri', 'is_valid')
     list_filter = ('client__application', 'client', 'is_valid')
-    search_fields = ('user__username', 'user__first_name', 'user__last_name', 'user__email', 'user__uuid')
+    search_fields = ('user__username', 'user__first_name', 'user__last_name', 'user__uuid', 'user__useremail__email')
     raw_id_fields = ("user",)
     list_select_related = ('user', 'client')
 
@@ -66,7 +67,7 @@ class AuthorizationCodeAdmin(admin.ModelAdmin):
 class RefreshTokenAdmin(admin.ModelAdmin):
     list_display = ('id', 'bearer_token_link', 'created_at')
     list_filter = ('bearer_token__client__application', 'bearer_token__client')
-    search_fields = ('user__username', 'user__first_name', 'user__last_name', 'user__email', 'user__uuid')
+    search_fields = ('user__username', 'user__first_name', 'user__last_name', 'user__uuid', 'user__useremail__email')
     raw_id_fields = ("bearer_token",)
     readonly_fields = ('created_at', )
     list_select_related = ('bearer_token__user', 'bearer_token__client')
