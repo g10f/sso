@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import urlparse
 
-from django.utils.http import urlsafe_base64_decode
+from django.utils.http import urlsafe_base64_decode, is_safe_url
 from django.conf import settings
 from django.shortcuts import render, redirect, resolve_url
 from django.views.decorators.debug import sensitive_post_parameters
@@ -92,6 +92,43 @@ def get_allowed_hosts():
     return allowed_hosts
 
 
+def is_safe_ext_url(url, hosts):
+    """
+    like django.util.http.is_safe_url but with a list of hosts instead one host name
+
+    Return ``True`` if the url is a safe redirection (i.e. it doesn't point to
+    a different host and uses a safe scheme).
+
+    Always returns ``False`` on an empty url.
+    """
+    if not url:
+        return False
+    url = url.strip()
+    # Chrome treats \ completely as /
+    url = url.replace('\\', '/')
+    # Chrome considers any URL with more than two slashes to be absolute, but
+    # urlparse is not so flexible. Treat any url with three slashes as unsafe.
+    if url.startswith('///'):
+        return False
+    url_info = urlparse(url)
+    # Forbid URLs like http:///example.com - with a scheme, but without a hostname.
+    # In that URL, example.com is not the hostname but, a path component. However,
+    # Chrome will still consider example.com to be the hostname, so we must not
+    # allow this syntax.
+    if not url_info.netloc and url_info.scheme:
+        return False
+    return ((not url_info.netloc or url_info.netloc in hosts) and
+            (not url_info.scheme or url_info.scheme in ['http', 'https']))
+
+
+def get_safe_redirect_url(request, redirect_to):
+    # Ensure the user-originating redirection url is safe.
+    if not is_safe_url(url=redirect_to, host=request.get_host()):
+        return resolve_url(settings.LOGIN_REDIRECT_URL)
+    else:
+        return redirect_to
+
+
 @never_cache
 def logout(request, next_page=None,
            template_name='accounts/logged_out.html',
@@ -102,12 +139,8 @@ def logout(request, next_page=None,
     """
     auth_logout(request)
     redirect_to = request.REQUEST.get(redirect_field_name, None)
-    if redirect_to:
-        netloc = urlparse.urlparse(redirect_to)[1]
-        # Security check -- don't allow redirection to a different host.
-        allowed_hosts = set(get_allowed_hosts())
-        if not(netloc and not (netloc in {request.get_host()} | allowed_hosts)):
-            return HttpResponseRedirect(redirect_to)
+    if redirect_to and is_safe_ext_url(redirect_to, set(get_allowed_hosts())):
+        return HttpResponseRedirect(redirect_to)
 
     if next_page is None:
         current_site = get_current_site(request)
@@ -126,23 +159,6 @@ def logout(request, next_page=None,
         return HttpResponseRedirect(next_page or request.path)
 
 
-def _check_redirect_url(request, redirect_to):
-    """
-    helper to make login more DRY
-    """
-    netloc = urlparse.urlparse(redirect_to)[1]
-    # Use default setting if redirect_to is empty
-    if not redirect_to:
-        redirect_to = settings.LOGIN_REDIRECT_URL
-
-    # Heavier security check -- don't allow redirection to a different
-    # host.
-    elif netloc and netloc != request.get_host():
-        redirect_to = settings.LOGIN_REDIRECT_URL
-    
-    return redirect_to
-    
-    
 @sensitive_post_parameters()
 @never_cache
 @throttle(duration=30, max_calls=12)
@@ -164,7 +180,7 @@ def login(request):
         if login_form_key == 'login_form':
             form = EmailAuthenticationForm(data=request.POST)
             if form.is_valid():
-                redirect_to = _check_redirect_url(request, redirect_to)
+                redirect_to = get_safe_redirect_url(request, redirect_to)
     
                 # Okay, security checks complete. Log the user in.
                 user = form.get_user()
@@ -186,8 +202,7 @@ def login(request):
                 cancel_url = reverse('accounts:logout')
                 if form.is_valid():
                     form.save()
-                        
-                    redirect_to = _check_redirect_url(request, redirect_to)
+                    redirect_to = get_safe_redirect_url(request, redirect_to)
                     return HttpResponseRedirect(redirect_to)
 
     context = {
