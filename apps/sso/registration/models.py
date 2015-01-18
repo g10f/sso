@@ -32,6 +32,9 @@ def send_user_validated_email(registration_profile, request):
     # add only admins of the new registered user to the final recipient list
     final_recipient_list = []
     for user in recipient_list:
+        if user.is_global_user_admin:
+            final_recipient_list.append(str(user.primary_email()))
+            continue
         for organisation in user_organisations:
             if user.has_organisation_user_access(organisation.uuid):
                 final_recipient_list.append(str(user.primary_email()))
