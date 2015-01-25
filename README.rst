@@ -40,4 +40,5 @@ TODOs
 1. User API 
 1.1 check if organisation is correct when adding or changing users
 
-2. Group Emails - add login required for reading email settings
+Organisation:
+Add Facebook, Twitter and Google URL

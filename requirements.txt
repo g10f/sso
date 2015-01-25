@@ -1,8 +1,6 @@
 django
 gunicorn
 psycopg2
-# for local testing only
-#selenium
 python-memcached
 docutils
 pycrypto
@@ -13,3 +11,6 @@ pillow
 django-recaptcha
 pytz
 geopy
+# for local testing only
+#selenium
+#uritemplate

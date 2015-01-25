@@ -41,6 +41,7 @@ logger = logging.getLogger(__name__)
 DS108_EU = '35efc492b8f54f1f86df9918e8cc2b3d'
 DS108_CEE = '2139dc55af8b42ec84a1ce9fd25fdf18'
 
+
 class ApplicationManager(models.Manager):
     def get_by_natural_key(self, uuid):
         return self.get(uuid=uuid)
@@ -366,7 +367,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         return Role.objects.distinct().filter(applicationrole__in=applicationroles, 
                                               applicationrole__application__uuid=app_uuid)
     
-    def get_permissions(self):
+    # TODO: rename method
+    def get_group_and_role_permissions(self):
+        """
+        get all permissions the user has through his groups and roles
+        """
         applicationroles = self.get_applicationroles()
         q = Q(group__role__applicationrole__in=applicationroles, 
               group__role__applicationrole__application__uuid=settings.SSO_APP_UUID) | Q(group__user=self)

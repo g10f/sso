@@ -25,7 +25,7 @@ class SSOBackend(ModelBackend):
             if user_obj.is_superuser:
                 perms = Permission.objects.all()
             else:
-                perms = user_obj.get_permissions()
+                perms = user_obj.get_group_and_role_permissions()
             perms = perms.values_list('content_type__app_label', 'codename').order_by()
             user_obj._sso_group_perm_cache = set(["%s.%s" % (ct, name) for ct, name in perms])
         return user_obj._sso_group_perm_cache

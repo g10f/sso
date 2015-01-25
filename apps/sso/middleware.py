@@ -3,6 +3,7 @@ import time
 from django.conf import settings
 from django.contrib import auth
 
+
 class CookieProlongationMiddleware(object):
     """
     We don't want to save the session with every request, because this creates a changed cookie

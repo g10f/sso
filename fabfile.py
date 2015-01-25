@@ -193,8 +193,6 @@ def update_debian():
 
 def deploy_debian():
     require.deb.package('libpq-dev')
-    # require.deb.package('libmysqlclient-dev')
-    require.deb.package('libjpeg62')
     require.deb.package('libjpeg62-dev')
     # Geospatial libraries
     require.deb.package('binutils')
