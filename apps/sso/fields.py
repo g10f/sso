@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 import re
+import uuid
+
 from django import forms
 from django.core.validators import URLValidator
 from django.db.models import CharField, URLField
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import ugettext_lazy as _
-import uuid
+from utils.translation import string_format
 
 
 @deconstructible
@@ -29,7 +31,7 @@ class URLFormFieldEx(forms.URLField):
         domain = kwargs.pop('domain')
         validators = [URLValidatorEx(domain)]
         error_messages = {
-            'invalid': _('Enter a valid URL starting with https://%(domain)s') % {'domain': domain},
+            'invalid': string_format(_('Enter a valid URL starting with https://%(domain)s'), {'domain': domain}),
         }
         kwargs['error_messages'] = error_messages
         kwargs['validators'] = validators
