@@ -32,6 +32,15 @@ $(function() {
 
 
 	<div class="row"><div class="dwbn-label">{% trans 'Homepage' %}: </div><div class="dwbn-content"><a href="{{ object.homepage }}">{{ object.homepage }}</a></div></div>
+	{% if object.google_plus_page %}
+	<div class="row"><div class="dwbn-label">{% trans 'Google+ page' %}: </div><div class="dwbn-content"><a href="{{ object.google_plus_page }}">{% trans 'Google+ page' %}</a></div></div>
+	{% endif %}
+	{% if object.facebook_page %}
+	<div class="row"><div class="dwbn-label">{% trans 'Facebook page' %}: </div><div class="dwbn-content"><a href="{{ object.facebook_page }}">{% trans 'Facebook page' %}</a></div></div>
+	{% endif %}
+	{% if object.twitter_page %}
+	<div class="row"><div class="dwbn-label">{% trans 'Twitter page' %}: </div><div class="dwbn-content"><a href="{{ object.twitter_page }}">{% trans 'Twitter page' %}</a></div></div>
+	{% endif %}
 	{% if object.google_maps_url %}
 	<div class="row"><div class="dwbn-label">{% trans 'Google Maps' %}: </div><div class="dwbn-content"><a href="{{ object.google_maps_url }}">{% trans 'Google Maps' %} ({{ object.get_coordinates_type_display }}) <span class="glyphicon glyphicon-map-marker"></span></a></div></div>
 	{% endif %}

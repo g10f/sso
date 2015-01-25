@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+from urlparse import urlsplit, urlunsplit
 from django.utils.translation import ugettext_lazy as _
 from django.forms import ModelChoiceField, ModelMultipleChoiceField, ValidationError
 from l10n.models import Country
@@ -47,10 +48,13 @@ class OrganisationBaseForm(BaseForm):
     class Meta:
         model = Organisation
         
-        fields = ('homepage', 'founded', 'coordinates_type', 'is_private', 'location')
+        fields = ('homepage', 'google_plus_page', 'facebook_page', 'twitter_page', 'founded', 'coordinates_type', 'is_private', 'location')
         years_to_display = range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1)
         widgets = {
-            'homepage': bootstrap.TextInput(attrs={'size': 50}),
+            'homepage': bootstrap.URLInput(attrs={'size': 50}),
+            'google_plus_page': bootstrap.URLInput(attrs={'size': 50}),
+            'facebook_page': bootstrap.URLInput(attrs={'size': 50}),
+            'twitter_page': bootstrap.URLInput(attrs={'size': 50}),
             'country': bootstrap.Select(),
             'name': bootstrap.TextInput(attrs={'size': 50}), 
             'founded': bootstrap.SelectDateWidget(years=years_to_display, required=False),

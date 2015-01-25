@@ -166,6 +166,14 @@ class TextInput(Widget, forms.TextInput):
         self.add_required()
         return super(TextInput, self).render(name, value, attrs)
 
+
+class URLInput(Widget, forms.URLInput):
+
+    def render(self, name, value, attrs=None):
+        self.add_required()
+        return super(URLInput, self).render(name, value, attrs)
+
+
 class EmailInput(Widget, forms.EmailInput):
     def render(self, name, value, attrs=None):
         self.add_required()

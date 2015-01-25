@@ -10,6 +10,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import pgettext_lazy, ugettext_lazy as _
 from l10n.models import Country
 from smart_selects.db_fields import ChainedForeignKey
+from sso.fields import URLFieldEx
 from utils.loaddata import disable_for_loaddata
 from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary
 from sso.emails.models import Email, CENTER_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, REGION_EMAIL_TYPE, COUNTRY_GROUP_EMAIL_TYPE
@@ -116,7 +117,7 @@ class GeoManager(gis_models.GeoManager):
     def get_by_natural_key(self, uuid):
         return self.get(uuid=uuid)
 
-    
+
 class Organisation(AbstractBaseModel):
     CENTER_TYPE_CHOICES = (
         ('1', _('Buddhist Center')),
@@ -147,6 +148,9 @@ class Organisation(AbstractBaseModel):
     email = models.ForeignKey(Email, verbose_name=_("email address"), blank=True, null=True, limit_choices_to={'email_type': CENTER_EMAIL_TYPE},
                               on_delete=models.SET_NULL)
     homepage = models.URLField(_("homepage"), blank=True,)
+    google_plus_page = URLFieldEx(domain='plus.google.com', verbose_name=_("Google+ page"), blank=True)
+    facebook_page = URLFieldEx(domain='www.facebook.com', verbose_name=_("Facebook page"), blank=True)
+    twitter_page = URLFieldEx(domain='twitter.com', verbose_name=_("Twitter page"), blank=True)
     notes = models.TextField(_('notes'), blank=True, max_length=255)
     center_type = models.CharField(_('center type'), max_length=2, choices=CENTER_TYPE_CHOICES, db_index=True)    
     centerid = models.IntegerField(blank=True, null=True)

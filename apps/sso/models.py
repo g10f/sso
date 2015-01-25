@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
+import logging
+
 from django.db import models
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from django.forms.models import model_to_dict
-
 from l10n.models import Country, AdminArea
 from smart_selects.db_fields import ChainedForeignKey
 from sso.fields import UUIDField
-import logging
+
 
 logger = logging.getLogger(__name__)
+
 
 class AbstractBaseModelManager(models.Manager):
     def get_by_natural_key(self, uuid):
