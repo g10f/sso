@@ -73,7 +73,7 @@ class EmailManagerInlineForm(BaseTabularInlineForm):
     """
     manager_email = forms.CharField(max_length=254, label=_('Email'), widget=bootstrap.TextInput(attrs={'size': 50}))
     name = bootstrap.ReadOnlyField(label=_('Name'), initial='')
-    
+
     class Meta:
         model = GroupEmailManager
         fields = ()
@@ -82,14 +82,14 @@ class EmailManagerInlineForm(BaseTabularInlineForm):
         super(EmailManagerInlineForm, self).__init__(*args, **kwargs)
         try:
             manager = self.instance.manager
-            self.fields['manager_email'].initial = manager.email
+            self.fields['manager_email'].initial = manager.primary_email()
             self.fields['name'].initial = u"%s %s" % (manager.first_name, manager.last_name)
         except ObjectDoesNotExist:
             pass
 
     def clean_manager_email(self):
         manager_email = self.cleaned_data['manager_email']
-        if not get_user_model().objects.filter(email=manager_email).exists():
+        if not get_user_model().objects.filter(useremail__email__iexact=manager_email).exists():
             msg = _('The user does not exists')
             raise ValidationError(msg)
             
@@ -98,7 +98,7 @@ class EmailManagerInlineForm(BaseTabularInlineForm):
     def save(self, commit=True):
         if 'manager_email' in self.changed_data:
             manager_email = self.cleaned_data['manager_email']
-            manager = get_user_model().objects.get(email=manager_email)
+            manager = get_user_model().objects.get(useremail__email__iexact=manager_email)
             self.instance.manager = manager
 
         instance = super(EmailManagerInlineForm, self).save(commit)
@@ -106,7 +106,7 @@ class EmailManagerInlineForm(BaseTabularInlineForm):
         return instance
 
 
-class GroupEmailForm(BaseForm):    
+class GroupEmailForm(BaseForm):
     email_value = EmailFieldLower(required=True, label=_("Email address"), widget=bootstrap.EmailInput())
     permission = forms.ChoiceField(label=_('Permission'), choices=Email.PERMISSION_CHOICES, widget=bootstrap.Select())
     is_active = forms.BooleanField(required=False, label=_("Active"), widget=bootstrap.CheckboxInput())

@@ -199,7 +199,8 @@ def deploy_debian():
     require.deb.package('libproj-dev')
     require.deb.package('gdal-bin')
     require.deb.package('postgresql-9.1-postgis-2.0')
-    
+
+
 def deploy_database(db_name):
     # Require a PostgreSQL server
     # require.postgres.server()
@@ -318,8 +319,7 @@ def deploy(conf='dev'):
     python = '/envs/%(virtualenv)s/bin/python' % {'virtualenv': virtualenv}
     with cd(code_dir):
         update_dir_settings(code_dir + '/logs')
-        sudo("supervisorctl stop %(server_name)s" % {'server_name': server_name})
-        # migrate_data(python, server_name, code_dir, app)
-        sudo("supervisorctl start %(server_name)s" % {'server_name': server_name})
+        migrate_data(python, server_name, code_dir, app)
+        sudo("supervisorctl restart %(server_name)s" % {'server_name': server_name})
         sudo("%s ./src/apps/manage.py collectstatic --noinput" % python)
         update_dir_settings(code_dir + '/logs')
