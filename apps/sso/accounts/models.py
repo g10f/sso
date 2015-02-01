@@ -244,7 +244,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         send_mail(subject, message, from_email, [email.email], **kwargs)
 
     def primary_email(self):
-        # iterate thru useremail_set.all because useremail_set is cached
+        # iterate through useremail_set.all because useremail_set is cached
         # if we use prefetch_related('useremail_set')
         for user_mail in self.useremail_set.all():
             if user_mail.primary:
@@ -367,7 +367,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         return Role.objects.distinct().filter(applicationrole__in=applicationroles, 
                                               applicationrole__application__uuid=app_uuid)
     
-    # TODO: rename method
     def get_group_and_role_permissions(self):
         """
         get all permissions the user has through his groups and roles
@@ -660,10 +659,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         default_role_profile = self.get_default_role_profile()
         if default_role_profile:
             self.role_profiles.add(default_role_profile) 
-        
-        default_admin_profile = self.get_default_admin_profile()
-        if default_admin_profile and self.is_center:  # for center accounts from streaming database
-            self.role_profiles.add(default_admin_profile)       
+
+        if self.is_center:  # for center accounts from streaming database
+            default_admin_profile = self.get_default_admin_profile()
+            if default_admin_profile:
+                self.role_profiles.add(default_admin_profile)
         
     def add_roles(self, app_roles_dict_array):
         # get or create Roles
