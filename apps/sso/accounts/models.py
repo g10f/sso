@@ -402,7 +402,10 @@ class User(AbstractBaseUser, PermissionsMixin):
                                                                    is_inheritable_by_org_admin=True).select_related()
             else:
                 application_roles = ApplicationRole.objects.none()
-            
+
+            if self.is_app_admin:
+                application_roles |= ApplicationRole.objects.filter(application__applicationadmin__admin=self)
+
             return application_roles
     
     @memoize
@@ -417,8 +420,11 @@ class User(AbstractBaseUser, PermissionsMixin):
                 role_profiles = self.role_profiles.filter(is_inheritable_by_org_admin=True)
             else:
                 role_profiles = self.role_profiles.none()
-                        
-            return role_profiles.prefetch_related('application_roles', 'application_roles__role', 'application_roles__application')    
+
+            if self.is_app_admin:
+                role_profiles |= RoleProfile.objects.filter(roleprofileadmin__admin=self)
+
+            return role_profiles.prefetch_related('application_roles', 'application_roles__role', 'application_roles__application').distinct()
     
     @memoize
     def get_administrable_user_organisations(self):
@@ -427,7 +433,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         if self.is_global_user_admin:
             return Organisation.objects.all().select_related('country', 'email')
-        elif self.is_user_admin:
+        elif self.is_user_admin or self.is_app_admin:
             return Organisation.objects.filter(
                 Q(pk__in=self.organisations.all()) | Q(admin_region__in=self.admin_regions.all()) | Q(country__in=self.admin_countries.all())).select_related('country', 'email').distinct()
         else:
@@ -440,7 +446,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         if self.is_global_user_admin:
             return AdminRegion.objects.all()
-        elif self.is_user_admin:
+        elif self.is_user_admin or self.is_app_admin:
             return AdminRegion.objects.filter(Q(organisation__in=self.organisations.all()) | Q(pk__in=self.admin_regions.all()) | Q(country__in=self.admin_countries.all())).distinct()
         else:
             return AdminRegion.objects.none()
@@ -452,7 +458,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         """        
         if self.is_global_user_admin:
             return Country.objects.filter(organisation__isnull=False).distinct()
-        elif self.is_user_admin:
+        elif self.is_user_admin or self.is_app_admin:
             return Country.objects.filter(
                 Q(organisation__admin_region__in=self.admin_regions.all()) |  # for adminregions without a associated country 
                 Q(organisation__in=self.organisations.all()) | Q(adminregion__in=self.admin_regions.all()) | Q(pk__in=self.admin_countries.all())).distinct()
@@ -538,7 +544,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             pass
         elif self.is_global_user_admin:
             qs = qs.filter(is_superuser=False)
-        elif self.is_user_admin:
+        elif self.is_user_admin or self.is_app_admin:
             organisations = self.get_administrable_user_organisations()
             q = Q(is_superuser=False) & Q(organisations__in=organisations)
             qs = qs.filter(q).distinct()
@@ -552,7 +558,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     
     @property
     def is_user_admin(self):
-        return self.has_perm("accounts.read_user")
+        return self.has_perm("accounts.read_user") # or self.is_app_admin
+
+    @property
+    def is_app_admin(self):
+        return self.applicationadmin_set.exists() or self.roleprofileadmin_set.exists()
 
     @property
     def is_global_organisation_admin(self):
@@ -744,6 +754,26 @@ class UserAssociatedSystem(models.Model):
 
     def __unicode__(self):
         return u"%s - %s" % (self.application, self.userid)    
+
+
+class RoleProfileAdmin(AbstractBaseModel):
+    role_profile = models.ForeignKey(RoleProfile, verbose_name=_("role profile"))
+    admin = models.ForeignKey(User)
+
+    class Meta(AbstractBaseModel.Meta):
+        unique_together = (("role_profile", "admin"),)
+        verbose_name = _('role profile admin')
+        verbose_name_plural = _('role profile admins')
+
+
+class ApplicationAdmin(AbstractBaseModel):
+    application = models.ForeignKey(Application, verbose_name=_("application"))
+    admin = models.ForeignKey(User)
+
+    class Meta(AbstractBaseModel.Meta):
+        unique_together = (("application", "admin"),)
+        verbose_name = _('application admin')
+        verbose_name_plural = _('application admins')
 
 
 def update_or_create_organisation_account(organisation, old_email_value, new_email_value):

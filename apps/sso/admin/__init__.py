@@ -4,14 +4,15 @@ from sso.auth.forms import EmailAuthenticationForm
 from sso.accounts.admin import *
 from sso.oauth2.admin import *
 from sso.registration.admin import *
-from sso.accounts.models import *
+from sso.accounts import models
 from sso.organisations import models as org_models
 from sso.organisations import admin as org_admin
 
-from sso.emails.models import Email, EmailForward, EmailAlias, GroupEmail
+from sso.emails.models import Email, EmailForward, EmailAlias, GroupEmail, GroupEmailManager
 from sso.emails.admin import EmailAdmin, EmailAliasAdmin, EmailForwardAdmin, GroupEmailAdmin, GroupEmailManagerAdmin
 
 from l10n.admin import *
+
 
 class SSOAdminSite(admin.AdminSite):
     login_form = EmailAuthenticationForm
@@ -20,18 +21,20 @@ class SSOAdminSite(admin.AdminSite):
 
 sso_admin_site = SSOAdminSite()
 
-sso_admin_site.register(Group, GroupAdmin)
-sso_admin_site.register(OneTimeMessage, OneTimeMessageAdmin)
+sso_admin_site.register(models.Group, GroupAdmin)
+sso_admin_site.register(models.OneTimeMessage, OneTimeMessageAdmin)
 
 # sso_admin_site.register(Permission, PermissionAdmin)
 # sso_admin_site.register(ContentType)
 
-sso_admin_site.register(UserEmail, UserEmailAdmin)
+sso_admin_site.register(models.UserEmail, UserEmailAdmin)
 sso_admin_site.register(get_user_model(), UserAdmin)
-sso_admin_site.register(ApplicationRole, ApplicationRoleAdmin)
-sso_admin_site.register(RoleProfile, RoleProfileAdmin)
-sso_admin_site.register(Role, RoleAdmin)
-sso_admin_site.register(Application, ApplicationAdmin)
+sso_admin_site.register(models.ApplicationRole, ApplicationRoleAdmin)
+sso_admin_site.register(models.RoleProfile, RoleProfileAdmin)
+sso_admin_site.register(models.Role, RoleAdmin)
+sso_admin_site.register(models.Application, ApplicationAdmin)
+sso_admin_site.register(models.ApplicationAdmin, ApplicationAdminAdmin)
+sso_admin_site.register(models.RoleProfileAdmin, RoleProfileAdminAdmin)
 
 sso_admin_site.register(AuthorizationCode, AuthorizationCodeAdmin)
 sso_admin_site.register(BearerToken, BearerTokenAdmin)

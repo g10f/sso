@@ -1,0 +1,69 @@
+{% extends "base_form.html" %}
+{% load i18n admin_static %}
+{% load thumbnail %}
+
+{% block title %}{% trans 'Change User' %}{% endblock %}
+
+{% block extrascript %}
+    {{ media }}
+    <script src="{% static "js/formsets-1.1.js" %}"></script>
+{% endblock extrascript %}
+
+{% block breadcrumb %}
+    <ol class="breadcrumb">
+        <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+        <li><a href="{% url 'accounts:user_list' %}">{% trans 'User List' %}</a></li>
+        <li class="active">{% trans 'Change User' %}</li>
+    </ol>
+{% endblock breadcrumb %}
+
+{% block form %}
+    <form class="form-horizontal" method="post" data-active="{{ active }}">{% csrf_token %}
+        {# Include the hidden fields in the form #}
+        {% for hidden in form.hidden_fields %}
+            {{ hidden }}
+        {% endfor %}
+
+        <div class="">
+            <h3>{{ title }} - {{ form.user.first_name }} {{ form.user.last_name }}</h3>
+
+            {% if messages %}{% for message in messages %}
+                <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+
+            {% if errors %}
+                <div class="alert alert-danger">
+                    {% if errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}
+                        {% trans "Please correct the errors below." %}{% endif %}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label class="control-label">{% trans 'picture' %}</label>
+
+            <div class="dwbn-form-control">
+                {% thumbnail form.user.picture "108x108" as im %}
+                    <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">{% endthumbnail %}
+            </div>
+        </div>
+
+        {% include 'include/_field.html' with field=form.username %}
+        {% include 'include/_field.html' with field=form.first_name %}
+        {% include 'include/_field.html' with field=form.last_name %}
+        {% include 'include/_field.html' with field=form.email %}
+        {% include 'include/_field.html' with field=form.organisations %}
+        {% include 'include/_field.html' with field=form.is_active %}
+        {% include 'accounts/includes/_profiles_field.html' with field=form.role_profiles %}
+        {% include 'include/_field.html' with field=form.application_roles %}
+
+        <div class="form-group">
+            <div class="dwbn-form-control_lg">
+                <button type="submit" class="btn btn-default" name="_continue">{% trans 'Save and continue editing' %}</button>
+                <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
+            </div>
+        </div>
+
+    </form>
+{% endblock %}

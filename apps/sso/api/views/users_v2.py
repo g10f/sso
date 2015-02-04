@@ -176,7 +176,7 @@ def get_last_modified_and_etag_for_me(request, *args, **kwargs):
 
 def read_permission(request, obj):
     """
-    user is the authenticted user
+    user is the authenticated user
     permission to read the obj data
     """
     user = request.user
@@ -195,7 +195,7 @@ def read_permission(request, obj):
 
 def replace_permission(request, obj):
     """
-    user is the authenticted user
+    user is the authenticated user
     permission to change user the obj
     """
     user = request.user

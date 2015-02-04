@@ -504,3 +504,29 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         # Display the confirmation page
         return TemplateResponse(request, "admin/accounts/send_mail_selected_confirmation.html", context, current_app=self.admin_site.name)
     mark_info_mail.short_description = _('Send info email')
+
+
+class RoleProfileAdminAdmin(admin.ModelAdmin):
+    raw_id_fields = ("admin",)
+    list_display = ('role_profile', 'admin')
+    list_filter = ('role_profile', )
+    readonly_fields = ("last_modified",)
+    fieldsets = [
+        (None,
+         {'fields':
+          ['role_profile', 'admin', "last_modified"],
+          'classes': ['wide']}),
+    ]
+
+
+class ApplicationAdminAdmin(admin.ModelAdmin):
+    raw_id_fields = ("admin",)
+    list_display = ('application', 'admin')
+    list_filter = ('application', )
+    readonly_fields = ("last_modified",)
+    fieldsets = [
+        (None,
+         {'fields':
+          ['application', 'admin', "last_modified"],
+          'classes': ['wide']}),
+    ]
