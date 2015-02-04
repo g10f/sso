@@ -545,7 +545,7 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
     last_name = forms.CharField(label=_('Last name'), max_length=30, widget=bootstrap.TextInput())
     is_active = forms.BooleanField(label=_('Active'), help_text=_('Designates whether this user should be treated as active. Unselect this instead of deleting accounts.'),
                                    widget=bootstrap.CheckboxInput(), required=False)
-    is_center = forms.BooleanField(label=_('Center'), help_text=_('Designates that this user is representing a center and not a private person.'), 
+    is_center = forms.BooleanField(label=_('Center'), help_text=_('Designates that this user is representing a center and not a private person.'),
                                    widget=bootstrap.CheckboxInput(), required=False)
     organisations = forms.ModelChoiceField(queryset=None, cache_choices=True, required=False, label=_("Organisation"), widget=bootstrap.Select())
     application_roles = forms.ModelMultipleChoiceField(queryset=None, cache_choices=True, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
@@ -597,5 +597,55 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
         self.update_user_m2m_fields('application_roles', current_user)
         self.update_user_m2m_fields('role_profiles', current_user)
         self.update_user_m2m_fields('organisations', current_user)
+
+        return self.user
+
+
+class AppAdminUserProfileForm(mixins.UserRolesMixin, forms.Form):
+    """
+    Form for application admins and profile admins
+    """
+    error_messages = {
+        'duplicate_username': _("A user with that username already exists."),
+        'duplicate_email': _("A user with that email address already exists."),
+    }
+    username = bootstrap.ReadOnlyField(label=_("Username"))
+    first_name = bootstrap.ReadOnlyField(label=_("First name"))
+    last_name = bootstrap.ReadOnlyField(label=_("Last name"))
+    email = bootstrap.ReadOnlyField(label=_("Email"))
+    application_roles = forms.ModelMultipleChoiceField(queryset=None, cache_choices=True, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
+    role_profiles = forms.ModelMultipleChoiceField(queryset=None, required=False, cache_choices=True, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
+                                                   help_text=_('Groups of application roles that are assigned together.'))
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request')
+        self.user = kwargs.pop('instance')
+        user_data = model_to_dict(self.user)
+        user_data['email'] = self.user.primary_email()
+        try:
+            # the user should have exactly 1 center
+            user_data['organisations'] = self.user.organisations.all()[0]
+        except IndexError:
+            # center is optional
+            # logger.error("User without center?", exc_info=1)
+            pass
+
+        initial = kwargs.get('initial', {})
+        initial.update(user_data)
+        kwargs['initial'] = initial
+        super(AppAdminUserProfileForm, self).__init__(*args, **kwargs)
+
+        organisations = u', '.join([x.__unicode__() for x in self.user.organisations.all()])
+        self.fields['organisations'] = bootstrap.ReadOnlyField(initial=organisations, label=_("Center"))
+
+        self.fields['application_roles'].queryset = self.request.user.get_administrable_application_roles()
+        self.fields['role_profiles'].queryset = self.request.user.get_administrable_role_profiles()
+
+    def save(self):
+        cd = self.cleaned_data
+        current_user = self.request.user
+
+        self.update_user_m2m_fields('application_roles', current_user)
+        self.update_user_m2m_fields('role_profiles', current_user)
 
         return self.user

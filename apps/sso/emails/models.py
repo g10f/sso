@@ -21,6 +21,7 @@ PERM_DWB = '2'
 PERM_VIP = '3'
 PERM_VIP_DWB = '4'
 
+
 class Email(AbstractBaseModel):
     EMAIL_TYPE_CHOICES = (
         (CENTER_EMAIL_TYPE, _('Center')),
@@ -107,7 +108,7 @@ class GroupEmail(AbstractBaseModel):
 
     @models.permalink
     def get_absolute_url(self):
-        return 'emails:groupemail_detail', (), {'uuid': self.uuid, }
+        return 'emails:groupemail_detail', (), {'uuid': self.uuid}
 
     def __unicode__(self):
         return u"%s" % self.email

@@ -7,7 +7,7 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib import messages
 from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.views.generic import DeleteView
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
@@ -19,7 +19,7 @@ from sso.views.generic import ListView, SearchFilter, ViewChoicesFilter, ViewQue
 from sso.accounts.models import ApplicationRole, RoleProfile, User, UserEmail
 from sso.accounts.email import send_account_created_email
 from sso.organisations.models import AdminRegion, Organisation
-from sso.accounts.forms import UserAddForm, UserProfileForm, UserEmailForm
+from sso.accounts.forms import UserAddForm, UserProfileForm, UserEmailForm, AppAdminUserProfileForm
 from sso.forms.helpers import ChangedDataList, log_change, ErrorList
 
 import logging
@@ -117,18 +117,22 @@ class RoleProfileFilter(ViewQuerysetFilter):
     select_all_text = _('All Profiles')
 
 
-class UserEmailHeadingl(object):
+class UserEmailHeading(object):
     verbose_name = _('primary email')
+
+
+def has_user_list_access(user):
+    return user.is_user_admin or user.is_app_admin
 
 
 class UserList(ListView):
     template_name = 'accounts/application/user_list.html'
     model = get_user_model()
-    list_display = ['username', 'picture', 'first_name', 'last_name', UserEmailHeadingl(), 'last_login', 'date_joined']
+    list_display = ['username', 'picture', 'first_name', 'last_name', UserEmailHeading(), 'last_login', 'date_joined']
     IS_ACTIVE_CHOICES = (('1', _('Active Users')), ('2', _('Inactive Users')))
 
     @method_decorator(login_required)
-    @method_decorator(permission_required('accounts.change_user', raise_exception=True))
+    @method_decorator(user_passes_test(has_user_list_access))
     def dispatch(self, request, *args, **kwargs):
         return super(UserList, self).dispatch(request, *args, **kwargs)
 
@@ -138,7 +142,6 @@ class UserList(ListView):
         be a queryset (in which qs-specific behavior will be enabled).
         """
         user = self.request.user
-        # q = Q(useremail__is_primary=True) | Q(useremail__isnull=True)
         qs = super(UserList, self).get_queryset().prefetch_related('useremail_set')
         qs = user.filter_administrable_users(qs)
             
@@ -149,8 +152,8 @@ class UserList(ListView):
         qs = AdminRegionFilter().apply(self, qs) 
         qs = CenterFilter().apply(self, qs) 
         qs = ApplicationRoleFilter().apply(self, qs) 
-        qs = RoleProfileFilter().apply(self, qs) 
-        qs = IsActiveFilter().apply(self, qs, default='1') 
+        qs = RoleProfileFilter().apply(self, qs)
+        qs = IsActiveFilter().apply(self, qs, default='1')
         
         # Set ordering.
         ordering = self.cl.get_ordering(self.request, qs)
@@ -187,10 +190,11 @@ class UserList(ListView):
         admin_region_filter = AdminRegionFilter().get(self, admin_regions)
         center_filter = CenterFilter().get(self, centers)
         application_role_filter = ApplicationRoleFilter().get(self, application_roles)
-        is_active_filter = IsActiveFilter().get(self)
         role_profile_filter = RoleProfileFilter().get(self, role_profiles)
 
-        filters = [country_filter, admin_region_filter, center_filter, role_profile_filter, application_role_filter, is_active_filter]        
+        filters = [country_filter, admin_region_filter, center_filter, role_profile_filter, application_role_filter]
+        if user.is_user_admin:
+            filters += [IsActiveFilter().get(self)]
         
         context = {
             'result_headers': headers,
@@ -205,7 +209,7 @@ class UserList(ListView):
         context.update(kwargs)
         return super(UserList, self).get_context_data(**context)
     
-    
+
 @login_required
 @permission_required('accounts.add_user', raise_exception=True)
 def add_user(request, template='accounts/application/add_user_form.html'):
@@ -234,7 +238,7 @@ def add_user_done(request, uuid, template='accounts/application/add_user_done.ht
     
 @login_required
 @permission_required('accounts.change_user', raise_exception=True)
-def update_user(request, uuid, template='accounts/application/change_user_form.html'):
+def update_user(request, uuid, template='accounts/application/update_user_form.html'):
     if not request.user.has_user_access(uuid):
         raise PermissionDenied
     user = get_object_or_404(get_user_model(), uuid=uuid)
@@ -300,4 +304,42 @@ def update_user(request, uuid, template='accounts/application/change_user_form.h
                     break
 
     dictionary = {'form': form, 'errors': errors, 'formsets': formsets, 'media': media, 'active': active, 'title': _('Change user')}
+    return render(request, template, dictionary)
+
+
+@login_required
+@user_passes_test(has_user_list_access)
+def update_user_app_roles(request, uuid, template='accounts/application/update_user_app_roles_form.html'):
+    if not request.user.has_user_access(uuid):
+        raise PermissionDenied
+    user = get_object_or_404(get_user_model(), uuid=uuid)
+
+    if request.method == 'POST':
+        form = AppAdminUserProfileForm(request.POST, instance=user, request=request)
+
+        if form.is_valid():
+            user = form.save()
+
+            change_message = ChangedDataList(form, []).change_message()
+            log_change(request, user, change_message)
+
+            msg_dict = {'name': force_text(get_user_model()._meta.verbose_name), 'obj': force_text(user)}
+            if "_continue" in request.POST:
+                msg = _('The %(name)s "%(obj)s" was changed successfully. You may edit it again below.') % msg_dict
+                success_url = reverse('accounts:update_user_app_roles', args=[user.uuid])
+            else:
+                msg = _('The %(name)s "%(obj)s" was changed successfully.') % msg_dict
+                success_url = reverse('accounts:user_list') + "?" + request.GET.urlencode()
+            messages.add_message(request, level=messages.SUCCESS, message=msg, fail_silently=True)
+            return HttpResponseRedirect(success_url)
+
+    else:
+        form = AppAdminUserProfileForm(instance=user, request=request)
+
+    media = form.media
+
+    errors = ErrorList(form, [])
+    active = ''
+
+    dictionary = {'form': form, 'errors': errors, 'media': media, 'active': active, 'title': _('Change user roles')}
     return render(request, template, dictionary)
