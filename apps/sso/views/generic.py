@@ -101,11 +101,7 @@ class ViewQuerysetFilter(BaseFilter):
                 filter_list = self.filter_list
             else:
                 filter_list = self.model.objects.all()
-            
-        if len(filter_list) == 1:
-            setattr(view, self.name, filter_list[0])
-            filter_list = self.model.objects.none()
-        
+
         return {
             'selected': getattr(view, self.name), 'list': filter_list, 'select_text': self.select_text, 'select_all_text': self.select_all_text, 
             'param_name': self.name, 'all_remove': self.all_remove, 'remove': self.remove, 'template_name': self.template_name
