@@ -613,6 +613,7 @@ class AppAdminUserProfileForm(mixins.UserRolesMixin, forms.Form):
     first_name = bootstrap.ReadOnlyField(label=_("First name"))
     last_name = bootstrap.ReadOnlyField(label=_("Last name"))
     email = bootstrap.ReadOnlyField(label=_("Email"))
+    organisations = bootstrap.ReadOnlyField(label=_("Center"))
     application_roles = forms.ModelMultipleChoiceField(queryset=None, cache_choices=True, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
     role_profiles = forms.ModelMultipleChoiceField(queryset=None, required=False, cache_choices=True, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
                                                    help_text=_('Groups of application roles that are assigned together.'))
@@ -622,21 +623,12 @@ class AppAdminUserProfileForm(mixins.UserRolesMixin, forms.Form):
         self.user = kwargs.pop('instance')
         user_data = model_to_dict(self.user)
         user_data['email'] = self.user.primary_email()
-        try:
-            # the user should have exactly 1 center
-            user_data['organisations'] = self.user.organisations.all()[0]
-        except IndexError:
-            # center is optional
-            # logger.error("User without center?", exc_info=1)
-            pass
+        user_data['organisations'] = u', '.join([x.__unicode__() for x in self.user.organisations.all()])
 
         initial = kwargs.get('initial', {})
         initial.update(user_data)
         kwargs['initial'] = initial
         super(AppAdminUserProfileForm, self).__init__(*args, **kwargs)
-
-        organisations = u', '.join([x.__unicode__() for x in self.user.organisations.all()])
-        self.fields['organisations'] = bootstrap.ReadOnlyField(initial=organisations, label=_("Center"))
 
         self.fields['application_roles'].queryset = self.request.user.get_administrable_application_roles()
         self.fields['role_profiles'].queryset = self.request.user.get_administrable_role_profiles()
