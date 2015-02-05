@@ -15,7 +15,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import ugettext_lazy as _
 from sorl.thumbnail.admin import AdminImageMixin
 
-from models import Application, UserAssociatedSystem, UserAddress, UserPhoneNumber, UserEmail
+from models import Application, UserAssociatedSystem, UserAddress, UserPhoneNumber, UserEmail, RoleProfile
 from sso.organisations.models import Organisation, AdminRegion
 from .forms import AdminUserChangeForm, AdminUserCreationForm
 import logging
@@ -176,6 +176,25 @@ class ApplicationRolesFilter(BaseFilter):
     def get_lookup_qs(self, request, model_admin):
         return request.user.get_administrable_application_roles()
 
+
+class ApplicationAdminApplicationFilter(BaseFilter):
+    title = _('Application Admin')
+    parameter_name = 'applicationadmin__application'
+    field_path = 'applicationadmin__application'
+
+    def get_lookup_qs(self, request, model_admin):
+        return Application.objects.filter(applicationadmin__application__isnull=False)
+
+
+class RoleProfileAdminRoleProfileFilter(BaseFilter):
+    title = _('Role Profile Admin')
+    parameter_name = 'roleprofileadmin__role_profile'
+    field_path = 'roleprofileadmin__role_profile'
+
+    def get_lookup_qs(self, request, model_admin):
+        return RoleProfile.objects.filter(roleprofileadmin__role_profile__isnull=False)
+
+
 """
 may be in the future?
 class ExcludeApplicationRolesFilter(ApplicationRolesFilter):
@@ -300,7 +319,8 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
     save_on_top = True
     list_display = ('id', 'username', 'primary_email', 'first_name', 'last_name', 'is_staff', 'last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user')
     search_fields = ('username', 'first_name', 'last_name', 'useremail__email', 'uuid')
-    list_filter = (SuperuserFilter, ) + ('is_staff', 'is_center', 'is_active', 'groups', UserAssociatedSystemFilter, UserRegionListFilter,
+    list_filter = (SuperuserFilter, ) + ('is_staff', 'is_center', 'is_active', 'groups', ApplicationAdminApplicationFilter, RoleProfileAdminRoleProfileFilter,
+                                         UserAssociatedSystemFilter, UserRegionListFilter,
                                          RoleProfilesFilter, ExcludeRoleProfilesFilter, ApplicationRolesFilter)  # ,UserOrganisationsListFilter, CreatedByUserFilter, LastModifiedUserFilter
     filter_horizontal = DjangoUserAdmin.filter_horizontal + ('admin_countries', 'admin_regions', 'groups', 'application_roles', 'role_profiles', 'organisations')
     ordering = ['-last_login', '-first_name', '-last_name']

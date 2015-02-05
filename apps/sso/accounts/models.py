@@ -89,6 +89,8 @@ class Role(models.Model):
     
     class Meta:
         ordering = ['order', 'name']    
+        verbose_name = _('role')
+        verbose_name_plural = _('roles')
 
     def natural_key(self):
         return self.name,
@@ -431,9 +433,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         return a list of organisations from all the users we have admin rights on
         """
-        if self.is_global_user_admin:
+        if self.is_global_admin:
             return Organisation.objects.all().select_related('country', 'email')
-        elif self.is_user_admin or self.is_app_admin:
+        elif self.is_admin:
             return Organisation.objects.filter(
                 Q(pk__in=self.organisations.all()) | Q(admin_region__in=self.admin_regions.all()) | Q(country__in=self.admin_countries.all())).select_related('country', 'email').distinct()
         else:
@@ -444,9 +446,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         return a list of regions from all the users we have admin rights on
         """
-        if self.is_global_user_admin:
+        if self.is_global_admin:
             return AdminRegion.objects.all()
-        elif self.is_user_admin or self.is_app_admin:
+        elif self.is_admin:
             return AdminRegion.objects.filter(Q(organisation__in=self.organisations.all()) | Q(pk__in=self.admin_regions.all()) | Q(country__in=self.admin_countries.all())).distinct()
         else:
             return AdminRegion.objects.none()
@@ -456,9 +458,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         return a list of countries from all the users we have admin rights on
         """        
-        if self.is_global_user_admin:
+        if self.is_global_admin:
             return Country.objects.filter(organisation__isnull=False).distinct()
-        elif self.is_user_admin or self.is_app_admin:
+        elif self.is_admin:
             return Country.objects.filter(
                 Q(organisation__admin_region__in=self.admin_regions.all()) |  # for adminregions without a associated country 
                 Q(organisation__in=self.organisations.all()) | Q(adminregion__in=self.admin_regions.all()) | Q(pk__in=self.admin_countries.all())).distinct()
@@ -542,23 +544,33 @@ class User(AbstractBaseUser, PermissionsMixin):
         # filter the users for who the authenticated user has admin rights
         if self.is_superuser:
             pass
-        elif self.is_global_user_admin:
+        elif self.is_global_admin:
             qs = qs.filter(is_superuser=False)
-        elif self.is_user_admin or self.is_app_admin:
+        elif self.is_admin:
             organisations = self.get_administrable_user_organisations()
             q = Q(is_superuser=False) & Q(organisations__in=organisations)
             qs = qs.filter(q).distinct()
         else:
             qs = User.objects.none()
         return qs
-        
+
+    @property
+    def is_global_admin(self):
+        return self.has_perm("accounts.access_all_users")
+
+    @property
+    def is_admin(self):
+        return self.is_user_admin or self.is_app_admin
+
     @property
     def is_global_user_admin(self):
+        # can access user data: name, email, center and roles for all users
         return self.has_perms(["accounts.read_user", "accounts.access_all_users"])
     
     @property
     def is_user_admin(self):
-        return self.has_perm("accounts.read_user") # or self.is_app_admin
+        # can access user data: name, email, center and roles
+        return self.has_perm("accounts.read_user")
 
     @property
     def is_app_admin(self):
@@ -698,6 +710,10 @@ class OneTimeMessage(AbstractBaseModel):
     user = models.ForeignKey(User)
     title = models.CharField(_("title"), max_length=255, default='')
     message = models.TextField(_("message"), blank=True, max_length=2048, default='')
+
+    class Meta(AbstractBaseModel.Meta):
+        verbose_name = _('one time message')
+        verbose_name_plural = _('one time messages')
 
 
 class UserAddress(AbstractBaseModel, AddressMixin):
