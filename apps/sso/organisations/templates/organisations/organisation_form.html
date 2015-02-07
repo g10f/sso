@@ -60,15 +60,15 @@
            {% include 'include/_field.html' with field=form.is_private %}            
            {% include 'include/_field.html' with field=form.is_active %}            
            {% include 'include/_field.html' with field=form.can_publish %}            
-           {% include 'include/_static_google_maps_field.html' with field=form.google_maps_url %}
-           {% include 'include/_field.html' with field=form.coordinates_type %}            
-           {#% include 'include/_field.html' with field=form.latitude %#}            
-           {#% include 'include/_field.html' with field=form.longitude %#}      
-           {% include 'include/_field.html' with field=form.location %}      
         </div>
         
         {% for formset in formsets %}
-        <div class="tab-pane {% if active == formset.prefix %}active{% endif %}" id="{{ formset.prefix }}"> 
+        <div class="tab-pane {% if active == formset.prefix %}active{% endif %}" id="{{ formset.prefix }}">
+            {% if formset.prefix == 'organisationaddress_set' %}
+                {% include 'include/_static_google_maps_field.html' with field=form.google_maps_url %}
+                {% include 'include/_field.html' with field=form.coordinates_type %}
+                {% include 'include/_field.html' with field=form.location %}
+            {% endif %}
             {% include formset.form.template %}
         </div>
         {% endfor %}
