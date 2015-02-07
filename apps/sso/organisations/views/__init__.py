@@ -9,7 +9,6 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.http import HttpResponseRedirect
 from django.forms.models import inlineformset_factory
-
 from l10n.models import Country
 from utils.url import is_safe_url
 from sso.views import main

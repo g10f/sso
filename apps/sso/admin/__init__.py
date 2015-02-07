@@ -42,6 +42,7 @@ sso_admin_site.register(RefreshToken, RefreshTokenAdmin)
 sso_admin_site.register(Client, ClientAdmin)
 
 sso_admin_site.register(Country, CountryOptions)
+sso_admin_site.register(CountryCallingCode, CountryCallingCodeOptions)
 
 sso_admin_site.register(RegistrationProfile, RegistrationAdmin)
 sso_admin_site.register(org_models.Organisation, org_admin.OrganisationAdmin)

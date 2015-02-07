@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
-from urlparse import urlsplit, urlunsplit
+
 from django.utils.translation import ugettext_lazy as _
 from django.forms import ModelChoiceField, ModelMultipleChoiceField, ValidationError
 from l10n.models import Country
@@ -17,12 +17,13 @@ class OrganisationAddressForm(BaseForm):
     
     class Meta:
         model = OrganisationAddress
-        fields = ('address_type', 'addressee', 'street_address', 'city', 'postal_code', 'country', 'region') 
+        fields = ('address_type', 'addressee', 'street_address', 'city', 'city_native', 'postal_code', 'country', 'region')
         widgets = {
             'address_type': bootstrap.Select(),
             'addressee': bootstrap.TextInput(attrs={'size': 50}),
             'street_address': bootstrap.Textarea(attrs={'cols': 50, 'rows': 2}),
             'city': bootstrap.TextInput(attrs={'size': 50}),
+            'city_native': bootstrap.TextInput(attrs={'size': 50}),
             'postal_code': bootstrap.TextInput(attrs={'size': 50}),
             'country': bootstrap.Select(),
             'region': bootstrap.TextInput(attrs={'size': 50}),            
@@ -33,13 +34,22 @@ class OrganisationAddressForm(BaseForm):
 
 
 class OrganisationPhoneNumberForm(BaseTabularInlineForm):
+    # country_calling_code = ModelChoiceField(
+    #    queryset=CountryCallingCode.objects.filter(country__organisationcountry__isnull=False).only("calling_code", "country__iso2_code").select_related(),
+    #    cache_choices=False, required=False, label=_("Calling Code"), widget=bootstrap.Select())
+
     class Meta:
         model = OrganisationPhoneNumber
-        fields = ('phone_type', 'phone') 
+        fields = (
+            'phone_type',
+            'phone')
         widgets = {
             'phone_type': bootstrap.Select(),
             'phone': bootstrap.TextInput(attrs={'size': 50}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super(OrganisationPhoneNumberForm, self).__init__(*args, **kwargs)
 
 
 class OrganisationBaseForm(BaseForm):
