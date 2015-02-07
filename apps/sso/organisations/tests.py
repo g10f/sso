@@ -110,7 +110,7 @@ class OrganisationssTest(TestCase):
             'organisationaddress_set-TOTAL_FORMS': 1,
             'organisationphonenumber_set-0-id': '',
             'organisationphonenumber_set-0-organisation': org_id,
-            'organisationphonenumber_set-0-phone': '+49 (0531) ...',
+            'organisationphonenumber_set-0-phone': '+49 (0531) 123456',
             'organisationphonenumber_set-0-phone_type': 'home',
             'organisationphonenumber_set-INITIAL_FORMS': 0,
             'organisationphonenumber_set-MAX_NUM_FORMS': 6,
@@ -125,5 +125,5 @@ class OrganisationssTest(TestCase):
         self.assertEqual(response.status_code, 200)
         obj = response.context['object']
         self.assertEqual(obj.organisationaddress_set.all()[0].addressee, 'Buddhistisches Zentrum New')
-        self.assertEqual(obj.organisationphonenumber_set.all()[0].phone, '+49 (0531) ...')
+        self.assertEqual(obj.organisationphonenumber_set.all()[0].phone, '+49 (0531) 123456')
         self.assertEqual(obj.email.emailforward_set.all()[0].forward, 'gunnar@g10f.de')

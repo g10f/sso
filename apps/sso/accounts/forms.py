@@ -263,13 +263,14 @@ class UserAddForm(forms.ModelForm):
 class AddressForm(BaseForm):
     class Meta:
         model = UserAddress
-        fields = ('primary', 'address_type', 'addressee', 'street_address', 'city', 'postal_code', 'country', 'region')
+        fields = ('primary', 'address_type', 'addressee', 'street_address', 'city', 'city_native', 'postal_code', 'country', 'region')
         widgets = {
             'primary': bootstrap.CheckboxInput(),
             'address_type': bootstrap.Select(),
             'addressee': bootstrap.TextInput(attrs={'size': 50}),
             'street_address': bootstrap.Textarea(attrs={'cols': 50, 'rows': 2}),
             'city': bootstrap.TextInput(attrs={'size': 50}),
+            'city_native': bootstrap.TextInput(attrs={'size': 50}),
             'postal_code': bootstrap.TextInput(attrs={'size': 50}),
             'country': bootstrap.Select(),
             'region': bootstrap.TextInput(attrs={'size': 50}),

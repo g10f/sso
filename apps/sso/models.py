@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 import logging
+import re
+from django.core.validators import RegexValidator
 
 from django.db import models
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from django.forms.models import model_to_dict
-from l10n.models import Country, AdminArea
+from l10n.models import Country, AdminArea, CountryCallingCode
 from smart_selects.db_fields import ChainedForeignKey
 from sso.fields import UUIDField
 
@@ -56,7 +58,8 @@ class AddressMixin(models.Model):
     addressee = models.CharField(_("addressee"), max_length=80)
     street_address = models.TextField(_('street address'), blank=True, help_text=_('Full street address, with house number, street name, P.O. box, and extended street address information.'), max_length=512)
     city = models.CharField(_("city"), max_length=100)  # , help_text=_('City or locality')
-    postal_code = models.CharField(_("postal code"), max_length=30, blank=True)  # , help_text=_('Zipcode or postal code') 
+    city_native = models.CharField(_("city in native language"), max_length=100, blank=True)
+    postal_code = models.CharField(_("postal code"), max_length=30, blank=True)  # , help_text=_('Zipcode or postal code')
     country = models.ForeignKey(Country, verbose_name=_("country"), limit_choices_to={'active': True})
     state = ChainedForeignKey(AdminArea, chained_field='country', chained_model_field="country", verbose_name=_("State"), 
                               help_text=_('State or region'), blank=True, null=True)
@@ -74,10 +77,16 @@ class AddressMixin(models.Model):
 
     def __unicode__(self):
         return u"%s" % self.addressee
-    
 
-class PhoneNumberMixin(models.Model): 
-    phone = models.CharField(_("phone number"), max_length=30,)
+
+phone_re = re.compile(
+    r'^\+\d{1,3}' + r'((-?\d+)|(\s?\(\d+\)\s?)|\s?\d+){1,9}$'
+)
+validate_phone = RegexValidator(phone_re, _("Enter a valid phone number i.e. +49 (531) 123456"), 'invalid')
+
+
+class PhoneNumberMixin(models.Model):
+    phone = models.CharField(_("phone number"), max_length=30, validators=[validate_phone])
     primary = models.BooleanField(_("primary"), default=False)
     # history = HistoricalRecords()
 
@@ -88,8 +97,8 @@ class PhoneNumberMixin(models.Model):
         verbose_name_plural = _("phone numbers")
 
     def __unicode__(self):
-        return u'%s: %s' % (self.get_phone_type_display(), self.phone)
-    
+        return u'%s' % self.phone
+
 
 def update_object_from_dict(destination, source_dict, key_mapping=None):
     """

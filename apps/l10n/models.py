@@ -83,3 +83,23 @@ class AdminArea(models.Model):
 
     def __unicode__(self):
         return self.name
+
+
+class CountryCallingCode(models.Model):
+    """
+    Generally, there can be more then one  calling code per country and different countries can have the same calling code,
+    but this model is only used to show a list of possible country codes.
+    Therefor the calling code is unique.
+
+    initial data from https://mledoze.github.io/countries/
+    """
+    calling_code = models.PositiveIntegerField(_('calling code'), unique=True)
+    country = models.ForeignKey(Country)
+
+    class Meta:
+        verbose_name = _('country calling code')
+        verbose_name_plural = _('country calling codes')
+        ordering = ('country__iso2_code',)
+
+    def __unicode__(self):
+        return u"%s +%d" % (self.country.iso2_code, self.calling_code)

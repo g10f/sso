@@ -10,7 +10,6 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.utils.timezone import now
 from django.utils.translation import get_language, activate
-from sso.accounts.models import UserEmail
 from sso.accounts.tokens import email_confirm_token_generator
 
 

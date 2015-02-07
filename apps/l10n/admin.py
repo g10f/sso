@@ -1,9 +1,9 @@
-from l10n.models import Country, AdminArea
+from l10n.models import Country, AdminArea, CountryCallingCode
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
 
-class AdminArea_Inline(admin.TabularInline):
+class AdminAreaInline(admin.TabularInline):
     model = AdminArea
     extra = 1
 
@@ -32,6 +32,14 @@ class CountryOptions(admin.ModelAdmin):
     list_filter = ('continent', 'active')
     search_fields = ('name', 'iso2_code', 'iso3_code')
     actions = ('make_active', 'make_inactive')
-    inlines = [AdminArea_Inline]
+    inlines = [AdminAreaInline]
+
+
+class CountryCallingCodeOptions(admin.ModelAdmin):
+    list_display = ('country', 'calling_code')
+    list_filter = ('country__active',)
+    search_fields = ('country__printable_name', 'country__iso2_code', 'calling_code')
+
 
 admin.site.register(Country, CountryOptions)
+admin.site.register(CountryCallingCode, CountryCallingCodeOptions)

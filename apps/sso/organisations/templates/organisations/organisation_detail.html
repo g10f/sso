@@ -98,7 +98,7 @@ $(function() {
 	{% if object.organisationphonenumber_set.all %}
 	<h4>{% trans 'Phone Numbers' %}</h4>
 	{% for phone_number in object.organisationphonenumber_set.all %}
-	<div class="row"><div class="dwbn-label">{{ phone_number.get_phone_type_display }} {% trans 'Phone' %}: </div><div class="dwbn-content">{{ phone_number.phone }}</div></div>
+	<div class="row"><div class="dwbn-label">{{ phone_number.get_phone_type_display }} {% trans 'Phone' %}: </div><div class="dwbn-content">{{ phone_number }}</div></div>
 	{% endfor %}{% endif %}
 	
     <h4>{% trans 'Nearest Centers' %}</h4>
