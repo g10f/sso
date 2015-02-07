@@ -5,17 +5,18 @@
  * @requires jQuery 
  */
 (function($) {
-	$(function() { 
+    function init_osm_widget(){
 		/*
-		 * Find all geodjango fields and initialise them
+		 * Find all geodjango fields in active tabs and initialise them
 		 */
 	    var map_options = {
 	    	maxExtend: new OpenLayers.Bounds(-20037508,-20037508,20037508,20037508),
 	    	maxResolution: 156543.0339,
 	    	numZoomLevels: 20,
 	    	units: 'm'
-	    };        
-		$(".geodjango-field").each(function(){			
+	    };
+
+		$(".active .geodjango-field:not(.initialised)").each(function(){
 		    var options = {
 		  		geom_name: $(this).data('geom_type'),
 		    	id: $(this).attr('id'),
@@ -29,12 +30,21 @@
 	    		default_lat: $(this).data('default_lat'),
 	    		base_layer: new OpenLayers.Layer.OSM.Mapnik("OpenStreetMap (Mapnik)")
 	        };
+            // initialise only once
+            $(this).addClass("initialised");
 		    /*
 		     * find the clear all features button and attach the clearFeatures function
 		     */
 	    	var geodjango_widget = new MapWidget(options);
 	    	$(this).prev(".clear_features").click(function(){geodjango_widget.clearFeatures();});
 		});
+    }
+	$(function() {
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            init_osm_widget();
+        });
+        init_osm_widget();
+
 	});
 })(jQuery);
 
