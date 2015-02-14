@@ -68,7 +68,7 @@
 
                 {% include 'include/_field.html' with field=form.username %}
                 {% if is_validation_period_active %}
-                    {% include 'include/_field.html' with field=form.valid_until %}
+                    {% include 'include/_static_field.html' with field=form.valid_until %}
                     {% include 'include/_field.html' with field=form.extend_validity %}
                 {% endif %}
                 {% include 'include/_field.html' with field=form.first_name %}
