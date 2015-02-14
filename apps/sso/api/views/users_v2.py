@@ -33,11 +33,21 @@ mapping consist of key values, where
 
 """
 
+
 def _parse_date(value):
     if value:
         return parse_date(value)
     else:
         return None
+
+
+def validate_phone(value):
+    """
+    same as validate_phone from sso.models, except that a return True is added
+    """
+    from sso.models import validate_phone
+    validate_phone(value)
+    return True
 
 
 SCOPE_MAPPING = {
@@ -60,6 +70,7 @@ API_ADDRESS_MAP = {
     'addressee': {'name': 'addressee', 'validate': lambda x: len(x) > 0},
     'street_address': 'street_address',
     'city': {'name': 'city', 'validate': lambda x: len(x) > 0},
+    'city_native': 'city_native',
     'postal_code': 'postal_code',
     'country': {'name': 'country', 'parser': lambda iso2_code: Country.objects.get(iso2_code=iso2_code)},
     'region': 'region',
@@ -67,7 +78,7 @@ API_ADDRESS_MAP = {
 }
 API_PHONE_MAP = {
     'phone_type': {'name': 'phone_type', 'default': UserPhoneNumber.PHONE_CHOICES[0][0]},
-    'phone': 'phone',
+    'phone': {'name': 'phone', 'validate': validate_phone},
     'primary': 'primary'
 }
 
@@ -134,6 +145,7 @@ class UserMixin(object):
                         'addressee': address.addressee,
                         'street_address': address.street_address,
                         'city': address.city,
+                        'city_native': address.city_native,
                         'postal_code': address.postal_code,
                         'country': address.country.iso2_code,
                         'region': address.region,

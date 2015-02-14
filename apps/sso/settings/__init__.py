@@ -21,6 +21,7 @@ TEMPLATE_DEBUG = DEBUG
 
 SSO_BRAND = 'G10F'
 SSO_SITE_NAME = 'G10F'
+SSO_BASE_URL = 'http://localhost:8000'  # for management scripts without a request object
 SSO_ABOUT = 'http://g10f.de/'
 SSO_APP_UUID = 'fa467234b81e4838a009e38d9e655d18'
 SSO_STREAMING_UUID = 'c362bea58c67457fa32234e3178285c4'
@@ -33,6 +34,9 @@ SSO_DEFAULT_ROLE_PROFILE_UUID = 'b4caab335bbc4c90a6f552f7f13aa410'
 SSO_DEFAULT_ADMIN_PROFILE_UUID = '1593284b238c4a1cabf291e573205508'
 SSO_SHOW_ADDRESS_AND_PHONE_FORM = True  # Address and Phone number in profile form
 SSO_ADD_DHARMASHOP_ROLE = False
+SSO_VALIDATION_PERIOD_IS_ACTIVE = True  # accounts must be prolonged
+SSO_VALIDATION_PERIOD_IS_ACTIVE_FOR_ALL = False  # all accounts must be prolonged, not only account from marked centers
+SSO_VALIDATION_PERIOD_DAYS = 356  # accounts must be prolonged after 1 year
 
 EMAIL_SUBJECT_PREFIX = '[SSO] '
 
@@ -194,7 +198,7 @@ RECAPTCHA_PRIVATE_KEY = '6LccjewSAAAAAAhJzHuEyVV40AYApL6CpmjqlmX8'
 RECAPTCHA_USE_SSL = True
 
 SESSION_COOKIE_HTTPONLY = False
-SESSION_COOKIE_AGE = 60 * 20  # seconds * Minutes
+SESSION_COOKIE_AGE = 60 * 30  # seconds * Minutes
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = False
 # SESSION_ENGINE = 'sso.sessions.backends'

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.core.exceptions import PermissionDenied
-from django.shortcuts import redirect, render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, resolve_url
 from django.utils.translation import ugettext_lazy as _
 from django.http import HttpResponseRedirect
 from django.contrib import messages
@@ -12,9 +12,10 @@ from django.utils.decorators import method_decorator
 from l10n.models import Country
 from django.utils.encoding import force_text
 from django.core.urlresolvers import reverse, reverse_lazy
+from sso.organisations.models import is_validation_period_active_for_user
 from sso.views import main
 from sso.views.generic import SearchFilter, ViewChoicesFilter, ViewQuerysetFilter, ListView
-from .models import RegistrationProfile, RegistrationManager, send_user_validated_email
+from .models import RegistrationProfile, RegistrationManager, send_user_validated_email, send_set_password_email
 from .forms import RegistrationProfileForm
 from .tokens import default_token_generator
 
@@ -181,6 +182,7 @@ def update_user_registration(request, pk, template='registration/change_user_reg
                 registrationprofile = registrationprofile_form.save(activate=True)
                 msg = _('The %(name)s "%(obj)s" was activated successfully.') % msg_dict
                 success_url = reverse('registration:user_registration_list') + "?" + request.GET.urlencode()
+                send_set_password_email(registrationprofile.user, request)
             
             messages.add_message(request, level=messages.SUCCESS, message=msg, fail_silently=True)
             return HttpResponseRedirect(success_url)
@@ -202,11 +204,16 @@ def validation_confirm(request, uidb64=None, token=None, token_generator=default
         profile = RegistrationProfile.objects.get(pk=uid)
     except (ValueError, RegistrationProfile.DoesNotExist):
         profile = None
-    
+
     validlink = False
     if profile is not None:
+        if is_validation_period_active_for_user(profile.user):
+            redirect_url = resolve_url('registration:validation_complete2')
+        else:
+            redirect_url = resolve_url('registration:validation_complete')
+
         if profile.is_validated:
-            return redirect('registration:validation_complete')
+            return HttpResponseRedirect(redirect_url)
         elif token_generator.check_token(profile, token):
             validlink = True
             
@@ -215,7 +222,7 @@ def validation_confirm(request, uidb64=None, token=None, token_generator=default
                 profile.save()
                 profile.user.confirm_primary_email_if_no_confirmed()
                 send_user_validated_email(profile, request)
-                return redirect('registration:validation_complete')
+                return HttpResponseRedirect(redirect_url)
             
     context = {
         'email': profile.user.primary_email() if profile else None,

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from urlparse import urlparse
+from django.contrib.auth.tokens import default_token_generator
 
 from django.utils.http import urlsafe_base64_decode, is_safe_url
 from django.conf import settings
@@ -28,7 +29,7 @@ from sso.forms.helpers import ErrorList, ChangedDataList, log_change
 from ..models import Application, User, UserAddress, UserPhoneNumber, UserEmail
 from ..email import send_useremail_confirmation
 from ..forms import PasswordResetForm, SetPasswordForm, PasswordChangeForm, ContactForm, AddressForm, PhoneNumberForm, \
-    SelfUserEmailForm
+    SelfUserEmailForm, SetPictureAndPasswordForm
 from ..forms import UserSelfProfileForm, UserSelfProfileDeleteForm, CenterSelfProfileForm
 
 
@@ -409,6 +410,52 @@ def delete_profile(request):
     return render(request, 'accounts/delete_profile_form.html', dictionary)
 
 
+# Doesn't need csrf_protect since no-one can guess the URL
+@sensitive_post_parameters()
+@never_cache
+def password_create_confirm(request, uidb64=None, token=None, template_name='accounts/password_create_confirm.html'):
+    """
+    View that checks the hash in a password create link and presents a
+    form for entering a  password and a picture
+    """
+    assert uidb64 is not None and token is not None  # checked by URLconf
+    post_reset_redirect = reverse('accounts:password_create_complete')
+    try:
+        uid = urlsafe_base64_decode(uidb64)
+        user = User._default_manager.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        validlink = True
+        title = _('Enter new password')
+        if request.method == 'POST':
+            form = SetPictureAndPasswordForm(user, request.POST, files=request.FILES)
+            if form.is_valid():
+                user = form.save()
+                return HttpResponseRedirect(post_reset_redirect)
+        else:
+            form = SetPictureAndPasswordForm(user)
+    else:
+        validlink = False
+        form = None
+        title = _('Password create unsuccessful')
+    context = {
+        'form': form,
+        'title': title,
+        'validlink': validlink,
+    }
+    return TemplateResponse(request, template_name, context)
+
+
+def password_create_complete(request):
+    from django.contrib.auth.views import password_reset_complete
+    defaults = {
+        'template_name': 'accounts/password_create_complete.html',
+    }
+    return password_reset_complete(request, **defaults)
+
+
 # 4 views for password reset:
 # - password_reset sends the mail
 # - password_reset_done shows a success message for the above
@@ -422,8 +469,8 @@ def password_reset(request, is_admin_site=False):
     defaults = {
         'post_reset_redirect': reverse('accounts:password_reset_done'),
         'template_name': 'accounts/password_reset_form.html',
-        'email_template_name': 'accounts/password_reset_email.html',
-        'subject_template_name': 'registration/password_reset_subject.txt',
+        'email_template_name': 'accounts/email/password_reset_email.html',
+        'subject_template_name': 'accounts/email/password_reset_subject.txt',
         'password_reset_form': PasswordResetForm
     }
     return password_reset(request, is_admin_site=False, **defaults)

@@ -73,8 +73,7 @@ class ReadOnlyWidget(forms.Widget):
                 
         klass = add_to_css_class(self.attrs.pop('class', ''), 'form-control-static')
         klass = add_to_css_class(klass, attrs.pop('class', ''))
-
-        return mark_safe(u'<p class="%s">%s</p>' % (klass, value))
+        return mark_safe(u'<p class="%s">%s</p>' % (klass, value if value is not None else ''))
 
 
 class YesNoWidget(ReadOnlyWidget):

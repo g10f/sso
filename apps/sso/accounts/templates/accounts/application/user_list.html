@@ -55,6 +55,7 @@
 	               <td>{{ user_obj.primary_email|default_if_none:"" }}</td>
 	               <td>{{ user_obj.last_login|utc|date:"Y-m-d H:i" }}</td>
 	               <td>{{ user_obj.date_joined|utc|date:"Y-m-d H:i" }}</td>
+	               <td>{{ user_obj.valid_until|utc|date:"Y-m-d H:i" }}</td>
 	           </tr>
 	           {% endfor %}
 	       </tbody>

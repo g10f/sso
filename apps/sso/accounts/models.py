@@ -178,13 +178,11 @@ class UserManager(DjangoUserManager):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-
     MAX_PICTURE_SIZE = 5242880  # 5 MB
     GENDER_CHOICES = [
         ('m', _('male')),
         ('f', _('female'))
-    ]    
-
+    ]
     username = models.CharField(_('username'), max_length=30, unique=True, help_text=_('Required. 30 characters or fewer. Letters, digits and @/./+/-/_ only.'),
                                 validators=[validators.RegexValidator(re.compile(r"^[\w.@+-]+$", flags=re.UNICODE), _('Enter a valid username.'), 'invalid')])
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
@@ -211,6 +209,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     dob = models.DateField(_("date of birth"), blank=True, null=True)
     homepage = models.URLField(_("homepage"), max_length=512, blank=True)
     language = models.CharField(_('language'), max_length=254, choices=settings.LANGUAGES, blank=True)
+    valid_until = models.DateTimeField(_('valid until'), blank=True, null=True)
 
     objects = UserManager()
 

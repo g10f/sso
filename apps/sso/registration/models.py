@@ -1,22 +1,21 @@
-import datetime 
+import datetime
 
 from django.utils.timezone import now
 from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from django.contrib.sites.models import get_current_site
-from django.template.loader import render_to_string
-from django.utils.translation import get_language, activate, ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.core.mail import send_mail
-from django.template import loader
 from django.core import urlresolvers
 from django.contrib.auth.tokens import default_token_generator as default_pwd_reset_token_generator
 from tokens import default_token_generator
 from current_user.models import CurrentUserField
 from sso.accounts.models import User
+from utils.translation import i18n_email_msg_and_subj
 
 
 def send_user_validated_email(registration_profile, request):
@@ -72,21 +71,16 @@ def send_set_password_email(user, request, token_generator=default_pwd_reset_tok
         'protocol': use_https and 'https' or 'http',
         'expiration_date': expiration_date
     }
-    cur_language = get_language()
-    try:
-        language = user.language if user.language else settings.LANGUAGE_CODE
-        activate(language)    
-        subject = loader.render_to_string(subject_template_name, c)
-        # Email subject *must not* contain newlines
-        subject = ''.join(subject.splitlines())
-        email = loader.render_to_string(email_template_name, c)
-    finally:
-        activate(cur_language)
-
-    user.email_user(subject, email, from_email)
+    # use the user language or the default language (en-us)
+    language = user.language if user.language else settings.LANGUAGE_CODE
+    message, subject = i18n_email_msg_and_subj(c, email_template_name, subject_template_name, language)
+    user.email_user(subject, message, from_email)
 
 
-def send_validation_email(registration_profile, request, token_generator=default_token_generator):
+def send_validation_email(registration_profile, request, token_generator=default_token_generator,
+                          email_template_name='registration/validation_email.txt',
+                          subject_template_name='registration/validation_email_subject.txt'
+                          ):
     use_https = request.is_secure()
     current_site = get_current_site(request)
     site_name = settings.SSO_SITE_NAME
@@ -101,10 +95,9 @@ def send_validation_email(registration_profile, request, token_generator=default
         'uid': urlsafe_base64_encode(force_bytes(registration_profile.pk)),
         'expiration_date': expiration_date
     }
-    subject = render_to_string('registration/validation_email_subject.txt', c)
-    # Email subject *must not* contain newlines
-    subject = ''.join(subject.splitlines())
-    message = render_to_string('registration/validation_email.txt', c)
+    # use the user language or the current language from the browser
+    language = registration_profile.user.language
+    message, subject = i18n_email_msg_and_subj(c, email_template_name, subject_template_name, language)
     registration_profile.user.email_user(subject, message, None)
 
 

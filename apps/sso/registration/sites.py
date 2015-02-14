@@ -24,6 +24,7 @@ class RegistrationSite(object):
             '',
             # registration
             url(r'^register/validate/complete/$', TemplateView.as_view(template_name='registration/validation_complete.html'), name='validation_complete'),
+            url(r'^register/validate/complete2/$', TemplateView.as_view(template_name='registration/validation_complete2.html'), name='validation_complete2'),
             url(r'^register/validate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', validation_confirm, name='validation_confirm'),
             url(r'^register/$', UserSelfRegistrationFormPreview(self.form_cls), name='registration_register'),
             url(r'^register/done/$', TemplateView.as_view(template_name='registration/registration_done.html'), name='registration_done'),

@@ -67,6 +67,10 @@
                 </div>
 
                 {% include 'include/_field.html' with field=form.username %}
+                {% if is_validation_period_active %}
+                    {% include 'include/_field.html' with field=form.valid_until %}
+                    {% include 'include/_field.html' with field=form.extend_validity %}
+                {% endif %}
                 {% include 'include/_field.html' with field=form.first_name %}
                 {% include 'include/_field.html' with field=form.last_name %}
                 {% include 'include/_field.html' with field=form.organisations %}
@@ -128,6 +132,9 @@
                 {% if perms.accounts.add_user %}
                     <button type="submit" class="btn btn-default"
                             name="_addanother">{% trans 'Save and add another' %}</button>{% endif %}
+                {% if not logged_in %}
+                    <button type="submit" class="btn btn-default"
+                            name="_resend_invitation">{% trans 'Save and resend Invitation Mail' %}</button>{% endif %}
                 <button type="submit" class="btn btn-default"
                         name="_continue">{% trans 'Save and continue editing' %}</button>
                 <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>

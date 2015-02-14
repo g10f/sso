@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
+from datetime import timedelta
+import logging
+
 from django.db.models import Q
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.forms import inlineformset_factory
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
@@ -18,11 +21,10 @@ from sso.views import main
 from sso.views.generic import ListView, SearchFilter, ViewChoicesFilter, ViewQuerysetFilter
 from sso.accounts.models import ApplicationRole, RoleProfile, User, UserEmail
 from sso.accounts.email import send_account_created_email
-from sso.organisations.models import AdminRegion, Organisation
+from sso.organisations.models import AdminRegion, Organisation, is_validation_period_active
 from sso.accounts.forms import UserAddForm, UserProfileForm, UserEmailForm, AppAdminUserProfileForm
 from sso.forms.helpers import ChangedDataList, log_change, ErrorList
 
-import logging
 
 logger = logging.getLogger(__name__)
     
@@ -126,9 +128,10 @@ def has_user_list_access(user):
 
 
 class UserList(ListView):
+
     template_name = 'accounts/application/user_list.html'
     model = get_user_model()
-    list_display = ['username', 'picture', 'first_name', 'last_name', UserEmailHeading(), 'last_login', 'date_joined']
+    list_display = ['username', 'picture', 'first_name', 'last_name', UserEmailHeading(), 'last_login', 'date_joined', 'valid_until']
     IS_ACTIVE_CHOICES = (('1', _('Active Users')), ('2', _('Inactive Users')))
 
     @method_decorator(login_required)
@@ -142,23 +145,24 @@ class UserList(ListView):
         be a queryset (in which qs-specific behavior will be enabled).
         """
         user = self.request.user
-        qs = super(UserList, self).get_queryset().prefetch_related('useremail_set')
+
+        qs = super(UserList, self).get_queryset().only('uuid', 'last_login', 'username', 'first_name', 'last_name', 'date_joined', 'picture', 'valid_until').prefetch_related('useremail_set')
         qs = user.filter_administrable_users(qs)
             
         self.cl = main.ChangeList(self.request, self.model, self.list_display, default_ordering=['-last_login'])
         # apply filters
         qs = UserSearchFilter().apply(self, qs) 
-        qs = CountryFilter().apply(self, qs) 
-        qs = AdminRegionFilter().apply(self, qs) 
-        qs = CenterFilter().apply(self, qs) 
-        qs = ApplicationRoleFilter().apply(self, qs) 
+        qs = CountryFilter().apply(self, qs)
+        qs = AdminRegionFilter().apply(self, qs)
+        qs = CenterFilter().apply(self, qs)
+        qs = ApplicationRoleFilter().apply(self, qs)
         qs = RoleProfileFilter().apply(self, qs)
         qs = IsActiveFilter().apply(self, qs, default='1')
         
         # Set ordering.
         ordering = self.cl.get_ordering(self.request, qs)
         qs = qs.order_by(*ordering)
-        return qs.distinct()
+        return qs
 
     def get_context_data(self, **kwargs):
         user = self.request.user
@@ -186,7 +190,7 @@ class UserList(ListView):
             else:
                 application_roles = application_roles.filter(user__organisations__in=centers).distinct() 
                 role_profiles = role_profiles.filter(user__organisations__in=centers).distinct()
-                
+
         admin_region_filter = AdminRegionFilter().get(self, admin_regions)
         center_filter = CenterFilter().get(self, centers)
         application_role_filter = ApplicationRoleFilter().get(self, application_roles)
@@ -275,6 +279,10 @@ def update_user(request, uuid, template='accounts/application/update_user_form.h
             elif "_continue" in request.POST:
                 msg = _('The %(name)s "%(obj)s" was changed successfully. You may edit it again below.') % msg_dict
                 success_url = reverse('accounts:update_user', args=[user.uuid])
+            elif "_resend_invitation" in request.POST:
+                send_account_created_email(user, request)
+                msg = _('The %(name)s "%(obj)s" was changed successfully and the invitation email was resend.') % msg_dict
+                success_url = reverse('accounts:update_user', args=[user.uuid])
             else:
                 msg = _('The %(name)s "%(obj)s" was changed successfully.') % msg_dict
                 success_url = reverse('accounts:user_list') + "?" + request.GET.urlencode()
@@ -303,7 +311,17 @@ def update_user(request, uuid, template='accounts/application/update_user_form.h
                     active = formset.prefix
                     break
 
-    dictionary = {'form': form, 'errors': errors, 'formsets': formsets, 'media': media, 'active': active, 'title': _('Change user')}
+    if (user.last_login - user.date_joined) < timedelta(seconds=1):
+        logged_in = False
+    else:
+        logged_in = True
+    try:
+        user_organisation = user.organisations.first()
+    except ObjectDoesNotExist:
+        user_organisation = None
+
+    dictionary = {'form': form, 'errors': errors, 'formsets': formsets, 'media': media, 'active': active,
+                  'logged_in': logged_in, 'is_validation_period_active': is_validation_period_active(user_organisation), 'title': _('Change user')}
     return render(request, template, dictionary)
 
 

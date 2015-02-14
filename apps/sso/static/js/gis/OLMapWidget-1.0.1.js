@@ -14,7 +14,7 @@
 	    	maxResolution: 156543.0339,
 	    	numZoomLevels: 20,
 	    	units: 'm'
-	    };  
+	    };
 
 		$(".active .geodjango-field:not(.initialised)").each(function(){
 		    var options = {

@@ -1,4 +1,5 @@
 import logging
+from django.conf import settings
 
 from django.db import models
 from django.contrib.gis.db import models as gis_models
@@ -18,6 +19,25 @@ from sso.decorators import memoize
 
 
 logger = logging.getLogger(__name__)
+
+
+def is_validation_period_active(organisation):
+    if settings.SSO_VALIDATION_PERIOD_IS_ACTIVE:
+        if settings.SSO_VALIDATION_PERIOD_IS_ACTIVE_FOR_ALL:
+            return True
+        else:
+            return organisation and organisation.uses_user_activation
+    else:
+        return False
+
+
+def is_validation_period_active_for_user(user):
+    try:
+        user_organisation = user.organisations.first()
+    except ObjectDoesNotExist:
+        user_organisation = None
+
+    return is_validation_period_active(user_organisation)
 
 
 class CountryGroup(AbstractBaseModel):
@@ -170,6 +190,9 @@ class Organisation(AbstractBaseModel):
     can_publish = models.BooleanField(_("publish"), 
                                       help_text=_('Designates whether this buddhist center data can be published.'), 
                                       default=True)
+    uses_user_activation = models.BooleanField(_("uses activation"),
+                                               help_text=_('Designates whether this buddhist center uses the new user activation process.'),
+                                               default=False)
     # history = HistoricalRecords()
     
     objects = GeoManager()
