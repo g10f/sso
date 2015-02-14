@@ -1,0 +1,12 @@
+{% load i18n %}{% autoescape off %}
+
+{% if has_expired %}{% blocktrans %}Your account {{ email }} at {{ site_name }} has expired at {{ expiration_date }}.{% endblocktrans %}{% else %}
+{% blocktrans %}You account {{ email }}  at {{ site_name }} will expire at {{ expiration_date }}.{% endblocktrans %}{% endif %}
+
+{% blocktrans %}Please contact the user administrator at your local buddhist center to renew your account.{% endblocktrans %}
+
+
+{% blocktrans %}The {{ site_name }} team{% endblocktrans %}
+{{ base_url }}{% url 'home' %}
+
+{% endautoescape %}

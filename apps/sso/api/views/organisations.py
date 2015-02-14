@@ -57,6 +57,7 @@ class OrganisationMixin(object):
                         'name': address.addressee,
                         'street_address': address.street_address,
                         'city': address.city,
+                        'city_native': address.city_native,
                         'postal_code': address.postal_code,
                         'country': address.country.iso2_code,
                         'region': address.region,

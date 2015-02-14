@@ -2,6 +2,7 @@
 Forms and validation code for user registration.
 """
 import datetime
+import logging
 
 from django import forms
 from django.db import transaction
@@ -10,20 +11,20 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import get_user_model
 from django.contrib.formtools.preview import FormPreview
 from django.utils.crypto import get_random_string
+from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from django.utils.text import capfirst
 from django.forms.models import model_to_dict
 from django.shortcuts import redirect
-
 from l10n.models import Country
-from .models import RegistrationProfile, send_set_password_email, send_validation_email
+from .models import RegistrationProfile, send_validation_email
 from . import default_username_generator
-
 from sso.forms import bootstrap, mixins, BLANK_CHOICE_DASH
-from sso.accounts.models import UserAddress, User, UserEmail
+from sso.accounts.models import UserAddress, User
+from sso.organisations.models import is_validation_period_active
 
-import logging
 logger = logging.getLogger(__name__)
+
 
 class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
     """
@@ -80,8 +81,8 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
             user_data['language'] = self.user.get_language_display()
         try:
             # after registration, the user should have exactly 1 center 
-            user_data['organisations'] = self.user.organisations.all()[0]
-        except IndexError:
+            user_data['organisations'] = self.user.organisations.first()
+        except ObjectDoesNotExist:
             # center is optional
             # logger.error("User without center?", exc_info=1)
             pass
@@ -141,7 +142,10 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
         if activate:
             self.user.is_active = True
             self.user.set_password(get_random_string(40))
-            send_set_password_email(self.user, self.request)
+
+        organisation = self.cleaned_data['organisations']
+        if is_validation_period_active(organisation):
+            self.user.valid_until = now() + datetime.timedelta(days=settings.SSO_VALIDATION_PERIOD_DAYS)
         self.user.save()
 
         return self.registrationprofile

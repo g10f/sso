@@ -28,7 +28,7 @@ from django.contrib.auth.tokens import default_token_generator
 from passwords.fields import PasswordField
 from .models import User, UserAddress, UserPhoneNumber, UserEmail
 from sso.forms.fields import EmailFieldLower
-from sso.organisations.models import Organisation
+from sso.organisations.models import Organisation, is_validation_period_active
 from sso.registration import default_username_generator
 from sso.registration.forms import UserSelfRegistrationForm
 from sso.forms import bootstrap, mixins, BLANK_CHOICE_DASH, BaseForm
@@ -150,6 +150,42 @@ class PasswordResetForm(DjangoPasswordResetForm):
         user.email_user(subject, message, from_email)
 
 
+class SetPictureAndPasswordForm(SetPasswordForm):
+    """
+    for new created users with an optional picture field
+    """
+    picture = forms.ImageField(label=_('Picture'), required=False, widget=bootstrap.ImageWidget())
+
+    def clean_picture(self):
+        from django.template.defaultfilters import filesizeformat
+        max_upload_size = User.MAX_PICTURE_SIZE  # 5 MB
+        picture = self.cleaned_data["picture"]
+        if picture and hasattr(picture, 'content_type'):
+            base_content_type = picture.content_type.split('/')[0]
+            if base_content_type in ['image']:
+                if picture._size > max_upload_size:
+                    raise forms.ValidationError(_('Please keep filesize under %(filesize)s. Current filesize %(current_filesize)s') %
+                                                {'filesize': filesizeformat(max_upload_size), 'current_filesize': filesizeformat(picture._size)})
+                # mimetypes.guess_extension return jpe which is quite uncommon for jpeg
+                if picture.content_type == 'image/jpeg':
+                    file_ext = '.jpg'
+                else:
+                    file_ext = guess_extension(picture.content_type)
+                picture.name = "%s%s" % (get_random_string(7, allowed_chars='abcdefghijklmnopqrstuvwxyz0123456789'), file_ext)
+            else:
+                raise forms.ValidationError(_('File type is not supported'))
+        return picture
+
+    def save(self, commit=True):
+        cd = self.cleaned_data
+        if 'picture' in self.changed_data:
+            self.user.picture.delete(save=False)
+        self.user.picture = cd['picture'] if cd['picture'] else None
+
+        self.user = super(SetPictureAndPasswordForm, self).save(commit)
+        return self.user
+
+
 class AdminUserCreationForm(forms.ModelForm):
     """
     Django Admin Site UserCreationForm where no password is required and the username is created from first_name and last_name
@@ -248,11 +284,14 @@ class UserAddForm(forms.ModelForm):
         user = super(UserAddForm, self).save(commit=False)
         user.set_password(get_random_string(40))
         user.username = default_username_generator(capfirst(self.cleaned_data.get('first_name')), capfirst(self.cleaned_data.get('last_name')))
+
+        organisation = self.cleaned_data["organisation"]
+        if is_validation_period_active(organisation):
+            self.user.valid_until = now() + datetime.timedelta(days=settings.SSO_VALIDATION_PERIOD_DAYS)
         user.save()
 
         user.application_roles = self.cleaned_data["application_roles"]
         user.role_profiles = self.cleaned_data["role_profiles"]
-        organisation = self.cleaned_data["organisation"]
         if organisation:
             user.organisations.add(organisation)
 
@@ -542,6 +581,7 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
         'duplicate_email': _("A user with that email address already exists."),
     }
     username = forms.CharField(label=_("Username"), max_length=30, widget=bootstrap.TextInput())
+    valid_until = bootstrap.ReadOnlyField(label=_("Valid until"))
     first_name = forms.CharField(label=_('First name'), max_length=30, widget=bootstrap.TextInput())
     last_name = forms.CharField(label=_('Last name'), max_length=30, widget=bootstrap.TextInput())
     is_active = forms.BooleanField(label=_('Active'), help_text=_('Designates whether this user should be treated as active. Unselect this instead of deleting accounts.'),
@@ -553,15 +593,17 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
     notes = forms.CharField(label=_("Notes"), required=False, max_length=1024, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
     role_profiles = forms.ModelMultipleChoiceField(queryset=None, required=False, cache_choices=True, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
                                                    help_text=_('Groups of application roles that are assigned together.'))
+    extend_validity = forms.BooleanField(label=_('Extend validity'), widget=bootstrap.CheckboxInput(), required=False)
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request')
         self.user = kwargs.pop('instance')
         user_data = model_to_dict(self.user)
+
         try:
             # the user should have exactly 1 center 
-            user_data['organisations'] = self.user.organisations.all()[0]
-        except IndexError:
+            user_data['organisations'] = self.user.organisations.first()
+        except ObjectDoesNotExist:
             # center is optional
             # logger.error("User without center?", exc_info=1)
             pass
@@ -587,6 +629,8 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
         cd = self.cleaned_data
         current_user = self.request.user
         
+        if cd['extend_validity']:
+            self.user.valid_until = now() + datetime.timedelta(days=settings.SSO_VALIDATION_PERIOD_DAYS)
         self.user.username = cd['username']
         self.user.first_name = cd['first_name']
         self.user.last_name = cd['last_name']
@@ -594,7 +638,7 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
         self.user.is_center = cd['is_center']
         self.user.notes = cd['notes']
         self.user.save()
-        
+
         self.update_user_m2m_fields('application_roles', current_user)
         self.update_user_m2m_fields('role_profiles', current_user)
         self.update_user_m2m_fields('organisations', current_user)

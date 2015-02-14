@@ -324,7 +324,7 @@ class OrganisationList(ListView):
         """
         
         self.cl = main.ChangeList(self.request, self.model, self.get_list_display(), default_ordering=self.get_default_ordering())
-        qs = super(OrganisationList, self).get_queryset().select_related('country', 'email')
+        qs = super(OrganisationList, self).get_queryset().only('location', 'uuid', 'name', 'email', 'country', 'founded').select_related('country', 'email')
         
         # apply filters
         qs = MyOrganisationsFilter().apply(self, qs) 

@@ -140,4 +140,4 @@ class RegistrationTest(TestCase):
 
         # the user got an email for creating the password
         outbox = getattr(mail, 'outbox')
-        self.assertNotEqual(outbox[-1].subject.find('Set your password'), -1) 
+        self.assertNotEqual(outbox[-1].subject.find('Set your password'), -1)

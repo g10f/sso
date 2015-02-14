@@ -93,7 +93,7 @@ class ApiTests(OAuth2BaseTestCase):
         self.assertIn('scope \"address\" is missing', response_obj['error_description'])
 
         # add phone to existing user (failing)
-        user['phone_numbers'] = new_phone('123456')
+        user['phone_numbers'] = new_phone('+49 123456')
         del user['addresses']
         response = self.client.put(user_url, json.dumps(user), HTTP_AUTHORIZATION=authorization)
         response_obj = json.loads(response.content)
@@ -110,7 +110,7 @@ class ApiTests(OAuth2BaseTestCase):
         self.assertNotIn('error', response_obj)
 
         # add phone to existing user (success)
-        user['phone_numbers'] = new_phone('123456')
+        user['phone_numbers'] = new_phone('+49 123456')
         del user['addresses']
         response = self.client.put(user_url, json.dumps(user), HTTP_AUTHORIZATION=authorization)
         response_obj = json.loads(response.content)
