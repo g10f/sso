@@ -92,7 +92,7 @@ class RoleAdmin(admin.ModelAdmin):
 
 class ApplicationRoleAdmin(admin.ModelAdmin):
     list_filter = ('roleprofile', 'application', 'role')
-    list_display = ('__unicode__', 'is_inheritable_by_org_admin', 'is_inheritable_by_global_admin')
+    list_display = ('__unicode__', 'is_inheritable_by_org_admin', 'is_inheritable_by_global_admin', 'is_organisation_related')
 
 
 class RoleProfileAdmin(admin.ModelAdmin):
