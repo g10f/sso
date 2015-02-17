@@ -1,0 +1,89 @@
+{% extends "base_form.html" %}
+{% load i18n admin_static %}
+{% load thumbnail %}
+
+{% block title %}{% trans 'Accept Center Change' %}{% endblock %}
+
+{% block extrascript %}{{ media }}{% endblock extrascript %}
+
+
+{% block breadcrumb %}
+    <ol class="breadcrumb">
+        <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+        <li><a href="{% url 'accounts:organisationchange_list' %}">{% trans 'Center Changes' %}</a></li>
+        <li class="active">{% trans 'Accept Center Change' %}</li>
+    </ol>
+{% endblock breadcrumb %}
+
+{% block form %}
+    <form class="form-horizontal" method="post">{% csrf_token %}
+        {# Include the hidden fields in the form #}
+        {% for hidden in form.hidden_fields %}
+            {{ hidden }}
+        {% endfor %}
+
+        <h3>{% trans 'Process Center Change' %}</h3>
+
+        <p>{% trans "Please accept or deny the center change request." %}</p>
+
+        {% if messages %}{% for message in messages %}
+            <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
+        {% endif %}
+
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                {% if form.errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
+            </div>
+        {% endif %}
+
+        <div class="form-group">
+            <label class="control-label">{% trans 'First name' %}</label>
+
+            <div class="dwbn-form-control"><p class="form-control-static">{{ organisationchange.user.first_name }}</p></div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label">{% trans 'Last name' %}</label>
+
+            <div class="dwbn-form-control"><p class="form-control-static">{{ organisationchange.user.last_name }}</p></div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label">{% trans 'Email address' %}</label>
+
+            <div class="dwbn-form-control"><p class="form-control-static">{{ organisationchange.user.primary_email }}</p></div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label">{% trans 'Phone number' %}</label>
+
+            <div class="dwbn-form-control"><p class="form-control-static">{{ organisationchange.user.primary_phone }}</p></div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label">{% trans 'Previous center' %}</label>
+
+            <div class="dwbn-form-control"><p class="form-control-static">{{ organisationchange.user.organisations.all.first|default_if_none:"" }}</p></div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label">{% trans 'New center' %}</label>
+
+            <div class="dwbn-form-control"><p class="form-control-static">{{ organisationchange.organisation }}</p></div>
+        </div>
+        <div class="form-group">
+            <label class="control-label">{% trans 'Reason' %}</label>
+
+            <div class="dwbn-form-control"><p class="form-control-static">{{ organisationchange.reason }}</p></div>
+        </div>
+
+        <div class="form-group">
+            <div class="dwbn-form-control_lg">
+                {% block submit_group %}
+                    <button type="submit" class="btn btn-danger" name="_delete">{% trans 'Deny change' %}</button>
+                    <button type="submit" class="btn btn-primary">{% trans 'Accept change' %}</button>
+                {% endblock submit_group %}
+            </div>
+        </div>
+    </form>
+{% endblock %}

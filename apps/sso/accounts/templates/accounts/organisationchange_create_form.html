@@ -1,0 +1,13 @@
+{% extends "accounts/organisationchange_form.html" %}
+{% load i18n %}
+
+{% block title %}{% trans 'Change Center' %}{% endblock %}
+
+{% block extrascript %}{{ form.media }}{% endblock extrascript %}
+
+{% block left_content %}{% include navigation_template with active_navigation="profile" %}{% endblock left_content %}
+
+
+{% block submit_group %}
+    <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
+{% endblock %}

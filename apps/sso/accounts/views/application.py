@@ -2,7 +2,7 @@
 from datetime import timedelta
 import logging
 
-from django.db.models import Q
+from django.conf import settings
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.forms import inlineformset_factory
 from django.shortcuts import render
@@ -16,14 +16,14 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import get_object_or_404
 from django.utils.encoding import force_text
-from l10n.models import Country
 from sso.views import main
-from sso.views.generic import ListView, SearchFilter, ViewChoicesFilter, ViewQuerysetFilter
-from sso.accounts.models import ApplicationRole, RoleProfile, User, UserEmail
+from sso.views.generic import ListView
+from sso.accounts.models import User, UserEmail
 from sso.accounts.email import send_account_created_email
-from sso.organisations.models import AdminRegion, Organisation, is_validation_period_active
+from sso.organisations.models import Organisation, is_validation_period_active
 from sso.accounts.forms import UserAddForm, UserProfileForm, UserEmailForm, AppAdminUserProfileForm
 from sso.forms.helpers import ChangedDataList, log_change, ErrorList
+from filter import AdminRegionFilter, ApplicationRoleFilter, CenterFilter, CountryFilter, IsActiveFilter, RoleProfileFilter, UserSearchFilter
 
 
 logger = logging.getLogger(__name__)
@@ -48,81 +48,6 @@ class UserDeleteView(DeleteView):
         return context
 
 
-class UserSearchFilter(SearchFilter):
-    search_names = ['username__icontains', 'first_name__icontains', 'last_name__icontains', 'useremail__email__icontains']
-
-
-class IsActiveFilter(ViewChoicesFilter):
-    name = 'is_active'
-    choices = (('1', _('Active Users')), ('2', _('Inactive Users')))
-    select_text = _('active/inactive')
-    select_all_text = _("All")
-    
-    def map_to_database(self, value):
-        return True if (value.pk == "1") else False
-
-
-class CountryFilter(ViewQuerysetFilter):
-    name = 'country'
-    qs_name = 'organisations__country'
-    model = Country
-    filter_list = Country.objects.filter(organisation__isnull=False).distinct()
-    select_text = _('Country')
-    select_all_text = _('All Countries')
-    all_remove = 'region,center'
-    remove = 'region,center,app_role,role_profile,p'
-
-
-class AdminRegionFilter(ViewQuerysetFilter):
-    name = 'admin_region'
-    qs_name = 'organisations__admin_region'
-    model = AdminRegion
-    select_text = _('Region')
-    select_all_text = _('All Regions')
-    all_remove = 'center'
-    remove = 'center,app_role,role_profile,p'
-
-
-class CenterFilter(ViewQuerysetFilter):
-    name = 'center'
-    qs_name = 'organisations'
-    model = Organisation
-    select_text = _('Center')
-    select_all_text = _('All Centers')
-    remove = 'app_role,p'
-
-
-class ApplicationRoleFilter(ViewQuerysetFilter):
-    name = 'app_role'
-    model = ApplicationRole
-    select_text = _('Role')
-    select_all_text = _('All Roles')
-
-    def apply(self, view, qs, default=''):
-        """
-        filter with respect to application_roles and role_profiles
-        """
-        value = self.get_value_from_query_param(view, default)
-        if value: 
-            q = Q(application_roles=value)
-            q |= Q(role_profiles__application_roles=value)
-            qs = qs.filter(q)
-        setattr(view, self.name, value)
-        return qs
-
-
-class RoleProfileFilter(ViewQuerysetFilter):
-    name = 'role_profile'
-    qs_name = 'role_profiles'
-    model = RoleProfile
-    select_text = _('Profile')
-    select_all_text = _('All Profiles')
-
-
-class UserEmailHeading(object):
-    verbose_name = _('primary email')
-
-
 def has_user_list_access(user):
     return user.is_user_admin or user.is_app_admin
 
@@ -131,13 +56,19 @@ class UserList(ListView):
 
     template_name = 'accounts/application/user_list.html'
     model = get_user_model()
-    list_display = ['username', 'picture', 'first_name', 'last_name', UserEmailHeading(), 'last_login', 'date_joined', 'valid_until']
     IS_ACTIVE_CHOICES = (('1', _('Active Users')), ('2', _('Inactive Users')))
 
     @method_decorator(login_required)
     @method_decorator(user_passes_test(has_user_list_access))
     def dispatch(self, request, *args, **kwargs):
         return super(UserList, self).dispatch(request, *args, **kwargs)
+
+    @property
+    def list_display(self):
+        if settings.SSO_VALIDATION_PERIOD_IS_ACTIVE:
+            return ['username', 'picture', 'first_name', 'last_name', _('primary email'), 'last_login', 'date_joined', 'valid_until']
+        else:
+            return ['username', 'picture', 'first_name', 'last_name', _('primary email'), 'last_login', 'date_joined']
 
     def get_queryset(self):
         """
@@ -161,7 +92,7 @@ class UserList(ListView):
         
         # Set ordering.
         ordering = self.cl.get_ordering(self.request, qs)
-        qs = qs.order_by(*ordering)
+        qs = qs.order_by(*ordering).distinct()
         return qs
 
     def get_context_data(self, **kwargs):
@@ -208,7 +139,8 @@ class UserList(ListView):
             'query': self.request.GET.get(main.SEARCH_VAR, ''),
             'cl': self.cl,
             'filters': filters,
-            'is_active': self.is_active       
+            'is_active': self.is_active,
+            'sso_validation_period_is_active': settings.SSO_VALIDATION_PERIOD_IS_ACTIVE
         }
         context.update(kwargs)
         return super(UserList, self).get_context_data(**context)

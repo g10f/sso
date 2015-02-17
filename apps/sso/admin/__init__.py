@@ -35,6 +35,7 @@ sso_admin_site.register(models.Role, RoleAdmin)
 sso_admin_site.register(models.Application, ApplicationAdmin)
 sso_admin_site.register(models.ApplicationAdmin, ApplicationAdminAdmin)
 sso_admin_site.register(models.RoleProfileAdmin, RoleProfileAdminAdmin)
+sso_admin_site.register(models.OrganisationChange, OrganisationChangeAdmin)
 
 sso_admin_site.register(AuthorizationCode, AuthorizationCodeAdmin)
 sso_admin_site.register(BearerToken, BearerTokenAdmin)

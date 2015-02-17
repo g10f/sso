@@ -23,6 +23,22 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+class OrganisationChangeAdmin(admin.ModelAdmin):
+    list_display = ('organisation', 'user_link', 'reason')
+    raw_id_fields = ("user",)
+    search_fields = ('user__username', 'organisation__name', 'reason')
+    ordering = ['-last_modified']
+    date_hierarchy = 'last_modified'
+    readonly_fields = ['uuid']
+
+    def user_link(self, obj):
+        url = urlresolvers.reverse('admin:accounts_user_change', args=(obj.user.pk,), current_app=self.admin_site.name)
+        return mark_safe(u'<a href="%s">%s</a>' % (url, obj.user))
+    user_link.allow_tags = True
+    user_link.short_description = _('user')
+    user_link.admin_order_field = 'user'
+
+
 class UserEmailAdmin(admin.ModelAdmin):
     list_display = ('email', 'user_link', 'primary', 'confirmed', 'last_modified')
     raw_id_fields = ("user",)
