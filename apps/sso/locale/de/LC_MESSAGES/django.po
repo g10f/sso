@@ -1789,7 +1789,7 @@ msgstr "Alle Profile"
 
 #: sso/accounts/views/organisation.py:127
 msgid "Denied center change."
-msgstr "Zentrumswechsel ablehnen"
+msgstr "Zentrumswechsel wurde abgelehnt"
 
 #: sso/accounts/views/organisation.py:135
 msgid "Successfully changed the center."
