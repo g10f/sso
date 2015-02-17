@@ -113,6 +113,9 @@ class ApplicationRole(models.Model):
                                                       help_text=_('Designates that the role can inherited by a organisation admin.'))
     is_inheritable_by_global_admin = models.BooleanField(_('inheritable by global admin'), default=True,
                                                          help_text=_('Designates that the role can inherited by a global admin.'))
+    is_organisation_related = models.BooleanField(_('organisation related'), default=False,
+                                                  help_text=_('Designates that the role will be deleted in case of a change of the organisation.'))
+
     objects = ApplicationRoleManager()
      
     class Meta:
@@ -680,7 +683,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def is_complete(self):
-        if self.first_name and self.last_name:  # or self.has_perm("accounts.change_org_users")) \
+        if self.first_name and self.last_name:
             return True
         else:
             return False

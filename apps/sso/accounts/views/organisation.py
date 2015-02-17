@@ -2,6 +2,7 @@
 import logging
 
 from django.contrib import messages
+from django.contrib.auth.models import Permission
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required, permission_required
@@ -13,7 +14,7 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.views.generic.detail import SingleObjectTemplateResponseMixin
 from django.views.generic.edit import ProcessFormView, ModelFormMixin
 from sso.accounts.forms import OrganisationChangeForm, OrganisationChangeAcceptForm
-from sso.accounts.models import OrganisationChange
+from sso.accounts.models import OrganisationChange, ApplicationRole
 from sso.accounts.views.filter import OrganisationChangeCountryFilter, OrganisationChangeAdminRegionFilter
 from sso.organisations.models import is_validation_period_active
 from sso.views import main
@@ -132,6 +133,11 @@ class OrganisationChangeAcceptView(FormView):
             user.organisations = [self.organisationchange.organisation]
             user.save()
             self.organisationchange.delete()
+
+            # remove user related permissions
+            organisation_related_application_roles = ApplicationRole.objects.filter(is_organisation_related=True)
+            user.application_roles.remove(*list(organisation_related_application_roles))
+
             msg = _('Successfully changed the center.')
             messages.add_message(self.request, level=messages.SUCCESS, message=msg, fail_silently=True)
             return HttpResponseRedirect(reverse('accounts:update_user', args=(user.uuid,)))
