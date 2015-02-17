@@ -5,7 +5,8 @@ from .views import onetimemessage
 from .views import password_change, password_change_done, login, logout, profile, contact, delete_profile
 from .views import password_reset, password_reset_confirm, password_reset_done, password_reset_complete
 from .views import emails, confirm_email, password_create_confirm, password_create_complete
- 
+from .views import organisation
+
 urlpatterns = patterns(
     '',
     url(r'^login/$', login, name='login'),
@@ -31,5 +32,10 @@ urlpatterns = patterns(
     url(r'^users/(?P<uuid>[^/]+)/$', application.update_user, name="update_user"),
     url(r'^users/(?P<uuid>[^/]+)/app_roles/', application.update_user_app_roles, name="update_user_app_roles"),
     url(r'^users/(?P<uuid>[^/]+)/delete/$', application.UserDeleteView.as_view(), name="delete_user"),
-    url(r'^messages/(?P<uuid>[^/]+)/$', onetimemessage.OneTimeMessageView.as_view(), name="view_message"), 
+    url(r'^organisation_change/(?P<pk>\d+)/$', organisation.OrganisationChangeDetailView.as_view(), name='organisationchange_detail'),
+    url(r'^organisation_change/(?P<pk>\d+)/update/$', organisation.OrganisationChangeUpdateView.as_view(), name='organisationchange_update'),
+    url(r'^organisation_change/create/$', organisation.OrganisationChangeCreateView.as_view(), name='organisationchange_create'),
+    url(r'^organisation_change/$', organisation.OrganisationChangeList.as_view(), name='organisationchange_list'),
+    url(r'^organisation_change/(?P<pk>\d+)/accept/$', organisation.OrganisationChangeAcceptView.as_view(), name='organisationchange_accept'),
+    url(r'^messages/(?P<uuid>[^/]+)/$', onetimemessage.OneTimeMessageView.as_view(), name="view_message"),
 )

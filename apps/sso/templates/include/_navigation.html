@@ -27,7 +27,7 @@
 
     {% if perms.registration.change_registrationprofile %}
         <a class="list-group-item" href="{% url 'registration:user_registration_list' %}">
-            <i class="glyphicon glyphicon-list"></i> {% trans 'Registrations' %}</a>
+            <i class="glyphicon glyphicon-list"></i> {% trans 'Registrations' %}<span class="badge">{{ user.get_count_of_registrationprofiles }}</span></a>
     {% endif %}
 
     {% if user.is_user_admin or user.is_app_admin %}
@@ -35,6 +35,10 @@
             <i class="glyphicon glyphicon-list"></i> {% trans 'Users' %}</a>
     {% endif %}
 
+    {% if perms.accounts.change_user %}
+        <a class="list-group-item" href="{% url 'accounts:organisationchange_list' %}">
+            <i class="glyphicon glyphicon-list"></i> {% trans 'Center Changes' %} <span class="badge">{{ user.get_count_of_centerchanges }}</span></a>
+    {% endif %}
 
     {% if perms.emails.add_groupemail %}
         <a class="list-group-item {% if active_navigation == "groupemail_create" %}active{% endif %}" href="{% url 'emails:groupemail_create' %}">

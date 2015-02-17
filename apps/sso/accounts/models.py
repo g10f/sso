@@ -5,6 +5,7 @@ import re
 import logging
 
 from sorl import thumbnail
+from django.core.urlresolvers import reverse
 
 from django.utils.crypto import get_random_string
 from django.core import validators
@@ -27,6 +28,7 @@ from sso.organisations.models import AdminRegion, Organisation
 from sso.emails.models import GroupEmailManager
 from sso.decorators import memoize
 from sso.registration import default_username_generator
+from sso.registration.models import RegistrationProfile
 from utils.loaddata import disable_for_loaddata
 from current_user.models import CurrentUserField
 
@@ -376,7 +378,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         q = Q(group__role__applicationrole__in=applicationroles, 
               group__role__applicationrole__application__uuid=settings.SSO_APP_UUID) | Q(group__user=self)
         return Permission.objects.distinct().filter(q)
-        
+
     @memoize
     def get_applicationroles(self):
         approles1 = ApplicationRole.objects.distinct().filter(user__uuid=self.uuid).select_related()
@@ -538,6 +540,30 @@ class User(AbstractBaseUser, PermissionsMixin):
             return Country.objects.filter(user=self)
         else:
             return Country.objects.none()
+
+    @memoize
+    def get_count_of_registrationprofiles(self):
+        qs = RegistrationProfile.objects.filter(is_access_denied=False, user__is_active=False, is_validated=True)
+        return RegistrationProfile.objects.filter_administrable_registrationprofiles(self, qs).count()
+
+    @memoize
+    def get_count_of_centerchanges(self):
+        organisationchanges = OrganisationChange.objects.all()
+        return self.filter_administrable_organisationchanges(organisationchanges).count()
+
+    def filter_administrable_organisationchanges(self, qs):
+        #  filter the organisationchanges for who the authenticated user has access to
+        if self.is_superuser:
+            pass
+        elif self.is_global_admin:
+            qs = qs.filter(user__is_superuser=False)
+        elif self.is_admin:
+            organisations = self.get_administrable_user_organisations()
+            q = Q(user__is_superuser=False) & Q(organisation__in=organisations)
+            qs = qs.filter(q).distinct()
+        else:
+            qs = OrganisationChange.objects.none()
+        return qs
 
     def filter_administrable_users(self, qs):
         # filter the users for who the authenticated user has admin rights
@@ -703,6 +729,22 @@ class User(AbstractBaseUser, PermissionsMixin):
                 self.application_roles.add(*app_roles)
             except ObjectDoesNotExist:
                 logger.warning("Application %s does not exist" % app_roles_dict_item['uuid'])
+
+
+class OrganisationChange(AbstractBaseModel):
+    """
+    a request from an user to change the organisation
+    """
+    user = models.OneToOneField(User)
+    organisation = models.ForeignKey(Organisation)
+    reason = models.TextField(_("reason"), max_length=2048)
+
+    class Meta(AbstractBaseModel.Meta):
+        verbose_name = _('organisation change')
+        verbose_name_plural = _('organisation change')
+
+    def get_absolute_url(self):
+        return reverse('accounts:organisationchange_update', kwargs={'pk': self.pk})
 
 
 class OneTimeMessage(AbstractBaseModel):

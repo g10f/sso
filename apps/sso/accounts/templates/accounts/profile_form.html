@@ -45,7 +45,7 @@
         <div class="tab-pane {% if not active or active == "object" %}active{% endif %}" id="object"> 
 		    {% include 'include/_picture_field.html' with field=form.picture %} 
 		    {% include 'include/_field.html' with field=form.username %}
-		    {% include 'include/_field.html' with field=form.organisation %}
+		    {% include 'accounts/includes/_organisation_field.html' with field=form.organisation %}
 		    {% include 'include/_field.html' with field=form.first_name %}
 		    {% include 'include/_field.html' with field=form.last_name %}
 		    {% include 'include/_field.html' with field=form.gender %}

@@ -1,4 +1,5 @@
 import datetime
+from django.contrib.auth import get_user_model
 
 from django.utils.timezone import now
 from django.conf import settings
@@ -14,7 +15,6 @@ from django.core import urlresolvers
 from django.contrib.auth.tokens import default_token_generator as default_pwd_reset_token_generator
 from tokens import default_token_generator
 from current_user.models import CurrentUserField
-from sso.accounts.models import User
 from utils.translation import i18n_email_msg_and_subj
 
 
@@ -23,7 +23,7 @@ def send_user_validated_email(registration_profile, request):
     Information for registration admins, that a new user registered.
     """
     registration_admin_group = settings.REGISTRATION.get('REGISTRATION_ADMIN_GROUP', 'RegistrationAdmin')
-    recipient_list = User.objects.filter(groups__name=registration_admin_group)
+    recipient_list = get_user_model().objects.filter(groups__name=registration_admin_group)
 
     # recipient_list = User.objects.filter(useremail__email__in=email_recipient_list)
     user_organisations = registration_profile.user.organisations.all()

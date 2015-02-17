@@ -26,7 +26,7 @@ from django.contrib.auth.forms import PasswordResetForm as DjangoPasswordResetFo
 from django.contrib.auth.forms import SetPasswordForm as DjangoSetPasswordForm
 from django.contrib.auth.tokens import default_token_generator
 from passwords.fields import PasswordField
-from .models import User, UserAddress, UserPhoneNumber, UserEmail
+from .models import User, UserAddress, UserPhoneNumber, UserEmail, OrganisationChange
 from sso.forms.fields import EmailFieldLower
 from sso.organisations.models import Organisation, is_validation_period_active
 from sso.registration import default_username_generator
@@ -35,6 +35,31 @@ from sso.forms import bootstrap, mixins, BLANK_CHOICE_DASH, BaseForm
 
 
 logger = logging.getLogger(__name__)
+
+
+class OrganisationChangeForm(BaseForm):
+    organisation = forms.ModelChoiceField(queryset=Organisation.objects.all().only('id', 'name', 'country__iso2_code').select_related('country'), cache_choices=True, label=_("Center"), widget=bootstrap.Select())
+
+    class Meta:
+        model = OrganisationChange
+        fields = ('organisation', 'reason')
+        widgets = {
+            'reason': bootstrap.Textarea()
+        }
+
+    def clean_organisation(self):
+        organisation = self.cleaned_data['organisation']
+        if organisation and organisation in self.initial['user'].organisations.all():
+            raise forms.ValidationError(_("The new center is the same as the old center!"))
+
+        return organisation
+
+
+class OrganisationChangeAcceptForm(forms.Form):
+    """
+    Form for organisation admins to accept an request for changing
+    the organisation from an user of another organisation
+    """
 
 
 class ContactForm(forms.Form):
