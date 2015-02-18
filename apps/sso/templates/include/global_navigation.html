@@ -39,10 +39,10 @@
             {% endif %}
             <ul class="nav navbar-nav navbar-right">
             {% if user.is_authenticated %}
-                <li><a href="{% url 'accounts:profile' %}" data-toggle="tooltip" data-placement="bottom" title="{{ user.get_full_name }}">{% if user.picture %}{% thumbnail user.picture "30x30" crop="center" as im %}<img class="dwbn-icon-user" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="">{% endthumbnail %}{% else %}<i class="glyphicon glyphicon-user"></i>{% endif %}</a></li>
-                <li><a href="{% url 'accounts:logout' %}" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Log out' %}"><i class="glyphicon glyphicon-log-out"></i></a></li>
+                <li><a href="{% url 'accounts:profile' %}">{% if user.picture %}{% thumbnail user.picture "30x30" crop="center" as im %}<img class="dwbn-icon-user" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="">{% endthumbnail %}{% else %}<i class="glyphicon glyphicon-user"></i>{% endif %} {{ user.first_name }}</a></li>
+                <li><a href="{% url 'accounts:logout' %}"><i class="glyphicon glyphicon-log-out"></i> {% trans 'Log out' %}</a></li>
             {% else %}
-                <li><a  href="{% url 'accounts:login' %}" data-toggle="tooltip" data-placement="bottom" title="{% trans 'Log in' %}"><i class="glyphicon glyphicon-log-in"></i></a></li>
+                <li><a  href="{% url 'accounts:login' %}"><i class="glyphicon glyphicon-log-in"></i> {% trans 'Log in' %}</a></li>
             {% endif %}
             </ul><!-- /.navbar-right -->
         </div><!--/.navbar-collapse -->
