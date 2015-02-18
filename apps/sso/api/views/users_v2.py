@@ -397,7 +397,7 @@ class GlobalNavigationView(UserDetailView):
             'id': obj.uuid,
             'apps': applications,
             'more': {'href': '#', 'title': _('More')},
-            'profile': {'href': absolute_url(request, reverse('accounts:profile')), 'title': obj.get_full_name()},
+            'profile': {'href': absolute_url(request, reverse('accounts:profile')), 'title': obj.first_name},
             'logout': {'href': absolute_url(request, reverse('accounts:logout')), 'title': _('Log out')}
         }
         if obj.picture:
