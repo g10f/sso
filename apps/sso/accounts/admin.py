@@ -4,7 +4,7 @@ from django.template.response import TemplateResponse
 from django.core.mail.message import EmailMessage
 from django.conf import settings
 from django.utils.encoding import force_unicode
-from django.contrib.admin.util import model_ngettext
+from django.contrib.admin.utils import model_ngettext, flatten_fieldsets
 from django.db.models import Q
 from django.contrib.admin import SimpleListFilter
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin, GroupAdmin as DjangoGroupAdmin
@@ -475,7 +475,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
             return super(UserAdmin, self).get_form(request, obj, **kwargs)
         else:
             defaults = {
-                'fields': admin.util.flatten_fieldsets(self.non_su_fieldsets),
+                'fields': flatten_fieldsets(self.non_su_fieldsets),
             }
             defaults.update(kwargs)
             return super(UserAdmin, self).get_form(request, obj, **defaults)

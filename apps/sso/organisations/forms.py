@@ -72,7 +72,7 @@ class OrganisationBaseForm(BaseForm):
             'center_type': bootstrap.Select(),
             'is_private': bootstrap.CheckboxInput(),
             'is_active': bootstrap.CheckboxInput(),
-            'can_publish': bootstrap.CheckboxInput(),
+            # 'can_publish': bootstrap.CheckboxInput(),
             'location': bootstrap.OSMWidget()
         }
 
@@ -89,7 +89,7 @@ class OrganisationCenterAdminForm(OrganisationBaseForm):
     center_type = bootstrap.ReadOnlyField(label=_("Center type"))
     name = bootstrap.ReadOnlyField(label=_("Name"))
     is_active = bootstrap.ReadOnlyYesNoField(label=_("Active"))
-    can_publish = bootstrap.ReadOnlyYesNoField(label=_("Publish"))
+    # can_publish = bootstrap.ReadOnlyYesNoField(label=_("Publish"))
 
     def __init__(self, *args, **kwargs):
         super(OrganisationCenterAdminForm, self).__init__(*args, **kwargs)
@@ -102,7 +102,7 @@ class OrganisationCenterAdminForm(OrganisationBaseForm):
         self.fields['center_type'].initial = self.instance.get_center_type_display()
         self.fields['name'].initial = self.instance.name
         self.fields['is_active'].initial = self.instance.is_active
-        self.fields['can_publish'].initial = self.instance.can_publish
+        # self.fields['can_publish'].initial = self.instance.can_publish
 
 
 class OrganisationEmailAdminForm(OrganisationBaseForm):
@@ -166,7 +166,7 @@ class OrganisationCountryAdminForm(OrganisationEmailAdminForm):
     A form for a country admin for update organisations
     """
     class Meta(OrganisationBaseForm.Meta):
-        fields = OrganisationBaseForm.Meta.fields + ('country', 'admin_region', 'name', 'center_type', 'is_active', 'can_publish')
+        fields = OrganisationBaseForm.Meta.fields + ('country', 'admin_region', 'name', 'center_type', 'is_active')  # , 'can_publish')
 
     def __init__(self, *args, **kwargs):
         super(OrganisationCountryAdminForm, self).__init__(*args, **kwargs)
@@ -183,7 +183,7 @@ class OrganisationRegionAdminForm(OrganisationEmailAdminForm):
     country = bootstrap.ReadOnlyField(label=_("Country"))
 
     class Meta(OrganisationBaseForm.Meta):
-        fields = OrganisationBaseForm.Meta.fields + ('admin_region', 'name', 'center_type', 'is_active', 'can_publish')
+        fields = OrganisationBaseForm.Meta.fields + ('admin_region', 'name', 'center_type', 'is_active')  # , 'can_publish')
 
     def __init__(self, *args, **kwargs):
         super(OrganisationRegionAdminForm, self).__init__(*args, **kwargs)

@@ -77,12 +77,13 @@ $(function() {
 	{% endif %}
 	
 	{% if perms.organisations.change_organisation %}
-    <div class="row"><div class="dwbn-label" data-toggle="tooltip" title="{% trans 'Private: Address is private. Publish: publish on public Web Sites or only internal.' %}">{% trans 'Active/Private/Publish' %}: </div>
-    	<div class="dwbn-content">
-    		<span class="glyphicon glyphicon-{% if object.is_active %}ok-sign{% else %}minus-sign{% endif %}"></span> /
-    		<span class="glyphicon glyphicon-{% if object.is_private %}ok-sign{% else %}minus-sign{% endif %}"></span> /
-    		<span class="glyphicon glyphicon-{% if object.can_publish %}ok-sign{% else %}minus-sign{% endif %}"></span>
-    	</div>
+    <div class="row"><div class="dwbn-label">{% trans 'Active' %}: </div>
+    	<div class="dwbn-content" data-toggle="tooltip" title="{% trans 'Designates whether this buddhist center should be treated as active. Unselect this instead of deleting buddhist center.' %}">
+            <span class="glyphicon glyphicon-{% if object.is_active %}check{% else %}uncheck{% endif %}"></span></div>
+    </div>
+    <div class="row"><div class="dwbn-label">{% trans 'Private' %}:</div>
+    	<div class="dwbn-content" data-toggle="tooltip" title="{% trans 'Designates whether this buddhist center data should be treated as private and only a telephone number should be displayed on public sites.' %}">
+            <span class="glyphicon glyphicon-{% if object.is_private %}check{% else %}unchecked{% endif %}"></span></div>
     </div>
 	{% endif %}
 	
