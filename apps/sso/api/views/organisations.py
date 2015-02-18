@@ -20,6 +20,7 @@ class OrganisationMixin(object):
             '@id': "%s%s" % (base, reverse('api:v2_organisation', kwargs={'uuid': obj.uuid})),
             'id': u'%s' % obj.uuid,
             'is_active': obj.is_active,
+            'is_private': obj.is_private,
             'name': u'%s' % obj.name,
             'email': u'%s' % obj.email,
             'founded': obj.founded,

@@ -2,6 +2,8 @@
 import json
 import base64
 import hashlib
+from http.util import get_request_param
+
 try:
     from urllib.parse import urlparse, urlunparse, urlsplit, urlunsplit
 except ImportError:     # Python 2
@@ -143,10 +145,6 @@ class LoginRequiredError(oauth2.OAuth2Error):
     description = 'The End User is currently not already authenticated.'
 
 
-def get_param(request, name, default=None):
-    return request.POST.get(name) if request.POST.get(name) else request.GET.get(name, default)
-
-
 def redirect_to_login(request, redirect_field_name=REDIRECT_FIELD_NAME):  # @ReservedAssignment
     """
     Redirects the user to the login page, passing the given 'next' page
@@ -188,12 +186,12 @@ def authorize(request):
         credentials['session_state'] = get_session_state(credentials['client_id'], browser_state=request.session.session_key)
         credentials['client'] = credentials['request'].client
         redirect_uri = credentials.get('redirect_uri')
-        prompt = get_param(request, 'prompt', '').split()
+        prompt = get_request_param(request, 'prompt', '').split()
         
         # check if the user must login
         is_login_required = True
         if request.user.is_authenticated() and ('login' not in prompt):
-            max_age = get_param(request, 'max_age')
+            max_age = get_request_param(request, 'max_age')
             if not max_age or (int(max_age) > (timezone.now() - request.user.last_login).total_seconds()):
                 is_login_required = False
         
@@ -201,7 +199,7 @@ def authorize(request):
             if is_login_required:
                 raise LoginRequiredError(state=credentials.get('state'))
             else:
-                id_token = get_param(request, 'id_token_hint', '')
+                id_token = get_request_param(request, 'id_token_hint', '')
                 parsed = loads_jwt(id_token)
                 if parsed['sub'] != request.user.uuid:
                     raise LoginRequiredError(state=credentials.get('state'))
@@ -320,5 +318,5 @@ class ErrorView(TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super(ErrorView, self).get_context_data(**kwargs)
-        context['error'] = self.request.REQUEST.get('error')
+        context['error'] = get_request_param(self.request, 'error')
         return context

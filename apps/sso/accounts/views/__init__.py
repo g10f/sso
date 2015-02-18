@@ -14,13 +14,14 @@ from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.template.response import TemplateResponse
 from django.template.loader import render_to_string
-from django.contrib.sites.models import get_current_site
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.urlresolvers import reverse
 from django.core.cache import cache
 from django.core.mail import mail_managers
 from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
 from django.forms.models import inlineformset_factory
+from http.util import get_request_param
 from sso.accounts.tokens import email_confirm_token_generator
 from throttle.decorators import throttle
 from sso.auth.forms import EmailAuthenticationForm
@@ -139,7 +140,7 @@ def logout(request, next_page=None,
     Logs out the user and displays 'You are logged out' message.
     """
     auth_logout(request)
-    redirect_to = request.REQUEST.get(redirect_field_name, None)
+    redirect_to = get_request_param(request, redirect_field_name)
     if redirect_to and is_safe_ext_url(redirect_to, set(get_allowed_hosts())):
         return HttpResponseRedirect(redirect_to)
 
@@ -169,10 +170,10 @@ def login(request):
     """
     current_site = get_current_site(request)
     site_name = settings.SSO_SITE_NAME
-    redirect_to = request.REQUEST.get(REDIRECT_FIELD_NAME, '')
+    redirect_to = get_request_param(request, REDIRECT_FIELD_NAME, '')
     # hidden field in the template to check from which form the post request comes
-    login_form_key = request.REQUEST.get(LOGIN_FORM_KEY)  
-    display = request.REQUEST.get('display', 'page')  # popup or page
+    login_form_key = request.POST.get(LOGIN_FORM_KEY)
+    display = get_request_param(request, 'display', 'page')  # popup or page
     template_name = 'accounts/login.html'
     cancel_url = get_oauth2_cancel_url(redirect_to)
     form = None

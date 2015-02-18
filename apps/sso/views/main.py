@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
+from collections import OrderedDict
 from django.utils.http import urlencode
 from django.utils.html import format_html
 from django.db import models
-
-from django.utils.datastructures import SortedDict
 
 
 # Changelist settings
@@ -122,13 +121,13 @@ class ChangeList(object):
 
     def get_ordering_field_columns(self):
         """
-        Returns a SortedDict of ordering field column numbers and asc/desc
+        Returns a OrderedDict of ordering field column numbers and asc/desc
         """
 
         # We must cope with more than one column having the same underlying sort
         # field, so we base things on column numbers.
         ordering = self._get_default_ordering()
-        ordering_fields = SortedDict()
+        ordering_fields = OrderedDict()
         if ORDER_VAR not in self.params:
             # for ordering specified on default_ordering or model Meta, we don't know
             # the right column numbers absolutely, because there might be more

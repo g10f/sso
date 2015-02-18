@@ -19,7 +19,7 @@ from django.forms.models import model_to_dict
 from django.template import loader
 from django.core.exceptions import ObjectDoesNotExist
 from django.core import signing
-from django.contrib.sites.models import get_current_site
+from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.forms import PasswordResetForm as DjangoPasswordResetForm
