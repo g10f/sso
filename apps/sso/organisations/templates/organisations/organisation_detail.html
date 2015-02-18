@@ -3,14 +3,6 @@
 
 {% block title %}{% trans 'Center Details' %}{% endblock %}
 
-{% block extrascript %}
-<script type="text/javascript">
-$(function() {
-	$('.dwbn-label').tooltip();
-});
-</script>
-{% endblock extrascript %}
-
 {% block breadcrumb %}
 <ol class="breadcrumb">
     <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
@@ -78,12 +70,14 @@ $(function() {
 	
 	{% if perms.organisations.change_organisation %}
     <div class="row"><div class="dwbn-label">{% trans 'Active' %}: </div>
-    	<div class="dwbn-content" data-toggle="tooltip" title="{% trans 'Designates whether this buddhist center should be treated as active. Unselect this instead of deleting buddhist center.' %}">
-            <span class="glyphicon glyphicon-{% if object.is_active %}check{% else %}uncheck{% endif %}"></span></div>
+    	<div class="dwbn-content">
+            <span data-toggle="tooltip" title="{% trans 'Designates whether this buddhist center should be treated as active. Unselect this instead of deleting buddhist center.' %}"
+                    class="glyphicon glyphicon-{% if object.is_active %}check{% else %}uncheck{% endif %}"></span></div>
     </div>
     <div class="row"><div class="dwbn-label">{% trans 'Private' %}:</div>
-    	<div class="dwbn-content" data-toggle="tooltip" title="{% trans 'Designates whether this buddhist center data should be treated as private and only a telephone number should be displayed on public sites.' %}">
-            <span class="glyphicon glyphicon-{% if object.is_private %}check{% else %}unchecked{% endif %}"></span></div>
+    	<div class="dwbn-content">
+            <span data-toggle="tooltip" title="{% trans 'Designates whether this buddhist center data should be treated as private and only a telephone number should be displayed on public sites.' %}"
+                    class="glyphicon glyphicon-{% if object.is_private %}check{% else %}unchecked{% endif %}"></span></div>
     </div>
 	{% endif %}
 	
