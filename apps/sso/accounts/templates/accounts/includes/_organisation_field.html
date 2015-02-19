@@ -3,8 +3,9 @@
     <label class="control-label">{{ field.label }}</label>
 
     <div class="dwbn-form-control">
-        <p class="form-control-static">{{ field.value|default_if_none:"" }}</p>
-
+        {% if field.value %}
+            <p class="form-control-static">{{ field.value }}</p>
+        {% endif %}
         {% if user.organisationchange %}
             <a class="btn btn-warning" href="{% url 'accounts:organisationchange_update' user.organisationchange.pk %}" role="button">
             {% blocktrans with name=user.organisationchange.organisation.name %}Update change of center to {{ name }}{% endblocktrans %}</a>
