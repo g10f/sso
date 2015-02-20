@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from datetime import timedelta
+
 from django.conf import settings
 from django.contrib.auth.forms import AuthenticationForm
 from django import forms
@@ -6,6 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.text import capfirst
 from django.utils.timezone import now
 from sso.forms import bootstrap
+from utils.translation import string_format
 
 
 class EmailAuthenticationForm(AuthenticationForm):
@@ -18,7 +21,9 @@ class EmailAuthenticationForm(AuthenticationForm):
         label=_("Password"), 
         error_messages={'required': _('Please enter your Password.')}, 
         widget=bootstrap.PasswordInput(attrs={'placeholder': capfirst(_('Password'))}))
-
+    remember_me = forms.BooleanField(label=_('Remember me'),
+                                     help_text=string_format(_('Stay logged in for %(days)d days'), {'days': timedelta(seconds=settings.SESSION_COOKIE_AGE).days}),
+                                     required=False)
     error_messages = {
         'invalid_login': _("Please enter a correct %(username)s and password. "
                            "Note that both fields may be case-sensitive."),

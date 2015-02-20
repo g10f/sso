@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-18 00:19+0100\n"
+"POT-Creation-Date: 2015-02-20 14:57+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -171,7 +171,7 @@ msgstr ""
 #: sso/organisations/forms.py:87 sso/organisations/forms.py:114
 #: sso/organisations/forms.py:275 sso/organisations/forms.py:329
 #: sso/organisations/templates/organisations/adminregion_detail.html:46
-#: sso/organisations/templates/organisations/organisation_detail.html:49
+#: sso/organisations/templates/organisations/organisation_detail.html:41
 #: sso/organisations/templates/organisations/organisationcountry_detail.html:42
 #: sso/registration/forms.py:42
 msgid "Email address"
@@ -238,7 +238,7 @@ msgstr ""
 msgid "File type is not supported"
 msgstr ""
 
-#: sso/accounts/forms.py:219 sso/auth/forms.py:18 sso/auth/forms.py:20
+#: sso/accounts/forms.py:219 sso/auth/forms.py:21 sso/auth/forms.py:23
 msgid "Password"
 msgstr ""
 
@@ -338,7 +338,7 @@ msgstr ""
 #: sso/accounts/forms.py:413
 #: sso/emails/templates/emails/groupemail_detail.html:30
 #: sso/organisations/templates/organisations/adminregion_detail.html:34
-#: sso/organisations/templates/organisations/organisation_detail.html:34
+#: sso/organisations/templates/organisations/organisation_detail.html:26
 #: sso/organisations/templates/organisations/organisationcountry_detail.html:31
 msgid "Homepage"
 msgstr ""
@@ -400,6 +400,7 @@ msgstr ""
 #: sso/emails/templates/emails/groupemail_detail.html:34
 #: sso/organisations/forms.py:91
 #: sso/organisations/templates/organisations/adminregion_detail.html:38
+#: sso/organisations/templates/organisations/organisation_detail.html:72
 #: sso/organisations/templates/organisations/organisationcountry_detail.html:35
 msgid "Active"
 msgstr ""
@@ -790,7 +791,7 @@ msgstr ""
 #: sso/organisations/templates/organisations/my_organisation_detail.html:6
 #: sso/organisations/templates/organisations/organisation_confirm_delete.html:8
 #: sso/organisations/templates/organisations/organisation_create_form.html:12
-#: sso/organisations/templates/organisations/organisation_detail.html:16
+#: sso/organisations/templates/organisations/organisation_detail.html:8
 #: sso/organisations/templates/organisations/organisation_form.html:12
 #: sso/organisations/templates/organisations/organisation_list.html:10
 #: sso/organisations/templates/organisations/organisationcountry_create_form.html:12
@@ -967,7 +968,7 @@ msgstr "Center"
 #: sso/accounts/templates/accounts/user_email_detail.html:109
 #: sso/emails/templates/emails/groupemail_detail.html:87
 #: sso/emails/templates/emails/groupemail_detail.html:88
-#: sso/organisations/templates/organisations/organisation_detail.html:118
+#: sso/organisations/templates/organisations/organisation_detail.html:113
 #: sso/organisations/templates/organisations/organisation_form.html:82
 #: sso/registration/templates/admin/registration/registrationprofile/change_form.html:9
 #: sso/registration/templates/registration/change_user_registration_form.html:99
@@ -1031,7 +1032,7 @@ msgid "or"
 msgstr ""
 
 #: sso/accounts/templates/accounts/delete_profile_form.html:37
-#: sso/accounts/templates/accounts/login.html:73
+#: sso/accounts/templates/accounts/login.html:79
 #: sso/accounts/templates/accounts/login_profile_form.html:41
 #: sso/accounts/templates/accounts/user_confirm_delete.html:61
 #: sso/emails/templates/emails/emailforward_confirm_delete.html:30
@@ -1162,12 +1163,12 @@ msgstr ""
 msgid "Confirm your email address at %(site_name)s"
 msgstr ""
 
-#: sso/accounts/templates/accounts/includes/_organisation_field.html:10
+#: sso/accounts/templates/accounts/includes/_organisation_field.html:9
 #, python-format
 msgid "Update change of center to %(name)s"
 msgstr ""
 
-#: sso/accounts/templates/accounts/includes/_organisation_field.html:12
+#: sso/accounts/templates/accounts/includes/_organisation_field.html:11
 msgid "Change my buddhist center"
 msgstr ""
 
@@ -1201,7 +1202,7 @@ msgid "Log in again"
 msgstr ""
 
 #: sso/accounts/templates/accounts/login.html:14
-#: sso/accounts/templates/accounts/login.html:51
+#: sso/accounts/templates/accounts/login.html:50
 #: sso/accounts/templates/accounts/login_profile_form.html:4
 #: sso/accounts/templates/accounts/password_create_complete.html:12
 #: sso/accounts/templates/accounts/password_reset_complete.html:12
@@ -1214,11 +1215,11 @@ msgstr ""
 msgid "Log in with your %(brand)s account"
 msgstr ""
 
-#: sso/accounts/templates/accounts/login.html:58
+#: sso/accounts/templates/accounts/login.html:64
 msgid "Forgotten your password?"
 msgstr ""
 
-#: sso/accounts/templates/accounts/login.html:66
+#: sso/accounts/templates/accounts/login.html:72
 #, python-format
 msgid ""
 "New at %(site_name)s? <a href=\"%(registration_register_url)s\">Sign up</a>"
@@ -1323,7 +1324,7 @@ msgstr ""
 #: sso/accounts/templates/accounts/organisationchange_detail.html:37
 #: sso/emails/templates/emails/groupemail_detail.html:56
 #: sso/organisations/templates/organisations/adminregion_detail.html:69
-#: sso/organisations/templates/organisations/organisation_detail.html:114
+#: sso/organisations/templates/organisations/organisation_detail.html:109
 #: sso/organisations/templates/organisations/organisationcountry_detail.html:77
 msgid "Back"
 msgstr ""
@@ -1387,7 +1388,7 @@ msgstr ""
 
 #: sso/accounts/templates/accounts/password_create_confirm.html:10
 #: sso/accounts/templates/accounts/password_reset_confirm.html:10
-#: sso/accounts/views/__init__.py:431
+#: sso/accounts/views/__init__.py:435
 msgid "Enter new password"
 msgstr ""
 
@@ -1502,7 +1503,7 @@ msgstr ""
 #: sso/organisations/forms.py:277 sso/organisations/forms.py:334
 #: sso/organisations/forms.py:352 sso/organisations/models.py:67
 #: sso/organisations/templates/organisations/adminregion_detail.html:30
-#: sso/organisations/templates/organisations/organisation_detail.html:70
+#: sso/organisations/templates/organisations/organisation_detail.html:62
 #: sso/organisations/templates/organisations/organisationcountry_detail.html:27
 #: sso/organisations/views/__init__.py:257
 #: sso/organisations/views/region.py:120 sso/registration/forms.py:44
@@ -1511,7 +1512,7 @@ msgid "Country"
 msgstr ""
 
 #: sso/accounts/templates/accounts/user_confirm_delete.html:52
-#: sso/organisations/templates/organisations/organisation_detail.html:93
+#: sso/organisations/templates/organisations/organisation_detail.html:88
 #: sso/registration/forms.py:45 sso/registration/forms.py:171
 msgid "City"
 msgstr ""
@@ -1574,51 +1575,51 @@ msgstr ""
 msgid "Send mail"
 msgstr ""
 
-#: sso/accounts/views/__init__.py:152
+#: sso/accounts/views/__init__.py:154
 msgid "Logged out"
 msgstr ""
 
-#: sso/accounts/views/__init__.py:231
-msgid "The confirmation was not succesfull, please resend the confirmation."
-msgstr ""
-
 #: sso/accounts/views/__init__.py:235
-#, python-format
-msgid "Your email address \"%(email)s\" was already confirmed successfully."
+msgid "The confirmation was not succesfull, please resend the confirmation."
 msgstr ""
 
 #: sso/accounts/views/__init__.py:239
 #, python-format
+msgid "Your email address \"%(email)s\" was already confirmed successfully."
+msgstr ""
+
+#: sso/accounts/views/__init__.py:243
+#, python-format
 msgid "Your email address \"%(email)s\" was confirmed successfully."
 msgstr ""
 
-#: sso/accounts/views/__init__.py:241
+#: sso/accounts/views/__init__.py:245
 msgid ""
 "The confirmation message has probably already expired, please resend the "
 "confirmation."
 msgstr ""
 
-#: sso/accounts/views/__init__.py:254 sso/accounts/views/__init__.py:279
+#: sso/accounts/views/__init__.py:258 sso/accounts/views/__init__.py:283
 #, python-format
 msgid "Confirmation email was sent to \"%(email)s\"."
 msgstr ""
 
-#: sso/accounts/views/__init__.py:260
+#: sso/accounts/views/__init__.py:264
 #, python-format
 msgid "The email \"%(email)s\" was deleted successfully."
 msgstr ""
 
-#: sso/accounts/views/__init__.py:270
+#: sso/accounts/views/__init__.py:274
 #, python-format
 msgid "The email \"%(email)s\" was changed successfully."
 msgstr ""
 
-#: sso/accounts/views/__init__.py:278 sso/accounts/views/__init__.py:309
-#: sso/accounts/views/__init__.py:327 sso/accounts/views/__init__.py:366
+#: sso/accounts/views/__init__.py:282 sso/accounts/views/__init__.py:313
+#: sso/accounts/views/__init__.py:331 sso/accounts/views/__init__.py:370
 msgid "Thank you. Your settings were saved."
 msgstr ""
 
-#: sso/accounts/views/__init__.py:442
+#: sso/accounts/views/__init__.py:446
 msgid "Password create unsuccessful"
 msgstr ""
 
@@ -1706,7 +1707,7 @@ msgstr ""
 #: sso/accounts/views/filter.py:44 sso/accounts/views/filter.py:105
 #: sso/emails/admin.py:43 sso/emails/models.py:28
 #: sso/organisations/models.py:104
-#: sso/organisations/templates/organisations/organisation_detail.html:74
+#: sso/organisations/templates/organisations/organisation_detail.html:66
 #: sso/organisations/views/__init__.py:267
 #, fuzzy
 msgid "Region"
@@ -1782,30 +1783,39 @@ msgstr ""
 msgid "Organisation is missing."
 msgstr "Centers"
 
-#: sso/auth/forms.py:14
+#: sso/auth/forms.py:17
 msgid "Please enter your Email address or Username."
 msgstr ""
 
-#: sso/auth/forms.py:15 sso/auth/forms.py:16
+#: sso/auth/forms.py:18 sso/auth/forms.py:19
 msgid "Email address or Username"
 msgstr ""
 
-#: sso/auth/forms.py:19
+#: sso/auth/forms.py:22
 msgid "Please enter your Password."
 msgstr ""
 
-#: sso/auth/forms.py:23
+#: sso/auth/forms.py:24
+msgid "Remember me"
+msgstr ""
+
+#: sso/auth/forms.py:25
+#, python-format
+msgid "Stay logged in for %(days)d days"
+msgstr ""
+
+#: sso/auth/forms.py:28
 #, python-format
 msgid ""
 "Please enter a correct %(username)s and password. Note that both fields may "
 "be case-sensitive."
 msgstr ""
 
-#: sso/auth/forms.py:25
+#: sso/auth/forms.py:30
 msgid "This account is inactive."
 msgstr ""
 
-#: sso/auth/forms.py:26
+#: sso/auth/forms.py:31
 #, python-format
 msgid ""
 "This account has expired. Please contact the user administrator in your "
@@ -1847,7 +1857,7 @@ msgstr ""
 #: sso/emails/templates/emails/emailforward_confirm_delete.html:25
 #: sso/organisations/forms.py:210
 #: sso/organisations/templates/organisations/adminregion_detail.html:52
-#: sso/organisations/templates/organisations/organisation_detail.html:52
+#: sso/organisations/templates/organisations/organisation_detail.html:44
 #: sso/organisations/templates/organisations/organisationcountry_detail.html:49
 msgid "Email forwarding address"
 msgstr ""
@@ -2001,14 +2011,14 @@ msgstr ""
 
 #: sso/emails/templates/emails/groupemail_detail.html:47
 #: sso/organisations/templates/organisations/adminregion_detail.html:58
-#: sso/organisations/templates/organisations/organisation_detail.html:55
+#: sso/organisations/templates/organisations/organisation_detail.html:47
 #: sso/organisations/templates/organisations/organisationcountry_detail.html:55
 msgid "Email alias address"
 msgstr ""
 
 #: sso/emails/templates/emails/groupemail_detail.html:60
 #: sso/organisations/templates/organisations/adminregion_detail.html:73
-#: sso/organisations/templates/organisations/organisation_detail.html:122
+#: sso/organisations/templates/organisations/organisation_detail.html:117
 #: sso/organisations/templates/organisations/organisationcountry_detail.html:81
 msgid "Update"
 msgstr ""
@@ -2257,7 +2267,7 @@ msgid "notes"
 msgstr ""
 
 #: sso/organisations/forms.py:56
-#: sso/organisations/templates/organisations/organisation_detail.html:45
+#: sso/organisations/templates/organisations/organisation_detail.html:37
 #: sso/organisations/templates/organisations/organisation_list.html:47
 #: sso/templates/include/_static_google_maps_field.html:6
 msgid "Google Maps"
@@ -2265,10 +2275,6 @@ msgstr ""
 
 #: sso/organisations/forms.py:89
 msgid "Center type"
-msgstr ""
-
-#: sso/organisations/forms.py:92
-msgid "Publish"
 msgstr ""
 
 #: sso/organisations/forms.py:98
@@ -2300,7 +2306,7 @@ msgid "Country Groups"
 msgstr ""
 
 #: sso/organisations/models.py:50
-#: sso/organisations/templates/organisations/organisation_detail.html:62
+#: sso/organisations/templates/organisations/organisation_detail.html:54
 msgid "Country groups"
 msgstr ""
 
@@ -2383,17 +2389,17 @@ msgid "admin region"
 msgstr "Center"
 
 #: sso/organisations/models.py:171
-#: sso/organisations/templates/organisations/organisation_detail.html:36
+#: sso/organisations/templates/organisations/organisation_detail.html:28
 msgid "Google+ page"
 msgstr ""
 
 #: sso/organisations/models.py:172
-#: sso/organisations/templates/organisations/organisation_detail.html:39
+#: sso/organisations/templates/organisations/organisation_detail.html:31
 msgid "Facebook page"
 msgstr ""
 
 #: sso/organisations/models.py:173
-#: sso/organisations/templates/organisations/organisation_detail.html:42
+#: sso/organisations/templates/organisations/organisation_detail.html:34
 msgid "Twitter page"
 msgstr ""
 
@@ -2422,6 +2428,7 @@ msgid "longitude/latitude"
 msgstr ""
 
 #: sso/organisations/models.py:184
+#: sso/organisations/templates/organisations/organisation_detail.html:74
 msgid ""
 "Designates whether this buddhist center should be treated as active. "
 "Unselect this instead of deleting buddhist center."
@@ -2432,6 +2439,7 @@ msgid "private"
 msgstr ""
 
 #: sso/organisations/models.py:187
+#: sso/organisations/templates/organisations/organisation_detail.html:79
 msgid ""
 "Designates whether this buddhist center data should be treated as private "
 "and only a telephone number should be displayed on public sites."
@@ -2517,7 +2525,7 @@ msgstr ""
 
 #: sso/organisations/templates/organisations/organisation_confirm_delete.html:9
 #: sso/organisations/templates/organisations/organisation_create_form.html:13
-#: sso/organisations/templates/organisations/organisation_detail.html:17
+#: sso/organisations/templates/organisations/organisation_detail.html:9
 #: sso/organisations/templates/organisations/organisation_form.html:13
 #: sso/organisations/templates/organisations/organisation_list.html:4
 #: sso/organisations/templates/organisations/organisation_list.html:11
@@ -2540,54 +2548,48 @@ msgid "Add Center"
 msgstr ""
 
 #: sso/organisations/templates/organisations/organisation_detail.html:4
-#: sso/organisations/templates/organisations/organisation_detail.html:18
+#: sso/organisations/templates/organisations/organisation_detail.html:10
 #: sso/organisations/templates/organisations/organisation_form.html:5
 msgid "Center Details"
 msgstr ""
 
-#: sso/organisations/templates/organisations/organisation_detail.html:47
+#: sso/organisations/templates/organisations/organisation_detail.html:39
 msgid "Founded"
 msgstr ""
 
-#: sso/organisations/templates/organisations/organisation_detail.html:80
-msgid ""
-"Private: Address is private. Publish: publish on public Web Sites or only "
-"internal."
+#: sso/organisations/templates/organisations/organisation_detail.html:77
+msgid "Private"
 msgstr ""
 
-#: sso/organisations/templates/organisations/organisation_detail.html:80
-msgid "Active/Private/Publish"
-msgstr ""
-
-#: sso/organisations/templates/organisations/organisation_detail.html:90
+#: sso/organisations/templates/organisations/organisation_detail.html:85
 msgid "Address"
 msgstr ""
 
-#: sso/organisations/templates/organisations/organisation_detail.html:91
+#: sso/organisations/templates/organisations/organisation_detail.html:86
 msgid "Addressee"
 msgstr ""
 
-#: sso/organisations/templates/organisations/organisation_detail.html:92
+#: sso/organisations/templates/organisations/organisation_detail.html:87
 msgid "Street Address"
 msgstr ""
 
-#: sso/organisations/templates/organisations/organisation_detail.html:94
+#: sso/organisations/templates/organisations/organisation_detail.html:89
 msgid "Postal Code"
 msgstr ""
 
-#: sso/organisations/templates/organisations/organisation_detail.html:95
+#: sso/organisations/templates/organisations/organisation_detail.html:90
 msgid "state"
 msgstr ""
 
-#: sso/organisations/templates/organisations/organisation_detail.html:99
+#: sso/organisations/templates/organisations/organisation_detail.html:94
 msgid "Phone Numbers"
 msgstr ""
 
-#: sso/organisations/templates/organisations/organisation_detail.html:101
+#: sso/organisations/templates/organisations/organisation_detail.html:96
 msgid "Phone"
 msgstr ""
 
-#: sso/organisations/templates/organisations/organisation_detail.html:104
+#: sso/organisations/templates/organisations/organisation_detail.html:99
 msgid "Nearest Centers"
 msgstr ""
 
