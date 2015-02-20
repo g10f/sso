@@ -16,6 +16,6 @@ def settings(request):
             'brand': site_settings.SSO_BRAND,
             'base_url': get_base_url(request),
             'stylesheet': site_settings.SSO_STYLESHEET,
-            'stylesheet_less': site_settings.SSO_SYLE_LESS,
+            'stylesheet_less': site_settings.SSO_STYLE_LESS,
             'favicon': site_settings.SSO_FAVICON
             }
