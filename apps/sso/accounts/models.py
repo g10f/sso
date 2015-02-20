@@ -600,9 +600,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         if max_age is None:
             max_age = settings.SSO_ADMIN_MAX_AGE
         if max_age is None:
-            return self.is_authenticated()
+            return True
         else:
-            return self.is_authenticated() and now() - self.last_login < timedelta(seconds=max_age)
+            return (now() - self.last_login) < timedelta(seconds=max_age)
 
     @property
     def is_global_user_admin(self):
