@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import time
 from urlparse import urlparse
 from django.contrib.auth.tokens import default_token_generator
 
@@ -187,7 +188,9 @@ def login(request):
                 # Okay, security checks complete. Log the user in.
                 user = form.get_user()
                 auth_login(request, user)
-    
+                if form.cleaned_data.get('remember_me', False):
+                    request.session.set_expiry(settings.SESSION_COOKIE_AGE)
+
                 if (not user.is_complete) and (display == 'page'):
                     # Display user profile form to complete user data
                     form = UserSelfProfileForm(instance=user)

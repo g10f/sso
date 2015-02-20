@@ -31,7 +31,7 @@ body {
 	
     <div class="{% if form.username.errors %}has-error{% endif %}">{{ form.username }}</div>
     <div class="{% if form.password.errors %}has-error{% endif %}">{{ form.password }}</div>
-           
+
 	<input type="hidden" name="this_is_the_login_form" value="1" /> {# used by the admin login #}
 	<input type="hidden" name="login_form_key" value="login_form" />
 	<input type="hidden" name="next" value="{{ next }}" />	  
@@ -46,11 +46,17 @@ body {
     </div>
     {% endif %}
 
-
     <div class="form-group">
        <button class="btn btn-lg btn-primary btn-block" type="submit">{% trans 'Log in' %}</button>
     </div>
    
+    <div class="checkbox">
+        <label title="{{ form.remember_me.help_text }}" for="id_{{ form.remember_me.html_name }}">
+            {{ form.remember_me }}
+            {{ form.remember_me.label }}
+        </label>
+    </div>
+
     <div class="form-group">
        {% url 'accounts:password_reset' as password_reset_url %}
        {% if password_reset_url %}

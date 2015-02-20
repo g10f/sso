@@ -1,19 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from django.conf import settings
 from django.core import signing
+from django.contrib.sessions.backends.signed_cookies import SessionStore as SignedCookiesSessionStore
+from sso.oauth2.crypt import loads_jwt, make_jwt
 
-from django.contrib.sessions.backends.base import SessionBase
 
-
-class SessionStore(SessionBase):
-    """
-    Copy of signed_cookies SessionStore. 
-    Instead of PickleSerializer the JSONSerializer is used because the cookie is extracted in a Varnish vmod
-    for checking the authentication to cached items
-    
-    Django 1.5.3 introduced a new setting, SESSION_SERIALIZER which makes this class redundant
-    """
+class SessionStore(SignedCookiesSessionStore):
 
     def load(self):
         """
@@ -22,55 +14,10 @@ class SessionStore(SessionBase):
         raises BadSignature if signature fails.
         """
         try:
-            return signing.loads(self.session_key,
-                                 # This doesn't handle non-default expiry dates, see #19201
-                                 max_age=settings.SESSION_COOKIE_AGE,
-                                 salt='sso.sessions.backends.signed_cookies')
+            return loads_jwt(self.session_key)
         except (signing.BadSignature, ValueError):
             self.create()
         return {}
-
-    def create(self):
-        """
-        To create a new key, we simply make sure that the modified flag is set
-        so that the cookie is set on the client for the current request.
-        """
-        self.modified = True
-
-    def save(self, must_create=False):
-        """
-        To save, we get the session key as a securely signed string and then
-        set the modified flag so that the cookie is set on the client for the
-        current request.
-        """
-        self._session_key = self._get_session_key()
-        self.modified = True
-
-    def exists(self, session_key=None):
-        """
-        This method makes sense when you're talking to a shared resource, but
-        it doesn't matter when you're storing the information in the client's
-        cookie.
-        """
-        return False
-
-    def delete(self, session_key=None):
-        """
-        To delete, we clear the session key and the underlying data structure
-        and set the modified flag so that the cookie is set on the client for
-        the current request.
-        """
-        self._session_key = ''
-        self._session_cache = {}
-        self.modified = True
-
-    def cycle_key(self):
-        """
-        Keeps the same data but with a new key.  To do this, we just have to
-        call ``save()`` and it will automatically save a cookie with a new key
-        at the end of the request.
-        """
-        self.save()
 
     def _get_session_key(self):
         """
@@ -80,9 +27,4 @@ class SessionStore(SessionBase):
         session key.
         """
         session_cache = getattr(self, '_session_cache', {})
-        return signing.dumps(session_cache, compress=True,
-                             salt='sso.sessions.backends.signed_cookies')
-
-    @classmethod
-    def clear_expired(cls):
-        pass
+        return make_jwt(session_cache)

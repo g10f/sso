@@ -30,5 +30,14 @@ class CookieProlongationMiddleware(object):
             
             if not last_modified or ((now - last_modified) > settings.SESSION_COOKIE_AGE / 2):
                 session['last_modified'] = now
-            
+
+            """
+            iat = session.get('iat')
+            exp = session.get('exp')
+            now = int(time.time())
+
+            if not iat or (now > (iat + exp) / 2):
+                session['iat'] = now
+            """
+
         return response

@@ -37,6 +37,7 @@ SSO_ADD_DHARMASHOP_ROLE = False
 SSO_VALIDATION_PERIOD_IS_ACTIVE = True  # accounts must be prolonged
 SSO_VALIDATION_PERIOD_IS_ACTIVE_FOR_ALL = False  # all accounts must be prolonged, not only account from marked centers
 SSO_VALIDATION_PERIOD_DAYS = 356  # accounts must be prolonged after 1 year
+# SSO_SESSION_REMEMBER_ME_COOKIE_AGE = 60 * 60 * 24 * 108  # 108 days
 
 EMAIL_SUBJECT_PREFIX = '[SSO] '
 
@@ -106,11 +107,11 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'sso.oauth2.middleware.OAuthAuthenticationMiddleware',
+    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'current_user.middleware.CurrentUserMiddleware',
-    'sso.middleware.CookieProlongationMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -198,11 +199,11 @@ RECAPTCHA_PRIVATE_KEY = '6LccjewSAAAAAAhJzHuEyVV40AYApL6CpmjqlmX8'
 RECAPTCHA_USE_SSL = True
 
 SESSION_COOKIE_HTTPONLY = False
-SESSION_COOKIE_AGE = 60 * 30  # seconds * Minutes
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 7 * 2  # 2 weeks
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = False
 # SESSION_ENGINE = 'sso.sessions.backends'
-SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies' 
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 CSRF_COOKIE_HTTPONLY = True
 CSRF_COOKIE_AGE = None 
 CSRF_FAILURE_VIEW = 'sso.views.csrf.csrf_failure'

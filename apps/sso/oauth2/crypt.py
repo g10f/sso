@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 CLOCK_SKEW_SECS = 300    # 5 minutes in seconds
 AUTH_TOKEN_LIFETIME_SECS = 300    # 5 minutes in seconds
 MAX_TOKEN_LIFETIME_SECS = 86400    # 1 day in seconds
+MAX_AGE = 3600  # one hour
 
 class PrivateKey(object):
     
@@ -88,7 +89,9 @@ def make_jwt(claim_set):
     """
     header = {"typ": "JWT", "alg": "RS256"}  # JSON Web token with RSA SHA-256 algorithm
     if "iat" not in claim_set:
-        claim_set["iat"] = int(time.time())  # add  issued at time 
+        claim_set["iat"] = int(time.time())  # add  issued at time
+    if "exp" not in claim_set:
+        claim_set["exp"] = int(time.time()) + MAX_AGE  # add  issued at time
 
     segments = [
         _urlsafe_b64encode(_json_encode(header)),

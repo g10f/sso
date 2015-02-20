@@ -11,14 +11,13 @@ from django.utils.crypto import get_random_string
 from oauthlib import oauth2, uri_validate
 from oauthlib.oauth2.rfc6749.tokens import random_token_generator
 from .models import BearerToken, RefreshToken, AuthorizationCode, Client, check_redirect_uri
-from .crypt import loads_jwt, make_jwt
+from .crypt import loads_jwt, make_jwt, MAX_AGE
 
 import logging
 logger = logging.getLogger(__name__)
 
 # SUPPORTED_SCOPES = ['openid', 'profile', 'email', 'offline_access', 'address', 'phone']
 # DEFAULT_SCOPES = ['openid', 'profile']
-MAX_AGE = 3600
 
 def get_iss_from_absolute_uri(abs_uri):
     (scheme, netloc, path, query, fragment) = urlparse.urlsplit(abs_uri)  # @UnusedVariable
