@@ -1845,7 +1845,7 @@ msgstr "Die Organisation fehlt"
 
 #: sso/auth/forms.py:17
 msgid "Please enter your Email address or Username."
-msgstr ""
+msgstr "Bitte trage Deine E-Mail Adresse oder Deinen Benutzernamen ein."
 
 #: sso/auth/forms.py:18 sso/auth/forms.py:19
 msgid "Email address or Username"

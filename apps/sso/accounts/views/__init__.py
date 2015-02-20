@@ -190,6 +190,8 @@ def login(request):
                 auth_login(request, user)
                 if form.cleaned_data.get('remember_me', False):
                     request.session.set_expiry(settings.SESSION_COOKIE_AGE)
+                else:
+                    request.session.set_expiry(0)  # expire at browser close
 
                 if (not user.is_complete) and (display == 'page'):
                     # Display user profile form to complete user data
@@ -210,8 +212,9 @@ def login(request):
                     redirect_to = get_safe_redirect_url(request, redirect_to)
                     return HttpResponseRedirect(redirect_to)
 
+    initial = {'remember_me': not request.session.get_expire_at_browser_close()}
     context = {
-        'form': form or EmailAuthenticationForm(request),
+        'form': form or EmailAuthenticationForm(request, initial=initial),
         'display': display,
         REDIRECT_FIELD_NAME: redirect_to,
         'cancel_url': cancel_url,
