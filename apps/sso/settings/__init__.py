@@ -37,6 +37,7 @@ SSO_ADD_DHARMASHOP_ROLE = False
 SSO_VALIDATION_PERIOD_IS_ACTIVE = True  # accounts must be prolonged
 SSO_VALIDATION_PERIOD_IS_ACTIVE_FOR_ALL = False  # all accounts must be prolonged, not only account from marked centers
 SSO_VALIDATION_PERIOD_DAYS = 356  # accounts must be prolonged after 1 year
+SSO_ADMIN_MAX_AGE = 60 * 15  # 15 min max age for admin pages
 # SSO_SESSION_REMEMBER_ME_COOKIE_AGE = 60 * 60 * 24 * 108  # 108 days
 
 EMAIL_SUBJECT_PREFIX = '[SSO] '

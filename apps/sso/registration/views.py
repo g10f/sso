@@ -7,11 +7,12 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.template.response import TemplateResponse
 from django.views.generic import DeleteView
-from django.contrib.auth.decorators import permission_required, login_required
+from django.contrib.auth.decorators import permission_required
 from django.utils.decorators import method_decorator
 from l10n.models import Country
 from django.utils.encoding import force_text
 from django.core.urlresolvers import reverse, reverse_lazy
+from sso.auth.decorators import admin_login_required
 from sso.organisations.models import is_validation_period_active_for_user
 from sso.views import main
 from sso.views.generic import SearchFilter, ViewChoicesFilter, ViewQuerysetFilter, ListView
@@ -30,7 +31,7 @@ class UserRegistrationDeleteView(DeleteView):
         user = self.request.user
         return user.filter_administrable_users(qs)
     
-    @method_decorator(login_required)
+    @method_decorator(admin_login_required)
     @method_decorator(permission_required('registration.change_registrationprofile', raise_exception=True))
     def dispatch(self, request, *args, **kwargs):
         return super(UserRegistrationDeleteView, self).dispatch(request, *args, **kwargs)
@@ -90,7 +91,7 @@ class UserRegistrationList(ListView):
     model = RegistrationProfile
     list_display = ['user', 'email', 'center', 'date_registered', 'verified_by_user', 'check_back', 'is_access_denied']
     
-    @method_decorator(login_required)
+    @method_decorator(admin_login_required)
     @method_decorator(permission_required('registration.change_registrationprofile', raise_exception=True))
     def dispatch(self, request, *args, **kwargs):
         return super(UserRegistrationList, self).dispatch(request, *args, **kwargs)
@@ -154,7 +155,7 @@ class UserRegistrationList(ListView):
         return super(UserRegistrationList, self).get_context_data(**context)
 
 
-@login_required
+@admin_login_required
 @permission_required('registration.change_registrationprofile', raise_exception=True)
 def update_user_registration(request, pk, template='registration/change_user_registration_form.html'):
     """
