@@ -18,6 +18,13 @@ class SSOAdminSite(admin.AdminSite):
     login_form = EmailAuthenticationForm
     login_template = 'accounts/login.html'
 
+    def has_permission(self, request):
+        """
+        Returns True if the given HttpRequest has permission to view
+        *at least one* page in the admin site.
+        """
+        return super(SSOAdminSite, self).has_permission(request) and request.user.is_recent_auth_time()
+
 
 sso_admin_site = SSOAdminSite()
 

@@ -155,14 +155,14 @@ class RegistrationProfile(models.Model):
     last_modified_by_user = CurrentUserField(verbose_name=_('last modified by'), related_name='registrationprofile_last_modified_by')
     verified_by_user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, verbose_name=_('verified by'), related_name='registrationprofile_verified_by')
     date_registered = models.DateTimeField(_('date registered'), default=timezone.now)
-    is_validated = models.BooleanField(_('validated'), default=False, help_text=_('Designates whether this profile was already validated by the user.'))
+    is_validated = models.BooleanField(_('validated'), default=False, db_index=True, help_text=_('Designates whether this profile was already validated by the user.'))
     about_me = models.TextField(_('about_me'), blank=True, max_length=1024)
     known_person1_first_name = models.CharField(_("first name of a known person"), max_length=100, blank=True)
     known_person1_last_name = models.CharField(_("last name of a known person"), max_length=100, blank=True)
     known_person2_first_name = models.CharField(_("first name of a another known person"), max_length=100, blank=True)
     known_person2_last_name = models.CharField(_("last name of a another known person"), max_length=100, blank=True)
     check_back = models.BooleanField(_('check back'), default=False, help_text=_('Designates if there are open questions to check.'))
-    is_access_denied = models.BooleanField(_('access denied'), default=False, help_text=_('Designates if access is denied to the user.'))
+    is_access_denied = models.BooleanField(_('access denied'), default=False, db_index=True, help_text=_('Designates if access is denied to the user.'))
     
     objects = RegistrationManager()
     
