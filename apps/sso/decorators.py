@@ -1,5 +1,6 @@
 from functools import wraps
 
+
 def memoize(func):
     """
     Based on django.util.functional.memoize. Automatically memoizes instace methods for the lifespan of an object.

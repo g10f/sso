@@ -10,12 +10,13 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib import messages
 from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
+from django.contrib.auth.decorators import permission_required, user_passes_test
 from django.views.generic import DeleteView
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import get_object_or_404
 from django.utils.encoding import force_text
+from sso.auth.decorators import admin_login_required
 from sso.views import main
 from sso.views.generic import ListView
 from sso.accounts.models import User, UserEmail
@@ -34,7 +35,7 @@ class UserDeleteView(DeleteView):
     model = get_user_model()
     success_url = reverse_lazy('accounts:user_list')
     
-    @method_decorator(login_required)
+    @method_decorator(admin_login_required)
     @method_decorator(permission_required('accounts.delete_user', raise_exception=True))
     def dispatch(self, request, *args, **kwargs):
         # additionally check if the user is admin of the user       
@@ -58,7 +59,7 @@ class UserList(ListView):
     model = get_user_model()
     IS_ACTIVE_CHOICES = (('1', _('Active Users')), ('2', _('Inactive Users')))
 
-    @method_decorator(login_required)
+    @method_decorator(admin_login_required)
     @method_decorator(user_passes_test(has_user_list_access))
     def dispatch(self, request, *args, **kwargs):
         return super(UserList, self).dispatch(request, *args, **kwargs)
@@ -146,7 +147,7 @@ class UserList(ListView):
         return super(UserList, self).get_context_data(**context)
     
 
-@login_required
+@admin_login_required
 @permission_required('accounts.add_user', raise_exception=True)
 def add_user(request, template='accounts/application/add_user_form.html'):
     if request.method == 'POST':
@@ -164,7 +165,7 @@ def add_user(request, template='accounts/application/add_user_form.html'):
     return render(request, template, data)
 
 
-@login_required
+@admin_login_required
 @permission_required('accounts.add_user', raise_exception=True)
 def add_user_done(request, uuid, template='accounts/application/add_user_done.html'):
     new_user = get_user_model().objects.get(uuid=uuid)
@@ -172,7 +173,7 @@ def add_user_done(request, uuid, template='accounts/application/add_user_done.ht
     return render(request, template, data)
 
     
-@login_required
+@admin_login_required
 @permission_required('accounts.change_user', raise_exception=True)
 def update_user(request, uuid, template='accounts/application/update_user_form.html'):
     if not request.user.has_user_access(uuid):
@@ -257,7 +258,7 @@ def update_user(request, uuid, template='accounts/application/update_user_form.h
     return render(request, template, dictionary)
 
 
-@login_required
+@admin_login_required
 @user_passes_test(has_user_list_access)
 def update_user_app_roles(request, uuid, template='accounts/application/update_user_app_roles_form.html'):
     if not request.user.has_user_access(uuid):
