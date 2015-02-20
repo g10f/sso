@@ -3,6 +3,7 @@ import os
 from itertools import chain
 import re
 import logging
+from datetime import timedelta
 
 from sorl import thumbnail
 from django.core.urlresolvers import reverse
@@ -19,6 +20,7 @@ from django.contrib.auth.models import Group, Permission, UserManager as DjangoU
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.utils import timezone
+from django.utils.timezone import now
 from django.utils.translation import pgettext_lazy, ugettext_lazy as _
 from django.utils.text import get_valid_filename, capfirst
 from l10n.models import Country
@@ -194,7 +196,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_name = models.CharField(_('last name'), max_length=30, blank=True)
     # email = models.EmailField(_('email address'), blank=True)
     is_staff = models.BooleanField(_('staff status'), default=False, help_text=_('Designates whether the user can log into this admin site.'))
-    is_active = models.BooleanField(_('active'), default=True, help_text=_('Designates whether this user should be treated as active. Unselect this instead of deleting accounts.'))
+    is_active = models.BooleanField(_('active'), default=True, db_index=True, help_text=_('Designates whether this user should be treated as active. Unselect this instead of deleting accounts.'))
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
     # extension
     uuid = UUIDField(version=4, editable=True, unique=True)
@@ -383,9 +385,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         return Permission.objects.distinct().filter(q)
 
     @memoize
-    def get_applicationroles(self):
-        approles1 = ApplicationRole.objects.distinct().filter(user__uuid=self.uuid).select_related()
-        approles2 = ApplicationRole.objects.distinct().filter(roleprofile__user__uuid=self.uuid).select_related()
+    def get_applicationroles(self, select_related=False):
+        if select_related:
+            approles1 = ApplicationRole.objects.filter(user__uuid=self.uuid).select_related()
+            approles2 = ApplicationRole.objects.filter(roleprofile__user__uuid=self.uuid).select_related()
+        else:
+            approles1 = ApplicationRole.objects.filter(user__uuid=self.uuid)
+            approles2 = ApplicationRole.objects.filter(roleprofile__user__uuid=self.uuid)
         
         # to get a list of distinct values, we create first a set and then a list 
         return list(set(chain(approles1, approles2)))
@@ -589,6 +595,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def is_admin(self):
         return self.is_user_admin or self.is_app_admin
+
+    def is_recent_auth_time(self, max_age=None):
+        if max_age is None:
+            max_age = settings.SSO_ADMIN_MAX_AGE
+
+        return self.is_authenticated() and now() - self.last_login < timedelta(seconds=max_age)
 
     @property
     def is_global_user_admin(self):
