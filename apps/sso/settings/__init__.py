@@ -26,7 +26,7 @@ SSO_ABOUT = 'http://g10f.de/'
 SSO_APP_UUID = 'fa467234b81e4838a009e38d9e655d18'
 SSO_STREAMING_UUID = 'c362bea58c67457fa32234e3178285c4'
 SSO_STYLESHEET = 'css/default-1.0.10.css'
-SSO_SYLE_LESS = 'less/default.less'
+SSO_STYLE_LESS = 'less/default.less'
 SSO_FAVICON = 'ico/favicon.ico'
 SSO_NAVIGATION_TEMPLATE = 'include/_navigation.html'
 SSO_EMAIL_CONFIRM_TIMEOUT_MINUTES = 60
@@ -38,7 +38,6 @@ SSO_VALIDATION_PERIOD_IS_ACTIVE = True  # accounts must be prolonged
 SSO_VALIDATION_PERIOD_IS_ACTIVE_FOR_ALL = False  # all accounts must be prolonged, not only account from marked centers
 SSO_VALIDATION_PERIOD_DAYS = 356  # accounts must be prolonged after 1 year
 SSO_ADMIN_MAX_AGE = 60 * 15  # 15 min max age for admin pages
-# SSO_SESSION_REMEMBER_ME_COOKIE_AGE = 60 * 60 * 24 * 108  # 108 days
 
 EMAIL_SUBJECT_PREFIX = '[SSO] '
 
