@@ -15,6 +15,7 @@ from l10n.admin import *
 
 
 class SSOAdminSite(admin.AdminSite):
+    # TODO: redirect to /accounts/login/ (see dwbn project)
     login_form = EmailAuthenticationForm
     login_template = 'accounts/login.html'
 

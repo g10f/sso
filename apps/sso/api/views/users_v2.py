@@ -377,7 +377,7 @@ class MyDetailView(UserDetailView):
     
 
 class GlobalNavigationView(UserDetailView):
-    operation = {}
+    operations = {}
     
     @method_decorator(cache_control(must_revalidate=True, max_age=60 * 5)) 
     def get(self, request, *args, **kwargs):
@@ -406,7 +406,7 @@ class GlobalNavigationView(UserDetailView):
 
 
 class MyGlobalNavigationView(GlobalNavigationView):
-    operation = {}
+    operations = {}
 
     @method_decorator(condition(last_modified_and_etag_func=get_last_modified_and_etag_for_me))
     @method_decorator(cache_control(must_revalidate=True, max_age=60 * 5)) 

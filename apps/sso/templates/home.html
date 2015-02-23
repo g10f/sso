@@ -39,14 +39,12 @@
             {% blocktrans %}Would you like <a href="{{ login_url }}">to log yourself</a> in?{% endblocktrans %}
         </p>
 
-        {% comment %}
         {% url 'registration:registration_register' as registration_register_url %}
         {% if registration_register_url %}
         <p>        
         {% blocktrans %}New at {{ site_name }}? <a href="{{ registration_register_url }}">Sign up</a>{% endblocktrans %}.
         </p>
         {% endif %}
-        {% endcomment %}
     {% endif %}
 
 {% endblock right_content %}
