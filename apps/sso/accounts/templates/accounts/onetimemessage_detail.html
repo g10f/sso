@@ -5,26 +5,20 @@
 {% block title %}{{ brand }} | {% trans 'One Time Message' %}{% endblock %}
 
 {% block breadcrumb %}
-<ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li class="active">{% trans 'One Time Message' %}</li>
-</ol> 
+    <ol class="breadcrumb">
+        <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+        <li class="active">{% trans 'One Time Message' %}</li>
+    </ol>
 {% endblock breadcrumb %}
 
 
 {% block right_content %}
-<h1>{% trans 'One Time Message' %}</h1>
-<div class="alert alert-danger" role="alert">
-{% blocktrans %}Please note, that the following personal message is displayed only once.{% endblocktrans %}
-</div>
+    <h1>{% trans 'One Time Message' %}</h1>
+    <div class="alert alert-danger" role="alert">
+        {% blocktrans %}Please note, that the following personal message is displayed only once.{% endblocktrans %}
+    </div>
 
-<div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">{{ object.title }}</h3>
-  </div>
-  <div class="panel-body">
-    {{ object.message }}
-  </div>
-</div>
+    <h2>{{ object.title }}</h2>
+    {{ object.message|safe }}
 
 {% endblock right_content %}
