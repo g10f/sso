@@ -19,7 +19,7 @@ from django.utils.encoding import force_text
 from sso.auth.decorators import admin_login_required
 from sso.views import main
 from sso.views.generic import ListView
-from sso.accounts.models import User, UserEmail
+from sso.accounts.models import User, UserEmail, RoleProfile
 from sso.accounts.email import send_account_created_email
 from sso.organisations.models import Organisation, is_validation_period_active
 from sso.accounts.forms import UserAddForm, UserProfileForm, UserEmailForm, AppAdminUserProfileForm
@@ -292,5 +292,13 @@ def update_user_app_roles(request, uuid, template='accounts/application/update_u
     errors = ErrorList(form, [])
     active = ''
 
-    dictionary = {'form': form, 'errors': errors, 'media': media, 'active': active, 'title': _('Change user roles')}
+    # get the role profiles where the administrable application_roles also appear, excluding
+    # the role profiles the current user has admin rights for
+    application_roles = request.user.get_administrable_application_roles()
+    pks = request.user.get_administrable_role_profiles().values_list('pk', flat=True)
+    role_profiles = user.role_profiles.filter(application_roles__in=application_roles).exclude(pk__in=pks)
+    dictionary = {'form': form, 'errors': errors, 'media': media, 'active': active,
+                  'role_profiles': role_profiles,
+                  'application_roles': application_roles,
+                  'title': _('Change user roles')}
     return render(request, template, dictionary)
