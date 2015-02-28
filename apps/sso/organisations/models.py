@@ -178,7 +178,7 @@ class Organisation(AbstractBaseModel):
     coordinates_type = models.CharField(_('coordinates type'), max_length=1, choices=COORDINATES_TYPE_CHOICES, default='3', db_index=True)    
     latitude = models.DecimalField(_("latitude"), max_digits=9, decimal_places=6, blank=True, null=True)
     longitude = models.DecimalField(_("longitude"), max_digits=9, decimal_places=6, blank=True, null=True)
-    location = gis_models.PointField(_("longitude/latitude"), geography=True, blank=True, null=True)
+    location = gis_models.PointField(_("location"), geography=True, blank=True, null=True)
     is_active = models.BooleanField(_('active'), 
                                     default=True,
                                     help_text=_('Designates whether this buddhist center should be treated as '

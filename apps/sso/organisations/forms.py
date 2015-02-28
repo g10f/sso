@@ -12,14 +12,14 @@ from .models import OrganisationPhoneNumber, OrganisationAddress, Organisation, 
 
 
 class OrganisationAddressForm(BaseForm):
-    country = ModelChoiceField(queryset=Country.objects.filter(organisationcountry__isnull=False, organisationcountry__is_active=True), required=True, 
-                               label=_("Country"), widget=bootstrap.Select())
+    country = ModelChoiceField(queryset=Country.objects.filter(organisationcountry__isnull=False, organisationcountry__is_active=True), required=True,
+                               label=_("Country"), widget=bootstrap.Select(), to_field_name="iso2_code")
     
     class Meta:
         model = OrganisationAddress
         fields = ('address_type', 'addressee', 'street_address', 'city', 'city_native', 'postal_code', 'country', 'region')
         widgets = {
-            'address_type': bootstrap.Select(),
+            'address_type': bootstrap.Select(attrs={'class': 'address_type'}),
             'addressee': bootstrap.TextInput(attrs={'size': 50}),
             'street_address': bootstrap.Textarea(attrs={'cols': 50, 'rows': 2}),
             'city': bootstrap.TextInput(attrs={'size': 50}),
@@ -29,8 +29,16 @@ class OrganisationAddressForm(BaseForm):
             'region': bootstrap.TextInput(attrs={'size': 50}),            
         }
     
+    def __init__(self, *args, **kwargs):
+        instance = kwargs.get('instance')
+        if instance and instance.country:
+            # update initial field because of to_field_name in ModelChoiceField
+            kwargs['initial'] = {'country': instance.country.iso2_code}
+
+        super(OrganisationAddressForm, self).__init__(*args, **kwargs)
+
     def template(self):
-        return 'edit_inline/stacked.html'
+        return 'organisations/addresses.html'
 
 
 class OrganisationPhoneNumberForm(BaseTabularInlineForm):

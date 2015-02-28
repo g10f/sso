@@ -98,7 +98,7 @@ class OrganisationssTest(TestCase):
             'organisationaddress_set-0-address_type': 'meditation',
             'organisationaddress_set-0-addressee': 'Buddhistisches Zentrum New',
             'organisationaddress_set-0-city': 'München',
-            'organisationaddress_set-0-country': 81,
+            'organisationaddress_set-0-country': 'DE',
             'organisationaddress_set-0-id': '',
             'organisationaddress_set-0-organisation': org_id,
             'organisationaddress_set-0-postal_code': 38122,

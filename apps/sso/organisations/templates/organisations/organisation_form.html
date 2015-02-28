@@ -4,7 +4,9 @@
 
 {% block title %}{% trans 'Center Details' %}{% endblock %}
 
-{% block extrascript %}{{ media }}{% endblock extrascript %}
+{% block extrascript %}{{ media }}
+<script src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
+{% endblock extrascript %}
 
 
 {% block breadcrumb %}
