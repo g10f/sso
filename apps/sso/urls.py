@@ -9,9 +9,13 @@ from sso.admin import sso_admin_site
 
 registration_site = RegistrationSite(form_cls=UserSelfRegistrationForm2)
 
+js_info_dict = {
+    'packages': ('sso',),
+}
 
 urlpatterns = patterns(
     '',
+    url(r'^jsi18n/$', 'django.views.i18n.javascript_catalog', js_info_dict),
     url(r'^admin/', include(sso_admin_site.urls)),
     url(r'^$', 'sso.views.home', name='home'),
     url(r'^privacy/$', TemplateView.as_view(template_name="privacy.html"), name='privacy'),

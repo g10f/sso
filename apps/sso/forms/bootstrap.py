@@ -356,10 +356,10 @@ class OSMWidget(BaseGeometryWidget):
 
     class Media:
         js = (
-            '//cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js',
-            #'//cdnjs.cloudflare.com/ajax/libs/ol3/3.2.0/ol.min.js'
+            #'//cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js',
+            'js/openlayer/2.13.1/OpenLayers.js',
             'js/gis/OpenStreetMap.js',
-            'js/gis/OLMapWidget-1.0.1.js',
+            'js/gis/OLMapWidget-1.0.2.js',
         )
 
     @property

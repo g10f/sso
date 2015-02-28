@@ -151,6 +151,7 @@ def compilemessages():
 def makemessages():
     with lcd('apps'):
         local('~/envs/sso/bin/python manage.py makemessages -a')
+        local('~/envs/sso/bin/python manage.py makemessages -d djangojs -a')
 
 
 @task
