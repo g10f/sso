@@ -10,7 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.http import HttpResponseRedirect
 from django.forms.models import inlineformset_factory
 from l10n.models import Country
-from utils.url import is_safe_url
+from sso.accounts.models import allowed_hosts
 from sso.views import main
 from sso.emails.models import EmailForward, Email, EmailAlias
 from sso.organisations.models import AdminRegion, Organisation
@@ -20,6 +20,7 @@ from sso.emails.forms import AdminEmailForwardInlineForm, EmailForwardInlineForm
 from sso.organisations.forms import OrganisationAddressForm, OrganisationPhoneNumberForm, OrganisationCountryAdminForm, \
     OrganisationRegionAdminForm, OrganisationCenterAdminForm, OrganisationRegionAdminCreateForm, OrganisationCountryAdminCreateForm
 from sso.forms.helpers import get_optional_inline_formset
+from utils.url import get_safe_redirect_uri
 
 logger = logging.getLogger(__name__)
 
@@ -40,21 +41,15 @@ class OrganisationBaseView(object):
     def dispatch(self, request, *args, **kwargs):
         return super(OrganisationBaseView, self).dispatch(request, *args, **kwargs)
 
-    def get_return_url(self):
-        return_url = self.request.GET.get("return_url")
-        if return_url and is_safe_url(return_url):
-            return return_url        
-        return ""
-    
     def get_context_data(self, **kwargs):
         """
         Insert the return_url into the context dict.
         """
         context = {}
-        return_url = self.get_return_url()
-        if return_url:
-            context['return_url'] = return_url
-        
+        redirect_uri = get_safe_redirect_uri(self.request, allowed_hosts())
+        if redirect_uri:
+            context['redirect_uri'] = redirect_uri
+
         if self.object and self.request.user.is_authenticated():
             context['has_organisation_access'] = self.request.user.has_organisation_access(self.object.uuid)
         
@@ -322,7 +317,6 @@ class OrganisationList(ListView):
         Get the list of items for this view. This must be an iterable, and may
         be a queryset (in which qs-specific behavior will be enabled).
         """
-        
         self.cl = main.ChangeList(self.request, self.model, self.get_list_display(), default_ordering=self.get_default_ordering())
         qs = super(OrganisationList, self).get_queryset().only('location', 'uuid', 'name', 'email', 'country', 'founded').select_related('country', 'email')
         

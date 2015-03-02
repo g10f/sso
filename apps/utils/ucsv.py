@@ -6,6 +6,7 @@ import logging
 
 logger = logging.getLogger(__name__)    
 
+
 def _get_text(value):
     if len(value) > 1 and value[0] == '"':            
         value = value[1:-1]
@@ -14,6 +15,7 @@ def _get_text(value):
         return None            
     else:
         return value
+
 
 def csv_map(reader, key_row=0):
     first_row = []

@@ -4,6 +4,8 @@ from itertools import chain
 import re
 import logging
 from datetime import timedelta
+from urlparse import urlparse
+from django.core.cache import cache
 
 from sorl import thumbnail
 from django.core.urlresolvers import reverse
@@ -49,6 +51,21 @@ DS108_CEE = '2139dc55af8b42ec84a1ce9fd25fdf18'
 class ApplicationManager(models.Manager):
     def get_by_natural_key(self, uuid):
         return self.get(uuid=uuid)
+
+    def get_allowed_hosts(self):
+        allowed_hosts = cache.get('allowed_hosts', [])
+        if not allowed_hosts:
+            for app in self.all():
+                netloc = urlparse(app.url)[1]
+                if netloc:
+                    allowed_hosts.append(netloc)
+            cache.set('allowed_hosts', allowed_hosts)
+
+        return allowed_hosts
+
+
+def allowed_hosts():
+    return Application.objects.get_allowed_hosts()
 
 
 class Application(models.Model):

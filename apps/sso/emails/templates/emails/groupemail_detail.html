@@ -53,7 +53,6 @@
     <div class="form-group">
         <div class="dwbn-form-control_lg">
             {% block submit_group %}
-                {% if return_url %}<a class="btn btn-default" href="{{ return_url }}">{% trans 'Back' %}</a>{% endif %}
 
                 {% if perms.emails.change_groupemail %}
                     <a class="btn btn-default"

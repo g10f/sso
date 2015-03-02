@@ -22,7 +22,7 @@ from sso.organisations.models import Organisation
 from sso.registration import default_username_generator
 from http.http_status import *  # @UnusedWildImport
 from sso.oauth2.decorators import client_required
-from utils.url import base_url, build_url, absolute_url
+from utils.url import base_url, update_url, absolute_url
 from sso.api.decorators import api_user_passes_test, catch_errors
 from sso.api.response import JsonHttpResponse
 from utils.parse import parse_datetime_with_timezone_support
@@ -51,16 +51,16 @@ def get_page_and_links(request, qs, find_expression=FIND_EXPRESSION):
         page = paginator.page(paginator.num_pages)
 
     page_base_url = "%s%s" % (base_url(request), request.path)
-    self_url = build_url(page_base_url, request.GET)
+    self_url = update_url(page_base_url, request.GET)
     links = {
         'find': {'href': '%s%s' % (page_base_url, find_expression), 'templated': True},
         'self': {'href': self_url}
     }
     
     if page.has_next():
-        links['next'] = {'href': build_url(self_url, {'page': page.next_page_number()})}
+        links['next'] = {'href': update_url(self_url, {'page': page.next_page_number()})}
     if page.has_previous():
-        links['prev'] = {'href': build_url(self_url, {'page': page.previous_page_number()})}
+        links['prev'] = {'href': update_url(self_url, {'page': page.previous_page_number()})}
     
     return page, links
 

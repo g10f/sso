@@ -359,7 +359,7 @@ class OSMWidget(BaseGeometryWidget):
             #'//cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js',
             'js/openlayer/2.13.1/OpenLayers.js',
             'js/gis/OpenStreetMap.js',
-            'js/gis/OLMapWidget-1.0.2.js',
+            'js/gis/OLMapWidget-1.0.3.js',
         )
 
     @property

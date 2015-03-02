@@ -1,8 +1,4 @@
-# -*- coding: utf-8 -*-
-import time
-from urlparse import urlparse
 from django.contrib.auth.tokens import default_token_generator
-
 from django.utils.http import urlsafe_base64_decode, is_safe_url
 from django.conf import settings
 from django.shortcuts import render, redirect, resolve_url
@@ -17,22 +13,22 @@ from django.template.response import TemplateResponse
 from django.template.loader import render_to_string
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.urlresolvers import reverse
-from django.core.cache import cache
 from django.core.mail import mail_managers
 from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
 from django.forms.models import inlineformset_factory
 from http.util import get_request_param
-from sso.accounts.tokens import email_confirm_token_generator
 from throttle.decorators import throttle
 from sso.auth.forms import EmailAuthenticationForm
 from sso.oauth2.models import get_oauth2_cancel_url
 from sso.forms.helpers import ErrorList, ChangedDataList, log_change
-from ..models import Application, User, UserAddress, UserPhoneNumber, UserEmail
-from ..email import send_useremail_confirmation
-from ..forms import PasswordResetForm, SetPasswordForm, PasswordChangeForm, ContactForm, AddressForm, PhoneNumberForm, \
+from utils.url import get_safe_redirect_uri, update_url
+from sso.accounts.tokens import email_confirm_token_generator
+from sso.accounts.models import User, UserAddress, UserPhoneNumber, UserEmail, Application, allowed_hosts
+from sso.accounts.email import send_useremail_confirmation
+from sso.accounts.forms import PasswordResetForm, SetPasswordForm, PasswordChangeForm, ContactForm, AddressForm, PhoneNumberForm, \
     SelfUserEmailForm, SetPictureAndPasswordForm
-from ..forms import UserSelfProfileForm, UserSelfProfileDeleteForm, CenterSelfProfileForm
+from sso.accounts.forms import UserSelfProfileForm, UserSelfProfileDeleteForm, CenterSelfProfileForm
 
 
 LOGIN_FORM_KEY = 'login_form_key'
@@ -50,86 +46,39 @@ def contact(request):
         initial = {}
         if request.user.is_authenticated():
             initial['email'] = request.user.primary_email()
-            initial['name'] = request.user.get_full_name()            
+            initial['name'] = request.user.get_full_name()
         form = ContactForm(initial=initial)
         
     dictionary = {'form': form}
     return render(request, 'accounts/contact_form.html', dictionary)
 
-    
+
 def password_change(request):
     """
     Handles the "change password" task -- both form display and validation.
     """
     from django.contrib.auth.views import password_change
-    url = reverse('accounts:password_change_done')
+    redirect_uri = get_safe_redirect_uri(request, allowed_hosts())
+    success_url = update_url(reverse('accounts:password_change_done'), {'redirect_uri': redirect_uri})
     defaults = {
+        'extra_context': {'redirect_uri': redirect_uri},
         'password_change_form': PasswordChangeForm,
-        'post_change_redirect': url,
+        'post_change_redirect': success_url,
         'template_name': 'accounts/password_change_form.html',
     }
     return password_change(request, **defaults)
 
 
-def password_change_done(request, extra_context=None):
+def password_change_done(request):
     """
     Displays the "success" page after a password change.
     """
     from django.contrib.auth.views import password_change_done
     defaults = {
-        'extra_context': extra_context or {},
+        'extra_context': {'redirect_uri': get_safe_redirect_uri(request, allowed_hosts())},
         'template_name': 'accounts/password_change_done.html',
     }
     return password_change_done(request, **defaults)
-
-
-def get_allowed_hosts():
-    allowed_hosts = cache.get('allowed_hosts', [])
-    if not allowed_hosts:
-        for app in Application.objects.all():
-            netloc = urlparse(app.url)[1]
-            if netloc:
-                allowed_hosts.append(netloc)
-        cache.set('allowed_hosts', allowed_hosts)
-
-    return allowed_hosts
-
-
-def is_safe_ext_url(url, hosts):
-    """
-    like django.util.http.is_safe_url but with a list of hosts instead one host name
-
-    Return ``True`` if the url is a safe redirection (i.e. it doesn't point to
-    a different host and uses a safe scheme).
-
-    Always returns ``False`` on an empty url.
-    """
-    if not url:
-        return False
-    url = url.strip()
-    # Chrome treats \ completely as /
-    url = url.replace('\\', '/')
-    # Chrome considers any URL with more than two slashes to be absolute, but
-    # urlparse is not so flexible. Treat any url with three slashes as unsafe.
-    if url.startswith('///'):
-        return False
-    url_info = urlparse(url)
-    # Forbid URLs like http:///example.com - with a scheme, but without a hostname.
-    # In that URL, example.com is not the hostname but, a path component. However,
-    # Chrome will still consider example.com to be the hostname, so we must not
-    # allow this syntax.
-    if not url_info.netloc and url_info.scheme:
-        return False
-    return ((not url_info.netloc or url_info.netloc in hosts) and
-            (not url_info.scheme or url_info.scheme in ['http', 'https']))
-
-
-def get_safe_redirect_url(request, redirect_to):
-    # Ensure the user-originating redirection url is safe.
-    if not is_safe_url(url=redirect_to, host=request.get_host()):
-        return resolve_url(settings.LOGIN_REDIRECT_URL)
-    else:
-        return redirect_to
 
 
 @never_cache
@@ -141,8 +90,11 @@ def logout(request, next_page=None,
     Logs out the user and displays 'You are logged out' message.
     """
     auth_logout(request)
-    redirect_to = get_request_param(request, redirect_field_name)
-    if redirect_to and is_safe_ext_url(redirect_to, set(get_allowed_hosts())):
+    redirect_to = get_safe_redirect_uri(request, allowed_hosts())
+    if redirect_to is None:
+        # try deprecated version with parameter name "next"
+        redirect_to = get_safe_redirect_uri(request, allowed_hosts(), redirect_field_name=redirect_field_name)
+    if redirect_to:
         return HttpResponseRedirect(redirect_to)
 
     if next_page is None:
@@ -169,6 +121,13 @@ def login(request):
     """
     Displays the login form for the given HttpRequest.
     """
+    def get_safe_login_redirect_url(request, redirect_to):
+        # Ensure the user-originating redirection url is safe.
+        if not is_safe_url(url=redirect_to, host=request.get_host()):
+            return resolve_url(settings.LOGIN_REDIRECT_URL)
+        else:
+            return redirect_to
+
     current_site = get_current_site(request)
     site_name = settings.SSO_SITE_NAME
     redirect_to = get_request_param(request, REDIRECT_FIELD_NAME, '')
@@ -183,7 +142,7 @@ def login(request):
         if login_form_key == 'login_form':
             form = EmailAuthenticationForm(data=request.POST)
             if form.is_valid():
-                redirect_to = get_safe_redirect_url(request, redirect_to)
+                redirect_to = get_safe_login_redirect_url(request, redirect_to)
     
                 # Okay, security checks complete. Log the user in.
                 user = form.get_user()
@@ -209,7 +168,7 @@ def login(request):
                 cancel_url = reverse('accounts:logout')
                 if form.is_valid():
                     form.save()
-                    redirect_to = get_safe_redirect_url(request, redirect_to)
+                    redirect_to = get_safe_login_redirect_url(request, redirect_to)
                     return HttpResponseRedirect(redirect_to)
 
     initial = {'remember_me': not request.session.get_expire_at_browser_close()}
@@ -282,7 +241,7 @@ def emails(request):
                 user_email = form.save()
                 change_message = ChangedDataList(form, []).change_message()
                 log_change(request, user, change_message)
-                msg = _('Thank you. Your settings were saved.') + '\n'
+                msg = _('Thank you. Your data were saved.') + '\n'
                 msg += _('Confirmation email was sent to \"%(email)s\".') % {'email': user_email}
                 messages.success(request, msg)
                 send_useremail_confirmation(user_email, request)
@@ -313,7 +272,7 @@ def profile_center_account(request):
             form.save()
             change_message = ChangedDataList(form, []).change_message() 
             log_change(request, user, change_message)            
-            messages.success(request, _('Thank you. Your settings were saved.'))
+            messages.success(request, _('Thank you. Your data were saved.'))
             return redirect('accounts:profile')
     else:
         form = CenterSelfProfileForm(instance=user)
@@ -331,7 +290,7 @@ def profile_core(request):
             form.save()
             change_message = ChangedDataList(form, []).change_message() 
             log_change(request, user, change_message)            
-            messages.success(request, _('Thank you. Your settings were saved.'))
+            messages.success(request, _('Thank you. Your data were saved.'))
             return redirect('accounts:profile')
     else:
         form = UserSelfProfileForm(instance=user)
@@ -340,8 +299,26 @@ def profile_core(request):
     return render(request, 'accounts/profile_core_form.html', dictionary)
     
 
+def get_profile_success_url(request, redirect_uri):
+    if "_continue" in request.POST:
+        if redirect_uri:
+            success_url = update_url(reverse('accounts:profile'), {'redirect_uri': redirect_uri})
+        else:
+            success_url = reverse('accounts:profile')
+        messages.success(request, _('Your profile was changed successfully. You may edit it again below.'))
+    else:
+        if redirect_uri:
+            success_url = redirect_uri
+        else:
+            success_url = reverse('home')
+            messages.success(request, _('Thank you. Your profile was saved.'))
+
+    return success_url
+
+
 @login_required
 def profile_with_address_and_phone(request):
+    redirect_uri = get_safe_redirect_uri(request, allowed_hosts())
     address_extra = 0
     phonenumber_extra = 1
     user = request.user
@@ -369,10 +346,9 @@ def profile_with_address_and_phone(request):
             formsets = [address_inline_formset, phonenumber_inline_formset]
             change_message = ChangedDataList(form, formsets).change_message() 
             log_change(request, user, change_message)
-            
-            messages.success(request, _('Thank you. Your settings were saved.'))
 
-            return redirect('accounts:profile')
+            success_url = get_profile_success_url(request, redirect_uri)
+            return HttpResponseRedirect(success_url)
     else:
         address_inline_formset = AddressInlineFormSet(instance=user)
         phonenumber_inline_formset = PhoneNumberInlineFormSet(instance=user)
@@ -398,7 +374,8 @@ def profile_with_address_and_phone(request):
                     active = formset.prefix
                     break
 
-    dictionary = {'form': form, 'errors': errors, 'formsets': formsets, 'media': media, 'active': active}
+    dictionary = {'form': form, 'errors': errors, 'formsets': formsets, 'media': media, 'active': active,
+                  'redirect_uri': redirect_uri}
     return render(request, 'accounts/profile_form.html', dictionary)
 
 

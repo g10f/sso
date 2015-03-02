@@ -34,11 +34,8 @@
     <div class="form-group">
         <div class="dwbn-form-control_lg">
             {% block submit_group %}
-                {% if return_url %}<a class="btn btn-default" href="{{ return_url }}">{% trans 'Back' %}</a>{% endif %}
-
                 <a class="btn btn-default" href="{% url 'accounts:organisationchange_update' user.organisationchange.pk %}" role="button">
                     {% trans 'Update center change' %}</a>
-
             {% endblock %}
         </div>
     </div>

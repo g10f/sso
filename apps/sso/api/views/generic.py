@@ -10,7 +10,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.vary import vary_on_headers
 from django.forms.models import model_to_dict
-from utils.url import base_url, build_url
+from utils.url import base_url, update_url
 from sso.api.decorators import catch_errors
 from sso.api.response import JsonHttpResponse
 
@@ -89,7 +89,7 @@ class JSONResponseMixin(object):
         if '@id' not in data:
             # if no @id is there we use the current url as the default
             page_base_url = "%s%s" % (base_url(self.request), self.request.path)
-            data['@id'] = build_url(page_base_url, self.request.GET)
+            data['@id'] = update_url(page_base_url, self.request.GET)
 
         data['operation'] = self.get_allowed_operations(context['object'])
         return data
@@ -245,16 +245,16 @@ class JsonListView(JSONResponseMixin, PermissionMixin, BaseListView):
             'member': [self.get_object_data(self.request, obj) for obj in context['object_list']],
         }
         page_base_url = "%s%s" % (base_url(self.request), self.request.path)
-        self_url = build_url(page_base_url, self.request.GET)
+        self_url = update_url(page_base_url, self.request.GET)
         data['total_items'] = context['paginator'].count
         if context['is_paginated']:
             data['items_per_page'] = context['paginator'].per_page
             
             page = context['page_obj']
             if page.has_next():
-                data['next_page'] = build_url(self_url, {'page': page.next_page_number()})
+                data['next_page'] = update_url(self_url, {'page': page.next_page_number()})
             if page.has_previous():
-                data['prev_page'] = build_url(self_url, {'page': page.previous_page_number()})
+                data['prev_page'] = update_url(self_url, {'page': page.previous_page_number()})
 
         data['@id'] = self_url
         data['operation'] = self.get_allowed_operations(None)
