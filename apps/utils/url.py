@@ -23,6 +23,13 @@ def get_safe_redirect_uri(request, hosts, redirect_field_name=REDIRECT_URI_FIELD
 
 
 def update_url(url, params):
+    """Given a URL, add or update query parameter and return the
+    modified URL.
+
+    >>> update_query_params('http://example.com?foo=bar&biz=baz', {'foo', 'stuff', 'new': 'val'})
+    'http://example.com?foo=stuff&biz=baz&new=val'
+
+    """
     (scheme, netloc, path, query, fragment) = urlsplit(url)
     q = QueryDict(query, mutable=True)
 

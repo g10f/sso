@@ -163,7 +163,7 @@ def test():
 @task
 def prepare_deploy():
     compilemessages()
-    #test()
+    # test()
     local("git commit -a")
     local("git push -u origin master")
 

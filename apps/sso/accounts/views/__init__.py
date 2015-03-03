@@ -24,7 +24,7 @@ from sso.oauth2.models import get_oauth2_cancel_url
 from sso.forms.helpers import ErrorList, ChangedDataList, log_change
 from utils.url import get_safe_redirect_uri, update_url
 from sso.accounts.tokens import email_confirm_token_generator
-from sso.accounts.models import User, UserAddress, UserPhoneNumber, UserEmail, Application, allowed_hosts
+from sso.accounts.models import User, UserAddress, UserPhoneNumber, UserEmail, allowed_hosts
 from sso.accounts.email import send_useremail_confirmation
 from sso.accounts.forms import PasswordResetForm, SetPasswordForm, PasswordChangeForm, ContactForm, AddressForm, PhoneNumberForm, \
     SelfUserEmailForm, SetPictureAndPasswordForm
@@ -253,52 +253,6 @@ def emails(request):
     return render(request, 'accounts/user_email_detail.html', dictionary)
 
 
-@login_required
-def profile(request):
-    if getattr(request.user, 'is_center', False):
-        return profile_center_account(request)        
-    if settings.SSO_SHOW_ADDRESS_AND_PHONE_FORM:
-        return profile_with_address_and_phone(request)
-    else:
-        return profile_core(request)
-
-
-@login_required
-def profile_center_account(request):
-    user = request.user
-    if request.method == 'POST':
-        form = CenterSelfProfileForm(request.POST, instance=user, files=request.FILES)
-        if form.is_valid():
-            form.save()
-            change_message = ChangedDataList(form, []).change_message() 
-            log_change(request, user, change_message)            
-            messages.success(request, _('Thank you. Your data were saved.'))
-            return redirect('accounts:profile')
-    else:
-        form = CenterSelfProfileForm(instance=user)
-
-    dictionary = {'form': form}
-    return render(request, 'accounts/profile_form_center.html', dictionary)
-
-
-@login_required
-def profile_core(request):
-    user = request.user
-    if request.method == 'POST':
-        form = UserSelfProfileForm(request.POST, instance=user, files=request.FILES)
-        if form.is_valid():
-            form.save()
-            change_message = ChangedDataList(form, []).change_message() 
-            log_change(request, user, change_message)            
-            messages.success(request, _('Thank you. Your data were saved.'))
-            return redirect('accounts:profile')
-    else:
-        form = UserSelfProfileForm(instance=user)
-
-    dictionary = {'form': form}
-    return render(request, 'accounts/profile_core_form.html', dictionary)
-    
-
 def get_profile_success_url(request, redirect_uri):
     if "_continue" in request.POST:
         if redirect_uri:
@@ -317,8 +271,56 @@ def get_profile_success_url(request, redirect_uri):
 
 
 @login_required
-def profile_with_address_and_phone(request):
+def profile(request):
     redirect_uri = get_safe_redirect_uri(request, allowed_hosts())
+    if getattr(request.user, 'is_center', False):
+        return profile_center_account(request, redirect_uri)
+    if settings.SSO_SHOW_ADDRESS_AND_PHONE_FORM:
+        return profile_with_address_and_phone(request, redirect_uri)
+    else:
+        return profile_core(request, redirect_uri)
+
+
+@login_required
+def profile_center_account(request, redirect_uri=None):
+    user = request.user
+    if request.method == 'POST':
+        form = CenterSelfProfileForm(request.POST, instance=user, files=request.FILES)
+        if form.is_valid():
+            form.save()
+            change_message = ChangedDataList(form, []).change_message() 
+            log_change(request, user, change_message)            
+
+            success_url = get_profile_success_url(request, redirect_uri)
+            return HttpResponseRedirect(success_url)
+    else:
+        form = CenterSelfProfileForm(instance=user)
+
+    dictionary = {'form': form, 'redirect_uri': redirect_uri}
+    return render(request, 'accounts/profile_form_center.html', dictionary)
+
+
+@login_required
+def profile_core(request, redirect_uri=None):
+    user = request.user
+    if request.method == 'POST':
+        form = UserSelfProfileForm(request.POST, instance=user, files=request.FILES)
+        if form.is_valid():
+            form.save()
+            change_message = ChangedDataList(form, []).change_message() 
+            log_change(request, user, change_message)            
+
+            success_url = get_profile_success_url(request, redirect_uri)
+            return HttpResponseRedirect(success_url)
+    else:
+        form = UserSelfProfileForm(instance=user)
+
+    dictionary = {'form': form, 'redirect_uri': redirect_uri}
+    return render(request, 'accounts/profile_core_form.html', dictionary)
+    
+
+@login_required
+def profile_with_address_and_phone(request, redirect_uri=None):
     address_extra = 0
     phonenumber_extra = 1
     user = request.user
