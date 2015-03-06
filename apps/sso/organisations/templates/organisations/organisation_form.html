@@ -68,6 +68,7 @@
         <div class="tab-pane {% if active == formset.prefix %}active{% endif %}" id="{{ formset.prefix }}">
             {% if formset.prefix == 'organisationaddress_set' %}
                 {% include 'include/_static_google_maps_field.html' with field=form.google_maps_url %}
+                {#% include 'include/_static_field.html' with field=form.timezone %#}
                 {% include 'include/_field.html' with field=form.coordinates_type %}
                 {% include 'include/_field.html' with field=form.location %}
             {% endif %}

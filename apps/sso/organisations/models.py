@@ -1,13 +1,13 @@
 import logging
 from django.conf import settings
 
-from django.db import models
+from django.db import models, connection
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis import measure
-from django.db.models.signals import post_delete
+from django.db.models.signals import post_delete, pre_save
 from django.dispatch import receiver
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.utils.translation import pgettext_lazy, ugettext_lazy as _
 from l10n.models import Country
 from smart_selects.db_fields import ChainedForeignKey
@@ -38,6 +38,21 @@ def is_validation_period_active_for_user(user):
         user_organisation = None
 
     return is_validation_period_active(user_organisation)
+
+
+class TzWorld(models.Model):
+    """
+    table from http://efele.net/maps/tz/world/ with timezones and areas
+    infos; http://shisaa.jp/postset/postgis-and-postgresql-in-action-timezones.html
+    """
+    gid = models.IntegerField(primary_key=True)
+    tzid = models.CharField(max_length=30, blank=True)
+    geom = gis_models.PolygonField(blank=True, null=True)
+    objects = gis_models.GeoManager()
+
+    class Meta:
+        # managed = False
+        db_table = 'tz_world'
 
 
 class CountryGroup(AbstractBaseModel):
@@ -161,6 +176,8 @@ class Organisation(AbstractBaseModel):
     def center_type_desc(self):
         return self._center_type_choices.get(self.center_type, '')
 
+    _original_location = None
+
     name = models.CharField(_("name"), max_length=255)
     country = models.ForeignKey(Country, verbose_name=_("country"), null=True, limit_choices_to={'active': True})
     admin_region = ChainedForeignKey(AdminRegion, chained_field='country', chained_model_field="country", verbose_name=_("admin region"), blank=True, null=True,
@@ -179,7 +196,8 @@ class Organisation(AbstractBaseModel):
     latitude = models.DecimalField(_("latitude"), max_digits=9, decimal_places=6, blank=True, null=True)
     longitude = models.DecimalField(_("longitude"), max_digits=9, decimal_places=6, blank=True, null=True)
     location = gis_models.PointField(_("location"), geography=True, blank=True, null=True)
-    is_active = models.BooleanField(_('active'), 
+    timezone = models.CharField(_('timezone'), blank=True, max_length=254)
+    is_active = models.BooleanField(_('active'),
                                     default=True,
                                     help_text=_('Designates whether this buddhist center should be treated as '
                                                 'active. Unselect this instead of deleting buddhist center.'))
@@ -205,6 +223,32 @@ class Organisation(AbstractBaseModel):
         ordering = ['name']
         verbose_name = _('Buddhist Center')
         verbose_name_plural = _('Buddhist Centers')
+
+    def __init__(self, *args, **kwargs):
+        """
+        save original location that we can check if the location changed and update the timezone
+        in pre_save if the location changed
+        """
+        super(Organisation, self).__init__(*args, **kwargs)
+        self._original_location = self.location
+
+    def save(self, force_insert=False, force_update=False, *args, **kwargs):
+        if self.location != self._original_location:
+            self.timezone = self.timezone_from_location
+
+        super(Organisation, self).save(force_insert, force_update, *args, **kwargs)
+        self._original_location = self.location
+
+    @property
+    def timezone_from_location(self):
+        if self.location:
+            try:
+                return TzWorld.objects.only('tzid').get(geom__contains=self.location).tzid
+            except ObjectDoesNotExist, e:
+                logger.warning(e)
+            except MultipleObjectsReturned, e:
+                logger.exception(e)
+        return ""
 
     @memoize
     def get_last_modified_deep(self):

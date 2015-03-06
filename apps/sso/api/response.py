@@ -11,6 +11,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 class JsonHttpResponse(HttpResponse):
     def __init__(self, data=None, request=None, status=None, *args, **kwargs):
         callback = ""
