@@ -202,6 +202,18 @@ def deploy_debian():
     require.deb.package('postgresql-9.1-postgis-2.0')
 
 
+def table_is_empty(db_name, name):
+    """
+    Check if a PostgreSQL table exists.
+    """
+    with settings(hide('running', 'stdout', 'stderr', 'warnings'),
+                  warn_only=True):
+        res = fabtools.postgres._run_as_pg('''psql -d %(db_name)s -t -A -c "SELECT COUNT(*) FROM %(name)s;"''' %
+                                           {'db_name': db_name, 'name': name})
+
+    return (res == "1")
+
+
 def deploy_database(db_name):
     # Require a PostgreSQL server
     # require.postgres.server()
@@ -209,6 +221,16 @@ def deploy_database(db_name):
     require.postgres.database(db_name, db_name)
     fabtools.postgres._run_as_pg('''psql -c "CREATE EXTENSION IF NOT EXISTS postgis;" %(db_name)s''' % {'db_name': db_name})
     fabtools.postgres._run_as_pg('''psql -c "ALTER TABLE spatial_ref_sys OWNER TO %(db_name)s;" %(db_name)s''' % {'db_name': db_name})
+
+    if not table_is_empty(db_name, 'tz_world'):
+        fabtools.download(url='http://efele.net/maps/tz/world/tz_world.zip')
+        run('unzip tz_world.zip')
+        with cd('world'):
+            run('shp2pgsql -S -d -s 4326 -I tz_world > tz_world.sql')
+            fabtools.postgres._run_as_pg('''psql -d %(db_name)s -f tz_world.sql''' % {'db_name': db_name})
+        # sudo('rm -R tz_world.zip')
+        # sudo('rm -R world')
+
 
 
 def deploy_webserver(code_dir, server_name):
@@ -276,7 +298,7 @@ def deploy(conf='dev'):
     # deploy_debian()
     # deploy_webserver(code_dir, server_name)
     # fabtools.user.modify(name=user, extra_groups=['www-data'])
-    # deploy_database(db_name)
+    deploy_database(db_name)
 
     with cd(code_dir):
         require.git.working_copy('git@bitbucket.org:dwbn/sso.git', path='src', branch='master')

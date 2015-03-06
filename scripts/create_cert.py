@@ -1,10 +1,11 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from OpenSSL import crypto
-import  os
+
+import os
 import uuid
 import subprocess
-import StringIO
+
+from OpenSSL import crypto
+
 
 def create_self_signed_cert(cert_dir, cn, serial=int(uuid.uuid4().hex, 16)):
     """

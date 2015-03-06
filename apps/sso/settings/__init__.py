@@ -138,7 +138,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.formtools',
+    'django.contrib.formtools',  # extracted to django-formtools in django 1.8
     'django.contrib.admin',
     'django.contrib.gis',
     'sorl.thumbnail',

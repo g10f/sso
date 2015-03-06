@@ -62,11 +62,12 @@ class OrganisationPhoneNumberForm(BaseTabularInlineForm):
 
 class OrganisationBaseForm(BaseForm):
     google_maps_url = bootstrap.ReadOnlyField(label=_("Google Maps"))
-    
+
     class Meta:
         model = Organisation
         
-        fields = ('homepage', 'google_plus_page', 'facebook_page', 'twitter_page', 'founded', 'coordinates_type', 'is_private', 'location')
+        fields = ('homepage', 'google_plus_page', 'facebook_page', 'twitter_page', 'founded', 'coordinates_type',
+                  'is_private', 'location')  # , 'timezone')
         years_to_display = range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1)
         widgets = {
             'homepage': bootstrap.URLInput(attrs={'size': 50}),
@@ -80,6 +81,7 @@ class OrganisationBaseForm(BaseForm):
             'center_type': bootstrap.Select(),
             'is_private': bootstrap.CheckboxInput(),
             'is_active': bootstrap.CheckboxInput(),
+            # 'timezone': bootstrap.ReadOnlyWidget(),
             # 'can_publish': bootstrap.CheckboxInput(),
             'location': bootstrap.OSMWidget()
         }
