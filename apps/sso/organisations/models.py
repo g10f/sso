@@ -1,13 +1,13 @@
 import logging
-from datetime import datetime
-from django.utils.dateformat import DateFormat
-from pytz import timezone
-from django.conf import settings
 
-from django.db import models, connection
+from pytz import timezone
+
+from django.utils.timezone import localtime, now
+from django.conf import settings
+from django.db import models
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis import measure
-from django.db.models.signals import post_delete, pre_save
+from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
@@ -256,7 +256,7 @@ class Organisation(AbstractBaseModel):
     @property
     def local_datetime(self):
         if self.timezone:
-            return DateFormat(datetime.now(timezone(self.timezone))).format('D, j M Y H:i:s O')
+            return localtime(now(), timezone(self.timezone)).strftime('%Y-%m-%d %H:%M:%S %z')
         else:
             return ""
 

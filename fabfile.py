@@ -220,17 +220,17 @@ def table_is_empty(db_name, name):
 
 def update_timezones(db_name):
     with cd('~postgres'):
-        fabtools.require.curl()
-        sudo('curl --silent -O http://efele.net/maps/tz/world/tz_world.zip', user='postgres')
-        sudo('unzip tz_world.zip', user='postgres')
+        fabtools.require.curl.command()
+        # sudo('curl --silent -O http://efele.net/maps/tz/world/tz_world.zip', user='postgres')
+        # sudo('unzip tz_world.zip', user='postgres')
         with cd('world'):
             # create sql file
             sudo('shp2pgsql -S -a -s 4326 -I tz_world > tz_world.sql', user='postgres')
             # empty timezone table
-            sudo('''psql -d %(db_name)s -c "TRUNCATE table tz_world; DROP INDEX tz_world_geom_gist;"''' % {'db_name': db_name}, user='postgres')
+            sudo('''psql -d %(db_name)s -c "TRUNCATE table tz_world; DROP INDEX IF EXISTS tz_world_geom_gist;"''' % {'db_name': db_name}, user='postgres')
             # load sql script
             sudo('''psql -d %(db_name)s -f tz_world.sql''' % {'db_name': db_name}, user='postgres')
-            sudo('''psql -c "ALTER TABLE tz_world OWNER TO %(db_name)s;" %(db_name)s''' % {'db_name': db_name})
+            sudo('''psql -c "ALTER TABLE tz_world OWNER TO %(db_name)s;" %(db_name)s''' % {'db_name': db_name}, user='postgres')
 
         # sudo('rm -R tz_world.zip')
         # sudo('rm -R world')
@@ -294,7 +294,7 @@ def deploy(conf='dev'):
     env.host_string = configuration['host_string']
     
     code_dir = '/proj/%s' % server_name
-    
+
     user = 'ubuntu'
     # setup_user(user)
     # fabtools.require.files.directory(code_dir)

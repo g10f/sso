@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
+import logging
+
 from pytz import timezone
+
+from django.utils.timezone import now, localtime
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from utils.url import base_url
@@ -8,7 +11,6 @@ from utils.parse import parse_datetime_with_timezone_support
 from sso.organisations.models import Organisation, get_near_organisations
 from sso.api.views.generic import JsonListView, JsonDetailView
 
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +38,7 @@ class OrganisationMixin(object):
         }
         if obj.timezone:
             data['timezone'] = obj.timezone
-            data['utc_offset'] = datetime.now(timezone(obj.timezone)).strftime('%z')
+            data['utc_offset'] = localtime(now(), timezone(obj.timezone)).strftime('%z')
 
         if obj.admin_region is not None:
             data['region'] = {
