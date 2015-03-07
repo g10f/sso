@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
+from pytz import timezone
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from utils.url import base_url
@@ -32,6 +34,10 @@ class OrganisationMixin(object):
                 '@id': "%s%s" % (base, reverse('api:v2_country', kwargs={'iso2_code': obj.country.iso2_code})),
             }
         }
+        if obj.timezone:
+            data['timezone'] = obj.timezone
+            data['utc_offset'] = datetime.now(timezone(obj.timezone)).strftime('%z')
+
         if obj.admin_region is not None:
             data['region'] = {
                 'id': obj.admin_region.uuid,

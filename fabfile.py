@@ -2,10 +2,7 @@ from __future__ import with_statement
 import posixpath
 
 from fabric.api import *
-from fabric.api import local, run, cd
-from fabtools import require
 import fabtools
-
 
 env.use_ssh_config = True
 env.apps = ['sso']
@@ -193,44 +190,50 @@ def update_debian():
     
 
 def deploy_debian():
-    require.deb.package('libpq-dev')
-    require.deb.package('libjpeg62-dev')
+    fabtools.require.deb.package('libpq-dev')
+    fabtools.require.deb.package('libjpeg62-dev')
     # Geospatial libraries
-    require.deb.package('binutils')
-    require.deb.package('libproj-dev')
-    require.deb.package('gdal-bin')
-    require.deb.package('postgresql-9.1-postgis-2.0')
-
-
-def table_is_empty(db_name, name):
-    """
-    Check if a PostgreSQL table exists.
-    """
-    with settings(hide('running', 'stdout', 'stderr', 'warnings'),
-                  warn_only=True):
-        res = fabtools.postgres._run_as_pg('''psql -d %(db_name)s -t -A -c "SELECT COUNT(*) FROM %(name)s;"''' %
-                                           {'db_name': db_name, 'name': name})
-
-    return (res == "1")
+    fabtools.require.deb.package('binutils')
+    fabtools.require.deb.package('libproj-dev')
+    fabtools.require.deb.package('gdal-bin')
+    fabtools.require.deb.package('postgresql-9.1-postgis-2.0')
 
 
 def deploy_database(db_name):
     # Require a PostgreSQL server
-    # require.postgres.server()
-    require.postgres.user(db_name, db_name)
-    require.postgres.database(db_name, db_name)
+    # fabtools.require.postgres.server()
+    fabtools.require.postgres.user(db_name, db_name)
+    fabtools.require.postgres.database(db_name, db_name)
     fabtools.postgres._run_as_pg('''psql -c "CREATE EXTENSION IF NOT EXISTS postgis;" %(db_name)s''' % {'db_name': db_name})
     fabtools.postgres._run_as_pg('''psql -c "ALTER TABLE spatial_ref_sys OWNER TO %(db_name)s;" %(db_name)s''' % {'db_name': db_name})
 
-    if not table_is_empty(db_name, 'tz_world'):
-        fabtools.download(url='http://efele.net/maps/tz/world/tz_world.zip')
-        run('unzip tz_world.zip')
+
+def table_is_empty(db_name, name):
+    """
+    Check if a name table is empty.
+    """
+    with settings(hide('running', 'stdout', 'stderr', 'warnings'), warn_only=True):
+        res = fabtools.postgres._run_as_pg('''psql -d %(db_name)s -t -A -c "SELECT COUNT(*) FROM %(name)s;"''' %
+                                           {'db_name': db_name, 'name': name})
+    return res == "0"
+
+
+def update_timezones(db_name):
+    with cd('~postgres'):
+        fabtools.require.curl()
+        sudo('curl --silent -O http://efele.net/maps/tz/world/tz_world.zip', user='postgres')
+        sudo('unzip tz_world.zip', user='postgres')
         with cd('world'):
-            run('shp2pgsql -S -d -s 4326 -I tz_world > tz_world.sql')
-            fabtools.postgres._run_as_pg('''psql -d %(db_name)s -f tz_world.sql''' % {'db_name': db_name})
+            # create sql file
+            sudo('shp2pgsql -S -a -s 4326 -I tz_world > tz_world.sql', user='postgres')
+            # empty timezone table
+            sudo('''psql -d %(db_name)s -c "TRUNCATE table tz_world; DROP INDEX tz_world_geom_gist;"''' % {'db_name': db_name}, user='postgres')
+            # load sql script
+            sudo('''psql -d %(db_name)s -f tz_world.sql''' % {'db_name': db_name}, user='postgres')
+            sudo('''psql -c "ALTER TABLE tz_world OWNER TO %(db_name)s;" %(db_name)s''' % {'db_name': db_name})
+
         # sudo('rm -R tz_world.zip')
         # sudo('rm -R world')
-
 
 
 def deploy_webserver(code_dir, server_name):
@@ -238,24 +241,24 @@ def deploy_webserver(code_dir, server_name):
     docroot = '/proj/static/htdocs/%(server_name)s' % {'server_name': server_name}    
     context = {'certroot': '/proj/g10f/certs', 'server_name': server_name, 'host_string': env.host_string, 'code_dir': code_dir}
     
-    require.directory('%(code_dir)s/logs' % context, use_sudo=True, owner="www-data", mode='770')
-    require.directory('%(code_dir)s/config' % context, use_sudo=True, owner="www-data", mode='770')
-    require.directory(docroot, use_sudo=True, owner="www-data", mode='770')
+    fabtools.require.directory('%(code_dir)s/logs' % context, use_sudo=True, owner="www-data", mode='770')
+    fabtools.require.directory('%(code_dir)s/config' % context, use_sudo=True, owner="www-data", mode='770')
+    fabtools.require.directory(docroot, use_sudo=True, owner="www-data", mode='770')
     
-    require.nginx.server()
+    fabtools.require.nginx.server()
     
-    require.files.directory(context['certroot'], use_sudo=True, owner='www-data', group='www-data')
-    require.files.template_file('/etc/nginx/conf.d/ssl.nginx.conf', template_contents=NGINX_SSL_TEMPLATE, context=context, use_sudo=True)
-    require.file('%(certroot)s/certificate.crt' % context, source='certs/%(host_string)s.certificate.crt' % context, use_sudo=True, owner='www-data', group='www-data')
-    require.file('%(certroot)s/certificate.key' % context, source='certs/%(host_string)s.certificate.key' % context, use_sudo=True, owner='www-data', group='www-data')
-    require.file('%(certroot)s/dh2048.pem' % context, source='certs/%(host_string)s.dh2048.pem' % context, use_sudo=True, owner='www-data', group='www-data')
-    require.files.template_file('%(code_dir)s/config/nginx.expired.conf' % context, template_contents=NGINX_EXPIRED_TEMPLATE, use_sudo=True, owner='www-data', group='www-data')
-    require.files.template_file('%(code_dir)s/config/nginx.webfonts.conf' % context, template_contents=NGINX_WEBFONTS_TEMPLATE, use_sudo=True, owner='www-data', group='www-data')
+    fabtools.require.files.directory(context['certroot'], use_sudo=True, owner='www-data', group='www-data')
+    fabtools.require.files.template_file('/etc/nginx/conf.d/ssl.nginx.conf', template_contents=NGINX_SSL_TEMPLATE, context=context, use_sudo=True)
+    fabtools.require.file('%(certroot)s/certificate.crt' % context, source='certs/%(host_string)s.certificate.crt' % context, use_sudo=True, owner='www-data', group='www-data')
+    fabtools.require.file('%(certroot)s/certificate.key' % context, source='certs/%(host_string)s.certificate.key' % context, use_sudo=True, owner='www-data', group='www-data')
+    fabtools.require.file('%(certroot)s/dh2048.pem' % context, source='certs/%(host_string)s.dh2048.pem' % context, use_sudo=True, owner='www-data', group='www-data')
+    fabtools.require.files.template_file('%(code_dir)s/config/nginx.expired.conf' % context, template_contents=NGINX_EXPIRED_TEMPLATE, use_sudo=True, owner='www-data', group='www-data')
+    fabtools.require.files.template_file('%(code_dir)s/config/nginx.webfonts.conf' % context, template_contents=NGINX_WEBFONTS_TEMPLATE, use_sudo=True, owner='www-data', group='www-data')
     
-    require.nginx.site(server_name, template_contents=PROXIED_SITE_TEMPLATE, docroot=docroot)
+    fabtools.require.nginx.site(server_name, template_contents=PROXIED_SITE_TEMPLATE, docroot=docroot)
     
     if env.host_string in ['dwbn']:
-        require.nginx.site('register.diamondway-buddhism.org', template_contents=REGISTRATION_TEMPLATE, docroot=docroot, target_name=server_name)
+        fabtools.require.nginx.site('register.diamondway-buddhism.org', template_contents=REGISTRATION_TEMPLATE, docroot=docroot, target_name=server_name)
         
 
 def deploy_app():
@@ -265,14 +268,14 @@ def deploy_app():
 def setup_user(user):
     # add the id_rsa files for accessing the bitbucket repository 
     ssh_dir = posixpath.join(fabtools.user.home_directory(user), '.ssh')
-    require.files.directory(ssh_dir, mode='700', owner=user, use_sudo=True)
+    fabtools.require.files.directory(ssh_dir, mode='700', owner=user, use_sudo=True)
     id_rsa = posixpath.join(ssh_dir, 'id_rsa')
     id_rsa_pub = posixpath.join(ssh_dir, 'id_rsa.pub')
-    require.file(id_rsa, source='secret/id_rsa_ubuntu', mode='0600', owner=user, use_sudo=True)
-    require.file(id_rsa_pub, source='secret/id_rsa_ubuntu.pub',  mode='0644', owner=user, use_sudo=True)
+    fabtools.require.file(id_rsa, source='secret/id_rsa_ubuntu', mode='0600', owner=user, use_sudo=True)
+    fabtools.require.file(id_rsa_pub, source='secret/id_rsa_ubuntu.pub',  mode='0644', owner=user, use_sudo=True)
     
-    require.files.directory('/proj', use_sudo=True, owner=user)
-    require.files.directory('/envs', use_sudo=True, owner=user)    
+    fabtools.require.files.directory('/proj', use_sudo=True, owner=user)
+    fabtools.require.files.directory('/envs', use_sudo=True, owner=user)
 
 
 def update_dir_settings(directory):
@@ -294,39 +297,39 @@ def deploy(conf='dev'):
     
     user = 'ubuntu'
     # setup_user(user)
-    # require.files.directory(code_dir)
+    # fabtools.require.files.directory(code_dir)
     # deploy_debian()
     # deploy_webserver(code_dir, server_name)
     # fabtools.user.modify(name=user, extra_groups=['www-data'])
-    deploy_database(db_name)
+    # deploy_database(db_name)
 
     with cd(code_dir):
-        require.git.working_copy('git@bitbucket.org:dwbn/sso.git', path='src', branch='master')
+        fabtools.require.git.working_copy('git@bitbucket.org:dwbn/sso.git', path='src', branch='master')
         sudo("chown www-data:www-data -R  ./src")
         sudo("chmod g+w -R  ./src")
     
     # local settings 
-    require.file('%(code_dir)s/src/apps/%(app)s/settings/local_settings.py' % {'code_dir': code_dir, 'app': app}, 
+    fabtools.require.file('%(code_dir)s/src/apps/%(app)s/settings/local_settings.py' % {'code_dir': code_dir, 'app': app},
                  source='apps/%(app)s/settings/local_%(server_name)s.py' % {'server_name': server_name, 'app': app},
                  use_sudo=True, owner='www-data', group='www-data')
 
     """
     # python enviroment
-    require.python.virtualenv('/envs/%s' % virtualenv)
+    fabtools.require.python.virtualenv('/envs/%s' % virtualenv)
     with fabtools.python.virtualenv('/envs/%s' % virtualenv):
         with cd(code_dir):
-            require.python.requirements('src/requirements.txt')
+            fabtools.require.python.requirements('src/requirements.txt')
     
-    require.file('/envs/%(virtualenv)s/lib/python2.7/sitecustomize.py' % {'virtualenv': virtualenv}, source='apps/sitecustomize.py')
+    fabtools.require.file('/envs/%(virtualenv)s/lib/python2.7/sitecustomize.py' % {'virtualenv': virtualenv}, source='apps/sitecustomize.py')
     
     # configure gunicorn
-    require.directory('%(code_dir)s/config' % {'code_dir': code_dir}, use_sudo=True, owner="www-data", mode='770')
+    fabtools.require.directory('%(code_dir)s/config' % {'code_dir': code_dir}, use_sudo=True, owner="www-data", mode='770')
     config_filename = '%(code_dir)s/config/gunicorn_%(server_name)s.py' % {'code_dir': code_dir, 'server_name': server_name}
     context = {'server_name': server_name, 'code_dir': code_dir}
-    require.files.template_file(config_filename, template_contents=GUNICORN_TEMPLATE, context=context, use_sudo=True)
+    fabtools.require.files.template_file(config_filename, template_contents=GUNICORN_TEMPLATE, context=context, use_sudo=True)
     
     # Require a supervisor process for our app
-    require.supervisor.process(
+    fabtools.require.supervisor.process(
         server_name,
         command='/envs/%(virtualenv)s/bin/gunicorn -c %(config_filename)s %(app)s.wsgi:application' % {'virtualenv': virtualenv, 'config_filename': config_filename, 'app': app},
         directory=code_dir + '/src/apps',
@@ -336,7 +339,7 @@ def deploy(conf='dev'):
     # configure logrotate 
     config_filename = '/etc/logrotate.d/%(server_name)s' % {'server_name': server_name}
     context = {'code_dir': code_dir}
-    require.files.template_file(config_filename, template_contents=LOGROTATE_TEMPLATE, context=context, use_sudo=True)
+    fabtools.require.files.template_file(config_filename, template_contents=LOGROTATE_TEMPLATE, context=context, use_sudo=True)
     """
     
     python = '/envs/%(virtualenv)s/bin/python' % {'virtualenv': virtualenv}
@@ -346,3 +349,6 @@ def deploy(conf='dev'):
         sudo("supervisorctl restart %(server_name)s" % {'server_name': server_name})
         sudo("%s ./src/apps/manage.py collectstatic --noinput" % python)
         update_dir_settings(code_dir + '/logs')
+
+    if table_is_empty(db_name, 'tz_world'):
+        update_timezones(db_name)

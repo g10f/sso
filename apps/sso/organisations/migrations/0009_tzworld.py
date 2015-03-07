@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TzWorld',
             fields=[
-                ('gid', models.IntegerField(serialize=False, primary_key=True)),
+                ('gid', models.AutoField(serialize=False, primary_key=True)),
                 ('tzid', models.CharField(max_length=30, blank=True)),
                 ('geom', django.contrib.gis.db.models.fields.PolygonField(srid=4326, null=True, blank=True)),
             ],

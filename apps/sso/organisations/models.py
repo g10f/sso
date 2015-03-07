@@ -1,4 +1,7 @@
 import logging
+from datetime import datetime
+from django.utils.dateformat import DateFormat
+from pytz import timezone
 from django.conf import settings
 
 from django.db import models, connection
@@ -45,7 +48,7 @@ class TzWorld(models.Model):
     table from http://efele.net/maps/tz/world/ with timezones and areas
     infos; http://shisaa.jp/postset/postgis-and-postgresql-in-action-timezones.html
     """
-    gid = models.IntegerField(primary_key=True)
+    gid = models.AutoField(primary_key=True)
     tzid = models.CharField(max_length=30, blank=True)
     geom = gis_models.PolygonField(blank=True, null=True)
     objects = gis_models.GeoManager()
@@ -249,6 +252,13 @@ class Organisation(AbstractBaseModel):
             except MultipleObjectsReturned, e:
                 logger.exception(e)
         return ""
+
+    @property
+    def local_datetime(self):
+        if self.timezone:
+            return DateFormat(datetime.now(timezone(self.timezone))).format('D, j M Y H:i:s O')
+        else:
+            return ""
 
     @memoize
     def get_last_modified_deep(self):

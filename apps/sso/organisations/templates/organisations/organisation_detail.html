@@ -33,6 +33,9 @@
 	{% if object.twitter_page %}
 	<div class="row"><div class="dwbn-label">{% trans 'Twitter page' %}: </div><div class="dwbn-content"><a href="{{ object.twitter_page }}">{% trans 'Twitter page' %}</a></div></div>
 	{% endif %}
+	{% if object.local_datetime %}
+	<div class="row"><div class="dwbn-label">{% trans 'Local date and time' %}: </div><div class="dwbn-content">{{ object.local_datetime }}</div></div>
+	{% endif %}
 	{% if object.google_maps_url %}
 	<div class="row"><div class="dwbn-label">{% trans 'Google Maps' %}: </div><div class="dwbn-content"><a href="{{ object.google_maps_url }}">{% trans 'Google Maps' %} ({{ object.get_coordinates_type_display }}) <span class="glyphicon glyphicon-map-marker"></span></a></div></div>
 	{% endif %}
