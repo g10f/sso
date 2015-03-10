@@ -39,6 +39,7 @@ def get_access_token_with_client_credentials(http, base_uri, client_id, client_s
     
     body = urlencode({'grant_type': 'client_credentials'})
     auth = b"%s:%s" % (client_id, client_secret)
+    # e2U5MWM4YWUxNThmYzQ0NTViYWE1Y2EzYWVkOTdlMjFjfTp7Tm8wcTBnVHJrUGVoMUF4Uk5aZEF5OURNZzVZa2JHfQ==
     headers = {'Content-Type': 'application/x-www-form-urlencoded', 'authorization': '%s %s' % ('Basic', b64encode(auth).decode("ascii"))}
     content = http.request(token_endpoint, 'POST', headers=headers, body=body)[1]
     json_response = json.loads(content)
