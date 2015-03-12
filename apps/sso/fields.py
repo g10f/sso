@@ -80,7 +80,7 @@ class UUIDField(CharField):
             self.node, self.clock_seq = node, clock_seq
         elif version == 3 or version == 5:
             self.namespace, self.name = namespace, name
-        CharField.__init__(self, verbose_name, name, **kwargs)
+        super(UUIDField, self).__init__(verbose_name, name, **kwargs)
 
     def get_internal_type(self):
         return CharField.__name__  # @UndefinedVariable
