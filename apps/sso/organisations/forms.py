@@ -42,10 +42,6 @@ class OrganisationAddressForm(BaseForm):
 
 
 class OrganisationPhoneNumberForm(BaseTabularInlineForm):
-    # country_calling_code = ModelChoiceField(
-    #    queryset=CountryCallingCode.objects.filter(country__organisationcountry__isnull=False).only("calling_code", "country__iso2_code").select_related(),
-    #    cache_choices=False, required=False, label=_("Calling Code"), widget=bootstrap.Select())
-
     class Meta:
         model = OrganisationPhoneNumber
         fields = (
