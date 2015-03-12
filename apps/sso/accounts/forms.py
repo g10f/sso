@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 
 
 class OrganisationChangeForm(BaseForm):
-    organisation = forms.ModelChoiceField(queryset=Organisation.objects.all().only('id', 'name', 'country__iso2_code').select_related('country'), cache_choices=True, label=_("Center"), widget=bootstrap.Select())
+    organisation = forms.ModelChoiceField(queryset=Organisation.objects.all().only('id', 'location', 'name', 'country__iso2_code').select_related('country'), cache_choices=True, label=_("Center"), widget=bootstrap.Select())
 
     class Meta:
         model = OrganisationChange

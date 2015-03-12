@@ -278,7 +278,7 @@ class Organisation(AbstractBaseModel):
 
     def __unicode__(self):
         if self.country:
-            return u'%s (%s)' % (self.name, self.country.iso2_code)
+                return u'%s (%s)' % (self.name, self.country.iso2_code)
         else:
             return u'%s' % self.name
 

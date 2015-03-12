@@ -48,6 +48,7 @@ class ErrorList(DjangoErrorList):
                 for errors_in_inline_form in inline_formset.errors:
                     self.extend(list(six.itervalues(errors_in_inline_form)))
 
+
 class ChangedDataList(list):
     """
     Stores all errors for the form/formsets in an add/change stage view.

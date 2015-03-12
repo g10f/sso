@@ -229,6 +229,7 @@ def _parse_date_fmt():
             # if not self.first_select: self.first_select = 'day'
     return output
 
+
 class SelectDateWidget(Widget):
     """
     A Widget that splits date input into three <select> boxes.

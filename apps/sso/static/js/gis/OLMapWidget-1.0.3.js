@@ -96,7 +96,7 @@
         var city = $("#id_" + formset_prefix + "-city").val();
         var country = $("#id_" + formset_prefix + "-country").val();
         var county = $("#id_" + formset_prefix + "-region").val();
-        var data = {
+        return {
             limit: 2,
             format: "jsonv2",
             street: street,
@@ -104,8 +104,7 @@
             country: country,
             postalcode: postalcode,
             county: county
-        }
-        return data;
+        };
     }
     function displaySuccess(formset_prefix, message) {
         var msg_id = "#" + formset_prefix + "-js_message";
@@ -141,7 +140,7 @@ OpenLayers.Util.properFeatures = function(features, geom_type) {
         features = new OpenLayers.Feature.Vector(geom);
     }
     return features;
-}
+};
 
 /**
  * @requires OpenLayers/Format/WKT.js
@@ -257,8 +256,7 @@ OpenLayers.Format.DjangoWKT = OpenLayers.Class(OpenLayers.Format.WKT, {
             geometry.transform(this.internalProjection, this.externalProjection);
         }
         var wktType = type == 'collection' ? 'GEOMETRYCOLLECTION' : type.toUpperCase();
-        var data = wktType + '(' + this.extract[type].apply(this, [geometry]) + ')';
-        return data;
+        return wktType + '(' + this.extract[type].apply(this, [geometry]) + ')';
     },
 
     /**
@@ -398,7 +396,7 @@ MapWidget.prototype.get_ewkt = function(feat) {
 };
 
 MapWidget.prototype.read_wkt = function(wkt) {
-    var prefix = 'SRID=' + this.options.map_srid + ';'
+    var prefix = 'SRID=' + this.options.map_srid + ';';
     if (wkt.indexOf(prefix) === 0) {
         wkt = wkt.slice(prefix.length);
     }

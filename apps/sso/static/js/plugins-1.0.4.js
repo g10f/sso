@@ -42,8 +42,7 @@ function showDistance(position) {
 	if (position) {
 	    latlng = position.coords.latitude + "," + position.coords.longitude;
 	}
-    var href = $("button.geo-location").data("href").replace("latlng=", "latlng=" + latlng);
-    window.location = href;
+    window.location = $("button.geo-location").data("href").replace("latlng=", "latlng=" + latlng);
 }
 $(function() {
 	$("button.geo-location").click(function() {			
