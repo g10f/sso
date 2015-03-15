@@ -143,7 +143,7 @@ class JsonDetailView(JSONResponseMixin, PermissionMixin, BaseDetailView):
         response['Access-Control-Allow-Origin'] = '*'
         return response        
 
-    @method_decorator(vary_on_headers('Access-Control-Allow-Origin', 'Authorization', 'Cookie'))
+    @method_decorator(vary_on_headers('Access-Control-Allow-Origin', 'Authorization', 'Cookie', 'Accept-Language'))
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()        
         # get_object is needed before check_permission
