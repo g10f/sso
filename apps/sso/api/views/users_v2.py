@@ -5,7 +5,7 @@ from django.views.decorators.cache import cache_control
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.dateparse import parse_date
-from django.utils.translation import ugettext as _
+from django.utils.translation import get_language_from_request, ugettext as _
 from django.utils.text import capfirst
 from django.db.models import Q
 from sorl.thumbnail import get_thumbnail
@@ -122,6 +122,20 @@ class UserMixin(object):
                     '@id': "%s%s" % (base, reverse('api:v2_organisation', kwargs={'uuid': organisation.uuid}))
                 } for organisation in obj.organisations.all().prefetch_related('country')
             }
+            data['admin_regions'] = {
+                region.uuid: {
+                    'country': region.country.iso2_code,
+                    'name': region.name,
+                    '@id': "%s%s" % (base, reverse('api:v2_region', kwargs={'uuid': region.uuid}))
+                } for region in obj.admin_regions.all().prefetch_related('country')
+            }
+            data['admin_countries'] = {
+                country.iso2_code: {
+                    'code': country.iso2_code,
+                    'name': country.printable_name,
+                    '@id': "%s%s" % (base, reverse('api:v2_country', kwargs={'iso2_code': country.iso2_code}))
+                } for country in obj.admin_countries.all()
+            }
 
             if 'role' in scopes:
                 applications = {}
@@ -168,8 +182,9 @@ def get_last_modified_and_etag(request, uuid):
     if request.user.is_authenticated():
         try:
             obj = User.objects.only('last_modified').get(uuid=uuid)
+            lang = get_language_from_request(request)
             last_modified = obj.get_last_modified_deep()
-            etag = "%s/%s" % (uuid, last_modified)
+            etag = "%s/%s/%s" % (uuid, lang, last_modified)
             return last_modified, etag
         except ObjectDoesNotExist:
             return None, None
@@ -179,8 +194,9 @@ def get_last_modified_and_etag(request, uuid):
 
 def get_last_modified_and_etag_for_me(request, *args, **kwargs):
     if request.user.is_authenticated():
+        lang = get_language_from_request(request)
         last_modified = request.user.get_last_modified_deep()
-        etag = "%s/%s" % (request.user.uuid, last_modified)
+        etag = "%s/%s/%s" % (request.user.uuid, lang, last_modified)
         return last_modified, etag
     else:
         return None, None
@@ -262,7 +278,7 @@ class UserDetailView(UserMixin, JsonDetailView):
         if 'organisations' in data:
             allowed_organisations = request.user.get_administrable_user_organisations().filter(uuid__in=data['organisations'].keys())
             organisations = Organisation.objects.filter(uuid__in=data['organisations'].keys())
-            if (len(allowed_organisations) < len(organisations)):
+            if len(allowed_organisations) < len(organisations):
                 denied_organisations = organisations.exclude(id__in=allowed_organisations.values_list('id', flat=True))
                 raise ValueError(_("You are not allowed to add users to %s.") % denied_organisations)
 
@@ -377,9 +393,10 @@ class MyDetailView(UserDetailView):
     
 
 class GlobalNavigationView(UserDetailView):
+    # TODO: result is cached for different languages
     operations = {}
-    
-    @method_decorator(cache_control(must_revalidate=True, max_age=60 * 5)) 
+
+    @method_decorator(cache_control(must_revalidate=True, max_age=60 * 5))
     def get(self, request, *args, **kwargs):
         return super(GlobalNavigationView, self).get(request, *args, **kwargs)
 
@@ -406,6 +423,7 @@ class GlobalNavigationView(UserDetailView):
 
 
 class MyGlobalNavigationView(GlobalNavigationView):
+    # TODO: result is cached for different languages
     operations = {}
 
     @method_decorator(condition(last_modified_and_etag_func=get_last_modified_and_etag_for_me))
