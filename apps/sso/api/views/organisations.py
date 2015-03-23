@@ -38,7 +38,7 @@ class OrganisationMixin(object):
         }
         if obj.timezone:
             data['timezone'] = obj.timezone
-            data['utc_offset'] = localtime(now(), timezone(obj.timezone)).strftime('%z')
+            # data['utc_offset'] = localtime(now(), timezone(obj.timezone)).strftime('%z')
 
         if obj.admin_region is not None:
             data['region'] = {

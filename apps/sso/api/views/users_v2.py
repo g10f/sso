@@ -109,7 +109,7 @@ class UserMixin(object):
         }
         if obj.timezone:
             data['timezone'] = obj.timezone
-            data['utc_offset'] = localtime(now(), timezone(obj.timezone)).strftime('%z')
+            # data['utc_offset'] = localtime(now(), timezone(obj.timezone)).strftime('%z')
 
         if email is not None:
             data['email'] = email.email
