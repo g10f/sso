@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+import logging
+
+from pytz import timezone
+from sorl.thumbnail import get_thumbnail
+
+from django.utils.timezone import now, localtime
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import cache_control
@@ -8,19 +14,16 @@ from django.utils.dateparse import parse_date
 from django.utils.translation import get_language_from_request, ugettext as _
 from django.utils.text import capfirst
 from django.db.models import Q
-from sorl.thumbnail import get_thumbnail
 from utils.url import base_url, absolute_url
 from utils.parse import parse_datetime_with_timezone_support
 from l10n.models import Country
-from sso.accounts.models import UserAddress, UserPhoneNumber, User, UserEmail
+from sso.accounts.models import UserAddress, UserPhoneNumber, User
 from sso.accounts.email import send_account_created_email
 from sso.organisations.models import Organisation
 from sso.registration import default_username_generator
 from sso.models import update_object_from_dict, map_dict2dict
 from sso.api.views.generic import JsonListView, JsonDetailView
 from sso.api.decorators import condition
-
-import logging
 # from sso.oauth2.decorators import scopes_required
 
 logger = logging.getLogger(__name__)
@@ -104,6 +107,10 @@ class UserMixin(object):
             'is_center': obj.is_center,
             'last_modified': obj.get_last_modified_deep()
         }
+        if obj.timezone:
+            data['timezone'] = obj.timezone
+            data['utc_offset'] = localtime(now(), timezone(obj.timezone)).strftime('%z')
+
         if email is not None:
             data['email'] = email.email
             data['email_verified'] = email.confirmed
