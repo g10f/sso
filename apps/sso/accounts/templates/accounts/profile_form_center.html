@@ -44,7 +44,8 @@
     {% include 'include/_field.html' with field=form.last_name %}
     {% include 'include/_field.html' with field=form.email %} 
     {% include 'include/_field.html' with field=form.language %}
-	    
+    {% include 'include/_field.html' with field=form.timezone %}
+
     <div class="form-group">
 	    <div class="dwbn-form-submit">
                 {% if redirect_uri %}<a class="btn btn-default" href="{{ redirect_uri }}">{% trans 'Back' %}</a>{% endif %}

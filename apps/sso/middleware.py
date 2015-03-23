@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 import time
+from django.core.exceptions import ImproperlyConfigured
+import pytz
 from django.conf import settings
 from django.contrib import auth
+from django.utils import timezone
 
 
 class CookieProlongationMiddleware(object):
@@ -41,3 +44,20 @@ class CookieProlongationMiddleware(object):
             """
 
         return response
+
+
+class TimezoneMiddleware(object):
+    def process_request(self, request):
+        if not hasattr(request, 'user'):
+            raise ImproperlyConfigured(
+                "The timezone middleware requires the"
+                " authentication middleware to be installed.  Edit your"
+                " MIDDLEWARE_CLASSES setting to insert"
+                " 'django.contrib.auth.middleware.AuthenticationMiddleware'"
+                " before the TimezoneMiddleware class.")
+
+        user = request.user
+        if user.is_authenticated() and user.timezone:
+            timezone.activate(pytz.timezone(user.timezone))
+        else:
+            timezone.deactivate()

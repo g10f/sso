@@ -233,6 +233,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     dob = models.DateField(_("date of birth"), blank=True, null=True)
     homepage = models.URLField(_("homepage"), max_length=512, blank=True)
     language = models.CharField(_('language'), max_length=254, choices=settings.LANGUAGES, blank=True)
+    timezone = models.CharField(_('timezone'), blank=True, max_length=254)
     valid_until = models.DateTimeField(_('valid until'), blank=True, null=True)
 
     objects = UserManager()

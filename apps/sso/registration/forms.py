@@ -3,6 +3,7 @@ Forms and validation code for user registration.
 """
 import datetime
 import logging
+import pytz
 
 from django import forms
 from django.db import transaction
@@ -44,6 +45,7 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
     country = bootstrap.ReadOnlyField(label=_("Country"))
     city = bootstrap.ReadOnlyField(label=_("City"))
     language = bootstrap.ReadOnlyField(label=_("Language"))
+    timezone = bootstrap.ReadOnlyField(label=_("Timezone"))
     gender = forms.ChoiceField(label=_('Gender'), required=False, choices=(BLANK_CHOICE_DASH + User.GENDER_CHOICES), widget=bootstrap.Select())
     dob = forms.CharField(label=_("Date of birth"), required=False, widget=bootstrap.TextInput(attrs={'disabled': ''})) 
     about_me = forms.CharField(label=_('About me'), required=False, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 5, 'readonly': 'readonly'}))
@@ -170,6 +172,7 @@ class UserSelfRegistrationForm(forms.Form):
     country = forms.ModelChoiceField(queryset=Country.objects.all(), label=_("Country"), widget=bootstrap.Select())
     city = forms.CharField(label=_("City"), max_length=100, widget=bootstrap.TextInput())
     language = forms.ChoiceField(label=_("Language"), required=False, choices=(BLANK_CHOICE_DASH + sorted(list(settings.LANGUAGES), key=lambda x: x[1])), widget=bootstrap.Select())
+    timezone = forms.ChoiceField(label=_("Timezone"), required=False, choices=BLANK_CHOICE_DASH + zip(pytz.common_timezones, pytz.common_timezones), widget=bootstrap.Select())
     gender = forms.ChoiceField(label=_('Gender'), required=False, choices=(BLANK_CHOICE_DASH + User.GENDER_CHOICES), widget=bootstrap.Select())
     dob = forms.DateField(label=_('Date of birth'), required=False, 
                           widget=bootstrap.SelectDateWidget(years=range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1), required=False))
@@ -201,7 +204,8 @@ class UserSelfRegistrationForm(forms.Form):
         new_user.username = username_generator(data.get('first_name'), data.get('last_name'))
         new_user.first_name = data.get('first_name')
         new_user.last_name = data.get('last_name')        
-        new_user.language = data.get('language')        
+        new_user.language = data.get('language')
+        new_user.timezone = data.get('timezone')
         new_user.gender = data.get('gender')
         new_user.dob = data.get('dob')    
         new_user.is_active = False

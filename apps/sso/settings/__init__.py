@@ -112,6 +112,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'current_user.middleware.CurrentUserMiddleware',
+    'sso.middleware.TimezoneMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (

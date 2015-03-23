@@ -6,6 +6,7 @@ from mimetypes import guess_extension
 import logging
 
 from captcha.fields import ReCaptchaField
+import pytz
 
 from django.utils.timezone import now
 from django import forms
@@ -412,6 +413,7 @@ class UserSelfProfileForm(forms.Form):
                           widget=bootstrap.SelectDateWidget(years=range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1), required=False))
     homepage = forms.URLField(label=_('Homepage'), required=False, max_length=512, widget=bootstrap.TextInput())
     language = forms.ChoiceField(label=_("Language"), required=False, choices=(BLANK_CHOICE_DASH + sorted(list(settings.LANGUAGES), key=lambda x: x[1])), widget=bootstrap.Select())
+    timezone = forms.ChoiceField(label=_("Timezone"), required=False, choices=BLANK_CHOICE_DASH + zip(pytz.common_timezones, pytz.common_timezones), widget=bootstrap.Select())
 
     error_messages = {
         'duplicate_username': _("A user with that username already exists."),
@@ -481,6 +483,8 @@ class UserSelfProfileForm(forms.Form):
         self.user.gender = cd['gender']
         self.user.homepage = cd['homepage']
         self.user.language = cd['language']
+        self.user.timezone = cd['timezone']
+
         self.user.save()
         
         if 'organisation' in cd and cd['organisation']:
@@ -499,7 +503,8 @@ class CenterSelfProfileForm(forms.Form):
     last_name = bootstrap.ReadOnlyField(label=_('Last name'))
     email = bootstrap.ReadOnlyField(label=_('Email address'))
     language = forms.ChoiceField(label=_("Language"), required=False, choices=(BLANK_CHOICE_DASH + sorted(list(settings.LANGUAGES), key=lambda x: x[1])), widget=bootstrap.Select())
-    
+    timezone = forms.ChoiceField(label=_("Timezone"), required=False, choices=BLANK_CHOICE_DASH + zip(pytz.common_timezones, pytz.common_timezones), widget=bootstrap.Select())
+
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('instance')
         object_data = model_to_dict(self.user)
@@ -518,6 +523,7 @@ class CenterSelfProfileForm(forms.Form):
     def save(self):
         cd = self.cleaned_data
         self.user.language = cd['language']
+        self.user.timezone = cd['timezone']
         self.user.save()
         
 
