@@ -195,7 +195,7 @@ class Organisation(AbstractBaseModel):
     center_type = models.CharField(_('center type'), max_length=2, choices=CENTER_TYPE_CHOICES, db_index=True)    
     centerid = models.IntegerField(blank=True, null=True)
     founded = models.DateField(_("founded"), blank=True, null=True)
-    coordinates_type = models.CharField(_('coordinates type'), max_length=1, choices=COORDINATES_TYPE_CHOICES, default='3', db_index=True)    
+    coordinates_type = models.CharField(_('coordinates type'), max_length=1, choices=COORDINATES_TYPE_CHOICES, default='3', db_index=True, blank=True)
     latitude = models.DecimalField(_("latitude"), max_digits=9, decimal_places=6, blank=True, null=True)
     longitude = models.DecimalField(_("longitude"), max_digits=9, decimal_places=6, blank=True, null=True)
     location = gis_models.PointField(_("location"), geography=True, blank=True, null=True)
