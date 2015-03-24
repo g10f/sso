@@ -196,7 +196,7 @@ def deploy_debian():
     fabtools.require.deb.package('binutils')
     fabtools.require.deb.package('libproj-dev')
     fabtools.require.deb.package('gdal-bin')
-    fabtools.require.deb.package('postgresql-9.1-postgis-2.0')
+    fabtools.require.deb.package('postgresql-9.1-postgis-2.0')  # postgresql-9.3-postgis-2.1
 
 
 def deploy_database(db_name):
