@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-23 23:26+0100\n"
+"POT-Creation-Date: 2015-03-27 21:11+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
 
 #: sso/accounts/admin.py:38 sso/accounts/admin.py:54
-#: sso/accounts/models.py:245 sso/oauth2/admin.py:34 sso/oauth2/admin.py:56
+#: sso/accounts/models.py:269 sso/oauth2/admin.py:34 sso/oauth2/admin.py:56
 #: sso/oauth2/models.py:82 sso/oauth2/models.py:113 sso/oauth2/models.py:134
 #: sso/registration/admin.py:76 sso/registration/models.py:153
 msgid "user"
@@ -38,16 +38,16 @@ msgid "Organisation"
 msgstr "Zentrum"
 
 #: sso/accounts/admin.py:141 sso/accounts/admin.py:431
-#: sso/accounts/models.py:225 sso/registration/models.py:155
+#: sso/accounts/models.py:249 sso/registration/models.py:155
 msgid "last modified by"
 msgstr "letzte Änderung durch"
 
 #: sso/accounts/admin.py:152 sso/accounts/admin.py:440
-#: sso/accounts/models.py:227
+#: sso/accounts/models.py:251
 msgid "created by"
 msgstr "angelegt von"
 
-#: sso/accounts/admin.py:163 sso/accounts/models.py:843
+#: sso/accounts/admin.py:163 sso/accounts/models.py:867
 msgid "associated system"
 msgstr "Assoziertes System"
 
@@ -110,7 +110,7 @@ msgid "Permissions"
 msgstr ""
 
 #: sso/accounts/admin.py:354 sso/accounts/forms.py:276
-#: sso/accounts/forms.py:624 sso/accounts/models.py:231
+#: sso/accounts/forms.py:624 sso/accounts/models.py:255
 #: sso/accounts/templates/accounts/application/add_user_done.html:54
 #: sso/accounts/templates/accounts/user_confirm_delete.html:33
 #: sso/registration/forms.py:40
@@ -288,7 +288,7 @@ msgstr ""
 msgid "Username"
 msgstr ""
 
-#: sso/accounts/forms.py:262 sso/accounts/models.py:210
+#: sso/accounts/forms.py:262 sso/accounts/models.py:234
 msgid "Required. 30 characters or fewer. Letters, digits and @/./+/-/_ only."
 msgstr ""
 
@@ -296,12 +296,12 @@ msgstr ""
 msgid "This value may contain only letters, numbers and @/./+/-/_ characters."
 msgstr ""
 
-#: sso/accounts/forms.py:274 sso/accounts/models.py:212
+#: sso/accounts/forms.py:274 sso/accounts/models.py:236
 #: sso/registration/forms.py:164
 msgid "first name"
 msgstr ""
 
-#: sso/accounts/forms.py:275 sso/accounts/models.py:213
+#: sso/accounts/forms.py:275 sso/accounts/models.py:237
 #: sso/registration/forms.py:165
 msgid "last name"
 msgstr ""
@@ -417,7 +417,7 @@ msgstr "Gültig bis"
 msgid "Active"
 msgstr "Aktiv"
 
-#: sso/accounts/forms.py:618 sso/accounts/models.py:216
+#: sso/accounts/forms.py:618 sso/accounts/models.py:240
 msgid ""
 "Designates whether this user should be treated as active. Unselect this "
 "instead of deleting accounts."
@@ -425,7 +425,7 @@ msgstr ""
 "Legt fest, ob dieser Benutzer aktiv ist. Kann deaktiviert werden, anstatt "
 "den Benutzer zu löschen."
 
-#: sso/accounts/forms.py:620 sso/accounts/models.py:228
+#: sso/accounts/forms.py:620 sso/accounts/models.py:252
 msgid ""
 "Designates that this user is representing a center and not a private person."
 msgstr ""
@@ -451,7 +451,7 @@ msgid ""
 "bar."
 msgstr ""
 
-#: sso/accounts/models.py:78 sso/accounts/models.py:216
+#: sso/accounts/models.py:78 sso/accounts/models.py:240
 #: sso/emails/models.py:45 sso/emails/models.py:102 sso/oauth2/models.py:87
 #: sso/organisations/models.py:81 sso/organisations/models.py:118
 #: sso/organisations/models.py:203 sso/registration/admin.py:29
@@ -463,7 +463,7 @@ msgstr "aktiv"
 msgid "Designates whether this application should be provided."
 msgstr "Gibt an, ob diese Anwendung aktiv ist."
 
-#: sso/accounts/models.py:83 sso/accounts/models.py:862
+#: sso/accounts/models.py:83 sso/accounts/models.py:886
 #: sso/oauth2/models.py:77
 msgid "application"
 msgstr "Anwendung"
@@ -526,7 +526,7 @@ msgstr ""
 msgid "application role"
 msgstr "Anwendungsrolle"
 
-#: sso/accounts/models.py:144 sso/accounts/models.py:223
+#: sso/accounts/models.py:144 sso/accounts/models.py:247
 msgid "application roles"
 msgstr "Anwendungsrollen"
 
@@ -549,11 +549,11 @@ msgstr ""
 "Gibt an, ob das Rollenprofile von einen einem globalen Administrator "
 "weitergegeben werden kann."
 
-#: sso/accounts/models.py:164 sso/accounts/models.py:852
+#: sso/accounts/models.py:164 sso/accounts/models.py:876
 msgid "role profile"
 msgstr "Rollenprofil"
 
-#: sso/accounts/models.py:165 sso/accounts/models.py:224
+#: sso/accounts/models.py:165 sso/accounts/models.py:248
 msgid "role profiles"
 msgstr "Rollenprofile"
 
@@ -579,192 +579,192 @@ msgstr "primär"
 msgid "email addresses"
 msgstr "E-Mail Adressen"
 
-#: sso/accounts/models.py:207
+#: sso/accounts/models.py:231
 msgid "male"
 msgstr "Männlich"
 
-#: sso/accounts/models.py:208
+#: sso/accounts/models.py:232
 msgid "female"
 msgstr "Weiblich"
 
-#: sso/accounts/models.py:210
+#: sso/accounts/models.py:234
 msgid "username"
 msgstr "Benutzername"
 
-#: sso/accounts/models.py:211
+#: sso/accounts/models.py:235
 msgid "Enter a valid username."
 msgstr ""
 
-#: sso/accounts/models.py:215
+#: sso/accounts/models.py:239
 msgid "staff status"
 msgstr ""
 
-#: sso/accounts/models.py:215
+#: sso/accounts/models.py:239
 msgid "Designates whether the user can log into this admin site."
 msgstr ""
 "Legt fest, ob sich der Benutzer an der Administrationsseite anmelden kann."
 
-#: sso/accounts/models.py:217
+#: sso/accounts/models.py:241
 msgid "date joined"
 msgstr "Mitglied seit"
 
-#: sso/accounts/models.py:220 sso/organisations/__init__.py:3
+#: sso/accounts/models.py:244 sso/organisations/__init__.py:3
 msgid "organisations"
 msgstr "Zentren"
 
-#: sso/accounts/models.py:221
+#: sso/accounts/models.py:245
 msgid "admin regions"
 msgstr "Regionen"
 
-#: sso/accounts/models.py:222
+#: sso/accounts/models.py:246
 msgid "admin countries"
 msgstr "Länder"
 
-#: sso/accounts/models.py:224
+#: sso/accounts/models.py:248
 msgid ""
 "Organises a group of application roles that are usually assigned together."
 msgstr ""
 "Organisiert eine Gruppe von Anwendungsrollen, die typischerweise zusammen "
 "vergeben werden."
 
-#: sso/accounts/models.py:226 sso/models.py:25 sso/registration/models.py:154
+#: sso/accounts/models.py:250 sso/models.py:25 sso/registration/models.py:154
 msgid "last modified"
 msgstr "letzte Änderung"
 
-#: sso/accounts/models.py:228
+#: sso/accounts/models.py:252
 msgid "center"
 msgstr "Zentrum"
 
-#: sso/accounts/models.py:229
+#: sso/accounts/models.py:253
 msgid "subscriber"
 msgstr ""
 
-#: sso/accounts/models.py:229
+#: sso/accounts/models.py:253
 msgid "Designates whether this user is a DWBN News subscriber."
 msgstr "Gibt an, ob dieser Benutzer ein DWBN News Emfänger ist."
 
-#: sso/accounts/models.py:230
+#: sso/accounts/models.py:254
 #: sso/accounts/templates/accounts/application/update_user_app_roles_form.html:44
 #: sso/accounts/templates/accounts/application/update_user_form.html:61
 msgid "picture"
 msgstr "Bild"
 
-#: sso/accounts/models.py:232
+#: sso/accounts/models.py:256
 msgid "gender"
 msgstr ""
 
-#: sso/accounts/models.py:233
+#: sso/accounts/models.py:257
 msgid "date of birth"
 msgstr "Geburtsdatum"
 
-#: sso/accounts/models.py:234 sso/emails/models.py:100
+#: sso/accounts/models.py:258 sso/emails/models.py:100
 #: sso/organisations/models.py:64 sso/organisations/models.py:78
 #: sso/organisations/models.py:114 sso/organisations/models.py:190
 #: sso/organisations/models.py:310
 msgid "homepage"
 msgstr ""
 
-#: sso/accounts/models.py:235
+#: sso/accounts/models.py:259
 msgid "language"
 msgstr ""
 
-#: sso/accounts/models.py:236 sso/organisations/models.py:202
+#: sso/accounts/models.py:260 sso/organisations/models.py:202
 msgid "timezone"
 msgstr "Zeitzone"
 
-#: sso/accounts/models.py:237
+#: sso/accounts/models.py:261
 msgid "valid until"
 msgstr "Gültig bis"
 
-#: sso/accounts/models.py:246
+#: sso/accounts/models.py:270
 #: sso/registration/templates/registration/user_registration_list.html:4
 msgid "users"
 msgstr "Benutzer"
 
-#: sso/accounts/models.py:775
+#: sso/accounts/models.py:799
 msgid "reason"
 msgstr "Begründung"
 
-#: sso/accounts/models.py:778 sso/accounts/models.py:779
+#: sso/accounts/models.py:802 sso/accounts/models.py:803
 msgid "organisation change"
 msgstr "Zentrumswechsel"
 
-#: sso/accounts/models.py:787
+#: sso/accounts/models.py:811
 msgid "title"
 msgstr ""
 
-#: sso/accounts/models.py:788
+#: sso/accounts/models.py:812
 msgid "message"
 msgstr ""
 
-#: sso/accounts/models.py:791
+#: sso/accounts/models.py:815
 msgid "one time message"
 msgstr "Einweg-Nachricht"
 
-#: sso/accounts/models.py:792
+#: sso/accounts/models.py:816
 msgid "one time messages"
 msgstr "Einweg-Nachrichten"
 
-#: sso/accounts/models.py:797
+#: sso/accounts/models.py:821
 msgctxt "address"
 msgid "Home"
 msgstr "Zuhause"
 
-#: sso/accounts/models.py:798 sso/accounts/models.py:817
+#: sso/accounts/models.py:822 sso/accounts/models.py:841
 msgid "Business"
 msgstr "Geschäftlich"
 
-#: sso/accounts/models.py:799 sso/accounts/models.py:820
+#: sso/accounts/models.py:823 sso/accounts/models.py:844
 #: sso/organisations/models.py:350
 msgid "Other"
 msgstr "Andere"
 
-#: sso/accounts/models.py:802 sso/organisations/models.py:332
+#: sso/accounts/models.py:826 sso/organisations/models.py:332
 msgid "address type"
 msgstr "Adressart"
 
-#: sso/accounts/models.py:815 sso/organisations/models.py:346
+#: sso/accounts/models.py:839 sso/organisations/models.py:346
 msgctxt "phone number"
 msgid "Home"
 msgstr "Privat"
 
-#: sso/accounts/models.py:816 sso/organisations/models.py:347
+#: sso/accounts/models.py:840 sso/organisations/models.py:347
 msgid "Mobile"
 msgstr "Handy"
 
-#: sso/accounts/models.py:818 sso/organisations/models.py:349
+#: sso/accounts/models.py:842 sso/organisations/models.py:349
 msgid "Fax"
 msgstr ""
 
-#: sso/accounts/models.py:819
+#: sso/accounts/models.py:843
 msgid "Pager"
 msgstr ""
 
-#: sso/accounts/models.py:822 sso/organisations/models.py:353
+#: sso/accounts/models.py:846 sso/organisations/models.py:353
 msgid "phone type"
 msgstr "Telefontyp"
 
-#: sso/accounts/models.py:822 sso/organisations/models.py:353
+#: sso/accounts/models.py:846 sso/organisations/models.py:353
 msgid "Mobile, home, office, etc."
 msgstr "Handy, privat, Büro, etc."
 
-#: sso/accounts/models.py:844
+#: sso/accounts/models.py:868
 msgid "associated systems"
 msgstr "Assoziertes System"
 
-#: sso/accounts/models.py:857
+#: sso/accounts/models.py:881
 msgid "role profile admin"
 msgstr "Rollenprofiladmin"
 
-#: sso/accounts/models.py:858
+#: sso/accounts/models.py:882
 msgid "role profile admins"
 msgstr "Rollenprofiladmins"
 
-#: sso/accounts/models.py:867
+#: sso/accounts/models.py:891
 msgid "application admin"
 msgstr "Anwendungsadmin"
 
-#: sso/accounts/models.py:868
+#: sso/accounts/models.py:892
 msgid "application admins"
 msgstr "Anwendungensadmins"
 
@@ -1909,6 +1909,16 @@ msgid ""
 "This account has expired. Please contact the user administrator in your "
 "buddhist center %s."
 msgstr ""
+"Dieses Benutzerkonto ist abgelaufen. Bitte wende Dich an den Benutzeradministrator "
+"in Deinem Buddhistischen Zentrum %s."
+
+#: sso/auth/forms.py:32
+msgid ""
+"Please enter your Email address or Username without whitespaces at the "
+"beginning or end."
+msgstr ""
+"Bitte trage Deine E-Mail Adresse oder Deinen Benutzernamen ohne Leerzeichen "
+"am Anfang oder Ende ein."
 
 #: sso/auth/hashers.py:35 sso/auth/hashers.py:74
 msgid "algorithm"
