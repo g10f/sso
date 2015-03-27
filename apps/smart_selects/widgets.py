@@ -1,7 +1,7 @@
 from django.forms.widgets import Select
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
-from django.db.models.loading import get_model
+from django.apps import apps
 from django.contrib.admin.templatetags.admin_static import static
 from django import forms
 import locale
@@ -72,7 +72,7 @@ class ChainedSelect(Select):
                             objects_filter = {self.model_field + "__in": pks}
                         except:  # give up
                             objects_filter = {}
-                filtered = list(get_model(self.app_name, self.model_name).objects.filter(**objects_filter).distinct())
+                filtered = list(apps.get_model(self.app_name, self.model_name).objects.filter(**objects_filter).distinct())
                 filtered.sort(cmp=locale.strcoll, key=lambda x: unicode_sorter(unicode(x)))
                 for choice in filtered:
                     final_choices.append((choice.pk, unicode(choice)))
