@@ -29,7 +29,15 @@ class EmailAuthenticationForm(AuthenticationForm):
                            "Note that both fields may be case-sensitive."),
         'inactive': _("This account is inactive."),
         'expired': _("This account has expired. Please contact the user administrator in your buddhist center %s."),
+        'whitespaces': _("Please enter your Email address or Username without whitespaces at the beginning or end."),
     }
+
+    def clean_username(self):
+        # check if there are whitespaces at the beginning or end of the username
+        data = self.cleaned_data['username']
+        if data and data != data.strip():
+            raise forms.ValidationError(self.error_messages['whitespaces'], code='whitespaces')
+        return data
 
     def confirm_login_allowed(self, user):
         super(EmailAuthenticationForm, self).confirm_login_allowed(user)
