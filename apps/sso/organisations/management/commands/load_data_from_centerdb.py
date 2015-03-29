@@ -100,7 +100,10 @@ def update_phonenumbers(phonenumbers, organisation):
             phonenumber.delete()
 
     for phonenumber_item in phonenumbers:
-        phonenumber, created = OrganisationPhoneNumber.objects.get_or_create(organisation=organisation, phone_type=phonenumber_item['phone_type'], defaults={'phone': phonenumber_item['phone']})
+        phonenumber = OrganisationPhoneNumber.objects.filter(organisation=organisation, phone_type=phonenumber_item['phone_type']).first()
+        if phonenumber is None:
+            phonenumber = OrganisationPhoneNumber.objects.create(organisation=organisation, phone_type=phonenumber_item['phone_type'], phone=phonenumber_item['phone'])
+
         update_object_from_dict(phonenumber, phonenumber_item)
 
 
