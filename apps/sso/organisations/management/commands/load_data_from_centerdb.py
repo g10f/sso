@@ -28,36 +28,50 @@ class Command(NoArgsCommand):
         except Exception, e: 
             logger.error(e)        
         
+
 def get_json(url):
     conn = urllib2.Request(url)
     f = urllib2.urlopen(conn)
     return json.load(f, encoding="utf-8")
+
 
 def get_self_url(links):
     for link in links:
         if link['rel'] == 'self':
             return link['href']
 
+
 def update_adresses(addresses, organisation):
     address_type_map = {
         'post': 'post',
-        'physical': 'meditation',    
+        'physical': 'meditation',
     }
-    OrganisationAddress.objects.filter(organisation=organisation).delete()
     for address_item in addresses:
-        country = Country.objects.get(iso2_code=address_item['country_iso2_code'])
-        """
-        state = None
-        if address_item['state']:
+        new_address_type = address_item['address_type']
+        if new_address_type in address_type_map:
+            address_item['address_type'] = address_type_map[new_address_type]
+        else:
+            logger.error("Loading Data from centerdb: address type %s not supported." % new_address_type)
+
+    def get_address_by_type(address_type):
+        for item in addresses:
+            if item['address_type'] == address_type:
+                return item
+
+    for address_type in OrganisationAddress.ADDRESSTYPE_CHOICES:
+        address_item = get_address_by_type(address_type[0])
+        if address_item:
+            country = Country.objects.get(iso2_code=address_item['country_iso2_code'])
+            address, created = OrganisationAddress.objects.get_or_create(address_type=address_type[0], organisation=organisation, defaults={'country': country})
+            address_item['country'] = country
+            update_object_from_dict(address, address_item, key_mapping={'is_default_postal': 'primary', 'state': 'region' })
+        else:
             try:
-                state = AdminArea.objects.get(country=country, name=address_item['state'])
+                address = OrganisationAddress.objects.get(address_type=address_type[0], organisation=organisation)
+                address.delete()
             except ObjectDoesNotExist:
                 pass
-        address_item['state'] = state
-        """
-        address_item['address_type'] = address_type_map[address_item['address_type']] 
-        address = OrganisationAddress(organisation=organisation, country=country)
-        update_object_from_dict(address, address_item, key_mapping={'is_default_postal': 'primary', 'state': 'region'})
+
 
 def update_phonenumbers(phonenumbers, organisation):
     phone_type_map = {
@@ -68,12 +82,27 @@ def update_phonenumbers(phonenumbers, organisation):
         'mobile': 'mobile',
         'mobile2': 'mobile2'
     }
-    
-    OrganisationPhoneNumber.objects.filter(organisation=organisation).delete()
     for phonenumber_item in phonenumbers:
-        phonenumber_item['phone_type'] = phone_type_map[phonenumber_item['phone_type']] 
-        phonenumber = OrganisationPhoneNumber(organisation=organisation, **phonenumber_item)
-        phonenumber.save()
+        new_phone_type = phonenumber_item['phone_type']
+        if new_phone_type in phone_type_map:
+            phonenumber_item['phone_type'] = phone_type_map[new_phone_type]
+        else:
+            logger.error("Loading Data from centerdb: phone type %s not supported." % new_phone_type)
+
+    def has_phone_type(type):
+        for item in phonenumbers:
+            if item['phone_type'] == type:
+                return True
+
+    # Delete types we don't get anymore
+    for phonenumber in OrganisationPhoneNumber.objects.filter(organisation=organisation):
+        if not has_phone_type(phonenumber.phone_type):
+            phonenumber.delete()
+
+    for phonenumber_item in phonenumbers:
+        phonenumber, created = OrganisationPhoneNumber.objects.get_or_create(organisation=organisation, phone_type=phonenumber_item['phone_type'], defaults={'phone': phonenumber_item['phone']})
+        update_object_from_dict(phonenumber, phonenumber_item)
+
 
 def mark_active_centers(active_center_uuids):
     for center in Organisation.objects.all():
@@ -83,7 +112,8 @@ def mark_active_centers(active_center_uuids):
         if center.is_active != is_active:
             center.is_active = is_active
             center.save()
-    
+
+
 def load_buddhistcenters(url):    
     def get_country(value):
         try:

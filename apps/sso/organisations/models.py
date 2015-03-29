@@ -379,3 +379,17 @@ def deactivate_center_account(email):
         user.save()
     except ObjectDoesNotExist:
         pass
+
+
+@receiver(post_delete, sender=OrganisationPhoneNumber)
+@disable_for_loaddata
+def post_delete_phone(sender, instance, **kwargs):
+    if instance:
+        instance.organisation.save(update_fields=['last_modified'])
+
+
+@receiver(post_delete, sender=OrganisationAddress)
+@disable_for_loaddata
+def post_delete_address(sender, instance, **kwargs):
+    if instance:
+        instance.organisation.save(update_fields=['last_modified'])
