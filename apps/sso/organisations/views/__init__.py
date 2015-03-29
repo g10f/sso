@@ -128,6 +128,8 @@ class OrganisationCreateView(OrganisationBaseView, CreateView):
         else:
             return OrganisationRegionAdminCreateForm
 
+# TODO: last_modified when an address or phone_number is deleted
+
 
 class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
     form_classes = {
