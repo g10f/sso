@@ -137,6 +137,7 @@
     "model": "accounts.useremail",
     "fields": {
       "uuid": "bf41ad534b954237b53670c609db7951",
+      "last_modified": "2012-03-23T07:00:46.076Z",
       "email": "admin@g10f.de",
       "primary": true,
       "user": ["GlobalAdmin"]
@@ -146,6 +147,7 @@
     "model": "accounts.useremail",
     "fields": {
       "uuid": "7019cb5526f04f559f8d467efdeec1b3",
+      "last_modified": "2012-03-23T07:00:46.076Z",
       "email": "gunnar@g10f.de",
       "primary": true,
       "confirmed": true,
@@ -156,6 +158,7 @@
     "model": "accounts.useremail",
     "fields": {
       "uuid": "63aff8ae13d54988b66b3cd09828bf17",
+      "last_modified": "2012-03-23T07:00:46.076Z",
       "email": "center@g10f.de",
       "primary": true,
       "user": ["CenterAdmin"]
@@ -165,6 +168,7 @@
     "model": "accounts.useremail",
     "fields": {
       "uuid": "a1fb383d07fb4fd6a524bffd4f4cef24",
+      "last_modified": "2012-03-23T07:00:46.076Z",
       "email": "region@g10f.de",
       "primary": true,
       "user": ["RegionAdmin"]
@@ -174,6 +178,7 @@
     "model": "accounts.useremail",
     "fields": {
       "uuid": "e3151f48295f4bdaba193d9c26c4e698",
+      "last_modified": "2012-03-23T07:00:46.076Z",
       "email": "country@g10f.de",
       "primary": true,
       "user": ["CountryAdmin"]

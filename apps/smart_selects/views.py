@@ -1,5 +1,5 @@
 import json
-from django.db.models.loading import get_model
+from django.apps import apps
 from django.http import HttpResponse
 from django.views.decorators.cache import cache_page
 
@@ -8,7 +8,7 @@ from smart_selects.utils import unicode_sorter
 
 @cache_page(60) 
 def filterchain(request, app, model, field, value, manager=None):
-    Model = get_model(app, model)
+    Model = apps.get_model(app, model)
     if value == '0':
         keywords = {str("%s__isnull" % field): True}
     else:

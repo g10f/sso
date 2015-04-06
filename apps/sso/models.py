@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging
 import re
-from django.core.validators import RegexValidator
 
+from django.core.validators import RegexValidator
 from django.db import models
-from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from django.forms.models import model_to_dict
 from l10n.models import Country, AdminArea
@@ -22,7 +21,7 @@ class AbstractBaseModelManager(models.Manager):
 
 class AbstractBaseModel(models.Model):
     uuid = UUIDField(version=4, unique=True, editable=True)
-    last_modified = models.DateTimeField(_('last modified'), auto_now=True, default=now)
+    last_modified = models.DateTimeField(_('last modified'), auto_now=True)
     objects = AbstractBaseModelManager()
     
     class Meta:

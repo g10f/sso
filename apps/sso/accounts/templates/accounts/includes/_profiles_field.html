@@ -6,9 +6,9 @@
        {% for item in field %}
        <div class="checkbox">
            {{ item }}
-           <div class="btn btn-default btn-xs" data-toggle="collapse" data-target="#collapse_{{ item.name }}_{{ item.index }}"><span class="caret"></span></div>      
+           <div class="btn btn-default btn-xs" data-toggle="collapse" data-target="#collapse_{{ item.name }}_{{ item.index }}"><span class="caret"></span></div>
            <div id="collapse_{{ item.name }}_{{ item.index }}" class="row help-block collapse">
-              {% with profile=field.field.queryset|by_pk:item.choice_value %}
+              {% with profile=field.field.dictionary|by_key:item.choice_value %}
               <ul>
                   {% for app_role in profile.application_roles.all %}
                   <li>{{ app_role }}</li>

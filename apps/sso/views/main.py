@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from collections import OrderedDict
+from django.db.models.expressions import OrderBy
 from django.utils.http import urlencode
 from django.utils.html import format_html
 from django.db import models
@@ -107,7 +108,15 @@ class ChangeList(object):
                     order_field = self.get_ordering_field(field_name)
                     if not order_field:
                         continue  # No 'admin_order_field', skip it
-                    ordering.append(pfx + order_field)
+                    try:  # OrderBy Expression
+                        if pfx == '-':
+                            order_field.desc()
+                        else:
+                            order_field.asc()
+                    except AttributeError:
+                        order_field = pfx + order_field
+
+                    ordering.append(order_field)
                 except (IndexError, ValueError):
                     continue  # Invalid ordering specified, skip it.
 
@@ -133,13 +142,27 @@ class ChangeList(object):
             # the right column numbers absolutely, because there might be more
             # than one column associated with that ordering, so we guess.
             for field in ordering:
-                if field.startswith('-'):
+                # field can be in the form '-fieldname' or an OrderBy Expression
+                try:  # OrderBy Expression
+                    if field.descending:
+                        order_type = 'desc'
+                    else:
+                        order_type = 'asc'
+                    field = field.expression.name
+                except AttributeError:
+                    if field.startswith('-'):
+                        order_type = 'desc'
+                    else:
+                        order_type = 'asc'
                     field = field[1:]
-                    order_type = 'desc'
-                else:
-                    order_type = 'asc'
                 for index, attr in enumerate(self.list_display):
-                    if self.get_ordering_field(attr) == field:
+                    ordering_field = self.get_ordering_field(attr)
+                    try:  # OrderBy Expression
+                        ordering_field = ordering_field.expression.name
+                    except AttributeError:
+                        pass
+
+                    if ordering_field == field:
                         ordering_fields[index] = order_type
                         break
         else:
@@ -232,3 +255,17 @@ class FilterItem(object):
     
     def __unicode__(self):
         return u"%s" % self.item_tuple[1]
+
+
+class OrderByWithNulls(OrderBy):
+    """
+    appends NULLS LAST or NULLS FIRST
+    can be used for ordering_field in list_display items
+    """
+    def as_sql(self, compiler, connection):
+        connection.ops.check_expression_support(self)
+        expression_sql, params = compiler.compile(self.expression)
+        placeholders = {'expression': expression_sql, 'ordering': 'DESC NULLS LAST' if self.descending else 'ASC NULLS FIRST'}
+        return (self.template % placeholders).rstrip(), params
+
+

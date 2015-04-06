@@ -60,7 +60,7 @@ class TzWorld(models.Model):
 
 class CountryGroup(AbstractBaseModel):
     name = models.CharField(_("name"), max_length=255)
-    email = models.ForeignKey(Email, verbose_name=_("email address"), blank=True, null=True, unique=True, limit_choices_to={'email_type': COUNTRY_GROUP_EMAIL_TYPE})
+    email = models.OneToOneField(Email, verbose_name=_("email address"), blank=True, null=True, limit_choices_to={'email_type': COUNTRY_GROUP_EMAIL_TYPE})
     homepage = models.URLField(_("homepage"), blank=True,)
     
     class Meta(AbstractBaseModel.Meta):
@@ -74,7 +74,7 @@ class CountryGroup(AbstractBaseModel):
 
 class OrganisationCountry(AbstractBaseModel):
     country = models.OneToOneField(Country, verbose_name=_("country"), null=True, limit_choices_to={'active': True})
-    country_groups = models.ManyToManyField(CountryGroup, blank=True, null=True)
+    country_groups = models.ManyToManyField(CountryGroup, blank=True)
     homepage = models.URLField(_("homepage"), blank=True,)
     email = models.ForeignKey(Email, verbose_name=_("email address"), blank=True, null=True, limit_choices_to={'email_type': COUNTRY_EMAIL_TYPE},
                               on_delete=models.SET_NULL)
@@ -113,7 +113,7 @@ class AdminRegion(AbstractBaseModel, ExtraManager):
     name = models.CharField(_("name"), max_length=255)
     homepage = models.URLField(_("homepage"), blank=True)
     country = models.ForeignKey(Country, verbose_name=_("country"), limit_choices_to={'active': True})
-    email = models.ForeignKey(Email, verbose_name=_("email address"), blank=True, null=True, unique=True, limit_choices_to={'email_type': REGION_EMAIL_TYPE},
+    email = models.OneToOneField(Email, verbose_name=_("email address"), blank=True, null=True, limit_choices_to={'email_type': REGION_EMAIL_TYPE},
                               on_delete=models.SET_NULL)
     is_active = models.BooleanField(_('active'), default=True, help_text=_('Designates whether this region should be treated as '
                                                                            'active. Unselect this instead of deleting the region.'))

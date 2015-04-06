@@ -1,10 +1,9 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 import views
 from views import region, country
  
-urlpatterns = patterns(
-    '',
-    url(r'^$', views.OrganisationList.as_view(), name='organisation_list'), 
+urlpatterns = [
+    url(r'^$', views.OrganisationList.as_view(), name='organisation_list'),
     url(r'^me/$', views.MyOrganisationDetailView.as_view(), name='my_organisation_detail'),
     url(r'^(?P<uuid>[a-z0-9]{32})/$', views.OrganisationDetailView.as_view(), name='organisation_detail'),
     url(r'^(?P<uuid>[a-z0-9]{32})/update/$', views.OrganisationUpdateView.as_view(), name='organisation_update'),
@@ -18,4 +17,4 @@ urlpatterns = patterns(
     url(r'^country/(?P<uuid>[a-z0-9]{32})/$', country.OrganisationCountryDetailView.as_view(), name='organisationcountry_detail'),
     url(r'^country/(?P<uuid>[a-z0-9]{32})/update/$', country.OrganisationCountryUpdateView.as_view(), name='organisationcountry_update'),
     url(r'^country/create/$', country.OrganisationCountryCreateView.as_view(), name='organisationcountry_create'),
-)
+]

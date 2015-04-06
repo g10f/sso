@@ -1,10 +1,12 @@
 from functools import update_wrapper
 from django.contrib.auth import get_user_model
 from django.contrib import admin
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.cache import never_cache
+from django.utils.translation import ugettext_lazy as _
 from sso.accounts.admin import ApplicationAdmin, ApplicationAdminAdmin, ApplicationRoleAdmin, GroupAdmin, RoleAdmin, \
     OneTimeMessageAdmin, OrganisationChangeAdmin, RoleProfileAdmin, RoleProfileAdminAdmin, UserAdmin, UserEmailAdmin
 from sso.oauth2.admin import ClientAdmin, AuthorizationCodeAdmin, BearerTokenAdmin, RefreshTokenAdmin
@@ -25,6 +27,9 @@ class SSOAdminSite(admin.AdminSite):
     copy of django admin view with:
     - redirecting to accounts:login instead of admin:login
     """
+    site_title = _('%(brand)s SSO site admin') % {'brand': settings.SSO_BRAND}
+    site_header = _('%(brand)s Single Sign-On Site administration') % {'brand': settings.SSO_BRAND}
+
     def admin_view(self, view, cacheable=False):
         def inner(request, *args, **kwargs):
             if not self.has_permission(request):

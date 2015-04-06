@@ -185,7 +185,7 @@ class OrganisationRegionAdminForm(OrganisationEmailAdminForm):
     """
     # don't use the default ModelChoiceField, because the regions are restricted to the administrable_organisation_regions
     # of the region admin
-    admin_region = ModelChoiceField(queryset=AdminRegion.objects.none(), cache_choices=True, required=True, label=_("Admin Region"), widget=bootstrap.Select())
+    admin_region = ModelChoiceField(queryset=AdminRegion.objects.none(), required=True, label=_("Admin Region"), widget=bootstrap.Select())
     country = bootstrap.ReadOnlyField(label=_("Country"))
 
     class Meta(OrganisationBaseForm.Meta):
@@ -279,7 +279,6 @@ class OrganisationRegionAdminCreateForm(OrganisationCountryAdminCreateForm):
 
 class AdminRegionForm(BaseForm):
     email_value = EmailFieldLower(required=True, label=_("Email address"), widget=bootstrap.EmailInput(attrs={'placeholder': 'name@diamondway-center.org'}))
-    # cache_choices performance optimisation and filter for organisation countries
     country = ModelChoiceField(queryset=None, required=True, label=_("Country"), widget=bootstrap.Select())
     
     class Meta:
@@ -333,8 +332,7 @@ class AdminRegionForm(BaseForm):
     
 class OrganisationCountryForm(BaseForm):
     email_value = EmailFieldLower(required=True, label=_("Email address"), widget=bootstrap.EmailInput(attrs={'placeholder': 'name@diamondway-center.org'}))
-    # cache_choices performance optimisation 
-    country_groups = ModelMultipleChoiceField(queryset=CountryGroup.objects.all(), cache_choices=True, required=False, 
+    country_groups = ModelMultipleChoiceField(queryset=CountryGroup.objects.all(), required=False,
                                               widget=bootstrap.CheckboxSelectMultiple(), label=_("Country Groups"))
     country = ModelChoiceField(queryset=Country.objects.filter(organisationcountry__isnull=True), required=True, 
                                label=_("Country"), widget=bootstrap.Select())

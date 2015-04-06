@@ -18,13 +18,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='user',
             name='admin_regions',
-            field=models.ManyToManyField(to='organisations.AdminRegion', null=True, verbose_name='admin regions', blank=True),
+            field=models.ManyToManyField(to='organisations.AdminRegion', verbose_name='admin regions', blank=True),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='user',
             name='application_roles',
-            field=models.ManyToManyField(to='accounts.ApplicationRole', null=True, verbose_name='application roles', blank=True),
+            field=models.ManyToManyField(to='accounts.ApplicationRole', verbose_name='application roles', blank=True),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -48,13 +48,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='user',
             name='organisations',
-            field=models.ManyToManyField(to='organisations.Organisation', null=True, verbose_name='organisations', blank=True),
+            field=models.ManyToManyField(to='organisations.Organisation', verbose_name='organisations', blank=True),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='user',
             name='role_profiles',
-            field=models.ManyToManyField(help_text='Organises a group of application roles that are usually assigned together.', to='accounts.RoleProfile', null=True, verbose_name='role profiles', blank=True),
+            field=models.ManyToManyField(help_text='Organises a group of application roles that are usually assigned together.', to='accounts.RoleProfile', verbose_name='role profiles', blank=True),
             preserve_default=True,
         ),
         migrations.AddField(

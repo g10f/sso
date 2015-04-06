@@ -45,7 +45,7 @@
 		  {% include "include/table_header.html" %}
 		  <tbody>
 		  {% for registration in object_list %}
-		    <tr> 
+		    <tr>
 		      <td>
 		          <a class="" href="{% url 'registration:update_user_registration' registration.pk %}{{ cl.get_query_string }}">{{ registration.user }}</a>
 		      </td>
