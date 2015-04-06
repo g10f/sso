@@ -23,6 +23,7 @@ class OrganisationMixin(object):
         data = {
             '@id': "%s%s" % (base, reverse('api:v2_organisation', kwargs={'uuid': obj.uuid})),
             'id': u'%s' % obj.uuid,
+            'centerid': u'%s' % obj.centerid,  # legacy id, should be removed when the resync ist done
             'is_active': obj.is_active,
             'is_private': obj.is_private,
             'name': u'%s' % obj.name,

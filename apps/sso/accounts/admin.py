@@ -273,6 +273,22 @@ class SuperuserFilter(SimpleListFilter):
             return queryset.all()
     
 
+class LoggedInFilter(SimpleListFilter):
+    title = _('logged in')
+    parameter_name = 'last_login__isnull'
+
+    def lookups(self, request, model_admin):
+        return [('True', _('Yes')), ('False', _('No'))]
+
+    def queryset(self, request, queryset):
+        if self.value() == 'True':
+            return queryset.filter(last_login__isnull=False)
+        elif self.value() == 'False':
+            return queryset.filter(last_login__isnull=True)
+        else:
+            return queryset.all()
+
+
 class UserAssociatedSystemInline(admin.StackedInline):
     model = UserAssociatedSystem
     fk_name = 'user'
@@ -335,7 +351,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
     save_on_top = True
     list_display = ('id', 'username', 'primary_email', 'first_name', 'last_name', 'is_staff', 'last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user')
     search_fields = ('username', 'first_name', 'last_name', 'useremail__email', 'uuid')
-    list_filter = (SuperuserFilter, ) + ('is_staff', 'is_center', 'is_active', 'groups', ApplicationAdminApplicationFilter, RoleProfileAdminRoleProfileFilter,
+    list_filter = (SuperuserFilter, ) + ('is_staff', 'is_center', 'is_service', 'is_active', LoggedInFilter, 'groups', ApplicationAdminApplicationFilter, RoleProfileAdminRoleProfileFilter,
                                          UserAssociatedSystemFilter, UserRegionListFilter,
                                          RoleProfilesFilter, ExcludeRoleProfilesFilter, ApplicationRolesFilter)  # ,UserOrganisationsListFilter, CreatedByUserFilter, LastModifiedUserFilter
     filter_horizontal = DjangoUserAdmin.filter_horizontal + ('admin_countries', 'admin_regions', 'groups', 'application_roles', 'role_profiles', 'organisations')
@@ -346,7 +362,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
     fieldsets = (
         (None, {'fields': ('username', 'password'), 'classes': ['wide']}),
         (_('Personal info'), {
-            'fields': ('first_name', 'last_name', 'gender', 'dob', 'homepage', 'language', 'uuid', 'is_center', 'is_subscriber', 'picture'),
+            'fields': ('first_name', 'last_name', 'gender', 'dob', 'homepage', 'language', 'uuid', 'is_center', 'is_service', 'is_subscriber', 'picture'),
             'classes': ['wide']}),
         (_('Important dates'), {'fields': ('valid_until', 'last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user'), 'classes': ['wide']}),
         (_('AppRoles'), {'fields': ('admin_countries', 'admin_regions', 'assigned_organisations', 'organisations', 'application_roles', 'role_profiles'), 'classes': ['collapse', 'wide']}),

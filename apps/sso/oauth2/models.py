@@ -78,15 +78,16 @@ class Client(AbstractBaseModel):
     redirect_uris = models.TextField(_('redirect uris'), blank=True)
     default_redirect_uri = models.CharField(_('default redirect uri'), max_length=2047, blank=True)
     client_secret = models.CharField(_('client secret'), max_length=2047, blank=True, default=get_default_secret)
-    # response_type = models.CharField(max_length=255, choices=OAUTH2_RESPONSE_TYPES, help_text="Supported OAuth 2 response type in Authorization Requests")
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'), null=True, blank=True, help_text=_("Associated user, required for Client Credentials Grant"))
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'), null=True, blank=True, limit_choices_to={'is_service': True},
+                             help_text=_("Associated user, required for Client Credentials Grant"))
     type = models.CharField(_('type'), max_length=255, choices=CLIENT_TYPES, default='web')
     # http://tools.ietf.org/html/rfc6749#section-3.3
     scopes = models.CharField(_('scopes'), max_length=512, default='openid profile email', 
                               help_text=_("Allowed space-delimited access token scopes ('openid', 'profile', 'email', 'role', 'offline_access', 'address', 'phone', 'users', 'picture')"))
     is_active = models.BooleanField(_('active'), default=True, 
                                     help_text=_('Designates whether this client should be treated as active. Unselect this instead of deleting clients.'))
-    
+    notes = models.TextField(_("Notes"), blank=True, max_length=2048)
+
     class Meta(AbstractBaseModel.Meta):
         ordering = ['name']
         

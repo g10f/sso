@@ -5,6 +5,7 @@ urlpatterns = [
     url(r'^$', home.home, name='home'),
     url(r'^emails.(?P<type>(txt|csv))$', emails.emails, name='emails'),
     url(r'^emails.csv$', emails.emails, name='emails'),
+    url(r'^user_emails/$', users_v2.user_emails, name='user_emails'),
     url(r'^v1/users/$', users.get_user_list, name='v1_users'),
     url(r'^v1/users/me/$', users.UserDetailView.as_view(), name='v1_users_me'),
     url(r'^v1/users/(?P<uuid>[a-z0-9]{32})/$', users.UserDetailView.as_view(), name='v1_user'),
