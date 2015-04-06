@@ -522,7 +522,7 @@ UserList.permissions_tests = {
 @permission_required(["accounts.access_all_users", "accounts.read_user"], raise_exception=True)
 def user_emails(request):
     email_list = []
-    for user_email in UserEmail.objects.filter(user__is_active=True, user__is_center=False, primary=True):
+    for user_email in UserEmail.objects.filter(user__is_active=True, user__is_center=False, user__last_login__isnull=False, primary=True):
         email_list.append(user_email.email + '\n')
 
     response = HttpResponse(content_type='text')
