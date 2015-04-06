@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 import logging
-from django.http.response import HttpResponse
-from django.contrib.auth.decorators import login_required, permission_required
 
-from pytz import timezone
 from sorl.thumbnail import get_thumbnail
 
-from django.utils.timezone import now, localtime
+from django.http.response import HttpResponse
+from django.contrib.auth.decorators import login_required, permission_required
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import cache_control
@@ -19,14 +17,13 @@ from django.db.models import Q
 from utils.url import base_url, absolute_url
 from utils.parse import parse_datetime_with_timezone_support
 from l10n.models import Country
-from sso.accounts.models import UserAddress, UserPhoneNumber, User
+from sso.accounts.models import UserAddress, UserPhoneNumber, User, UserEmail
 from sso.accounts.email import send_account_created_email
 from sso.organisations.models import Organisation
 from sso.registration import default_username_generator
 from sso.models import update_object_from_dict, map_dict2dict
 from sso.api.views.generic import JsonListView, JsonDetailView
-from sso.api.decorators import condition, api_user_passes_test
-# from sso.oauth2.decorators import scopes_required
+from sso.api.decorators import condition
 
 logger = logging.getLogger(__name__)
 
@@ -525,9 +522,9 @@ UserList.permissions_tests = {
 @permission_required(["accounts.access_all_users", "accounts.read_user"], raise_exception=True)
 def user_emails(request):
     email_list = []
-    for user in User.objects.filter(is_active=True, is_center=False).prefetch_related('useremail_set'):
-        email_list.append(str(user.primary_email()) + '\n')
+    for user_email in UserEmail.objects.filter(user__is_active=True, user__is_center=False, primary=True):
+        email_list.append(user_email.email + '\n')
 
     response = HttpResponse(content_type='text')
-    response.writelines(email_list)
+    response.writelines(sorted(email_list))
     return response
