@@ -150,7 +150,7 @@ class RegistrationManager(models.Manager):
 
 
 class RegistrationProfile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, unique=True, verbose_name=_('user'))
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, verbose_name=_('user'))
     last_modified = models.DateTimeField(_('last modified'), auto_now=True)
     last_modified_by_user = CurrentUserField(verbose_name=_('last modified by'), related_name='registrationprofile_last_modified_by')
     verified_by_user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, verbose_name=_('verified by'), related_name='registrationprofile_verified_by')

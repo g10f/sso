@@ -1,8 +1,7 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from sso.api.views import users, users_v2, organisations, home, emails, countries, regions, country_groups, media
  
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^$', home.home, name='home'),
     url(r'^emails.(?P<type>(txt|csv))$', emails.emails, name='emails'),
     url(r'^emails.csv$', emails.emails, name='emails'),
@@ -26,4 +25,4 @@ urlpatterns = patterns(
     url(r'^v2/country_groups/(?P<uuid>[a-z0-9]{32})/$', country_groups.CountryGroupDetailView.as_view(), name='v2_country_group'), 
     url(r'^v2/users/me/picture/$', media.MyUserPictureDetailView.as_view(), name='v2_picture_me'),
     url(r'^v2/users/(?P<uuid>[a-z0-9]{32})/picture/$', media.UserPictureDetailView.as_view(), name='v2_picture'),
-)
+]

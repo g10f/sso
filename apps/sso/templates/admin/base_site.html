@@ -2,24 +2,26 @@
 {% load i18n %}
 {% load admin_static %}
 
-{% block extrahead %}<link rel="shortcut icon" id="favicon" href="{{ STATIC_URL }}{{ favicon }}" />{% endblock %}
-
-{% block title %}{% blocktrans %}{{ brand }} SSO{% endblocktrans %} | {{ title }}{% endblock %}
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
 
 {% block branding %}
-<h1 id="site-name">{% blocktrans %}{{ brand }} Single Sign-On{% endblocktrans %} {% trans 'Site administration' %}</h1>
+<h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a></h1>
 {% endblock %}
 
 {% block userlinks %}
-    <strong><a href="{% url 'home' %}">{% trans 'Front-End Home Page' %}</a></strong> /
-    {% url 'django-admindocs-docroot' as docsroot %}
-    {% if docsroot %}
-        <a href="{{ docsroot }}">{% trans 'Documentation' %}</a> /
+    {% if site_url %}
+        <a href="{{ site_url }}">{% trans 'View site' %}</a> /
     {% endif %}
+    {% if user.is_active and user.is_staff %}
+        {% url 'django-admindocs-docroot' as docsroot %}
+        {% if docsroot %}
+            <a href="{{ docsroot }}">{% trans 'Documentation' %}</a> /
+        {% endif %}
+    {% endif %}
+    {% if user.has_usable_password %}
     <a href="{% url 'accounts:password_change' %}">{% trans 'Change password' %}</a> /
+    {% endif %}
     <a href="{% url 'accounts:logout' %}">{% trans 'Log out' %}</a>
 {% endblock %}
 
-    
 {% block nav-global %}{% endblock %}
-

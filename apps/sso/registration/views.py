@@ -99,7 +99,7 @@ class UserRegistrationList(ListView):
     def get_queryset(self):
         qs = super(UserRegistrationList, self).get_queryset()\
             .prefetch_related('user__organisations', 'user__organisations__country', 'user__useraddress_set', 'user__useraddress_set__country', 'user__useremail_set')\
-            .select_related('user', 'user__useraddress__country__printable_name').filter(user__is_active=False, is_validated=True)
+            .filter(user__is_active=False, is_validated=True)
         
         # display only users from centers where the logged in user has admin rights
         user = self.request.user

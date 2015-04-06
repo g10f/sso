@@ -14,7 +14,8 @@ def selected_choice(form, field_name):
     else:
         return ''
 
-
+# TODO: Remove
+"""
 @register.filter
 def by_pk(queryset, pk):
     # iterate because this uses prefetched queryset features
@@ -23,3 +24,8 @@ def by_pk(queryset, pk):
         if str(item.pk) == pk:
             return item
     return None
+"""
+
+@register.filter
+def by_key(dictionary, key):
+    return dictionary.get(key, None)

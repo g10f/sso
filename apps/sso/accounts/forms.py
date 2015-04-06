@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 
 
 class OrganisationChangeForm(BaseForm):
-    organisation = forms.ModelChoiceField(queryset=Organisation.objects.all().only('id', 'location', 'name', 'country__iso2_code').select_related('country'), cache_choices=True, label=_("Center"), widget=bootstrap.Select())
+    organisation = forms.ModelChoiceField(queryset=Organisation.objects.all().only('id', 'location', 'name', 'country__iso2_code').select_related('country'), label=_("Center"), widget=bootstrap.Select())
 
     class Meta:
         model = OrganisationChange
@@ -274,10 +274,12 @@ class UserAddForm(forms.ModelForm):
     first_name = forms.CharField(label=_('First name'), required=True, widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('first name'))}))
     last_name = forms.CharField(label=_('Last name'), required=True, widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('last name'))}))
     notes = forms.CharField(label=_("Notes"), required=False, max_length=1024, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
-    organisation = forms.ModelChoiceField(queryset=None, cache_choices=True, required=False, label=_("Organisation"), widget=bootstrap.Select())
-    application_roles = forms.ModelMultipleChoiceField(queryset=None, cache_choices=True, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
-    role_profiles = forms.ModelMultipleChoiceField(queryset=None, cache_choices=True, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
-                                                   help_text=_('Groups of application roles that are assigned together.'))
+    organisation = forms.ModelChoiceField(queryset=None, required=False, label=_("Organisation"), widget=bootstrap.Select())
+    application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
+    # role_profiles = forms.ModelMultipleChoiceField(queryset=None, cache_choices=True, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
+    #                                               help_text=_('Groups of application roles that are assigned together.'))
+    role_profiles = forms.MultipleChoiceField(required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
+                                              help_text=_('Groups of application roles that are assigned together.'))
 
     error_messages = {
         'duplicate_email': _("A user with that email address already exists."),
@@ -290,7 +292,9 @@ class UserAddForm(forms.ModelForm):
     def __init__(self, user, *args, **kwargs):
         super(UserAddForm, self).__init__(*args, **kwargs)
         self.fields['application_roles'].queryset = user.get_administrable_application_roles()
-        self.fields['role_profiles'].queryset = user.get_administrable_role_profiles()
+        self.fields['role_profiles'].choices = [(role_profile.id, role_profile) for role_profile in user.get_administrable_role_profiles()]
+        # add custom data
+        self.fields['role_profiles'].dictionary = {str(role_profile.id): role_profile for role_profile in user.get_administrable_role_profiles()}
         self.fields['organisation'].queryset = user.get_administrable_user_organisations()
         if not user.has_perm("accounts.access_all_users"):
             self.fields['organisation'].required = True
@@ -313,7 +317,7 @@ class UserAddForm(forms.ModelForm):
 
         organisation = self.cleaned_data["organisation"]
         if is_validation_period_active(organisation):
-            self.user.valid_until = now() + datetime.timedelta(days=settings.SSO_VALIDATION_PERIOD_DAYS)
+            user.valid_until = now() + datetime.timedelta(days=settings.SSO_VALIDATION_PERIOD_DAYS)
         user.save()
 
         user.application_roles = self.cleaned_data["application_roles"]
@@ -427,15 +431,8 @@ class UserSelfProfileForm(forms.Form):
         kwargs['initial'] = object_data
         super(UserSelfProfileForm, self).__init__(*args, **kwargs)
 
-        # if the user is already in at least 1 organisation, 
-        # the organisation field is readonly
-        # otherwise a required select field is displayed 
-        if self.user.organisations.exists():
-            organisation = u', '.join([x.__unicode__() for x in self.user.organisations.all()])
-            organisation_field = bootstrap.ReadOnlyField(initial=organisation, label=_("Center"), help_text=_('Please use the contact form for a request to change this value.'))
-        else:
-            organisation_field = forms.ModelChoiceField(queryset=Organisation.objects.all().select_related('country'), cache_choices=True, label=_("Center"), widget=bootstrap.Select(), 
-                                                        help_text=_('You can set this value only once.'), required=False)
+        organisation_field = bootstrap.ReadOnlyField(initial=u', '.join([x.__unicode__() for x in self.user.organisations.all()]),
+                                                     label=_("Center"), help_text=_('Please use the contact form for a request to change this value.'))
         self.fields['organisation'] = organisation_field
 
     def clean_organisation(self):
@@ -619,18 +616,20 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
                                    widget=bootstrap.CheckboxInput(), required=False)
     is_center = forms.BooleanField(label=_('Center'), help_text=_('Designates that this user is representing a center and not a private person.'),
                                    widget=bootstrap.CheckboxInput(), required=False)
-    organisations = forms.ModelChoiceField(queryset=None, cache_choices=True, required=False, label=_("Organisation"), widget=bootstrap.Select())
-    application_roles = forms.ModelMultipleChoiceField(queryset=None, cache_choices=True, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
+    organisations = forms.ModelChoiceField(queryset=None, required=False, label=_("Organisation"), widget=bootstrap.Select())
+    application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
     notes = forms.CharField(label=_("Notes"), required=False, max_length=1024, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
-    role_profiles = forms.ModelMultipleChoiceField(queryset=None, required=False, cache_choices=True, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
-                                                   help_text=_('Groups of application roles that are assigned together.'))
+    # role_profiles = forms.ModelMultipleChoiceField(queryset=None, required=False, cache_choices=True, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
+    #                                               help_text=_('Groups of application roles that are assigned together.'))
+    role_profiles = forms.MultipleChoiceField(required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
+                                              help_text=_('Groups of application roles that are assigned together.'))
+
     extend_validity = forms.BooleanField(label=_('Extend validity'), widget=bootstrap.CheckboxInput(), required=False)
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request')
         self.user = kwargs.pop('instance')
         user_data = model_to_dict(self.user)
-
         try:
             # the user should have exactly 1 center 
             user_data['organisations'] = self.user.organisations.first()
@@ -645,7 +644,11 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
         super(UserProfileForm, self).__init__(*args, **kwargs)
 
         self.fields['application_roles'].queryset = self.request.user.get_administrable_application_roles()
-        self.fields['role_profiles'].queryset = self.request.user.get_administrable_role_profiles()
+        # self.fields['role_profiles'].queryset = self.request.user.get_administrable_role_profiles()
+        self.fields['role_profiles'].choices = [(role_profile.id, role_profile) for role_profile in self.request.user.get_administrable_role_profiles()]
+        # add custom data
+        self.fields['role_profiles'].dictionary = {str(role_profile.id): role_profile for role_profile in self.request.user.get_administrable_role_profiles()}
+
         self.fields['organisations'].queryset = self.request.user.get_administrable_user_organisations()
 
     def clean_username(self):
@@ -690,9 +693,11 @@ class AppAdminUserProfileForm(mixins.UserRolesMixin, forms.Form):
     last_name = bootstrap.ReadOnlyField(label=_("Last name"))
     email = bootstrap.ReadOnlyField(label=_("Email"))
     organisations = bootstrap.ReadOnlyField(label=_("Center"))
-    application_roles = forms.ModelMultipleChoiceField(queryset=None, cache_choices=True, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
-    role_profiles = forms.ModelMultipleChoiceField(queryset=None, required=False, cache_choices=True, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
-                                                   help_text=_('Groups of application roles that are assigned together.'))
+    application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
+    # role_profiles = forms.ModelMultipleChoiceField(queryset=None, required=False, cache_choices=True, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
+    #                                               help_text=_('Groups of application roles that are assigned together.'))
+    role_profiles = forms.MultipleChoiceField(required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
+                                              help_text=_('Groups of application roles that are assigned together.'))
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request')
@@ -707,7 +712,10 @@ class AppAdminUserProfileForm(mixins.UserRolesMixin, forms.Form):
         super(AppAdminUserProfileForm, self).__init__(*args, **kwargs)
 
         self.fields['application_roles'].queryset = self.request.user.get_administrable_application_roles()
-        self.fields['role_profiles'].queryset = self.request.user.get_administrable_role_profiles()
+        # self.fields['role_profiles'].queryset = self.request.user.get_administrable_role_profiles()
+        self.fields['role_profiles'].choices = [(role_profile.id, role_profile) for role_profile in self.request.user.get_administrable_role_profiles()]
+        # add custom data
+        self.fields['role_profiles'].dictionary = {str(role_profile.id): role_profile for role_profile in self.request.user.get_administrable_role_profiles()}
 
     def save(self):
         cd = self.cleaned_data

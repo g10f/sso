@@ -1,4 +1,5 @@
 django
+django-formtools
 gunicorn
 psycopg2
 python-memcached

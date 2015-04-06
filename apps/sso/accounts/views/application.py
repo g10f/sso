@@ -2,6 +2,7 @@
 from datetime import timedelta
 import logging
 
+from django.db.models.expressions import F
 from django.conf import settings
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.forms import inlineformset_factory
@@ -19,12 +20,13 @@ from django.utils.encoding import force_text
 from sso.auth.decorators import admin_login_required
 from sso.views import main
 from sso.views.generic import ListView
-from sso.accounts.models import User, UserEmail, RoleProfile
+from sso.accounts.models import User, UserEmail
 from sso.accounts.email import send_account_created_email
 from sso.organisations.models import Organisation, is_validation_period_active
 from sso.accounts.forms import UserAddForm, UserProfileForm, UserEmailForm, AppAdminUserProfileForm
 from sso.forms.helpers import ChangedDataList, log_change, ErrorList
 from filter import AdminRegionFilter, ApplicationRoleFilter, CenterFilter, CountryFilter, IsActiveFilter, RoleProfileFilter, UserSearchFilter
+from sso.views.main import OrderByWithNulls
 
 
 logger = logging.getLogger(__name__)
@@ -53,6 +55,24 @@ def has_user_list_access(user):
     return user.is_user_admin or user.is_app_admin
 
 
+class LastLogin(object):
+    verbose_name = _('last login')
+    sortable = True
+    ordering_field = OrderByWithNulls(F('last_login'))
+
+    def __str__(self):
+        return 'last_login'
+
+
+class ValidUntil(object):
+    verbose_name = _('valid until')
+    sortable = True
+    ordering_field = OrderByWithNulls(F('valid_until'))
+
+    def __str__(self):
+        return 'valid_until'
+
+
 class UserList(ListView):
 
     template_name = 'accounts/application/user_list.html'
@@ -67,9 +87,9 @@ class UserList(ListView):
     @property
     def list_display(self):
         if settings.SSO_VALIDATION_PERIOD_IS_ACTIVE:
-            return ['username', 'picture', 'first_name', 'last_name', _('primary email'), 'last_login', 'date_joined', 'valid_until']
+            return ['username', 'picture', 'first_name', 'last_name', _('primary email'), LastLogin(), 'date_joined', ValidUntil()]
         else:
-            return ['username', 'picture', 'first_name', 'last_name', _('primary email'), 'last_login', 'date_joined']
+            return ['username', 'picture', 'first_name', 'last_name', _('primary email'), LastLogin(), 'date_joined']
 
     def get_queryset(self):
         """
@@ -81,7 +101,7 @@ class UserList(ListView):
         qs = super(UserList, self).get_queryset().only('uuid', 'last_login', 'username', 'first_name', 'last_name', 'date_joined', 'picture', 'valid_until').prefetch_related('useremail_set')
         qs = user.filter_administrable_users(qs)
             
-        self.cl = main.ChangeList(self.request, self.model, self.list_display, default_ordering=['-last_login'])
+        self.cl = main.ChangeList(self.request, self.model, self.list_display, default_ordering=[OrderByWithNulls(F('last_login'), descending=True)])
         # apply filters
         qs = UserSearchFilter().apply(self, qs) 
         qs = CountryFilter().apply(self, qs)
@@ -244,7 +264,7 @@ def update_user(request, uuid, template='accounts/application/update_user_form.h
                     active = formset.prefix
                     break
 
-    if (user.last_login - user.date_joined) < timedelta(seconds=1):
+    if (user.last_login is None) or (user.last_login - user.date_joined) < timedelta(seconds=1):
         logged_in = False
     else:
         logged_in = True

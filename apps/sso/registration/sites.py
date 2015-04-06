@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.views.generic import TemplateView 
 from .views import validation_confirm, UserRegistrationList, UserRegistrationDeleteView, update_user_registration  # , register
 from forms import UserSelfRegistrationForm, UserSelfRegistrationFormPreview
@@ -20,8 +20,7 @@ class RegistrationSite(object):
         self.username_generator = username_generator
     
     def get_urls(self):
-        urlpatterns = patterns(
-            '',
+        urlpatterns = [
             # registration
             url(r'^register/validate/complete/$', TemplateView.as_view(template_name='registration/validation_complete.html'), name='validation_complete'),
             url(r'^register/validate/complete2/$', TemplateView.as_view(template_name='registration/validation_complete2.html'), name='validation_complete2'),
@@ -32,7 +31,7 @@ class RegistrationSite(object):
             url(r'^registrations/$', UserRegistrationList.as_view(), name='user_registration_list'),
             url(r'^registrations/(?P<pk>[^/]+)/$', update_user_registration, name="update_user_registration"), 
             url(r'^registrations/delete/(?P<pk>\d+)/$', UserRegistrationDeleteView.as_view(), name="delete_user_registration"),
-        )
+        ]
         return urlpatterns 
     
     @property

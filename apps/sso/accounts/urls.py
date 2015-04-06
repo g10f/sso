@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.views.generic import TemplateView
 from .views import application
 from .views import onetimemessage
@@ -7,8 +7,7 @@ from .views import password_reset, password_reset_confirm, password_reset_done, 
 from .views import emails, confirm_email, password_create_confirm, password_create_complete
 from .views import organisation
 
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^login/$', login, name='login'),
     url(r'^logout/$', logout, name='logout'),
     url(r'^contact/$', contact, name='contact'),
@@ -38,4 +37,4 @@ urlpatterns = patterns(
     url(r'^organisation_change/$', organisation.OrganisationChangeList.as_view(), name='organisationchange_list'),
     url(r'^organisation_change/(?P<pk>\d+)/accept/$', organisation.OrganisationChangeAcceptView.as_view(), name='organisationchange_accept'),
     url(r'^messages/(?P<uuid>[^/]+)/$', onetimemessage.OneTimeMessageView.as_view(), name="view_message"),
-)
+]

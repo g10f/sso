@@ -38,6 +38,7 @@
 	"model" : "organisations.organisation",
 	"fields" : {
 		"uuid" : "31664dd38ca4454e916e55fe8b1f0745",
+        "last_modified": "2012-03-23T07:00:46.076Z",
 		"admin_region" : [ "0ebf2537fc664b7db285ea773c981404" ],
 		"name" : "Test Center 1",
 		"center_type" : "1",
@@ -47,6 +48,7 @@
 	"model" : "organisations.organisation",
 	"fields" : {
 		"uuid" : "31664dd38ca4454e916e55fe8b1f0746",
+        "last_modified": "2012-03-23T07:00:46.076Z",
 		"admin_region" : [ "0ebf2537fc664b7db285ea773c981404" ],
 		"name" : "Test Center 2",
 		"center_type" : "1",

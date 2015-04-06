@@ -3,6 +3,7 @@
 	 "model" : "oauth2.client",
 	 "fields" : {
 		 "uuid" : "ca96cd88bc2740249d0def68221cba88",
+         "last_modified": "2012-03-23T07:00:46.076Z",
 		 "name" : "SSO",
 		 "scopes" : "address phone role",
 		 "application" :  ["fa467234b81e4838a009e38d9e655d18"]

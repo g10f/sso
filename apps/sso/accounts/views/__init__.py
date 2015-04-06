@@ -107,8 +107,9 @@ def logout(request, next_page=None,
         }
         if extra_context is not None:
             context.update(extra_context)
-        return TemplateResponse(request, template_name, context,
-                                current_app=current_app)
+        if current_app is not None:
+            request.current_app = current_app
+        return TemplateResponse(request, template_name, context)
     else:
         # Redirect to this page until the session has been cleared.
         return HttpResponseRedirect(next_page or request.path)

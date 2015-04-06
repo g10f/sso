@@ -1,8 +1,7 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 import views
  
-urlpatterns = patterns(
-    '',
+urlpatterns = [
     url(r'^client/(?P<object_id>.+)/$', views.client_details, name='client.details.json'),
     url(r'^authorize/$', views.authorize, name='authorize'),
     url(r'^certs/$', views.certs, name='certs'),
@@ -12,4 +11,4 @@ urlpatterns = patterns(
     url(r'^approval/$', views.approval, name='approval'),
     url(r'^error/$', views.ErrorView.as_view(), name='oauth2_error'),
     url(r'^session/$', views.SessionView.as_view(template_name="oauth2/session.html"), name='session'),
-)
+]

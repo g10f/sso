@@ -42,7 +42,10 @@ class UserRolesMixin(object):
         # first get the new values. This can be a queryset or a single object
         cd = self.cleaned_data.get(attribute_name)
         try:
-            new_value_set = set(cd.values_list('id', flat=True))
+            if isinstance(cd, list):  # role_profiles
+                new_value_set = set(cd)
+            else:  # queryset
+                new_value_set = set(cd.values_list('id', flat=True))
         except AttributeError:
             # should be a single object instead of queryset
             new_value_set = {cd.id} if cd else set()

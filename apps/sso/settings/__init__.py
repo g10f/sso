@@ -88,19 +88,43 @@ STATIC_URL = '/static/'
 
 if DEBUG:
     # don't use cached loader
-    TEMPLATE_LOADERS = (
+    TEMPLATE_LOADERS = [
         'django.template.loaders.filesystem.Loader',
         'django.template.loaders.app_directories.Loader',
         'django.template.loaders.eggs.Loader',
-    )
+    ]
 else:
-    TEMPLATE_LOADERS = (
+    TEMPLATE_LOADERS = [
         ('django.template.loaders.cached.Loader', (
             'django.template.loaders.filesystem.Loader',
             'django.template.loaders.app_directories.Loader',
             'django.template.loaders.eggs.Loader',
         )),
-    )
+    ]
+
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            os.path.join(BASE_DIR, 'sso/templates'),
+        ],
+        # 'APP_DIRS': True,  # must not be set if loaders is set
+        'OPTIONS': {
+            'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.template.context_processors.request',
+                'django.contrib.messages.context_processors.messages',
+                'sso.context_processors.settings',
+            ],
+            'loaders': TEMPLATE_LOADERS
+        },
+    },
+]
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -115,23 +139,7 @@ MIDDLEWARE_CLASSES = (
     'sso.middleware.TimezoneMiddleware',
 )
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.contrib.auth.context_processors.auth",
-    "django.core.context_processors.debug",
-    "django.core.context_processors.i18n",
-    "django.core.context_processors.media",
-    "django.core.context_processors.static",
-    "django.core.context_processors.tz",
-    "django.core.context_processors.request",
-    "django.contrib.messages.context_processors.messages",
-    "sso.context_processors.settings"
-)
-
 ROOT_URLCONF = 'sso.urls'
-
-TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR, 'sso/templates'),
-)
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -139,9 +147,9 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.formtools',  # extracted to django-formtools in django 1.8
     'django.contrib.admin',
     'django.contrib.gis',
+    'formtools',
     'sorl.thumbnail',
     'captcha',
     'passwords',
