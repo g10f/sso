@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
+from django.http.response import HttpResponse
+from django.contrib.auth.decorators import login_required, permission_required
 
 from pytz import timezone
 from sorl.thumbnail import get_thumbnail
@@ -23,7 +25,7 @@ from sso.organisations.models import Organisation
 from sso.registration import default_username_generator
 from sso.models import update_object_from_dict, map_dict2dict
 from sso.api.views.generic import JsonListView, JsonDetailView
-from sso.api.decorators import condition
+from sso.api.decorators import condition, api_user_passes_test
 # from sso.oauth2.decorators import scopes_required
 
 logger = logging.getLogger(__name__)
@@ -517,3 +519,15 @@ UserList.permissions_tests = {
     'read': UserList.read_permission,
     'create': UserList.create_permission,
 }
+
+
+@login_required
+@permission_required(["accounts.access_all_users", "accounts.read_user"], raise_exception=True)
+def user_emails(request):
+    email_list = []
+    for user in User.objects.filter(is_active=True, is_center=False).prefetch_related('useremail_set'):
+        email_list.append(str(user.primary_email()) + '\n')
+
+    response = HttpResponse(content_type='text')
+    response.writelines(email_list)
+    return response
