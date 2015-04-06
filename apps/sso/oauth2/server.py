@@ -3,17 +3,18 @@ import time
 import json
 import calendar
 import urlparse
+import logging
+
 from django.contrib.auth import authenticate, get_user_model
 from django.core import signing
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.crypto import get_random_string
-
+from django.utils import timezone
 from oauthlib import oauth2, uri_validate
 from oauthlib.oauth2.rfc6749.tokens import random_token_generator
 from .models import BearerToken, RefreshToken, AuthorizationCode, Client, check_redirect_uri
 from .crypt import loads_jwt, make_jwt, MAX_AGE
 
-import logging
 logger = logging.getLogger(__name__)
 
 # SUPPORTED_SCOPES = ['openid', 'profile', 'email', 'offline_access', 'address', 'phone']
@@ -148,8 +149,11 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
         try:
             request.client = Client.objects.get(uuid=request.client_id, client_secret=request.client_secret)
             if request.grant_type == 'client_credentials':
-                if request.client.user:
-                    request.user = request.client.user
+                user = request.client.user
+                if user:
+                    user.last_login = timezone.now()
+                    user.save(update_fields=['last_login'])
+                    request.user = user
                     return True
                 else:
                     logger.error("missing user for client %s in authenticate_client with grant_type 'client_credentials'", request.client)
