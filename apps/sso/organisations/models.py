@@ -114,7 +114,7 @@ class AdminRegion(AbstractBaseModel, ExtraManager):
     homepage = models.URLField(_("homepage"), blank=True)
     country = models.ForeignKey(Country, verbose_name=_("country"), limit_choices_to={'active': True})
     email = models.OneToOneField(Email, verbose_name=_("email address"), blank=True, null=True, limit_choices_to={'email_type': REGION_EMAIL_TYPE},
-                              on_delete=models.SET_NULL)
+                                 on_delete=models.SET_NULL)
     is_active = models.BooleanField(_('active'), default=True, help_text=_('Designates whether this region should be treated as '
                                                                            'active. Unselect this instead of deleting the region.'))
     
@@ -170,7 +170,7 @@ class Organisation(AbstractBaseModel):
         ('2', _('City/Village')),
         ('3', _('Exact')),
         ('4', _('Nearby')),
-        # ('5', _('Others')) is not included in legacy data and seems to be redundent 
+        # ('5', _('Others')) is not included in legacy data and seems to be redundant
     )
     _center_type_choices = {}
     for choice in CENTER_TYPE_CHOICES:
@@ -182,6 +182,7 @@ class Organisation(AbstractBaseModel):
     _original_location = None
 
     name = models.CharField(_("name"), max_length=255)
+    name_native = models.CharField(_("name in native language"), max_length=255, blank=True)
     country = models.ForeignKey(Country, verbose_name=_("country"), null=True, limit_choices_to={'active': True})
     admin_region = ChainedForeignKey(AdminRegion, chained_field='country', chained_model_field="country", verbose_name=_("admin region"), blank=True, null=True,
                                      limit_choices_to={'is_active': True}) 
@@ -193,7 +194,7 @@ class Organisation(AbstractBaseModel):
     twitter_page = URLFieldEx(domain='twitter.com', verbose_name=_("Twitter page"), blank=True)
     notes = models.TextField(_('notes'), blank=True, max_length=255)
     center_type = models.CharField(_('center type'), max_length=2, choices=CENTER_TYPE_CHOICES, db_index=True)    
-    centerid = models.IntegerField(blank=True, null=True)
+    centerid = models.IntegerField(blank=True, help_text=_("id from the previous center DB (obsolete)"), null=True)
     founded = models.DateField(_("founded"), blank=True, null=True)
     coordinates_type = models.CharField(_('coordinates type'), max_length=1, choices=COORDINATES_TYPE_CHOICES, default='3', db_index=True, blank=True)
     latitude = models.DecimalField(_("latitude"), max_digits=9, decimal_places=6, blank=True, null=True)
@@ -214,8 +215,7 @@ class Organisation(AbstractBaseModel):
     uses_user_activation = models.BooleanField(_("uses activation"),
                                                help_text=_('Designates whether this buddhist center uses the new user activation process.'),
                                                default=False)
-    # history = HistoricalRecords()
-    
+
     objects = GeoManager()
 
     class Meta(AbstractBaseModel.Meta):

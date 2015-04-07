@@ -62,7 +62,7 @@ class OrganisationBaseForm(BaseForm):
     class Meta:
         model = Organisation
         
-        fields = ('homepage', 'google_plus_page', 'facebook_page', 'twitter_page', 'founded', 'coordinates_type',
+        fields = ('name_native', 'homepage', 'google_plus_page', 'facebook_page', 'twitter_page', 'founded', 'coordinates_type',
                   'is_private', 'location')  # , 'timezone')
         years_to_display = range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1)
         widgets = {
@@ -72,6 +72,7 @@ class OrganisationBaseForm(BaseForm):
             'twitter_page': bootstrap.URLInput(attrs={'size': 50}),
             'country': bootstrap.Select(),
             'name': bootstrap.TextInput(attrs={'size': 50}), 
+            'name_native': bootstrap.TextInput(attrs={'size': 50}),
             'founded': bootstrap.SelectDateWidget(years=years_to_display, required=False),
             'coordinates_type': bootstrap.Select(),
             'center_type': bootstrap.Select(),

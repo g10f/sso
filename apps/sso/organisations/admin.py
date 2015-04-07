@@ -111,11 +111,11 @@ class OrganisationAdmin(gis_admin.OSMGeoAdmin):
     date_hierarchy = 'founded'
     list_filter = ('is_active', 'is_private', 'uses_user_activation', 'coordinates_type', 'admin_region', 'country__continent', CountryListFilter, 'center_type',
                    'organisationaddress__address_type', 'organisationphonenumber__phone_type')
-    list_display = ('id', 'name', 'email', 'last_modified', 'homepage_link', 'google_maps_link', )
+    list_display = ('id', 'name', 'name_native', 'email', 'last_modified', 'homepage_link', 'google_maps_link', )
     fieldsets = [
         (None,
          {'fields':
-          ['uuid', 'centerid', 'name', 'center_type', 'country', 'admin_region', 'founded', ('coordinates_type', 'google_maps_link'),
+          ['uuid', 'centerid', 'name', 'name_native', 'center_type', 'country', 'admin_region', 'founded', ('coordinates_type', 'google_maps_link'),
            'location',
            'email', 'homepage', 'is_active', 'is_private', 'uses_user_activation', 'last_modified'],
           'classes': ['wide']}),

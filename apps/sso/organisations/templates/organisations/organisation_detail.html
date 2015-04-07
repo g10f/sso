@@ -22,7 +22,9 @@
 <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
 {% endif %}
 
-
+	{% if object.name_native %}
+	<div class="row"><div class="dwbn-label">{% trans 'Name in native language' %}: </div><div class="dwbn-content">{{ object.name_native }}</div></div>
+	{% endif %}
 	<div class="row"><div class="dwbn-label">{% trans 'Homepage' %}: </div><div class="dwbn-content"><a href="{{ object.homepage }}">{{ object.homepage }}</a></div></div>
 	{% if object.google_plus_page %}
 	<div class="row"><div class="dwbn-label">{% trans 'Google+ page' %}: </div><div class="dwbn-content"><a href="{{ object.google_plus_page }}">{% trans 'Google+ page' %}</a></div></div>

@@ -64,8 +64,7 @@ class AddressMixin(models.Model):
                               help_text=_('State or region'), blank=True, null=True)
     region = models.CharField(_("region"), help_text=_('State or region'), blank=True, max_length=100)
     primary = models.BooleanField(_("primary"), default=False)
-    # history = HistoricalRecords()
-    
+
     # formatted  : formatted Address for mail http://tools.ietf.org/html/draft-ietf-scim-core-schema-03
     
     class Meta:

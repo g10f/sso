@@ -17,8 +17,8 @@ logger = logging.getLogger(__name__)
 
 class Command(NoArgsCommand):
     help = "Load Buddhist Organisations."  # @ReservedAssignment
-    url = "https://center.dwbn.org/organisations/buddhistcenter/"
-    # url = "http://localhost:8002/organisations/buddhistcenter/"
+    # url = "https://center.dwbn.org/organisations/buddhistcenter/"
+    url = "http://localhost:8002/organisations/buddhistcenter/"
     
     def handle(self, *args, **options):
         if len(args) > 0:
@@ -148,7 +148,8 @@ def load_buddhistcenters(url):
         'longitude': ('longitude', float_to_decimal),
         'founded': ('founded', parse_date),
         'country_iso2_code': ('country', get_country),
-        'email': ('email', get_email)
+        'email': ('email', get_email),
+        'alias': 'name_native'
     }
     
     buddhistcenters = get_json(url)
