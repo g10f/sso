@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-27 21:11+0100\n"
+"POT-Creation-Date: 2015-04-07 12:15+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,8 +18,8 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
 
 #: sso/accounts/admin.py:38 sso/accounts/admin.py:54
-#: sso/accounts/models.py:269 sso/oauth2/admin.py:34 sso/oauth2/admin.py:56
-#: sso/oauth2/models.py:82 sso/oauth2/models.py:113 sso/oauth2/models.py:134
+#: sso/accounts/models.py:270 sso/oauth2/admin.py:33 sso/oauth2/admin.py:55
+#: sso/oauth2/models.py:81 sso/oauth2/models.py:114 sso/oauth2/models.py:135
 #: sso/registration/admin.py:76 sso/registration/models.py:153
 msgid "user"
 msgstr "Anwender"
@@ -33,26 +33,26 @@ msgid "(None)"
 msgstr ""
 
 #: sso/accounts/admin.py:132 sso/accounts/forms.py:277
-#: sso/accounts/forms.py:622 sso/registration/forms.py:59
+#: sso/accounts/forms.py:619 sso/registration/forms.py:59
 msgid "Organisation"
 msgstr "Zentrum"
 
-#: sso/accounts/admin.py:141 sso/accounts/admin.py:431
+#: sso/accounts/admin.py:141 sso/accounts/admin.py:447
 #: sso/accounts/models.py:249 sso/registration/models.py:155
 msgid "last modified by"
 msgstr "letzte Änderung durch"
 
-#: sso/accounts/admin.py:152 sso/accounts/admin.py:440
+#: sso/accounts/admin.py:152 sso/accounts/admin.py:456
 #: sso/accounts/models.py:251
 msgid "created by"
 msgstr "angelegt von"
 
-#: sso/accounts/admin.py:163 sso/accounts/models.py:867
+#: sso/accounts/admin.py:163 sso/accounts/models.py:868
 msgid "associated system"
 msgstr "Assoziertes System"
 
-#: sso/accounts/admin.py:179 sso/organisations/forms.py:188
-#: sso/organisations/forms.py:255
+#: sso/accounts/admin.py:179 sso/organisations/forms.py:189
+#: sso/organisations/forms.py:256
 msgid "Admin Region"
 msgstr ""
 
@@ -68,10 +68,10 @@ msgstr "Anwendungsadmin"
 msgid "Role Profile Admin"
 msgstr "Rollenprofiladmin"
 
-#: sso/accounts/admin.py:233 sso/accounts/forms.py:279
-#: sso/accounts/forms.py:625 sso/accounts/forms.py:694
+#: sso/accounts/admin.py:233 sso/accounts/forms.py:281
+#: sso/accounts/forms.py:624 sso/accounts/forms.py:699
 #: sso/accounts/templates/accounts/application/add_user_done.html:43
-#: sso/registration/forms.py:63
+#: sso/registration/forms.py:65
 msgid "Role profiles"
 msgstr "Rollenprofile"
 
@@ -83,63 +83,66 @@ msgstr "nicht enthaltene Rollenprofile"
 msgid "superuser status"
 msgstr ""
 
-#: sso/accounts/admin.py:263 sso/registration/admin.py:16
-#: sso/registration/admin.py:32
+#: sso/accounts/admin.py:263 sso/accounts/admin.py:281
+#: sso/registration/admin.py:16 sso/registration/admin.py:32
 msgid "Yes"
 msgstr ""
 
-#: sso/accounts/admin.py:263 sso/registration/admin.py:16
-#: sso/registration/admin.py:32
+#: sso/accounts/admin.py:263 sso/accounts/admin.py:281
+#: sso/registration/admin.py:16 sso/registration/admin.py:32
 msgid "No"
 msgstr ""
 
-#: sso/accounts/admin.py:348 sso/accounts/admin.py:358
+#: sso/accounts/admin.py:277
+msgid "logged in"
+msgstr ""
+
+#: sso/accounts/admin.py:364 sso/accounts/admin.py:374
 msgid "Personal info"
 msgstr ""
 
-#: sso/accounts/admin.py:351 sso/accounts/admin.py:359
+#: sso/accounts/admin.py:367 sso/accounts/admin.py:375
 msgid "Important dates"
 msgstr ""
 
-#: sso/accounts/admin.py:352 sso/accounts/admin.py:360
+#: sso/accounts/admin.py:368 sso/accounts/admin.py:376
 msgid "AppRoles"
 msgstr "Anwendungsrollen"
 
-#: sso/accounts/admin.py:353
+#: sso/accounts/admin.py:369
 msgid "Permissions"
 msgstr ""
 
-#: sso/accounts/admin.py:354 sso/accounts/forms.py:276
-#: sso/accounts/forms.py:624 sso/accounts/models.py:255
+#: sso/accounts/admin.py:370 sso/accounts/forms.py:276
+#: sso/accounts/forms.py:621 sso/accounts/models.py:256
 #: sso/accounts/templates/accounts/application/add_user_done.html:54
 #: sso/accounts/templates/accounts/user_confirm_delete.html:33
-#: sso/registration/forms.py:40
+#: sso/oauth2/models.py:89 sso/registration/forms.py:40
 msgid "Notes"
 msgstr "Notizen"
 
-#: sso/accounts/admin.py:509
+#: sso/accounts/admin.py:525
 #, python-format
 msgid "%s SSO Information"
 msgstr "%s SSO Information"
 
-#: sso/accounts/admin.py:519
+#: sso/accounts/admin.py:535
 #, python-format
 msgid "Successfully send information email to %(count)d %(items)s."
 msgstr ""
 
-#: sso/accounts/admin.py:533
+#: sso/accounts/admin.py:549
 #: sso/accounts/templates/admin/accounts/send_mail_selected_confirmation.html:14
 msgid "Send information mail to selected users"
 msgstr ""
 
-#: sso/accounts/admin.py:542
+#: sso/accounts/admin.py:558
 msgid "Send info email"
 msgstr ""
 
 #: sso/accounts/forms.py:42 sso/accounts/forms.py:435
-#: sso/accounts/forms.py:437 sso/accounts/forms.py:520
-#: sso/accounts/forms.py:545 sso/accounts/forms.py:620
-#: sso/accounts/forms.py:692
+#: sso/accounts/forms.py:517 sso/accounts/forms.py:542
+#: sso/accounts/forms.py:617 sso/accounts/forms.py:695
 #: sso/accounts/templates/accounts/user_confirm_delete.html:39
 #: sso/accounts/views/filter.py:54 sso/emails/admin.py:44
 #: sso/emails/models.py:27
@@ -154,23 +157,23 @@ msgstr ""
 #: sso/accounts/templates/accounts/application/add_user_done.html:27
 #: sso/emails/forms.py:75
 #: sso/emails/templates/emails/groupemail_detail.html:26
-#: sso/organisations/forms.py:96
+#: sso/organisations/forms.py:97
 #: sso/organisations/templates/organisations/adminregion_detail.html:26
 msgid "Name"
 msgstr ""
 
-#: sso/accounts/forms.py:68 sso/accounts/forms.py:365
-#: sso/accounts/forms.py:504
+#: sso/accounts/forms.py:68 sso/accounts/forms.py:369
+#: sso/accounts/forms.py:501
 #: sso/accounts/templates/accounts/organisationchange_accept.html:52
 #: sso/accounts/templates/accounts/user_confirm_delete.html:28
 #: sso/accounts/templates/accounts/user_email_detail.html:62
 #: sso/accounts/templates/accounts/user_email_detail.html:70
 #: sso/emails/forms.py:110
 #: sso/emails/templates/emails/groupemail_detail.html:41
-#: sso/organisations/forms.py:93 sso/organisations/forms.py:120
-#: sso/organisations/forms.py:281 sso/organisations/forms.py:335
+#: sso/organisations/forms.py:94 sso/organisations/forms.py:121
+#: sso/organisations/forms.py:282 sso/organisations/forms.py:335
 #: sso/organisations/templates/organisations/adminregion_detail.html:46
-#: sso/organisations/templates/organisations/organisation_detail.html:44
+#: sso/organisations/templates/organisations/organisation_detail.html:46
 #: sso/organisations/templates/organisations/organisationcountry_detail.html:42
 #: sso/registration/forms.py:43
 msgid "Email address"
@@ -216,20 +219,20 @@ msgstr ""
 "Der Benutzer mit dieser E-Mail-Adresse kann das Passwort nicht zurücksetzen."
 
 #: sso/accounts/forms.py:129 sso/accounts/forms.py:273
-#: sso/accounts/forms.py:691
+#: sso/accounts/forms.py:694
 #: sso/accounts/templates/accounts/application/add_user_done.html:36
 #: sso/emails/forms.py:74 sso/emails/models.py:61
 #: sso/emails/templates/emails/groupemail_detail.html:19
 #: sso/emails/templates/emails/groupemail_form.html:27
-#: sso/registration/forms.py:166
+#: sso/registration/forms.py:172
 msgid "Email"
 msgstr ""
 
-#: sso/accounts/forms.py:183 sso/accounts/forms.py:410
+#: sso/accounts/forms.py:183 sso/accounts/forms.py:414
 msgid "Picture"
 msgstr "Bild"
 
-#: sso/accounts/forms.py:193 sso/accounts/forms.py:456
+#: sso/accounts/forms.py:193 sso/accounts/forms.py:453
 #, python-format
 msgid ""
 "Please keep filesize under %(filesize)s. Current filesize "
@@ -238,7 +241,7 @@ msgstr ""
 "Bitte Dateien mit einer Größe unter %(filesize)s hochladen. Aktuelle "
 "Dateigröße %(current_filesize)s."
 
-#: sso/accounts/forms.py:202 sso/accounts/forms.py:465
+#: sso/accounts/forms.py:202 sso/accounts/forms.py:462
 msgid "File type is not supported"
 msgstr "Dateitype wird nicht unterstützt"
 
@@ -255,26 +258,26 @@ msgid "Enter the same password as above, for verification."
 msgstr ""
 
 #: sso/accounts/forms.py:222 sso/accounts/forms.py:274
-#: sso/accounts/forms.py:408 sso/accounts/forms.py:502
-#: sso/accounts/forms.py:616 sso/accounts/forms.py:689
+#: sso/accounts/forms.py:412 sso/accounts/forms.py:499
+#: sso/accounts/forms.py:613 sso/accounts/forms.py:692
 #: sso/accounts/templates/accounts/application/add_user_done.html:30
 #: sso/accounts/templates/accounts/organisationchange_accept.html:40
 #: sso/accounts/templates/accounts/user_confirm_delete.html:18
 #: sso/registration/forms.py:41 sso/registration/forms.py:52
-#: sso/registration/forms.py:54 sso/registration/forms.py:164
-#: sso/registration/forms.py:167 sso/registration/forms.py:169
+#: sso/registration/forms.py:54 sso/registration/forms.py:170
+#: sso/registration/forms.py:173 sso/registration/forms.py:175
 msgid "First name"
 msgstr "Vorname"
 
 #: sso/accounts/forms.py:223 sso/accounts/forms.py:275
-#: sso/accounts/forms.py:409 sso/accounts/forms.py:503
-#: sso/accounts/forms.py:617 sso/accounts/forms.py:690
+#: sso/accounts/forms.py:413 sso/accounts/forms.py:500
+#: sso/accounts/forms.py:614 sso/accounts/forms.py:693
 #: sso/accounts/templates/accounts/application/add_user_done.html:33
 #: sso/accounts/templates/accounts/organisationchange_accept.html:46
 #: sso/accounts/templates/accounts/user_confirm_delete.html:23
 #: sso/registration/forms.py:42 sso/registration/forms.py:53
-#: sso/registration/forms.py:55 sso/registration/forms.py:165
-#: sso/registration/forms.py:168 sso/registration/forms.py:170
+#: sso/registration/forms.py:55 sso/registration/forms.py:171
+#: sso/registration/forms.py:174 sso/registration/forms.py:176
 msgid "Last name"
 msgstr "Nachname"
 
@@ -282,9 +285,9 @@ msgstr "Nachname"
 msgid "The two password fields didn't match."
 msgstr ""
 
-#: sso/accounts/forms.py:261 sso/accounts/forms.py:407
-#: sso/accounts/forms.py:501 sso/accounts/forms.py:614
-#: sso/accounts/forms.py:688 sso/registration/forms.py:39
+#: sso/accounts/forms.py:261 sso/accounts/forms.py:411
+#: sso/accounts/forms.py:498 sso/accounts/forms.py:611
+#: sso/accounts/forms.py:691 sso/registration/forms.py:39
 msgid "Username"
 msgstr ""
 
@@ -297,69 +300,69 @@ msgid "This value may contain only letters, numbers and @/./+/-/_ characters."
 msgstr ""
 
 #: sso/accounts/forms.py:274 sso/accounts/models.py:236
-#: sso/registration/forms.py:164
+#: sso/registration/forms.py:170
 msgid "first name"
 msgstr ""
 
 #: sso/accounts/forms.py:275 sso/accounts/models.py:237
-#: sso/registration/forms.py:165
+#: sso/registration/forms.py:171
 msgid "last name"
 msgstr ""
 
-#: sso/accounts/forms.py:278 sso/accounts/forms.py:623
-#: sso/accounts/forms.py:693
+#: sso/accounts/forms.py:278 sso/accounts/forms.py:620
+#: sso/accounts/forms.py:696
 #: sso/accounts/templates/accounts/application/add_user_done.html:49
 #: sso/registration/forms.py:60
 msgid "Application roles"
 msgstr "Anwendungsrollen"
 
-#: sso/accounts/forms.py:280 sso/accounts/forms.py:626
-#: sso/accounts/forms.py:695 sso/registration/forms.py:64
+#: sso/accounts/forms.py:282 sso/accounts/forms.py:625
+#: sso/accounts/forms.py:700 sso/registration/forms.py:66
 msgid "Groups of application roles that are assigned together."
 msgstr "Gruppen von Anwendungsrollen, die zusammen vergeben werden."
 
-#: sso/accounts/forms.py:283 sso/accounts/forms.py:612
-#: sso/accounts/forms.py:686 sso/api/views/users_v2.py:357
-#: sso/registration/forms.py:36 sso/registration/forms.py:162
+#: sso/accounts/forms.py:285 sso/accounts/forms.py:609
+#: sso/accounts/forms.py:689 sso/api/views/users_v2.py:356
+#: sso/registration/forms.py:36 sso/registration/forms.py:168
 msgid "A user with that email address already exists."
 msgstr "Die E-Mail Adresse wird schon verwendet"
 
-#: sso/accounts/forms.py:369
+#: sso/accounts/forms.py:373
 #, python-format
 msgid "The email address \"%(email)s\" is already in use."
 msgstr "Die E-Mail Adresse \"%(email)s\" wird schon benutzt."
 
-#: sso/accounts/forms.py:411 sso/registration/forms.py:49
-#: sso/registration/forms.py:176
+#: sso/accounts/forms.py:415 sso/registration/forms.py:49
+#: sso/registration/forms.py:182
 msgid "Gender"
 msgstr "Geschlecht"
 
-#: sso/accounts/forms.py:412 sso/registration/forms.py:50
-#: sso/registration/forms.py:177
+#: sso/accounts/forms.py:416 sso/registration/forms.py:50
+#: sso/registration/forms.py:183
 msgid "Date of birth"
 msgstr "Geburtsdatum"
 
-#: sso/accounts/forms.py:414
+#: sso/accounts/forms.py:418
 #: sso/emails/templates/emails/groupemail_detail.html:30
 #: sso/organisations/templates/organisations/adminregion_detail.html:34
-#: sso/organisations/templates/organisations/organisation_detail.html:26
+#: sso/organisations/templates/organisations/organisation_detail.html:28
 #: sso/organisations/templates/organisations/organisationcountry_detail.html:31
 msgid "Homepage"
 msgstr ""
 
-#: sso/accounts/forms.py:415 sso/accounts/forms.py:505
-#: sso/registration/forms.py:47 sso/registration/forms.py:174
+#: sso/accounts/forms.py:419 sso/accounts/forms.py:502
+#: sso/registration/forms.py:47 sso/registration/forms.py:180
 msgid "Language"
 msgstr "Sprache"
 
-#: sso/accounts/forms.py:416 sso/accounts/forms.py:506
-#: sso/registration/forms.py:48 sso/registration/forms.py:175
+#: sso/accounts/forms.py:420 sso/accounts/forms.py:503
+#: sso/registration/forms.py:48 sso/registration/forms.py:181
 msgid "Timezone"
 msgstr "Zeitzone"
 
-#: sso/accounts/forms.py:419 sso/accounts/forms.py:611
-#: sso/accounts/forms.py:685 sso/registration/forms.py:35
-#: sso/registration/forms.py:161
+#: sso/accounts/forms.py:423 sso/accounts/forms.py:608
+#: sso/accounts/forms.py:688 sso/registration/forms.py:35
+#: sso/registration/forms.py:167
 msgid "A user with that username already exists."
 msgstr ""
 
@@ -367,31 +370,27 @@ msgstr ""
 msgid "Please use the contact form for a request to change this value."
 msgstr "Bitte verwende das Kontaktformular um diesen Wert ändern zu lassen."
 
-#: sso/accounts/forms.py:438
-msgid "You can set this value only once."
-msgstr "Dieser Wert kann nur einmal festgelegt werden."
-
-#: sso/accounts/forms.py:500
+#: sso/accounts/forms.py:497
 msgid "Account type"
 msgstr "Benutzerkontotyp"
 
-#: sso/accounts/forms.py:511
+#: sso/accounts/forms.py:508
 msgid "Center Account"
 msgstr "Zentrumskonto"
 
-#: sso/accounts/forms.py:511
+#: sso/accounts/forms.py:508
 msgid "Member Account"
 msgstr "Mitgliedskonto"
 
-#: sso/accounts/forms.py:547 sso/models.py:64
+#: sso/accounts/forms.py:544 sso/models.py:63
 msgid "State"
 msgstr "Bundesland"
 
-#: sso/accounts/forms.py:555
+#: sso/accounts/forms.py:552
 msgid "Prove you are human"
 msgstr "Zum Schutz vor Bots"
 
-#: sso/accounts/forms.py:556
+#: sso/accounts/forms.py:553
 msgid ""
 "Please enter the words you see in the box, in order and separated by a "
 "space. Doing so helps prevent automated programs from abusing this service."
@@ -400,24 +399,24 @@ msgstr ""
 "und durch ein Leerzeichen voneinander getrennt ein. Auf diese Weise wird der "
 "Missbrauch durch automatische Programme verhindert."
 
-#: sso/accounts/forms.py:557
+#: sso/accounts/forms.py:554
 msgid "Incorrect, please try again."
 msgstr "Nicht richtig, bitte versuche es erneut."
 
-#: sso/accounts/forms.py:615
+#: sso/accounts/forms.py:612
 msgid "Valid until"
 msgstr "Gültig bis"
 
-#: sso/accounts/forms.py:618 sso/emails/forms.py:112
+#: sso/accounts/forms.py:615 sso/emails/forms.py:112
 #: sso/emails/templates/emails/groupemail_detail.html:34
-#: sso/organisations/forms.py:97
+#: sso/organisations/forms.py:98
 #: sso/organisations/templates/organisations/adminregion_detail.html:38
-#: sso/organisations/templates/organisations/organisation_detail.html:75
+#: sso/organisations/templates/organisations/organisation_detail.html:77
 #: sso/organisations/templates/organisations/organisationcountry_detail.html:35
 msgid "Active"
 msgstr "Aktiv"
 
-#: sso/accounts/forms.py:618 sso/accounts/models.py:240
+#: sso/accounts/forms.py:615 sso/accounts/models.py:240
 msgid ""
 "Designates whether this user should be treated as active. Unselect this "
 "instead of deleting accounts."
@@ -425,7 +424,7 @@ msgstr ""
 "Legt fest, ob dieser Benutzer aktiv ist. Kann deaktiviert werden, anstatt "
 "den Benutzer zu löschen."
 
-#: sso/accounts/forms.py:620 sso/accounts/models.py:252
+#: sso/accounts/forms.py:617 sso/accounts/models.py:252
 msgid ""
 "Designates that this user is representing a center and not a private person."
 msgstr ""
@@ -454,7 +453,7 @@ msgstr ""
 #: sso/accounts/models.py:78 sso/accounts/models.py:240
 #: sso/emails/models.py:45 sso/emails/models.py:102 sso/oauth2/models.py:87
 #: sso/organisations/models.py:81 sso/organisations/models.py:118
-#: sso/organisations/models.py:203 sso/registration/admin.py:29
+#: sso/organisations/models.py:204 sso/registration/admin.py:29
 #: sso/registration/admin.py:66
 msgid "active"
 msgstr "aktiv"
@@ -463,7 +462,7 @@ msgstr "aktiv"
 msgid "Designates whether this application should be provided."
 msgstr "Gibt an, ob diese Anwendung aktiv ist."
 
-#: sso/accounts/models.py:83 sso/accounts/models.py:886
+#: sso/accounts/models.py:83 sso/accounts/models.py:887
 #: sso/oauth2/models.py:77
 msgid "application"
 msgstr "Anwendung"
@@ -549,7 +548,7 @@ msgstr ""
 "Gibt an, ob das Rollenprofile von einen einem globalen Administrator "
 "weitergegeben werden kann."
 
-#: sso/accounts/models.py:164 sso/accounts/models.py:876
+#: sso/accounts/models.py:164 sso/accounts/models.py:877
 msgid "role profile"
 msgstr "Rollenprofil"
 
@@ -561,7 +560,7 @@ msgstr "Rollenprofile"
 #: sso/emails/models.py:44 sso/emails/models.py:69 sso/emails/models.py:84
 #: sso/emails/models.py:99 sso/forms/fields.py:18
 #: sso/organisations/models.py:63 sso/organisations/models.py:79
-#: sso/organisations/models.py:116 sso/organisations/models.py:188
+#: sso/organisations/models.py:116 sso/organisations/models.py:189
 msgid "email address"
 msgstr "E-Mail Adresse"
 
@@ -571,7 +570,7 @@ msgstr "bestätigt"
 
 #: sso/accounts/models.py:183
 #: sso/accounts/templates/accounts/user_email_detail.html:86
-#: sso/emails/models.py:71 sso/models.py:67 sso/models.py:90
+#: sso/emails/models.py:71 sso/models.py:66 sso/models.py:88
 msgid "primary"
 msgstr "primär"
 
@@ -627,7 +626,7 @@ msgstr ""
 "Organisiert eine Gruppe von Anwendungsrollen, die typischerweise zusammen "
 "vergeben werden."
 
-#: sso/accounts/models.py:250 sso/models.py:25 sso/registration/models.py:154
+#: sso/accounts/models.py:250 sso/models.py:24 sso/registration/models.py:154
 msgid "last modified"
 msgstr "letzte Änderung"
 
@@ -636,135 +635,144 @@ msgid "center"
 msgstr "Zentrum"
 
 #: sso/accounts/models.py:253
-msgid "subscriber"
+msgid "service"
 msgstr ""
 
 #: sso/accounts/models.py:253
+msgid ""
+"Designates that this user is representing a service account and not a person."
+msgstr "Legt fest, ob dieses ein Service Konto ist und keine private Person."
+
+#: sso/accounts/models.py:254
+msgid "subscriber"
+msgstr ""
+
+#: sso/accounts/models.py:254
 msgid "Designates whether this user is a DWBN News subscriber."
 msgstr "Gibt an, ob dieser Benutzer ein DWBN News Emfänger ist."
 
-#: sso/accounts/models.py:254
+#: sso/accounts/models.py:255
 #: sso/accounts/templates/accounts/application/update_user_app_roles_form.html:44
 #: sso/accounts/templates/accounts/application/update_user_form.html:61
 msgid "picture"
 msgstr "Bild"
 
-#: sso/accounts/models.py:256
+#: sso/accounts/models.py:257
 msgid "gender"
 msgstr ""
 
-#: sso/accounts/models.py:257
+#: sso/accounts/models.py:258
 msgid "date of birth"
 msgstr "Geburtsdatum"
 
-#: sso/accounts/models.py:258 sso/emails/models.py:100
+#: sso/accounts/models.py:259 sso/emails/models.py:100
 #: sso/organisations/models.py:64 sso/organisations/models.py:78
-#: sso/organisations/models.py:114 sso/organisations/models.py:190
+#: sso/organisations/models.py:114 sso/organisations/models.py:191
 #: sso/organisations/models.py:310
 msgid "homepage"
 msgstr ""
 
-#: sso/accounts/models.py:259
+#: sso/accounts/models.py:260
 msgid "language"
 msgstr ""
 
-#: sso/accounts/models.py:260 sso/organisations/models.py:202
+#: sso/accounts/models.py:261 sso/organisations/models.py:203
 msgid "timezone"
 msgstr "Zeitzone"
 
-#: sso/accounts/models.py:261
+#: sso/accounts/models.py:262 sso/accounts/views/application.py:68
 msgid "valid until"
 msgstr "Gültig bis"
 
-#: sso/accounts/models.py:270
+#: sso/accounts/models.py:271
 #: sso/registration/templates/registration/user_registration_list.html:4
 msgid "users"
 msgstr "Benutzer"
 
-#: sso/accounts/models.py:799
+#: sso/accounts/models.py:800
 msgid "reason"
 msgstr "Begründung"
 
-#: sso/accounts/models.py:802 sso/accounts/models.py:803
+#: sso/accounts/models.py:803 sso/accounts/models.py:804
 msgid "organisation change"
 msgstr "Zentrumswechsel"
 
-#: sso/accounts/models.py:811
+#: sso/accounts/models.py:812
 msgid "title"
 msgstr ""
 
-#: sso/accounts/models.py:812
+#: sso/accounts/models.py:813
 msgid "message"
 msgstr ""
 
-#: sso/accounts/models.py:815
+#: sso/accounts/models.py:816
 msgid "one time message"
 msgstr "Einweg-Nachricht"
 
-#: sso/accounts/models.py:816
+#: sso/accounts/models.py:817
 msgid "one time messages"
 msgstr "Einweg-Nachrichten"
 
-#: sso/accounts/models.py:821
+#: sso/accounts/models.py:822
 msgctxt "address"
 msgid "Home"
 msgstr "Zuhause"
 
-#: sso/accounts/models.py:822 sso/accounts/models.py:841
+#: sso/accounts/models.py:823 sso/accounts/models.py:842
 msgid "Business"
 msgstr "Geschäftlich"
 
-#: sso/accounts/models.py:823 sso/accounts/models.py:844
+#: sso/accounts/models.py:824 sso/accounts/models.py:845
 #: sso/organisations/models.py:350
 msgid "Other"
 msgstr "Andere"
 
-#: sso/accounts/models.py:826 sso/organisations/models.py:332
+#: sso/accounts/models.py:827 sso/organisations/models.py:332
 msgid "address type"
 msgstr "Adressart"
 
-#: sso/accounts/models.py:839 sso/organisations/models.py:346
+#: sso/accounts/models.py:840 sso/organisations/models.py:346
 msgctxt "phone number"
 msgid "Home"
 msgstr "Privat"
 
-#: sso/accounts/models.py:840 sso/organisations/models.py:347
+#: sso/accounts/models.py:841 sso/organisations/models.py:347
 msgid "Mobile"
 msgstr "Handy"
 
-#: sso/accounts/models.py:842 sso/organisations/models.py:349
+#: sso/accounts/models.py:843 sso/organisations/models.py:349
 msgid "Fax"
 msgstr ""
 
-#: sso/accounts/models.py:843
+#: sso/accounts/models.py:844
 msgid "Pager"
 msgstr ""
 
-#: sso/accounts/models.py:846 sso/organisations/models.py:353
+#: sso/accounts/models.py:847 sso/organisations/models.py:353
 msgid "phone type"
 msgstr "Telefontyp"
 
-#: sso/accounts/models.py:846 sso/organisations/models.py:353
+#: sso/accounts/models.py:847 sso/organisations/models.py:353
 msgid "Mobile, home, office, etc."
 msgstr "Handy, privat, Büro, etc."
 
-#: sso/accounts/models.py:868
+#: sso/accounts/models.py:869
 msgid "associated systems"
 msgstr "Assoziertes System"
 
-#: sso/accounts/models.py:881
+#: sso/accounts/models.py:882
 msgid "role profile admin"
 msgstr "Rollenprofiladmin"
 
-#: sso/accounts/models.py:882
+#: sso/accounts/models.py:883
 msgid "role profile admins"
 msgstr "Rollenprofiladmins"
 
-#: sso/accounts/models.py:891
+#: sso/accounts/models.py:892
 msgid "application admin"
 msgstr "Anwendungsadmin"
 
-#: sso/accounts/models.py:892
+#: sso/accounts/models.py:893
 msgid "application admins"
 msgstr "Anwendungensadmins"
 
@@ -822,7 +830,7 @@ msgstr "Benutzer hinzufügen"
 #: sso/organisations/templates/organisations/organisationcountry_list.html:10
 #: sso/registration/templates/registration/change_user_registration_form.html:6
 #: sso/registration/templates/registration/user_registration_list.html:10
-#: sso/templates/base.html:59 sso/templates/home.html:14
+#: sso/templates/base.html:59 sso/templates/home.html:13
 #: sso/templates/privacy.html:9 sso/views/__init__.py:15
 msgid "Home"
 msgstr ""
@@ -959,7 +967,7 @@ msgstr "Zugehörige Rollenprofile"
 #: sso/accounts/templates/accounts/profile_form_center.html:53
 #: sso/emails/templates/emails/groupemail_form.html:68
 #: sso/organisations/templates/organisations/adminregion_form.html:66
-#: sso/organisations/templates/organisations/organisation_form.html:87
+#: sso/organisations/templates/organisations/organisation_form.html:88
 #: sso/organisations/templates/organisations/organisationcountry_form.html:69
 #: sso/registration/templates/admin/registration/registrationprofile/change_form.html:11
 #: sso/registration/templates/registration/change_user_registration_form.html:102
@@ -980,7 +988,7 @@ msgstr ""
 #: sso/organisations/templates/organisations/adminregion_create_form.html:20
 #: sso/organisations/templates/organisations/adminregion_form.html:67
 #: sso/organisations/templates/organisations/organisation_create_form.html:20
-#: sso/organisations/templates/organisations/organisation_form.html:88
+#: sso/organisations/templates/organisations/organisation_form.html:89
 #: sso/organisations/templates/organisations/organisationcountry_create_form.html:20
 #: sso/organisations/templates/organisations/organisationcountry_form.html:70
 #: sso/registration/templates/admin/registration/registrationprofile/change_form.html:8
@@ -1000,8 +1008,8 @@ msgstr "Registrierung"
 #: sso/accounts/templates/accounts/user_email_detail.html:109
 #: sso/emails/templates/emails/groupemail_detail.html:86
 #: sso/emails/templates/emails/groupemail_detail.html:87
-#: sso/organisations/templates/organisations/organisation_detail.html:115
-#: sso/organisations/templates/organisations/organisation_form.html:85
+#: sso/organisations/templates/organisations/organisation_detail.html:117
+#: sso/organisations/templates/organisations/organisation_form.html:86
 #: sso/registration/templates/admin/registration/registrationprofile/change_form.html:9
 #: sso/registration/templates/registration/change_user_registration_form.html:100
 msgid "Delete"
@@ -1265,7 +1273,7 @@ msgstr "Mit Deinem %(brand)s-Konto anmelden"
 msgid "Forgotten your password?"
 msgstr "Passwort vergessen?"
 
-#: sso/accounts/templates/accounts/login.html:72 sso/templates/home.html:45
+#: sso/accounts/templates/accounts/login.html:72 sso/templates/home.html:44
 #, python-format
 msgid ""
 "New at %(site_name)s? <a href=\"%(registration_register_url)s\">Sign up</a>"
@@ -1445,7 +1453,7 @@ msgstr "Passwort Anlegen"
 
 #: sso/accounts/templates/accounts/password_create_confirm.html:10
 #: sso/accounts/templates/accounts/password_reset_confirm.html:10
-#: sso/accounts/views/__init__.py:417
+#: sso/accounts/views/__init__.py:418
 msgid "Enter new password"
 msgstr ""
 
@@ -1529,7 +1537,7 @@ msgstr ""
 #: sso/accounts/templates/accounts/password_reset_done.html:4
 #: sso/accounts/templates/accounts/password_reset_done.html:7
 msgid "Password reset successful"
-msgstr ""
+msgstr "Das Passwort wurde erfolgreich zurückgesetzt"
 
 #: sso/accounts/templates/accounts/password_reset_done.html:8
 msgid ""
@@ -1571,21 +1579,21 @@ msgstr "Benutzer löschen"
 #: sso/accounts/views/filter.py:34 sso/accounts/views/filter.py:95
 #: sso/emails/admin.py:42 sso/emails/models.py:29
 #: sso/organisations/admin.py:13 sso/organisations/forms.py:16
-#: sso/organisations/forms.py:94 sso/organisations/forms.py:189
-#: sso/organisations/forms.py:283 sso/organisations/forms.py:340
-#: sso/organisations/forms.py:358 sso/organisations/models.py:85
+#: sso/organisations/forms.py:95 sso/organisations/forms.py:190
+#: sso/organisations/forms.py:283 sso/organisations/forms.py:339
+#: sso/organisations/forms.py:357 sso/organisations/models.py:85
 #: sso/organisations/templates/organisations/adminregion_detail.html:30
-#: sso/organisations/templates/organisations/organisation_detail.html:65
+#: sso/organisations/templates/organisations/organisation_detail.html:67
 #: sso/organisations/templates/organisations/organisationcountry_detail.html:27
-#: sso/organisations/views/__init__.py:252
+#: sso/organisations/views/__init__.py:254
 #: sso/organisations/views/region.py:120 sso/registration/forms.py:45
-#: sso/registration/forms.py:172 sso/registration/views.py:54
+#: sso/registration/forms.py:178 sso/registration/views.py:54
 msgid "Country"
 msgstr "Land"
 
 #: sso/accounts/templates/accounts/user_confirm_delete.html:52
-#: sso/organisations/templates/organisations/organisation_detail.html:91
-#: sso/registration/forms.py:46 sso/registration/forms.py:173
+#: sso/organisations/templates/organisations/organisation_detail.html:93
+#: sso/registration/forms.py:46 sso/registration/forms.py:179
 msgid "City"
 msgstr ""
 
@@ -1656,23 +1664,23 @@ msgstr "E-Mail Senden"
 msgid "Logged out"
 msgstr ""
 
-#: sso/accounts/views/__init__.py:197
+#: sso/accounts/views/__init__.py:198
 msgid "The confirmation was not succesfull, please resend the confirmation."
 msgstr ""
 "Die Bestätigung war nicht erfolgreich, bitte versende erneut eine "
 "Bestätigungsemail."
 
-#: sso/accounts/views/__init__.py:201
+#: sso/accounts/views/__init__.py:202
 #, python-format
 msgid "Your email address \"%(email)s\" was already confirmed successfully."
 msgstr "Deine E-Mail Adresse \"%(email)s\" wurde schon bestätigt."
 
-#: sso/accounts/views/__init__.py:205
+#: sso/accounts/views/__init__.py:206
 #, python-format
 msgid "Your email address \"%(email)s\" was confirmed successfully."
 msgstr "Deine E-Mail Adresse \"%(email)s\" wurde erfolgreich bestätigt."
 
-#: sso/accounts/views/__init__.py:207
+#: sso/accounts/views/__init__.py:208
 msgid ""
 "The confirmation message has probably already expired, please resend the "
 "confirmation."
@@ -1680,73 +1688,77 @@ msgstr ""
 "Die Bestätigungsemail ist wahrscheinlich veraltet, bitte versende erneut "
 "eine Bestätigungsemail."
 
-#: sso/accounts/views/__init__.py:220 sso/accounts/views/__init__.py:245
+#: sso/accounts/views/__init__.py:221 sso/accounts/views/__init__.py:246
 #, python-format
 msgid "Confirmation email was sent to \"%(email)s\"."
 msgstr ""
 "Eine E-Mail zur Bestätigung der E-Mail Adresse wurde an \"%(email)s\" "
 "versendet."
 
-#: sso/accounts/views/__init__.py:226
+#: sso/accounts/views/__init__.py:227
 #, python-format
 msgid "The email \"%(email)s\" was deleted successfully."
 msgstr "Die  E-Mail Adresse \"%(email)s\" wurde erfolgreich gelöscht."
 
-#: sso/accounts/views/__init__.py:236
+#: sso/accounts/views/__init__.py:237
 #, python-format
 msgid "The email \"%(email)s\" was changed successfully."
 msgstr "Die E-Mail Adresse \"%(email)s\" wurde erfolgreich geändert."
 
-#: sso/accounts/views/__init__.py:244
+#: sso/accounts/views/__init__.py:245
 msgid "Thank you. Your data were saved."
 msgstr "Vielen Dank, Deine Eingaben wurden gespeichert."
 
-#: sso/accounts/views/__init__.py:262
+#: sso/accounts/views/__init__.py:263
 msgid "Your profile was changed successfully. You may edit it again below."
 msgstr ""
 "Dein Benutzerprofil wurde erfolgreich geändert. Du kannst die Daten unten "
 "erneut ändern."
 
-#: sso/accounts/views/__init__.py:268
+#: sso/accounts/views/__init__.py:269
 msgid "Thank you. Your profile was saved."
 msgstr "Vielen Dank, Deine Eingaben wurden gespeichert."
 
-#: sso/accounts/views/__init__.py:428
+#: sso/accounts/views/__init__.py:429
 msgid "Password create unsuccessful"
 msgstr "Fehler beim Passwort Anlegen"
 
-#: sso/accounts/views/application.py:60 sso/accounts/views/filter.py:21
+#: sso/accounts/views/application.py:59
+msgid "last login"
+msgstr "letzte Anmeldung"
+
+#: sso/accounts/views/application.py:80 sso/accounts/views/filter.py:21
 #: sso/accounts/views/organisation.py:166
 msgid "Active Users"
 msgstr "Aktive Benutzer"
 
-#: sso/accounts/views/application.py:60 sso/accounts/views/filter.py:21
+#: sso/accounts/views/application.py:80 sso/accounts/views/filter.py:21
 #: sso/accounts/views/organisation.py:166
 msgid "Inactive Users"
 msgstr "Inaktive Benutzer"
 
-#: sso/accounts/views/application.py:70 sso/accounts/views/application.py:72
+#: sso/accounts/views/application.py:90 sso/accounts/views/application.py:92
 #: sso/accounts/views/organisation.py:170
 msgid "primary email"
 msgstr "primäre E-Mail"
 
-#: sso/accounts/views/application.py:164 sso/accounts/views/application.py:172
+#: sso/accounts/views/application.py:184 sso/accounts/views/application.py:192
 msgid "Add user"
 msgstr "Benutzer hinzufügen"
 
-#: sso/accounts/views/application.py:199
+#: sso/accounts/views/application.py:219
 #, python-format
 msgid "The account %(username)s has no email address!"
 msgstr "Zu dem Konto %(username)s wurde keine E-Mail Adresse angegeben!"
 
-#: sso/accounts/views/application.py:210
+#: sso/accounts/views/application.py:230
 #, python-format
 msgid ""
 "The %(name)s \"%(obj)s\" was changed successfully. You may add another "
 "%(name)s below."
 msgstr ""
 
-#: sso/accounts/views/application.py:213 sso/accounts/views/application.py:279
+#: sso/accounts/views/application.py:233 sso/accounts/views/application.py:299
 #: sso/registration/views.py:176 sso/views/generic.py:243
 #, python-format
 msgid ""
@@ -1754,7 +1766,7 @@ msgid ""
 "below."
 msgstr ""
 
-#: sso/accounts/views/application.py:217
+#: sso/accounts/views/application.py:237
 #, python-format
 msgid ""
 "The %(name)s \"%(obj)s\" was changed successfully and the invitation email "
@@ -1763,29 +1775,29 @@ msgstr ""
 "%(name)s \"%(obj)s\" wurde erfolgreich geändert und eine Email Einladung "
 "wurde erneut versendet."
 
-#: sso/accounts/views/application.py:220 sso/accounts/views/application.py:282
+#: sso/accounts/views/application.py:240 sso/accounts/views/application.py:302
 #: sso/registration/views.py:180 sso/views/generic.py:246
 #, python-format
 msgid "The %(name)s \"%(obj)s\" was changed successfully."
 msgstr ""
 
-#: sso/accounts/views/application.py:257
+#: sso/accounts/views/application.py:277
 msgid "Change user"
 msgstr "Benutzer bearbeiten"
 
-#: sso/accounts/views/application.py:303
+#: sso/accounts/views/application.py:323
 msgid "Change user roles"
 msgstr "Benutzer Rollen bearbeiten"
 
 #: sso/accounts/views/filter.py:22 sso/emails/views.py:147
-#: sso/organisations/views/__init__.py:241
+#: sso/organisations/views/__init__.py:243
 #: sso/organisations/views/country.py:118
 #: sso/organisations/views/region.py:142
 msgid "active/inactive"
 msgstr "aktiv/inaktiv"
 
 #: sso/accounts/views/filter.py:23 sso/emails/views.py:148
-#: sso/organisations/views/__init__.py:242
+#: sso/organisations/views/__init__.py:244
 #: sso/organisations/views/country.py:119
 #: sso/organisations/views/region.py:143 sso/registration/views.py:63
 #: sso/registration/views.py:73 sso/registration/views.py:83
@@ -1793,7 +1805,7 @@ msgid "All"
 msgstr ""
 
 #: sso/accounts/views/filter.py:35 sso/accounts/views/filter.py:96
-#: sso/organisations/views/__init__.py:253
+#: sso/organisations/views/__init__.py:255
 #: sso/organisations/views/region.py:121 sso/registration/views.py:55
 msgid "All Countries"
 msgstr "Alle Länder"
@@ -1801,13 +1813,13 @@ msgstr "Alle Länder"
 #: sso/accounts/views/filter.py:44 sso/accounts/views/filter.py:105
 #: sso/emails/admin.py:43 sso/emails/models.py:28
 #: sso/organisations/models.py:122
-#: sso/organisations/templates/organisations/organisation_detail.html:69
-#: sso/organisations/views/__init__.py:262
+#: sso/organisations/templates/organisations/organisation_detail.html:71
+#: sso/organisations/views/__init__.py:264
 msgid "Region"
 msgstr "Region"
 
 #: sso/accounts/views/filter.py:45 sso/accounts/views/filter.py:106
-#: sso/organisations/views/__init__.py:263
+#: sso/organisations/views/__init__.py:265
 msgid "All Regions"
 msgstr "Alle Regionen"
 
@@ -1843,31 +1855,41 @@ msgstr "zum Zentrum"
 msgid "from organisation"
 msgstr "vom Zentrum"
 
+#: sso/admin/__init__.py:30
+#, python-format
+msgid "%(brand)s SSO site admin"
+msgstr ""
+
+#: sso/admin/__init__.py:31
+#, python-format
+msgid "%(brand)s Single Sign-On Site administration"
+msgstr ""
+
 #: sso/api/response.py:56
 msgid "The request requires user authentication"
 msgstr ""
 
-#: sso/api/views/users.py:95 sso/api/views/users_v2.py:423
+#: sso/api/views/users.py:95 sso/api/views/users_v2.py:422
 #: sso/templates/include/global_navigation.html:27
 msgid "More"
 msgstr "Mehr"
 
-#: sso/api/views/users.py:95 sso/api/views/users_v2.py:425
-#: sso/templates/admin/base_site.html:20
+#: sso/api/views/users.py:95 sso/api/views/users_v2.py:424
+#: sso/templates/admin/base_site.html:24
 #: sso/templates/include/global_navigation.html:43
 msgid "Log out"
 msgstr ""
 
-#: sso/api/views/users_v2.py:290
+#: sso/api/views/users_v2.py:289
 #, python-format
 msgid "You are not allowed to add users to %s."
 msgstr ""
 
-#: sso/api/views/users_v2.py:354
+#: sso/api/views/users_v2.py:353
 msgid "E-mail value is missing"
 msgstr "Die E-Mail Adresse fehlt"
 
-#: sso/api/views/users_v2.py:375
+#: sso/api/views/users_v2.py:374
 msgid "Organisation is missing."
 msgstr "Die Organisation fehlt"
 
@@ -1909,8 +1931,8 @@ msgid ""
 "This account has expired. Please contact the user administrator in your "
 "buddhist center %s."
 msgstr ""
-"Dieses Benutzerkonto ist abgelaufen. Bitte wende Dich an den Benutzeradministrator "
-"in Deinem Buddhistischen Zentrum %s."
+"Dieses Benutzerkonto ist abgelaufen. Bitte wende Dich an den "
+"Benutzeradministrator in Deinem Buddhistischen Zentrum %s."
 
 #: sso/auth/forms.py:32
 msgid ""
@@ -1953,9 +1975,9 @@ msgstr ""
 #: sso/emails/forms.py:12 sso/emails/forms.py:30 sso/emails/forms.py:44
 #: sso/emails/forms.py:52
 #: sso/emails/templates/emails/emailforward_confirm_delete.html:25
-#: sso/organisations/forms.py:216
+#: sso/organisations/forms.py:217
 #: sso/organisations/templates/organisations/adminregion_detail.html:52
-#: sso/organisations/templates/organisations/organisation_detail.html:47
+#: sso/organisations/templates/organisations/organisation_detail.html:49
 #: sso/organisations/templates/organisations/organisationcountry_detail.html:49
 msgid "Email forwarding address"
 msgstr "E-Mail Weiterleitung"
@@ -1972,8 +1994,8 @@ msgstr "Der Benutzer existiert nicht"
 msgid "Permission"
 msgstr "Berechtigung"
 
-#: sso/emails/forms.py:138 sso/organisations/forms.py:139
-#: sso/organisations/forms.py:313 sso/organisations/forms.py:371
+#: sso/emails/forms.py:138 sso/organisations/forms.py:140
+#: sso/organisations/forms.py:313 sso/organisations/forms.py:370
 msgid "The email address already exists"
 msgstr "Diese E-Mail Adresse wird schon benutzt."
 
@@ -2112,14 +2134,14 @@ msgstr "E-Mail hinzufügen"
 
 #: sso/emails/templates/emails/groupemail_detail.html:47
 #: sso/organisations/templates/organisations/adminregion_detail.html:58
-#: sso/organisations/templates/organisations/organisation_detail.html:50
+#: sso/organisations/templates/organisations/organisation_detail.html:52
 #: sso/organisations/templates/organisations/organisationcountry_detail.html:55
 msgid "Email alias address"
 msgstr "E-Mail Alias-Adresse"
 
 #: sso/emails/templates/emails/groupemail_detail.html:59
 #: sso/organisations/templates/organisations/adminregion_detail.html:72
-#: sso/organisations/templates/organisations/organisation_detail.html:119
+#: sso/organisations/templates/organisations/organisation_detail.html:121
 #: sso/organisations/templates/organisations/organisationcountry_detail.html:80
 msgid "Update"
 msgstr "Aktualisieren"
@@ -2178,15 +2200,15 @@ msgstr ""
 msgid "No fields changed."
 msgstr ""
 
-#: sso/models.py:58
+#: sso/models.py:57
 msgid "addressee"
 msgstr "Name / Adressat"
 
-#: sso/models.py:59
+#: sso/models.py:58
 msgid "street address"
 msgstr "Adresse"
 
-#: sso/models.py:59
+#: sso/models.py:58
 msgid ""
 "Full street address, with house number, street name, P.O. box, and extended "
 "street address information."
@@ -2194,57 +2216,57 @@ msgstr ""
 "Vollständige Adresse, mit der Hausnummer, Straße, Postfach und weiteren "
 "Adressinformationen."
 
-#: sso/models.py:60
+#: sso/models.py:59
 msgid "city"
 msgstr "Stadt"
 
-#: sso/models.py:61
+#: sso/models.py:60
 msgid "city in native language"
 msgstr "Stadt in der Landessprache"
 
-#: sso/models.py:62
+#: sso/models.py:61
 msgid "postal code"
 msgstr "Postleitzahl"
 
-#: sso/models.py:63 sso/organisations/models.py:76
-#: sso/organisations/models.py:115 sso/organisations/models.py:185
+#: sso/models.py:62 sso/organisations/models.py:76
+#: sso/organisations/models.py:115 sso/organisations/models.py:186
 msgid "country"
 msgstr "Land"
 
-#: sso/models.py:65 sso/models.py:66
+#: sso/models.py:64 sso/models.py:65
 msgid "State or region"
 msgstr "Bundesland oder Region"
 
-#: sso/models.py:66
+#: sso/models.py:65
 msgid "region"
 msgstr "Region"
 
-#: sso/models.py:74
+#: sso/models.py:72
 msgid "address"
 msgstr "Adresse"
 
-#: sso/models.py:75
+#: sso/models.py:73
 msgid "addresses"
 msgstr "Adressen"
 
-#: sso/models.py:85
+#: sso/models.py:83
 msgid "Enter a valid phone number i.e. +49 (531) 123456"
 msgstr "Gebe eine gültige Telefonnummer ein, z.B. +49 (531) 123456"
 
-#: sso/models.py:89 sso/models.py:96
+#: sso/models.py:87 sso/models.py:94
 msgid "phone number"
 msgstr "Telefonnummer"
 
-#: sso/models.py:97
+#: sso/models.py:95
 msgid "phone numbers"
 msgstr "Telefonnummern"
 
-#: sso/oauth2/admin.py:41 sso/oauth2/admin.py:63 sso/oauth2/models.py:112
-#: sso/oauth2/models.py:133
+#: sso/oauth2/admin.py:40 sso/oauth2/admin.py:62 sso/oauth2/models.py:113
+#: sso/oauth2/models.py:134
 msgid "client"
 msgstr "Client"
 
-#: sso/oauth2/admin.py:79 sso/oauth2/models.py:150
+#: sso/oauth2/admin.py:78 sso/oauth2/models.py:151
 msgid "bearer token"
 msgstr "Bearer Token"
 
@@ -2288,7 +2310,7 @@ msgstr ""
 msgid "type"
 msgstr ""
 
-#: sso/oauth2/models.py:85 sso/oauth2/models.py:119
+#: sso/oauth2/models.py:85 sso/oauth2/models.py:120
 msgid "scopes"
 msgstr ""
 
@@ -2306,31 +2328,31 @@ msgstr ""
 "Legt fest, ob dieser Client aktiv ist. Kann deaktiviert werden, anstatt den "
 "Client zu löschen."
 
-#: sso/oauth2/models.py:114
+#: sso/oauth2/models.py:115
 msgid "code"
 msgstr "Code"
 
-#: sso/oauth2/models.py:115 sso/oauth2/models.py:136 sso/oauth2/models.py:152
+#: sso/oauth2/models.py:116 sso/oauth2/models.py:137 sso/oauth2/models.py:153
 msgid "created at"
 msgstr "angelegt am"
 
-#: sso/oauth2/models.py:116
+#: sso/oauth2/models.py:117
 msgid "redirect uri"
 msgstr ""
 
-#: sso/oauth2/models.py:117
+#: sso/oauth2/models.py:118
 msgid "is valid"
 msgstr "ist gültig"
 
-#: sso/oauth2/models.py:118
+#: sso/oauth2/models.py:119
 msgid "client state"
 msgstr ""
 
-#: sso/oauth2/models.py:135
+#: sso/oauth2/models.py:136
 msgid "access token"
 msgstr "Zugriffstoken"
 
-#: sso/oauth2/models.py:151
+#: sso/oauth2/models.py:152
 msgid "token"
 msgstr ""
 
@@ -2360,52 +2382,52 @@ msgstr ""
 msgid "There's been an OAuth 2 error: %(error)s"
 msgstr ""
 
-#: sso/organisations/admin.py:122 sso/organisations/models.py:194
+#: sso/organisations/admin.py:122 sso/organisations/models.py:195
 msgid "notes"
 msgstr "Notizen"
 
 #: sso/organisations/forms.py:60
-#: sso/organisations/templates/organisations/organisation_detail.html:40
+#: sso/organisations/templates/organisations/organisation_detail.html:42
 #: sso/organisations/templates/organisations/organisation_list.html:47
 #: sso/templates/include/_static_google_maps_field.html:6
 msgid "Google Maps"
 msgstr ""
 
-#: sso/organisations/forms.py:95
+#: sso/organisations/forms.py:96
 msgid "Center type"
 msgstr "Zentrumstyp"
 
-#: sso/organisations/forms.py:104
+#: sso/organisations/forms.py:105
 msgid "Admin region"
 msgstr "Region"
 
-#: sso/organisations/forms.py:135 sso/organisations/forms.py:309
-#: sso/organisations/forms.py:367
+#: sso/organisations/forms.py:136 sso/organisations/forms.py:309
+#: sso/organisations/forms.py:366
 msgid ""
 "The email address of the center must be ending with @diamondway-center.org"
 msgstr ""
 
-#: sso/organisations/forms.py:206 sso/organisations/forms.py:273
+#: sso/organisations/forms.py:207 sso/organisations/forms.py:274
 msgid "The admin region is not valid for the selected country."
 msgstr ""
 
-#: sso/organisations/forms.py:216
+#: sso/organisations/forms.py:217
 msgid "The primary email forwarding address for the center"
 msgstr "Die primäre E-Mail Weiterleitungsadresse für das Zentrum"
 
-#: sso/organisations/forms.py:228
+#: sso/organisations/forms.py:229
 msgid "The email forward address and email address must be different"
 msgstr ""
 "Die E-Mail Weiterleitungsadresse und die Email Adresse müssen sich "
 "unterscheiden"
 
-#: sso/organisations/forms.py:338
+#: sso/organisations/forms.py:337
 #: sso/organisations/templates/organisations/organisationcountry_detail.html:61
 msgid "Country Groups"
 msgstr "Länder Gruppen"
 
 #: sso/organisations/models.py:68
-#: sso/organisations/templates/organisations/organisation_detail.html:57
+#: sso/organisations/templates/organisations/organisation_detail.html:59
 msgid "Country groups"
 msgstr "Länder Gruppen"
 
@@ -2485,51 +2507,59 @@ msgstr ""
 msgid "Nearby"
 msgstr ""
 
-#: sso/organisations/models.py:186
+#: sso/organisations/models.py:185
+msgid "name in native language"
+msgstr "Name in der Landessprache"
+
+#: sso/organisations/models.py:187
 msgid "admin region"
 msgstr "Region"
 
-#: sso/organisations/models.py:191
-#: sso/organisations/templates/organisations/organisation_detail.html:28
+#: sso/organisations/models.py:192
+#: sso/organisations/templates/organisations/organisation_detail.html:30
 msgid "Google+ page"
 msgstr "Google+ Seite"
 
-#: sso/organisations/models.py:192
-#: sso/organisations/templates/organisations/organisation_detail.html:31
+#: sso/organisations/models.py:193
+#: sso/organisations/templates/organisations/organisation_detail.html:33
 msgid "Facebook page"
 msgstr "Facebook Seite"
 
-#: sso/organisations/models.py:193
-#: sso/organisations/templates/organisations/organisation_detail.html:34
+#: sso/organisations/models.py:194
+#: sso/organisations/templates/organisations/organisation_detail.html:36
 msgid "Twitter page"
 msgstr "Twitter Seite"
 
-#: sso/organisations/models.py:195
+#: sso/organisations/models.py:196
 msgid "center type"
 msgstr "Art des Zentrums"
 
 #: sso/organisations/models.py:197
+msgid "id from the previous center DB (obsolete)"
+msgstr ""
+
+#: sso/organisations/models.py:198
 msgid "founded"
 msgstr "gegründet"
 
-#: sso/organisations/models.py:198
+#: sso/organisations/models.py:199
 msgid "coordinates type"
 msgstr "Koordinatentyp"
 
-#: sso/organisations/models.py:199
+#: sso/organisations/models.py:200
 msgid "latitude"
 msgstr ""
 
-#: sso/organisations/models.py:200
+#: sso/organisations/models.py:201
 msgid "longitude"
 msgstr ""
 
-#: sso/organisations/models.py:201
+#: sso/organisations/models.py:202
 msgid "location"
 msgstr "Position"
 
-#: sso/organisations/models.py:205
-#: sso/organisations/templates/organisations/organisation_detail.html:77
+#: sso/organisations/models.py:206
+#: sso/organisations/templates/organisations/organisation_detail.html:79
 msgid ""
 "Designates whether this buddhist center should be treated as active. "
 "Unselect this instead of deleting buddhist center."
@@ -2537,12 +2567,12 @@ msgstr ""
 "Legt fest, ob dieses Zentrum aktiv ist. Kann deaktiviert werden, anstatt das "
 "Zentrum zu löschen."
 
-#: sso/organisations/models.py:207
+#: sso/organisations/models.py:208
 msgid "private"
 msgstr "privat"
 
-#: sso/organisations/models.py:208
-#: sso/organisations/templates/organisations/organisation_detail.html:82
+#: sso/organisations/models.py:209
+#: sso/organisations/templates/organisations/organisation_detail.html:84
 msgid ""
 "Designates whether this buddhist center data should be treated as private "
 "and only a telephone number should be displayed on public sites."
@@ -2550,20 +2580,20 @@ msgstr ""
 "Legt fest, ob die Daten diese Zentrums privat sind und nur die Telefonnummer "
 "auf öffentlichen Seiten angezeigt werden soll."
 
-#: sso/organisations/models.py:211
+#: sso/organisations/models.py:212
 msgid "publish"
 msgstr "veröffentlichen"
 
-#: sso/organisations/models.py:212
+#: sso/organisations/models.py:213
 msgid "Designates whether this buddhist center data can be published."
 msgstr ""
 "Gibt an, ob dieses Zentrum auf öffentlichen Seiten publiziert werden kann."
 
-#: sso/organisations/models.py:214
+#: sso/organisations/models.py:215
 msgid "uses activation"
 msgstr "Benutzeraktivierung verwenden"
 
-#: sso/organisations/models.py:215
+#: sso/organisations/models.py:216
 msgid ""
 "Designates whether this buddhist center uses the new user activation process."
 msgstr ""
@@ -2599,13 +2629,13 @@ msgstr "Andere#2"
 
 #: sso/organisations/templates/organisations/addresses.html:5
 #: sso/templates/edit_inline/stacked.html:4
-#: sso/templates/edit_inline/tabular.html:4
+#: sso/templates/edit_inline/tabular.html:3
 msgid "Remove"
 msgstr ""
 
 #: sso/organisations/templates/organisations/addresses.html:6
 #: sso/templates/edit_inline/stacked.html:5
-#: sso/templates/edit_inline/tabular.html:5
+#: sso/templates/edit_inline/tabular.html:4
 #, python-format
 msgid "Add another %(verbose_name)s"
 msgstr "%(verbose_name)s hinzufügen"
@@ -2682,47 +2712,51 @@ msgstr "Zentrum hinzufügen"
 msgid "Center Details"
 msgstr "Zentrums Details"
 
-#: sso/organisations/templates/organisations/organisation_detail.html:37
+#: sso/organisations/templates/organisations/organisation_detail.html:26
+msgid "Name in native language"
+msgstr "Name in der Landessprache"
+
+#: sso/organisations/templates/organisations/organisation_detail.html:39
 msgid "Local date and time"
 msgstr "Lokales Datum und Uhrzeit"
 
-#: sso/organisations/templates/organisations/organisation_detail.html:42
+#: sso/organisations/templates/organisations/organisation_detail.html:44
 msgid "Founded"
 msgstr "Gegründet"
 
-#: sso/organisations/templates/organisations/organisation_detail.html:80
+#: sso/organisations/templates/organisations/organisation_detail.html:82
 msgid "Private"
 msgstr "Privat"
 
-#: sso/organisations/templates/organisations/organisation_detail.html:88
+#: sso/organisations/templates/organisations/organisation_detail.html:90
 msgid "Address"
 msgstr "Adresse"
 
-#: sso/organisations/templates/organisations/organisation_detail.html:89
+#: sso/organisations/templates/organisations/organisation_detail.html:91
 msgid "Addressee"
 msgstr "Name / Addressat"
 
-#: sso/organisations/templates/organisations/organisation_detail.html:90
+#: sso/organisations/templates/organisations/organisation_detail.html:92
 msgid "Street Address"
 msgstr "Adresse"
 
-#: sso/organisations/templates/organisations/organisation_detail.html:92
+#: sso/organisations/templates/organisations/organisation_detail.html:94
 msgid "Postal Code"
 msgstr "Postleitzahl"
 
-#: sso/organisations/templates/organisations/organisation_detail.html:93
+#: sso/organisations/templates/organisations/organisation_detail.html:95
 msgid "state"
 msgstr "Bundesland"
 
-#: sso/organisations/templates/organisations/organisation_detail.html:97
+#: sso/organisations/templates/organisations/organisation_detail.html:99
 msgid "Phone Numbers"
 msgstr "Telefonnummern"
 
-#: sso/organisations/templates/organisations/organisation_detail.html:99
+#: sso/organisations/templates/organisations/organisation_detail.html:101
 msgid "Phone"
 msgstr "Telefonnummer"
 
-#: sso/organisations/templates/organisations/organisation_detail.html:102
+#: sso/organisations/templates/organisations/organisation_detail.html:104
 msgid "Nearest Centers"
 msgstr "Nächste Zentren"
 
@@ -2758,27 +2792,27 @@ msgstr "Land aktualisieren"
 msgid "Country Data"
 msgstr "Landesdaten"
 
-#: sso/organisations/views/__init__.py:234
+#: sso/organisations/views/__init__.py:236
 msgid "Center Type"
 msgstr "Zentrumstyp"
 
-#: sso/organisations/views/__init__.py:235
+#: sso/organisations/views/__init__.py:237
 msgid "All Center Types"
 msgstr "Alle Zentren"
 
-#: sso/organisations/views/__init__.py:240
+#: sso/organisations/views/__init__.py:242
 msgid "Active Centers"
 msgstr "Aktive Zentren"
 
-#: sso/organisations/views/__init__.py:240
+#: sso/organisations/views/__init__.py:242
 msgid "Inactive Centers"
 msgstr "inaktive Zentren"
 
-#: sso/organisations/views/__init__.py:270
+#: sso/organisations/views/__init__.py:272
 msgid "My Centers"
 msgstr "Meine Zentren"
 
-#: sso/organisations/views/__init__.py:284
+#: sso/organisations/views/__init__.py:286
 msgid "distance"
 msgstr "Entfernung"
 
@@ -2865,7 +2899,7 @@ msgstr "Bestätigungs E-Mails erneut senden"
 msgid "Date registered"
 msgstr "Registrierungsdatum"
 
-#: sso/registration/forms.py:51 sso/registration/forms.py:171
+#: sso/registration/forms.py:51 sso/registration/forms.py:177
 msgid "About me"
 msgstr "Über mich"
 
@@ -2905,7 +2939,7 @@ msgstr "Zugriff verweigert"
 msgid "Designates if access is denied to the user."
 msgstr "Gibt an, ob dem Benutzer der Zugang verweigert wurde."
 
-#: sso/registration/forms.py:171
+#: sso/registration/forms.py:177
 msgid ""
 "If you would like to tell us something about yourself or your involvement "
 "with buddhism please do so in this box."
@@ -2913,7 +2947,7 @@ msgstr ""
 "Wenn Du möchtest, erzähle uns etwas über Dich und Deine Verbindung zum "
 "Buddhismus."
 
-#: sso/registration/forms.py:243
+#: sso/registration/forms.py:249
 msgid "User registration"
 msgstr "Benutzer Registrierung"
 
@@ -3249,29 +3283,24 @@ msgid ""
 "email and should be fixed shortly. Thanks for your patience."
 msgstr ""
 
-#: sso/templates/admin/base_site.html:7
-#, python-format
-msgid "%(brand)s SSO"
+#: sso/templates/admin/base_site.html:5
+msgid "Site admin"
 msgstr ""
 
-#: sso/templates/admin/base_site.html:10
-#, python-format
-msgid "%(brand)s Single Sign-On"
+#: sso/templates/admin/base_site.html:8
+#: sso/templates/include/_navigation.html:5
+msgid "Administration"
+msgstr "Administration"
+
+#: sso/templates/admin/base_site.html:13
+msgid "View site"
 msgstr ""
 
-#: sso/templates/admin/base_site.html:10
-msgid "Site administration"
-msgstr ""
-
-#: sso/templates/admin/base_site.html:14
-msgid "Front-End Home Page"
-msgstr "Front-End Start Seite"
-
-#: sso/templates/admin/base_site.html:17
+#: sso/templates/admin/base_site.html:18
 msgid "Documentation"
 msgstr ""
 
-#: sso/templates/admin/base_site.html:19
+#: sso/templates/admin/base_site.html:22
 msgid "Change password"
 msgstr ""
 
@@ -3283,11 +3312,6 @@ msgstr ""
 #: sso/templates/privacy.html.py:10 sso/templates/privacy.html:16
 msgid "Privacy"
 msgstr "Datenschutz"
-
-#: sso/templates/base_site.html:4 sso/templates/base_site.html.py:5
-#, python-format
-msgid "%(brand)s"
-msgstr ""
 
 #: sso/templates/csrf_failure.html:26
 msgid ""
@@ -3321,7 +3345,7 @@ msgstr ""
 msgid "Try again"
 msgstr "Erneut versuchen"
 
-#: sso/templates/edit_inline/tabular.html:23
+#: sso/templates/edit_inline/tabular.html:22
 msgid "Delete?"
 msgstr "Löschen?"
 
@@ -3329,20 +3353,20 @@ msgstr "Löschen?"
 msgid "Delete all Features"
 msgstr "Auswahl löschen"
 
-#: sso/templates/home.html:24
+#: sso/templates/home.html:23
 msgid "Welcome,"
 msgstr ""
 
-#: sso/templates/home.html:27
+#: sso/templates/home.html:26
 msgid "Applications"
 msgstr "Anwendungen"
 
-#: sso/templates/home.html:36
+#: sso/templates/home.html:35
 #, python-format
 msgid "Welcome, at the %(brand)s Single Sign-On home page."
 msgstr "Willkommen auf der %(brand)s Single Sign-On Startseite"
 
-#: sso/templates/home.html:39
+#: sso/templates/home.html:38
 #, python-format
 msgid "Would you like <a href=\"%(login_url)s\">to log yourself</a> in?"
 msgstr "Möchtest Du Dich <a href=\"%(login_url)s\">Anmelden</a>?"
@@ -3352,10 +3376,6 @@ msgstr "Möchtest Du Dich <a href=\"%(login_url)s\">Anmelden</a>?"
 #: sso/templates/include/_user_field.html:10
 msgid "Send email"
 msgstr "E-Mail Senden"
-
-#: sso/templates/include/_navigation.html:5
-msgid "Administration"
-msgstr "Administration"
 
 #: sso/templates/include/_navigation.html:30
 msgid "Registrations"

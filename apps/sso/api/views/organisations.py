@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from pytz import timezone
-
-from django.utils.timezone import now, localtime
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from utils.url import base_url
@@ -27,6 +24,7 @@ class OrganisationMixin(object):
             'is_active': obj.is_active,
             'is_private': obj.is_private,
             'name': u'%s' % obj.name,
+            'name_native': u'%s' % obj.name_native,
             'email': u'%s' % obj.email,
             'founded': obj.founded,
             'center_type': obj.center_type,

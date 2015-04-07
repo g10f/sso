@@ -49,6 +49,7 @@
      <div class="tab-content">
         <div class="tab-pane {% if not active or active == "object" %}active{% endif %}" id="object">         
            {% include 'include/_field.html' with field=form.name %}
+           {% include 'include/_field.html' with field=form.name_native %}
            {% include 'include/_field.html' with field=form.center_type %}
            {% include 'include/_field.html' with field=form.country %}
            {% include 'include/_field.html' with field=form.admin_region %}           
