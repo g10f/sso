@@ -79,7 +79,7 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
             request.client = Client.objects.get(uuid=client_id)
         return request.client
         
-    # Ordered roughly in order of apperance in the authorization grant flow
+    # Ordered roughly in order of appearance in the authorization grant flow
     # Pre- and Post-authorization.
     def validate_client_id(self, client_id, request, *args, **kwargs):
         try:
@@ -89,7 +89,7 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
             return False
         
     def validate_redirect_uri(self, client_id, redirect_uri, request, *args, **kwargs):
-        # We use the pre registerd default uri
+        # We use the pre registered default uri
         client = self._get_client(client_id, request)
         return check_redirect_uri(client, redirect_uri)            
 

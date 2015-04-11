@@ -3,7 +3,7 @@ import logging
 
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-from utils.url import base_url
+from utils.url import base_url, absolute_url
 from utils.parse import parse_datetime_with_timezone_support
 from sso.organisations.models import Organisation, get_near_organisations
 from sso.api.views.generic import JsonListView, JsonDetailView
@@ -79,6 +79,15 @@ class OrganisationMixin(object):
                     'primary': phone_number.primary
                 } for phone_number in obj.organisationphonenumber_set.all()
             }
+            data['pictures'] = {
+                picture.uuid: {
+                    'title': picture.title,
+                    'description': picture.description,
+                    'order': picture.order,
+                    'url': absolute_url(request, picture.picture.url)
+                } for picture in obj.organisationpicture_set.all()
+            }
+
         return data
     
 
@@ -87,7 +96,8 @@ class OrganisationDetailView(OrganisationMixin, JsonDetailView):
     operations = {}
     
     def get_queryset(self):
-        return super(OrganisationDetailView, self).get_queryset().prefetch_related('country', 'email', 'organisationaddress_set', 'organisationphonenumber_set')
+        return super(OrganisationDetailView, self).get_queryset().prefetch_related('country', 'email', 'organisationaddress_set', 'organisationphonenumber_set',
+                                                                                   'organisationpicture_set')
 
     def get_object_data(self, request, obj):
         return super(OrganisationDetailView, self).get_object_data(request, obj, details=True)
@@ -100,7 +110,8 @@ class OrganisationDetailView(OrganisationMixin, JsonDetailView):
 class OrganisationList(OrganisationMixin, JsonListView):
     # TODO: caching
     def get_queryset(self):
-        qs = super(OrganisationList, self).get_queryset().prefetch_related('country', 'admin_region', 'email', 'organisationaddress_set', 'organisationphonenumber_set').distinct()
+        qs = super(OrganisationList, self).get_queryset().prefetch_related('country', 'admin_region', 'email', 'organisationaddress_set',
+                                                                           'organisationphonenumber_set', 'organisationpicture_set').distinct()
         
         is_active = self.request.GET.get('is_active', None)
         if is_active:
@@ -128,7 +139,8 @@ class OrganisationList(OrganisationMixin, JsonListView):
             parsed = parse_datetime_with_timezone_support(modified_since)
             if parsed is None:
                 raise ValueError("can not parse %s" % modified_since)
-            qs = qs.filter(Q(last_modified__gte=parsed) | Q(organisationaddress__last_modified__gte=parsed) | Q(organisationphonenumber__last_modified__gte=parsed))
+            qs = qs.filter(Q(last_modified__gte=parsed) | Q(organisationaddress__last_modified__gte=parsed) | Q(organisationphonenumber__last_modified__gte=parsed)
+                           | Q(organisationpicture__last_modified__gte=parsed))
          
         latlng = self.request.GET.get('latlng', None) 
         

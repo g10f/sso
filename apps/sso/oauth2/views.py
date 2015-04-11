@@ -4,10 +4,6 @@ import base64
 import hashlib
 from http.util import get_request_param
 
-try:
-    from urllib.parse import urlparse, urlunparse, urlsplit, urlunsplit
-except ImportError:     # Python 2
-    from urlparse import urlparse, urlunparse, urlsplit, urlunsplit
 from django.views.decorators.cache import never_cache, cache_page, cache_control
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.clickjacking import xframe_options_exempt
@@ -32,6 +28,11 @@ from .server import server
 from .models import Client
 
 import logging
+
+try:
+    from urllib.parse import urlparse, urlunparse, urlsplit, urlunsplit
+except ImportError:     # Python 2
+    from urlparse import urlparse, urlunparse, urlsplit, urlunsplit
 
 logger = logging.getLogger(__name__)
 
@@ -200,10 +201,14 @@ def authorize(request):
                 raise LoginRequiredError(state=credentials.get('state'))
             else:
                 id_token = get_request_param(request, 'id_token_hint', '')
-                parsed = loads_jwt(id_token)
-                if parsed['sub'] != request.user.uuid:
+                try:
+                    parsed = loads_jwt(id_token)
+                    if parsed['sub'] != request.user.uuid:
+                        raise LoginRequiredError(state=credentials.get('state'))
+                except BadSignature, e:  # maybe Token used too late
+                    logger.exception(e)
                     raise LoginRequiredError(state=credentials.get('state'))
-                
+
         if is_login_required: 
             return redirect_to_login(request)
             

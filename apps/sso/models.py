@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 import logging
+from mimetypes import guess_extension
+import os
 import re
+from django.utils.crypto import get_random_string
+from django.forms import forms
+from django.utils.text import get_valid_filename
 
 from django.core.validators import RegexValidator
 from django.db import models
@@ -12,6 +17,29 @@ from sso.fields import UUIDField
 
 
 logger = logging.getLogger(__name__)
+
+
+def get_filename(filename):
+    return os.path.normpath(get_valid_filename(os.path.basename(filename)))
+
+
+def clean_picture(picture, max_upload_size):
+    from django.template.defaultfilters import filesizeformat
+    if picture and hasattr(picture, 'content_type'):
+        base_content_type = picture.content_type.split('/')[0]
+        if base_content_type in ['image']:
+            if picture._size > max_upload_size:
+                raise forms.ValidationError(_('Please keep filesize under %(filesize)s. Current filesize %(current_filesize)s') %
+                                            {'filesize': filesizeformat(max_upload_size), 'current_filesize': filesizeformat(picture._size)})
+            # mimetypes.guess_extension return jpe which is quite uncommon for jpeg
+            if picture.content_type == 'image/jpeg':
+                file_ext = '.jpg'
+            else:
+                file_ext = guess_extension(picture.content_type)
+            picture.name = "%s%s" % (get_random_string(7, allowed_chars='abcdefghijklmnopqrstuvwxyz0123456789'), file_ext)
+        else:
+            raise forms.ValidationError(_('File type is not supported'))
+    return picture
 
 
 class AbstractBaseModelManager(models.Manager):
@@ -86,7 +114,6 @@ validate_phone = RegexValidator(phone_re, _("Enter a valid phone number i.e. +49
 class PhoneNumberMixin(models.Model):
     phone = models.CharField(_("phone number"), max_length=30, validators=[validate_phone])
     primary = models.BooleanField(_("primary"), default=False)
-    # history = HistoricalRecords()
 
     class Meta:
         abstract = True

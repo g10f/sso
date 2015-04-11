@@ -1,6 +1,7 @@
 import logging
 
 from pytz import timezone
+from sorl import thumbnail
 
 from django.utils.timezone import localtime, now
 from django.conf import settings
@@ -16,7 +17,7 @@ from l10n.models import Country
 from smart_selects.db_fields import ChainedForeignKey
 from sso.fields import URLFieldEx
 from utils.loaddata import disable_for_loaddata
-from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary
+from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary, get_filename
 from sso.emails.models import Email, CENTER_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, REGION_EMAIL_TYPE, COUNTRY_GROUP_EMAIL_TYPE
 from sso.decorators import memoize
 
@@ -273,6 +274,11 @@ class Organisation(AbstractBaseModel):
         else:
             last_modified_list += self.organisationphonenumber_set.values_list("last_modified", flat=True)
         
+        if hasattr(self, '_prefetched_objects_cache') and ('organisationpicture' in self._prefetched_objects_cache):
+            last_modified_list += [obj.last_modified for obj in self.organisationpicture_set.all()]
+        else:
+            last_modified_list += self.organisationpicture_set.values_list("last_modified", flat=True)
+
         last_modified = max(last_modified_list)
         return last_modified
 
@@ -322,6 +328,24 @@ class Organisation(AbstractBaseModel):
             pass            
         return None
     primary_phone = property(phone_number)       
+
+
+def generate_filename(instance, filename):
+    return u'organisation_image/%s/%s' % (instance.organisation.uuid, get_filename(filename.encode('ascii', 'replace')))
+
+
+class OrganisationPicture(AbstractBaseModel):
+    MAX_PICTURE_SIZE = 5242880  # 5 MB
+    organisation = models.ForeignKey(Organisation)
+    title = models.CharField(_("title"), max_length=255, blank=True)
+    description = models.TextField(_("description"), blank=True, max_length=2048)
+    picture = thumbnail.ImageField(_('picture'), upload_to=generate_filename)  # , storage=MediaStorage())
+    order = models.IntegerField(default=0, help_text=_('Overwrites the alphabetic order.'))
+
+    class Meta(AbstractBaseModel.Meta):
+        verbose_name = _('organisation picture')
+        verbose_name_plural = _('organisation pictures')
+        ordering = ['order']
 
 
 class OrganisationAddress(AbstractBaseModel, AddressMixin):

@@ -21,6 +21,7 @@ AUTH_TOKEN_LIFETIME_SECS = 300    # 5 minutes in seconds
 MAX_TOKEN_LIFETIME_SECS = 86400    # 1 day in seconds
 MAX_AGE = 3600  # one hour
 
+
 class PrivateKey(object):
     
     @property

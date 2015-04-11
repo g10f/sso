@@ -108,24 +108,24 @@ class ReadOnlyYesNoField(ReadOnlyField):
 class ImageWidget(forms.ClearableFileInput):
     """
     An ImageField Widget for django.contrib.admin that shows a thumbnailed
-    image as well as a link to the current one if it hase one.
+    image as well as a link to the current one if it has one.
     """
-    template_with_initial = u'%(clear_template)s<br />%(input_text)s: %(input)s'
+    template_with_initial = u'<div>%(clear_template)s<br />%(input_text)s: %(input)s</div>'
     template_with_clear = u'<div class="checkbox"><label>%(clear)s %(clear_checkbox_label)s </label></div>'
-    # template_with_clear = u'<label for="%(clear_checkbox_id)s"></label><div class="checkbox">%(clear_checkbox_label)s %(clear)s'
 
     def render(self, name, value, attrs=None):
         output = super(ImageWidget, self).render(name, value, attrs)
         if value and hasattr(value, 'url'):
             try:
-                mini = get_thumbnail(value, 'x108', upscale=False)
+                mini = get_thumbnail(value, '180x180', crop='center')
             except Exception:
                 pass
             else:
                 output = (
                     u'<div><a href="%s">'
-                    u'<img src="%s" alt="%s"></a></div>%s'
+                    u'<img class="img-thumbnail" src="%s" alt="%s"></a></div>%s'
                 ) % (value.url, mini.url, name, output)
+
         return mark_safe(output)
 
 

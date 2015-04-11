@@ -18,7 +18,7 @@ class BaseForm(forms.ModelForm):
             return self.instance
 
     def opts(self):
-        # i need the model verbose_name in the html form, is there a better way?
+        # we need the model verbose_name in the html form
         return self._meta.model._meta
 
 
