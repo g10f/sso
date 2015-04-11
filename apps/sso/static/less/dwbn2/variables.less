@@ -1,0 +1,104 @@
+//
+// Variables
+// --------------------------------------------------
+
+@dwbn-red: #d22138;
+@dwbn-fw-red: #be0f34;
+@dwbn-yellow: #ffd451;
+
+
+//== Colors
+//
+
+@gray-base:              #000;
+@gray-darker:            lighten(@gray-base, 13.5%); // #222
+@gray-dark:              #333;   // #333
+@gray:                   #595959; // #555
+@gray-light:             #b2b2b2; // #777
+@gray-lighter:           #eee; // #eee
+
+@brand-primary:     @dwbn-red;      //#428bca;
+@text-color: 		#595959;
+
+//== Typography
+//
+//## Font, line-height, and color for body text, headings, and more.
+
+@font-family-sans-serif:  "myriad-pro", "Roboto", sans-serif; //"Helvetica Neue", Helvetica, Arial, sans-serif;
+@font-family-serif:       Georgia, "Times New Roman", Times, serif;
+
+@headings-font-weight:  300;
+
+@font-size-base:        16px; //14px;
+@font-size-h1:			40px;
+@font-size-h2:			28px;
+
+// grid layout
+
+
+// scaffolding
+@link-hover-decoration: none;
+
+
+// grid system override
+@grid-gutter-width:         10px;
+@container-large-desktop:   (960px + @grid-gutter-width);
+
+
+//== Buttons
+//
+//## For each of Bootstrap's buttons, define text, background and border color.
+
+@btn-font-weight:                normal;
+
+@btn-default-color:              #333; //#fff; //#333;
+@btn-default-bg:                 #fff; //@gray-light; //#fff;
+@btn-default-border:             #ccc; //@btn-default-bg; //#ccc;
+
+@btn-primary-bg:                 @gray;                 //@brand-primary;
+
+
+//=== Shared nav styles
+
+@nav-link-padding-vert:		15px;
+@nav-link-padding:      	10px @nav-link-padding-vert;
+
+//== Navbar
+//
+
+@navbar-height:		49px;
+@nav-link-hover-bg: transparent;
+
+@dw-navbar-content-height: 30px;
+@navbar-padding-vertical: ((@navbar-height - @dw-navbar-content-height) / 2);
+  
+
+// Inverted navbar
+// Reset inverted navbar basics
+@navbar-default-border: 					@brand-primary; 
+
+
+@navbar-inverse-color:                      @gray-dark;  //@gray-light;
+@navbar-inverse-border:						@brand-primary;                    
+@navbar-inverse-bg:                         #ffffff; 							//darken(@dwbn-red, 6.5%);  or #222;
+
+// Inverted navbar links
+@navbar-inverse-link-color:                 @gray-dark;    //@gray-light; 
+@navbar-inverse-link-hover-color:			@dwbn-red;               
+@navbar-inverse-link-hover-bg:              transparent;
+@navbar-inverse-link-active-color:			@dwbn-red;
+@navbar-inverse-link-active-bg:				transparent;
+@navbar-inverse-brand-hover-color:			@dwbn-red;
+@navbar-inverse-brand-color:				@gray-dark;
+
+// Inverted navbar toggle
+@navbar-inverse-toggle-hover-bg:            transparent;              //#333;
+@navbar-inverse-toggle-border-color:        lighten(@dwbn-red, 3%);              //#333;
+@navbar-inverse-toggle-icon-bar-bg: 		@dwbn-red;
+
+
+//== List group
+//
+
+//** Background color of active list elements
+@list-group-active-bg:          @gray;              //@component-active-bg;
