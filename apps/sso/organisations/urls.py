@@ -8,6 +8,7 @@ urlpatterns = [
     url(r'^(?P<uuid>[a-z0-9]{32})/$', views.OrganisationDetailView.as_view(), name='organisation_detail'),
     url(r'^(?P<uuid>[a-z0-9]{32})/update/$', views.OrganisationUpdateView.as_view(), name='organisation_update'),
     url(r'^(?P<uuid>[a-z0-9]{32})/delete/$', views.OrganisationDeleteView.as_view(), name='organisation_delete'),
+    url(r'^(?P<uuid>[a-z0-9]{32})/picture/$', views.OrganisationPictureUpdateView.as_view(), name='organisation_picture_update'),
     url(r'^create/$', views.OrganisationCreateView.as_view(), name='organisation_create'),
     url(r'^region/$', region.AdminRegionList.as_view(), name='adminregion_list'), 
     url(r'^region/(?P<uuid>[a-z0-9]{32})/$', region.AdminRegionDetailView.as_view(), name='adminregion_detail'),

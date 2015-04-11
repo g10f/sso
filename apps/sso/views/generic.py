@@ -221,10 +221,7 @@ class FormsetsUpdateView(generic.UpdateView):
         add additionally the form class to self, because we need to check changed_data for verifying the formsets 
         """
         self.object = self.get_object()
-        form_class = self.get_form_class()
-        # TODO: is this is a hack? 
-        self.form = self.get_form(form_class)
-
+        self.form = self.get_form()
         if self.is_valid:
             # form_valid saves the form
             response = self.form_valid(self.form)

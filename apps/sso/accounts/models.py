@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
-import os
 from itertools import chain
 import re
 import logging
 from datetime import timedelta
 from urlparse import urlparse
-from django.core.cache import cache
 
 from sorl import thumbnail
-from django.core.urlresolvers import reverse
 
+from django.core.cache import cache
+from django.core.urlresolvers import reverse
 from django.utils.crypto import get_random_string
 from django.core import validators
 from django.db import models
@@ -24,7 +23,7 @@ from django.core.mail import send_mail
 from django.utils import timezone
 from django.utils.timezone import now
 from django.utils.translation import pgettext_lazy, ugettext_lazy as _
-from django.utils.text import get_valid_filename, capfirst
+from django.utils.text import capfirst
 from l10n.models import Country
 from sso.fields import UUIDField
 from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary
@@ -168,14 +167,6 @@ class RoleProfile(AbstractBaseModel):
         return u"%s" % self.name
 
 
-def get_filename(filename):
-    return os.path.normpath(get_valid_filename(os.path.basename(filename)))
-
-
-def generate_filename(instance, filename):
-    return u'image/%s/%s' % (instance.uuid, get_filename(filename.encode('ascii', 'replace'))) 
-
-
 class UserEmail(AbstractBaseModel):
     MAX_EMAIL_ADRESSES = 2
     email = models.EmailField(_('email address'), max_length=254, unique=True)
@@ -223,6 +214,10 @@ class UserManager(BaseUserManager):
 
     def get_by_email(self, email):
         return self.filter(useremail__email__iexact=email).prefetch_related('useremail_set').get()
+
+
+def generate_filename(instance, filename):
+    return u'image/%s/%s' % (instance.uuid, get_filename(filename.encode('ascii', 'replace')))
 
 
 class User(AbstractBaseUser, PermissionsMixin):

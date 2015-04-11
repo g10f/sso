@@ -1,14 +1,38 @@
 # -*- coding: utf-8 -*-
 import datetime
 
+from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.forms import ModelChoiceField, ModelMultipleChoiceField, ValidationError
 from l10n.models import Country
 from sso.accounts.models import update_or_create_organisation_account
-from sso.forms import bootstrap, BaseForm, BaseTabularInlineForm
+from sso.forms import bootstrap, BaseForm, BaseTabularInlineForm, BLANK_CHOICE_DASH
 from sso.forms.fields import EmailFieldLower
 from sso.emails.models import Email, EmailForward, CENTER_EMAIL_TYPE, REGION_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, PERM_EVERYBODY, PERM_DWB
-from .models import OrganisationPhoneNumber, OrganisationAddress, Organisation, AdminRegion, OrganisationCountry, CountryGroup
+from .models import OrganisationPhoneNumber, OrganisationAddress, Organisation, AdminRegion, OrganisationCountry, CountryGroup, OrganisationPicture
+from sso.models import clean_picture
+
+
+class OrganisationPictureForm(BaseTabularInlineForm):
+    order = forms.IntegerField(label=_("Order"), required=False, widget=bootstrap.Select(choices=BLANK_CHOICE_DASH + zip(range(3), range(3))))
+
+    class Meta:
+        model = OrganisationPicture
+        fields = ('picture', 'title', 'description', 'order')
+        widgets = {
+            'name': bootstrap.TextInput(attrs={'size': 50}),
+            'picture': bootstrap.ImageWidget(),
+        }
+
+    def clean_order(self):
+        order = self.cleaned_data["order"]
+        if order is None:
+            order = 0
+        return order
+
+    def clean_picture(self):
+        picture = self.cleaned_data["picture"]
+        return clean_picture(picture, OrganisationPicture.MAX_PICTURE_SIZE)
 
 
 class OrganisationAddressForm(BaseForm):
@@ -51,9 +75,6 @@ class OrganisationPhoneNumberForm(BaseTabularInlineForm):
             'phone_type': bootstrap.Select(),
             'phone': bootstrap.TextInput(attrs={'size': 50}),
         }
-
-    def __init__(self, *args, **kwargs):
-        super(OrganisationPhoneNumberForm, self).__init__(*args, **kwargs)
 
 
 class OrganisationBaseForm(BaseForm):

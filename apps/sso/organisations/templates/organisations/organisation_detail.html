@@ -1,5 +1,6 @@
 {% extends "base_form.html" %}
 {% load i18n admin_static %}
+{% load thumbnail %}
 
 {% block title %}{% trans 'Center Details' %}{% endblock %}
 
@@ -7,7 +8,7 @@
 <ol class="breadcrumb">
     <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
     <li><a href="{% url 'organisations:organisation_list' %}">{% trans 'Centers' %}</a></li>
-    <li class="active">{% trans 'Center Details' %}</li>
+    <li class="active">{{ object.name }}</li>
 </ol> 
 {% endblock breadcrumb %}
 
@@ -21,7 +22,18 @@
 {% if messages %}{% for message in messages %}
 <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
 {% endif %}
-
+    <div class="row">
+        {% for org_pic in object.organisationpicture_set.all %}
+        <div class="col-xs-6 col-md-3">
+            <div class="thumbnail">
+            <a href="{{ org_pic.picture.url }}">{% thumbnail org_pic.picture "180x180" crop="center" as im %}
+                <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="">{% endthumbnail %}</a>
+            <h4>{{ org_pic.title }}</h4>
+            <p>{{ org_pic.description }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
 	{% if object.name_native %}
 	<div class="row"><div class="dwbn-label">{% trans 'Name in native language' %}: </div><div class="dwbn-content">{{ object.name_native }}</div></div>
 	{% endif %}
@@ -118,6 +130,7 @@
         {% endif %}
 
         {% if perms.organisations.change_organisation %}
+        <a class="btn btn-default" href="{% url 'organisations:organisation_picture_update' object.uuid %}">{% trans 'Update Pictures' %}</a>
         <a class="btn btn-primary" href="{% url 'organisations:organisation_update' object.uuid %}">{% trans 'Update' %}</a>
         {% endif %}
         {% endif %}
