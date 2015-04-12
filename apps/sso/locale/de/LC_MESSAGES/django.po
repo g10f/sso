@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-04-11 13:13+0200\n"
+"POT-Creation-Date: 2015-04-12 15:22+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -51,8 +51,8 @@ msgstr "angelegt von"
 msgid "associated system"
 msgstr "Assoziertes System"
 
-#: sso/accounts/admin.py:179 sso/organisations/forms.py:210
-#: sso/organisations/forms.py:277
+#: sso/accounts/admin.py:179 sso/organisations/forms.py:211
+#: sso/organisations/forms.py:278
 msgid "Admin Region"
 msgstr ""
 
@@ -157,7 +157,7 @@ msgstr ""
 #: sso/accounts/templates/accounts/application/add_user_done.html:27
 #: sso/emails/forms.py:75
 #: sso/emails/templates/emails/groupemail_detail.html:26
-#: sso/organisations/forms.py:118
+#: sso/organisations/forms.py:119
 #: sso/organisations/templates/organisations/adminregion_detail.html:26
 msgid "Name"
 msgstr ""
@@ -170,8 +170,8 @@ msgstr ""
 #: sso/accounts/templates/accounts/user_email_detail.html:70
 #: sso/emails/forms.py:110
 #: sso/emails/templates/emails/groupemail_detail.html:41
-#: sso/organisations/forms.py:115 sso/organisations/forms.py:142
-#: sso/organisations/forms.py:303 sso/organisations/forms.py:356
+#: sso/organisations/forms.py:116 sso/organisations/forms.py:143
+#: sso/organisations/forms.py:304 sso/organisations/forms.py:357
 #: sso/organisations/templates/organisations/adminregion_detail.html:46
 #: sso/organisations/templates/organisations/organisation_detail.html:58
 #: sso/organisations/templates/organisations/organisationcountry_detail.html:42
@@ -409,7 +409,7 @@ msgstr "Gültig bis"
 
 #: sso/accounts/forms.py:615 sso/emails/forms.py:112
 #: sso/emails/templates/emails/groupemail_detail.html:34
-#: sso/organisations/forms.py:119
+#: sso/organisations/forms.py:120
 #: sso/organisations/templates/organisations/adminregion_detail.html:38
 #: sso/organisations/templates/organisations/organisation_detail.html:89
 #: sso/organisations/templates/organisations/organisationcountry_detail.html:35
@@ -700,7 +700,7 @@ msgstr "Zentrumswechsel"
 
 #: sso/accounts/models.py:807 sso/organisations/models.py:340
 msgid "title"
-msgstr ""
+msgstr "Titel"
 
 #: sso/accounts/models.py:808
 msgid "message"
@@ -832,7 +832,7 @@ msgstr "Benutzer hinzufügen"
 #: sso/organisations/templates/organisations/organisationcountry_list.html:10
 #: sso/registration/templates/registration/change_user_registration_form.html:6
 #: sso/registration/templates/registration/user_registration_list.html:10
-#: sso/templates/base.html:59 sso/templates/home.html:13
+#: sso/templates/base.html:52 sso/templates/home.html:13
 #: sso/templates/privacy.html:9 sso/views/__init__.py:15
 msgid "Home"
 msgstr ""
@@ -1038,7 +1038,7 @@ msgstr "Kontakt Information"
 #: sso/accounts/templates/accounts/contact_form.html:15
 #: sso/accounts/templates/accounts/contact_thanks.html:9
 #: sso/accounts/templates/accounts/contact_thanks.html:15
-#: sso/templates/base.html:72
+#: sso/templates/base.html:65
 msgid "Feedback"
 msgstr ""
 
@@ -1056,6 +1056,7 @@ msgstr "Vielen Dank für Deine Nachricht."
 #: sso/accounts/templates/accounts/profile_form.html:47
 #: sso/accounts/templates/accounts/profile_form_center.html:5
 #: sso/accounts/views/filter.py:82
+#: sso/templates/include/dwbn2/global_navigation_temp.html:43
 msgid "Profile"
 msgstr "Profil"
 
@@ -1266,6 +1267,9 @@ msgstr ""
 #: sso/accounts/templates/accounts/login_profile_form.html:4
 #: sso/accounts/templates/accounts/password_create_complete.html:12
 #: sso/accounts/templates/accounts/password_reset_complete.html:12
+#: sso/templates/include/dwbn/global_navigation.html:45
+#: sso/templates/include/dwbn2/global_navigation.html:63
+#: sso/templates/include/dwbn2/global_navigation_temp.html:48
 #: sso/templates/include/global_navigation.html:45
 msgid "Log in"
 msgstr ""
@@ -1441,8 +1445,9 @@ msgstr "Zurück"
 
 #: sso/accounts/templates/accounts/password_change_form.html:34
 #: sso/accounts/templates/accounts/password_reset_confirm.html:25
+#: sso/templates/include/_navigation.html:80
 msgid "Change my password"
-msgstr ""
+msgstr "Mein Passwort ändern"
 
 #: sso/accounts/templates/accounts/password_create_complete.html:4
 #: sso/accounts/templates/accounts/password_create_complete.html:8
@@ -1584,10 +1589,10 @@ msgstr "Benutzer löschen"
 #: sso/accounts/templates/accounts/user_confirm_delete.html:47
 #: sso/accounts/views/filter.py:34 sso/accounts/views/filter.py:95
 #: sso/emails/admin.py:42 sso/emails/models.py:29
-#: sso/organisations/admin.py:13 sso/organisations/forms.py:40
-#: sso/organisations/forms.py:116 sso/organisations/forms.py:211
-#: sso/organisations/forms.py:304 sso/organisations/forms.py:360
-#: sso/organisations/forms.py:378 sso/organisations/models.py:86
+#: sso/organisations/admin.py:13 sso/organisations/forms.py:41
+#: sso/organisations/forms.py:117 sso/organisations/forms.py:212
+#: sso/organisations/forms.py:305 sso/organisations/forms.py:361
+#: sso/organisations/forms.py:379 sso/organisations/models.py:86
 #: sso/organisations/templates/organisations/adminregion_detail.html:30
 #: sso/organisations/templates/organisations/organisation_detail.html:79
 #: sso/organisations/templates/organisations/organisationcountry_detail.html:27
@@ -1876,12 +1881,18 @@ msgid "The request requires user authentication"
 msgstr ""
 
 #: sso/api/views/users.py:95 sso/api/views/users_v2.py:422
+#: sso/templates/include/dwbn/global_navigation.html:27
+#: sso/templates/include/dwbn2/global_navigation.html:27
+#: sso/templates/include/dwbn2/global_navigation_temp.html:27
 #: sso/templates/include/global_navigation.html:27
 msgid "More"
 msgstr "Mehr"
 
 #: sso/api/views/users.py:95 sso/api/views/users_v2.py:424
 #: sso/templates/admin/base_site.html:24
+#: sso/templates/include/dwbn/global_navigation.html:43
+#: sso/templates/include/dwbn2/global_navigation.html:61
+#: sso/templates/include/dwbn2/global_navigation_temp.html:46
 #: sso/templates/include/global_navigation.html:43
 msgid "Log out"
 msgstr ""
@@ -1981,7 +1992,7 @@ msgstr ""
 #: sso/emails/forms.py:12 sso/emails/forms.py:30 sso/emails/forms.py:44
 #: sso/emails/forms.py:52
 #: sso/emails/templates/emails/emailforward_confirm_delete.html:25
-#: sso/organisations/forms.py:238
+#: sso/organisations/forms.py:239
 #: sso/organisations/templates/organisations/adminregion_detail.html:52
 #: sso/organisations/templates/organisations/organisation_detail.html:61
 #: sso/organisations/templates/organisations/organisationcountry_detail.html:49
@@ -2000,8 +2011,8 @@ msgstr "Der Benutzer existiert nicht"
 msgid "Permission"
 msgstr "Berechtigung"
 
-#: sso/emails/forms.py:138 sso/organisations/forms.py:161
-#: sso/organisations/forms.py:334 sso/organisations/forms.py:391
+#: sso/emails/forms.py:138 sso/organisations/forms.py:162
+#: sso/organisations/forms.py:335 sso/organisations/forms.py:392
 msgid "The email address already exists"
 msgstr "Diese E-Mail Adresse wird schon benutzt."
 
@@ -2396,42 +2407,42 @@ msgstr "Notizen"
 msgid "Order"
 msgstr ""
 
-#: sso/organisations/forms.py:81
+#: sso/organisations/forms.py:82
 #: sso/organisations/templates/organisations/organisation_detail.html:54
 #: sso/organisations/templates/organisations/organisation_list.html:47
 #: sso/templates/include/_static_google_maps_field.html:6
 msgid "Google Maps"
 msgstr ""
 
-#: sso/organisations/forms.py:117
+#: sso/organisations/forms.py:118
 msgid "Center type"
 msgstr "Zentrumstyp"
 
-#: sso/organisations/forms.py:126
+#: sso/organisations/forms.py:127
 msgid "Admin region"
 msgstr "Region"
 
-#: sso/organisations/forms.py:157 sso/organisations/forms.py:330
-#: sso/organisations/forms.py:387
+#: sso/organisations/forms.py:158 sso/organisations/forms.py:331
+#: sso/organisations/forms.py:388
 msgid ""
 "The email address of the center must be ending with @diamondway-center.org"
 msgstr ""
 
-#: sso/organisations/forms.py:228 sso/organisations/forms.py:295
+#: sso/organisations/forms.py:229 sso/organisations/forms.py:296
 msgid "The admin region is not valid for the selected country."
 msgstr ""
 
-#: sso/organisations/forms.py:238
+#: sso/organisations/forms.py:239
 msgid "The primary email forwarding address for the center"
 msgstr "Die primäre E-Mail Weiterleitungsadresse für das Zentrum"
 
-#: sso/organisations/forms.py:250
+#: sso/organisations/forms.py:251
 msgid "The email forward address and email address must be different"
 msgstr ""
 "Die E-Mail Weiterleitungsadresse und die Email Adresse müssen sich "
 "unterscheiden"
 
-#: sso/organisations/forms.py:358
+#: sso/organisations/forms.py:359
 #: sso/organisations/templates/organisations/organisationcountry_detail.html:61
 msgid "Country Groups"
 msgstr "Länder Gruppen"
@@ -3338,11 +3349,11 @@ msgstr ""
 msgid "Change password"
 msgstr ""
 
-#: sso/templates/base.html:68
+#: sso/templates/base.html:61
 msgid "About us"
 msgstr ""
 
-#: sso/templates/base.html:70 sso/templates/privacy.html:5
+#: sso/templates/base.html:63 sso/templates/privacy.html:5
 #: sso/templates/privacy.html.py:10 sso/templates/privacy.html:16
 msgid "Privacy"
 msgstr "Datenschutz"
@@ -3423,19 +3434,28 @@ msgstr "Benutzer"
 msgid "My Email Addresses"
 msgstr "Meine E-Mail Adressen"
 
-#: sso/templates/include/_navigation.html:80
-msgid "Change my password "
-msgstr "Mein Passwort Ändern"
-
 #: sso/templates/include/_search_form.html:9
 msgid "search text"
 msgstr "Suchtext"
 
+#: sso/templates/include/dwbn/global_navigation.html:53
 #: sso/templates/include/global_navigation.html:53
 #, python-format
 msgid ""
 "Please activate JavaScript to enable all features. <a href=\"%(url)s\" "
 "target=\"_blank\">Read this page for more help</a>"
+msgstr ""
+"Bitte aktiviere JavaScript, damit alle Funktionen zur Verfügung stehen. <a "
+"href=\"%(url)s\" target=\"_blank\">Lese diese Seite für Hilfe zum Aktivieren "
+"von JavaScript</a>"
+
+#: sso/templates/include/dwbn2/global_navigation.html:72
+#: sso/templates/include/dwbn2/global_navigation_temp.html:57
+#, python-format
+msgid ""
+"Please activate JavaScript to enable all features.\n"
+"            <a href=\"%(url)s\" target=\"_blank\">Read this page for more "
+"help</a>"
 msgstr ""
 "Bitte aktiviere JavaScript, damit alle Funktionen zur Verfügung stehen. <a "
 "href=\"%(url)s\" target=\"_blank\">Lese diese Seite für Hilfe zum Aktivieren "

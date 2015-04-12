@@ -12,7 +12,8 @@ def get_base_url(request):
 
 def settings(request):
     
-    return {'navigation_template': site_settings.SSO_NAVIGATION_TEMPLATE,
+    return {"global_navigation_template": site_settings.SSO_GLOBAL_NAVIGATION_TEMPLATE,
+            'navigation_template': site_settings.SSO_NAVIGATION_TEMPLATE,
             'brand': site_settings.SSO_BRAND,
             'base_url': get_base_url(request),
             'stylesheet': site_settings.SSO_STYLESHEET,
