@@ -25,3 +25,8 @@ class BaseForm(forms.ModelForm):
 class BaseTabularInlineForm(BaseForm):    
     def template(self):
         return 'edit_inline/tabular.html'
+
+
+class BaseStackedInlineForm(BaseForm):
+    def template(self):
+        return 'edit_inline/stacked.html'

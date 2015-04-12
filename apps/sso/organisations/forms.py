@@ -6,14 +6,14 @@ from django.utils.translation import ugettext_lazy as _
 from django.forms import ModelChoiceField, ModelMultipleChoiceField, ValidationError
 from l10n.models import Country
 from sso.accounts.models import update_or_create_organisation_account
-from sso.forms import bootstrap, BaseForm, BaseTabularInlineForm, BLANK_CHOICE_DASH
+from sso.forms import bootstrap, BaseForm, BaseTabularInlineForm, BLANK_CHOICE_DASH, BaseStackedInlineForm
 from sso.forms.fields import EmailFieldLower
 from sso.emails.models import Email, EmailForward, CENTER_EMAIL_TYPE, REGION_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, PERM_EVERYBODY, PERM_DWB
 from .models import OrganisationPhoneNumber, OrganisationAddress, Organisation, AdminRegion, OrganisationCountry, CountryGroup, OrganisationPicture
 from sso.models import clean_picture
 
 
-class OrganisationPictureForm(BaseTabularInlineForm):
+class OrganisationPictureForm(BaseStackedInlineForm):
     order = forms.IntegerField(label=_("Order"), required=False, widget=bootstrap.Select(choices=BLANK_CHOICE_DASH + zip(range(3), range(3))))
 
     class Meta:
