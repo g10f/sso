@@ -7,7 +7,7 @@
     <meta name="description" content="OpenID Connect Identity Provider">
     <meta name="author" content="">
     <link rel="shortcut icon" href="{% static favicon %}" type="image/ico"/>
-    {% block style %}{% with less=False %}{% if debug and less %}
+    {% block style %}{% with less=True %}{% if debug and less %}
         <link rel="stylesheet/less" href="{% static stylesheet_less %}">
         <script src="{% static "js/vendor/less-1.7.5.min.js" %}"></script>
         <script>less.modifyVars({'@icon-font-path': '"/static/fonts/"'});</script>{% else %}
@@ -35,14 +35,7 @@
     <![endif]-->
 
     {% block navbar %}
-        {% include "include/global_navigation.html" %}
-        {% if brand == "DWBN" %}
-            <div id="dwbn-logo-header">
-                <div class=" container">
-                    <div id="dwbn-diamondway-logo">&nbsp;</div>
-                </div>
-            </div>
-        {% endif %}
+        {% include global_navigation_template %}
     {% endblock navbar %}
 
     <div class="{% block containerclass %}container{% endblock %}">

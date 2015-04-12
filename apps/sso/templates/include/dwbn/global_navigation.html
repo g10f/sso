@@ -1,0 +1,60 @@
+{% load  i18n thumbnail %}
+<div class="navbar navbar-fixed-top navbar-inverse" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{% url 'home' %}">{% block brand %}{{ brand }}{% endblock %}</a>
+        </div>
+        <div class="collapse navbar-collapse">
+            {% if user.is_authenticated %}
+	            <ul class="nav navbar-nav">
+	            {% with user_apps=user.get_global_navigation_urls %}
+		            {% if user_apps|length < 5 %}
+			            {% for app in user_apps %}
+			                <li><a href="{{ app.url }}">{{ app.title }}</a></li>
+			            {% endfor %}
+		            {% else %}
+			            {% for app in user_apps|slice:":3" %}
+			                <li><a href="{{ app.url }}">{{ app.title }}</a></li>
+			            {% endfor %}
+			            {% for app in user_apps|slice:"3:" %}
+			                {% if forloop.first %}
+			                <li class="dropdown">
+			                   <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans 'More' %} <b class="caret"></b></a>
+			                   <ul class="dropdown-menu">
+			                {% endif %}
+			                       <li><a href="{{ app.url }}">{{ app.title }}</a></li>
+			                {% if forloop.last %}
+			                  </ul>
+			                </li>
+			                {% endif %}
+			            {% endfor %}
+		            {% endif %}
+	            {% endwith %}
+	            </ul>
+            {% endif %}
+            <ul class="nav navbar-nav navbar-right">
+            {% if user.is_authenticated %}
+                <li><a href="{% url 'accounts:profile' %}">{% if user.picture %}{% thumbnail user.picture "30x30" crop="center" as im %}<img class="dwbn-icon-user" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="">{% endthumbnail %}{% else %}<i class="glyphicon glyphicon-user"></i>{% endif %} {{ user.first_name }}</a></li>
+                <li><a href="{% url 'accounts:logout' %}"><i class="glyphicon glyphicon-log-out"></i> {% trans 'Log out' %}</a></li>
+            {% else %}
+                <li><a  href="{% url 'accounts:login' %}"><i class="glyphicon glyphicon-log-in"></i> {% trans 'Log in' %}</a></li>
+            {% endif %}
+            </ul><!-- /.navbar-right -->
+        </div><!--/.navbar-collapse -->
+    </div>
+</div>
+<noscript>
+    <div class="alert alert-warning">
+        {% blocktrans with "http://enable-javascript.com/" as url %}Please activate JavaScript to enable all features. <a href="{{ url }}" target="_blank">Read this page for more help</a>{% endblocktrans %}
+	</div>
+</noscript>
+<div id="dwbn-logo-header">
+    <div class=" container">
+        <div id="dwbn-diamondway-logo">&nbsp;</div>
+    </div>
+</div>

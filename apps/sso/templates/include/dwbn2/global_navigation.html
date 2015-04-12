@@ -1,0 +1,74 @@
+{% load  i18n thumbnail static %}
+<div class="navbar navbar-fixed-top navbar-default" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{% url 'home' %}"><img class="brand-logo" src="{% static 'img/dwbn/logo.png' %}" alt="firewheel"> {{ brand }}</a>
+        </div>
+        <div class="collapse navbar-collapse">
+            <ul class="nav navbar-nav">
+                {% if user.is_authenticated %}
+                    {% with user_apps=user.get_global_navigation_urls %}
+                        {% if user_apps|length < 5 %}
+                            {% for app in user_apps %}
+                                <li><a href="{{ app.url }}">{{ app.title }}</a></li>
+                            {% endfor %}
+                        {% else %}
+                            {% for app in user_apps|slice:":3" %}
+                                <li><a href="{{ app.url }}">{{ app.title }}</a></li>
+                            {% endfor %}
+                            {% for app in user_apps|slice:"3:" %}
+                                {% if forloop.first %}
+                                    <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans 'More' %} <b class="caret"></b></a>
+                                    <ul class="dropdown-menu">
+                                {% endif %}
+                            <li><a href="{{ app.url }}">{{ app.title }}</a></li>
+                            {% if forloop.last %}
+                                </ul>
+                                </li>
+                            {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                {% endif %}
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+            {% if user.is_authenticated %}
+                {% comment %}
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% if user.picture %}{% thumbnail user.picture "30x30" crop="center" as im %}
+                        <img class="dwbn-icon-user" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="">{% endthumbnail %}{% else %}
+                        <i class="glyphicon glyphicon-user"></i>{% endif %} {{ user.first_name }} <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{% url 'accounts:profile' %}">{% trans 'My Account' %}</a></li>
+                        {% if user.organisations.exists %}
+                            <li><a href="{% url 'organisations:my_organisation_detail' %}">{% trans 'My Center' %}</a></li>
+                        {% endif %}
+                        <li><a href="{% url 'accounts:password_change' %}">{% trans 'Change my password' %}</a></li>
+                        {% if not user.is_center %}
+                            <li><a href="{% url 'accounts:emails' %}">{% trans 'My Email Addresses' %}</a></li>{% endif %}
+                        <li><a href="{% url 'accounts:password_change' %}">{% trans 'Change my password' %}</a></li>
+                    </ul>
+                </li>
+                {% endcomment %}
+                <li><a href="{% url 'accounts:profile' %}">{% if user.picture %}{% thumbnail user.picture "30x30" crop="center" as im %}<img class="dwbn-icon-user" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="">{% endthumbnail %}{% else %}<i class="glyphicon glyphicon-user"></i>{% endif %} {{ user.first_name }}</a></li>
+                <li><a href="{% url 'accounts:logout' %}"><i class="glyphicon glyphicon-log-out"></i>   {% trans 'Log out' %}</a></li>
+            {% else %}
+                <li><a href="{% url 'accounts:login' %}"><i class="glyphicon glyphicon-log-in"></i> {% trans 'Log in' %}</a></li>
+            {% endif %}
+            </ul><!-- /.navbar-right -->
+        </div>
+        <!--/.navbar-collapse -->
+    </div>
+</div>
+<noscript>
+    <div class="alert alert-warning">
+        {% blocktrans with "http://enable-javascript.com/" as url %}Please activate JavaScript to enable all features.
+            <a href="{{ url }}" target="_blank">Read this page for more help</a>{% endblocktrans %}
+    </div>
+</noscript>

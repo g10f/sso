@@ -20,7 +20,8 @@ class OrganisationPictureForm(BaseTabularInlineForm):
         model = OrganisationPicture
         fields = ('picture', 'title', 'description', 'order')
         widgets = {
-            'name': bootstrap.TextInput(attrs={'size': 50}),
+            'title': bootstrap.TextInput(attrs={'size': 50}),
+            'description': bootstrap.Textarea(),
             'picture': bootstrap.ImageWidget(),
         }
 
