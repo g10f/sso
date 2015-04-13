@@ -26,7 +26,7 @@ from django.utils.translation import pgettext_lazy, ugettext_lazy as _
 from django.utils.text import capfirst
 from l10n.models import Country
 from sso.fields import UUIDField
-from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary
+from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary, get_filename
 from sso.organisations.models import AdminRegion, Organisation
 from sso.emails.models import GroupEmailManager
 from sso.decorators import memoize
