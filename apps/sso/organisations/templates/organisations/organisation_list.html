@@ -11,7 +11,8 @@
     <li class="active">{% trans 'Centers' %}</li>
 </ol> 
 {% endblock breadcrumb %}
-    
+
+{% block navbar %}{% include global_navigation_template with active_navigation="organisations" %}{% endblock navbar %}
     
 {% block content %}
 <div class="row">

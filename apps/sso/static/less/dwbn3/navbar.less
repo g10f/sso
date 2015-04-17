@@ -1,0 +1,100 @@
+//
+.navbar-toggle {
+  float: left;
+  margin-left: @navbar-padding-horizontal;
+}
+
+.dwbn-navbar-apps {
+  float: left;
+  font-size: @font-size-large;
+  line-height: @line-height-computed;
+  height: @navbar-height;
+  margin-left: -@navbar-padding-horizontal;
+  .dropdown-menu {
+    .border-bottom-radius(@navbar-border-radius);
+    .border-top-radius(0);
+    margin: 0 0;
+  }
+  .dropdown-toggle {
+    position: relative;
+    display: block;
+    padding: @navbar-padding-vertical @navbar-padding-horizontal;
+    color: @navbar-default-link-color;
+    &:hover,
+    &:focus {
+      color: @navbar-default-brand-hover-color;
+      background-color: @navbar-default-brand-hover-bg;
+    }
+  }
+}
+
+.navbar-default {
+  .navbar-nav {
+    // Remove background color from open dropdown
+    > .open > a {
+      &,
+      &:hover,
+      &:focus {
+        background-color: transparent;
+        color: @navbar-default-link-active-color;
+      }
+    }
+  }
+}
+
+.navbar-header {
+  @media (max-width: @grid-float-breakpoint) {
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: #b83b40;
+  }
+}
+
+.navbar-default {
+  @media (max-width: @grid-float-breakpoint) {
+    border-style: none;
+
+  }
+  @media (min-width: @grid-float-breakpoint) {
+    border-color: #b83b40;
+  }
+}
+
+.navbar-default .navbar-collapse {
+  border-style: none;
+}
+
+.navbar-default .navbar-collapse {
+  @media (max-width: @grid-float-breakpoint) {
+    clear: right;
+  }
+}
+
+.collapse.in {
+  @media (max-width: @grid-float-breakpoint) {
+    border-bottom: 1px solid @navbar-default-border;
+  }
+}
+
+@dwbn-logo-top-margin: 13px;
+@dwbn-logo-width-small: 55px;
+
+.dwbn-navbar-logo {
+  height: (@navbar-height - @dwbn-logo-top-margin);
+  float: right;
+  margin: -34px 0 9px;
+  @media (min-width: @grid-float-breakpoint) {
+    margin: 17px 0 -4px;
+  }
+}
+
+.dwbn-logo {
+  width: @dwbn-logo-width-small;
+  display: block;
+  height: 45px;
+  background: transparent url(../img/dwbn/diamondway_logo_m.png) no-repeat top right !important;
+  overflow: visible;
+  @media (min-width: @screen-md-min) {
+    width: 247px;
+  }
+}

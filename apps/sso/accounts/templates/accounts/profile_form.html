@@ -11,6 +11,8 @@
     <script src="{% static "js/formsets-1.1.js" %}"></script>
 {% endblock extrascript %}
 
+{% block navbar %}{% include global_navigation_template with active_navigation="profile" %}{% endblock navbar %}
+
 {% block breadcrumb %}
     <ol class="breadcrumb">
         <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
