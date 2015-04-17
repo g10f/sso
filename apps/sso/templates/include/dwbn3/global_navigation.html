@@ -2,22 +2,25 @@
 <div class="navbar navbar-fixed-top navbar-default" role="navigation">
     <div class="container">
         <div class="navbar-header">
-            <a class="navbar-brand" href="/">{{ brand }}</a>
-        {% if  user.get_global_navigation_urls %}
-            <div class="dwbn-navbar-apps dropdown">
-                <a data-toggle="dropdown" class="dropdown-toggle" href="#"><i class="glyphicon glyphicon-menu-down"></i></a>
-                <ul class="dropdown-menu">
-                    {% for app in user.get_global_navigation_urls %}
-                        <li><a href="{{ app.url }}">{{ app.title }}</a></li>
-                    {% endfor %}
-                </ul>
-            </div>
-        {% endif %}
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
+            {% if  user.get_global_navigation_urls %}
+                <div class="dwbn-navbar-apps dropdown">
+                    <a data-toggle="dropdown" class="dropdown-toggle" href="#">{{ brand }} <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="{% url 'home' %}">{{ brand }}</a></li>
+                        {% for app in user.get_global_navigation_urls %}
+                            <li><a href="{{ app.url }}">{{ app.title }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% else %}
+                <a class="navbar-brand" href="{% url 'home' %}">{{ brand }}</a>
+            {% endif %}
+
         </div>
         <div class="dwbn-navbar-logo"><a class="dwbn-logo" href="#"></a></div>
         <div class="collapse navbar-collapse">
