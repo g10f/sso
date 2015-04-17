@@ -13,6 +13,61 @@
 }
 
 // Brand/project name
+.dwbn-navbar-brand {
+  float: left;
+  //padding: @navbar-padding-vertical @navbar-padding-horizontal;
+  padding: 9px 0px;
+  font-size: @font-size-large;
+  line-height: @line-height-computed;
+  height: @navbar-height;
+  list-style: none;
+
+  &:hover,
+  &:focus {
+    text-decoration: none;
+  }
+  @media (min-width: @grid-float-breakpoint) {
+    .navbar > .container &,
+    .navbar > .container-fluid & {
+      margin-left: -@navbar-padding-horizontal;
+    }
+  }
+
+  > img {
+    display: block;
+  }
+  > li {
+    position: relative;
+    display: block;
+
+    > a {
+      color: @navbar-default-brand-color;
+      position: relative;
+      display: block;
+      padding: @nav-link-padding;
+      &:hover,
+      &:focus {
+        text-decoration: none;
+        background-color: transparent;
+      }
+    }
+  }
+  .dropdown-menu {
+    .border-bottom-radius(@navbar-border-radius);
+    .border-top-radius(0);
+    margin-top: 8px;
+    margin-left: @navbar-padding-horizontal;
+  }
+  // Dropdown menu items
+  > .open > a {
+    &,
+    &:hover,
+    &:focus {
+      background-color: @navbar-default-bg;
+      color: @navbar-default-link-active-color;
+    }
+  }
+}
 
 // set margin-left to 0
 .navbar-brand {

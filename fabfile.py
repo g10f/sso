@@ -17,7 +17,7 @@ configurations = {
 LOGROTATE_TEMPLATE = """\
 %(code_dir)s/logs/*.log {
     monthly
-    missingok
+    missingokv
     rotate 12
     compress
     delaycompress
@@ -134,7 +134,7 @@ os.environ['THROTTELING_DISABLED'] = "False"
 
 @task
 def compileless(version='1.0.11'):
-    for style in ['default', 'dwbn', 'cerulean', 'slate', 'vw', 'dwbn2']:
+    for style in ['default', 'dwbn', 'cerulean', 'slate', 'vw', 'dwbn2', 'dwbn3']:
         local('lessc ./apps/sso/static/less/%(style)s.less ./apps/sso/static/css/%(style)s-%(version)s.css' %{'style': style, 'version': version})
 
 
