@@ -14,6 +14,16 @@
     .border-bottom-radius(@navbar-border-radius);
     .border-top-radius(0);
     margin: 0 0 0 @navbar-padding-horizontal;
+    > .active > a {
+      &,
+      &:hover,
+      &:focus {
+        color: @navbar-default-link-active-color;
+        text-decoration: none;
+        outline: 0;
+        background-color: @navbar-default-link-active-bg;
+      }
+    }
   }
   .dropdown-toggle {
     position: relative;

@@ -11,7 +11,7 @@
                 <div class="dwbn-navbar-apps dropdown">
                     <a data-toggle="dropdown" class="dropdown-toggle" href="#">{{ brand }} <span class="caret"></span></a>
                     <ul class="dropdown-menu">
-                        <li><a href="{% url 'home' %}">{{ brand }}</a></li>
+                        <li class="active"><a href="{% url 'home' %}">{{ brand }}</a></li>
                         {% for app in user.get_global_navigation_urls %}
                             <li><a href="{{ app.url }}">{{ app.title }}</a></li>
                         {% endfor %}
