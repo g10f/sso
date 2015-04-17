@@ -29,6 +29,9 @@ class OrganisationMixin(object):
             'founded': obj.founded,
             'center_type': obj.center_type,
             'homepage': obj.homepage,
+            'google_plus_page': obj.homepage,
+            'facebook_page': obj.facebook_page,
+            'twitter_page': obj.twitter_page,
             'last_modified': obj.get_last_modified_deep(),
             'country': {
                 'code': obj.country.iso2_code,
