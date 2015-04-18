@@ -40,6 +40,7 @@ SSO_VALIDATION_PERIOD_IS_ACTIVE_FOR_ALL = False  # all accounts must be prolonge
 SSO_VALIDATION_PERIOD_DAYS = 356  # accounts must be prolonged after 1 year
 SSO_ADMIN_MAX_AGE = 60 * 30  # 30 min max age for admin pages
 SSO_ORGANISATION_EMAIL_DOMAIN = '@diamondway-center.org'
+SSO_CREATE_ACCOUNT_FOR_ORGANISATION = True
 
 EMAIL_SUBJECT_PREFIX = '[SSO] '
 
