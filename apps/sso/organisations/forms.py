@@ -189,7 +189,8 @@ class OrganisationEmailAdminForm(OrganisationBaseForm):
                 self.instance.email = email
                 
         instance = super(OrganisationEmailAdminForm, self).save(commit)
-        update_or_create_organisation_account(self.instance, old_email_value, new_email_value) 
+        if settings.SSO_CREATE_ACCOUNT_FOR_ORGANISATION:
+            update_or_create_organisation_account(self.instance, old_email_value, new_email_value)
         return instance
 
 
