@@ -178,10 +178,6 @@ L10N_SETTINGS = {
     'default_currency': 'EURO',
 }
 
-LOCALE_PATHS = (
-    os.path.join(BASE_DIR, 'sso/locale'),
-)
-
 AUTHENTICATION_BACKENDS = (
     'sso.auth.backends.EmailBackend',
     'sso.oauth2.backends.OAuth2Backend',

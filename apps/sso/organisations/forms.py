@@ -154,7 +154,7 @@ class OrganisationEmailAdminForm(OrganisationBaseForm):
 
     def clean_email_value(self):
         """
-        the new email address must be ending with @diamondway-center.org
+        the new email address must be ending with SSO_ORGANISATION_EMAIL_DOMAIN
         """
         email_value = self.cleaned_data['email_value']
         if email_value[-len(SSO_ORGANISATION_EMAIL_DOMAIN):] != SSO_ORGANISATION_EMAIL_DOMAIN:
@@ -240,7 +240,7 @@ class OrganisationCountryAdminCreateForm(OrganisationCountryAdminForm):
     A form for a country admin for create and update organisations with 
     additionally email_forward field  
     """
-    email_forward = EmailFieldLower(required=True, label=_("Email forwarding address"), help_text=_('The primary email forwarding address for the center'), 
+    email_forward = EmailFieldLower(required=True, label=_("Email forwarding address"), help_text=_('The primary email forwarding address for the organisation'),
                                     widget=bootstrap.EmailInput())
 
     def clean(self):
@@ -328,7 +328,7 @@ class AdminRegionForm(BaseForm):
 
     def clean_email_value(self):
         """
-        the new email address must be ending with @diamondway-center.org
+        the new email address must be ending with SSO_ORGANISATION_EMAIL_DOMAIN
         """
         email_value = self.cleaned_data['email_value']
         if email_value[-len(SSO_ORGANISATION_EMAIL_DOMAIN):] != SSO_ORGANISATION_EMAIL_DOMAIN:
@@ -385,7 +385,7 @@ class OrganisationCountryForm(BaseForm):
             
     def clean_email_value(self):
         """
-        the new email address must be ending with @diamondway-center.org
+        the new email address must be ending with SSO_ORGANISATION_EMAIL_DOMAIN
         """
         email_value = self.cleaned_data['email_value']
         if email_value[-len(SSO_ORGANISATION_EMAIL_DOMAIN):] != SSO_ORGANISATION_EMAIL_DOMAIN:
