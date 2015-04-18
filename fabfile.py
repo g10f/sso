@@ -8,7 +8,7 @@ env.use_ssh_config = True
 env.apps = ['sso']
 
 configurations = {
-    'dev': {'host_string': 'sso.dwbn.org', 'server_name': 'sso-dev.dwbn.org', 'app': 'sso', 'virtualenv': 'sso-dev', 'db_name': 'sso_dev'},
+    'dev': {'host_string': 'sso.dwbn.org', 'server_name': 'sso-dev.dwbn.org', 'app': 'sso', 'virtualenv': 'sso-dev', 'db_name': 'sso_dev', 'branch': 'generic'},
     'prod': {'host_string': 'sso.dwbn.org', 'server_name': 'sso.dwbn.org', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'sso'},
     'g10f': {'host_string': 'g10f', 'server_name': 'sso.g10f.de', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'sso', 'branch': 'generic'},
     'elsapro': {'host_string': 'g10f', 'server_name': 'sso.elsapro.com', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'vw_sso', 'branch': 'generic'},
@@ -279,13 +279,11 @@ def update_dir_settings(directory):
 
 
 @task
-def prepare_deploy(conf='dev'):
-    configuration = configurations.get(conf)
-    branch = configuration.get('branch', 'master')
+def prepare_deploy():
     compilemessages()
     # test()
     local("git commit -a")
-    local("git push -u origin %s" % branch)
+    local("git push -u origin")
 
 
 @task
