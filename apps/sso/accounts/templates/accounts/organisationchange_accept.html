@@ -2,7 +2,7 @@
 {% load i18n admin_static %}
 {% load thumbnail %}
 
-{% block title %}{% trans 'Accept Center Change' %}{% endblock %}
+{% block title %}{% trans 'Accept Organisation Change' %}{% endblock %}
 
 {% block extrascript %}{{ media }}{% endblock extrascript %}
 
@@ -10,8 +10,8 @@
 {% block breadcrumb %}
     <ol class="breadcrumb">
         <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-        <li><a href="{% url 'accounts:organisationchange_list' %}">{% trans 'Center Changes' %}</a></li>
-        <li class="active">{% trans 'Accept Center Change' %}</li>
+        <li><a href="{% url 'accounts:organisationchange_list' %}">{% trans 'Organisation Changes' %}</a></li>
+        <li class="active">{% trans 'Accept Organisation Change' %}</li>
     </ol>
 {% endblock breadcrumb %}
 
@@ -22,9 +22,9 @@
             {{ hidden }}
         {% endfor %}
 
-        <h3>{% trans 'Process Center Change' %}</h3>
+        <h3>{% trans 'Process Organisation Change' %}</h3>
 
-        <p>{% trans "Please accept or deny the center change request." %}</p>
+        <p>{% trans "Please accept or deny the organisation change request." %}</p>
 
         {% if messages %}{% for message in messages %}
             <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
@@ -61,13 +61,13 @@
         </div>
 
         <div class="form-group">
-            <label class="control-label">{% trans 'Previous center' %}</label>
+            <label class="control-label">{% trans 'Previous organisation' %}</label>
 
             <div class="dwbn-form-control"><p class="form-control-static">{{ organisationchange.user.organisations.all.first|default_if_none:"" }}</p></div>
         </div>
 
         <div class="form-group">
-            <label class="control-label">{% trans 'New center' %}</label>
+            <label class="control-label">{% trans 'New organisation' %}</label>
 
             <div class="dwbn-form-control"><p class="form-control-static">{{ organisationchange.organisation }}</p></div>
         </div>

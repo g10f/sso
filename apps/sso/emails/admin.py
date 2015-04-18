@@ -35,13 +35,13 @@ class EmailForward_Inline(admin.TabularInline):
 class EmailTypeFilter(admin.SimpleListFilter):
     title = _('Email type')
     parameter_name = 'type'
-
+    # TODO: check keys!
     def lookups(self, request, model_admin):
         return (
             ('countrygroup', _('Country group')),
             ('country', _('Country')),
             ('region', _('Region')),
-            ('organisation', _('Center')),
+            ('organisation', _('Organisation')),
             ('group', _('Group')),
             ('none', _('None')),
         )

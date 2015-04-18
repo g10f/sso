@@ -22,7 +22,7 @@
 
     {% if user.is_authenticated %}
         <a class="list-group-item" href="{% url 'organisations:organisation_list' %}">
-            <i class="glyphicon glyphicon-list"></i> {% trans 'Centers' %}</a>
+            <i class="glyphicon glyphicon-list"></i> {% trans 'Organisations' %}</a>
     {% endif %}
 
     {% if perms.registration.change_registrationprofile %}
@@ -37,7 +37,7 @@
 
     {% if perms.accounts.change_user %}
         <a class="list-group-item" href="{% url 'accounts:organisationchange_list' %}">
-            <i class="glyphicon glyphicon-list"></i> {% trans 'Center Changes' %} <span class="badge">{{ user.get_count_of_centerchanges }}</span></a>
+            <i class="glyphicon glyphicon-list"></i> {% trans 'Organisation Changes' %} <span class="badge">{{ user.get_count_of_centerchanges }}</span></a>
     {% endif %}
 
     {% if perms.emails.add_groupemail %}
@@ -57,7 +57,7 @@
 
     {% if perms.organisations.add_organisation %}
         <a class="list-group-item {% if active_navigation == "organisation_create" %}active{% endif %}" href="{% url 'organisations:organisation_create' %}">
-            <i class="glyphicon glyphicon-plus-sign"></i> {% trans 'Add Center' %}</a>
+            <i class="glyphicon glyphicon-plus-sign"></i> {% trans 'Add Organisation' %}</a>
     {% endif %}
 
     {% if perms.accounts.change_user and perms.accounts.add_user %}
@@ -68,7 +68,7 @@
     {% if user.is_authenticated %}
         {% if user.organisations.exists %}
             <a class="list-group-item {% if active_navigation == "my_organisation" %}active{% endif %}" href="{% url 'organisations:my_organisation_detail' %}">
-                <i class="glyphicon glyphicon-home"></i> {% trans 'My Center' %}</a>
+                <i class="glyphicon glyphicon-home"></i> {% trans 'My Organisation' %}</a>
         {% endif %}
         <a class="list-group-item {% if active_navigation == "profile" %}active{% endif %}" href="{% url 'accounts:profile' %}">
             <i class="glyphicon glyphicon-user"></i> {% trans 'My Account' %}</a>

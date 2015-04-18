@@ -2,7 +2,7 @@
 {% load i18n admin_static %}
 {% load thumbnail %}
 
-{% block title %}{% trans 'Center Change Details' %}{% endblock %}
+{% block title %}{% trans 'Organisation Change Details' %}{% endblock %}
 
 {% block extrascript %}{{ media }}{% endblock extrascript %}
 
@@ -11,7 +11,7 @@
     <ol class="breadcrumb">
         <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
         <li><a href="{% url 'accounts:profile' %}">{% trans 'My Account' %}</a></li>
-        <li class="active">{% trans 'Update My Center' %}</li>
+        <li class="active">{% trans 'Update My Organisation' %}</li>
     </ol>
 {% endblock breadcrumb %}
 
@@ -19,14 +19,14 @@
 
     {% block message %}{% endblock %}
 
-    <h3>{% trans 'Update My Center' %}</h3>
+    <h3>{% trans 'Update My Organisation' %}</h3>
 
     {% if messages %}{% for message in messages %}
         <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
     {% endif %}
 
     <div class="alert alert-info">
-    {% blocktrans with name=object.organisation.name %}Please contact the user administrator at the Buddhist Center {{ name }} to complete the change.{% endblocktrans %}
+    {% blocktrans with name=object.organisation.name %}Please contact the user administrator at your organisation {{ name }} to complete the change.{% endblocktrans %}
     </div>
 
     <br>
@@ -35,7 +35,7 @@
         <div class="dwbn-form-control_lg">
             {% block submit_group %}
                 <a class="btn btn-default" href="{% url 'accounts:organisationchange_update' user.organisationchange.pk %}" role="button">
-                    {% trans 'Update center change' %}</a>
+                    {% trans 'Update organisation change' %}</a>
             {% endblock %}
         </div>
     </div>

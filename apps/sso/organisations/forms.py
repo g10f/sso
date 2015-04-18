@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+from django.conf import settings
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
@@ -12,6 +13,7 @@ from sso.emails.models import Email, EmailForward, CENTER_EMAIL_TYPE, REGION_EMA
 from .models import OrganisationPhoneNumber, OrganisationAddress, Organisation, AdminRegion, OrganisationCountry, CountryGroup, OrganisationPicture
 from sso.models import clean_picture
 
+SSO_ORGANISATION_EMAIL_DOMAIN = getattr(settings, 'SSO_ORGANISATION_EMAIL_DOMAIN', '@diamondway-center.org')
 
 class OrganisationPictureForm(BaseStackedInlineForm):
     order = forms.IntegerField(label=_("Order"), required=False, widget=bootstrap.Select(choices=BLANK_CHOICE_DASH + zip(range(3), range(3))))
@@ -115,7 +117,7 @@ class OrganisationBaseForm(BaseForm):
 class OrganisationCenterAdminForm(OrganisationBaseForm):
     email_value = bootstrap.ReadOnlyField(label=_("Email address"))
     country = bootstrap.ReadOnlyField(label=_("Country"))
-    center_type = bootstrap.ReadOnlyField(label=_("Center type"))
+    center_type = bootstrap.ReadOnlyField(label=_("Organisation type"))
     name = bootstrap.ReadOnlyField(label=_("Name"))
     is_active = bootstrap.ReadOnlyYesNoField(label=_("Active"))
     # can_publish = bootstrap.ReadOnlyYesNoField(label=_("Publish"))
@@ -140,22 +142,23 @@ class OrganisationEmailAdminForm(OrganisationBaseForm):
     """
     email_type = CENTER_EMAIL_TYPE
     permission = PERM_EVERYBODY
-    email_value = EmailFieldLower(required=True, label=_("Email address"), widget=bootstrap.EmailInput(attrs={'placeholder': 'name@diamondway-center.org'}))
+    email_value = EmailFieldLower(required=True, label=_("Email address"),
+                                  widget=bootstrap.EmailInput(attrs={'placeholder': 'name' + SSO_ORGANISATION_EMAIL_DOMAIN}))
 
     def __init__(self, *args, **kwargs):
         super(OrganisationEmailAdminForm, self).__init__(*args, **kwargs)
         if self.instance.email:
             self.fields['email_value'].initial = str(self.instance.email)
         else:
-            self.fields['email_value'].initial = "@diamondway-center.org"
+            self.fields['email_value'].initial = SSO_ORGANISATION_EMAIL_DOMAIN
 
     def clean_email_value(self):
         """
         the new email address must be ending with @diamondway-center.org
         """
         email_value = self.cleaned_data['email_value']
-        if email_value[-22:] != '@diamondway-center.org':
-            msg = _('The email address of the center must be ending with @diamondway-center.org')
+        if email_value[-len(SSO_ORGANISATION_EMAIL_DOMAIN):] != SSO_ORGANISATION_EMAIL_DOMAIN:
+            msg = _('The email address of the center must be ending with %(domain)s') % {'domain': SSO_ORGANISATION_EMAIL_DOMAIN}
             raise ValidationError(msg)
         
         if Email.objects.filter(email__iexact=email_value).exclude(organisation=self.instance).exists():
@@ -301,7 +304,7 @@ class OrganisationRegionAdminCreateForm(OrganisationCountryAdminCreateForm):
 
 
 class AdminRegionForm(BaseForm):
-    email_value = EmailFieldLower(required=True, label=_("Email address"), widget=bootstrap.EmailInput(attrs={'placeholder': 'name@diamondway-center.org'}))
+    email_value = EmailFieldLower(required=True, label=_("Email address"), widget=bootstrap.EmailInput(attrs={'placeholder': 'name' + SSO_ORGANISATION_EMAIL_DOMAIN}))
     country = ModelChoiceField(queryset=None, required=True, label=_("Country"), widget=bootstrap.Select())
     
     class Meta:
@@ -320,15 +323,15 @@ class AdminRegionForm(BaseForm):
         if self.instance.email:
             self.fields['email_value'].initial = str(self.instance.email)
         else:
-            self.fields['email_value'].initial = "@diamondway-center.org"
+            self.fields['email_value'].initial = SSO_ORGANISATION_EMAIL_DOMAIN
 
     def clean_email_value(self):
         """
         the new email address must be ending with @diamondway-center.org
         """
         email_value = self.cleaned_data['email_value']
-        if email_value[-22:] != '@diamondway-center.org':
-            msg = _('The email address of the center must be ending with @diamondway-center.org')
+        if email_value[-len(SSO_ORGANISATION_EMAIL_DOMAIN):] != SSO_ORGANISATION_EMAIL_DOMAIN:
+            msg = _('The email address of the center must be ending with %(domain)s') % {'domain': SSO_ORGANISATION_EMAIL_DOMAIN}
             raise ValidationError(msg)
         
         if Email.objects.filter(email__iexact=email_value).exclude(adminregion=self.instance).exists():
@@ -354,7 +357,7 @@ class AdminRegionForm(BaseForm):
     
     
 class OrganisationCountryForm(BaseForm):
-    email_value = EmailFieldLower(required=True, label=_("Email address"), widget=bootstrap.EmailInput(attrs={'placeholder': 'name@diamondway-center.org'}))
+    email_value = EmailFieldLower(required=True, label=_("Email address"), widget=bootstrap.EmailInput(attrs={'placeholder': 'name' + SSO_ORGANISATION_EMAIL_DOMAIN}))
     country_groups = ModelMultipleChoiceField(queryset=CountryGroup.objects.all(), required=False,
                                               widget=bootstrap.CheckboxSelectMultiple(), label=_("Country Groups"))
     country = ModelChoiceField(queryset=Country.objects.filter(organisationcountry__isnull=True), required=True, 
@@ -373,7 +376,7 @@ class OrganisationCountryForm(BaseForm):
         if self.instance.email:
             self.fields['email_value'].initial = str(self.instance.email)
         else:
-            self.fields['email_value'].initial = "@diamondway-center.org"
+            self.fields['email_value'].initial = SSO_ORGANISATION_EMAIL_DOMAIN
         if self.instance.country:
             # readonly field for the update form
             self.fields['country_text'] = bootstrap.ReadOnlyField(initial=str(self.instance.country), label=_("Country"))
@@ -384,8 +387,8 @@ class OrganisationCountryForm(BaseForm):
         the new email address must be ending with @diamondway-center.org
         """
         email_value = self.cleaned_data['email_value']
-        if email_value[-22:] != '@diamondway-center.org':
-            msg = _('The email address of the center must be ending with @diamondway-center.org')
+        if email_value[-len(SSO_ORGANISATION_EMAIL_DOMAIN):] != SSO_ORGANISATION_EMAIL_DOMAIN:
+            msg = _('The email address of the center must be ending with %(domain)s') % {'domain': SSO_ORGANISATION_EMAIL_DOMAIN}
             raise ValidationError(msg)
         
         if Email.objects.filter(email__iexact=email_value).exclude(organisationcountry=self.instance).exists():

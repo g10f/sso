@@ -2,7 +2,7 @@
 {% load i18n admin_static %}
 {% load thumbnail %}
 
-{% block title %}{% trans 'Center Details' %}{% endblock %}
+{% block title %}{% trans 'Organisation Details' %}{% endblock %}
 
 {% block extrascript %}{{ media }}
 <script src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
@@ -12,9 +12,9 @@
 {% block breadcrumb %}
 <ol class="breadcrumb">
     <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'organisations:organisation_list' %}">{% trans 'Centers' %}</a></li>
+    <li><a href="{% url 'organisations:organisation_list' %}">{% trans 'Organisations' %}</a></li>
     <li><a href="{% url 'organisations:organisation_detail' object.uuid %}">{{ object.name }}</a></li>
-    <li class="active">{% trans 'Update Center' %}</li>
+    <li class="active">{% trans 'Update Organisation' %}</li>
 </ol> 
 {% endblock breadcrumb %}
 

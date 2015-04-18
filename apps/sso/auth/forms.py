@@ -28,7 +28,7 @@ class EmailAuthenticationForm(AuthenticationForm):
         'invalid_login': _("Please enter a correct %(username)s and password. "
                            "Note that both fields may be case-sensitive."),
         'inactive': _("This account is inactive."),
-        'expired': _("This account has expired. Please contact the user administrator in your buddhist center %s."),
+        'expired': _("This account has expired. Please contact the user administrator in your organisation %s."),
         'whitespaces': _("Please enter your Email address or Username without whitespaces at the beginning or end."),
     }
 

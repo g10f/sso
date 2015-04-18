@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 
 
 class OrganisationChangeForm(BaseForm):
-    organisation = forms.ModelChoiceField(queryset=Organisation.objects.all().only('id', 'location', 'name', 'country__iso2_code').select_related('country'), label=_("Center"), widget=bootstrap.Select())
+    organisation = forms.ModelChoiceField(queryset=Organisation.objects.all().only('id', 'location', 'name', 'country__iso2_code').select_related('country'), label=_("Organisation"), widget=bootstrap.Select())
 
     class Meta:
         model = OrganisationChange
@@ -51,7 +51,7 @@ class OrganisationChangeForm(BaseForm):
     def clean_organisation(self):
         organisation = self.cleaned_data['organisation']
         if organisation and organisation in self.initial['user'].organisations.all():
-            raise forms.ValidationError(_("The new center is the same as the old center!"))
+            raise forms.ValidationError(_("The new organisation is the same as the old organisation!"))
 
         return organisation
 
@@ -432,7 +432,7 @@ class UserSelfProfileForm(forms.Form):
         super(UserSelfProfileForm, self).__init__(*args, **kwargs)
 
         organisation_field = bootstrap.ReadOnlyField(initial=u', '.join([x.__unicode__() for x in self.user.organisations.all()]),
-                                                     label=_("Center"), help_text=_('Please use the contact form for a request to change this value.'))
+                                                     label=_("Organisation"), help_text=_('Please use the contact form for a request to change this value.'))
         self.fields['organisation'] = organisation_field
 
     def clean_organisation(self):
@@ -505,7 +505,7 @@ class CenterSelfProfileForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('instance')
         object_data = model_to_dict(self.user)
-        object_data['account_type'] = _('Center Account') if self.user.is_center else _('Member Account')
+        object_data['account_type'] = _('Organisation Account') if self.user.is_center else _('Member Account')
         object_data['email'] = str(self.user.primary_email())
         initial = kwargs.get('initial', {})
         object_data.update(initial)
@@ -514,7 +514,7 @@ class CenterSelfProfileForm(forms.Form):
 
         if self.user.organisations.exists():
             organisation = u', '.join([x.__unicode__() for x in self.user.organisations.all()])
-            organisation_field = bootstrap.ReadOnlyField(initial=organisation, label=_("Center"))
+            organisation_field = bootstrap.ReadOnlyField(initial=organisation, label=_("Organisation"))
             self.fields['organisation'] = organisation_field
 
     def save(self):
@@ -539,7 +539,7 @@ class UserSelfRegistrationForm2(UserSelfRegistrationForm):
     """
     Overwritten UserSelfRegistrationForm Form with additional  organisation field
     """
-    organisation = forms.ModelChoiceField(queryset=Organisation.objects.all().select_related('country'), required=False, label=_("Center"), widget=bootstrap.Select())
+    organisation = forms.ModelChoiceField(queryset=Organisation.objects.all().select_related('country'), required=False, label=_("Organisation"), widget=bootstrap.Select())
     # for Bots. If you enter anything in this field you will be treated as a robot
     state = forms.CharField(label=_('State'), required=False, widget=bootstrap.HiddenInput())
     
@@ -614,7 +614,7 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
     last_name = forms.CharField(label=_('Last name'), max_length=30, widget=bootstrap.TextInput())
     is_active = forms.BooleanField(label=_('Active'), help_text=_('Designates whether this user should be treated as active. Unselect this instead of deleting accounts.'),
                                    widget=bootstrap.CheckboxInput(), required=False)
-    is_center = forms.BooleanField(label=_('Center'), help_text=_('Designates that this user is representing a center and not a private person.'),
+    is_center = forms.BooleanField(label=_('Organisation'), help_text=_('Designates that this user is representing a organisation and not a private person.'),
                                    widget=bootstrap.CheckboxInput(), required=False)
     organisations = forms.ModelChoiceField(queryset=None, required=False, label=_("Organisation"), widget=bootstrap.Select())
     application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
@@ -692,7 +692,7 @@ class AppAdminUserProfileForm(mixins.UserRolesMixin, forms.Form):
     first_name = bootstrap.ReadOnlyField(label=_("First name"))
     last_name = bootstrap.ReadOnlyField(label=_("Last name"))
     email = bootstrap.ReadOnlyField(label=_("Email"))
-    organisations = bootstrap.ReadOnlyField(label=_("Center"))
+    organisations = bootstrap.ReadOnlyField(label=_("Organisation"))
     application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
     # role_profiles = forms.ModelMultipleChoiceField(queryset=None, required=False, cache_choices=True, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
     #                                               help_text=_('Groups of application roles that are assigned together.'))

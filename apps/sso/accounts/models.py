@@ -244,7 +244,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     last_modified_by_user = CurrentUserField(verbose_name=_('last modified by'), related_name='+')
     last_modified = models.DateTimeField(_('last modified'), auto_now=True)
     created_by_user = models.ForeignKey('self', verbose_name=_('created by'), related_name='+', null=True)
-    is_center = models.BooleanField(_('center'), default=False, help_text=_('Designates that this user is representing a center and not a private person.'))
+    is_center = models.BooleanField(_('organisation'), default=False, help_text=_('Designates that this user is representing a organisation and not a private person.'))
     is_service = models.BooleanField(_('service'), default=False, help_text=_('Designates that this user is representing a service account and not a person.'))
     is_subscriber = models.BooleanField(_('subscriber'), default=False, help_text=_('Designates whether this user is a DWBN News subscriber.'))
     picture = thumbnail.ImageField(_('picture'), upload_to=generate_filename, blank=True)  # , storage=MediaStorage())

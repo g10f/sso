@@ -1,7 +1,7 @@
 {% extends "organisations/organisation_form.html" %}
 {% load i18n %}
 
-{% block title %}{% trans 'Add Center' %}{% endblock %}
+{% block title %}{% trans 'Add Organisation' %}{% endblock %}
 
 {% block extrascript %}{{ form.media }}{% endblock extrascript %}
 
@@ -10,8 +10,8 @@
 {% block breadcrumb %}
 <ol class="breadcrumb">
     <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'organisations:organisation_list' %}">{% trans 'Centers' %}</a></li>
-    <li class="active">{% trans 'Add Center' %}</li>
+    <li><a href="{% url 'organisations:organisation_list' %}">{% trans 'Organisations' %}</a></li>
+    <li class="active">{% trans 'Add Organisation' %}</li>
 </ol> 
 {% endblock breadcrumb %}
 

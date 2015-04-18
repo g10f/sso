@@ -11,7 +11,7 @@ configurations = {
     'dev': {'host_string': 'sso.dwbn.org', 'server_name': 'sso-dev.dwbn.org', 'app': 'sso', 'virtualenv': 'sso-dev', 'db_name': 'sso_dev'},
     'prod': {'host_string': 'sso.dwbn.org', 'server_name': 'sso.dwbn.org', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'sso'},
     'g10f': {'host_string': 'g10f', 'server_name': 'sso.g10f.de', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'sso'},
-    'elsapro': {'host_string': 'g10f', 'server_name': 'sso.elsapro.com', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'vw_sso'},
+    'elsapro': {'host_string': 'g10f', 'server_name': 'sso.elsapro.com', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'vw_sso', 'branch': 'vwag'},
 }
 
 LOGROTATE_TEMPLATE = """\
@@ -157,14 +157,6 @@ def test():
         local("~/envs/sso/bin/python manage.py test streaming accounts oauth2")
 
 
-@task
-def prepare_deploy():
-    compilemessages()
-    # test()
-    local("git commit -a")
-    local("git push -u origin master")
-
-
 def migrate_data(python, server_name, code_dir, app):
     sudo("%s ./src/apps/manage.py migrate" % python, user='www-data', group='www-data')
     # sudo("%s ./src/apps/manage.py loaddata l10n_data.xml" % python, user='www-data', group='www-data')
@@ -287,6 +279,16 @@ def update_dir_settings(directory):
 
 
 @task
+def prepare_deploy(conf='dev'):
+    configuration = configurations.get(conf)
+    branch = configuration.get('branch', 'master')
+    compilemessages()
+    # test()
+    local("git commit -a")
+    local("git push -u origin %s" % branch)
+
+
+@task
 def deploy(conf='dev'):
     configuration = configurations.get(conf)
     server_name = configuration['server_name']
@@ -306,7 +308,8 @@ def deploy(conf='dev'):
     # deploy_database(db_name)
 
     with cd(code_dir):
-        fabtools.require.git.working_copy('git@bitbucket.org:dwbn/sso.git', path='src', branch='master')
+        branch = configuration.get('branch', 'master')
+        fabtools.require.git.working_copy('git@bitbucket.org:dwbn/sso.git', path='src', branch=branch)
         sudo("chown www-data:www-data -R  ./src")
         sudo("chmod g+w -R  ./src")
     

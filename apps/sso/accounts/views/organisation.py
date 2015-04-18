@@ -125,7 +125,7 @@ class OrganisationChangeAcceptView(FormView):
     def form_valid(self, form):
         if '_delete' in self.request.POST:
             self.organisationchange.delete()
-            msg = _('Denied center change.')
+            msg = _('Denied organisation change.')
             messages.add_message(self.request, level=messages.WARNING, message=msg, fail_silently=True)
             return HttpResponseRedirect(self.get_success_url())
         else:
@@ -138,7 +138,7 @@ class OrganisationChangeAcceptView(FormView):
             organisation_related_application_roles = ApplicationRole.objects.filter(is_organisation_related=True)
             user.application_roles.remove(*list(organisation_related_application_roles))
 
-            msg = _('Successfully changed the center.')
+            msg = _('Successfully changed the organisation.')
             messages.add_message(self.request, level=messages.SUCCESS, message=msg, fail_silently=True)
             return HttpResponseRedirect(reverse('accounts:update_user', args=(user.uuid,)))
 
