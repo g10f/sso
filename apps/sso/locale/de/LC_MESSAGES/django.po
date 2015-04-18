@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-04-12 15:22+0200\n"
+"POT-Creation-Date: 2015-04-17 23:37+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -32,10 +32,15 @@ msgstr ""
 msgid "(None)"
 msgstr ""
 
-#: sso/accounts/admin.py:132 sso/accounts/forms.py:277
-#: sso/accounts/forms.py:619 sso/registration/forms.py:59
+#: sso/accounts/admin.py:132 sso/accounts/forms.py:42
+#: sso/accounts/forms.py:277 sso/accounts/forms.py:435
+#: sso/accounts/forms.py:517 sso/accounts/forms.py:542
+#: sso/accounts/forms.py:617 sso/accounts/forms.py:619
+#: sso/accounts/forms.py:695 sso/accounts/views/filter.py:54
+#: sso/emails/admin.py:44 sso/organisations/models.py:225
+#: sso/registration/forms.py:59
 msgid "Organisation"
-msgstr "Zentrum"
+msgstr "Organisation"
 
 #: sso/accounts/admin.py:141 sso/accounts/admin.py:447
 #: sso/accounts/models.py:244 sso/registration/models.py:155
@@ -140,17 +145,8 @@ msgstr ""
 msgid "Send info email"
 msgstr ""
 
-#: sso/accounts/forms.py:42 sso/accounts/forms.py:435
-#: sso/accounts/forms.py:517 sso/accounts/forms.py:542
-#: sso/accounts/forms.py:617 sso/accounts/forms.py:695
-#: sso/accounts/templates/accounts/user_confirm_delete.html:39
-#: sso/accounts/views/filter.py:54 sso/emails/admin.py:44
-#: sso/emails/models.py:27
-msgid "Center"
-msgstr "Zentrum"
-
 #: sso/accounts/forms.py:54
-msgid "The new center is the same as the old center!"
+msgid "The new organisation is the same as the old organisation!"
 msgstr ""
 
 #: sso/accounts/forms.py:67
@@ -375,8 +371,8 @@ msgid "Account type"
 msgstr "Benutzerkontotyp"
 
 #: sso/accounts/forms.py:508
-msgid "Center Account"
-msgstr "Zentrumskonto"
+msgid "Organisation Account"
+msgstr "Organisationskonto"
 
 #: sso/accounts/forms.py:508
 msgid "Member Account"
@@ -426,17 +422,18 @@ msgstr ""
 
 #: sso/accounts/forms.py:617 sso/accounts/models.py:247
 msgid ""
-"Designates that this user is representing a center and not a private person."
+"Designates that this user is representing a organisation and not a private "
+"person."
 msgstr ""
-"Legt fest, ob dieser Benutzer ein Zentrum präsentiert und keine private "
-"Person."
+"Legt fest, ob dieser Benutzer eine Organisation präsentiert und keine "
+"private Person."
 
 #: sso/accounts/forms.py:627
 msgid "Extend validity"
 msgstr "Gültigkeit verlängern"
 
 #: sso/accounts/models.py:71 sso/accounts/models.py:106
-#: sso/accounts/models.py:155 sso/organisations/models.py:343
+#: sso/accounts/models.py:155 sso/organisations/models.py:340
 msgid "Overwrites the alphabetic order."
 msgstr "Überschreibt die alphabethische Sortierung"
 
@@ -453,7 +450,7 @@ msgstr ""
 #: sso/accounts/models.py:77 sso/accounts/models.py:235
 #: sso/emails/models.py:45 sso/emails/models.py:102 sso/oauth2/models.py:87
 #: sso/organisations/models.py:82 sso/organisations/models.py:119
-#: sso/organisations/models.py:205 sso/registration/admin.py:29
+#: sso/organisations/models.py:202 sso/registration/admin.py:29
 #: sso/registration/admin.py:66
 msgid "active"
 msgstr "aktiv"
@@ -474,7 +471,7 @@ msgstr "Anwendungen"
 #: sso/accounts/models.py:105 sso/accounts/models.py:153
 #: sso/emails/models.py:98 sso/oauth2/models.py:76
 #: sso/organisations/models.py:63 sso/organisations/models.py:114
-#: sso/organisations/models.py:185
+#: sso/organisations/models.py:182
 msgid "name"
 msgstr ""
 
@@ -512,14 +509,14 @@ msgstr ""
 
 #: sso/accounts/models.py:134
 msgid "organisation related"
-msgstr "zentrumsspezifisch"
+msgstr "organisationsspezifisch"
 
 #: sso/accounts/models.py:135
 msgid ""
 "Designates that the role will be deleted in case of a change of the "
 "organisation."
 msgstr ""
-"Gibt an, ob die Anwendungsrolle bei einem Zentrumswechsel gelöscht wird."
+"Gibt an, ob die Anwendungsrolle bei einem Organisationswechsel gelöscht wird."
 
 #: sso/accounts/models.py:142
 msgid "application role"
@@ -560,7 +557,7 @@ msgstr "Rollenprofile"
 #: sso/emails/models.py:44 sso/emails/models.py:69 sso/emails/models.py:84
 #: sso/emails/models.py:99 sso/forms/fields.py:18
 #: sso/organisations/models.py:64 sso/organisations/models.py:80
-#: sso/organisations/models.py:117 sso/organisations/models.py:190
+#: sso/organisations/models.py:117 sso/organisations/models.py:187
 msgid "email address"
 msgstr "E-Mail Adresse"
 
@@ -609,7 +606,7 @@ msgstr "Mitglied seit"
 
 #: sso/accounts/models.py:239 sso/organisations/__init__.py:3
 msgid "organisations"
-msgstr "Zentren"
+msgstr "Organisationen"
 
 #: sso/accounts/models.py:240
 msgid "admin regions"
@@ -631,8 +628,8 @@ msgid "last modified"
 msgstr "letzte Änderung"
 
 #: sso/accounts/models.py:247
-msgid "center"
-msgstr "Zentrum"
+msgid "organisation"
+msgstr "Organisation"
 
 #: sso/accounts/models.py:248
 msgid "service"
@@ -654,7 +651,7 @@ msgstr "Gibt an, ob dieser Benutzer ein DWBN News Emfänger ist."
 #: sso/accounts/models.py:250
 #: sso/accounts/templates/accounts/application/update_user_app_roles_form.html:44
 #: sso/accounts/templates/accounts/application/update_user_form.html:61
-#: sso/organisations/models.py:342
+#: sso/organisations/models.py:339
 msgid "picture"
 msgstr "Bild"
 
@@ -668,8 +665,8 @@ msgstr "Geburtsdatum"
 
 #: sso/accounts/models.py:254 sso/emails/models.py:100
 #: sso/organisations/models.py:65 sso/organisations/models.py:79
-#: sso/organisations/models.py:115 sso/organisations/models.py:192
-#: sso/organisations/models.py:316
+#: sso/organisations/models.py:115 sso/organisations/models.py:189
+#: sso/organisations/models.py:313
 msgid "homepage"
 msgstr ""
 
@@ -677,7 +674,7 @@ msgstr ""
 msgid "language"
 msgstr ""
 
-#: sso/accounts/models.py:256 sso/organisations/models.py:204
+#: sso/accounts/models.py:256 sso/organisations/models.py:201
 msgid "timezone"
 msgstr "Zeitzone"
 
@@ -696,9 +693,9 @@ msgstr "Begründung"
 
 #: sso/accounts/models.py:798 sso/accounts/models.py:799
 msgid "organisation change"
-msgstr "Zentrumswechsel"
+msgstr "Organisationswechsel"
 
-#: sso/accounts/models.py:807 sso/organisations/models.py:340
+#: sso/accounts/models.py:807 sso/organisations/models.py:337
 msgid "title"
 msgstr "Titel"
 
@@ -724,24 +721,24 @@ msgid "Business"
 msgstr "Geschäftlich"
 
 #: sso/accounts/models.py:819 sso/accounts/models.py:840
-#: sso/organisations/models.py:374
+#: sso/organisations/models.py:371
 msgid "Other"
 msgstr "Andere"
 
-#: sso/accounts/models.py:822 sso/organisations/models.py:356
+#: sso/accounts/models.py:822 sso/organisations/models.py:353
 msgid "address type"
 msgstr "Adressart"
 
-#: sso/accounts/models.py:835 sso/organisations/models.py:370
+#: sso/accounts/models.py:835 sso/organisations/models.py:367
 msgctxt "phone number"
 msgid "Home"
 msgstr "Privat"
 
-#: sso/accounts/models.py:836 sso/organisations/models.py:371
+#: sso/accounts/models.py:836 sso/organisations/models.py:368
 msgid "Mobile"
 msgstr "Handy"
 
-#: sso/accounts/models.py:838 sso/organisations/models.py:373
+#: sso/accounts/models.py:838 sso/organisations/models.py:370
 msgid "Fax"
 msgstr ""
 
@@ -749,11 +746,11 @@ msgstr ""
 msgid "Pager"
 msgstr ""
 
-#: sso/accounts/models.py:842 sso/organisations/models.py:377
+#: sso/accounts/models.py:842 sso/organisations/models.py:374
 msgid "phone type"
 msgstr "Telefontyp"
 
-#: sso/accounts/models.py:842 sso/organisations/models.py:377
+#: sso/accounts/models.py:842 sso/organisations/models.py:374
 msgid "Mobile, home, office, etc."
 msgstr "Handy, privat, Büro, etc."
 
@@ -802,7 +799,7 @@ msgstr "Benutzer hinzufügen"
 #: sso/accounts/templates/accounts/password_change_done.html:11
 #: sso/accounts/templates/accounts/password_change_form.html:11
 #: sso/accounts/templates/accounts/profile_core_form.html:16
-#: sso/accounts/templates/accounts/profile_form.html:16
+#: sso/accounts/templates/accounts/profile_form.html:18
 #: sso/accounts/templates/accounts/profile_form_center.html:16
 #: sso/accounts/templates/accounts/user_confirm_delete.html:8
 #: sso/accounts/templates/accounts/user_email_detail.html:8
@@ -861,9 +858,19 @@ msgstr ""
 "Passworts erhalten."
 
 #: sso/accounts/templates/accounts/application/add_user_done.html:39
-#: sso/organisations/__init__.py:2
+#: sso/organisations/__init__.py:2 sso/organisations/models.py:226
+#: sso/organisations/templates/organisations/organisation_confirm_delete.html:9
+#: sso/organisations/templates/organisations/organisation_create_form.html:13
+#: sso/organisations/templates/organisations/organisation_detail.html:10
+#: sso/organisations/templates/organisations/organisation_form.html:15
+#: sso/organisations/templates/organisations/organisation_list.html:4
+#: sso/organisations/templates/organisations/organisation_list.html:11
+#: sso/organisations/templates/organisations/organisation_picture_update_form.html:15
+#: sso/templates/include/_navigation.html:25
+#: sso/templates/include/dwbn2/global_navigation.html:23
+#: sso/templates/include/dwbn3/global_navigation.html:29
 msgid "Organisations"
-msgstr "Zentren"
+msgstr "Organisationen"
 
 #: sso/accounts/templates/accounts/application/add_user_done.html:58
 msgid "Edit user"
@@ -898,7 +905,7 @@ msgstr ""
 #: sso/accounts/templates/accounts/password_reset_confirm.html:17
 #: sso/accounts/templates/accounts/profile_core_form.html:31
 #: sso/accounts/templates/accounts/profile_core_form.html:36
-#: sso/accounts/templates/accounts/profile_form.html:34
+#: sso/accounts/templates/accounts/profile_form.html:36
 #: sso/accounts/templates/accounts/profile_form_center.html:31
 #: sso/accounts/templates/accounts/profile_form_center.html:36
 #: sso/accounts/templates/accounts/user_email_detail.html:45
@@ -927,7 +934,7 @@ msgstr "Bitte korrigiere den Fehler unten."
 #: sso/accounts/templates/accounts/password_reset_confirm.html:17
 #: sso/accounts/templates/accounts/profile_core_form.html:31
 #: sso/accounts/templates/accounts/profile_core_form.html:36
-#: sso/accounts/templates/accounts/profile_form.html:35
+#: sso/accounts/templates/accounts/profile_form.html:37
 #: sso/accounts/templates/accounts/profile_form_center.html:31
 #: sso/accounts/templates/accounts/profile_form_center.html:36
 #: sso/accounts/templates/accounts/user_email_detail.html:46
@@ -967,7 +974,7 @@ msgstr "Zugehörige Rollenprofile"
 #: sso/accounts/templates/accounts/application/update_user_form.html:139
 #: sso/accounts/templates/accounts/organisationchange_form.html:47
 #: sso/accounts/templates/accounts/profile_core_form.html:56
-#: sso/accounts/templates/accounts/profile_form.html:82
+#: sso/accounts/templates/accounts/profile_form.html:84
 #: sso/accounts/templates/accounts/profile_form_center.html:53
 #: sso/emails/templates/emails/groupemail_form.html:68
 #: sso/organisations/templates/organisations/adminregion_form.html:66
@@ -985,7 +992,7 @@ msgstr ""
 #: sso/accounts/templates/accounts/organisationchange_create_form.html:12
 #: sso/accounts/templates/accounts/organisationchange_form.html:48
 #: sso/accounts/templates/accounts/profile_core_form.html:57
-#: sso/accounts/templates/accounts/profile_form.html:83
+#: sso/accounts/templates/accounts/profile_form.html:85
 #: sso/accounts/templates/accounts/profile_form_center.html:54
 #: sso/emails/templates/emails/emailforward_create_form.html:53
 #: sso/emails/templates/emails/groupemail_create_form.html:20
@@ -1009,7 +1016,7 @@ msgstr "Registrierung"
 #: sso/accounts/templates/accounts/application/update_user_form.html:131
 #: sso/accounts/templates/accounts/delete_profile_form.html:36
 #: sso/accounts/templates/accounts/profile_core_form.html:55
-#: sso/accounts/templates/accounts/profile_form.html:81
+#: sso/accounts/templates/accounts/profile_form.html:83
 #: sso/accounts/templates/accounts/profile_form_center.html:52
 #: sso/accounts/templates/accounts/user_email_detail.html:109
 #: sso/emails/templates/emails/groupemail_detail.html:86
@@ -1053,10 +1060,10 @@ msgstr "Vielen Dank für Deine Nachricht."
 #: sso/accounts/templates/accounts/delete_profile_form.html:5
 #: sso/accounts/templates/accounts/profile_core_form.html:5
 #: sso/accounts/templates/accounts/profile_form.html:5
-#: sso/accounts/templates/accounts/profile_form.html:47
+#: sso/accounts/templates/accounts/profile_form.html:49
 #: sso/accounts/templates/accounts/profile_form_center.html:5
 #: sso/accounts/views/filter.py:82
-#: sso/templates/include/dwbn2/global_navigation_temp.html:43
+#: sso/templates/include/dwbn3/global_navigation.html:32
 msgid "Profile"
 msgstr "Profil"
 
@@ -1224,11 +1231,11 @@ msgstr "Bestätige Deine E-Mail Adresse auf %(site_name)s"
 #: sso/accounts/templates/accounts/includes/_organisation_field.html:9
 #, python-format
 msgid "Update change of center to %(name)s"
-msgstr "Zentrumswechsel zu %(name)s aktualisieren"
+msgstr "Organisationswechsel zu %(name)s aktualisieren"
 
 #: sso/accounts/templates/accounts/includes/_organisation_field.html:11
-msgid "Change my buddhist center"
-msgstr "Mein Buddhistisches Zentrum wechseln"
+msgid "Change my organisation"
+msgstr "Meine Organisation wechseln"
 
 #: sso/accounts/templates/accounts/includes/password_requirements.html:2
 msgid "Your password must fulfill the following requirements:"
@@ -1268,8 +1275,8 @@ msgstr ""
 #: sso/accounts/templates/accounts/password_create_complete.html:12
 #: sso/accounts/templates/accounts/password_reset_complete.html:12
 #: sso/templates/include/dwbn/global_navigation.html:45
-#: sso/templates/include/dwbn2/global_navigation.html:63
-#: sso/templates/include/dwbn2/global_navigation_temp.html:48
+#: sso/templates/include/dwbn2/global_navigation.html:33
+#: sso/templates/include/dwbn3/global_navigation.html:52
 #: sso/templates/include/global_navigation.html:45
 msgid "Log in"
 msgstr ""
@@ -1312,34 +1319,34 @@ msgstr "Beachte bitte, dass die folgende Nachricht nur einmal angezeigt wird."
 
 #: sso/accounts/templates/accounts/organisationchange_accept.html:5
 #: sso/accounts/templates/accounts/organisationchange_accept.html:14
-msgid "Accept Center Change"
-msgstr "Zentrumswechsel annehmen"
+msgid "Accept Organisation Change"
+msgstr "Organisationswechsel aktualisieren"
 
 #: sso/accounts/templates/accounts/organisationchange_accept.html:13
 #: sso/accounts/templates/accounts/organisationchange_list.html:11
 #: sso/templates/include/_navigation.html:40
-msgid "Center Changes"
-msgstr "Zentrumswechsel"
+msgid "Organisation Changes"
+msgstr "Organisationswechsel"
 
 #: sso/accounts/templates/accounts/organisationchange_accept.html:25
-msgid "Process Center Change"
-msgstr "Zentrumswechsel bearbeiten"
+msgid "Process Organisation Change"
+msgstr "Organisationswechsel bearbeiten"
 
 #: sso/accounts/templates/accounts/organisationchange_accept.html:27
-msgid "Please accept or deny the center change request."
-msgstr "Bitte den Zentrumswechsel annehmen oder ablehnen"
+msgid "Please accept or deny the organisation change request."
+msgstr "Bitte den Organisationswechsel annehmen oder ablehnen"
 
 #: sso/accounts/templates/accounts/organisationchange_accept.html:58
 msgid "Phone number"
 msgstr "Telefonnummer"
 
 #: sso/accounts/templates/accounts/organisationchange_accept.html:64
-msgid "Previous center"
-msgstr "Vorheriges Zentrum"
+msgid "Previous organisation"
+msgstr "vorherige Organisation"
 
 #: sso/accounts/templates/accounts/organisationchange_accept.html:70
-msgid "New center"
-msgstr "Neues Zentrum"
+msgid "New organisation"
+msgstr "Neue Organisation"
 
 #: sso/accounts/templates/accounts/organisationchange_accept.html:75
 msgid "Reason"
@@ -1354,18 +1361,18 @@ msgid "Accept change"
 msgstr "Änderung annehmen"
 
 #: sso/accounts/templates/accounts/organisationchange_create_form.html:4
-msgid "Change Center"
-msgstr "Zentrum wechseln"
+msgid "Change Organisation"
+msgstr "Meine Organisation wechseln"
 
 #: sso/accounts/templates/accounts/organisationchange_detail.html:5
 #: sso/accounts/templates/accounts/organisationchange_form.html:5
-msgid "Center Change Details"
-msgstr "Zentrumswechseldetails"
+msgid "Organisation Change Details"
+msgstr "Organisationswechsel Details"
 
 #: sso/accounts/templates/accounts/organisationchange_detail.html:13
 #: sso/accounts/templates/accounts/organisationchange_form.html:13
 #: sso/accounts/templates/accounts/profile_core_form.html:17
-#: sso/accounts/templates/accounts/profile_form.html:17
+#: sso/accounts/templates/accounts/profile_form.html:19
 #: sso/accounts/templates/accounts/profile_form_center.html:17
 #: sso/accounts/templates/accounts/user_email_detail.html:9
 #: sso/templates/include/_navigation.html:74
@@ -1376,35 +1383,35 @@ msgstr "Mein Konto"
 #: sso/accounts/templates/accounts/organisationchange_detail.html:22
 #: sso/accounts/templates/accounts/organisationchange_form.html:14
 #: sso/accounts/templates/accounts/organisationchange_form.html:25
-msgid "Update My Center"
-msgstr "Mein Zentrum aktualisieren"
+msgid "Update My Organisation"
+msgstr "Meine Organisation aktualisieren"
 
 #: sso/accounts/templates/accounts/organisationchange_detail.html:29
 #, python-format
 msgid ""
-"Please contact the user administrator at the Buddhist Center %(name)s to "
+"Please contact the user administrator at your organisation %(name)s to "
 "complete the change."
 msgstr ""
-"Bitte wende Dich an den Benutzer Administrator in Deinem Buddhistischen "
-"Zentrum %(name)s um die Änderung abzuschließen."
+"Bitte wende Dich an den Benutzer Administrator in Deiner Organisation "
+"%(name)s um die Änderung abzuschließen."
 
 #: sso/accounts/templates/accounts/organisationchange_detail.html:38
-msgid "Update center change"
-msgstr "Zentrumswechsel aktualisieren"
+msgid "Update organisation change"
+msgstr "Organisationswechsel aktualisieren"
 
 #: sso/accounts/templates/accounts/organisationchange_form.html:27
-msgid "Please select the center you moved to and insert a reason text."
+msgid "Please select the organisation you moved to and insert a reason text."
 msgstr ""
-"Bitte wähle das Zentrum zu dem Du wechseln möchtest aus und gib einen "
+"Bitte wähle die Organisation zu der Du wechseln möchtest und gib einen "
 "Begründungstext ein."
 
 #: sso/accounts/templates/accounts/organisationchange_form.html:46
-msgid "Cancel change of center"
-msgstr "Zentrumswechsel abbrechen"
+msgid "Cancel change of organisation"
+msgstr "Abbrechen des Organisationswechsel"
 
 #: sso/accounts/templates/accounts/organisationchange_list.html:4
-msgid "Center Change Request List"
-msgstr "Zentrumswechsel Anfragen"
+msgid "Organisation Change Request List"
+msgstr "Organisationswechsel Liste"
 
 #: sso/accounts/templates/accounts/password_change_done.html:4
 #: sso/accounts/templates/accounts/password_change_done.html:13
@@ -1438,7 +1445,7 @@ msgstr ""
 
 #: sso/accounts/templates/accounts/password_change_form.html:33
 #: sso/accounts/templates/accounts/profile_core_form.html:54
-#: sso/accounts/templates/accounts/profile_form.html:80
+#: sso/accounts/templates/accounts/profile_form.html:82
 #: sso/accounts/templates/accounts/profile_form_center.html:51
 msgid "Back"
 msgstr "Zurück"
@@ -1572,7 +1579,7 @@ msgid "Reset my password"
 msgstr ""
 
 #: sso/accounts/templates/accounts/profile_core_form.html:24
-#: sso/accounts/templates/accounts/profile_form.html:26
+#: sso/accounts/templates/accounts/profile_form.html:28
 #: sso/accounts/templates/accounts/profile_form_center.html:24
 msgid "My account"
 msgstr "Mein Konto"
@@ -1585,6 +1592,11 @@ msgstr ""
 #: sso/accounts/templates/accounts/user_confirm_delete.html:15
 msgid "Delete user"
 msgstr "Benutzer löschen"
+
+#: sso/accounts/templates/accounts/user_confirm_delete.html:39
+#: sso/emails/models.py:27 sso/organisations/models.py:162
+msgid "Center"
+msgstr "Zentrum"
 
 #: sso/accounts/templates/accounts/user_confirm_delete.html:47
 #: sso/accounts/views/filter.py:34 sso/accounts/views/filter.py:95
@@ -1835,8 +1847,8 @@ msgid "All Regions"
 msgstr "Alle Regionen"
 
 #: sso/accounts/views/filter.py:55
-msgid "All Centers"
-msgstr "Alle Zentren"
+msgid "All Organisations"
+msgstr "Alle Organisationen"
 
 #: sso/accounts/views/filter.py:62
 msgid "Role"
@@ -1851,20 +1863,20 @@ msgid "All Profiles"
 msgstr "Alle Profile"
 
 #: sso/accounts/views/organisation.py:128
-msgid "Denied center change."
-msgstr "Zentrumswechsel wurde abgelehnt"
+msgid "Denied organisation change."
+msgstr "Organisationswechsel abgelehnt"
 
 #: sso/accounts/views/organisation.py:141
-msgid "Successfully changed the center."
-msgstr "Zentrumswechsel erfolgreich"
+msgid "Successfully changed the organisation."
+msgstr "Organisationswechsel erfolgreich"
 
 #: sso/accounts/views/organisation.py:151
 msgid "to organisation"
-msgstr "zum Zentrum"
+msgstr "zu Organisation"
 
 #: sso/accounts/views/organisation.py:157
 msgid "from organisation"
-msgstr "vom Zentrum"
+msgstr "von Organisation"
 
 #: sso/admin/__init__.py:30
 #, python-format
@@ -1882,8 +1894,6 @@ msgstr ""
 
 #: sso/api/views/users.py:95 sso/api/views/users_v2.py:422
 #: sso/templates/include/dwbn/global_navigation.html:27
-#: sso/templates/include/dwbn2/global_navigation.html:27
-#: sso/templates/include/dwbn2/global_navigation_temp.html:27
 #: sso/templates/include/global_navigation.html:27
 msgid "More"
 msgstr "Mehr"
@@ -1891,8 +1901,8 @@ msgstr "Mehr"
 #: sso/api/views/users.py:95 sso/api/views/users_v2.py:424
 #: sso/templates/admin/base_site.html:24
 #: sso/templates/include/dwbn/global_navigation.html:43
-#: sso/templates/include/dwbn2/global_navigation.html:61
-#: sso/templates/include/dwbn2/global_navigation_temp.html:46
+#: sso/templates/include/dwbn2/global_navigation.html:31
+#: sso/templates/include/dwbn3/global_navigation.html:33
 #: sso/templates/include/global_navigation.html:43
 msgid "Log out"
 msgstr ""
@@ -1946,10 +1956,10 @@ msgstr "Dieses Benutzerkonto ist inaktiv"
 #, python-format
 msgid ""
 "This account has expired. Please contact the user administrator in your "
-"buddhist center %s."
+"organisation %s."
 msgstr ""
 "Dieses Benutzerkonto ist abgelaufen. Bitte wende Dich an den "
-"Benutzeradministrator in Deinem Buddhistischen Zentrum %s."
+"Benutzeradministrator in Deiner Organisation %s."
 
 #: sso/auth/forms.py:32
 msgid ""
@@ -1981,7 +1991,7 @@ msgid "Country group"
 msgstr "Ländergruppe"
 
 #: sso/emails/admin.py:45 sso/emails/models.py:32
-#: sso/organisations/views/country.py:96
+#: sso/organisations/models.py:163 sso/organisations/views/country.py:96
 msgid "Group"
 msgstr ""
 
@@ -2246,7 +2256,7 @@ msgid "postal code"
 msgstr "Postleitzahl"
 
 #: sso/models.py:90 sso/organisations/models.py:77
-#: sso/organisations/models.py:116 sso/organisations/models.py:187
+#: sso/organisations/models.py:116 sso/organisations/models.py:184
 msgid "country"
 msgstr "Land"
 
@@ -2399,7 +2409,7 @@ msgstr ""
 msgid "There's been an OAuth 2 error: %(error)s"
 msgstr ""
 
-#: sso/organisations/admin.py:122 sso/organisations/models.py:196
+#: sso/organisations/admin.py:122 sso/organisations/models.py:193
 msgid "notes"
 msgstr "Notizen"
 
@@ -2409,14 +2419,14 @@ msgstr ""
 
 #: sso/organisations/forms.py:82
 #: sso/organisations/templates/organisations/organisation_detail.html:54
-#: sso/organisations/templates/organisations/organisation_list.html:47
+#: sso/organisations/templates/organisations/organisation_list.html:48
 #: sso/templates/include/_static_google_maps_field.html:6
 msgid "Google Maps"
 msgstr ""
 
 #: sso/organisations/forms.py:118
-msgid "Center type"
-msgstr "Zentrumstyp"
+msgid "Organisation type"
+msgstr "Organisationstyp"
 
 #: sso/organisations/forms.py:127
 msgid "Admin region"
@@ -2488,175 +2498,151 @@ msgstr ""
 msgid "Regions"
 msgstr "Regionen"
 
-#: sso/organisations/models.py:162 sso/organisations/models.py:228
-msgid "Buddhist Center"
-msgstr ""
-
-#: sso/organisations/models.py:163
-msgid "Buddhist Group"
-msgstr ""
-
 #: sso/organisations/models.py:164
-msgid "Buddhist Retreat"
-msgstr ""
-
-#: sso/organisations/models.py:165
-msgid "Buddhist Contact"
-msgstr ""
-
-#: sso/organisations/models.py:166
-msgid "Buddhist Center & Retreat"
-msgstr ""
+msgid "Contact"
+msgstr "Kontakt"
 
 #: sso/organisations/models.py:167
-msgid "Buddhist Group & Retreat"
-msgstr ""
-
-#: sso/organisations/models.py:170
 msgid "Unknown"
 msgstr ""
 
-#: sso/organisations/models.py:171
+#: sso/organisations/models.py:168
 msgid "City/Village"
 msgstr ""
 
-#: sso/organisations/models.py:172
+#: sso/organisations/models.py:169
 msgid "Exact"
 msgstr ""
 
-#: sso/organisations/models.py:173
+#: sso/organisations/models.py:170
 msgid "Nearby"
 msgstr ""
 
-#: sso/organisations/models.py:186
+#: sso/organisations/models.py:183
 msgid "name in native language"
 msgstr "Name in der Landessprache"
 
-#: sso/organisations/models.py:188
+#: sso/organisations/models.py:185
 msgid "admin region"
 msgstr "Region"
 
-#: sso/organisations/models.py:193
+#: sso/organisations/models.py:190
 #: sso/organisations/templates/organisations/organisation_detail.html:42
 msgid "Google+ page"
 msgstr "Google+ Seite"
 
-#: sso/organisations/models.py:194
+#: sso/organisations/models.py:191
 #: sso/organisations/templates/organisations/organisation_detail.html:45
 msgid "Facebook page"
 msgstr "Facebook Seite"
 
-#: sso/organisations/models.py:195
+#: sso/organisations/models.py:192
 #: sso/organisations/templates/organisations/organisation_detail.html:48
 msgid "Twitter page"
 msgstr "Twitter Seite"
 
-#: sso/organisations/models.py:197
-msgid "center type"
-msgstr "Art des Zentrums"
+#: sso/organisations/models.py:194
+msgid "organisation type"
+msgstr "Organisationstyp"
 
-#: sso/organisations/models.py:198
+#: sso/organisations/models.py:195
 msgid "id from the previous center DB (obsolete)"
 msgstr ""
 
-#: sso/organisations/models.py:199
+#: sso/organisations/models.py:196
 msgid "founded"
 msgstr "gegründet"
 
-#: sso/organisations/models.py:200
+#: sso/organisations/models.py:197
 msgid "coordinates type"
 msgstr "Koordinatentyp"
 
-#: sso/organisations/models.py:201
+#: sso/organisations/models.py:198
 msgid "latitude"
 msgstr ""
 
-#: sso/organisations/models.py:202
+#: sso/organisations/models.py:199
 msgid "longitude"
 msgstr ""
 
-#: sso/organisations/models.py:203
+#: sso/organisations/models.py:200
 msgid "location"
 msgstr "Position"
 
-#: sso/organisations/models.py:207
-#: sso/organisations/templates/organisations/organisation_detail.html:91
+#: sso/organisations/models.py:204
 msgid ""
-"Designates whether this buddhist center should be treated as active. "
-"Unselect this instead of deleting buddhist center."
+"Designates whether this organisation should be treated as active. Unselect "
+"this instead of deleting organisation."
 msgstr ""
-"Legt fest, ob dieses Zentrum aktiv ist. Kann deaktiviert werden, anstatt das "
-"Zentrum zu löschen."
+"Legt fest, ob diese Organisation aktiv ist. Kann deaktiviert werden, anstatt "
+"die Organisation zu löschen."
 
-#: sso/organisations/models.py:209
+#: sso/organisations/models.py:206
 msgid "private"
 msgstr "privat"
 
-#: sso/organisations/models.py:210
+#: sso/organisations/models.py:207
 #: sso/organisations/templates/organisations/organisation_detail.html:96
 msgid ""
-"Designates whether this buddhist center data should be treated as private "
-"and only a telephone number should be displayed on public sites."
+"Designates whether this organisation data should be treated as private and "
+"only a telephone number should be displayed on public sites."
 msgstr ""
-"Legt fest, ob die Daten diese Zentrums privat sind und nur die Telefonnummer "
-"auf öffentlichen Seiten angezeigt werden soll."
+"Legt fest, ob die Daten dieser Organisation privat sind und nur die "
+"Telefonnummer auf öffentlichen Seiten angezeigt werden soll."
 
-#: sso/organisations/models.py:213
+#: sso/organisations/models.py:210
 msgid "publish"
 msgstr "veröffentlichen"
 
-#: sso/organisations/models.py:214
-msgid "Designates whether this buddhist center data can be published."
+#: sso/organisations/models.py:211
+msgid "Designates whether this organisation data can be published."
 msgstr ""
-"Gibt an, ob dieses Zentrum auf öffentlichen Seiten publiziert werden kann."
+"Gibt an, ob diese Organisation auf öffentlichen Seiten publiziert werden "
+"kann."
 
-#: sso/organisations/models.py:216
+#: sso/organisations/models.py:213
 msgid "uses activation"
 msgstr "Benutzeraktivierung verwenden"
 
-#: sso/organisations/models.py:217
+#: sso/organisations/models.py:214
 msgid ""
-"Designates whether this buddhist center uses the new user activation process."
+"Designates whether this organisation uses the new user activation process."
 msgstr ""
-"Gibt an, ob dieses Zentrum den neuen Benutzer Aktivierungsprozess nutzt."
+"Gibt an, ob diese Organisation den neuen Benutzer Aktivierungsprozess nutzt."
 
-#: sso/organisations/models.py:229
-msgid "Buddhist Centers"
-msgstr ""
-
-#: sso/organisations/models.py:308
+#: sso/organisations/models.py:305
 msgid "Maps"
 msgstr ""
 
-#: sso/organisations/models.py:341
+#: sso/organisations/models.py:338
 msgid "description"
 msgstr "Beschreibung"
 
-#: sso/organisations/models.py:346
+#: sso/organisations/models.py:343
 msgid "organisation picture"
 msgstr "Zentrumsbild"
 
-#: sso/organisations/models.py:347
+#: sso/organisations/models.py:344
 msgid "organisation pictures"
 msgstr "Zentrumsbilder"
 
-#: sso/organisations/models.py:353
+#: sso/organisations/models.py:350
 msgid "Meditation"
 msgstr "Meditation"
 
-#: sso/organisations/models.py:354
+#: sso/organisations/models.py:351
 msgid "Post Only"
 msgstr ""
 
-#: sso/organisations/models.py:358
+#: sso/organisations/models.py:355
 msgid "care of (c/o)"
 msgstr ""
 
-#: sso/organisations/models.py:372
+#: sso/organisations/models.py:369
 msgid "Mobile#2"
 msgstr "Handy#2"
 
-#: sso/organisations/models.py:375
+#: sso/organisations/models.py:372
 msgid "Other#2"
 msgstr "Andere#2"
 
@@ -2707,43 +2693,32 @@ msgstr "Regionsdaten"
 
 #: sso/organisations/templates/organisations/my_organisation_detail.html:7
 #: sso/templates/include/_navigation.html:71
-msgid "My Center"
-msgstr "Mein Zentrum"
+msgid "My Organisation"
+msgstr "Meine Organisation"
 
 #: sso/organisations/templates/organisations/organisation_confirm_delete.html:4
 #: sso/organisations/templates/organisations/organisation_confirm_delete.html:10
-msgid "Delete Center"
-msgstr "Zentrum löschen"
-
-#: sso/organisations/templates/organisations/organisation_confirm_delete.html:9
-#: sso/organisations/templates/organisations/organisation_create_form.html:13
-#: sso/organisations/templates/organisations/organisation_detail.html:10
-#: sso/organisations/templates/organisations/organisation_form.html:15
-#: sso/organisations/templates/organisations/organisation_list.html:4
-#: sso/organisations/templates/organisations/organisation_list.html:11
-#: sso/organisations/templates/organisations/organisation_picture_update_form.html:15
-#: sso/templates/include/_navigation.html:25
-msgid "Centers"
-msgstr "Zentren"
+msgid "Delete Organisation"
+msgstr "Organisation Löschen"
 
 #: sso/organisations/templates/organisations/organisation_confirm_delete.html:17
-msgid "Please confirm deleting this center"
-msgstr "Bitte bestäge das Löschen des Zentrums"
+msgid "Please confirm deleting this organisation"
+msgstr "Bitte bestäge das Löschen der Organisation"
 
 #: sso/organisations/templates/organisations/organisation_confirm_delete.html:24
-msgid "Confirm Delete Center"
-msgstr "Löschen des Zentrums bestätigen"
+msgid "Confirm Delete Organisation"
+msgstr "Löschen der Organisation bestätigen"
 
 #: sso/organisations/templates/organisations/organisation_create_form.html:4
 #: sso/organisations/templates/organisations/organisation_create_form.html:14
 #: sso/templates/include/_navigation.html:60
-msgid "Add Center"
-msgstr "Zentrum hinzufügen"
+msgid "Add Organisation"
+msgstr "Organisation hinzufügen"
 
 #: sso/organisations/templates/organisations/organisation_detail.html:5
 #: sso/organisations/templates/organisations/organisation_form.html:5
-msgid "Center Details"
-msgstr "Zentrums Details"
+msgid "Organisation Details"
+msgstr "Organisationsdetails"
 
 #: sso/organisations/templates/organisations/organisation_detail.html:38
 msgid "Name in native language"
@@ -2756,6 +2731,14 @@ msgstr "Lokales Datum und Uhrzeit"
 #: sso/organisations/templates/organisations/organisation_detail.html:56
 msgid "Founded"
 msgstr "Gegründet"
+
+#: sso/organisations/templates/organisations/organisation_detail.html:91
+msgid ""
+"Designates whether this organisation should be treated as active. Unselect "
+"this instead of deleting the organisation."
+msgstr ""
+"Legt fest, ob diese Organisation aktiv ist. Kann deaktiviert werden, anstatt "
+"die Organisation zu löschen."
 
 #: sso/organisations/templates/organisations/organisation_detail.html:94
 msgid "Private"
@@ -2790,28 +2773,28 @@ msgid "Phone"
 msgstr "Telefonnummer"
 
 #: sso/organisations/templates/organisations/organisation_detail.html:116
-msgid "Nearest Centers"
-msgstr "Nächste Zentren"
+msgid "Nearest Organisations"
+msgstr "Nächste Organisationen"
 
 #: sso/organisations/templates/organisations/organisation_detail.html:133
 msgid "Update Pictures"
 msgstr "Bilder aktualisieren"
 
 #: sso/organisations/templates/organisations/organisation_form.html:17
-msgid "Update Center"
-msgstr "Zentrum aktualisieren"
+msgid "Update Organisation"
+msgstr "Organisation aktualisieren"
 
 #: sso/organisations/templates/organisations/organisation_form.html:44
 msgid "Center Data"
 msgstr "Zentrumsdaten"
 
-#: sso/organisations/templates/organisations/organisation_list.html:34
+#: sso/organisations/templates/organisations/organisation_list.html:35
 msgid "Distance"
 msgstr "Entfernung"
 
 #: sso/organisations/templates/organisations/organisation_picture_update_form.html:5
-msgid "Center Pictures"
-msgstr "Zentrumsbilder"
+msgid "Organisation Pictures"
+msgstr "Organisationsbilder"
 
 #: sso/organisations/templates/organisations/organisation_picture_update_form.html:17
 msgid "Update Picture"
@@ -2838,24 +2821,24 @@ msgid "Country Data"
 msgstr "Landesdaten"
 
 #: sso/organisations/views/__init__.py:264
-msgid "Center Type"
-msgstr "Zentrumstyp"
+msgid "Organisation Type"
+msgstr "Organisationstyp"
 
 #: sso/organisations/views/__init__.py:265
-msgid "All Center Types"
-msgstr "Alle Zentren"
+msgid "All Organisation Types"
+msgstr "Alle Organisationstypen"
 
 #: sso/organisations/views/__init__.py:270
-msgid "Active Centers"
-msgstr "Aktive Zentren"
+msgid "Active Organisations"
+msgstr "Aktive Organisationen"
 
 #: sso/organisations/views/__init__.py:270
-msgid "Inactive Centers"
-msgstr "inaktive Zentren"
+msgid "Inactive Organisations"
+msgstr "Inaktive Organisationen"
 
 #: sso/organisations/views/__init__.py:300
-msgid "My Centers"
-msgstr "Meine Zentren"
+msgid "My Organisations"
+msgstr "Meine Organisationen"
 
 #: sso/organisations/views/__init__.py:314
 msgid "distance"
@@ -2986,11 +2969,9 @@ msgstr "Gibt an, ob dem Benutzer der Zugang verweigert wurde."
 
 #: sso/registration/forms.py:177
 msgid ""
-"If you would like to tell us something about yourself or your involvement "
-"with buddhism please do so in this box."
-msgstr ""
-"Wenn Du möchtest, erzähle uns etwas über Dich und Deine Verbindung zum "
-"Buddhismus."
+"If you would like to tell us something about yourself, please do so in this "
+"box."
+msgstr "Wenn Du möchtest, erzähle uns etwas über Dich."
 
 #: sso/registration/forms.py:249
 msgid "User registration"
@@ -3209,11 +3190,11 @@ msgstr ""
 #: sso/registration/templates/registration/validation_complete2.html:9
 msgid ""
 "Your registration and email address has been validated. Please contact the "
-"user administrator at your local buddhist center to activate your account."
+"user administrator at your local organisation to activate your account."
 msgstr ""
 "Deine Registrierung und E-Mail Adresse wurde bestätigt. Bitte melde Dich bei "
-"dem Benutzeradministrator in Deinem Buddhistischen Zentrum zum Aktivieren "
-"Deines Benutzerkontos"
+"dem Benutzeradministrator in Deiner Organisation zum Aktivieren Deines "
+"Benutzerkontos"
 
 #: sso/registration/templates/registration/validation_confirm.html:4
 #: sso/registration/templates/registration/validation_confirm.html:12
@@ -3403,6 +3384,7 @@ msgid "Welcome,"
 msgstr ""
 
 #: sso/templates/home.html:26
+#: sso/templates/include/dwbn2/global_navigation.html:16
 msgid "Applications"
 msgstr "Anwendungen"
 
@@ -3449,8 +3431,8 @@ msgstr ""
 "href=\"%(url)s\" target=\"_blank\">Lese diese Seite für Hilfe zum Aktivieren "
 "von JavaScript</a>"
 
-#: sso/templates/include/dwbn2/global_navigation.html:72
-#: sso/templates/include/dwbn2/global_navigation_temp.html:57
+#: sso/templates/include/dwbn2/global_navigation.html:43
+#: sso/templates/include/dwbn3/global_navigation.html:60
 #, python-format
 msgid ""
 "Please activate JavaScript to enable all features.\n"
@@ -3488,3 +3470,103 @@ msgstr ""
 #: sso/views/csrf.py:10
 msgid "CSRF verification failed. Request aborted."
 msgstr ""
+
+#~ msgid "Center Account"
+#~ msgstr "Zentrumskonto"
+
+#~ msgid "Accept Center Change"
+#~ msgstr "Zentrumswechsel annehmen"
+
+#~ msgid "Center Changes"
+#~ msgstr "Zentrumswechsel"
+
+#~ msgid "Process Center Change"
+#~ msgstr "Zentrumswechsel bearbeiten"
+
+#~ msgid "Change Center"
+#~ msgstr "Zentrum wechseln"
+
+#~ msgid "Center Change Details"
+#~ msgstr "Zentrumswechseldetails"
+
+#~ msgid "Update My Center"
+#~ msgstr "Mein Zentrum aktualisieren"
+
+#~ msgid "All Centers"
+#~ msgstr "Alle Zentren"
+
+#~ msgid "Center type"
+#~ msgstr "Zentrumstyp"
+
+#~ msgid "My Center"
+#~ msgstr "Mein Zentrum"
+
+#~ msgid "Delete Center"
+#~ msgstr "Zentrum löschen"
+
+#~ msgid "Centers"
+#~ msgstr "Zentren"
+
+#~ msgid "Confirm Delete Center"
+#~ msgstr "Löschen des Zentrums bestätigen"
+
+#~ msgid "Add Center"
+#~ msgstr "Zentrum hinzufügen"
+
+#~ msgid "Center Details"
+#~ msgstr "Zentrums Details"
+
+#~ msgid "Nearest Centers"
+#~ msgstr "Nächste Zentren"
+
+#~ msgid "Update Center"
+#~ msgstr "Zentrum aktualisieren"
+
+#~ msgid "Center Pictures"
+#~ msgstr "Zentrumsbilder"
+
+#~ msgid "Center Type"
+#~ msgstr "Zentrumstyp"
+
+#~ msgid "All Center Types"
+#~ msgstr "Alle Zentren"
+
+#~ msgid "Active Centers"
+#~ msgstr "Aktive Zentren"
+
+#~ msgid "Inactive Centers"
+#~ msgstr "inaktive Zentren"
+
+#~ msgid "My Centers"
+#~ msgstr "Meine Zentren"
+
+#~ msgid "center"
+#~ msgstr "Zentrum"
+
+#~ msgid "Previous center"
+#~ msgstr "Vorheriges Zentrum"
+
+#~ msgid "New center"
+#~ msgstr "Neues Zentrum"
+
+#~ msgid "Update center change"
+#~ msgstr "Zentrumswechsel aktualisieren"
+
+#~ msgid "Cancel change of center"
+#~ msgstr "Zentrumswechsel abbrechen"
+
+#~ msgid "Denied center change."
+#~ msgstr "Zentrumswechsel wurde abgelehnt"
+
+#~ msgid "center type"
+#~ msgstr "Art des Zentrums"
+
+#~ msgid ""
+#~ "Designates whether this organisation should be treated as active. "
+#~ "Unselect this instead of deleting buddhist center."
+#~ msgstr ""
+#~ "Legt fest, ob diese Organisation aktiv ist. Kann deaktiviert werden, "
+#~ "anstatt die Organisation zu löschen."
+
+#~ msgid "Change my buddhist center"
+#~ msgstr "Mein Buddhistisches Zentrum wechseln"

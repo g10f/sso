@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import urlparse
 import re
+from django.conf import settings
 from django.core import mail
 from django.test import TestCase
 from django.test.client import Client
@@ -42,7 +43,7 @@ class OrganisationssTest(TestCase):
             'name': 'New Center',
             'center_type': '2',
             'country': 81,
-            'email_value': 'newcenter@diamondway-center.org',
+            'email_value': 'newcenter' + settings.SSO_ORGANISATION_EMAIL_DOMAIN,
             'email_forward': 'test@g10f.de',
             'coordinates_type': 3,
             'is_active': 'on'
@@ -56,7 +57,7 @@ class OrganisationssTest(TestCase):
         self.assertIsNotNone(organisation.uuid)
         
         # check that a new center account was created
-        user = User.objects.get_by_email('newcenter@diamondway-center.org')
+        user = User.objects.get_by_email('newcenter' + settings.SSO_ORGANISATION_EMAIL_DOMAIN)
         self.assertTrue(user.is_center)
         
         self.assertIn(organisation, user.organisations.all())
@@ -69,7 +70,7 @@ class OrganisationssTest(TestCase):
         # first reset the password because the account was just created and has a random password
         # then login with the new password and try changing the center data
         response = self.client.post(reverse('accounts:password_reset'), 
-                                    data={'email': 'newcenter@diamondway-center.org'})
+                                    data={'email': 'newcenter' + settings.SSO_ORGANISATION_EMAIL_DOMAIN})
         self.assertEqual(response.status_code, 302)
         
         new_password = 'gsf1zghxyz'
@@ -77,7 +78,7 @@ class OrganisationssTest(TestCase):
         response = self.client.post(path, 
                                     data={'new_password1': new_password, 'new_password2': new_password})
         self.assertEqual(response.status_code, 302)
-        self.client.login(username='newcenter@diamondway-center.org', password=new_password)
+        self.client.login(username='newcenter' + settings.SSO_ORGANISATION_EMAIL_DOMAIN, password=new_password)
         # update center
         org_id = organisation.pk
         email_id = organisation.email.pk
@@ -96,7 +97,7 @@ class OrganisationssTest(TestCase):
             'homepage': 'http://newcenter.de/',
             'location': 'SRID=3857;POINT(1286998.028908273 6131762.443410875)',
             'organisationaddress_set-0-address_type': 'meditation',
-            'organisationaddress_set-0-addressee': 'Buddhistisches Zentrum New',
+            'organisationaddress_set-0-addressee': 'Zentrum New',
             'organisationaddress_set-0-city': 'München',
             'organisationaddress_set-0-country': 'DE',
             'organisationaddress_set-0-id': '',
@@ -124,6 +125,6 @@ class OrganisationssTest(TestCase):
         response = self.client.get(reverse('organisations:organisation_detail', args=[organisation.uuid]))
         self.assertEqual(response.status_code, 200)
         obj = response.context['object']
-        self.assertEqual(obj.organisationaddress_set.all()[0].addressee, 'Buddhistisches Zentrum New')
+        self.assertEqual(obj.organisationaddress_set.all()[0].addressee, 'Zentrum New')
         self.assertEqual(obj.organisationphonenumber_set.all()[0].phone, '+49 (0531) 123456')
         self.assertEqual(obj.email.emailforward_set.all()[0].forward, 'gunnar@g10f.de')

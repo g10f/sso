@@ -261,13 +261,13 @@ class OrganisationSearchFilter(SearchFilter):
 class CenterTypeFilter(ViewChoicesFilter):
     name = 'center_type'
     choices = Organisation.CENTER_TYPE_CHOICES
-    select_text = _('Center Type')
-    select_all_text = _("All Center Types")
+    select_text = _('Organisation Type')
+    select_all_text = _("All Organisation Types")
 
 
 class IsActiveFilter(ViewChoicesFilter):
     name = 'is_active'
-    choices = (('1', _('Active Centers')), ('2', _('Inactive Centers')))  
+    choices = (('1', _('Active Organisations')), ('2', _('Inactive Organisations')))
     select_text = _('active/inactive')
     select_all_text = _("All")
     
@@ -297,7 +297,7 @@ class AdminRegionFilter(ViewQuerysetFilter):
 
 class MyOrganisationsFilter(ViewButtonFilter):
     name = 'my_organisations'
-    select_text = _('My Centers')
+    select_text = _('My Organisations')
     
     def apply(self, view, qs, default=''):
         if not view.request.user.is_superuser and view.request.user.get_administrable_organisations().exists():

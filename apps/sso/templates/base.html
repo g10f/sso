@@ -7,7 +7,7 @@
     <meta name="description" content="OpenID Connect Identity Provider">
     <meta name="author" content="">
     <link rel="shortcut icon" href="{% static favicon %}" type="image/ico"/>
-    {% block style %}{% with less=True %}{% if debug and less %}
+    {% block style %}{% with less=False %}{% if debug and less %}
         <link rel="stylesheet/less" href="{% static stylesheet_less %}">
         <script src="{% static "js/vendor/less-1.7.5.min.js" %}"></script>
         <script>less.modifyVars({'@icon-font-path': '"/static/fonts/"'});</script>{% else %}

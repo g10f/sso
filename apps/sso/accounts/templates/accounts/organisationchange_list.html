@@ -1,14 +1,14 @@
 {% extends 'base_site.html' %}
 {% load i18n list tz static thumbnail %}
 
-{% block title %}{% trans 'Center Change Request List' %}{% endblock %}
+{% block title %}{% trans 'Organisation Change Request List' %}{% endblock %}
 
 {% block nav_accounts_user_list_class %}active{% endblock %}
 
 {% block breadcrumb %}
 <ol class="breadcrumb">
     <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li class="active">{% trans 'Center Changes' %}</li>
+    <li class="active">{% trans 'Organisation Changes' %}</li>
 </ol> 
 {% endblock breadcrumb %}
     

@@ -2,12 +2,12 @@
 {% load i18n admin_static %}
 {% load thumbnail %}
 
-{% block title %}{% trans 'Center Details' %}{% endblock %}
+{% block title %}{% trans 'Organisation Details' %}{% endblock %}
 
 {% block breadcrumb %}
 <ol class="breadcrumb">
     <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'organisations:organisation_list' %}">{% trans 'Centers' %}</a></li>
+    <li><a href="{% url 'organisations:organisation_list' %}">{% trans 'Organisations' %}</a></li>
     <li class="active">{{ object.name }}</li>
 </ol> 
 {% endblock breadcrumb %}
@@ -88,12 +88,12 @@
 	{% if perms.organisations.change_organisation %}
     <div class="row"><div class="dwbn-label">{% trans 'Active' %}: </div>
     	<div class="dwbn-content">
-            <span data-toggle="tooltip" title="{% trans 'Designates whether this buddhist center should be treated as active. Unselect this instead of deleting buddhist center.' %}"
+            <span data-toggle="tooltip" title="{% trans 'Designates whether this organisation should be treated as active. Unselect this instead of deleting the organisation.' %}"
                     class="glyphicon glyphicon-{% if object.is_active %}check{% else %}uncheck{% endif %}"></span></div>
     </div>
     <div class="row"><div class="dwbn-label">{% trans 'Private' %}:</div>
     	<div class="dwbn-content">
-            <span data-toggle="tooltip" title="{% trans 'Designates whether this buddhist center data should be treated as private and only a telephone number should be displayed on public sites.' %}"
+            <span data-toggle="tooltip" title="{% trans 'Designates whether this organisation data should be treated as private and only a telephone number should be displayed on public sites.' %}"
                     class="glyphicon glyphicon-{% if object.is_private %}check{% else %}unchecked{% endif %}"></span></div>
     </div>
 	{% endif %}
@@ -113,7 +113,7 @@
 	<div class="row"><div class="dwbn-label">{{ phone_number.get_phone_type_display }} {% trans 'Phone' %}: </div><div class="dwbn-content">{{ phone_number }}</div></div>
 	{% endfor %}{% endif %}
 	
-    <h4>{% trans 'Nearest Centers' %}</h4>
+    <h4>{% trans 'Nearest Organisations' %}</h4>
 	{% for organisation in object.get_near_organisations %}
     <div class="row"><div class="dwbn-label"><a href="{% url 'organisations:organisation_detail' organisation.uuid %}">{{ organisation.name }}:</a> </div><div class="dwbn-content">{{ organisation.distance.km|floatformat }} km</div></div>
 	{% endfor %} 

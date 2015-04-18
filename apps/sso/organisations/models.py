@@ -159,12 +159,9 @@ class GeoManager(gis_models.GeoManager):
 
 class Organisation(AbstractBaseModel):
     CENTER_TYPE_CHOICES = (
-        ('1', _('Buddhist Center')),
-        ('2', _('Buddhist Group')),
-        ('3', _('Buddhist Retreat')),            
-        ('4', _('Buddhist Contact')),
-        ('7', _('Buddhist Center & Retreat')),            
-        ('16', _('Buddhist Group & Retreat')),            
+        ('1', _('Center')),
+        ('2', _('Group')),
+        ('4', _('Contact')),
     )
     COORDINATES_TYPE_CHOICES = (
         ('1', _('Unknown')),
@@ -194,7 +191,7 @@ class Organisation(AbstractBaseModel):
     facebook_page = URLFieldEx(domain='www.facebook.com', verbose_name=_("Facebook page"), blank=True)
     twitter_page = URLFieldEx(domain='twitter.com', verbose_name=_("Twitter page"), blank=True)
     notes = models.TextField(_('notes'), blank=True, max_length=255)
-    center_type = models.CharField(_('center type'), max_length=2, choices=CENTER_TYPE_CHOICES, db_index=True)    
+    center_type = models.CharField(_('organisation type'), max_length=2, choices=CENTER_TYPE_CHOICES, db_index=True)
     centerid = models.IntegerField(blank=True, help_text=_("id from the previous center DB (obsolete)"), null=True)
     founded = models.DateField(_("founded"), blank=True, null=True)
     coordinates_type = models.CharField(_('coordinates type'), max_length=1, choices=COORDINATES_TYPE_CHOICES, default='3', db_index=True, blank=True)
@@ -204,17 +201,17 @@ class Organisation(AbstractBaseModel):
     timezone = models.CharField(_('timezone'), blank=True, max_length=254)
     is_active = models.BooleanField(_('active'),
                                     default=True,
-                                    help_text=_('Designates whether this buddhist center should be treated as '
-                                                'active. Unselect this instead of deleting buddhist center.'))
+                                    help_text=_('Designates whether this organisation should be treated as '
+                                                'active. Unselect this instead of deleting organisation.'))
     is_private = models.BooleanField(_("private"), 
-                                     help_text=_('Designates whether this buddhist center data should be treated as private and '
+                                     help_text=_('Designates whether this organisation data should be treated as private and '
                                                  'only a telephone number should be displayed on public sites.'), 
                                      default=False)
     can_publish = models.BooleanField(_("publish"), 
-                                      help_text=_('Designates whether this buddhist center data can be published.'), 
+                                      help_text=_('Designates whether this organisation data can be published.'),
                                       default=True)
     uses_user_activation = models.BooleanField(_("uses activation"),
-                                               help_text=_('Designates whether this buddhist center uses the new user activation process.'),
+                                               help_text=_('Designates whether this organisation uses the new user activation process.'),
                                                default=False)
 
     objects = GeoManager()
@@ -225,8 +222,8 @@ class Organisation(AbstractBaseModel):
             # ("read_organisation", "Can read organisation data"),
         )
         ordering = ['name']
-        verbose_name = _('Buddhist Center')
-        verbose_name_plural = _('Buddhist Centers')
+        verbose_name = _('Organisation')
+        verbose_name_plural = _('Organisations')
 
     def __init__(self, *args, **kwargs):
         """
