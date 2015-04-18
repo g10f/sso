@@ -16,4 +16,9 @@ class Migration(migrations.Migration):
             name='is_center',
             field=models.BooleanField(default=False, help_text='Designates that this user is representing a organisation and not a private person.', verbose_name='organisation'),
         ),
+        migrations.AlterField(
+            model_name='user',
+            name='is_subscriber',
+            field=models.BooleanField(default=False, help_text='Designates whether this user is a newsletter subscriber.', verbose_name='subscriber'),
+        ),
     ]

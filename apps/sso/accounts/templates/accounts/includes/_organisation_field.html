@@ -6,7 +6,7 @@
         <p class="form-control-static">{{ field.value|default:"---" }}</p>
         {% if user.organisationchange %}
             <a class="btn btn-warning" href="{% url 'accounts:organisationchange_update' user.organisationchange.pk %}" role="button">
-            {% blocktrans with name=user.organisationchange.organisation.name %}Update change of center to {{ name }}{% endblocktrans %}</a>
+            {% blocktrans with name=user.organisationchange.organisation.name %}Update change of organisation to {{ name }}{% endblocktrans %}</a>
         {% else %}
             <a class="btn btn-default" href="{% url 'accounts:organisationchange_create' %}" role="button">{% trans 'Change my organisation' %}</a>
         {% endif %}

@@ -158,17 +158,20 @@ class GeoManager(gis_models.GeoManager):
 
 
 class Organisation(AbstractBaseModel):
+    # TODO: make configurable
     CENTER_TYPE_CHOICES = (
-        ('1', _('Center')),
-        ('2', _('Group')),
-        ('4', _('Contact')),
+        ('1', pgettext_lazy('Organisation Type', 'Center')),
+        ('2', pgettext_lazy('Organisation Type', 'Group')),
+        ('3', pgettext_lazy('Organisation Type', 'Retreat')),
+        ('4', pgettext_lazy('Organisation Type', 'Contact')),
+        ('7', pgettext_lazy('Organisation Type', 'Center & Retreat')),
+        ('16', pgettext_lazy('Organisation Type', 'Group & Retreat')),
     )
     COORDINATES_TYPE_CHOICES = (
         ('1', _('Unknown')),
         ('2', _('City/Village')),
         ('3', _('Exact')),
         ('4', _('Nearby')),
-        # ('5', _('Others')) is not included in legacy data and seems to be redundant
     )
     _center_type_choices = {}
     for choice in CENTER_TYPE_CHOICES:

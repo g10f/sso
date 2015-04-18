@@ -3,7 +3,7 @@
 {% if has_expired %}{% blocktrans %}Your account {{ email }} at {{ site_name }} has expired at {{ expiration_date }}.{% endblocktrans %}{% else %}
 {% blocktrans %}You account {{ email }}  at {{ site_name }} will expire at {{ expiration_date }}.{% endblocktrans %}{% endif %}
 
-{% blocktrans %}Please contact the user administrator at your local buddhist center to renew your account.{% endblocktrans %}
+{% blocktrans %}Please contact the user administrator at your organisation to renew your account.{% endblocktrans %}
 
 
 {% blocktrans %}The {{ site_name }} team{% endblocktrans %}

@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='organisation',
             name='center_type',
-            field=models.CharField(db_index=True, max_length=2, verbose_name='organisation type', choices=[(b'1', 'Center'), (b'2', 'Group'), (b'4', 'Contact')]),
+            field=models.CharField(db_index=True, max_length=2, verbose_name='organisation type', choices=[(b'1', 'Center'), (b'2', 'Group'), (b'3', 'Retreat'), (b'4', 'Contact'), (b'7', 'Center & Retreat'), (b'16', 'Group & Retreat')]),
         ),
         migrations.AlterField(
             model_name='organisation',
