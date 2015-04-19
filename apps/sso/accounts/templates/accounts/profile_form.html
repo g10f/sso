@@ -4,14 +4,13 @@
 
 {% block title %}{% trans 'Profile' %}{% endblock %}
 
-{% block left_content %}{% include navigation_template with active_navigation="profile" %}{% endblock left_content %}
-
 {% block extrascript %}
     {{ media }}
     <script src="{% static "js/formsets-1.1.js" %}"></script>
 {% endblock extrascript %}
 
 {% block navbar %}{% include global_navigation_template with active_navigation="profile" %}{% endblock navbar %}
+{% block left_content %}{% include navigation_template with active_navigation="profile" %}{% endblock left_content %}
 
 {% block breadcrumb %}
     <ol class="breadcrumb">
@@ -19,7 +18,6 @@
         <li class="active">{% trans 'My Account' %}</li>
     </ol>
 {% endblock breadcrumb %}
-
 
 {% block form %}
     <form enctype="multipart/form-data" class="form-horizontal" method="post"
