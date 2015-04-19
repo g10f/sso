@@ -10,7 +10,7 @@
             <i class="glyphicon glyphicon-list"></i> {% trans 'Emails' %}</a>
     {% endif %}
 
-    {% if perms.organisations.change_organisationcountry %}
+    {% if user.is_authenticated %}
         <a class="list-group-item" href="{% url 'organisations:organisationcountry_list' %}">
             <i class="glyphicon glyphicon-list"></i> {% trans 'Countries' %}</a>
     {% endif %}

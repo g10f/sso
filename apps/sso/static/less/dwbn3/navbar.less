@@ -88,7 +88,9 @@
 }
 
 @dwbn-logo-top-margin: 13px;
-@dwbn-logo-width-small: 55px;
+@dwbn-logo-width-small: 45px;
+@dwbn-logo-height: @dwbn-logo-width-small;
+@dwbn-logo-width: 202px;
 
 .dwbn-navbar-logo {
   height: (@navbar-height - @dwbn-logo-top-margin);
@@ -102,10 +104,10 @@
 .dwbn-logo {
   width: @dwbn-logo-width-small;
   display: block;
-  height: 45px;
+  height: @dwbn-logo-height;
   background: transparent url(../img/dwbn/diamondway_logo_m.png) no-repeat top right !important;
   overflow: visible;
   @media (min-width: @screen-md-min) {
-    width: 247px;
+    width: @dwbn-logo-width;
   }
 }
