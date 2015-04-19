@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 # SUPPORTED_SCOPES = ['openid', 'profile', 'email', 'offline_access', 'address', 'phone']
 # DEFAULT_SCOPES = ['openid', 'profile']
 
+
 def get_iss_from_absolute_uri(abs_uri):
     (scheme, netloc, path, query, fragment) = urlparse.urlsplit(abs_uri)  # @UnusedVariable
     return "%s://%s" % (scheme, netloc)
