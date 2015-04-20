@@ -9,7 +9,7 @@
     <link rel="shortcut icon" href="{% static favicon %}" type="image/ico"/>
     {% block style %}{% if less %}
         <link rel="stylesheet/less" href="{% static stylesheet_less %}">
-        <script src="{% static "js/vendor/less-1.7.5.min.js" %}"></script>
+        <script src="{% static "js/vendor/less-2.5.0.min.js" %}"></script>
         <script>less.modifyVars({'@icon-font-path': '"/static/fonts/"'});</script>{% else %}
         <link rel="stylesheet" href="{% static stylesheet %}">{% endif %}
     {% endblock style %}
