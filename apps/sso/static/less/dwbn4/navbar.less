@@ -1,3 +1,39 @@
+//
+// for app list in the brand
+.dwbn-navbar-apps {
+  float: left;
+  font-size: @font-size-large;
+  line-height: @line-height-computed;
+  height: @navbar-height;
+  margin-left: -@navbar-padding-horizontal;
+  .dropdown-menu {
+    .border-bottom-radius(@navbar-border-radius);
+    .border-top-radius(0);
+    margin: 0 0 0 @navbar-padding-horizontal;
+    > .active > a {
+      &,
+      &:hover,
+      &:focus {
+        color: @dropdown-link-active-color;
+        text-decoration: none;
+        outline: 0;
+        background-color: @dropdown-link-active-bg;
+      }
+    }
+  }
+  .dropdown-toggle {
+    position: relative;
+    display: block;
+    padding: @navbar-padding-vertical @navbar-padding-horizontal;
+    color: @navbar-default-link-color;
+    &:hover,
+    &:focus {
+      text-decoration: none;
+      color: @navbar-default-brand-hover-color;
+      background-color: @navbar-default-brand-hover-bg;
+    }
+  }
+}
 // red line
 .navbar-header {
   @media (max-width: @grid-float-breakpoint) {
