@@ -21,9 +21,9 @@ class JsonHttpResponse(HttpResponse):
             status = HTTP_200_OK  # jsonp can not handle http errors
             content = u"%s(%s)" % (callback, json.dumps(data, cls=DjangoJSONEncoder))
         else:
-            content = json.dumps(data, cls=DjangoJSONEncoder)
+            content = json.dumps(data, cls=DjangoJSONEncoder, ensure_ascii=False)
         
-        super(JsonHttpResponse, self).__init__(content, status=status, content_type='application/json', *args, **kwargs)
+        super(JsonHttpResponse, self).__init__(content, status=status, content_type='application/json; charset=utf-8;', *args, **kwargs)
         
         if request:
             origin = request.META.get('HTTP_ORIGIN')
