@@ -32,8 +32,8 @@
             </ul>
         {% endif %}
     {% else %}
-        {% blocktrans %}Welcome, at the {{ brand }} Single Sign-On home page.{% endblocktrans %}
-        <br/><br/>
+        <h3>{% blocktrans %}Welcome, at the {{ brand }} Single Sign-On home page.{% endblocktrans %}</h3>
+
         <p>
             {% blocktrans %}Would you like <a href="{{ login_url }}">to log yourself</a> in?{% endblocktrans %}
         </p>
