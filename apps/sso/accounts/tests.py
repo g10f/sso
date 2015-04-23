@@ -162,10 +162,9 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.selenium.find_element_by_name("new_password2").send_keys(new_password)
         self.selenium.find_element_by_xpath('//button[@type="submit"]').click()
         self.wait_page_loaded()
-        
-        self.selenium.find_element_by_xpath('//a[@href="%s"]' % reverse('accounts:logout')).click()        
-        self.wait_page_loaded()   
-        
+
+        self.logout()
+
         self.login_test(username, new_password)
 
     def test_password_reset(self):
