@@ -16,7 +16,7 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">{% trans 'Applications' %} <b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             {% for app in user.get_global_navigation_urls %}
-                                <li><a href="{{ app.url }}">{{ app.title }}</a></li>
+                                <li class="{% if app.uuid == sso_app_uuid %}active{% endif %}"><a href="{{ app.url }}">{{ app.title }}</a></li>
                             {% endfor %}
                         </ul>
                     </li>
