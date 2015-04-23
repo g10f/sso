@@ -19,5 +19,6 @@ def settings(request):
             'stylesheet': 'css/%(style)s-%(version)s.css' % {'style': site_settings.SSO_STYLE, 'version': site_settings.SSO_STYLE_VERSION},
             'stylesheet_less': 'less/%(style)s.less' % {'style': site_settings.SSO_STYLE},
             'less': site_settings.SSO_LESS,
-            'favicon': site_settings.SSO_FAVICON
+            'favicon': site_settings.SSO_FAVICON,
+            'sso_app_uuid': site_settings.SSO_APP_UUID
             }
