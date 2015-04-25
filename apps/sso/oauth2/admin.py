@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 class ClientAdmin(admin.ModelAdmin):
     list_display = ('name', 'uuid', 'application', 'type', 'user')
     list_filter = ('type', 'application',)
-    fields = ('application', 'type', 'name', 'uuid', 'client_secret', 'redirect_uris', 'scopes', 'user', 'notes', 'last_modified')
+    fields = ('application', 'type', 'name', 'uuid', 'client_secret', 'redirect_uris', 'scopes', 'user', 'notes', 'is_active', 'last_modified')
     readonly_fields = ('last_modified', )
     list_select_related = ('application', )
 

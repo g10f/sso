@@ -56,6 +56,7 @@ location ~* \.(?:css|js)$ {
 """
 
 PROXIED_SITE_TEMPLATE = """\
+# limit_req_zone $binary_remote_addr zone=sso:10m rate=1r/s;
 upstream %(server_name)s.backend {
     server unix:/tmp/%(server_name)s.gunicorn.sock;
 }
@@ -85,6 +86,7 @@ server {
     }
 
     location @proxied {
+        # limit_req zone=sso burst=10 nodelay;
         add_header X-UA-Compatible IE=edge;
         add_header Strict-Transport-Security max-age=31536000;
         proxy_set_header Host $host;
