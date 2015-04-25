@@ -77,7 +77,7 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
         if request.client:
             assert(request.client.uuid == client_id)
         else:
-            request.client = Client.objects.get(uuid=client_id)
+            request.client = Client.objects.get(uuid=client_id, is_active=True)
         return request.client
         
     # Ordered roughly in order of appearance in the authorization grant flow
@@ -238,7 +238,7 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
                 logger.debug('Bearer Token with no scope')
             user = get_user_model().objects.get(uuid=data['sub'])
             request.user = user
-            request.client = Client.objects.get(uuid=data['aud'])
+            request.client = Client.objects.get(uuid=data['aud'], is_active=True)
         except (ObjectDoesNotExist, signing.BadSignature, ValueError):
             return False
         return True
