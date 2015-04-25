@@ -148,7 +148,7 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
                     request.client_id, request.client_secret = http_authorization[1].decode("base64").split(":")
                 
         try:
-            request.client = Client.objects.get(uuid=request.client_id, client_secret=request.client_secret)
+            request.client = Client.objects.get(uuid=request.client_id, client_secret=request.client_secret, is_active=True)
             if request.grant_type == 'client_credentials':
                 user = request.client.user
                 if user:
