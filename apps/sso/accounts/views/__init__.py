@@ -180,7 +180,6 @@ def login(request):
         'cancel_url': cancel_url,
         'site': current_site,
         'site_name': site_name,
-        'registration_open': settings.REGISTRATION.get('OPEN', True)
     }
     return TemplateResponse(request, template_name, context)
 

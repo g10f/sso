@@ -20,5 +20,6 @@ def settings(request):
             'stylesheet_less': 'less/%(style)s.less' % {'style': site_settings.SSO_STYLE},
             'less': site_settings.SSO_LESS,
             'favicon': site_settings.SSO_FAVICON,
-            'sso_app_uuid': site_settings.SSO_APP_UUID
+            'sso_app_uuid': site_settings.SSO_APP_UUID,
+            'registration_open': site_settings.REGISTRATION.get('OPEN', True)
             }
