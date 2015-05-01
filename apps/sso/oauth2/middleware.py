@@ -24,8 +24,10 @@ def get_access_token(request):
     http_authorization = request.META.get('HTTP_AUTHORIZATION')
     if http_authorization:
         http_authorization = http_authorization.split()
-        if http_authorization[0] == 'Bearer':
-            return http_authorization[1]
+        if len(http_authorization) == 2:
+            if http_authorization[0] == 'Bearer':
+                return http_authorization[1]
+        return None
     else:
         return request.POST.get('access_token', request.GET.get('access_token', None))
 
