@@ -13,6 +13,7 @@ from sso.api.response import HttpApiResponseNotAuthorized, HttpApiErrorResponse
 
 logger = logging.getLogger(__name__)
 
+
 def api_user_passes_test(test_func):
     """
     Decorator for views that checks that the user passes the given test,
