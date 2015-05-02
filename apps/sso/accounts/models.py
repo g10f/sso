@@ -2,6 +2,7 @@
 from itertools import chain
 import re
 import logging
+import uuid
 from datetime import timedelta
 from urlparse import urlparse
 
@@ -25,7 +26,6 @@ from django.utils.timezone import now
 from django.utils.translation import pgettext_lazy, ugettext_lazy as _
 from django.utils.text import capfirst
 from l10n.models import Country
-from sso.fields import UUIDField
 from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary, get_filename
 from sso.organisations.models import AdminRegion, Organisation
 from sso.emails.models import GroupEmailManager
@@ -71,8 +71,8 @@ class Application(models.Model):
     order = models.IntegerField(default=0, help_text=_('Overwrites the alphabetic order.'))
     title = models.CharField(max_length=255)
     url = models.URLField(max_length=2047, blank=True)
-    uuid = UUIDField(version=4, unique=True, editable=True)
-    global_navigation = models.BooleanField(_('global navigation'), 
+    uuid = models.UUIDField(unique=True, default=uuid.uuid4, editable=True)
+    global_navigation = models.BooleanField(_('global navigation'),
                                             help_text=_('Designates whether this application should be shown in the global navigation bar.'), default=True)
     is_active = models.BooleanField(_('active'), default=True, help_text=_('Designates whether this application should be provided.'))
     objects = ApplicationManager()
@@ -235,7 +235,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(_('active'), default=True, db_index=True, help_text=_('Designates whether this user should be treated as active. Unselect this instead of deleting accounts.'))
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
     # extension
-    uuid = UUIDField(version=4, editable=True, unique=True)
+    uuid = models.UUIDField(unique=True, default=uuid.uuid4, editable=True)
     organisations = models.ManyToManyField(Organisation, verbose_name=_('organisations'), blank=True)
     admin_regions = models.ManyToManyField(AdminRegion, verbose_name=_('admin regions'), blank=True)
     admin_countries = models.ManyToManyField(Country, verbose_name=_('admin countries'), blank=True)

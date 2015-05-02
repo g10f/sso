@@ -3,17 +3,17 @@ import logging
 from mimetypes import guess_extension
 import os
 import re
+import uuid
+
 from django.utils.crypto import get_random_string
 from django.forms import forms
 from django.utils.text import get_valid_filename
-
 from django.core.validators import RegexValidator
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.forms.models import model_to_dict
 from l10n.models import Country, AdminArea
 from smart_selects.db_fields import ChainedForeignKey
-from sso.fields import UUIDField
 
 
 logger = logging.getLogger(__name__)
@@ -48,7 +48,7 @@ class AbstractBaseModelManager(models.Manager):
 
 
 class AbstractBaseModel(models.Model):
-    uuid = UUIDField(version=4, unique=True, editable=True)
+    uuid = models.UUIDField(unique=True, default=uuid.uuid4, editable=True)
     last_modified = models.DateTimeField(_('last modified'), auto_now=True)
     objects = AbstractBaseModelManager()
     
