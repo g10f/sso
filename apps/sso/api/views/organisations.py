@@ -55,7 +55,8 @@ class OrganisationMixin(object):
             pass
         if not obj.is_private:
             if obj.location:
-                data['location'] = {'geo': {'latitude': obj.location.y, 'longitude': obj.location.x}}
+                data['location'] = {'geo': {'latitude': obj.location.y, 'longitude': obj.location.x},
+                                    'type': obj.coordinates_type}
             
         if details:
             if ('users' in request.scopes) and (obj in request.user.get_administrable_user_organisations()):
