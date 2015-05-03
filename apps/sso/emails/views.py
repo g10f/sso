@@ -81,7 +81,7 @@ class GroupEmailCreateView(GroupEmailBaseView, CreateView):
     template_name_suffix = '_create_form'
     
     def get_success_url(self):
-        return reverse('emails:groupemail_detail', args=[self.object.uuid])
+        return reverse('emails:groupemail_detail', args=[self.object.uuid.hex])
 
     @method_decorator(login_required)
     @method_decorator(permission_required('emails.add_groupemail', raise_exception=True))

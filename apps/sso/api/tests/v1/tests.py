@@ -53,7 +53,7 @@ class ApiTests(OAuth2BaseTestCase):
         response = self.client.get(uri, HTTP_AUTHORIZATION=authorization)
         self.assertEqual(response.status_code, HTTP_401_UNAUTHORIZED)  # Standard user is not allowed to query all users
 
-        # login as user with the rigth to change all users
+        # login as user with the right to change all users
         authorization = self.get_authorization(username="GlobalAdmin", password="secret007")
         response = self.client.get(uri, HTTP_AUTHORIZATION=authorization)
         self.assertEqual(response.status_code, HTTP_200_OK)

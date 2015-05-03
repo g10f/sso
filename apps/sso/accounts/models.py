@@ -217,7 +217,7 @@ class UserManager(BaseUserManager):
 
 
 def generate_filename(instance, filename):
-    return u'image/%s/%s' % (instance.uuid, get_filename(filename.encode('ascii', 'replace')))
+    return u'image/%s/%s' % (instance.uuid.hex, get_filename(filename.encode('ascii', 'replace')))
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -951,6 +951,6 @@ def update_user(sender, instance, created, **kwargs):
 """
 @receiver(user_logged_in)
 def add_cache_key(request, user, **kwargs):
-    cache_key = ",".join([org.uuid for org in user.get_profile().organisations.all().only('uuid')[:10]])    
+    cache_key = ",".join([org.uuid.hex for org in user.get_profile().organisations.all().only('uuid')[:10]])
     request.session['_auth_cache_key'] = cache_key
 """

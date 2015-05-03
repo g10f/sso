@@ -33,7 +33,7 @@ def default_token_generator(request, max_age=MAX_AGE, refresh_token=False):
         claim_set = {
             'jti': get_random_string(), 
             'iss': get_iss_from_absolute_uri(request.uri),
-            'sub': request.user.uuid,  # required
+            'sub': request.user.uuid.hex,  # required
             'aud': request.client.client_id,  # required
             'exp': int(time.time()) + max_age,  # required
             'iat': int(time.time()),  # required
@@ -57,7 +57,7 @@ def default_idtoken_generator(request, max_age=MAX_AGE, refresh_token=False):
         auth_time = int(calendar.timegm(user.last_login.utctimetuple()))
         claim_set = {
             'iss': get_iss_from_absolute_uri(request.uri),
-            'sub': user.uuid,
+            'sub': user.uuid.hex,
             'aud': request.client.client_id,
             'exp': int(time.time()) + max_age,
             'iat': int(time.time()),
@@ -75,7 +75,7 @@ def default_idtoken_generator(request, max_age=MAX_AGE, refresh_token=False):
 class OAuth2RequestValidator(oauth2.RequestValidator):
     def _get_client(self, client_id, request):
         if request.client:
-            assert(request.client.uuid == client_id)
+            assert(request.client.uuid.hex == client_id)
         else:
             request.client = Client.objects.get(uuid=client_id, is_active=True)
         return request.client

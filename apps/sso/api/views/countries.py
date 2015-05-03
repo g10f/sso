@@ -18,7 +18,7 @@ class CountryMixin(object):
         base = base_url(request)
         data = {
             '@id': "%s%s" % (base, reverse('api:v2_country', kwargs={'iso2_code': obj.country.iso2_code})),
-            'id': u'%s' % obj.uuid,
+            'id': u'%s' % obj.uuid.hex,
             'code': obj.country.iso2_code,
             'name': u'%s' % str(obj),
             'email': u'%s' % obj.email,

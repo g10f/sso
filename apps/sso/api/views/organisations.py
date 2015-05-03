@@ -18,8 +18,8 @@ class OrganisationMixin(object):
     def get_object_data(self, request, obj, details=False):
         base = base_url(request)
         data = {
-            '@id': "%s%s" % (base, reverse('api:v2_organisation', kwargs={'uuid': obj.uuid})),
-            'id': u'%s' % obj.uuid,
+            '@id': "%s%s" % (base, reverse('api:v2_organisation', kwargs={'uuid': obj.uuid.hex})),
+            'id': u'%s' % obj.uuid.hex,
             'centerid': u'%s' % obj.centerid,  # legacy id, should be removed when the resync ist done
             'is_active': obj.is_active,
             'is_private': obj.is_private,
@@ -29,7 +29,7 @@ class OrganisationMixin(object):
             'founded': obj.founded,
             'center_type': obj.center_type,
             'homepage': obj.homepage,
-            'google_plus_page': obj.homepage,
+            'google_plus_page': obj.google_plus_page,
             'facebook_page': obj.facebook_page,
             'twitter_page': obj.twitter_page,
             'last_modified': obj.get_last_modified_deep(),
@@ -44,8 +44,8 @@ class OrganisationMixin(object):
 
         if obj.admin_region is not None:
             data['region'] = {
-                'id': obj.admin_region.uuid,
-                '@id': "%s%s" % (base, reverse('api:v2_region', kwargs={'uuid': obj.admin_region.uuid})),
+                'id': obj.admin_region.uuid.hex,
+                '@id': "%s%s" % (base, reverse('api:v2_region', kwargs={'uuid': obj.admin_region.uuid.hex})),
             }
 
         try:
@@ -59,11 +59,11 @@ class OrganisationMixin(object):
             
         if details:
             if ('users' in request.scopes) and (obj in request.user.get_administrable_user_organisations()):
-                data['users'] = "%s%s?org_id=%s" % (base, reverse('api:v2_users'), obj.uuid)
+                data['users'] = "%s%s?org_id=%s" % (base, reverse('api:v2_users'), obj.uuid.hex)
             
             if not obj.is_private:
                 data['addresses'] = {
-                    address.uuid: {
+                    address.uuid.hex: {
                         'address_type': address.address_type,
                         'name': address.addressee,
                         'street_address': address.street_address,
@@ -76,14 +76,14 @@ class OrganisationMixin(object):
                     } for address in obj.organisationaddress_set.all()
                 }
             data['phone_numbers'] = {
-                phone_number.uuid: {
+                phone_number.uuid.hex: {
                     'phone_type': phone_number.phone_type,
                     'phone': phone_number.phone,
                     'primary': phone_number.primary
                 } for phone_number in obj.organisationphonenumber_set.all()
             }
             data['pictures'] = {
-                picture.uuid: {
+                picture.uuid.hex: {
                     'title': picture.title,
                     'description': picture.description,
                     'order': picture.order,

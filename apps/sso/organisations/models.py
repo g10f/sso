@@ -92,7 +92,7 @@ class OrganisationCountry(AbstractBaseModel):
 
     @models.permalink
     def get_absolute_url(self):
-        return 'organisations:organisationcountry_detail', (), {'uuid': self.uuid, }
+        return 'organisations:organisationcountry_detail', (), {'uuid': self.uuid.hex, }
 
 
 class ActiveAdminRegionManager(models.Manager):
@@ -129,7 +129,7 @@ class AdminRegion(AbstractBaseModel, ExtraManager):
 
     @models.permalink
     def get_absolute_url(self):
-        return 'organisations:adminregion_detail', (), {'uuid': self.uuid, }
+        return 'organisations:adminregion_detail', (), {'uuid': self.uuid.hex, }
 
 
 def get_near_organisations(current_point, distance_from_point=None, qs=None, order=True):
@@ -293,7 +293,7 @@ class Organisation(AbstractBaseModel):
 
     @models.permalink
     def get_absolute_url(self):
-        return 'organisations:organisation_detail', (), {'uuid': self.uuid, }
+        return 'organisations:organisation_detail', (), {'uuid': self.uuid.hex, }
     
     @property
     def google_maps_url(self):
@@ -331,7 +331,7 @@ class Organisation(AbstractBaseModel):
 
 
 def generate_filename(instance, filename):
-    return u'organisation_image/%s/%s' % (instance.organisation.uuid, get_filename(filename.encode('ascii', 'replace')))
+    return u'organisation_image/%s/%s' % (instance.organisation.uuid.hex, get_filename(filename.encode('ascii', 'replace')))
 
 
 class OrganisationPicture(AbstractBaseModel):

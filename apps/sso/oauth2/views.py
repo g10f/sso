@@ -203,7 +203,7 @@ def authorize(request):
                 id_token = get_request_param(request, 'id_token_hint', '')
                 try:
                     parsed = loads_jwt(id_token)
-                    if parsed['sub'] != request.user.uuid:
+                    if parsed['sub'] != request.user.uuid.hex:
                         raise LoginRequiredError(state=credentials.get('state'))
                 except BadSignature, e:  # maybe Token used too late
                     logger.exception(e)
@@ -309,8 +309,8 @@ def client_details(request, object_id):
         "client_secret": client.client_secret,
         "token_uri": request.build_absolute_uri(reverse('oauth2:token')),
         "redirect_uris": [uri for uri in client.redirect_uris.split()],
-        "application_id": client.application.uuid if client.application else None,
-        "client_id": client.uuid,
+        "application_id": client.application.uuid.hex if client.application else None,
+        "client_id": client.uuid.hex,
         "auth_provider_x509_cert_url": request.build_absolute_uri(reverse('oauth2:certs')),
         "userinfo_uri": request.build_absolute_uri(reverse('api:v1_users_me')),
         "logout_uri": request.build_absolute_uri(reverse('accounts:logout')),

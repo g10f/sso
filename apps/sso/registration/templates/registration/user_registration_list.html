@@ -54,7 +54,7 @@
               <td>{{ registration.date_registered|utc|date:"Y-m-d H:i" }}</td>
               <td>
               {% if registration.verified_by_user %}
-                <a class="" href="{% url 'accounts:update_user' registration.verified_by_user.uuid %}{{ cl.get_query_string }}">{{ registration.verified_by_user }}</a>
+                <a class="" href="{% url 'accounts:update_user' registration.verified_by_user.uuid.hex %}{{ cl.get_query_string }}">{{ registration.verified_by_user }}</a>
               {% endif %}
               </td>
               <td><i class="{% if registration.check_back %}glyphicon glyphicon glyphicon-exclamation-sign{% endif %}"></i></td>

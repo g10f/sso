@@ -118,11 +118,11 @@ class OrganisationssTest(TestCase):
             'organisationphonenumber_set-MIN_NUM_FORMS': 0,
             'organisationphonenumber_set-TOTAL_FORMS': 1,
         }
-        response = self.client.post(reverse('organisations:organisation_update', args=[organisation.uuid]), data=data)
+        response = self.client.post(reverse('organisations:organisation_update', args=[organisation.uuid.hex]), data=data)
         self.assertEqual(response.status_code, 302)
         
         # request the new data
-        response = self.client.get(reverse('organisations:organisation_detail', args=[organisation.uuid]))
+        response = self.client.get(reverse('organisations:organisation_detail', args=[organisation.uuid.hex]))
         self.assertEqual(response.status_code, 200)
         obj = response.context['object']
         self.assertEqual(obj.organisationaddress_set.all()[0].addressee, 'Zentrum New')

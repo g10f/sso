@@ -108,7 +108,7 @@ class GroupEmail(AbstractBaseModel):
 
     @models.permalink
     def get_absolute_url(self):
-        return 'emails:groupemail_detail', (), {'uuid': self.uuid}
+        return 'emails:groupemail_detail', (), {'uuid': self.uuid.hex}
 
     def __unicode__(self):
         return u"%s" % self.email

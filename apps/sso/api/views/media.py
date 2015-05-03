@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 def get_last_modified_and_etag(request, uuid):
     obj = User.objects.get(uuid=uuid)
     last_modified = obj.last_modified
-    etag = "%s/%s" % (uuid, obj.last_modified)
+    etag = "%s/%s" % (uuid.hex, obj.last_modified)
     return last_modified, etag       
 
 
@@ -34,12 +34,12 @@ def get_last_modified_and_etag_for_me(request, *args, **kwargs):
 
 def modify_permission(request, obj):
     """
-    user is the authenticted user
+    user is the authenticated user
     permission to change user the obj
     """
     if 'picture' in request.scopes:
         user = request.user
-        if (not user.is_authenticated()):
+        if not user.is_authenticated():
             return False, 'User not authenticated'
         else:
             if user.uuid == obj.uuid:
@@ -76,8 +76,8 @@ class UserPictureDetailView(JsonDetailView):
     def get_object_data(self, request, obj):
         base = base_url(request)
         data = {
-            '@id': "%s%s" % (base, reverse('api:v2_picture', kwargs={'uuid': obj.uuid})),
-            'id': u'%s' % obj.uuid,
+            '@id': "%s%s" % (base, reverse('api:v2_picture', kwargs={'uuid': obj.uuid.hex})),
+            'id': u'%s' % obj.uuid.hex,
             'last_modified': obj.last_modified,
             'max_size': User.MAX_PICTURE_SIZE
         }

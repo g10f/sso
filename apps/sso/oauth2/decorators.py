@@ -47,7 +47,7 @@ def client_required(client_uuids, raise_exception=False):
     """
     def check_client(request):
         if client_uuids:
-            if request.client and request.client.uuid in client_uuids:
+            if request.client and request.client.uuid.hex in client_uuids:
                 return True
 
         raise PermissionDenied('client_id not allowed')

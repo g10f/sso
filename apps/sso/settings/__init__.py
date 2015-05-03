@@ -3,6 +3,7 @@
 import os
 import sys
 import socket
+from uuid import UUID
 
 try:
     RUNNING_DEVSERVER = (sys.argv[1] == 'runserver')
@@ -23,8 +24,8 @@ SSO_BRAND = 'G10F'
 SSO_SITE_NAME = 'G10F'
 SSO_BASE_URL = 'http://localhost:8000'  # for management scripts without a request object
 SSO_ABOUT = 'http://g10f.de/'
-SSO_APP_UUID = 'fa467234b81e4838a009e38d9e655d18'
-SSO_STREAMING_UUID = 'c362bea58c67457fa32234e3178285c4'
+SSO_APP_UUID = UUID('fa467234b81e4838a009e38d9e655d18')
+SSO_STREAMING_UUID = UUID('c362bea58c67457fa32234e3178285c4')
 SSO_STYLE = 'default'
 SSO_STYLE_VERSION = '1.0.13'
 SSO_LESS = False
@@ -32,8 +33,8 @@ SSO_FAVICON = 'ico/favicon.ico'
 SSO_NAVIGATION_TEMPLATE = 'include/_navigation.html'
 SSO_GLOBAL_NAVIGATION_TEMPLATE = 'include/global_navigation.html'
 SSO_EMAIL_CONFIRM_TIMEOUT_MINUTES = 60
-SSO_DEFAULT_ROLE_PROFILE_UUID = 'b4caab335bbc4c90a6f552f7f13aa410'
-SSO_DEFAULT_ADMIN_PROFILE_UUID = '1593284b238c4a1cabf291e573205508'
+SSO_DEFAULT_ROLE_PROFILE_UUID = UUID('b4caab335bbc4c90a6f552f7f13aa410')
+SSO_DEFAULT_ADMIN_PROFILE_UUID = UUID('1593284b238c4a1cabf291e573205508')
 SSO_SHOW_ADDRESS_AND_PHONE_FORM = True  # Address and Phone number in profile form
 SSO_ADD_DHARMASHOP_ROLE = False
 SSO_VALIDATION_PERIOD_IS_ACTIVE = True  # accounts must be prolonged
@@ -73,7 +74,7 @@ TIME_ZONE = 'Europe/Berlin'
 LANGUAGE_CODE = 'en-us'
 
 ABSOLUTE_URL_OVERRIDES = {
-    'accounts.user': lambda u: "/api/v2/users/%s/" % u.uuid,
+    'accounts.user': lambda u: "/api/v2/users/%s/" % u.uuid.hex,
 }
 
 USE_I18N = True

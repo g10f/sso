@@ -47,7 +47,7 @@ class UserDeleteView(DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super(UserDeleteView, self).get_context_data(**kwargs)
-        context['cancel_url'] = reverse('accounts:update_user', args=[self.object.uuid])
+        context['cancel_url'] = reverse('accounts:update_user', args=[self.object.uuid.hex])
         return context
 
 
@@ -176,7 +176,7 @@ def add_user(request, template='accounts/application/add_user_form.html'):
             user = form.save()                
             send_account_created_email(user, request)
             
-            return HttpResponseRedirect(reverse('accounts:add_user_done', args=[user.uuid]))
+            return HttpResponseRedirect(reverse('accounts:add_user_done', args=[user.uuid.hex]))
     else:
         default_role_profile = User.get_default_role_profile()
         form = UserAddForm(request.user, initial={'role_profiles': [default_role_profile]})
@@ -231,11 +231,11 @@ def update_user(request, uuid, template='accounts/application/update_user_form.h
                 success_url = reverse('accounts:add_user')
             elif "_continue" in request.POST:
                 msg = _('The %(name)s "%(obj)s" was changed successfully. You may edit it again below.') % msg_dict
-                success_url = reverse('accounts:update_user', args=[user.uuid])
+                success_url = reverse('accounts:update_user', args=[user.uuid.hex])
             elif "_resend_invitation" in request.POST:
                 send_account_created_email(user, request)
                 msg = _('The %(name)s "%(obj)s" was changed successfully and the invitation email was resend.') % msg_dict
-                success_url = reverse('accounts:update_user', args=[user.uuid])
+                success_url = reverse('accounts:update_user', args=[user.uuid.hex])
             else:
                 msg = _('The %(name)s "%(obj)s" was changed successfully.') % msg_dict
                 success_url = reverse('accounts:user_list') + "?" + request.GET.urlencode()
@@ -297,7 +297,7 @@ def update_user_app_roles(request, uuid, template='accounts/application/update_u
             msg_dict = {'name': force_text(get_user_model()._meta.verbose_name), 'obj': force_text(user)}
             if "_continue" in request.POST:
                 msg = _('The %(name)s "%(obj)s" was changed successfully. You may edit it again below.') % msg_dict
-                success_url = reverse('accounts:update_user_app_roles', args=[user.uuid])
+                success_url = reverse('accounts:update_user_app_roles', args=[user.uuid.hex])
             else:
                 msg = _('The %(name)s "%(obj)s" was changed successfully.') % msg_dict
                 success_url = reverse('accounts:user_list') + "?" + request.GET.urlencode()

@@ -77,7 +77,7 @@
 
                 {% if perms.organisations.change_organisationcountry and has_country_access %}
                     <a class="btn btn-primary"
-                       href="{% url 'organisations:organisationcountry_update' object.uuid %}">{% trans 'Update' %}</a>
+                       href="{% url 'organisations:organisationcountry_update' object.uuid.hex %}">{% trans 'Update' %}</a>
                 {% endif %}
 
             {% endblock %}

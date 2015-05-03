@@ -69,7 +69,7 @@
 
                 {% if perms.organisations.change_adminregion and has_region_access %}
                     <a class="btn btn-primary"
-                       href="{% url 'organisations:adminregion_update' object.uuid %}">{% trans 'Update' %}</a>
+                       href="{% url 'organisations:adminregion_update' object.uuid.hex %}">{% trans 'Update' %}</a>
                 {% endif %}
 
             {% endblock %}

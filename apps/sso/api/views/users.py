@@ -82,14 +82,14 @@ def get_userapps(user, request):
     applications = []
     for application in user.get_apps():
         application_data = {
-            'uuid': application.uuid,
+            'uuid': application.uuid.hex,
             'order': application.order, 
             'links': {'app': {'href': application.url, 'title': application.title, 'global_navigation': application.global_navigation}}
         }
         applications.append(application_data)
     
     userinfo = {
-        'uuid': user.uuid,
+        'uuid': user.uuid.hex,
         'applications': applications,
         'full_name': user.get_full_name(),
         'text': {'More': _('More'), 'Logout': _('Log out')},
@@ -106,8 +106,8 @@ def get_userinfo(user, request, show_details=False):
     base = base_url(request)
     email = user.primary_email()
     userinfo = {
-        'id': u'%s' % user.uuid,
-        # 'sub': u'%s' % user.uuid,  # remove after all clients migrated to id
+        'id': u'%s' % user.uuid.hex,
+        # 'sub': u'%s' % user.uuid.hex,  # remove after all clients migrated to id
         'name': u'%s' % user,
         'given_name': u'%s' % user.first_name,
         'family_name': u'%s' % user.last_name,
@@ -116,9 +116,9 @@ def get_userinfo(user, request, show_details=False):
         'homepage': user.homepage,
         'language': user.language,
         'is_center': user.is_center,
-        'organisations': {organisation.uuid: {'name': organisation.name} for organisation in user.organisations.all()},
-        'links': {'self': {'href': "%s%s" % (base, reverse('api:v1_user', kwargs={'uuid': user.uuid}))},
-                  'apps': {'href': "%s%s" % (base, reverse('api:v1_users_apps', kwargs={'uuid': user.uuid}))}}
+        'organisations': {organisation.uuid.hex: {'name': organisation.name} for organisation in user.organisations.all()},
+        'links': {'self': {'href': "%s%s" % (base, reverse('api:v1_user', kwargs={'uuid': user.uuid.hex}))},
+                  'apps': {'href': "%s%s" % (base, reverse('api:v1_users_apps', kwargs={'uuid': user.uuid.hex}))}}
     } 
     if email is not None:
         userinfo['email'] = email.email
@@ -141,12 +141,12 @@ def get_userinfo(user, request, show_details=False):
                 if applicationrole.application == application:
                     application_data['roles'].append(applicationrole.role.name)
             
-            applications[application.uuid] = application_data
+            applications[application.uuid.hex] = application_data
         userinfo['applications'] = applications
         
         if 'address' in scopes:
             userinfo['addresses'] = {
-                address.uuid: {
+                address.uuid.hex: {
                     'address_type': address.address_type,
                     'addressee': address.addressee,
                     'street_address': address.street_address,
@@ -160,7 +160,7 @@ def get_userinfo(user, request, show_details=False):
         
         if 'phone' in scopes:
             userinfo['phone_numbers'] = {
-                phone_number.uuid: {
+                phone_number.uuid.hex: {
                     'phone_type': phone_number.phone_type,
                     'phone': phone_number.phone,
                     'primary': phone_number.primary
@@ -192,7 +192,7 @@ def get_user_list(request):
     page, links = get_page_and_links(request, qs)
     userinfo = {
         'collection': {
-            user.uuid: get_userinfo(user, request, show_details=False) for user in page
+            user.uuid.hex: get_userinfo(user, request, show_details=False) for user in page
         },
         'links': links
     }

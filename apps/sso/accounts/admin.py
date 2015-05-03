@@ -69,7 +69,7 @@ class OneTimeMessageAdmin(admin.ModelAdmin):
     
     def message_link(self, obj):
         if obj.uuid:
-            url = urlresolvers.reverse('accounts:view_message', args=[obj.uuid])
+            url = urlresolvers.reverse('accounts:view_message', args=[obj.uuid.hex])
             link = u'<div class="field-box"><a class="deletelink" href="%s">%s</a></div>' % (url, obj.title)
             
             return mark_safe(u'%s' % link)

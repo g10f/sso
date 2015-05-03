@@ -41,7 +41,7 @@
 	       <tbody>
 	           {% for object in object_list %}
 	           <tr> 
-	               <td><a href="{% url 'organisations:adminregion_detail' object.uuid %}">{{ object.name }}</a></td>
+	               <td><a href="{% url 'organisations:adminregion_detail' object.uuid.hex %}">{{ object.name }}</a></td>
 	               <td>{{ object.email|default_if_none:"" }}</td>
 	               <td>{% if object.homepage %}<a href="{{ object.homepage }}">{{ object.homepage }}</a>{% endif %}</td>
 	               <td>{{ object.country.iso2_code }}</td>

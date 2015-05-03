@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+from uuid import UUID
 
 from sorl.thumbnail import get_thumbnail
 
@@ -65,7 +66,7 @@ API_USER_MAPPING = {
     'birth_date': {'name': 'dob', 'parser': _parse_date},
     'homepage': 'homepage',
     'language': 'language',
-    'uuid': 'uuid'  # this value is created  JsonDetailView.create from the url
+    'uuid': 'uuid'  # this value is created in JsonDetailView.create from the url
 }
 API_ADDRESS_MAP = {
     'address_type': {'name': 'address_type', 'validate': lambda x: len(x) > 0, 'default': UserAddress.ADDRESSTYPE_CHOICES[0][0]}, 
@@ -93,8 +94,8 @@ class UserMixin(object):
         base = base_url(request)
         email = obj.primary_email()
         data = {
-            '@id': "%s%s" % (base, reverse('api:v2_user', kwargs={'uuid': obj.uuid})),
-            'id': u'%s' % obj.uuid,
+            '@id': "%s%s" % (base, reverse('api:v2_user', kwargs={'uuid': obj.uuid.hex})),
+            'id': u'%s' % obj.uuid.hex,
             'is_active': obj.is_active,
             'name': u'%s' % obj,
             'given_name': u'%s' % obj.first_name,
@@ -116,23 +117,23 @@ class UserMixin(object):
 
         if obj.picture:
             data['picture'] = {
-                '@id': "%s%s" % (base, reverse('api:v2_picture', kwargs={'uuid': obj.uuid})),
+                '@id': "%s%s" % (base, reverse('api:v2_picture', kwargs={'uuid': obj.uuid.hex})),
                 'url': absolute_url(request, obj.picture.url)
             }
         
         if details:
             data['organisations'] = {
-                organisation.uuid: {
+                organisation.uuid.hex: {
                     'country': organisation.country.iso2_code,
                     'name': organisation.name,
-                    '@id': "%s%s" % (base, reverse('api:v2_organisation', kwargs={'uuid': organisation.uuid}))
+                    '@id': "%s%s" % (base, reverse('api:v2_organisation', kwargs={'uuid': organisation.uuid.hex}))
                 } for organisation in obj.organisations.all().prefetch_related('country')
             }
             data['admin_regions'] = {
-                region.uuid: {
+                region.uuid.hex: {
                     'country': region.country.iso2_code,
                     'name': region.name,
-                    '@id': "%s%s" % (base, reverse('api:v2_region', kwargs={'uuid': region.uuid}))
+                    '@id': "%s%s" % (base, reverse('api:v2_region', kwargs={'uuid': region.uuid.hex}))
                 } for region in obj.admin_regions.all().prefetch_related('country')
             }
             data['admin_countries'] = {
@@ -155,12 +156,12 @@ class UserMixin(object):
                         if applicationrole.application == application:
                             application_data['roles'].append(applicationrole.role.name)
                     
-                    applications[application.uuid] = application_data
+                    applications[application.uuid.hex] = application_data
                 data['apps'] = applications
             
             if 'address' in scopes:
                 data['addresses'] = {
-                    address.uuid: {
+                    address.uuid.hex: {
                         'address_type': address.address_type,
                         'addressee': address.addressee,
                         'street_address': address.street_address,
@@ -175,7 +176,7 @@ class UserMixin(object):
             
             if 'phone' in scopes:
                 data['phone_numbers'] = {
-                    phone_number.uuid: {
+                    phone_number.uuid.hex: {
                         'phone_type': phone_number.phone_type,
                         'phone': phone_number.phone,
                         'primary': phone_number.primary
@@ -202,7 +203,7 @@ def get_last_modified_and_etag_for_me(request, *args, **kwargs):
     if request.user.is_authenticated():
         lang = get_language_from_request(request)
         last_modified = request.user.get_last_modified_deep()
-        etag = "%s/%s/%s" % (request.user.uuid, lang, last_modified)
+        etag = "%s/%s/%s" % (request.user.uuid.hex, lang, last_modified)
         return last_modified, etag
     else:
         return None, None
@@ -325,7 +326,7 @@ class UserDetailView(UserMixin, JsonDetailView):
         for key in new_object_keys:
             value = data[name][key]
             obj_data = map_dict2dict(mapping, value, with_defaults=True)
-            obj_data['uuid'] = key
+            obj_data['uuid'] = UUID(key)
             obj_data['user'] = self.object
             cls.objects.create(**obj_data)        
 
@@ -364,6 +365,7 @@ class UserDetailView(UserMixin, JsonDetailView):
         
         self.object = self.model(**object_data)
         self.object.save()
+        # self.object.refresh_from_db()
         self.object.role_profiles = [User.get_default_role_profile()]
 
         self.object.create_primary_email(email=data['email'])
@@ -410,14 +412,14 @@ class GlobalNavigationView(UserDetailView):
         applications = []
         for application in obj.get_apps():
             application_data = {
-                'id': application.uuid,
+                'id': application.uuid.hex,
                 'order': application.order, 
                 'link': {'href': application.url, 'title': application.title, 'global_navigation': application.global_navigation}
             }
             applications.append(application_data)
         
         data = {
-            'id': obj.uuid,
+            'id': obj.uuid.hex,
             'apps': applications,
             'more': {'href': '#', 'title': _('More')},
             'profile': {'href': absolute_url(request, reverse('accounts:profile')), 'title': obj.first_name},

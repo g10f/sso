@@ -22,6 +22,6 @@
 {% block submit_group %}
 <form class="form-horizontal" method="post">{% csrf_token %}  
 	<button type="submit" class="btn btn-danger">{% trans 'Confirm Delete Organisation' %}</button>
-	<a class="btn btn-primary" href="{% url 'organisations:organisation_detail' object.uuid %}">{% trans 'Cancel' %}</a>
+	<a class="btn btn-primary" href="{% url 'organisations:organisation_detail' object.uuid.hex %}">{% trans 'Cancel' %}</a>
 </form>
 {% endblock %}

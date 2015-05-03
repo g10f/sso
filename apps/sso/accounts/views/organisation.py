@@ -140,7 +140,7 @@ class OrganisationChangeAcceptView(FormView):
 
             msg = _('Successfully changed the organisation.')
             messages.add_message(self.request, level=messages.SUCCESS, message=msg, fail_silently=True)
-            return HttpResponseRedirect(reverse('accounts:update_user', args=(user.uuid,)))
+            return HttpResponseRedirect(reverse('accounts:update_user', args=(user.uuid.hex,)))
 
 
 class UserSearchFilter(SearchFilter):
