@@ -18,6 +18,7 @@ else:
     LOCAL_DEV = False
 
 TEMPLATE_DEBUG = DEBUG
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))  # django 1.7 settings
 
 SSO_BRAND = 'G10F'
 SSO_SITE_NAME = 'G10F'
@@ -40,12 +41,14 @@ SSO_VALIDATION_PERIOD_IS_ACTIVE = True  # accounts must be prolonged
 SSO_VALIDATION_PERIOD_IS_ACTIVE_FOR_ALL = False  # all accounts must be prolonged, not only account from marked centers
 SSO_VALIDATION_PERIOD_DAYS = 356  # accounts must be prolonged after 1 year
 SSO_ADMIN_MAX_AGE = 60 * 30  # 30 min max age for admin pages
-SSO_ORGANISATION_EMAIL_DOMAIN = '@diamondway-center.org'
+SSO_ORGANISATION_EMAIL_DOMAIN = '@g10f.de'
 SSO_CREATE_ACCOUNT_FOR_ORGANISATION = True
 
-EMAIL_SUBJECT_PREFIX = '[SSO] '
+LOCALE_PATHS = (
+    os.path.join(BASE_DIR, 'sso/locale'),
+)
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))  # django 1.7 settings
+EMAIL_SUBJECT_PREFIX = '[SSO] '
 
 hostname = socket.gethostname().upper()
 TEST = 'test' in sys.argv
