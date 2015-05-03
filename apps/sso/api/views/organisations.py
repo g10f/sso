@@ -65,6 +65,7 @@ class OrganisationMixin(object):
                 data['addresses'] = {
                     address.uuid: {
                         'address_type': address.address_type,
+                        'careof': address.careof,
                         'name': address.addressee,
                         'street_address': address.street_address,
                         'city': address.city,
