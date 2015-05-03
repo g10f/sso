@@ -40,7 +40,7 @@ class AdminRegionCreateView(AdminRegionBaseView, CreateView):
     form_class = AdminRegionForm
     
     def get_success_url(self):
-        return reverse('organisations:adminregion_update', args=[self.object.uuid])
+        return reverse('organisations:adminregion_update', args=[self.object.uuid.hex])
 
     @method_decorator(login_required)
     @method_decorator(permission_required('organisations.add_adminregion', raise_exception=True))

@@ -8,27 +8,21 @@ from uritemplate import expand
 from sso.oauth2.tests import OAuth2BaseTestCase
 
 
-def new_address(addressee, country='DE', street_address='', region='', address_type='home'):
-    return {
-        uuid4().hex:
-        {
-            'address_type': address_type,
-            'addressee': addressee,
-            'region': region,
-            'country': country,
-            'street_address': street_address
-        }
+def address(addressee, country='DE', street_address='', region='', address_type='home'):
+    return  {
+        'address_type': address_type,
+        'addressee': addressee,
+        'region': region,
+        'country': country,
+        'street_address': street_address
     }
 
 
-def new_phone(phone, phone_type='home', primary=True):
+def phone(phone, phone_type='home', primary=True):
     return {
-        uuid4().hex: 
-        {
-            'phone': phone,
-            'primary': primary,
-            'phone_type': phone_type
-        }
+        'phone': phone,
+        'primary': primary,
+        'phone_type': phone_type
     }
 
 
@@ -87,13 +81,13 @@ class ApiTests(OAuth2BaseTestCase):
         self.assertNotIn('error', user)
         
         # add address to  existing user (failing)
-        user['addresses'] = new_address('Test Address', address_type='work')
+        user['addresses'] = {uuid4().hex: address('Test Address', address_type='work')}
         response = self.client.put(user_url, json.dumps(user), HTTP_AUTHORIZATION=authorization)
         response_obj = json.loads(response.content)
         self.assertIn('scope \"address\" is missing', response_obj['error_description'])
 
         # add phone to existing user (failing)
-        user['phone_numbers'] = new_phone('+49 123456')
+        user['phone_numbers'] = {uuid4().hex: phone('+49 123456')}
         del user['addresses']
         response = self.client.put(user_url, json.dumps(user), HTTP_AUTHORIZATION=authorization)
         response_obj = json.loads(response.content)
@@ -104,13 +98,28 @@ class ApiTests(OAuth2BaseTestCase):
 
         # add address to  existing user (success)
         del user['phone_numbers']
-        user['addresses'] = new_address('Test Address', address_type='work')
+        work_uuid = uuid4().hex
+        home_uuid = uuid4().hex
+        addresses = {
+            work_uuid: address('Work Address', address_type='work'),
+            home_uuid: address('Home Address', address_type='home')
+        }
+        user['addresses'] = addresses
+        response = self.client.put(user_url, json.dumps(user), HTTP_AUTHORIZATION=authorization)
+        response_obj = json.loads(response.content)
+        self.assertNotIn('error', response_obj)
+
+        # remove work address
+        addresses = {
+            home_uuid: address('Home Address', address_type='home')
+        }
+        user['addresses'] = addresses
         response = self.client.put(user_url, json.dumps(user), HTTP_AUTHORIZATION=authorization)
         response_obj = json.loads(response.content)
         self.assertNotIn('error', response_obj)
 
         # add phone to existing user (success)
-        user['phone_numbers'] = new_phone('+49 123456')
+        user['phone_numbers'] = {uuid4().hex: phone('+49 123456')}
         del user['addresses']
         response = self.client.put(user_url, json.dumps(user), HTTP_AUTHORIZATION=authorization)
         response_obj = json.loads(response.content)

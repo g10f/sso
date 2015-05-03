@@ -13,7 +13,7 @@
 <ol class="breadcrumb">
     <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
     <li><a href="{% url 'organisations:organisation_list' %}">{% trans 'Organisations' %}</a></li>
-    <li><a href="{% url 'organisations:organisation_detail' object.uuid %}">{{ object.name }}</a></li>
+    <li><a href="{% url 'organisations:organisation_detail' object.uuid.hex %}">{{ object.name }}</a></li>
     <li class="active">{% trans 'Update Picture' %}</li>
 </ol> 
 {% endblock breadcrumb %}

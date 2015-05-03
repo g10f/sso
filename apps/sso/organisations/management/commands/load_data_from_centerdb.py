@@ -110,7 +110,7 @@ def update_phonenumbers(phonenumbers, organisation):
 def mark_active_centers(active_center_uuids):
     for center in Organisation.objects.all():
         
-        is_active = True if center.uuid in active_center_uuids else False           
+        is_active = True if center.uuid.hex in active_center_uuids else False
         
         if center.is_active != is_active:
             center.is_active = is_active

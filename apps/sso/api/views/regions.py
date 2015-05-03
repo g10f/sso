@@ -17,8 +17,8 @@ class RegionMixin(object):
     def get_object_data(self, request, obj, details=False):
         base = base_url(request)
         data = {
-            '@id': "%s%s" % (base, reverse('api:v2_region', kwargs={'uuid': obj.uuid})),
-            'id': u'%s' % obj.uuid,
+            '@id': "%s%s" % (base, reverse('api:v2_region', kwargs={'uuid': obj.uuid.hex})),
+            'id': u'%s' % obj.uuid.hex,
             'name': u'%s' % str(obj),
             'email': u'%s' % obj.email if obj.email else "",
             'homepage': obj.homepage,
@@ -30,9 +30,9 @@ class RegionMixin(object):
         }
         if details:
             if ('users' in request.scopes) and (obj in request.user.get_administrable_user_regions()):
-                data['users'] = "%s%s?region_id=%s" % (base, reverse('api:v2_users'), obj.uuid)
+                data['users'] = "%s%s?region_id=%s" % (base, reverse('api:v2_users'), obj.uuid.hex)
             if obj.organisation_set.exists():
-                data['organisations'] = "%s%s?region_id=%s" % (base, reverse('api:v2_organisations'), obj.uuid)
+                data['organisations'] = "%s%s?region_id=%s" % (base, reverse('api:v2_organisations'), obj.uuid.hex)
             
         return data
 

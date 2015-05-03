@@ -103,7 +103,7 @@ class OrganisationCreateView(OrganisationBaseView, CreateView):
     template_name_suffix = '_create_form'
     
     def get_success_url(self):
-        return reverse('organisations:organisation_update', args=[self.object.uuid])
+        return reverse('organisations:organisation_update', args=[self.object.uuid.hex])
 
     @method_decorator(login_required)
     @method_decorator(permission_required('organisations.add_organisation', raise_exception=True))

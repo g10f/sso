@@ -11,7 +11,7 @@
 <ol class="breadcrumb">
     <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
     <li><a href="{% url 'emails:groupemail_list' %}">{% trans 'Emails' %}</a></li>
-    <li><a href="{% url 'emails:groupemail_detail' object.uuid %}">{{ object.name }}</a></li>
+    <li><a href="{% url 'emails:groupemail_detail' object.uuid.hex %}">{{ object.name }}</a></li>
     <li class="active">{% trans 'Update Email' %}</li>
 </ol> 
 {% endblock breadcrumb %}

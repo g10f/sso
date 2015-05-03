@@ -115,7 +115,7 @@
 	
     <h4>{% trans 'Nearest Organisations' %}</h4>
 	{% for organisation in object.get_near_organisations %}
-    <div class="row"><div class="dwbn-label"><a href="{% url 'organisations:organisation_detail' organisation.uuid %}">{{ organisation.name }}:</a> </div><div class="dwbn-content">{{ organisation.distance.km|floatformat }} km</div></div>
+    <div class="row"><div class="dwbn-label"><a href="{% url 'organisations:organisation_detail' organisation.uuid.hex %}">{{ organisation.name }}:</a> </div><div class="dwbn-content">{{ organisation.distance.km|floatformat }} km</div></div>
 	{% endfor %} 
     
 <br>
@@ -126,12 +126,12 @@
 
         {% if has_organisation_access %}
         {% if perms.organisations.delete_organisation %}
-        <a class="btn btn-default" href="{% url 'organisations:organisation_delete' object.uuid %}">{% trans 'Delete' %}</a>
+        <a class="btn btn-default" href="{% url 'organisations:organisation_delete' object.uuid.hex %}">{% trans 'Delete' %}</a>
         {% endif %}
 
         {% if perms.organisations.change_organisation %}
-        <a class="btn btn-default" href="{% url 'organisations:organisation_picture_update' object.uuid %}">{% trans 'Update Pictures' %}</a>
-        <a class="btn btn-primary" href="{% url 'organisations:organisation_update' object.uuid %}">{% trans 'Update' %}</a>
+        <a class="btn btn-default" href="{% url 'organisations:organisation_picture_update' object.uuid.hex %}">{% trans 'Update Pictures' %}</a>
+        <a class="btn btn-primary" href="{% url 'organisations:organisation_update' object.uuid.hex %}">{% trans 'Update' %}</a>
         {% endif %}
         {% endif %}
         

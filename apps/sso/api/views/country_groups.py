@@ -18,8 +18,8 @@ class CountryGroupMixin(object):
     def get_object_data(self, request, obj, details=False):
         base = base_url(request)
         data = {
-            '@id': "%s%s" % (base, reverse('api:v2_country_group', kwargs={'uuid': obj.uuid})),
-            'id': u'%s' % obj.uuid,
+            '@id': "%s%s" % (base, reverse('api:v2_country_group', kwargs={'uuid': obj.uuid.hex})),
+            'id': u'%s' % obj.uuid.hex,
             'name': u'%s' % str(obj),
             'email': u'%s' % obj.email if obj.email else "",
             'homepage': obj.homepage,
@@ -30,14 +30,14 @@ class CountryGroupMixin(object):
                 users = User.objects.filter(organisations__country__organisationcountry__country_groups=obj)
                 users = request.user.filter_administrable_users(users)
                 if users.exists():
-                    data['users'] = "%s%s?country_group_id=%s" % (base, reverse('api:v2_users'), obj.uuid)
+                    data['users'] = "%s%s?country_group_id=%s" % (base, reverse('api:v2_users'), obj.uuid.hex)
             
             if Organisation.objects.filter(country__organisationcountry__country_groups=obj).exists():
-                data['organisations'] = "%s%s?country_group_id=%s" % (base, reverse('api:v2_organisations'), obj.uuid)
+                data['organisations'] = "%s%s?country_group_id=%s" % (base, reverse('api:v2_organisations'), obj.uuid.hex)
             if AdminRegion.objects.filter(country__organisationcountry__country_groups=obj).exists():
-                data['regions'] = "%s%s?country_group_id=%s" % (base, reverse('api:v2_regions'), obj.uuid)
+                data['regions'] = "%s%s?country_group_id=%s" % (base, reverse('api:v2_regions'), obj.uuid.hex)
             if OrganisationCountry.objects.filter(country_groups=obj).exists():
-                data['countries'] = "%s%s?country_group_id=%s" % (base, reverse('api:v2_countries'), obj.uuid)
+                data['countries'] = "%s%s?country_group_id=%s" % (base, reverse('api:v2_countries'), obj.uuid.hex)
         return data
 
 

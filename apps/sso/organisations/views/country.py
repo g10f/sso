@@ -40,7 +40,7 @@ class OrganisationCountryCreateView(OrganisationCountryBaseView, CreateView):
     form_class = OrganisationCountryForm
     
     def get_success_url(self):
-        return reverse('organisations:organisationcountry_update', args=[self.object.uuid])
+        return reverse('organisations:organisationcountry_update', args=[self.object.uuid.hex])
 
     @method_decorator(login_required)
     @method_decorator(permission_required('organisations.add_organisationcountry', raise_exception=True))

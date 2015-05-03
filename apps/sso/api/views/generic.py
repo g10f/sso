@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+from uuid import UUID
 
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.http import HttpResponse, Http404
@@ -175,7 +176,7 @@ class JsonDetailView(JSONResponseMixin, PermissionMixin, BaseDetailView):
         
         # get the new id for the object
         slug = self.kwargs.get(self.slug_url_kwarg, None)
-        data[self.slug_field] = slug
+        data[self.slug_field] = UUID(slug)
         
         self.object = self.create_object(request, data)
         

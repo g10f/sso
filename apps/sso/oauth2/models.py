@@ -68,6 +68,7 @@ CLIENT_TYPES = [
     ('trusted', _('Trusted Client'))  # grant_type=password
 ]
 
+
 def get_default_secret():
     return get_random_string(30)
 
@@ -96,7 +97,7 @@ class Client(AbstractBaseModel):
             
     @property
     def client_id(self):
-        return self.uuid
+        return self.uuid.hex
 
     def get_session_auth_hash(self):
         key_salt = "sso.oauth2.models.Client"
