@@ -114,11 +114,11 @@ class UserMixin(object):
             data['email'] = email.email
             data['email_verified'] = email.confirmed
 
+        data['picture'] = {
+            '@id': "%s%s" % (base, reverse('api:v2_picture', kwargs={'uuid': obj.uuid}))
+        }
         if obj.picture:
-            data['picture'] = {
-                '@id': "%s%s" % (base, reverse('api:v2_picture', kwargs={'uuid': obj.uuid})),
-                'url': absolute_url(request, obj.picture.url)
-            }
+            data['picture']['url'] = absolute_url(request, obj.picture.url)
         
         if details:
             data['organisations'] = {
