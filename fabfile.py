@@ -135,7 +135,7 @@ os.environ['THROTTELING_DISABLED'] = "False"
 
 
 @task
-def compileless(version='1.0.13'):
+def compileless(version='1.0.14'):
     for style in ['default', 'dwbn', 'cerulean', 'slate', 'vw', 'dwbn2', 'dwbn3', 'dwbn4']:
         local('lessc ./apps/sso/static/less/%(style)s.less ./apps/sso/static/css/%(style)s-%(version)s.css' %{'style': style, 'version': version})
 
@@ -184,8 +184,22 @@ def update_debian():
     
 
 def deploy_debian():
+    # pillow
+    fabtools.require.deb.package('libtiff4-dev')
+    fabtools.require.deb.package('libjpeg8-dev')
+    fabtools.require.deb.package('zlib1g-dev')
+    fabtools.require.deb.package('libfreetype6-dev')
+    fabtools.require.deb.package('liblcms2-dev')
+    fabtools.require.deb.package('libwebp-dev')
+    fabtools.require.deb.package('tcl8.5-dev')
+    fabtools.require.deb.package('tk8.5-dev')
+    fabtools.require.deb.package('python-tk')
+    # pillow ubuntu 14.04
+    # fabtools.require.deb.package('libtiff5-dev')
+    # fabtools.require.deb.package('tcl8.6-dev')
+    # fabtools.require.deb.package('tk8.6-dev')
+    # postgres
     fabtools.require.deb.package('libpq-dev')
-    fabtools.require.deb.package('libjpeg62-dev')
     # Geospatial libraries
     fabtools.require.deb.package('binutils')
     fabtools.require.deb.package('libproj-dev')

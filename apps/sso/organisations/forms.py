@@ -44,10 +44,11 @@ class OrganisationAddressForm(BaseForm):
     
     class Meta:
         model = OrganisationAddress
-        fields = ('address_type', 'addressee', 'street_address', 'city', 'city_native', 'postal_code', 'country', 'region')
+        fields = ('address_type', 'addressee', 'careof', 'street_address', 'city', 'city_native', 'postal_code', 'country', 'region')
         widgets = {
             'address_type': bootstrap.Select(attrs={'class': 'address_type'}),
             'addressee': bootstrap.TextInput(attrs={'size': 50}),
+            'careof': bootstrap.TextInput(attrs={'size': 50}),
             'street_address': bootstrap.Textarea(attrs={'cols': 50, 'rows': 2}),
             'city': bootstrap.TextInput(attrs={'size': 50}),
             'city_native': bootstrap.TextInput(attrs={'size': 50}),
