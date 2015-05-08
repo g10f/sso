@@ -213,7 +213,7 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
             RefreshToken.objects.create(token=token['refresh_token'], bearer_token=bearer_token)
         
     def invalidate_authorization_code(self, client_id, code, request, *args, **kwargs):
-        # Authorization codes are use once, invalidate it when a Bearer token
+        # Authorization codes are used once, invalidate it when a Bearer token
         # has been acquired.
         try:      
             authorization_code = AuthorizationCode.objects.get(code=code, is_valid=True)
@@ -286,7 +286,6 @@ class OpenIDConnectBearerToken(oauth2.BearerToken):
     """
     Bearer token with OpenIDConnect id_token where the access token is equal the id_token
     """
-
     def __init__(self, request_validator=None):
         super(OpenIDConnectBearerToken, self).__init__(request_validator, token_generator=default_token_generator)
         self.idtoken_generator = default_idtoken_generator
