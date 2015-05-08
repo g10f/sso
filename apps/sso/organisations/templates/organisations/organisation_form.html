@@ -5,91 +5,94 @@
 {% block title %}{% trans 'Organisation Details' %}{% endblock %}
 
 {% block extrascript %}{{ media }}
-<script src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
+    <script src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
 {% endblock extrascript %}
 
 
 {% block breadcrumb %}
-<ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'organisations:organisation_list' %}">{% trans 'Organisations' %}</a></li>
-    <li><a href="{% url 'organisations:organisation_detail' object.uuid %}">{{ object.name }}</a></li>
-    <li class="active">{% trans 'Update Organisation' %}</li>
-</ol> 
+    <ol class="breadcrumb">
+        <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+        <li><a href="{% url 'organisations:organisation_list' %}">{% trans 'Organisations' %}</a></li>
+        <li><a href="{% url 'organisations:organisation_detail' object.uuid %}">{{ object.name }}</a></li>
+        <li class="active">{% trans 'Update Organisation' %}</li>
+    </ol>
 {% endblock breadcrumb %}
 
 {% block form %}
-<form class="form-horizontal" method="post" data-active="{{ active }}">{% csrf_token %} 
-    {# Include the hidden fields in the form #}
-    {% for hidden in form.hidden_fields %}
-    {{ hidden }}
-    {% endfor %}    
-    
-    <div class="">
-        <h3>{{ object.get_center_type_display }} {{ object.name }}</h3>
-
-        {% if messages %}{% for message in messages %}
-        <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
-        {% endif %}
-        
-        {% if errors %}
-        <div class="alert alert-danger">
-            {% if errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
-        </div>
-        {% endif %}
-        
-    </div>
-
-     <ul class="nav nav-tabs dwbn-nav-tabs" id="myTab">
-       <li class="{% if not active or active == "object" %}active{% endif %}" ><a data-toggle="tab" href="#object">{% trans 'Center Data' %}</a></li>
-       {% for formset in formsets %}
-       <li class="{% if active == formset.prefix %}active{% endif %}"><a data-toggle="tab" href="#{{ formset.prefix }}">{{ formset.form.opts.verbose_name_plural|title }}</a></li>
-       {% endfor %}
-     </ul>
-    
-     <div class="tab-content">
-        <div class="tab-pane {% if not active or active == "object" %}active{% endif %}" id="object">         
-           {% include 'include/_field.html' with field=form.name %}
-           {% include 'include/_field.html' with field=form.name_native %}
-           {% include 'include/_field.html' with field=form.center_type %}
-           {% include 'include/_field.html' with field=form.country %}
-           {% include 'include/_field.html' with field=form.admin_region %}           
-           {% include 'include/_field.html' with field=form.email_value %}
-           {% include 'include/_field.html' with field=form.email_forward %} {# for the create form #}
-           {% include 'include/_field.html' with field=form.homepage %}
-           {% include 'include/_field.html' with field=form.google_plus_page %}
-           {% include 'include/_field.html' with field=form.facebook_page %}
-           {% include 'include/_field.html' with field=form.twitter_page %}
-           {% include 'include/_field.html' with field=form.founded %}
-           {% include 'include/_field.html' with field=form.is_private %}            
-           {% include 'include/_field.html' with field=form.is_active %}            
-           {#% include 'include/_field.html' with field=form.can_publish %#}
-        </div>
-        
-        {% for formset in formsets %}
-        <div class="tab-pane {% if active == formset.prefix %}active{% endif %}" id="{{ formset.prefix }}">
-            {% if formset.prefix == 'organisationaddress_set' %}
-                {% include 'include/_static_google_maps_field.html' with field=form.google_maps_url %}
-                {#% include 'include/_static_field.html' with field=form.timezone %#}
-                {% include 'include/_field.html' with field=form.coordinates_type %}
-                {% include 'include/_field.html' with field=form.location %}
-            {% endif %}
-            {% include formset.form.template %}
-        </div>
+    <form class="form-horizontal" method="post" data-active="{{ active }}">{% csrf_token %}
+        {# Include the hidden fields in the form #}
+        {% for hidden in form.hidden_fields %}
+            {{ hidden }}
         {% endfor %}
- 
-    </div><!-- /.tab-content -->
+        {#<input class="hidden" name="redirect_uri" value="{{ redirect_uri }}"/>#}
 
-    <div class="form-group">
-        <div class="dwbn-form-submit">
-            {% block submit_group %}
-            {% if perms.organisations.delete_organisation %}
-			<a class="btn btn-default" href="{% url 'organisations:organisation_delete' object.uuid %}">{% trans 'Delete' %}</a>
-			{% endif %}
-			<button type="submit" class="btn btn-default" name="_continue" >{% trans 'Save and continue editing' %}</button>
-			<button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
-			{% endblock submit_group %}
-		</div>
-	</div>
-</form>
+        <div class="">
+            <h3>{{ object.get_center_type_display }} {{ object.name }}</h3>
+
+            {% if messages %}{% for message in messages %}
+                <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
+            {% endif %}
+
+            {% if errors %}
+                <div class="alert alert-danger">
+                    {% if errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
+                </div>
+            {% endif %}
+
+        </div>
+
+        <ul class="nav nav-tabs dwbn-nav-tabs" id="myTab">
+            <li class="{% if not active or active == "object" %}active{% endif %}"><a data-toggle="tab" href="#object">{% trans 'Center Data' %}</a></li>
+            {% for formset in formsets %}
+                <li class="{% if active == formset.prefix %}active{% endif %}"><a data-toggle="tab" href="#{{ formset.prefix }}">{{ formset.form.opts.verbose_name_plural|title }}</a></li>
+            {% endfor %}
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane {% if not active or active == "object" %}active{% endif %}" id="object">
+                {% include 'include/_field.html' with field=form.name %}
+                {% include 'include/_field.html' with field=form.name_native %}
+                {% include 'include/_field.html' with field=form.center_type %}
+                {% include 'include/_field.html' with field=form.country %}
+                {% include 'include/_field.html' with field=form.admin_region %}
+                {% include 'include/_field.html' with field=form.email_value %}
+                {% include 'include/_field.html' with field=form.email_forward %} {# for the create form #}
+                {% include 'include/_field.html' with field=form.homepage %}
+                {% include 'include/_field.html' with field=form.google_plus_page %}
+                {% include 'include/_field.html' with field=form.facebook_page %}
+                {% include 'include/_field.html' with field=form.twitter_page %}
+                {% include 'include/_field.html' with field=form.founded %}
+                {% include 'include/_field.html' with field=form.is_private %}
+                {% include 'include/_field.html' with field=form.is_active %}
+                {#% include 'include/_field.html' with field=form.can_publish %#}
+            </div>
+
+            {% for formset in formsets %}
+                <div class="tab-pane {% if active == formset.prefix %}active{% endif %}" id="{{ formset.prefix }}">
+                    {% if formset.prefix == 'organisationaddress_set' %}
+                        {% include 'include/_static_google_maps_field.html' with field=form.google_maps_url %}
+                        {#% include 'include/_static_field.html' with field=form.timezone %#}
+                        {% include 'include/_field.html' with field=form.coordinates_type %}
+                        {% include 'include/_field.html' with field=form.location %}
+                    {% endif %}
+                    {% include formset.form.template %}
+                </div>
+            {% endfor %}
+
+        </div>
+        <!-- /.tab-content -->
+
+        <div class="form-group">
+            <div class="dwbn-form-submit">
+                {% block submit_group %}
+                    {% if redirect_uri %}<a class="btn btn-default" href="{{ redirect_uri }}">{% trans 'Back' %}</a>{% endif %}
+                    {% if perms.organisations.delete_organisation %}
+                        <a class="btn btn-default" href="{% url 'organisations:organisation_delete' object.uuid %}">{% trans 'Delete' %}</a>
+                    {% endif %}
+                    <button type="submit" class="btn btn-default" name="_continue">{% trans 'Save and continue editing' %}</button>
+                    <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
+                {% endblock submit_group %}
+            </div>
+        </div>
+    </form>
 {% endblock %}
