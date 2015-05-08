@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from urlparse import urlunsplit
 from django.contrib import messages
 from django.utils.encoding import force_text
 from django.views import generic
@@ -233,12 +234,10 @@ class FormsetsUpdateView(generic.UpdateView):
             return self.form_invalid(self.form)
 
     def get_success_url(self):
-        msg = ""
-        success_url = ""
         msg_dict = {'name': force_text(self.model._meta.verbose_name), 'obj': force_text(self.object)}
         if "_continue" in self.request.POST:
             msg = _('The %(name)s "%(obj)s" was changed successfully. You may edit it again below.') % msg_dict
-            success_url = self.request.path
+            success_url = urlunsplit(('', '', self.request.path, self.request.GET.urlencode(safe='/'), ''))
         else:
             msg = _('The %(name)s "%(obj)s" was changed successfully.') % msg_dict
             success_url = super(FormsetsUpdateView, self).get_success_url()   

@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 import logging
+from urlparse import urlunsplit
+from django.contrib import messages
+from django.utils.encoding import force_text
 
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
@@ -56,6 +59,23 @@ class OrganisationBaseView(object):
         context.update(kwargs)
         return super(OrganisationBaseView, self).get_context_data(**context)
 
+    def get_success_url(self):
+        msg_dict = {'name': force_text(self.model._meta.verbose_name), 'obj': force_text(self.object)}
+        if "_continue" in self.request.POST:
+            msg = _('The %(name)s "%(obj)s" was changed successfully. You may edit it again below.') % msg_dict
+            success_url = urlunsplit(('', '', self.request.path, self.request.GET.urlencode(safe='/'), ''))
+            messages.add_message(self.request, level=messages.SUCCESS, message=msg, fail_silently=True)
+        else:
+            redirect_uri = get_safe_redirect_uri(self.request, allowed_hosts())
+            if redirect_uri:
+                success_url = redirect_uri
+            else:
+                msg = _('The %(name)s "%(obj)s" was changed successfully.') % msg_dict
+                success_url = super(FormsetsUpdateView, self).get_success_url()
+                messages.add_message(self.request, level=messages.SUCCESS, message=msg, fail_silently=True)
+
+        return success_url
+
 
 class OrganisationDetailView(OrganisationBaseView, DetailView):
     pass
@@ -103,7 +123,7 @@ class OrganisationCreateView(OrganisationBaseView, CreateView):
     template_name_suffix = '_create_form'
     
     def get_success_url(self):
-        return reverse('organisations:organisation_update', args=[self.object.uuid.hex])
+        return urlunsplit(('', '', reverse('organisations:organisation_update', args=[self.object.uuid.hex]), self.request.GET.urlencode(safe='/'), ''))
 
     @method_decorator(login_required)
     @method_decorator(permission_required('organisations.add_organisation', raise_exception=True))
