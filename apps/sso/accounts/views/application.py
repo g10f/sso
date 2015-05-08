@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta
 import logging
+from urlparse import urlunsplit
 
 from django.db.models.expressions import F
 from django.conf import settings
@@ -20,13 +21,14 @@ from django.utils.encoding import force_text
 from sso.auth.decorators import admin_login_required
 from sso.views import main
 from sso.views.generic import ListView
-from sso.accounts.models import User, UserEmail
+from sso.accounts.models import User, UserEmail, allowed_hosts
 from sso.accounts.email import send_account_created_email
 from sso.organisations.models import Organisation, is_validation_period_active
 from sso.accounts.forms import UserAddForm, UserProfileForm, UserEmailForm, AppAdminUserProfileForm
 from sso.forms.helpers import ChangedDataList, log_change, ErrorList
 from filter import AdminRegionFilter, ApplicationRoleFilter, CenterFilter, CountryFilter, IsActiveFilter, RoleProfileFilter, UserSearchFilter
 from sso.views.main import OrderByWithNulls
+from utils.url import get_safe_redirect_uri
 
 
 logger = logging.getLogger(__name__)
@@ -170,18 +172,22 @@ class UserList(ListView):
 @admin_login_required
 @permission_required('accounts.add_user', raise_exception=True)
 def add_user(request, template='accounts/application/add_user_form.html'):
+    redirect_uri = get_safe_redirect_uri(request, allowed_hosts())
     if request.method == 'POST':
         form = UserAddForm(request.user, request.POST)
         if form.is_valid():
             user = form.save()                
             send_account_created_email(user, request)
-            
-            return HttpResponseRedirect(reverse('accounts:add_user_done', args=[user.uuid.hex]))
+            if redirect_uri:
+                success_url = redirect_uri
+            else:
+                success_url = urlunsplit(('', '', reverse('accounts:add_user_done', args=[user.uuid.hex]), request.GET.urlencode(safe='/'), ''))
+            return HttpResponseRedirect(success_url)
     else:
         default_role_profile = User.get_default_role_profile()
         form = UserAddForm(request.user, initial={'role_profiles': [default_role_profile]})
 
-    data = {'form': form, 'title': _('Add user')}
+    data = {'form': form, 'redirect_uri': redirect_uri, 'title': _('Add user')}
     return render(request, template, data)
 
 
@@ -189,7 +195,8 @@ def add_user(request, template='accounts/application/add_user_form.html'):
 @permission_required('accounts.add_user', raise_exception=True)
 def add_user_done(request, uuid, template='accounts/application/add_user_done.html'):
     new_user = get_user_model().objects.get(uuid=uuid)
-    data = {'new_user': new_user, 'title': _('Add user')}
+    redirect_uri = get_safe_redirect_uri(request, allowed_hosts())
+    data = {'new_user': new_user, 'redirect_uri': redirect_uri, 'title': _('Add user')}
     return render(request, template, data)
 
     
