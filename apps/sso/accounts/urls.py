@@ -9,8 +9,8 @@ from .views import organisation
 
 urlpatterns = [
     url(r'^$', application.UserList.as_view(), name='user_list'),
-    url(r'^create/$', application.add_user, name='add_user'),
-    url(r'^create/done/(?P<uuid>[^/]+)/$', application.add_user_done, name="add_user_done"),
+    url(r'^add/$', application.add_user, name='add_user'),
+    url(r'^add/done/(?P<uuid>[^/]+)/$', application.add_user_done, name="add_user_done"),
     url(r'^(?P<uuid>[a-z0-9]{32})/$', application.update_user, name="update_user"),
     url(r'^(?P<uuid>[a-z0-9]{32})/app_roles/', application.update_user_app_roles, name="update_user_app_roles"),
     url(r'^(?P<uuid>[a-z0-9]{32})/delete/$', application.UserDeleteView.as_view(), name="delete_user"),
@@ -33,7 +33,7 @@ urlpatterns = [
     url(r'^create/done/$', password_create_complete, name='password_create_complete'),
     url(r'^organisation_change/(?P<pk>\d+)/$', organisation.OrganisationChangeDetailView.as_view(), name='organisationchange_detail'),
     url(r'^organisation_change/(?P<pk>\d+)/update/$', organisation.OrganisationChangeUpdateView.as_view(), name='organisationchange_update'),
-    url(r'^organisation_change/create/$', organisation.OrganisationChangeCreateView.as_view(), name='organisationchange_create'),
+    url(r'^organisation_change/add/$', organisation.OrganisationChangeCreateView.as_view(), name='organisationchange_create'),
     url(r'^organisation_change/$', organisation.OrganisationChangeList.as_view(), name='organisationchange_list'),
     url(r'^organisation_change/(?P<pk>\d+)/accept/$', organisation.OrganisationChangeAcceptView.as_view(), name='organisationchange_accept'),
     url(r'^messages/(?P<uuid>[^/]+)/$', onetimemessage.OneTimeMessageView.as_view(), name="view_message"),
