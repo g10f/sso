@@ -15,7 +15,7 @@ class ClientAdmin(admin.ModelAdmin):
     list_filter = ('is_active', 'type', 'application')
     fields = ('application', 'type', 'name', 'uuid', 'client_secret', 'redirect_uris', 'scopes', 'user', 'notes', 'is_active', 'last_modified')
     readonly_fields = ('last_modified', )
-    list_select_related = ('application', )
+    list_select_related = ('application', 'user')
 
 
 class BearerTokenAdmin(admin.ModelAdmin):

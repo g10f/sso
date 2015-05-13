@@ -192,7 +192,7 @@ def confirm_email(request, uidb64, token, post_reset_redirect=None):
         post_reset_redirect = resolve_url(post_reset_redirect)
     try:
         uid = urlsafe_base64_decode(uidb64)
-        user_email = UserEmail.objects.get(pk=uid)
+        user_email = UserEmail.objects.get(pk=uid, user=request.user)
     except (TypeError, ValueError, OverflowError, UserEmail.DoesNotExist):
         messages.error(request, _('The confirmation was not succesfull, please resend the confirmation.'))
         user_email = None
