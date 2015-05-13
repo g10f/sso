@@ -170,12 +170,11 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
         return False
 
     def validate_code(self, client_id, code, client, request, *args, **kwargs):
-        # Validate the code belongs to the client. Add associated scopes,
-        # state and user to request.scopes, request.state and request.user.
+        # Validate the code belongs to the client. Add associated scopes
+        # and user to request.scopes and request.user.
         try:
             authorization_code = AuthorizationCode.objects.get(code=request.code, client__uuid=client_id, is_valid=True)
             request.user = authenticate(token=authorization_code)
-            request.state = authorization_code.state
             request.scopes = authorization_code.scopes.split()
             return True
         except ObjectDoesNotExist:
@@ -215,12 +214,7 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
     def invalidate_authorization_code(self, client_id, code, request, *args, **kwargs):
         # Authorization codes are used once, invalidate it when a Bearer token
         # has been acquired.
-        try:      
-            authorization_code = AuthorizationCode.objects.get(code=code, is_valid=True)
-            authorization_code.is_valid = False
-            authorization_code.save()            
-        except ObjectDoesNotExist:
-            pass
+        AuthorizationCode.objects.filter(code=code, is_valid=True).update(is_valid=False)
 
     # Protected resource request
     def validate_bearer_token(self, token, scopes, request):
