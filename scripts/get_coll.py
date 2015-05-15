@@ -165,7 +165,7 @@ class ApiClient(object):
                 write_dot()
                 self.update_item(item, resource)                
                                               
-            url = data['next_page']  if 'next_page' in data else None
+            url = data['next_page'] if 'next_page' in data else None
     
         print ''
         
