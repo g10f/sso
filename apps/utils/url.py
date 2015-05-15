@@ -1,8 +1,6 @@
 import logging
 from urlparse import urlparse, urlsplit, urlunsplit
 
-from django.utils.http import urlunquote_plus
-
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import QueryDict
 from http.util import get_request_param
