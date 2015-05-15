@@ -99,7 +99,6 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
 
     def validate_scopes(self, client_id, scopes, client, request, *args, **kwargs):
         requested_scopes = set(scopes)
-        # valid_scopes = set(SUPPORTED_SCOPES)
         valid_scopes = set(client.scopes.split())
         if requested_scopes.issubset(valid_scopes):
             return True
