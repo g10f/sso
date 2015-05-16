@@ -409,9 +409,9 @@ class User(AbstractBaseUser, PermissionsMixin):
                                                      global_navigation=True).order_by('order')
     
     def get_roles_by_app(self, app_uuid):
-        applicationroles = self.get_applicationroles()
-        return Role.objects.distinct().filter(applicationrole__in=applicationroles, 
+        return Role.objects.distinct().filter(Q(applicationrole__user=self) | Q(applicationrole__roleprofile__user=self),
                                               applicationrole__application__uuid=app_uuid)
+        # return Role.objects.distinct().filter(applicationrole__in=self.get_applicationroles(), applicationrole__application__uuid=app_uuid)
     
     def get_group_and_role_permissions(self):
         """
@@ -425,11 +425,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     @memoize
     def get_applicationroles(self, select_related=False):
         if select_related:
-            approles1 = ApplicationRole.objects.filter(user__uuid=self.uuid).select_related()
-            approles2 = ApplicationRole.objects.filter(roleprofile__user__uuid=self.uuid).select_related()
+            approles1 = ApplicationRole.objects.filter(user=self).select_related()
+            approles2 = ApplicationRole.objects.filter(roleprofile__user=self).select_related()
         else:
-            approles1 = ApplicationRole.objects.filter(user__uuid=self.uuid)
-            approles2 = ApplicationRole.objects.filter(roleprofile__user__uuid=self.uuid)
+            approles1 = ApplicationRole.objects.filter(user=self)
+            approles2 = ApplicationRole.objects.filter(roleprofile__user=self)
         
         # to get a list of distinct values, we create first a set and then a list 
         return list(set(chain(approles1, approles2)))

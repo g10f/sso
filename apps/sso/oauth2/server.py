@@ -176,14 +176,15 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
             authorization_code = AuthorizationCode.objects.get(code=request.code, client__uuid=client_id, is_valid=True)
             request.user = authenticate(token=authorization_code)
             request.scopes = authorization_code.scopes.split()
+            client.authorization_code = authorization_code  # save the authorization_code for using in confirm_redirect_uri
             return True
         except ObjectDoesNotExist:
-            return False        
+            return False
 
     def confirm_redirect_uri(self, client_id, code, redirect_uri, client, *args, **kwargs):
         # You did save the redirect uri with the authorization code right?
         try:
-            authorization_code = AuthorizationCode.objects.get(code=code, client__uuid=client_id, is_valid=True)
+            authorization_code = client.authorization_code  # AuthorizationCode.objects.get(code=code, client__uuid=client_id, is_valid=True)
             if authorization_code.redirect_uri == redirect_uri:
                 return True
             else:
