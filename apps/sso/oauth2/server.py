@@ -159,8 +159,9 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
                     logger.error("missing user for client %s in authenticate_client with grant_type 'client_credentials'", request.client)
             else:
                 return True
-        except ObjectDoesNotExist:
-            pass      
+        except (ObjectDoesNotExist, ValueError):
+            logger.warning("authenticate_client failed for client_id: %s", request.client_id, exc_info=True)
+            pass
         
         return False
 
