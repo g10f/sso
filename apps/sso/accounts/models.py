@@ -409,9 +409,9 @@ class User(AbstractBaseUser, PermissionsMixin):
                                                      global_navigation=True).order_by('order')
     
     def get_roles_by_app(self, app_uuid):
-        # return Role.objects.distinct().filter(Q(applicationrole__user=self) | Q(applicationrole__roleprofile__user=self),
-        #                                      applicationrole__application__uuid=app_uuid)
-        return Role.objects.distinct().filter(applicationrole__in=self.get_applicationroles(), applicationrole__application__uuid=app_uuid)
+        return Role.objects.distinct().filter(Q(applicationrole__user=self) | Q(applicationrole__roleprofile__user=self),
+                                              applicationrole__application__uuid=app_uuid)
+        # return Role.objects.distinct().filter(applicationrole__in=self.get_applicationroles(), applicationrole__application__uuid=app_uuid)
     
     def get_group_and_role_permissions(self):
         """
