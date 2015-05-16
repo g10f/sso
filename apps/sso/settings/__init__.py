@@ -45,9 +45,7 @@ SSO_ADMIN_MAX_AGE = 60 * 30  # 30 min max age for admin pages
 SSO_ORGANISATION_EMAIL_DOMAIN = '@g10f.de'
 SSO_CREATE_ACCOUNT_FOR_ORGANISATION = True
 
-LOCALE_PATHS = (
-    os.path.join(BASE_DIR, 'sso/locale'),
-)
+LOCALE_PATHS = ()
 
 EMAIL_SUBJECT_PREFIX = '[SSO] '
 
