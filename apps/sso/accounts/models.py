@@ -398,41 +398,40 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @memoize
     def get_apps(self):
-        applicationroles = self.get_applicationroles()
-        return Application.objects.distinct().filter(applicationrole__in=applicationroles, is_active=True).\
+        applicationrole_ids = self.get_applicationrole_ids()
+        return Application.objects.distinct().filter(applicationrole__in=applicationrole_ids, is_active=True).\
             order_by('order').prefetch_related('applicationrole_set', 'applicationrole_set__role')
 
     def get_global_navigation_urls(self):
-        applicationroles = self.get_applicationroles()
-        return Application.objects.distinct().filter(applicationrole__in=applicationroles, 
+        applicationrole_ids = self.get_applicationrole_ids()
+        return Application.objects.distinct().filter(applicationrole__in=applicationrole_ids,
                                                      is_active=True, 
                                                      global_navigation=True).order_by('order')
     
     def get_roles_by_app(self, app_uuid):
-        return Role.objects.distinct().filter(Q(applicationrole__user=self) | Q(applicationrole__roleprofile__user=self),
-                                              applicationrole__application__uuid=app_uuid)
-        # return Role.objects.distinct().filter(applicationrole__in=self.get_applicationroles(), applicationrole__application__uuid=app_uuid)
+        applicationrole_ids = self.get_applicationrole_ids()
+        return Role.objects.distinct().filter(applicationrole__in=applicationrole_ids, applicationrole__application__uuid=app_uuid)
     
     def get_group_and_role_permissions(self):
         """
         get all permissions the user has through his groups and roles
         """
-        applicationroles = self.get_applicationroles()
-        q = Q(group__role__applicationrole__in=applicationroles, 
+        applicationrole_ids = self.get_applicationrole_ids()
+        q = Q(group__role__applicationrole__in=applicationrole_ids,
               group__role__applicationrole__application__uuid=settings.SSO_APP_UUID) | Q(group__user=self)
         return Permission.objects.distinct().filter(q)
 
     @memoize
-    def get_applicationroles(self, select_related=False):
-        if select_related:
-            approles1 = ApplicationRole.objects.filter(user=self).select_related()
-            approles2 = ApplicationRole.objects.filter(roleprofile__user=self).select_related()
-        else:
-            approles1 = ApplicationRole.objects.filter(user=self)
-            approles2 = ApplicationRole.objects.filter(roleprofile__user=self)
-        
-        # to get a list of distinct values, we create first a set and then a list 
+    def get_applicationrole_ids(self):
+        approles1 = ApplicationRole.objects.filter(user=self).only("id").values_list('id', flat=True)
+        approles2 = ApplicationRole.objects.filter(roleprofile__user=self).only("id").values_list('id', flat=True)
+        # to get a list of distinct values, we create first a set and then a list
         return list(set(chain(approles1, approles2)))
+
+    @memoize
+    def get_applicationroles(self):
+        applicationrole_ids = self.get_applicationrole_ids()
+        return ApplicationRole.objects.filter(id__in=applicationrole_ids).select_related()
 
     @memoize
     def get_administrable_application_roles(self):
@@ -442,7 +441,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         if self.is_superuser:
             return ApplicationRole.objects.all().select_related()
         else:
-            applicationrole_ids = [x.id for x in self.get_applicationroles()]
+            applicationrole_ids = self.get_applicationrole_ids()
             # all roles the user has, with adequate inheritable flag
             if self.is_global_user_admin:
                 application_roles = ApplicationRole.objects.filter(id__in=applicationrole_ids, 
