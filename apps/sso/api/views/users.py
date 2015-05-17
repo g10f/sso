@@ -126,7 +126,7 @@ def get_userinfo(user, request, show_details=False):
         userinfo['picture'] = absolute_url(request, user.picture.url)
     if show_details:
         applications = {}
-        applicationroles = user.get_applicationroles(True)
+        applicationroles = user.get_applicationroles()
              
         for application in user.get_apps():
             application_data = {

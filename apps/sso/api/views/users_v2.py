@@ -146,7 +146,7 @@ class UserMixin(object):
 
             if 'role' in scopes:
                 applications = {}
-                applicationroles = obj.get_applicationroles(True)
+                applicationroles = obj.get_applicationroles()
                      
                 for application in obj.get_apps():
                     application_data = {'order': application.order,
