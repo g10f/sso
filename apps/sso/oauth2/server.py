@@ -86,7 +86,8 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
         try:
             self._get_client(client_id, request)
             return True
-        except ObjectDoesNotExist:
+        except (ObjectDoesNotExist, ValueError):
+            logger.warning("validate_client_id failed for client_id: %s", client_id, exc_info=True)
             return False
         
     def validate_redirect_uri(self, client_id, redirect_uri, request, *args, **kwargs):
