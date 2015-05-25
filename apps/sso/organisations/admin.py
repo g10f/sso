@@ -8,7 +8,6 @@ from l10n.models import Country
 from .models import OrganisationAddress, OrganisationPhoneNumber
 from sso.emails.models import Email, CENTER_EMAIL_TYPE
 
-
 class CountryListFilter(SimpleListFilter):
     title = _('Country')
     parameter_name = 'country_id'
