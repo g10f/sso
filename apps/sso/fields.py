@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 import re
-import uuid
 
 from django import forms
 from django.core.validators import URLValidator
-from django.db.models import CharField, URLField
+from django.db.models import URLField
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import ugettext_lazy as _
 from utils.translation import string_format

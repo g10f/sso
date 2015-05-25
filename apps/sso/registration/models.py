@@ -152,8 +152,8 @@ class RegistrationManager(models.Manager):
 class RegistrationProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, verbose_name=_('user'))
     last_modified = models.DateTimeField(_('last modified'), auto_now=True)
-    last_modified_by_user = CurrentUserField(verbose_name=_('last modified by'), related_name='registrationprofile_last_modified_by')
-    verified_by_user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, verbose_name=_('verified by'), related_name='registrationprofile_verified_by')
+    last_modified_by_user = CurrentUserField(verbose_name=_('last modified by'), related_name='registrationprofile_last_modified_by', on_delete=models.SET_NULL)
+    verified_by_user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, verbose_name=_('verified by'), related_name='registrationprofile_verified_by', on_delete=models.SET_NULL)
     date_registered = models.DateTimeField(_('date registered'), default=timezone.now)
     is_validated = models.BooleanField(_('validated'), default=False, db_index=True, help_text=_('Designates whether this profile was already validated by the user.'))
     about_me = models.TextField(_('about_me'), blank=True, max_length=1024)
