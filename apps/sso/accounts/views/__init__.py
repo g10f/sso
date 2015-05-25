@@ -118,7 +118,7 @@ def logout(request, next_page=None,
 @sensitive_post_parameters()
 @never_cache
 @throttle(duration=30, max_calls=12)
-def login(request):
+def login(request, template_name='accounts/login.html'):
     """
     Displays the login form for the given HttpRequest.
     """
@@ -132,45 +132,23 @@ def login(request):
     current_site = get_current_site(request)
     site_name = settings.SSO_SITE_NAME
     redirect_to = get_request_param(request, REDIRECT_FIELD_NAME, '')
-    # hidden field in the template to check from which form the post request comes
-    login_form_key = request.POST.get(LOGIN_FORM_KEY)
     display = get_request_param(request, 'display', 'page')  # popup or page
-    template_name = 'accounts/login.html'
     cancel_url = get_oauth2_cancel_url(redirect_to)
     form = None
 
     if request.method == "POST":
-        if login_form_key == 'login_form':
-            form = EmailAuthenticationForm(data=request.POST)
-            if form.is_valid():
-                redirect_to = get_safe_login_redirect_url(request, redirect_to)
-    
-                # Okay, security checks complete. Log the user in.
-                user = form.get_user()
-                auth_login(request, user)
-                if form.cleaned_data.get('remember_me', False):
-                    request.session.set_expiry(settings.SESSION_COOKIE_AGE)
-                else:
-                    request.session.set_expiry(0)  # expire at browser close
+        form = EmailAuthenticationForm(data=request.POST)
+        if form.is_valid():
+            redirect_to = get_safe_login_redirect_url(request, redirect_to)
+            # Okay, security checks complete. Log the user in.
+            user = form.get_user()
+            auth_login(request, user)
+            if form.cleaned_data.get('remember_me', False):
+                request.session.set_expiry(settings.SESSION_COOKIE_AGE)
+            else:
+                request.session.set_expiry(0)  # expire at browser close
 
-                if (not user.is_complete) and (display == 'page'):
-                    # Display user profile form to complete user data
-                    form = UserSelfProfileForm(instance=user)
-                    template_name = 'accounts/login_profile_form.html'
-                    cancel_url = reverse('accounts:logout')
-                else:              
-                    return HttpResponseRedirect(redirect_to)
-        elif login_form_key == 'login_profile_form':
-            user = request.user
-            # if the browser back button is used the user may be not authenticated
-            if user.is_authenticated():
-                form = UserSelfProfileForm(request.POST, instance=user)
-                template_name = 'accounts/login_profile_form.html'
-                cancel_url = reverse('accounts:logout')
-                if form.is_valid():
-                    form.save()
-                    redirect_to = get_safe_login_redirect_url(request, redirect_to)
-                    return HttpResponseRedirect(redirect_to)
+            return HttpResponseRedirect(redirect_to)
 
     initial = {'remember_me': not request.session.get_expire_at_browser_close()}
     context = {

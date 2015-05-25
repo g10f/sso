@@ -51,7 +51,6 @@ class UserBehavior(TaskSet):
             "username": OAUTH2_CLIENT['username'], 
             "password": OAUTH2_CLIENT['password'],
             "csrfmiddlewaretoken": pq("input[name='csrfmiddlewaretoken']").val(), 
-            "this_is_the_login_form": "1",
             "login_form_key": "login_form",
             "next": pq("input[name='next']").val()
         }
