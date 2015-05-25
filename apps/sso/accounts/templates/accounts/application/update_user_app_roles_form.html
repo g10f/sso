@@ -58,24 +58,26 @@
         {% include 'accounts/includes/_profiles_field.html' with field=form.role_profiles %}
         {% include 'include/_field.html' with field=form.application_roles %}
 
-        <div class="form-group">
-          <label class="control-label">{% trans 'Related role profiles' %}</label>
-          <div class="dwbn-form-control">
-            {% for role_profile in role_profiles %}
-                <p class="form-control-static"><span data-toggle="tooltip" class="glyphicon glyphicon-check"></span>&nbsp;&nbsp;{{ role_profile }}</p>
-                <div class="row help-block">
-                        <ul>
-                            {% for app_role in role_profile.application_roles.all %}
-                                {% if app_role in application_roles %}
-                                    <li>{{ app_role }}</li>
-                                {% endif %}
-                            {% endfor %}
-                        </ul>
-                </div>
+        {% if role_profiles %}
+            <div class="form-group">
+                <label class="control-label">{% trans 'Related role profiles' %}</label>
+                <div class="dwbn-form-control">
+                    {% for role_profile in role_profiles %}
+                        <p class="form-control-static"><span data-toggle="tooltip" class="glyphicon glyphicon-check"></span>&nbsp;&nbsp;{{ role_profile }}</p>
+                        <div class="row help-block">
+                            <ul>
+                                {% for app_role in role_profile.application_roles.all %}
+                                    {% if app_role in application_roles %}
+                                        <li>{{ app_role }}</li>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
 
-            {% endfor %}
-          </div>
-        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
 
 
         <div class="form-group">
