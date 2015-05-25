@@ -32,9 +32,7 @@ body {
     <div class="{% if form.username.errors %}has-error{% endif %}">{{ form.username }}</div>
     <div class="{% if form.password.errors %}has-error{% endif %}">{{ form.password }}</div>
 
-	<input type="hidden" name="this_is_the_login_form" value="1" /> {# used by the admin login #}
-	<input type="hidden" name="login_form_key" value="login_form" />
-	<input type="hidden" name="next" value="{{ next }}" />	  
+	<input type="hidden" name="next" value="{{ next }}" />
 	  
 	{% block extra_fields %}{% endblock %}
   
