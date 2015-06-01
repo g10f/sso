@@ -129,8 +129,6 @@ def login(request, template_name='accounts/login.html'):
         else:
             return redirect_to
 
-    current_site = get_current_site(request)
-    site_name = settings.SSO_SITE_NAME
     redirect_to = get_request_param(request, REDIRECT_FIELD_NAME, '')
     display = get_request_param(request, 'display', 'page')  # popup or page
     cancel_url = get_oauth2_cancel_url(redirect_to)
@@ -154,10 +152,7 @@ def login(request, template_name='accounts/login.html'):
     context = {
         'form': form or EmailAuthenticationForm(request, initial=initial),
         'display': display,
-        REDIRECT_FIELD_NAME: redirect_to,
         'cancel_url': cancel_url,
-        'site': current_site,
-        'site_name': site_name,
     }
     return TemplateResponse(request, template_name, context)
 
