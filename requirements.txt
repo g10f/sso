@@ -12,6 +12,8 @@ pillow
 django-recaptcha
 pytz
 geopy
+qrcode
+requests
 # for local testing only
 #selenium
 #uritemplate
