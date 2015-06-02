@@ -30,7 +30,7 @@
                         <i class="glyphicon glyphicon-user"></i>{% endif %} {{ user.first_name }}</a></li>
                     <li><a href="{% url 'accounts:logout' %}"><i class="glyphicon glyphicon-log-out"></i> {% trans 'Log out' %}</a></li>
                 {% else %}
-                    <li><a href="{% url 'accounts:login' %}"><i class="glyphicon glyphicon-log-in"></i> {% trans 'Log in' %}</a></li>
+                    <li><a href="{% url 'auth:login' %}"><i class="glyphicon glyphicon-log-in"></i> {% trans 'Log in' %}</a></li>
                 {% endif %}
             </ul>
             <!-- /.navbar-right -->

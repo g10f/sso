@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block title %}Profile{% endblock %}
+
+{% block breadcrumb %}
+    <ol class="breadcrumb">
+        <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+        <li class="active">{% trans 'Profile' %}</li>
+    </ol>
+{% endblock breadcrumb %}
+
+{% block left_content %}{% include navigation_template with active_navigation="auth_profile" %}{% endblock left_content %}
+
+{% block right_content %}
+    <form class="" action="" method="post">{% csrf_token %}
+
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                {% for key, errors in form.errors.items %}
+                    {% for error in errors %}{{ error }}<br>{% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% for device_class in device_classes %}
+            {% include device_class.setup_template %}
+        {% endfor %}
+
+        {% if user.sso_auth_profile.is_otp_enabled %}
+            <button class="btn btn-danger" type="submit" name="is_otp_enabled" value="3">{% trans "Disable Two-Factor Authentication" %}</button>
+        {% else %}
+            <button class="btn btn-primary" type="submit" name="is_otp_enabled" value="2">{% trans "Enable Two-Factor Authentication" %}</button>
+        {% endif %}
+    </form>
+{% endblock right_content %}

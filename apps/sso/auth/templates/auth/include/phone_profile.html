@@ -1,0 +1,34 @@
+{% load i18n static %}
+<div class="panel panel-{% if default_device.twiliosmsdevice %}primary{% else %}default{% endif %}">
+    <div class="panel-heading">{% trans 'Get your codes via SMS' %}</div>
+    <div class="panel-body">
+        <div class="media">
+            <div class="media-left media-middle"><img class="media-object" src="{% static 'img/sms.png' %}" alt="{{ device }}"></div>
+            <div class="media-body">
+                <table class="table table-responsive">
+                    {% for device in twiliosmsdevices %}
+                        <tr>
+                            <td>
+                                Telephone number: {{ device.number }}
+                                {% if device.confirmed and device.device_ptr == default_device %}
+                                    <span class="label label-primary">default</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if device.confirmed %}
+                                    {% if device.device_ptr != default_device %}
+                                        <button class="btn btn-default" type="submit" name="default" value="{{ device.device_ptr.id }}">{% trans 'Set as default' %}</button>
+                                    {% endif %}
+                                {% else %}
+                                    <a class="btn btn-success btn" href="{% url 'auth:phone_setup' device.device_ptr.id %}">{% trans 'Confirm' %}</a>
+                                {% endif %}
+                                <button class="btn btn-danger btn" type="submit" name="delete" value="{{ device.device_ptr.id }}">{% trans 'Delete' %}</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="panel-footer"><a class="btn btn-default" type="submit" href="{% url 'auth:add_phone' %}">Add Phone</a></div>
+</div>

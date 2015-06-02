@@ -13,7 +13,7 @@ def home(request, template="home.html"):
         apps = request.user.get_apps()
         
     data = {'title': _('Home'),
-            'login_url': reverse('accounts:login'),
+            'login_url': reverse('auth:login'),
             'site_name': site_name,
             'apps': apps
             }

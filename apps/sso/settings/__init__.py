@@ -4,6 +4,7 @@ import os
 import sys
 import socket
 from uuid import UUID
+from django.core.urlresolvers import reverse_lazy
 
 try:
     RUNNING_DEVSERVER = (sys.argv[1] == 'runserver')
@@ -44,6 +45,12 @@ SSO_VALIDATION_PERIOD_DAYS = 356  # accounts must be prolonged after 1 year
 SSO_ADMIN_MAX_AGE = 60 * 30  # 30 min max age for admin pages
 SSO_ORGANISATION_EMAIL_DOMAIN = '@g10f.de'
 SSO_CREATE_ACCOUNT_FOR_ORGANISATION = True
+
+OTP_TWILIO_ACCOUNT = 'AC7cb133136e4e616d174261e6adbae6c4'
+OTP_TWILIO_AUTH = 'f739d38c2a8ac9ade892fecf403a629f'
+OTP_TWILIO_FROM = '+15864801842'
+OTP_TWILIO_NO_DELIVERY = False
+OTP_TWILIO_TOKEN_VALIDITY = 60  # seconds
 
 LOCALE_PATHS = ()
 
@@ -137,7 +144,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'sso.oauth2.middleware.OAuthAuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    'sso.auth.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -196,8 +203,8 @@ PASSWORD_HASHERS = (
 POSTGIS_VERSION = (2, 0, 3)
 
 LOGIN_REDIRECT_URL = '/'
-LOGIN_URL = '/accounts/login/'
-LOGOUT_URL = '/accounts/logout/'
+LOGIN_URL = reverse_lazy('auth:login')
+LOGOUT_URL = reverse_lazy('accounts:logout')
 AUTH_USER_MODEL = 'accounts.User'
 
 REGISTRATION = {

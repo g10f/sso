@@ -171,7 +171,7 @@ class OAuth2Tests(OAuth2BaseTestCase):
         # check if the response is a redirect to the login page
         self.assertEqual(response.status_code, 302)
         path = urlparse.urlsplit(response['Location'])[2]
-        self.assertEqual(path, reverse('accounts:login'))
+        self.assertEqual(path, reverse('auth:login'))
         
     def test_get_implicit_id_token_and_access_token(self):
         """

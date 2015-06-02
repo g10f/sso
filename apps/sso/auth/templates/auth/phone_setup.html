@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}Index{% endblock %}
+
+
+{% block breadcrumb %}
+    <ol class="breadcrumb">
+        <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+        <li><a href="{% url 'auth:profile' %}">{% trans 'Security' %}</a></li>
+        <li class="active">{% trans 'SMS Setup' %}</li>
+    </ol>
+{% endblock breadcrumb %}
+
+{% block left_content %}{% include navigation_template with active_navigation="auth_profile" %}{% endblock left_content %}
+
+{% block right_content %}
+    <form class="form-horizontal" action="" method="post">{% csrf_token %}
+        <h3>{% trans 'Confirm Phone' %}</h3>
+        <p>{{ form.sms_device }} {% trans "Please enter your token." %}</p>
+
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                {% for key, errors in form.errors.items %}
+                    {% for error in errors %}{{ error }}<br>{% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% for field in form %}
+            <div class="form-group {% if field.errors %}has-error{% endif %} {% if field.is_hidden %}dwbn-ab{% endif %}">
+                <label class="control-label" for="id_{{ field.html_name }}">{{ field.label }}{% if field.field.required %}*{% endif %}</label>
+
+                <div class="dwbn-form-control">
+                    {{ field }}{% if field.help_text or field.errors %}<span class="help-block">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
+                </div>
+            </div>
+        {% endfor %}
+
+        <div class="form-group">
+            <div class="dwbn-form-submit">
+                <button class="btn btn-default" name="resend_token" value="1" type="submit">{% trans 'Resend Token' %}</button>
+                <button class="btn btn-primary" type="submit">{% trans 'Submit' %}</button>
+            </div>
+        </div>
+
+    </form>
+
+{% endblock right_content %}
