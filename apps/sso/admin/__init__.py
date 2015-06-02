@@ -41,7 +41,7 @@ class SSOAdminSite(admin.AdminSite):
                 from django.contrib.auth.views import redirect_to_login
                 return redirect_to_login(
                     request.get_full_path(),
-                    reverse('accounts:login')
+                    reverse('auth:login')
                 )
             return view(request, *args, **kwargs)
         if not cacheable:

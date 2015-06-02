@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}Index{% endblock %}
+
+
+{% block breadcrumb %}
+    <ol class="breadcrumb">
+        <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+        <li><a href="{% url 'auth:profile' %}">{% trans 'Security' %}</a></li>
+        <li class="active">{% trans 'TOTP Setup' %}</li>
+    </ol>
+{% endblock breadcrumb %}
+
+{% block left_content %}{% include navigation_template with active_navigation="auth_profile" %}{% endblock left_content %}
+
+{% block right_content %}
+    <form class="form-horizontal" action="" method="post">{% csrf_token %}
+        <h3>{% trans 'Token Generator Setup' %}</h3>
+        <div class="media">
+            <div class="media-left media-middle">
+                <img src="{{ form.qr_code }}" alt="QR Code"/>
+            </div>
+            <div class="media-body">
+                {% blocktrans %}
+            <h4>Google Authenticator App für Android installieren</h4>
+                <ul>
+                    <li>Gehen Sie auf Ihrem Telefon zum Google Play Store.</li>
+                    <li>Gehen Sie zu Google Authenticator. (Vom Google Play Store herunterladen)</li>
+                    <li>Laden Sie die App herunter und installieren Sie sie.</li>
+                    <li>Öffnen und konfigurieren Sie Google Authenticator jetzt</li>
+                    <li>Tippen Sie in Google Authenticator auf "Menü" und wählen Sie "Konto einrichten" aus.</li>
+                    <li> Wählen Sie "Barcode scannen" aus.</li>
+                    <li>Verwenden Sie die Kamera Ihres Telefons, um diesen Barcode zu scannen.</li>
+                </ul>
+                {% endblocktrans %}
+            </div>
+        </div>
+
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                {% for key, errors in form.errors.items %}
+                    {% for error in errors %}{{ error }}<br>{% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+
+        {% for field in form.visible_fields %}
+            <div class="form-group {% if field.errors %}has-error{% endif %} {% if field.is_hidden %}dwbn-ab{% endif %}">
+                <label class="control-label" for="id_{{ field.html_name }}">{{ field.label }}{% if field.field.required %}*{% endif %}</label>
+
+                <div class="dwbn-form-control">
+                    {{ field }}{% if field.help_text or field.errors %}<span class="help-block">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
+                </div>
+            </div>
+        {% endfor %}
+
+        <div class="form-group">
+            <div class="dwbn-form-submit">
+                <button type="submit" class="btn btn-primary">{% trans 'Submit' %}</button>
+            </div>
+        </div>
+
+    </form>
+
+{% endblock right_content %}

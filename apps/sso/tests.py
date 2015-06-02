@@ -57,7 +57,7 @@ class SSOSeleniumTests(StaticLiveServerTestCase):
 
     def login(self, username, password):
         driver = self.selenium
-        driver.get('%s%s' % (self.live_server_url, reverse('accounts:login')))
+        driver.get('%s%s' % (self.live_server_url, reverse('auth:login')))
         driver.find_element_by_name("username").send_keys(username)
         driver.find_element_by_name("password").send_keys(password)
         driver.find_element_by_xpath('//button[@type="submit"]').click()

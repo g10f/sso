@@ -7,7 +7,7 @@ from django.test import TestCase
 from django.test.client import Client
 from django.core.urlresolvers import reverse
 from sso.organisations.models import OrganisationCountry, Organisation
-from sso.accounts.models import User
+from sso.accounts.models import User, update_or_create_organisation_account
 
 
 class OrganisationssTest(TestCase):
@@ -56,26 +56,30 @@ class OrganisationssTest(TestCase):
         self.assertEqual(organisation.country, country)
         self.assertIsNotNone(organisation.uuid)
         
+        if not settings.SSO_CREATE_ACCOUNT_FOR_ORGANISATION:
+            update_or_create_organisation_account(organisation, None, 'newcenter' + settings.SSO_ORGANISATION_EMAIL_DOMAIN)
+
         # check that a new center account was created
         user = User.objects.get_by_email('newcenter' + settings.SSO_ORGANISATION_EMAIL_DOMAIN)
+
         self.assertTrue(user.is_center)
-        
+
         self.assertIn(organisation, user.organisations.all())
 
         # check admin profile of center account
-        default_admin_profile = User.get_default_admin_profile()        
+        default_admin_profile = User.get_default_admin_profile()
         self.assertIn(default_admin_profile, user.role_profiles.all())
-        
+
         # check if the center account can edit the center
         # first reset the password because the account was just created and has a random password
         # then login with the new password and try changing the center data
-        response = self.client.post(reverse('accounts:password_reset'), 
+        response = self.client.post(reverse('accounts:password_reset'),
                                     data={'email': 'newcenter' + settings.SSO_ORGANISATION_EMAIL_DOMAIN})
         self.assertEqual(response.status_code, 302)
-        
+
         new_password = 'gsf1zghxyz'
         path = self.get_url_path_from_mail()
-        response = self.client.post(path, 
+        response = self.client.post(path,
                                     data={'new_password1': new_password, 'new_password2': new_password})
         self.assertEqual(response.status_code, 302)
         self.client.login(username='newcenter' + settings.SSO_ORGANISATION_EMAIL_DOMAIN, password=new_password)
@@ -120,7 +124,7 @@ class OrganisationssTest(TestCase):
         }
         response = self.client.post(reverse('organisations:organisation_update', args=[organisation.uuid.hex]), data=data)
         self.assertEqual(response.status_code, 302)
-        
+
         # request the new data
         response = self.client.get(reverse('organisations:organisation_detail', args=[organisation.uuid.hex]))
         self.assertEqual(response.status_code, 200)

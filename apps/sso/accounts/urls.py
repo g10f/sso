@@ -15,7 +15,7 @@ urlpatterns = [
     url(r'^(?P<uuid>[a-z0-9]{32})/app_roles/', application.update_user_app_roles, name="update_user_app_roles"),
     url(r'^(?P<uuid>[a-z0-9]{32})/delete/$', application.UserDeleteView.as_view(), name="delete_user"),
     url(r'^me/$', profile, name='profile'),
-    url(r'^login/$', login, name='login'),
+    # url(r'^login/$', login, name='login'),
     url(r'^logout/$', logout, name='logout'),
     url(r'^contact/$', contact, name='contact'),
     url(r'^contact_thanks/$', TemplateView.as_view(template_name="accounts/contact_thanks.html"), name='contact_thanks'),
