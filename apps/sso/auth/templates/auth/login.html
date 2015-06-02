@@ -36,8 +36,6 @@ body {
     <div class="{% if form.username.errors %}has-error{% endif %}">{{ form.username }}</div>
     <div class="{% if form.password.errors %}has-error{% endif %}">{{ form.password }}</div>
 
-	<input type="hidden" name="next" value="{{ next }}" />
-	  
 	{% block extra_fields %}{% endblock %}
   
     {% if form.errors %}

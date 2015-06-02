@@ -43,9 +43,7 @@
             <p>{% trans "Or, alternatively, use one of your backup phones:" %}</p>
             <p>
                 {% for other in other_devices %}
-                    <button name="challenge_device" value="{{ other.persistent_id }}"
-                            class="btn btn-default btn-block" type="submit">
-                    </button>
+                    <button name="challenge_device" value="{{ other.persistent_id }}" class="btn btn-default btn-block" type="submit"></button>
                 {% endfor %}</p>
         {% endif %}
 
