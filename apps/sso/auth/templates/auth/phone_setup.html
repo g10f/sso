@@ -17,7 +17,11 @@
 {% block right_content %}
     <form class="form-horizontal" action="" method="post">{% csrf_token %}
         <h3>{% trans 'Confirm Phone' %}</h3>
-        <p>{{ form.sms_device }} {% trans "Please enter your token." %}</p>
+        <p>{{ form.sms_device.login_text }}</p>
+
+        {% if messages %}{% for message in messages %}
+            <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
+        {% endif %}
 
         {% if form.errors %}
             <div class="alert alert-danger">

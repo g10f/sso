@@ -43,7 +43,7 @@ class OTPMiddleware(object):
         except Device.DoesNotExist:
             device = None
             del request.session[DEVICE_KEY]
-            logger.exception('Invalid device_id in session')
+            logger.warning('Device with id %d from session does not exist', device_id)
 
         if (device is not None) and (device.user_id != user.id):
             device = None
