@@ -29,6 +29,7 @@ class ProfileView(FormView):
         totpdevices = TOTPDevice.objects.filter(user=user).prefetch_related('device_ptr')
         twiliosmsdevices = TwilioSMSDevice.objects.filter(user=user).prefetch_related('device_ptr')
         device_classes = [TOTPDevice, TwilioSMSDevice]
+
         kwargs.update({
             'totpdevice': totpdevices.first(),
             'twiliosmsdevices': twiliosmsdevices,

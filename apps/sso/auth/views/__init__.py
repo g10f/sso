@@ -1,5 +1,6 @@
 import urllib
 import logging
+from django.shortcuts import redirect
 from django.contrib import messages
 from django.views.generic.edit import FormView
 from django.conf import settings
@@ -14,7 +15,7 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.utils.translation import ugettext_lazy as _
 
 from sso.auth.forms import EmailAuthenticationForm, AuthenticationTokenForm
-from sso.auth.models import Device
+from sso.auth.models import Device, TOTPDevice, TwilioSMSDevice
 from sso.auth.utils import get_safe_login_redirect_url, get_request_param
 from sso.oauth2.models import get_oauth2_cancel_url
 
@@ -49,10 +50,14 @@ class LoginView(FormView):
         if device:
             try:
                 challenge = device.generate_challenge()
-                user_data = signing.dumps({'user_id': user.pk, 'backend': user.backend, 'device_id': device.id}, salt=SALT)
+                user_data = signing.dumps({'user_id': user.pk, 'backend': user.backend}, salt=SALT)
                 logger.debug(challenge)
-                query_string = urllib.urlencode({REDIRECT_FIELD_NAME: redirect_url})
-                self.success_url = "%s?%s" % (reverse('auth:token', kwargs={'user_data': user_data}), query_string)
+                query_string = {REDIRECT_FIELD_NAME: redirect_url}
+                display = self.request.GET.get('display')
+                if display:
+                    query_string['display'] = display
+
+                self.success_url = "%s?%s" % (reverse('auth:token', kwargs={'user_data': user_data, 'device_id': device.id}), urllib.urlencode(query_string))
             except StandardError, e:
                 messages.error(self.request, _('Device error, select another device. (%(error)s)') % {'error': e.message})
                 return self.render_to_response(self.get_context_data(form=form))
@@ -84,24 +89,48 @@ class TokenView(FormView):
         state = signing.loads(self.kwargs['user_data'], salt=SALT)
         self.user = get_user_model().objects.get(pk=state['user_id'])
         self.user.backend = state['backend']
-        self.device = Device.objects.get(user=self.user, pk=state['device_id'])
+        self.device = Device.objects.get(user=self.user, pk=self.kwargs['device_id'])
+
         kwargs['user'] = self.user
         kwargs['device'] = self.device
         return kwargs
+
+    def post(self, request, *args, **kwargs):
+        if request.POST.get('resend_token'):
+            state = signing.loads(self.kwargs['user_data'], salt=SALT)
+            device = Device.objects.get(user_id=state['user_id'], pk=self.kwargs['device_id'])
+            challenge = device.generate_challenge()
+            messages.add_message(self.request, level=messages.INFO, message=challenge, fail_silently=True)
+            return redirect("%s?%s" % (self.request.path, self.request.GET.urlencode()))
+
+        return super(TokenView, self).post(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         """
         Adds user's default and backup OTP devices to the context.
         """
         context = super(TokenView, self).get_context_data(**kwargs)
+
+        device_classes = [TOTPDevice, TwilioSMSDevice]
+        other_devices = []
+        for device_class in device_classes:
+            for device in device_class.objects.filter(user=self.user).exclude(device_ptr_id=self.device.id).prefetch_related('device_ptr'):
+                device_info = {
+                    'device': device,
+                    'url': "%s?%s" % (reverse('auth:token', kwargs={'user_data': self.kwargs['user_data'], 'device_id': device.id}), self.request.GET.urlencode())
+                }
+                other_devices.append(device_info)
+
+        context['other_devices'] = other_devices
         context['device'] = self.device
-        context['cancel_url'] = settings.LOGOUT_URL
+        redirect_url = get_safe_login_redirect_url(self.request)
+        context['cancel_url'] = get_oauth2_cancel_url(redirect_url)
         return context
 
     def form_valid(self, form):
         redirect_url = get_safe_login_redirect_url(self.request)
         auth_login(self.request, form.user)
-        self.request.session[DEVICE_KEY] = self.device.id
+        self.request.session[DEVICE_KEY] = self.device.id  # TODO: ???
 
         self.success_url = redirect_url
         return super(TokenView, self).form_valid(form)

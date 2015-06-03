@@ -17,6 +17,7 @@ from django.shortcuts import resolve_url
 from django.utils.http import is_safe_url
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.utils.decorators import method_decorator
+from http.util import get_request_param
 
 
 def totp_digits():
@@ -89,10 +90,6 @@ def devices_for_user(user, confirmed=True):
         return Device.objects.none()
 
     return Device.objects.filter(user=user, confirmed=confirmed)
-
-
-def get_request_param(request, name, default=None):
-    return request.POST.get(name, request.GET.get(name, default))
 
 
 def get_safe_login_redirect_url(request):

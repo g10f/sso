@@ -11,7 +11,7 @@ configurations = {
     'dev': {'host_string': 'sso.dwbn.org', 'server_name': 'sso-dev.dwbn.org', 'app': 'sso', 'virtualenv': 'sso-dev', 'db_name': 'sso_dev', 'branch': 'master'},
     'prod': {'host_string': 'sso.dwbn.org', 'server_name': 'sso.dwbn.org', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'sso', 'branch': 'master'},
     'g10f': {'host_string': 'g10f', 'server_name': 'sso.g10f.de', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'sso', 'branch': 'master'},
-    'elsapro': {'host_string': 'g10f', 'server_name': 'sso.elsapro.com', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'vw_sso', 'branch': 'master'},
+    'elsapro': {'host_string': 'g10f', 'server_name': 'sso.elsapro.com', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'vw_sso', 'branch': '2f'},
 }
 
 LOGROTATE_TEMPLATE = """\
@@ -135,8 +135,8 @@ os.environ['THROTTELING_DISABLED'] = "False"
 
 
 @task
-def compileless(version='1.0.14'):
-    for style in ['default', 'dwbn', 'cerulean', 'slate', 'vw', 'dwbn2', 'dwbn3', 'dwbn4']:
+def compileless(version='1.0.15'):
+    for style in ['default', 'dwbn', 'vw', 'dwbn2', 'dwbn3', 'dwbn4']:
         local('lessc ./apps/sso/static/less/%(style)s.less ./apps/sso/static/css/%(style)s-%(version)s.css' %{'style': style, 'version': version})
 
 
