@@ -11,16 +11,25 @@
 
 
 {% block content %}
-
     <form class="dwbn-form-signin" action="" method="post">{% csrf_token %}
 
         <h3 class="dwbn-form-signin-heading">{% trans 'Two factor login' %}</h3>
+        <input type="submit" class="hidden"/> {# to enable submit when pressing enter in the edit field #}
+
+        {% if messages %}{% for message in messages %}
+            <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
+        {% endif %}
 
         <div class="media">
             <div class="media-left media-middle">
-                <img class="media-object" src="{%  static device.image %}" alt="{{ device }}">
+                <img class="media-object" src="{% static device.image %}" alt="{{ device }}">
             </div>
-            <div class="media-body">{{ device.login_text }}</div>
+            <div class="media-body">{{ device.login_text }}
+                <br><br>
+                {% if device.twiliosmsdevice %}
+                    <button class="btn btn-default btn-xs" type="submit" name="resend_token" value=1">{% trans 'Resend Token' %}</button>
+                {% endif %}
+            </div>
         </div>
         <br>
 
@@ -34,17 +43,21 @@
             </div>
         {% endif %}
 
-
         <div class="form-group">
             <button class="btn btn-lg btn-primary btn-block" type="submit">{% trans 'Submit' %}</button>
         </div>
 
+    </form>
+
+    <div class="dwbn-form-signin">
         {% if other_devices %}
-            <p>{% trans "Or, alternatively, use one of your backup phones:" %}</p>
-            <p>
-                {% for other in other_devices %}
-                    <button name="challenge_device" value="{{ other.persistent_id }}" class="btn btn-default btn-block" type="submit"></button>
-                {% endfor %}</p>
+
+            {% trans "Alternatively, use one of your backup devices:" %}
+            {% for other in other_devices %}
+                <form class="" action="{{ other.url }}" method="post">{% csrf_token %}
+                    <button class="btn-link" type="submit" name="resend_token" value=1">{{ other.device.default_name }}</button>
+                </form>
+            {% endfor %}
         {% endif %}
 
         {% if backup_tokens %}
@@ -54,6 +67,12 @@
                         class="btn btn-default btn-block">{% trans "Use Backup Token" %}</button>
             </p>
         {% endif %}
+        {% if cancel_url %}
 
-    </form>
+            <div class="cancel">
+                <a class="" href="{{ cancel_url }}">{% trans 'Cancel' %}</a>
+            </div>
+        {% endif %}
+
+    </div>
 {% endblock %}
