@@ -1,4 +1,5 @@
 {% load static %}
+<script src="{% static 'js/vendor/bowser.min.js' %}"></script>
 {% if debug %}
     <script src="chrome-extension://pfboblefjcgdjicmnffhdgionmgcdmne/u2f-api.js"></script>
 {% else %}
@@ -7,9 +8,8 @@
 <script>
     // TODO: put into its own file
     $(function() {
-        if (typeof window.u2f === 'undefined'){
-            var text = 'This Login method requires Chrome 41 or later! Your current browser is not yet supported.';
-            displayError(text);
+        if((bowser.chrome && bowser.version >= 41)) {
+          $(".browser-not-supported").hide();
         }
     });
     function displayError(text){

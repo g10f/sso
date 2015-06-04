@@ -30,6 +30,10 @@
         </div>
         <br>
 
+        <div class="alert alert-danger browser-not-supported">
+            {% trans 'This Login method requires Chrome 41 or later! Your current browser is not yet supported.' %}
+        </div>
+
         <div class="" id="u2f-status"></div>
         {% if form.errors %}
             <div class="alert alert-danger">
