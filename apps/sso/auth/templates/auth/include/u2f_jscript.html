@@ -8,7 +8,10 @@
     // TODO: put into its own file
     function handleU2FError(resp) {
         if (resp.errorCode) {
-            document.getElementById('u2f-status').textContent = 'Error with U2F'
+            var status = document.getElementById('u2f-status');
+            status.textContent = 'Error with U2F (Error code: ' + resp.errorCode + ')';
+            status.classList.add('alert');
+            status.classList.add('alert-danger');
             return true;
         } else {
             return false;
