@@ -1,32 +1,41 @@
 {% extends "base.html" %}
-{% load i18n %}
-
-{% block title %}{% trans 'Add U2F Device' %}{% endblock %}
+{% load i18n static %}
 
 
-{% block breadcrumb %}
-    <ol class="breadcrumb">
-        <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-        <li><a href="{% url 'auth:profile' %}">{% trans 'Security' %}</a></li>
-        <li class="active">{% trans 'U2F Device Setup' %}</li>
-    </ol>
-{% endblock breadcrumb %}
+<h1>{% block title %}{% trans "Enter U2F Device" %}{% endblock %}</h1>
 
-{% block left_content %}{% include navigation_template with active_navigation="auth_profile" %}{% endblock left_content %}
+{% block bodyclass %}dwbn-{{ display }}{% endblock %}
+
+{% block navbar %}
+{% endblock navbar %}
 
 {% block extrascript %}
     {% include 'auth/include/u2f_jscript.html' %}
 {% endblock extrascript %}
 
 
-{% block right_content %}
-    <p>Please touch the flashing U2F device now.
+{% block content %}
 
-You may be prompted to allow the site permission to access your security keys. After granting permission, the device will start to blink.</p>
+    <form class="dwbn-form-signin" method="post" id="u2f-form">{% csrf_token %}
+        <h3 class="dwbn-form-signin-heading">{% trans 'Two factor login' %}</h3>
 
-    <p id="u2f-status"></p>
-    <form method="post" id="u2f-form">
-        {% csrf_token %}
+        {% if messages %}{% for message in messages %}
+            <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
+        {% endif %}
+
+        <div class="media">
+            <div class="media-left media-middle">
+                <img class="media-object" src="{% static device.image %}" alt="{{ device }}">
+            </div>
+            <div class="media-body">{{ device.login_text }}
+                <br><br>
+                {% if device.twiliosmsdevice %}
+                    <button class="btn btn-default btn-xs" type="submit" name="resend_token" value=1">{% trans 'Resend Token' %}</button>
+                {% endif %}
+            </div>
+        </div>
+        <br>
+        <div class="" id="u2f-status"></div>
         {% if form.errors %}
             <div class="alert alert-danger">
                 {% for key, errors in form.errors.items %}
@@ -47,25 +56,50 @@ You may be prompted to allow the site permission to access your security keys. A
             </div>
         {% endfor %}
 
-        <div class="form-group">
+        <div class="form-group hidden">
             <div class="dwbn-form-submit">
                 <button type="submit" class="btn btn-primary">{% trans 'Submit' %}</button>
             </div>
         </div>
-
     </form>
+    <div class="dwbn-form-signin">
+        {% if other_devices %}
+
+            {% trans "Alternatively, use one of your backup devices:" %}
+            {% for other in other_devices %}
+                <form class="" action="{{ other.url }}" method="post">{% csrf_token %}
+                    <button class="btn-link" type="submit" name="resend_token" value=1">{{ other.device.default_name }}</button>
+                </form>
+            {% endfor %}
+        {% endif %}
+
+        {% if backup_tokens %}
+            <p>{% trans "As a last resort, you can use a backup token:" %}</p>
+            <p>
+                <button name="wizard_goto_step" type="submit" value="backup"
+                        class="btn btn-default btn-block">{% trans "Use Backup Token" %}</button>
+            </p>
+        {% endif %}
+        {% if cancel_url %}
+
+            <div class="cancel">
+                <a class="" href="{{ cancel_url }}">{% trans 'Cancel' %}</a>
+            </div>
+        {% endif %}
+
+    </div>
 
     <script>
-    var challenges = {{ challenges|safe }};
-    u2f.sign(challenges, function(resp) {
-        var form = document.getElementById('u2f-form');
-        form.response.value = JSON.stringify(resp);
-        if ( ! handleU2FError(resp) ) {
-            //form.submit();
-        }
-    })
+        var challenges = {{ challenges|safe }};
+        u2f.sign(challenges, function (resp) {
+            var form = document.getElementById('u2f-form');
+            form.response.value = JSON.stringify(resp);
+            if (!handleU2FError(resp)) {
+                form.submit();
+            }
+        })
     </script>
 
-{% endblock right_content %}
+{% endblock content %}
 
 

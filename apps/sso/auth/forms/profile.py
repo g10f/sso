@@ -74,8 +74,8 @@ class AddPhoneForm(forms.Form):
 
 
 class AddU2FForm(forms.Form):
-    response = forms.CharField(label=_('Response'), widget=bootstrap.Textarea())
-    challenge = forms.CharField(label=_('Challenge'), required=False, widget=bootstrap.Textarea())
+    response = forms.CharField(label=_('Response'), widget=forms.HiddenInput())
+    challenge = forms.CharField(label=_('Challenge'), widget=forms.HiddenInput())
 
 
 class PhoneSetupForm(forms.Form):

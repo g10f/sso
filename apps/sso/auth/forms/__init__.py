@@ -64,7 +64,7 @@ class EmailAuthenticationForm(AuthenticationForm):
 
 
 class U2FForm(forms.Form):
-    response = forms.CharField(label=_('Response'), widget=bootstrap.Textarea())
+    response = forms.CharField(label=_('Response'), widget=forms.HiddenInput())
 
     def __init__(self, device=None, **kwargs):
         self.user = kwargs.pop('user')
