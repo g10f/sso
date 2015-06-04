@@ -14,6 +14,7 @@ pytz
 geopy
 qrcode
 requests
+python-u2flib-server
 # for local testing only
 #selenium
 #uritemplate

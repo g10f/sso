@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import redirect
 from django.contrib import messages
 
@@ -5,9 +6,10 @@ from django.core.urlresolvers import reverse_lazy
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth.decorators import login_required
 from django.views.generic import FormView
-from sso.auth.forms.profile import TOTPDeviceForm, ProfileForm, PhoneSetupForm, AddPhoneForm
-from sso.auth.models import TOTPDevice, TwilioSMSDevice
+from sso.auth.forms.profile import TOTPDeviceForm, ProfileForm, PhoneSetupForm, AddPhoneForm, AddU2FForm
+from sso.auth.models import TOTPDevice, TwilioSMSDevice, U2FDevice
 from sso.auth.utils import class_view_decorator, default_device, random_hex
+from u2flib_server import u2f_v2 as u2f
 
 
 @class_view_decorator(login_required)
@@ -28,11 +30,13 @@ class ProfileView(FormView):
         user = self.request.user
         totpdevices = TOTPDevice.objects.filter(user=user).prefetch_related('device_ptr')
         twiliosmsdevices = TwilioSMSDevice.objects.filter(user=user).prefetch_related('device_ptr')
-        device_classes = [TOTPDevice, TwilioSMSDevice]
+        u2fdevices = U2FDevice.objects.filter(user=user).prefetch_related('device_ptr')
+        device_classes = [TOTPDevice, TwilioSMSDevice, U2FDevice]
 
         kwargs.update({
             'totpdevice': totpdevices.first(),
             'twiliosmsdevices': twiliosmsdevices,
+            'u2fdevices': u2fdevices,
             'default_device': default_device(self.request.user, None),
             'device_classes': device_classes
         })
@@ -71,6 +75,59 @@ class TOTPSetup(FormView):
     def form_valid(self, form):
         form.save()
         return super(TOTPSetup, self).form_valid(form)
+
+
+@class_view_decorator(login_required)
+class AddU2FView(FormView):
+    template_name = 'auth/u2f/add_device.html'
+    form_class = AddU2FForm
+    success_url = reverse_lazy('auth:profile')
+    challenge = None
+
+    def get(self, request, *args, **kwargs):
+        self.challenge = u2f.start_register(self.get_origin())
+        return super(AddU2FView, self).get(request, *args, **kwargs)
+
+    def get_origin(self):
+        return '{scheme}://{host}'.format(
+            # BBB: Django >= 1.7 has request.scheme
+            scheme='https' if self.request.is_secure() else 'http',
+            host=self.request.get_host(),
+        )
+
+    def get_context_data(self, **kwargs):
+        kwargs = super(AddU2FView, self).get_context_data(**kwargs)
+
+        kwargs['challenge'] = json.dumps(self.challenge)
+
+        # Create a SignRequest for each key that has already been added to the
+        # account.
+        # This can be passed to u2f.register as the second parameter to prevent
+        # re-registering the same key for the same user.
+        u2f_devices = U2FDevice.objects.filter(user=self.request.user, confirmed=True)
+        sign_requests = [
+            u2f.start_authenticate(d.to_json()) for d in u2f_devices
+        ]
+        kwargs['sign_requests'] = json.dumps(sign_requests)
+
+        return kwargs
+
+    def form_valid(self, form):
+        response = form.cleaned_data['response']
+        challenge = form.cleaned_data['challenge']
+        device, attestation_cert = u2f.complete_register(challenge, response)
+        U2FDevice.objects.create(user=self.request.user, public_key=device['publicKey'], key_handle=device['keyHandle'],
+            app_id=device['appId'], confirmed=True)
+
+        messages.success(self.request, 'Key added.')
+        return super(AddU2FView, self).form_valid(form)
+
+    def get_initial(self):
+        initial = super(AddU2FView, self).get_initial()
+        if self.challenge is not None:
+            initial.update({'challenge': json.dumps(self.challenge)})
+        return initial
+
 
 
 @class_view_decorator(login_required)

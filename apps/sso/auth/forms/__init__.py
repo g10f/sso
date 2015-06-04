@@ -63,6 +63,15 @@ class EmailAuthenticationForm(AuthenticationForm):
                 )
 
 
+class U2FForm(forms.Form):
+    response = forms.CharField(label=_('Response'), widget=bootstrap.Textarea())
+
+    def __init__(self, device=None, **kwargs):
+        self.user = kwargs.pop('user')
+        self.device = device
+        super(U2FForm, self).__init__(**kwargs)
+
+
 class AuthenticationTokenForm(forms.Form):
     otp_token = forms.IntegerField(label=_("Token"), min_value=1, max_value=int('9' * totp_digits()),
                                    widget=bootstrap.TextInput(attrs={'autofocus': ''}))

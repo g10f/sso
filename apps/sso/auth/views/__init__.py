@@ -1,3 +1,4 @@
+import json
 import urllib
 import logging
 from django.shortcuts import redirect
@@ -14,10 +15,12 @@ from django.core import signing
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.utils.translation import ugettext_lazy as _
 
-from sso.auth.forms import EmailAuthenticationForm, AuthenticationTokenForm
-from sso.auth.models import Device, TOTPDevice, TwilioSMSDevice
+from sso.auth.forms import EmailAuthenticationForm, AuthenticationTokenForm, U2FForm
+from sso.auth.forms.profile import AddU2FForm
+from sso.auth.models import Device, TOTPDevice, TwilioSMSDevice, U2FDevice
 from sso.auth.utils import get_safe_login_redirect_url, get_request_param
 from sso.oauth2.models import get_oauth2_cancel_url
+from u2flib_server import u2f_v2 as u2f
 
 SALT = 'sso.auth.views.LoginView'
 DEVICE_KEY = '_auth_device'
@@ -83,6 +86,18 @@ class TokenView(FormView):
     user = None
     device = None
 
+    def get_form_class(self):
+        state = signing.loads(self.kwargs['user_data'], salt=SALT)
+        self.user = get_user_model().objects.get(pk=state['user_id'])
+        self.device = Device.objects.get(user=self.user, pk=self.kwargs['device_id'])
+        return self.device.login_form_class
+
+    def get_template_names(self):
+        try:
+            return self.device.login_form_templates
+        except StandardError:
+            return super(TokenView, self).get_template_names()
+
     def get_form_kwargs(self):
         kwargs = super(TokenView, self).get_form_kwargs()
 
@@ -111,7 +126,7 @@ class TokenView(FormView):
         """
         context = super(TokenView, self).get_context_data(**kwargs)
 
-        device_classes = [TOTPDevice, TwilioSMSDevice]
+        device_classes = [TOTPDevice, TwilioSMSDevice, U2FDevice]  # TODO remove redundance to see model
         other_devices = []
         for device_class in device_classes:
             for device in device_class.objects.filter(user=self.user).exclude(device_ptr_id=self.device.id).prefetch_related('device_ptr'):
@@ -121,6 +136,12 @@ class TokenView(FormView):
                 }
                 other_devices.append(device_info)
 
+        u2f_devices = U2FDevice.objects.filter(user=self.user, confirmed=True)
+        challenges = [
+            u2f.start_authenticate(d.to_json()) for d in u2f_devices
+        ]
+
+        context['challenges'] = json.dumps(challenges)
         context['other_devices'] = other_devices
         context['device'] = self.device
         redirect_url = get_safe_login_redirect_url(self.request)

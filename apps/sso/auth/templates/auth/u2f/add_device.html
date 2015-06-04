@@ -1,24 +1,30 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans 'Add Phone' %}{% endblock %}
+{% block title %}{% trans 'Add U2F Device' %}{% endblock %}
 
 
 {% block breadcrumb %}
     <ol class="breadcrumb">
         <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
         <li><a href="{% url 'auth:profile' %}">{% trans 'Security' %}</a></li>
-        <li class="active">{% trans 'SMS Setup' %}</li>
+        <li class="active">{% trans 'U2F Device Setup' %}</li>
     </ol>
 {% endblock breadcrumb %}
 
 {% block left_content %}{% include navigation_template with active_navigation="auth_profile" %}{% endblock left_content %}
 
-{% block right_content %}
-     <form class="form-horizontal" action="" method="post">{% csrf_token %}
-        <h3>{% trans 'Add Phone' %}</h3>
-        <p>{% trans "Please enter your phone number." %}</p>
+{% block extrascript %}
+    {% include 'auth/include/u2f_jscript.html' %}
+{% endblock extrascript %}
 
+
+{% block right_content %}
+    <p>To add a security key to your account, insert (and tap) it.</p>
+
+    <p id="u2f-status"></p>
+    <form method="post" id="u2f-form">
+        {% csrf_token %}
         {% if form.errors %}
             <div class="alert alert-danger">
                 {% for key, errors in form.errors.items %}
@@ -32,6 +38,7 @@
         {% for field in form.visible_fields %}
             <div class="form-group {% if field.errors %}has-error{% endif %} {% if field.is_hidden %}dwbn-ab{% endif %}">
                 <label class="control-label" for="id_{{ field.html_name }}">{{ field.label }}{% if field.field.required %}*{% endif %}</label>
+
                 <div class="dwbn-form-control">
                     {{ field }}{% if field.help_text or field.errors %}<span class="help-block">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
                 </div>
@@ -45,5 +52,17 @@
         </div>
 
     </form>
+
+    <script>
+        var challenge = {{ challenge|safe }};
+        var signRequests = {{ sign_requests|safe }};
+        u2f.register([challenge], signRequests, function (resp) {
+            var form = document.getElementById('u2f-form');
+            form.response.value = JSON.stringify(resp);
+            if (!handleU2FError(resp)) {
+                //form.submit();
+            }
+        })
+    </script>
 
 {% endblock right_content %}
