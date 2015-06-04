@@ -117,9 +117,8 @@ class AddU2FView(FormView):
         challenge = form.cleaned_data['challenge']
         device, attestation_cert = u2f.complete_register(challenge, response)
         U2FDevice.objects.create(user=self.request.user, public_key=device['publicKey'], key_handle=device['keyHandle'],
-            app_id=device['appId'], confirmed=True)
-
-        messages.success(self.request, 'Key added.')
+                                 app_id=device['appId'], confirmed=True)
+        # messages.success(self.request, 'U2F device added.')
         return super(AddU2FView, self).form_valid(form)
 
     def get_initial(self):
