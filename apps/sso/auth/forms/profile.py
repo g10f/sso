@@ -73,6 +73,11 @@ class AddPhoneForm(forms.Form):
         return sms_device
 
 
+class AddU2FForm(forms.Form):
+    response = forms.CharField(label=_('Response'), widget=bootstrap.Textarea())
+    challenge = forms.CharField(label=_('Challenge'), required=False, widget=bootstrap.Textarea())
+
+
 class PhoneSetupForm(forms.Form):
     token = forms.IntegerField(label=_("Token"), min_value=0, max_value=int('9' * totp_digits()),
                                widget=bootstrap.TextInput(attrs={'autofocus': ''}))

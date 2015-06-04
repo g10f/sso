@@ -1,0 +1,19 @@
+{% load static %}
+{% if debug %}
+    <script src="chrome-extension://pfboblefjcgdjicmnffhdgionmgcdmne/u2f-api.js"></script>
+{% else %}
+    <script src="{% static "js/vendor/u2f-api.js" %}"></script>
+{% endif %}
+<script>
+    // TODO: put into its own file
+    function handleU2FError(resp) {
+        if (resp.errorCode) {
+            document.getElementById('u2f-status').textContent = 'Error with U2F'
+            return true;
+        } else {
+            return false;
+        }
+    }
+    if (typeof window.u2f === 'undefined')
+        document.getElementById('extension-not-installed-error-message').style.display = 'block';
+</script>
