@@ -27,12 +27,7 @@
             <div class="media-left media-middle">
                 <img class="media-object" src="{% static device.image %}" alt="{{ device }}">
             </div>
-            <div class="media-body">{{ device.login_text }}
-                <br><br>
-                {% if device.twiliosmsdevice %}
-                    <button class="btn btn-default btn-xs" type="submit" name="resend_token" value=1">{% trans 'Resend Token' %}</button>
-                {% endif %}
-            </div>
+            <div class="media-body alert alert-info">{{ device.login_text }}</div>
         </div>
         <br>
         <div class="" id="u2f-status"></div>
