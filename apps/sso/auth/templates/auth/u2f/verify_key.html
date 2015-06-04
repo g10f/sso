@@ -6,8 +6,7 @@
 
 {% block bodyclass %}dwbn-{{ display }}{% endblock %}
 
-{% block navbar %}
-{% endblock navbar %}
+{% block navbar %}{% endblock navbar %}
 
 {% block extrascript %}
     {% include 'auth/include/u2f_jscript.html' %}
@@ -30,6 +29,7 @@
             <div class="media-body alert alert-info">{{ device.login_text }}</div>
         </div>
         <br>
+
         <div class="" id="u2f-status"></div>
         {% if form.errors %}
             <div class="alert alert-danger">

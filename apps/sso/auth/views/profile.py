@@ -128,7 +128,6 @@ class AddU2FView(FormView):
         return initial
 
 
-
 @class_view_decorator(login_required)
 class AddPhoneView(FormView):
     template_name = 'auth/add_phone.html'
