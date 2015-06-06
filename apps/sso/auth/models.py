@@ -13,7 +13,7 @@ from sso.auth.oath import TOTP
 from sso.auth.utils import random_hex, hex_validator
 from django.utils import timezone
 from sso.models import AbstractBaseModel
-from utils.translation import string_format
+from sso.utils.translation import string_format
 
 logger = logging.getLogger(__name__)
 

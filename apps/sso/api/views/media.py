@@ -11,7 +11,7 @@ from sso.api.views.generic import JsonDetailView
 from sso.accounts.models import User
 from sso.api.decorators import condition
 from sso.api.views.users_v2 import read_permission
-from utils.url import base_url, absolute_url
+from sso.utils.url import base_url, absolute_url
 
 import logging
 

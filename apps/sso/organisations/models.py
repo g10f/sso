@@ -16,7 +16,7 @@ from django.utils.translation import pgettext_lazy, ugettext_lazy as _
 from l10n.models import Country
 from smart_selects.db_fields import ChainedForeignKey
 from sso.fields import URLFieldEx
-from utils.loaddata import disable_for_loaddata
+from sso.utils.loaddata import disable_for_loaddata
 from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary, get_filename
 from sso.emails.models import Email, CENTER_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, REGION_EMAIL_TYPE, COUNTRY_GROUP_EMAIL_TYPE
 from sso.decorators import memoize

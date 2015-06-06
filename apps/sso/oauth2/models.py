@@ -8,6 +8,7 @@ from django.conf import settings
 from django.http import QueryDict
 from django.utils.translation import ugettext_lazy as _
 from sso.accounts.models import Application
+from sso.auth.models import Device
 from sso.models import AbstractBaseModel
 from django.utils.crypto import get_random_string, salted_hmac
 
@@ -113,6 +114,7 @@ class AuthorizationCode(models.Model):
     """
     client = models.ForeignKey(Client, verbose_name=_('client'))
     user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'))
+    # acr = models.CharField(_(' Authentication Context Class Reference'), blank=True, max_length=254)
     code = models.CharField(_('code'), max_length=100, unique=True)
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)
     redirect_uri = models.CharField(_('redirect uri'), max_length=2047, blank=True)

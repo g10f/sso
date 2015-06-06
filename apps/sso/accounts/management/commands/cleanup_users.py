@@ -5,7 +5,7 @@ from django.conf import settings
 from django.utils.dateformat import format
 from sso.registration.models import RegistrationProfile
 
-from utils.ucsv import UnicodeReader, UnicodeWriter, dic_from_csv
+from sso.utils.ucsv import UnicodeReader, UnicodeWriter, dic_from_csv
 
 from sso.accounts.models import User, RoleProfile
 

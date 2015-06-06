@@ -5,7 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import BaseCommand
 from django.conf import settings
 from l10n.models import Country
-from utils.ucsv import UnicodeReader, list_from_csv, dic_from_csv
+from sso.utils.ucsv import UnicodeReader, list_from_csv, dic_from_csv
 from sso.emails.models import GroupEmail, Email, EmailForward, EmailAlias
 from sso.emails.models import GROUP_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, COUNTRY_GROUP_EMAIL_TYPE, REGION_EMAIL_TYPE, CENTER_EMAIL_TYPE, PERM_DWB, PERM_EVERYBODY
 from sso.organisations.models import OrganisationCountry, CountryGroup, AdminRegion, Organisation

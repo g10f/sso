@@ -28,7 +28,7 @@ from sso.accounts.forms import UserAddForm, UserProfileForm, UserEmailForm, AppA
 from sso.forms.helpers import ChangedDataList, log_change, ErrorList
 from filter import AdminRegionFilter, ApplicationRoleFilter, CenterFilter, CountryFilter, IsActiveFilter, RoleProfileFilter, UserSearchFilter
 from sso.views.main import OrderByWithNulls
-from utils.url import get_safe_redirect_uri
+from sso.utils.url import get_safe_redirect_uri
 
 
 logger = logging.getLogger(__name__)

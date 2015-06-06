@@ -23,7 +23,7 @@ from sso.emails.forms import AdminEmailForwardInlineForm, EmailForwardInlineForm
 from sso.organisations.forms import OrganisationAddressForm, OrganisationPhoneNumberForm, OrganisationCountryAdminForm, \
     OrganisationRegionAdminForm, OrganisationCenterAdminForm, OrganisationRegionAdminCreateForm, OrganisationCountryAdminCreateForm, OrganisationPictureForm
 from sso.forms.helpers import get_optional_inline_formset
-from utils.url import get_safe_redirect_uri
+from sso.utils.url import get_safe_redirect_uri
 
 logger = logging.getLogger(__name__)
 

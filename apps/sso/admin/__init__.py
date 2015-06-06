@@ -20,7 +20,8 @@ from l10n.models import Country
 from sso.accounts import models
 from sso.organisations import models as org_models
 from sso.organisations import admin as org_admin
-
+from sso.auth import models as sso_auth_models
+from sso.auth import admin as sso_auth_admin
 
 class SSOAdminSite(admin.AdminSite):
     """
@@ -97,3 +98,8 @@ sso_admin_site.register(EmailAlias, EmailAliasAdmin)
 sso_admin_site.register(EmailForward, EmailForwardAdmin)
 sso_admin_site.register(GroupEmail, GroupEmailAdmin)
 sso_admin_site.register(GroupEmailManager, GroupEmailManagerAdmin)
+
+sso_admin_site.register(sso_auth_models.Device, sso_auth_admin.DeviceAdmin)
+sso_admin_site.register(sso_auth_models.TwilioSMSDevice, sso_auth_admin.TwilioSMSDeviceAdmin)
+sso_admin_site.register(sso_auth_models.TOTPDevice, sso_auth_admin.TOTPDeviceAdmin)
+sso_admin_site.register(sso_auth_models.U2FDevice, sso_auth_admin.U2FDeviceAdmin)

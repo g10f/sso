@@ -11,7 +11,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.vary import vary_on_headers
 from django.forms.models import model_to_dict
-from utils.url import base_url, update_url
+from sso.utils.url import base_url, update_url
 from sso.api.decorators import catch_errors
 from sso.api.response import JsonHttpResponse
 

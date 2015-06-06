@@ -1,3 +1,4 @@
+from django.core.urlresolvers import reverse_lazy
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth.decorators import user_passes_test
 
@@ -15,3 +16,23 @@ def admin_login_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME,
     if function:
         return actual_decorator(function)
     return actual_decorator
+
+
+def otp_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME, login_url=None):
+    """
+    Decorator for views that checks that the user is logged in with 2FA, redirecting
+    to the log-in page if necessary.
+    """
+    if login_url is None:
+        login_url = reverse_lazy('login_otp')
+    test = lambda u: u.is_authenticated() and u.is_verified()
+    actual_decorator = user_passes_test(
+        test,
+        login_url=login_url,
+        redirect_field_name=redirect_field_name
+    )
+    if function:
+        return actual_decorator(function)
+    return actual_decorator
+
+
