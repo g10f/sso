@@ -10,7 +10,7 @@ from django.utils.text import capfirst
 
 from sso.auth.utils import totp_digits, match_token
 from sso.forms import bootstrap
-from utils.translation import string_format
+from sso.utils.translation import string_format
 
 
 class EmailAuthenticationForm(AuthenticationForm):

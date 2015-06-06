@@ -3,15 +3,11 @@ import StringIO
 from binascii import unhexlify, hexlify
 from os import urandom
 from urllib import quote, urlencode
-import urllib
-from django.core.urlresolvers import reverse_lazy
-from django.contrib.auth.decorators import user_passes_test
 
 import qrcode
 
 from django.core.exceptions import ValidationError
 from django.utils import six
-from django.utils.functional import lazy
 from django.conf import settings
 from django.shortcuts import resolve_url
 from django.utils.http import is_safe_url
@@ -42,23 +38,6 @@ def class_view_decorator(function_decorator):
         View.dispatch = method_decorator(function_decorator)(View.dispatch)
         return View
     return simple_decorator
-
-
-def otp_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME, login_url=None):
-    """
-    Decorator for views that checks that the user is logged in with 2FA, redirecting
-    to the log-in page if necessary.
-    """
-    login_url = reverse_lazy('login_otp')
-    test = lambda u: u.is_authenticated() and u.is_verified()
-    actual_decorator = user_passes_test(
-        test,
-        login_url=login_url,
-        redirect_field_name=redirect_field_name
-    )
-    if function:
-        return actual_decorator(function)
-    return actual_decorator
 
 
 def default_device(user, is_otp_enabled=True):
@@ -99,14 +78,6 @@ def get_safe_login_redirect_url(request):
         return resolve_url(settings.LOGIN_REDIRECT_URL)
     else:
         return redirect_to
-
-
-def totp_digits():
-    """
-    Returns the number of digits (as configured by the TWO_FACTOR_TOTP_DIGITS setting)
-    for totp tokens. Defaults to 6
-    """
-    return getattr(settings, 'TWO_FACTOR_TOTP_DIGITS', 6)
 
 
 def get_otpauth_url(accountname, secret, issuer=None, digits=None):

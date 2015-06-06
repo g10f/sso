@@ -35,6 +35,7 @@
         </div>
 
         <div class="" id="u2f-status"></div>
+
         {% if form.errors %}
             <div class="alert alert-danger">
                 {% for key, errors in form.errors.items %}
@@ -63,7 +64,6 @@
     </form>
     <div class="dwbn-form-signin">
         {% if other_devices %}
-
             {% trans "Alternatively, use one of your backup devices:" %}
             {% for other in other_devices %}
                 <form class="" action="{{ other.url }}" method="post">{% csrf_token %}
@@ -79,8 +79,8 @@
                         class="btn btn-default btn-block">{% trans "Use Backup Token" %}</button>
             </p>
         {% endif %}
-        {% if cancel_url %}
 
+        {% if cancel_url %}
             <div class="cancel">
                 <a class="" href="{{ cancel_url }}">{% trans 'Cancel' %}</a>
             </div>

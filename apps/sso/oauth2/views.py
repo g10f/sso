@@ -20,8 +20,8 @@ from django.contrib.auth.decorators import permission_required, login_required
 from django.shortcuts import render, get_object_or_404, resolve_url
 from oauthlib import oauth2
 from oauthlib.common import urlencode, urlencoded, quote
-from utils.url import base_url
-from utils.convert import pack_bigint
+from sso.utils.url import base_url
+from sso.utils.convert import pack_bigint
 from sso.api.response import JsonHttpResponse 
 from .crypt import key, loads_jwt, BadSignature
 from .server import server

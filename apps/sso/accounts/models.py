@@ -32,7 +32,7 @@ from sso.emails.models import GroupEmailManager
 from sso.decorators import memoize
 from sso.registration import default_username_generator
 from sso.registration.models import RegistrationProfile
-from utils.loaddata import disable_for_loaddata
+from sso.utils.loaddata import disable_for_loaddata
 from current_user.models import CurrentUserField
 
 

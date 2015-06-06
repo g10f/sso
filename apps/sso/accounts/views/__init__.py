@@ -22,7 +22,7 @@ from throttle.decorators import throttle
 from sso.auth.forms import EmailAuthenticationForm
 from sso.oauth2.models import get_oauth2_cancel_url
 from sso.forms.helpers import ErrorList, ChangedDataList, log_change
-from utils.url import get_safe_redirect_uri, update_url
+from sso.utils.url import get_safe_redirect_uri, update_url
 from sso.accounts.tokens import email_confirm_token_generator
 from sso.accounts.models import User, UserAddress, UserPhoneNumber, UserEmail, allowed_hosts
 from sso.accounts.email import send_useremail_confirmation

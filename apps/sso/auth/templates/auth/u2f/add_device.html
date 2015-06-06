@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 {% load i18n %}
 
+
 {% block title %}{% trans 'Add U2F Device' %}{% endblock %}
+
 
 {% block breadcrumb %}
     <ol class="breadcrumb">
@@ -11,7 +13,9 @@
     </ol>
 {% endblock breadcrumb %}
 
+
 {% block left_content %}{% include navigation_template with active_navigation="auth_profile" %}{% endblock left_content %}
+
 
 {% block extrascript %}
     {% include 'auth/include/u2f_jscript.html' %}

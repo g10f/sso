@@ -22,10 +22,10 @@ from sso.organisations.models import Organisation
 from sso.registration import default_username_generator
 from http.http_status import *  # @UnusedWildImport
 from sso.oauth2.decorators import client_required
-from utils.url import base_url, update_url, absolute_url
+from sso.utils.url import base_url, update_url, absolute_url
 from sso.api.decorators import api_user_passes_test, catch_errors
 from sso.api.response import JsonHttpResponse
-from utils.parse import parse_datetime_with_timezone_support
+from sso.utils.parse import parse_datetime_with_timezone_support
 
 import logging
 

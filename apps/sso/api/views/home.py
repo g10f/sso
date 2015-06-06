@@ -3,7 +3,7 @@
 from django.views.decorators.cache import cache_page
 from django.core.urlresolvers import reverse
 
-from utils.url import base_url
+from sso.utils.url import base_url
 from sso.api.response import JsonHttpResponse
 
 import logging

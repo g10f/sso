@@ -3,8 +3,8 @@ import logging
 
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-from utils.url import base_url, absolute_url
-from utils.parse import parse_datetime_with_timezone_support
+from sso.utils.url import base_url, absolute_url
+from sso.utils.parse import parse_datetime_with_timezone_support
 from sso.organisations.models import Organisation, get_near_organisations
 from sso.api.views.generic import JsonListView, JsonDetailView
 

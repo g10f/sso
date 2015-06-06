@@ -15,8 +15,8 @@ from django.utils.dateparse import parse_date
 from django.utils.translation import get_language_from_request, ugettext as _
 from django.utils.text import capfirst
 from django.db.models import Q
-from utils.url import base_url, absolute_url
-from utils.parse import parse_datetime_with_timezone_support
+from sso.utils.url import base_url, absolute_url
+from sso.utils.parse import parse_datetime_with_timezone_support
 from l10n.models import Country
 from sso.accounts.models import UserAddress, UserPhoneNumber, User, UserEmail
 from sso.accounts.email import send_account_created_email
