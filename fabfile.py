@@ -112,14 +112,15 @@ server {
 """
 
 NGINX_SSL_TEMPLATE = """\
-#ssl                       on;
-ssl_certificate           %(certroot)s/certificate.crt;
-ssl_certificate_key       %(certroot)s/certificate.key;
-ssl_dhparam               %(certroot)s/dh2048.pem;
+ssl_certificate           /proj/g10f/certs/certificate.crt;
+ssl_certificate_key       /proj/g10f/certs/certificate.key;
+ssl_dhparam               /proj/g10f/certs/dh2048.pem;
 ssl_session_cache         builtin:1000  shared:SSL:10m;
 ssl_prefer_server_ciphers on;
 add_header                Strict-Transport-Security "max-age=63072000;";
 ssl_protocols             TLSv1 TLSv1.1 TLSv1.2;
+#ssl_ciphers 'AES128+EECDH:AES128+EDH';
+ssl_ciphers 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384
 """
 
 GUNICORN_TEMPLATE = """\
