@@ -67,17 +67,15 @@
 
     {% if user.is_authenticated %}
         {% if user.organisations.exists %}
-            <a class="list-group-item {% if active_navigation == "my_organisation" %}active{% endif %}" href="{% url 'organisations:my_organisation_detail' %}">
-                <i class="glyphicon glyphicon-home"></i> {% trans 'My Organisation' %}</a>
+            <a class="list-group-item {% if active_navigation == "my_organisation" %}active{% endif %}" href="{% url 'organisations:my_organisation_detail' %}"><i class="glyphicon glyphicon-home"></i> {% trans 'My Organisation' %}</a>
         {% endif %}
-        <a class="list-group-item {% if active_navigation == "profile" %}active{% endif %}" href="{% url 'accounts:profile' %}">
-            <i class="glyphicon glyphicon-user"></i> {% trans 'My Account' %}</a>
+        <a class="list-group-item {% if active_navigation == "profile" %}active{% endif %}" href="{% url 'accounts:profile' %}"><i class="glyphicon glyphicon-user"></i> {% trans 'My Account' %}</a>
         {% if not user.is_center %}
-            <a class="list-group-item {% if active_navigation == "emails" %}active{% endif %}" href="{% url 'accounts:emails' %}">
-                <i class="glyphicon glyphicon-envelope"></i> {% trans 'My Email Addresses' %}</a>
+            <a class="list-group-item {% if active_navigation == "emails" %}active{% endif %}" href="{% url 'accounts:emails' %}"><i class="glyphicon glyphicon-envelope"></i> {% trans 'My Email Addresses' %}</a>
         {% endif %}
-        <a class="list-group-item {% if active_navigation == "password_change" %}active{% endif %}" href="{% url 'accounts:password_change' %}">
-            <i class="glyphicon glyphicon-edit"></i> {% trans 'Change my password' %}</a>
-        <a class="list-group-item {% if active_navigation == "auth_profile" %}active{% endif %}" href="{% url 'auth:profile' %}"><i class="glyphicon glyphicon-lock"></i> {% trans 'Security' %}</a>
+        <a class="list-group-item {% if active_navigation == "password_change" %}active{% endif %}" href="{% url 'accounts:password_change' %}"><i class="glyphicon glyphicon-edit"></i> {% trans 'Change my password' %}</a>
+        {% if user.is_staff and device_classes %}
+            <a class="list-group-item {% if active_navigation == "auth_profile" %}active{% endif %}" href="{% url 'auth:profile' %}"><i class="glyphicon glyphicon-lock"></i> {% trans 'Security' %}</a>
+        {% endif %}
     {% endif %}
 </nav>

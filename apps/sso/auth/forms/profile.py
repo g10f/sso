@@ -11,6 +11,11 @@ from sso.auth.models import TwilioSMSDevice, TOTPDevice, Profile, Device
 from sso.forms import bootstrap
 
 
+class AddU2FForm(forms.Form):
+    response = forms.CharField(label=_('Response'), widget=forms.HiddenInput())
+    challenge = forms.CharField(label=_('Challenge'), widget=forms.HiddenInput())
+
+
 class ProfileForm(forms.Form):
     default = forms.IntegerField(required=False)
     delete = forms.IntegerField(required=False)
@@ -71,11 +76,6 @@ class AddPhoneForm(forms.Form):
 
         sms_device.save()
         return sms_device
-
-
-class AddU2FForm(forms.Form):
-    response = forms.CharField(label=_('Response'), widget=forms.HiddenInput())
-    challenge = forms.CharField(label=_('Challenge'), widget=forms.HiddenInput())
 
 
 class PhoneSetupForm(forms.Form):

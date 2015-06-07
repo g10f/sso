@@ -1,4 +1,5 @@
 {% load i18n static %}
+{% with totpdevice=totpdevice_set.first %}
 <div class="panel panel-{% if default_device.totpdevice %}primary{% else %}default{% endif %}">
     <div class="panel-heading">{% trans 'Get codes via Token Generator App' %}</div>
     <div class="panel-body">
@@ -31,3 +32,4 @@
         {% endif %}
     </div>
 </div>
+{% endwith %}

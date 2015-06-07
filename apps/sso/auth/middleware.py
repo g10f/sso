@@ -12,6 +12,15 @@ class IsVerified(object):
     def __call__(self):
         return self.user.otp_device is not None
 
+"""
+Open ID Values:
+
+http://openid.net/specs/openid-provider-authentication-policy-extension-1_0.html
+
+http://schemas.openid.net/pape/policies/2007/06/phishing-resistant
+http://schemas.openid.net/pape/policies/2007/06/multi-factor
+http://schemas.openid.net/pape/policies/2007/06/multi-factor-physical
+"""
 
 class OTPMiddleware(object):
     """
@@ -32,7 +41,6 @@ class OTPMiddleware(object):
             return None
 
         user.otp_device = None
-        user.is_verified = IsVerified(user)
 
         if user.is_anonymous():
             return None

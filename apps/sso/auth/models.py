@@ -1,9 +1,13 @@
 from __future__ import absolute_import  # we have utils at root and relativ path
 
 from binascii import unhexlify
+import json
 import logging
 import time
+
 import requests
+from u2flib_server import u2f_v2
+
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.conf import settings
@@ -25,9 +29,8 @@ class Device(AbstractBaseModel):
     created_at = models.DateTimeField(_('created at'), default=timezone.now)
     last_used = models.DateTimeField(null=True, blank=True, help_text="Last time this device was used?")
     order = models.IntegerField(default=0, help_text=_('Overwrites the alphabetic order.'))
-    acr = models.CharField(_('Authentication Context Class Reference'), max_length=255, blank=True, help_text=_('Authentication Context Class Reference of the device.'))
 
-    DEVICES = ['totpdevice', 'twiliosmsdevice', 'u2fdevice']  # TODO remove redundance to
+    DEVICES = [cls.split('.')[-1].lower() for cls in settings.OTP_DEVICES]
 
     def __unicode__(self):
         return u"%s" % (str(self.get_child()))
@@ -39,6 +42,9 @@ class Device(AbstractBaseModel):
         for device in self.DEVICES:
             if hasattr(self, device):
                 return getattr(self, device)
+
+    def challenges(self):
+        return self.get_child().challenges
 
     @property
     def image(self):
@@ -98,6 +104,14 @@ class U2FDevice(Device):
     @classmethod
     def setup_template(cls):
         return 'auth/include/u2f_profile.html'
+
+    @property
+    def challenges(self):
+        u2f_devices = U2FDevice.objects.filter(user=self.user, confirmed=True)
+        challenges = [
+            u2f_v2.start_authenticate(d.to_json()) for d in u2f_devices
+        ]
+        return json.dumps(challenges)
 
     @property
     def image(self):
@@ -194,6 +208,10 @@ class TOTPDevice(Device):
         return 'auth/include/totp_profile.html'
 
     @property
+    def challenges(self):
+        return None
+
+    @property
     def image(self):
         return 'img/totp.png'
 
@@ -288,6 +306,10 @@ class TwilioSMSDevice(Device):
     @classmethod
     def setup_template(cls):
         return 'auth/include/phone_profile.html'
+
+    @property
+    def challenges(self):
+        return None
 
     @property
     def image(self):
