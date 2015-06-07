@@ -1,13 +1,14 @@
 import urllib
 import logging
+from django.views.decorators.cache import never_cache
+from django.views.decorators.debug import sensitive_post_parameters
+from django.utils.decorators import method_decorator
+from django.conf import settings
 
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.views.generic.edit import FormView
-# Avoid shadowing the login() and logout() views below.
-from django.contrib.auth import (
-    REDIRECT_FIELD_NAME, login as auth_login,
-    get_user_model)
+from django.contrib.auth import REDIRECT_FIELD_NAME, get_user_model
 from django.core import signing
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.utils.translation import ugettext_lazy as _
@@ -16,9 +17,10 @@ from sso.auth.forms import EmailAuthenticationForm, AuthenticationTokenForm
 from sso.auth.models import Device
 from sso.auth.utils import get_safe_login_redirect_url, get_request_param, get_device_classes
 from sso.oauth2.models import get_oauth2_cancel_url
+from sso.auth import auth_login
+from throttle.decorators import throttle
 
 SALT = 'sso.auth.views.LoginView'
-DEVICE_KEY = '_auth_device'
 
 logger = logging.getLogger(__name__)
 
@@ -38,16 +40,24 @@ class LoginView(FormView):
     success_url = reverse_lazy('home')
     is_otp = False
 
+    @method_decorator(sensitive_post_parameters())
+    @method_decorator(never_cache)
+    @method_decorator(throttle(duration=30, max_calls=12))
+    def dispatch(self, request, *args, **kwargs):
+        return super(LoginView, self).dispatch(request, *args, **kwargs)
+
     def form_valid(self, form):
         user = form.get_user()
         redirect_url = get_safe_login_redirect_url(self.request)
 
         # if 2-nd factor available, send token
         device = is_otp_login(user, self.is_otp)
+        expiry = settings.SESSION_COOKIE_AGE if form.cleaned_data.get('remember_me', False) else 0
+
         if device:
             try:
                 challenge = device.generate_challenge()
-                user_data = signing.dumps({'user_id': user.pk, 'backend': user.backend}, salt=SALT)
+                user_data = signing.dumps({'user_id': user.pk, 'backend': user.backend, 'expiry': expiry}, salt=SALT)
                 logger.debug(challenge)
                 query_string = {REDIRECT_FIELD_NAME: redirect_url}
                 display = self.request.GET.get('display')
@@ -61,7 +71,7 @@ class LoginView(FormView):
 
         else:
             self.success_url = redirect_url
-            auth_login(self.request, user)
+            auth_login(self.request, user, expiry)
 
         return super(LoginView, self).form_valid(form)
 
@@ -79,6 +89,13 @@ class TokenView(FormView):
     success_url = reverse_lazy('home')
     user = None
     device = None
+    expiry = 0
+
+    @method_decorator(sensitive_post_parameters())
+    @method_decorator(never_cache)
+    @method_decorator(throttle(duration=30, max_calls=12))
+    def dispatch(self, *args, **kwargs):
+        return super(TokenView, self).dispatch(*args, **kwargs)
 
     def get_form_class(self):
         state = signing.loads(self.kwargs['user_data'], salt=SALT)
@@ -96,6 +113,7 @@ class TokenView(FormView):
         kwargs = super(TokenView, self).get_form_kwargs()
 
         state = signing.loads(self.kwargs['user_data'], salt=SALT)
+        self.expiry = state['expiry']
         self.user = get_user_model().objects.get(pk=state['user_id'])
         self.user.backend = state['backend']
         self.device = Device.objects.get(user=self.user, pk=self.kwargs['device_id'])
@@ -135,12 +153,12 @@ class TokenView(FormView):
         context['device'] = self.device
         redirect_url = get_safe_login_redirect_url(self.request)
         context['cancel_url'] = get_oauth2_cancel_url(redirect_url)
+        context['display'] = get_request_param(self.request, 'display', 'page')
         return context
 
     def form_valid(self, form):
         redirect_url = get_safe_login_redirect_url(self.request)
-        auth_login(self.request, form.user)
-        self.request.session[DEVICE_KEY] = self.device.id  # TODO: ???
+        auth_login(self.request, form.user, self.expiry, self.device.id)
 
         self.success_url = redirect_url
         return super(TokenView, self).form_valid(form)

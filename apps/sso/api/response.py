@@ -13,13 +13,13 @@ logger = logging.getLogger(__name__)
 
 
 class JsonHttpResponse(HttpResponse):
-    def __init__(self, data=None, request=None, status=None, *args, **kwargs):
-        callback = ""
-        if request:
+    def __init__(self, data=None, request=None, status=None, allow_jsonp=False, *args, **kwargs):
+        # for security reasons, allow jsonp only for certain resources with more or less public data
+        if allow_jsonp and request:
             callback = request.GET.get('callback', "")
-        if callback:
-            status = HTTP_200_OK  # jsonp can not handle http errors
-            content = u"%s(%s)" % (callback, json.dumps(data, cls=DjangoJSONEncoder))
+            if callback:
+                status = HTTP_200_OK  # jsonp can not handle http errors
+                content = u"%s(%s)" % (callback, json.dumps(data, cls=DjangoJSONEncoder, ensure_ascii=False))
         else:
             content = json.dumps(data, cls=DjangoJSONEncoder, ensure_ascii=False)
         

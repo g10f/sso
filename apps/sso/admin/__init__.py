@@ -9,6 +9,7 @@ from django.views.decorators.cache import never_cache
 from django.utils.translation import ugettext_lazy as _
 from sso.accounts.admin import ApplicationAdmin, ApplicationAdminAdmin, ApplicationRoleAdmin, GroupAdmin, RoleAdmin, \
     OneTimeMessageAdmin, OrganisationChangeAdmin, RoleProfileAdmin, RoleProfileAdminAdmin, UserAdmin, UserEmailAdmin
+from sso.auth.utils import is_recent_auth_time
 from sso.oauth2.admin import ClientAdmin, AuthorizationCodeAdmin, BearerTokenAdmin, RefreshTokenAdmin
 from sso.oauth2.models import Client, AuthorizationCode, BearerToken, RefreshToken
 from sso.registration.admin import RegistrationAdmin
@@ -58,7 +59,7 @@ class SSOAdminSite(admin.AdminSite):
         Returns True if the given HttpRequest has permission to view
         *at least one* page in the admin site.
         """
-        return super(SSOAdminSite, self).has_permission(request) and request.user.is_recent_auth_time()
+        return super(SSOAdminSite, self).has_permission(request) and is_recent_auth_time(request)
 
 
 sso_admin_site = SSOAdminSite()

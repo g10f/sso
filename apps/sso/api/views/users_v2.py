@@ -15,6 +15,7 @@ from django.utils.dateparse import parse_date
 from django.utils.translation import get_language_from_request, ugettext as _
 from django.utils.text import capfirst
 from django.db.models import Q
+from sso.auth.utils import is_recent_auth_time
 from sso.utils.url import base_url, absolute_url
 from sso.utils.parse import parse_datetime_with_timezone_support
 from l10n.models import Country
@@ -209,23 +210,26 @@ def get_last_modified_and_etag_for_me(request, *args, **kwargs):
         return None, None
 
 
-def read_permission(request, obj):
+def read_permission(request, obj, required_scope=None):
     """
     user is the authenticated user
     permission to read the obj data
     """
     user = request.user
-    if user.is_authenticated():
-        if user.uuid == obj.uuid:
-            return True, None
+    if not user.is_authenticated():
+        return False, 'User not authenticated'
+    if required_scope and required_scope not in request.scopes:
+        return False, "%s not in scope '%s'" % (required_scope, request.scopes)
+
+    if user.uuid == obj.uuid:
+        return True, None
+    else:
+        if not user.has_perm('accounts.read_user'):
+            return False, "User has no permission '%s" % 'accounts.read_user'
+        elif not user.has_user_access(obj.uuid):
+            return False, "User has no access to object"
         else:
-            if not user.has_perm('accounts.read_user'):
-                return False, "User has no permission '%s" % 'accounts.read_user'
-            elif not user.has_user_access(obj.uuid):
-                return False, "User has no access to object"
-            else:
-                return True, None
-    return False, 'User not authenticated'
+            return True, None
 
 
 def replace_permission(request, obj):
@@ -403,6 +407,13 @@ class MyDetailView(UserDetailView):
 class GlobalNavigationView(UserDetailView):
     # TODO: result is cached for different languages
     operations = {}
+    permissions_tests = {
+        'read': read_permission,
+    }
+
+    def render_to_json_response(self, context, allow_jsonp=True, **response_kwargs):
+        # allow jsonp requests for the global navigation bar
+        return super(GlobalNavigationView, self).render_to_json_response(context, allow_jsonp=allow_jsonp, **response_kwargs)
 
     @method_decorator(cache_control(must_revalidate=True, max_age=60 * 5))
     def get(self, request, *args, **kwargs):
@@ -441,28 +452,37 @@ class MyGlobalNavigationView(GlobalNavigationView):
 
     def get_object(self, queryset=None):
         return self.request.user
-    
+
 
 class UserList(UserMixin, JsonListView):
     @classmethod
     def read_permission(cls, request, obj):
         user = request.user
+        if not user.is_authenticated():
+            return False, "Not authenticated"
         if not user.has_perm('accounts.read_user'):
             return False, "User has no permission '%s" % 'accounts.read_user'
-        elif 'users' not in request.scopes:
+        if 'users' not in request.scopes:
             return False, "users not in scope '%s'" % request.scopes
-        else:
-            return True, None
+        if not is_recent_auth_time(request):
+            return False, "session too old'"
+
+        return True, None
 
     @classmethod
     def create_permission(cls, request, obj=None):
         user = request.user
+        user = request.user
+        if not user.is_authenticated():
+            return False, "Not authenticated"
         if not user.has_perm('accounts.add_user'):
             return False, "User has no permission '%s" % 'accounts.add_user'
-        elif 'users' not in request.scopes:
+        if 'users' not in request.scopes:
             return False, "users not in scope '%s'" % request.scopes
-        else:
-            return True, None
+        if not is_recent_auth_time(request):
+            return False, "session too old'"
+
+        return True, None
     
     def get_operations(self):
         base_uri = base_url(self.request)
