@@ -6,7 +6,7 @@
             <div class="media-left media-middle"><img class="media-object" src="{% static 'img/u2f_yubikey.png' %}" alt="{{ device }}"></div>
             <div class="media-body">
                 <table class="table table-responsive">
-                    {% for device in u2fdevices %}
+                    {% for device in u2fdevice_set %}
                         <tr>
                             <td>
                                 app_id: {{ device.app_id }}

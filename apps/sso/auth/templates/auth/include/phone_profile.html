@@ -6,7 +6,7 @@
             <div class="media-left media-middle"><img class="media-object" src="{% static 'img/sms.png' %}" alt="{{ device }}"></div>
             <div class="media-body">
                 <table class="table table-responsive">
-                    {% for device in twiliosmsdevices %}
+                    {% for device in twiliosmsdevice_set %}
                         <tr>
                             <td>
                                 Telephone number: {{ device.number }}

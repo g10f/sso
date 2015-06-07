@@ -738,6 +738,12 @@ class User(AbstractBaseUser, PermissionsMixin):
             return True
         else:
             return False
+
+    @property
+    def is_verified(self):
+        if hasattr(self, 'otp_device'):
+            return self.otp_device is not None
+        return False
     
     @property
     def default_dharmashop_roles(self):

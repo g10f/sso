@@ -1,19 +1,30 @@
 import base64
 import StringIO
+import qrcode
 from binascii import unhexlify, hexlify
 from os import urandom
 from urllib import quote, urlencode
 
-import qrcode
-
-from django.core.exceptions import ValidationError
+from django.utils import lru_cache
 from django.utils import six
+from django.utils.http import is_safe_url
+from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.shortcuts import resolve_url
-from django.utils.http import is_safe_url
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.utils.decorators import method_decorator
+from django.apps import apps as django_apps
+
 from http.util import get_request_param
+
+
+@lru_cache.lru_cache()
+def get_device_classes():
+    device_classes = []
+    for device_class_path in settings.OTP_DEVICES:
+        device_class = django_apps.get_model(device_class_path)
+        device_classes.append(device_class)
+    return device_classes
 
 
 def totp_digits():
@@ -100,7 +111,6 @@ def get_otpauth_url(accountname, secret, issuer=None, digits=None):
         query['issuer'] = issuer
 
     return 'otpauth://totp/%s?%s' % (label, urlencode(query))
-
 
 
 def hex_validator(length=0):

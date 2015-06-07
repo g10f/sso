@@ -26,7 +26,6 @@ class Migration(migrations.Migration):
                 ('created_at', models.DateTimeField(default=django.utils.timezone.now, verbose_name='created at')),
                 ('last_used', models.DateTimeField(help_text=b'Last time this device was used?', null=True, blank=True)),
                 ('order', models.IntegerField(default=0, help_text='Overwrites the alphabetic order.')),
-                ('acr', models.CharField(help_text='Authentication Context Class Reference of the device.', max_length=255, verbose_name='Authentication Context Class Reference', blank=True)),
             ],
             options={
                 'ordering': ['order', 'name'],
@@ -63,6 +62,19 @@ class Migration(migrations.Migration):
                 ('number', models.CharField(help_text=b'The mobile number to deliver tokens to.', max_length=16)),
                 ('key', models.CharField(default=sso.auth.models.default_key, help_text=b'A random key used to generate tokens (hex-encoded).', max_length=40, validators=[sso.auth.models.key_validator])),
                 ('last_t', models.BigIntegerField(default=-1, help_text=b'The t value of the latest verified token. The next token must be at a higher time step.')),
+            ],
+            options={
+                'ordering': ['order', 'name'],
+            },
+            bases=('sso_auth.device',),
+        ),
+        migrations.CreateModel(
+            name='U2FDevice',
+            fields=[
+                ('device_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='sso_auth.Device')),
+                ('public_key', models.TextField()),
+                ('key_handle', models.TextField()),
+                ('app_id', models.TextField()),
             ],
             options={
                 'ordering': ['order', 'name'],

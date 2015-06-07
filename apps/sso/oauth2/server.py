@@ -30,15 +30,17 @@ def default_token_generator(request, max_age=MAX_AGE, refresh_token=False):
     if refresh_token:
         return random_token_generator(request, refresh_token=True)
     else:
+        user = request.user
         claim_set = {
             'jti': get_random_string(), 
             'iss': get_iss_from_absolute_uri(request.uri),
-            'sub': request.user.uuid.hex,  # required
+            'sub': user.uuid.hex,  # required
             'aud': request.client.client_id,  # required
             'exp': int(time.time()) + max_age,  # required
             'iat': int(time.time()),  # required
+            'acr': '1' if user.is_verified else '0',
             'scope': ' '.join(request.scopes),  # custom, required
-            # session authentication hash, 
+            # session authentication hash,
             # see django.contrib.auth.middleware.SessionAuthenticationMiddleware
             'sa_hash': request.client.get_session_auth_hash(),  # custom, required
         }
@@ -62,6 +64,7 @@ def default_idtoken_generator(request, max_age=MAX_AGE, refresh_token=False):
             'exp': int(time.time()) + max_age,
             'iat': int(time.time()),
             'auth_time': auth_time,  # required when max_age is in the request
+            'acr': '1' if user.is_verified else '0',
             'email': str(user.primary_email()),  # custom
             'name': user.username,  # custom
             'given_name': user.first_name,  # custom
@@ -131,8 +134,10 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
         self._get_client(client_id, request)
             
         state = request.state if request.state else ''
-        authorization_code = AuthorizationCode(client=request.client, code=code['code'], user=request.user, 
-                                               redirect_uri=request.redirect_uri, state=state, 
+        otp_device = getattr(request.user, 'otp_device', None)
+        authorization_code = AuthorizationCode(client=request.client, code=code['code'], user=request.user,
+                                               otp_device=otp_device,
+                                               redirect_uri=request.redirect_uri, state=state,
                                                scopes=' '.join(request.scopes))
         authorization_code.save()
 

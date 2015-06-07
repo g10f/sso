@@ -2,6 +2,7 @@ from django.conf import settings as site_settings
 from django.contrib.sites.shortcuts import get_current_site
 
 import logging
+from sso.auth.utils import get_device_classes
 
 log = logging.getLogger(__name__)
 
@@ -21,5 +22,6 @@ def settings(request):
             'less': site_settings.SSO_LESS,
             'favicon': site_settings.SSO_FAVICON,
             'sso_app_uuid': site_settings.SSO_APP_UUID,
-            'registration_open': site_settings.REGISTRATION.get('OPEN', True)
+            'registration_open': site_settings.REGISTRATION.get('OPEN', True),
+            'device_classes': get_device_classes()
             }

@@ -114,7 +114,7 @@ class AuthorizationCode(models.Model):
     """
     client = models.ForeignKey(Client, verbose_name=_('client'))
     user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'))
-    # acr = models.CharField(_(' Authentication Context Class Reference'), blank=True, max_length=254)
+    otp_device = models.ForeignKey(Device, null=True, on_delete=models.SET_NULL)
     code = models.CharField(_('code'), max_length=100, unique=True)
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)
     redirect_uri = models.CharField(_('redirect uri'), max_length=2047, blank=True)
