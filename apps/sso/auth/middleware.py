@@ -1,6 +1,6 @@
 import logging
 from .models import Device
-from sso.auth.views import DEVICE_KEY
+from sso.auth import DEVICE_KEY
 
 logger = logging.getLogger(__name__)
 

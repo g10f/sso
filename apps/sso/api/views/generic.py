@@ -11,7 +11,10 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.vary import vary_on_headers
 from django.forms.models import model_to_dict
-from sso.utils.url import base_url, update_url
+from django.conf import settings
+from sso.auth.utils import is_browser_client
+from sso.oauth2.models import allowed_hosts
+from sso.utils.url import base_url, update_url, is_safe_ext_url
 from sso.api.decorators import catch_errors
 from sso.api.response import JsonHttpResponse
 
@@ -19,13 +22,14 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
 def is_authenticated(request, obj=None):
     if not request.user.is_authenticated():
         return False, 'User not authenticated'
     else:
         return True, None
 
-    
+
 class PermissionMixin(object):
     """
     # the result is of type (boolean, string) where string contains the reason if the result is false
@@ -49,16 +53,29 @@ class PermissionMixin(object):
         'read': is_authenticated,
     }
     operations = {}
-    
+
+    def is_referer_allowed(self):
+        # check the referer if cookie based browser authentication is used
+        if 'HTTP_REFERER' in self.request.META and is_browser_client() and\
+                not is_safe_ext_url(self.request.META['HTTP_REFERER'], set(allowed_hosts())):
+            return False
+        else:
+            return True
+
     def check_permission(self, operation_name, obj=None, raise_exception=True):
         permission_check = self.permissions_tests.get(operation_name, None)
         if permission_check:
+            if not self.is_referer_allowed():
+                if raise_exception:
+                    raise PermissionDenied("Access to: %s not allowed to referer %s'" % (self.request.path, self.request.META['HTTP_REFERER']))
+                else:
+                    return False
             is_allowed, reason = permission_check(self.request, obj)
             if not is_allowed and raise_exception:
                 raise PermissionDenied("operation '%s' not allowed, user: '%s', reason '%s'" % (operation_name, self.request.user, reason))
             else:
                 return is_allowed
-        else:
+        else:  # default is no permission
             return False
        
     def get_operations(self):
@@ -77,12 +94,12 @@ class JSONResponseMixin(object):
     """
     A mixin that can be used to render a JSON response.
     """
-    def render_to_json_response(self, context, **response_kwargs):
+    def render_to_json_response(self, context, allow_jsonp=False, **response_kwargs):
         """
         Returns a JSON response
         """
         data = self.get_data(context)
-        return JsonHttpResponse(data=data, request=self.request, **response_kwargs)        
+        return JsonHttpResponse(data=data, request=self.request, allow_jsonp=allow_jsonp, **response_kwargs)
     
     def get_data(self, context):
         data = self.get_object_data(self.request, context['object'])
@@ -221,7 +238,7 @@ class JsonDetailView(JSONResponseMixin, PermissionMixin, BaseDetailView):
         custom function to transform the object into an object which can be json rendered
         """
         raise NotImplementedError
-        
+
 
 class JsonListView(JSONResponseMixin, PermissionMixin, BaseListView):
     paginate_by = 100

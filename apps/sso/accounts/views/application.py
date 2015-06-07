@@ -18,10 +18,11 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import get_object_or_404
 from django.utils.encoding import force_text
+from sso.oauth2.models import allowed_hosts
 from sso.auth.decorators import admin_login_required
 from sso.views import main
 from sso.views.generic import ListView
-from sso.accounts.models import User, UserEmail, allowed_hosts
+from sso.accounts.models import User, UserEmail
 from sso.accounts.email import send_account_created_email
 from sso.organisations.models import Organisation, is_validation_period_active
 from sso.accounts.forms import UserAddForm, UserProfileForm, UserEmailForm, AppAdminUserProfileForm

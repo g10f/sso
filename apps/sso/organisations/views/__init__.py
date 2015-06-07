@@ -13,7 +13,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.http import HttpResponseRedirect
 from django.forms.models import inlineformset_factory
 from l10n.models import Country
-from sso.accounts.models import allowed_hosts
 from sso.views import main
 from sso.emails.models import EmailForward, Email, EmailAlias
 from sso.organisations.models import AdminRegion, Organisation, OrganisationPicture
@@ -24,6 +23,7 @@ from sso.organisations.forms import OrganisationAddressForm, OrganisationPhoneNu
     OrganisationRegionAdminForm, OrganisationCenterAdminForm, OrganisationRegionAdminCreateForm, OrganisationCountryAdminCreateForm, OrganisationPictureForm
 from sso.forms.helpers import get_optional_inline_formset
 from sso.utils.url import get_safe_redirect_uri
+from sso.oauth2.models import allowed_hosts
 
 logger = logging.getLogger(__name__)
 

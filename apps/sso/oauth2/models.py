@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import urlparse
+from django.core.cache import cache
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
@@ -9,7 +10,7 @@ from django.http import QueryDict
 from django.utils.translation import ugettext_lazy as _
 from sso.accounts.models import Application
 from sso.auth.models import Device
-from sso.models import AbstractBaseModel
+from sso.models import AbstractBaseModel, AbstractBaseModelManager
 from django.utils.crypto import get_random_string, salted_hmac
 
 import logging
@@ -74,6 +75,30 @@ def get_default_secret():
     return get_random_string(30)
 
 
+class ClientManager(AbstractBaseModelManager):
+    def get_allowed_hosts(self):
+        """
+        all host from active client redirect_uris and default_redirect_uri are allowed
+        """
+        allowed_hosts = cache.get('allowed_hosts', set())
+        if not allowed_hosts:
+            allowed_hosts.add(urlparse.urlparse(settings.SSO_BASE_URL)[1])
+            for client in self.filter(is_active=True):
+                redirect_uris = client.redirect_uris.split() + [client.default_redirect_uri]
+                for redirect_uri in redirect_uris:
+                    if redirect_uri:
+                        netloc = urlparse.urlparse(redirect_uri)[1]
+                        if netloc:
+                            allowed_hosts.add(netloc)
+            cache.set('allowed_hosts', set(allowed_hosts))
+
+        return allowed_hosts
+
+
+def allowed_hosts():
+    return Client.objects.get_allowed_hosts()
+
+
 class Client(AbstractBaseModel):
     name = models.CharField(_("name"), max_length=255)
     application = models.ForeignKey(Application, verbose_name=_('application'), blank=True, null=True)
@@ -84,11 +109,12 @@ class Client(AbstractBaseModel):
                              help_text=_("Associated user, required for Client Credentials Grant"))
     type = models.CharField(_('type'), max_length=255, choices=CLIENT_TYPES, default='web')
     # http://tools.ietf.org/html/rfc6749#section-3.3
-    scopes = models.CharField(_('scopes'), max_length=512, default='openid profile email', 
+    scopes = models.CharField(_('scopes'), max_length=512, blank=True, default='openid profile email',
                               help_text=_("Allowed space-delimited access token scopes ('openid', 'profile', 'email', 'role', 'offline_access', 'address', 'phone', 'users', 'picture')"))
     is_active = models.BooleanField(_('active'), default=True, 
                                     help_text=_('Designates whether this client should be treated as active. Unselect this instead of deleting clients.'))
     notes = models.TextField(_("Notes"), blank=True, max_length=2048)
+    objects = ClientManager()
 
     class Meta(AbstractBaseModel.Meta):
         ordering = ['name']

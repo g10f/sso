@@ -6,7 +6,7 @@ from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth import login as auth_login, REDIRECT_FIELD_NAME, logout as auth_logout
+from django.contrib.auth import REDIRECT_FIELD_NAME, logout as auth_logout
 from django.contrib import messages
 from django.http import HttpResponseRedirect
 from django.template.response import TemplateResponse
@@ -19,12 +19,13 @@ from django.utils.translation import ugettext as _
 from django.forms.models import inlineformset_factory
 from http.util import get_request_param
 from throttle.decorators import throttle
+from sso.auth import auth_login
 from sso.auth.forms import EmailAuthenticationForm
-from sso.oauth2.models import get_oauth2_cancel_url
+from sso.oauth2.models import allowed_hosts, get_oauth2_cancel_url
 from sso.forms.helpers import ErrorList, ChangedDataList, log_change
 from sso.utils.url import get_safe_redirect_uri, update_url
 from sso.accounts.tokens import email_confirm_token_generator
-from sso.accounts.models import User, UserAddress, UserPhoneNumber, UserEmail, allowed_hosts
+from sso.accounts.models import User, UserAddress, UserPhoneNumber, UserEmail
 from sso.accounts.email import send_useremail_confirmation
 from sso.accounts.forms import PasswordResetForm, SetPasswordForm, PasswordChangeForm, ContactForm, AddressForm, PhoneNumberForm, \
     SelfUserEmailForm, SetPictureAndPasswordForm
@@ -114,14 +115,12 @@ def logout(request, next_page=None,
         # Redirect to this page until the session has been cleared.
         return HttpResponseRedirect(next_page or request.path)
 
-
+"""
 @sensitive_post_parameters()
 @never_cache
 @throttle(duration=30, max_calls=12)
 def login(request, template_name='accounts/login.html'):
-    """
-    Displays the login form for the given HttpRequest.
-    """
+    # Displays the login form for the given HttpRequest.
     def get_safe_login_redirect_url(request, redirect_to):
         # Ensure the user-originating redirection url is safe.
         if not is_safe_url(url=redirect_to, host=request.get_host()):
@@ -140,11 +139,8 @@ def login(request, template_name='accounts/login.html'):
             redirect_to = get_safe_login_redirect_url(request, redirect_to)
             # Okay, security checks complete. Log the user in.
             user = form.get_user()
-            auth_login(request, user)
-            if form.cleaned_data.get('remember_me', False):
-                request.session.set_expiry(settings.SESSION_COOKIE_AGE)
-            else:
-                request.session.set_expiry(0)  # expire at browser close
+            expiry = settings.SESSION_COOKIE_AGE if form.cleaned_data.get('remember_me', False) else 0
+            auth_login(request, user, expiry)
 
             return HttpResponseRedirect(redirect_to)
 
@@ -155,6 +151,7 @@ def login(request, template_name='accounts/login.html'):
         'cancel_url': cancel_url,
     }
     return TemplateResponse(request, template_name, context)
+"""
 
 
 @login_required

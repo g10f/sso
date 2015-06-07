@@ -1,9 +1,13 @@
 import base64
 import StringIO
-import qrcode
+import time
 from binascii import unhexlify, hexlify
 from os import urandom
 from urllib import quote, urlencode
+from uuid import UUID
+import logging
+
+import qrcode
 
 from django.utils import lru_cache
 from django.utils import six
@@ -14,8 +18,34 @@ from django.shortcuts import resolve_url
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.utils.decorators import method_decorator
 from django.apps import apps as django_apps
-
 from http.util import get_request_param
+from sso.auth import SESSION_AUTH_DATE
+
+logger = logging.getLogger(__name__)
+
+
+def is_browser_client(request):
+    return request.client and request.client.uuid == settings.SSO_BROWSER_CLIENT_ID
+
+
+def is_recent_auth_time(request, max_age=None):
+    """
+    check if the cookie is recent
+    if max_age is None and settings.SSO_ADMIN_MAX_AGE also
+    then there is no checking
+    """
+    if is_browser_client(request):
+        # user must be authenticated
+        if not request.user.is_authenticated():
+            return False
+        session_auth_date = request.session[SESSION_AUTH_DATE]
+        if max_age is None:
+            max_age = settings.SSO_ADMIN_MAX_AGE
+        if max_age is None:
+            return True
+        now = long(time.time())
+        return session_auth_date + max_age >= now
+    return True
 
 
 @lru_cache.lru_cache()

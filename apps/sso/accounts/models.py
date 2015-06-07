@@ -51,21 +51,6 @@ class ApplicationManager(models.Manager):
     def get_by_natural_key(self, uuid):
         return self.get(uuid=uuid)
 
-    def get_allowed_hosts(self):
-        allowed_hosts = cache.get('allowed_hosts', [])
-        if not allowed_hosts:
-            for app in self.all():
-                netloc = urlparse(app.url)[1]
-                if netloc:
-                    allowed_hosts.append(netloc)
-            cache.set('allowed_hosts', allowed_hosts)
-
-        return allowed_hosts
-
-
-def allowed_hosts():
-    return Application.objects.get_allowed_hosts()
-
 
 class Application(models.Model):
     order = models.IntegerField(default=0, help_text=_('Overwrites the alphabetic order.'))
@@ -632,14 +617,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def is_admin(self):
         return self.is_user_admin or self.is_app_admin
-
-    def is_recent_auth_time(self, max_age=None):
-        if max_age is None:
-            max_age = settings.SSO_ADMIN_MAX_AGE
-        if max_age is None:
-            return True
-        else:
-            return (now() - self.last_login) < timedelta(seconds=max_age)
 
     @property
     def is_global_user_admin(self):

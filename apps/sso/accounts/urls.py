@@ -2,7 +2,7 @@ from django.conf.urls import url
 from django.views.generic import TemplateView
 from .views import application
 from .views import onetimemessage
-from .views import password_change, password_change_done, login, logout, profile, contact, delete_profile
+from .views import password_change, password_change_done, logout, profile, contact, delete_profile
 from .views import password_reset, password_reset_confirm, password_reset_done, password_reset_complete
 from .views import emails, confirm_email, password_create_confirm, password_create_complete
 from .views import organisation
@@ -15,7 +15,6 @@ urlpatterns = [
     url(r'^(?P<uuid>[a-z0-9]{32})/app_roles/', application.update_user_app_roles, name="update_user_app_roles"),
     url(r'^(?P<uuid>[a-z0-9]{32})/delete/$', application.UserDeleteView.as_view(), name="delete_user"),
     url(r'^me/$', profile, name='profile'),
-    # url(r'^login/$', login, name='login'),
     url(r'^logout/$', logout, name='logout'),
     url(r'^contact/$', contact, name='contact'),
     url(r'^contact_thanks/$', TemplateView.as_view(template_name="accounts/contact_thanks.html"), name='contact_thanks'),
