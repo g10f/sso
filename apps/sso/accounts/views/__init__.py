@@ -1,5 +1,5 @@
 from django.contrib.auth.tokens import default_token_generator
-from django.utils.http import urlsafe_base64_decode, is_safe_url
+from django.utils.http import urlsafe_base64_decode
 from django.conf import settings
 from django.shortcuts import render, redirect, resolve_url
 from django.views.decorators.debug import sensitive_post_parameters
@@ -17,11 +17,7 @@ from django.core.mail import mail_managers
 from django.utils.html import strip_tags
 from django.utils.translation import ugettext as _
 from django.forms.models import inlineformset_factory
-from http.util import get_request_param
-from throttle.decorators import throttle
-from sso.auth import auth_login
-from sso.auth.forms import EmailAuthenticationForm
-from sso.oauth2.models import allowed_hosts, get_oauth2_cancel_url
+from sso.oauth2.models import allowed_hosts
 from sso.forms.helpers import ErrorList, ChangedDataList, log_change
 from sso.utils.url import get_safe_redirect_uri, update_url
 from sso.accounts.tokens import email_confirm_token_generator

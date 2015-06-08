@@ -34,16 +34,13 @@ def is_recent_auth_time(request, max_age=None):
     if max_age is None and settings.SSO_ADMIN_MAX_AGE also
     then there is no checking
     """
-    if is_browser_client(request):
-        # user must be authenticated
-        if not request.user.is_authenticated():
-            return False
-        session_auth_date = request.session[SESSION_AUTH_DATE]
-        if max_age is None:
-            max_age = settings.SSO_ADMIN_MAX_AGE
+    if SESSION_AUTH_DATE in request.session:
+        max_age = max_age if max_age else settings.SSO_ADMIN_MAX_AGE
         if max_age is None:
             return True
+
         now = long(time.time())
+        session_auth_date = request.session[SESSION_AUTH_DATE]
         return session_auth_date + max_age >= now
     return True
 
