@@ -39,7 +39,6 @@
 
 	<ul class="nav nav-tabs dwbn-nav-tabs">
 	   <li class="active"><a href="#user" data-toggle="tab">{% trans 'User data' %}</a></li>
-       {#<li><a href="#role_profiles" data-toggle="tab">{{ form.role_profiles.label }}</a></li>#}
 	   <li><a href="#app_roles" data-toggle="tab">{{ form.application_roles.label }}</a></li>
        <li><a href="#notes" data-toggle="tab">{{ form.notes.label }}</a></li>
 	</ul>
@@ -50,18 +49,13 @@
 	       <div>
              {% include 'include/_field.html' with field=form.first_name %}
              {% include 'include/_field.html' with field=form.last_name %}
+             {% include 'include/_field.html' with field=form.gender %}
+             {% include 'include/_field.html' with field=form.dob %}
              {% include 'include/_field.html' with field=form.organisation %}
              {% include 'include/_email_field.html' with field=form.email %}
              {% include 'accounts/includes/_profiles_field.html' with field=form.role_profiles %}
           </div>
        </div>
-       {% comment %} 
-       <div class="tab-pane" id="role_profiles">
-           <div>
-             {% include 'accounts/includes/_profiles_field.html' with field=form.role_profiles %}
-          </div>
-       </div>
-       {% endcomment %}
 	   <div class="tab-pane" id="app_roles">
 	       <div>
              {% with field=form.application_roles %}

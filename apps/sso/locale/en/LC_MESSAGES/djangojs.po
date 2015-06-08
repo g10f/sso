@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-05-03 15:47+0200\n"
+"POT-Creation-Date: 2015-06-08 22:40+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,17 +17,15 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: sso/static/js/gis/OLMapWidget-1.0.2.js:54
+#: static/js/gis/OLMapWidget-1.0.2.js:54
 msgid "More than one location found"
 msgstr ""
 
-#: sso/static/js/gis/OLMapWidget-1.0.2.js:57
-#: sso/static/js/gis/OLMapWidget-1.0.3.js:54
+#: static/js/gis/OLMapWidget-1.0.2.js:57 static/js/gis/OLMapWidget-1.0.3.js:54
 msgid "No location found"
 msgstr ""
 
-#: sso/static/js/gis/OLMapWidget-1.0.2.js:64
-#: sso/static/js/gis/OLMapWidget-1.0.3.js:61
+#: static/js/gis/OLMapWidget-1.0.2.js:64 static/js/gis/OLMapWidget-1.0.3.js:61
 msgid ""
 "The map was updated with the new coordinates. Press the 'Save' button for "
 "saving the new coordinates."
