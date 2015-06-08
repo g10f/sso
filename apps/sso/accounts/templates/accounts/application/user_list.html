@@ -6,64 +6,72 @@
 {% block nav_accounts_user_list_class %}active{% endblock %}
 
 {% block breadcrumb %}
-<ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li class="active">{% trans 'User List' %}</li>
-</ol> 
+    <ol class="breadcrumb">
+        <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+        <li class="active">{% trans 'User List' %}</li>
+    </ol>
 {% endblock breadcrumb %}
-    
+
 {% block navbar %}{% include global_navigation_template with active_navigation="users" %}{% endblock navbar %}
 
 {% block content %}
-<div class="row">
-	<div class="col-sm-12">
-	    {% if messages %}{% for message in messages %}
-	       <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
-	    {% endif %}
-	</div>
-</div><!-- /.row -->
+    <div class="row">
+        <div class="col-sm-12">
+            {% if messages %}{% for message in messages %}
+                <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
+            {% endif %}
+        </div>
+    </div><!-- /.row -->
 
-<div class="row dwbn-filter-row">
-	<div class="col-sm-3">
-	   {% include 'include/_search_form.html' %}
+    <div class="row dwbn-filter-row">
+        <div class="col-sm-3">
+            {% include 'include/_search_form.html' %}
+        </div>
+        <div class="col-sm-9">
+            {% for filter in filters %}{% if filter %}
+                {% include filter.template_name with filter=filter %}
+            {% endif %}{% endfor %}
+        </div>
+        <!-- /.col-sm-9 -->
     </div>
-	<div class="col-sm-9">
-        {% for filter in filters %}{% if filter %} 
-        {% include filter.template_name with filter=filter %}
-        {% endif %}{% endfor %}
-    </div><!-- /.col-sm-9 -->
-</div>
 
-<main>
-    <div class="col-sm-12 table-responsive">
-	   <table class="table table-bordered table-striped">
-	       {% include "include/table_header.html" %}
-	       <tbody>
-	           {% for user_obj in object_list %}
-	           <tr> 
-	               <td>
-	               {% if perms.accounts.change_user %}
-	               <a class="" href="{% url 'accounts:update_user' user_obj.uuid.hex %}{{ cl.get_query_string }}">{{ user_obj.username }}</a>
-                   {% elif user.is_app_admin %}
-	               <a class="" href="{% url 'accounts:update_user_app_roles' user_obj.uuid.hex %}{{ cl.get_query_string }}">{{ user_obj.username }}</a>
-	               {% else %}{{ user_obj.username }}{% endif %}
-	               </td>
-	               <td>
-	               {% if user_obj.picture %}<a href="{{ user_obj.picture.url }}">{% thumbnail user_obj.picture "30x30" crop="center" as im %}<img class="dwbn-icon-user" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="">{% endthumbnail %}</a>{% endif %}
-	               </td>
-	               <td>{{ user_obj.first_name }}</td>
-	               <td>{{ user_obj.last_name }}</td>
-	               <td>{{ user_obj.primary_email|default_if_none:"" }}</td>
-	               <td>{{ user_obj.last_login|date:"Y-m-d H:i" }}</td>
-	               <td>{{ user_obj.date_joined|date:"Y-m-d H:i" }}</td>
-               {% if sso_validation_period_is_active %}
-	               <td>{{ user_obj.valid_until|date:"Y-m-d H:i" }}</td>
-               {% endif %}
-	           </tr>
-	           {% endfor %}
-	       </tbody>
-	   </table>
-	   {% if is_paginated %}{% pagination page_obj cl %}{% endif %}
-    </div>
-</main>
+    <main>
+        <div class="col-sm-12 table-responsive">
+            <table class="table table-bordered table-striped">
+                {% include "include/table_header.html" %}
+                <tbody>
+                {% for user_obj in object_list %}
+                    <tr>
+                        <td>
+                            {% if perms.accounts.change_user %}
+                                <a class="" href="{% url 'accounts:update_user' user_obj.uuid.hex %}{{ cl.get_query_string }}">{{ user_obj.username }}</a>
+                            {% elif user.is_app_admin %}
+                                <a class="" href="{% url 'accounts:update_user_app_roles' user_obj.uuid.hex %}{{ cl.get_query_string }}">{{ user_obj.username }}</a>
+                            {% else %}{{ user_obj.username }}{% endif %}
+                        </td>
+                        <td>
+                            {% if user_obj.picture %}<a href="{{ user_obj.picture.url }}">{% thumbnail user_obj.picture "30x30" crop="center" as im %}
+                                <img class="dwbn-icon-user" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="">{% endthumbnail %}</a>{% endif %}
+                        </td>
+                        <td>{{ user_obj.first_name }}</td>
+                        <td>{{ user_obj.last_name }}</td>
+                        <td>
+                            {% with primary_email=user_obj.primary_email %}
+                                {% if primary_email %}
+                                    <a href="mailto:{{ primary_email }}">{{ primary_email }}</a>
+                                {% endif %}
+                            {% endwith %}
+                        </td>
+                        <td>{{ user_obj.last_login|date:"Y-m-d H:i" }}</td>
+                        <td>{{ user_obj.date_joined|date:"Y-m-d H:i" }}</td>
+                        {% if sso_validation_period_is_active %}
+                            <td>{{ user_obj.valid_until|date:"Y-m-d H:i" }}</td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% if is_paginated %}{% pagination page_obj cl %}{% endif %}
+        </div>
+    </main>
 {% endblock content %}
