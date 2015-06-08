@@ -46,6 +46,11 @@ class LoginView(FormView):
     def dispatch(self, request, *args, **kwargs):
         return super(LoginView, self).dispatch(request, *args, **kwargs)
 
+    def get_initial(self):
+        initial = super(LoginView, self).get_initial()
+        initial['remember_me'] = not self.request.session.get_expire_at_browser_close()
+        return initial
+
     def form_valid(self, form):
         user = form.get_user()
         redirect_url = get_safe_login_redirect_url(self.request)
