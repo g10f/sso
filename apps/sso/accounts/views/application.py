@@ -185,8 +185,14 @@ def add_user(request, template='accounts/application/add_user_form.html'):
                 success_url = urlunsplit(('', '', reverse('accounts:add_user_done', args=[user.uuid.hex]), request.GET.urlencode(safe='/'), ''))
             return HttpResponseRedirect(success_url)
     else:
+        initial = {}
         default_role_profile = User.get_default_role_profile()
-        form = UserAddForm(request.user, initial={'role_profiles': [default_role_profile]})
+        if default_role_profile:
+            initial['role_profiles'] = [default_role_profile.id]
+        organisations = request.user.get_administrable_user_organisations()
+        if len(organisations) == 1:
+            initial['organisation'] = organisations[0]
+        form = UserAddForm(request.user, initial=initial)
 
     data = {'form': form, 'redirect_uri': redirect_uri, 'title': _('Add user')}
     return render(request, template, data)

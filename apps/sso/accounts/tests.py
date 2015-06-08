@@ -265,6 +265,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         new_first_name = 'Test'
         new_last_name = 'User'
         new_email = 'mail@g10f.de'
+        new_gender = 'm'
 
         first_name = self.selenium.find_element_by_name("first_name")
         first_name.send_keys(new_first_name)
@@ -274,6 +275,9 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         
         email = self.selenium.find_element_by_name("email")
         email.send_keys(new_email)
+
+        gender = self.selenium.find_element_by_name("gender")
+        gender.send_keys(new_gender)
 
         organisation = Select(self.selenium.find_element_by_name("organisation"))
         

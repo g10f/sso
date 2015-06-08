@@ -5,7 +5,7 @@ from fabric.api import *
 import fabtools
 
 env.use_ssh_config = True
-env.apps = ['sso']
+env.apps = ['sso', 'brands/dwbn']
 
 configurations = {
     'dev': {'host_string': 'sso.dwbn.org', 'server_name': 'sso-dev.dwbn.org', 'app': 'sso', 'virtualenv': 'sso-dev', 'db_name': 'sso_dev', 'branch': '2f'},
@@ -143,15 +143,17 @@ def compileless(version='1.0.15'):
 
 @task
 def compilemessages():
-    with lcd('apps'):
-        local('~/envs/sso/bin/python manage.py compilemessages')
+    for app in env.apps:
+        with lcd('apps/%s' % app):
+            local('~/envs/sso/bin/django-admin.py compilemessages')
 
 
 @task
 def makemessages():
-    with lcd('apps'):
-        local('~/envs/sso/bin/python manage.py makemessages -a')
-        local('~/envs/sso/bin/python manage.py makemessages -d djangojs -a')
+    for app in env.apps:
+        with lcd('apps/%s' % app):
+            local('~/envs/sso/bin/django-admin.py makemessages -a')
+            local('~/envs/sso/bin/django-admin.py makemessages -d djangojs -a')
 
 
 @task
