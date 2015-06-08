@@ -74,8 +74,14 @@
             <a class="list-group-item {% if active_navigation == "emails" %}active{% endif %}" href="{% url 'accounts:emails' %}"><i class="glyphicon glyphicon-envelope"></i> {% trans 'My Email Addresses' %}</a>
         {% endif %}
         <a class="list-group-item {% if active_navigation == "password_change" %}active{% endif %}" href="{% url 'accounts:password_change' %}"><i class="glyphicon glyphicon-edit"></i> {% trans 'Change my password' %}</a>
-        {% if user.is_staff and device_classes %}
-            <a class="list-group-item {% if active_navigation == "auth_profile" %}active{% endif %}" href="{% url 'auth:profile' %}"><i class="glyphicon glyphicon-lock"></i> {% trans 'Security' %}</a>
+        {% if device_classes %}
+            {% if brand == 'DWBN' %}
+                {% if user.is_staff %}
+                    <a class="list-group-item {% if active_navigation == "auth_profile" %}active{% endif %}" href="{% url 'auth:profile' %}"><i class="glyphicon glyphicon-lock"></i> {% trans 'Security' %}</a>
+                {% endif %}
+            {% else %}
+                <a class="list-group-item {% if active_navigation == "auth_profile" %}active{% endif %}" href="{% url 'auth:profile' %}"><i class="glyphicon glyphicon-lock"></i> {% trans 'Security' %}</a>
+            {% endif %}
         {% endif %}
     {% endif %}
 </nav>
