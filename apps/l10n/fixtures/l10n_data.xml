@@ -973,7 +973,7 @@
     <object pk="98" model="l10n.country">
         <field type="CharField" name="iso2_code">HK</field>
         <field type="CharField" name="name">HONG KONG</field>
-        <field type="CharField" name="printable_name">Hong Kong Special Administrative Region of China</field>
+        <field type="CharField" name="printable_name">Hong Kong</field>
         <field type="CharField" name="iso3_code">HKG</field>
         <field type="PositiveSmallIntegerField" name="numcode">344</field>
         <field type="BooleanField" name="active">1</field>
@@ -1293,7 +1293,7 @@
     <object pk="130" model="l10n.country">
         <field type="CharField" name="iso2_code">MK</field>
         <field type="CharField" name="name">MACEDONIA, THE FORMER YUGOSLAV REPUBLIC OF</field>
-        <field type="CharField" name="printable_name">The former Yugoslav Republic of Macedonia</field>
+        <field type="CharField" name="printable_name">Macedonia</field>
         <field type="CharField" name="iso3_code">MKD</field>
         <field type="PositiveSmallIntegerField" name="numcode">807</field>
         <field type="BooleanField" name="active">1</field>
@@ -1813,7 +1813,7 @@
     <object pk="182" model="l10n.country">
         <field type="CharField" name="iso2_code">RU</field>
         <field type="CharField" name="name">RUSSIAN FEDERATION</field>
-        <field type="CharField" name="printable_name">Russian Federation</field>
+        <field type="CharField" name="printable_name">Russia</field>
         <field type="CharField" name="iso3_code">RUS</field>
         <field type="PositiveSmallIntegerField" name="numcode">643</field>
         <field type="BooleanField" name="active">1</field>
@@ -2293,7 +2293,7 @@
     <object pk="230" model="l10n.country">
         <field type="CharField" name="iso2_code">GB</field>
         <field type="CharField" name="name">UNITED KINGDOM</field>
-        <field type="CharField" name="printable_name">United Kingdom of Great Britain and Northern Ireland</field>
+        <field type="CharField" name="printable_name">United Kingdom</field>
         <field type="CharField" name="iso3_code">GBR</field>
         <field type="PositiveSmallIntegerField" name="numcode">826</field>
         <field type="BooleanField" name="active">1</field>
@@ -2303,7 +2303,7 @@
     <object pk="231" model="l10n.country">
         <field type="CharField" name="iso2_code">US</field>
         <field type="CharField" name="name">UNITED STATES</field>
-        <field type="CharField" name="printable_name">United States of America</field>
+        <field type="CharField" name="printable_name">United States</field>
         <field type="CharField" name="iso3_code">USA</field>
         <field type="PositiveSmallIntegerField" name="numcode">840</field>
         <field type="BooleanField" name="active">1</field>
@@ -2353,7 +2353,7 @@
     <object pk="236" model="l10n.country">
         <field type="CharField" name="iso2_code">VE</field>
         <field type="CharField" name="name">VENEZUELA</field>
-        <field type="CharField" name="printable_name">Venezuela (Bolivarian Republic of)</field>
+        <field type="CharField" name="printable_name">Venezuela</field>
         <field type="CharField" name="iso3_code">VEN</field>
         <field type="PositiveSmallIntegerField" name="numcode">862</field>
         <field type="BooleanField" name="active">1</field>
