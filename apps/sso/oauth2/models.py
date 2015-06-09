@@ -45,8 +45,9 @@ def get_oauth2_cancel_url(redirect_to):
             if check_redirect_uri(client, redirect_uri):
                 redirect_uri = replace_query_param(redirect_uri, 'error', 'access_denied')
                 return redirect_uri
-        except ObjectDoesNotExist:
-            pass
+        except (ObjectDoesNotExist, ValueError):
+            logger.exception('Invalid client_id %s', query_dict['client_id'])
+
     return reverse('home')
 
 """

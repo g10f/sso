@@ -2,14 +2,17 @@
 import urlparse
 import json
 import base64
-from time import sleep
+from time import sleep, time
+from django.conf import settings
 
 from django.http import QueryDict, SimpleCookie
 from django.test import TestCase
 from django.test.client import Client
 from django.core.urlresolvers import reverse
+from sso.auth import SESSION_AUTH_DATE
 
-def get_query_dict(url):        
+
+def get_query_dict(url):
     scheme, netloc, path, query_string, fragment = urlparse.urlsplit(url)  # @UnusedVariable
     query_dict = QueryDict(query_string).copy()
     return query_dict
@@ -157,7 +160,7 @@ class OAuth2Tests(OAuth2BaseTestCase):
     def test_login_and_get_code_max_age_failure(self):
         self.client.login(username='GunnarScherf', password='gsf')
         max_age = 2
-        sleep(max_age)
+        sleep(max_age + 1)
         authorize_data = {
             'scope': "openid profile email",
             'state': self._state,
