@@ -10,6 +10,8 @@ from django.shortcuts import resolve_url
 from django.utils.decorators import available_attrs
 from django.utils.six.moves.urllib.parse import urlparse
 from sso.auth.utils import is_recent_auth_time
+from sso.auth.views import TWO_FACTOR_PARAM
+from sso.utils.url import update_url
 
 
 def request_passes_test(test_func, login_url=None, redirect_field_name=REDIRECT_FIELD_NAME):
@@ -59,7 +61,7 @@ def otp_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME, login_u
     to the log-in page if necessary.
     """
     if login_url is None:
-        login_url = reverse_lazy('login_otp')
+        login_url = update_url(reverse_lazy('login'), {TWO_FACTOR_PARAM: '1'})
     test = lambda u: u.is_authenticated() and u.is_verified()
     actual_decorator = user_passes_test(
         test,

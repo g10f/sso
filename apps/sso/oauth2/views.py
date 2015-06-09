@@ -2,13 +2,13 @@
 import json
 import base64
 import hashlib
-from http.util import get_request_param
+import logging
 
+from http.util import get_request_param
 from django.views.decorators.cache import never_cache, cache_page, cache_control
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.generic import TemplateView
-from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_str
@@ -20,14 +20,14 @@ from django.contrib.auth.decorators import permission_required, login_required
 from django.shortcuts import render, get_object_or_404, resolve_url
 from oauthlib import oauth2
 from oauthlib.common import urlencode, urlencoded, quote
+from sso.auth.utils import is_recent_auth_time
+from sso.auth.views import TWO_FACTOR_PARAM
 from sso.utils.url import base_url
 from sso.utils.convert import pack_bigint
-from sso.api.response import JsonHttpResponse 
+from sso.api.response import JsonHttpResponse
 from .crypt import key, loads_jwt, BadSignature
 from .server import server
 from .models import Client
-
-import logging
 
 try:
     from urllib.parse import urlparse, urlunparse, urlsplit, urlunsplit
@@ -146,7 +146,7 @@ class LoginRequiredError(oauth2.OAuth2Error):
     description = 'The End User is currently not already authenticated.'
 
 
-def redirect_to_login(request, redirect_field_name=REDIRECT_FIELD_NAME):  # @ReservedAssignment
+def redirect_to_login(request, redirect_field_name=REDIRECT_FIELD_NAME, two_factor=False):  # @ReservedAssignment
     """
     Redirects the user to the login page, passing the given 'next' page
     if there is a display parameter in the url we extract this parameter from the next url
@@ -157,13 +157,16 @@ def redirect_to_login(request, redirect_field_name=REDIRECT_FIELD_NAME):  # @Res
     redirect_url, display = pop_query_param(full_path, 'display')
 
     login_url_parts = list(urlparse(resolved_login_url))
+
+    querystring = QueryDict(login_url_parts[4], mutable=True)
     if redirect_field_name:
-        querystring = QueryDict(login_url_parts[4], mutable=True)
         querystring[redirect_field_name] = redirect_url
         if display:
             querystring['display'] = display
-            
-        login_url_parts[4] = querystring.urlencode(safe='/')
+    if two_factor:
+        querystring[TWO_FACTOR_PARAM] = '1'
+
+    login_url_parts[4] = querystring.urlencode(safe='/')
 
     return HttpResponseRedirect(urlunparse(login_url_parts))
 
@@ -173,6 +176,43 @@ def get_session_state(client_id, browser_state):
     if browser_state is None:
         browser_state = ""
     return hashlib.sha256((client_id + " " + browser_state + " " + salt).encode('utf-8')).hexdigest() + "." + salt
+
+
+class TwoFactorRequiredError(oauth2.OAuth2Error):
+    error = 'two_factor_required'
+    description = 'The End User has no "two factor" device.'
+
+
+def get_acr_claim(request):
+    claims = json.loads(get_request_param(request, 'claims', '{}'))
+    try:
+        return claims['id_token']['acr']['values']
+    except KeyError:
+        return None
+
+
+def is_login_required(request, client_state):
+    two_factor = True if get_acr_claim(request) else False
+
+    user = request.user
+    if not user.is_authenticated():
+        return True, two_factor
+
+    prompt = get_request_param(request, 'prompt', '').split()
+    if 'login' in prompt:
+        return True, two_factor
+
+    max_age = get_request_param(request, 'max_age')
+    if not is_recent_auth_time(request, max_age):
+        return True, two_factor
+
+    user_has_device = user.device_set.filter(confirmed=True).exists()
+    if two_factor and not user_has_device:
+        raise TwoFactorRequiredError(state=client_state)
+    if two_factor and not user.is_verified:
+        return True, two_factor
+
+    return False, two_factor
 
 
 @never_cache
@@ -188,16 +228,12 @@ def authorize(request):
         credentials['client'] = credentials['request'].client
         redirect_uri = credentials.get('redirect_uri')
         prompt = get_request_param(request, 'prompt', '').split()
-        
+
         # check if the user must login
-        is_login_required = True
-        if request.user.is_authenticated() and ('login' not in prompt):
-            max_age = get_request_param(request, 'max_age')
-            if not max_age or (int(max_age) > (timezone.now() - request.user.last_login).total_seconds()):
-                is_login_required = False
-        
+        login_req, two_factor = is_login_required(request, credentials.get('state'))
+
         if 'none' in prompt:
-            if is_login_required:
+            if login_req:
                 raise LoginRequiredError(state=credentials.get('state'))
             else:
                 id_token = get_request_param(request, 'id_token_hint', '')
@@ -209,8 +245,8 @@ def authorize(request):
                     logger.exception(e)
                     raise LoginRequiredError(state=credentials.get('state'))
 
-        if is_login_required: 
-            return redirect_to_login(request)
+        if login_req:
+            return redirect_to_login(request, two_factor=two_factor)
             
         # if we are here, the user is already logged in does not need to login again          
         headers, body, status = server.create_authorization_response(uri, http_method, body, headers, scopes, credentials)  # @UnusedVariable
