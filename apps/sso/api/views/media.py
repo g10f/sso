@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 def get_last_modified_and_etag(request, uuid):
     obj = User.objects.get(uuid=uuid)
     last_modified = obj.last_modified
-    etag = "%s/%s" % (uuid.hex, obj.last_modified)
+    etag = "%s/%s" % (uuid, obj.last_modified)
     return last_modified, etag       
 
 
