@@ -266,3 +266,6 @@ msgstr "Buddhist Center & Retreat"
 msgctxt "Organisation Type"
 msgid "Group & Retreat"
 msgstr "Buddhist Group & Retreat"
+
+msgid "Log in with your %(brand)s account"
+msgstr "Log in with your Diamond Way account"

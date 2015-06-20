@@ -85,6 +85,8 @@ def logout(request, next_page=None,
            current_app=None, extra_context=None):
     """
     Logs out the user and displays 'You are logged out' message.
+    TODO: replace next with post_logout_redirect_uri
+    see http://openid.net/specs/openid-connect-session-1_0.html#RPLogout
     """
     auth_logout(request)
     redirect_to = get_safe_redirect_uri(request, allowed_hosts())
