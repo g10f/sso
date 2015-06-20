@@ -274,3 +274,6 @@ msgstr "Buddhistisches Zentrum & Retreatstelle"
 msgctxt "Organisation Type"
 msgid "Group & Retreat"
 msgstr "Buddhistische Gruppe & Retreatstelle"
+
+msgid "Log in with your %(brand)s account"
+msgstr "Mit Deinem Diamantweg-Konto anmelden"
