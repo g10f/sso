@@ -277,3 +277,6 @@ msgstr "Buddhistische Gruppe & Retreatstelle"
 
 msgid "Log in with your %(brand)s account"
 msgstr "Mit Deinem Diamantweg-Konto anmelden"
+
+msgid "Welcome, at the %(brand)s Single Sign-On home page."
+msgstr "Willkommen auf der Diamantweg Single Sign-On Startseite"
