@@ -781,7 +781,7 @@ class OrganisationChange(AbstractBaseModel):
         verbose_name_plural = _('organisation change')
 
     def get_absolute_url(self):
-        return reverse('accounts:organisationchange_update', kwargs={'pk': self.pk})
+        return reverse('accounts:organisationchange_detail', kwargs={'pk': self.pk})
 
 
 class OneTimeMessage(AbstractBaseModel):
