@@ -4,7 +4,6 @@ import time
 from binascii import unhexlify, hexlify
 from os import urandom
 from urllib import quote, urlencode
-from uuid import UUID
 import logging
 
 import qrcode
@@ -41,7 +40,7 @@ def is_recent_auth_time(request, max_age=None):
 
         now = long(time.time())
         session_auth_date = request.session[SESSION_AUTH_DATE]
-        return session_auth_date + max_age >= now
+        return session_auth_date + int(max_age) >= now
     return True
 
 
