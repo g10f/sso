@@ -46,7 +46,7 @@ class OrganisationBaseView(object):
 
     def get_context_data(self, **kwargs):
         """
-        Insert the return_url into the context dict.
+        Insert the redirect_uri into the context dict.
         """
         context = {}
         redirect_uri = get_safe_redirect_uri(self.request, allowed_hosts())

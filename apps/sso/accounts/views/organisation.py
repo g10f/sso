@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 import logging
+from urlparse import urlunsplit
 
 from django.contrib import messages
-from django.contrib.auth.models import Permission
 from django.shortcuts import get_object_or_404
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required, permission_required
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.http import HttpResponseRedirect
-from django.views.generic import CreateView, DetailView, FormView
+from django.views.generic import DetailView, FormView
 from django.utils.decorators import method_decorator
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.views.generic.detail import SingleObjectTemplateResponseMixin
@@ -16,38 +16,14 @@ from django.views.generic.edit import ProcessFormView, ModelFormMixin
 from sso.accounts.forms import OrganisationChangeForm, OrganisationChangeAcceptForm
 from sso.accounts.models import OrganisationChange, ApplicationRole
 from sso.accounts.views.filter import OrganisationChangeCountryFilter, OrganisationChangeAdminRegionFilter
+from sso.auth.decorators import admin_login_required
+from sso.oauth2.models import allowed_hosts
 from sso.organisations.models import is_validation_period_active
+from sso.utils.url import get_safe_redirect_uri
 from sso.views import main
 from sso.views.generic import ListView, SearchFilter
 
-
 logger = logging.getLogger(__name__)
-
-
-class OrganisationChangeCreateView(CreateView):
-    model = OrganisationChange
-    template_name_suffix = '_create_form'
-    form_class = OrganisationChangeForm
-    
-    def get_success_url(self):
-        if is_validation_period_active(self.object.organisation):
-            return reverse('accounts:organisationchange_detail', args=[self.object.pk])
-        else:
-            return reverse('accounts:profile')
-
-    def get_initial(self):
-        initial = super(OrganisationChangeCreateView, self).get_initial()
-        initial['user'] = self.request.user
-        return initial
-
-    @method_decorator(login_required)
-    def dispatch(self, request, *args, **kwargs):
-        return super(OrganisationChangeCreateView, self).dispatch(request, *args, **kwargs)
-
-    def form_valid(self, form):
-        form.instance.user = self.request.user
-        return super(OrganisationChangeCreateView, self).form_valid(form)
-
 
 class OrganisationChangeDetailView(DetailView):
     model = OrganisationChange
@@ -59,12 +35,29 @@ class OrganisationChangeDetailView(DetailView):
             raise PermissionDenied
         return super(OrganisationChangeDetailView, self).dispatch(request, *args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        """
+        Insert the redirect_uri into the context dict.
+        """
+        context = {}
+        redirect_uri = get_safe_redirect_uri(self.request, allowed_hosts())
+        if redirect_uri:
+            context['redirect_uri'] = redirect_uri
+
+        update_url = urlunsplit(('', '', reverse('accounts:organisationchange_me'), self.request.GET.urlencode(safe='/'), ''))
+        context['update_url'] = update_url
+
+        context.update(kwargs)
+        return super(OrganisationChangeDetailView, self).get_context_data(**context)
+
+
 
 class OrganisationChangeUpdateView(SingleObjectTemplateResponseMixin, ModelFormMixin, ProcessFormView):
     """
-    like BaseUpdateView, but we do self.object = self.get_object() already in the dispatch method
-    and check if the OrganisationChange is owned by the user.
-    In the post, delete and get method, therefor  self.object is already initialized
+    like BaseUpdateView, but
+    - self.object is initialized from the current user (self.request.user.organisationchange) so that add new and update is handled
+    - redirect_uri is saved
+    - form user is initialized with current user is
     """
     model = OrganisationChange
     form_class = OrganisationChangeForm
@@ -77,35 +70,60 @@ class OrganisationChangeUpdateView(SingleObjectTemplateResponseMixin, ModelFormM
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        if self.object.user != self.request.user:
-            raise PermissionDenied
         return super(OrganisationChangeUpdateView, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        """
+        Insert the redirect_uri into the context dict.
+        """
+        context = {}
+        redirect_uri = get_safe_redirect_uri(self.request, allowed_hosts())
+        if redirect_uri:
+            context['redirect_uri'] = redirect_uri
+
+        context.update(kwargs)
+        return super(OrganisationChangeUpdateView, self).get_context_data(**context)
 
     def delete(self, request, *args, **kwargs):
         success_url = self.get_success_url()
         self.object.delete()
         return HttpResponseRedirect(success_url)
 
+    def get_object(self, queryset=None):
+        try:
+            return self.request.user.organisationchange
+        except ObjectDoesNotExist:
+            return None
+
     def get(self, request, *args, **kwargs):
+        self.object = self.object = self.get_object()
         return super(OrganisationChangeUpdateView, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
+        self.object = self.object = self.get_object()
         if '_delete' in self.request.POST:
             return self.delete(request, *args, **kwargs)
         else:
             return super(OrganisationChangeUpdateView, self).post(request, *args, **kwargs)
 
     def get_success_url(self):
+        success_url = ''
         if '_continue' in self.request.POST:
-            return super(OrganisationChangeUpdateView, self).get_success_url()
+            success_url = self.request.path
         elif '_delete' in self.request.POST:
-            return reverse('accounts:profile')
+            success_url = reverse('accounts:profile')
         else:
             if is_validation_period_active(self.object.organisation):
-                return reverse('accounts:organisationchange_detail', args=[self.object.pk])
+                success_url = reverse('accounts:organisationchange_detail', args=[self.object.pk])
             else:
-                return reverse('accounts:profile')
+                success_url = reverse('accounts:profile')
+
+        # save exiting get parameters (i.e. redirect_uri)
+        return urlunsplit(('', '', success_url, self.request.GET.urlencode(safe='/'), ''))
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super(OrganisationChangeUpdateView, self).form_valid(form)
 
 
 class OrganisationChangeAcceptView(FormView):
@@ -113,6 +131,8 @@ class OrganisationChangeAcceptView(FormView):
     success_url = reverse_lazy('accounts:organisationchange_list')
     template_name = 'accounts/organisationchange_accept.html'
 
+    @method_decorator(admin_login_required)
+    @method_decorator(permission_required('accounts.change_user'))
     def dispatch(self, request, *args, **kwargs):
         self.organisationchange = get_object_or_404(OrganisationChange, pk=self.kwargs['pk'])
         return super(OrganisationChangeAcceptView, self).dispatch(request, *args, **kwargs)
@@ -169,7 +189,7 @@ class OrganisationChangeList(ListView):
     def list_display(self):
         return ['user', FromOrganisationHeader(), ToOrganisationHeader(), 'reason', _('primary email'), 'last_modified']
 
-    @method_decorator(login_required)
+    @method_decorator(admin_login_required)
     @method_decorator(permission_required('accounts.change_user'))
     def dispatch(self, request, *args, **kwargs):
         return super(OrganisationChangeList, self).dispatch(request, *args, **kwargs)

@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from urlparse import urlunsplit
+import logging
+
 from django.contrib import messages
 from django.utils.encoding import force_text
 from django.views import generic
@@ -7,11 +9,9 @@ from django.contrib.staticfiles.templatetags.staticfiles import static
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.db.models import Q
-
 from sso.views import main
 from sso.forms.helpers import ErrorList
 
-import logging
 logger = logging.getLogger(__name__)
 
 

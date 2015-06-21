@@ -31,7 +31,7 @@ def is_browser_client(request):
 def is_recent_auth_time(request, max_age=None):
     """
     check if the cookie is recent
-    if max_age is None and settings.SSO_ADMIN_MAX_AGE also
+    if max_age is None and settings.SSO_ADMIN_MAX_AGE is also None
     then there is no checking
     """
     if SESSION_AUTH_DATE in request.session:
