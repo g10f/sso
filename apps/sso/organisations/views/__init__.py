@@ -436,7 +436,7 @@ def organisation_list_csv(request, type):
     else:
         response = HttpResponse(content_type='text;charset=utf-8;')
 
-    writer = csv.writer(response)
+    writer = csv.writer(response, quoting=csv.QUOTE_MINIMAL)
     for organisation in Organisation.objects.filter(is_active=True).prefetch_related('country', 'email', 'organisationphonenumber_set', 'organisationaddress_set', 'organisationaddress_set__country'):
         primary_address = organisation.primary_address
         row = [organisation.name, organisation.homepage, str(organisation.email), str(organisation.country), str(organisation.primary_phone)]
