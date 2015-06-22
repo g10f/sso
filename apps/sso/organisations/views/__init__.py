@@ -439,8 +439,12 @@ def organisation_list_csv(request, type):
     writer = csv.writer(response)
     for organisation in Organisation.objects.filter(is_active=True).prefetch_related('country', 'email', 'organisationphonenumber_set', 'organisationaddress_set', 'organisationaddress_set__country'):
         primary_address = organisation.primary_address
-        writer.writerow([organisation.name, organisation.homepage, str(organisation.email), str(organisation.country), str(organisation.primary_phone),
-                         primary_address.addressee, primary_address.street_address, primary_address.city, primary_address.postal_code,
-                         str(primary_address.country)])
+        row = [organisation.name, organisation.homepage, str(organisation.email), str(organisation.country), str(organisation.primary_phone)]
+        if primary_address:
+            row += [primary_address.addressee, primary_address.street_address, primary_address.city, primary_address.postal_code, str(primary_address.country)]
+        else:
+            row += ['', '', '', '', '']
+
+        writer.writerow(row)
 
     return response
