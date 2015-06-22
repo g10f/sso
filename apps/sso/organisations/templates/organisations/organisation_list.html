@@ -33,7 +33,7 @@
        {% include filter.template_name with filter=filter %}
        {% endif %}{% endfor %}
        <button type="button" class="btn btn-default geo-location {% if cl.params.latlng %}active{% endif %}" data-href="{% query_string cl 'latlng' '' %}"><span class="glyphicon glyphicon-globe"></span> {% trans 'Distance' %}</button>
-        <a class="btn btn-default pull-right" href="{% url 'organisations:organisation_list_csv' type='csv' %}" role="button"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
+        <a class="btn btn-default pull-right" href="{% url 'organisations:organisation_list_csv' type='csv' %}" role="button" title="{% trans 'Download' %}"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
     </div><!-- /.col-sm-9 -->
 </div>
 
