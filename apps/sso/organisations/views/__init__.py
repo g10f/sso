@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
+import csv
 import logging
 from urlparse import urlunsplit
+from django.http.response import HttpResponse
 from django.contrib import messages
 from django.utils.encoding import force_text
 
@@ -13,6 +15,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.http import HttpResponseRedirect
 from django.forms.models import inlineformset_factory
 from l10n.models import Country
+from sso.utils.ucsv import UnicodeWriter
 from sso.views import main
 from sso.emails.models import EmailForward, Email, EmailAlias
 from sso.organisations.models import AdminRegion, Organisation, OrganisationPicture
@@ -422,3 +425,22 @@ class OrganisationList(ListView):
         }
         context.update(kwargs)
         return super(OrganisationList, self).get_context_data(**context)
+
+
+@login_required
+def organisation_list_csv(request, type):
+    # Create the HttpResponse object with the appropriate CSV header.
+    if type == 'csv':
+        response = HttpResponse(content_type='text/csv;charset=utf-8;')
+        response['Content-Disposition'] = 'attachment; filename="organisations.csv"'
+    else:
+        response = HttpResponse(content_type='text;charset=utf-8;')
+
+    writer = csv.writer(response)
+    for organisation in Organisation.objects.filter(is_active=True).prefetch_related('country', 'email', 'organisationphonenumber_set', 'organisationaddress_set', 'organisationaddress_set__country'):
+        primary_address = organisation.primary_address
+        writer.writerow([organisation.name, organisation.homepage, str(organisation.email), str(organisation.country), str(organisation.primary_phone),
+                         primary_address.addressee, primary_address.street_address, primary_address.city, primary_address.postal_code,
+                         str(primary_address.country)])
+
+    return response

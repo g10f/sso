@@ -314,20 +314,22 @@ class Organisation(AbstractBaseModel):
             return ''
     homepage_link.allow_tags = True
     homepage_link.short_description = _('homepage')
-        
-    def phone_number(self, phone_type=None):
-        """Return the default phone number or None."""
-        try:
-            if phone_type is None:
-                return self.phonenumber_set.get(primary=True)
-            else:
-                return self.phonenumber_set.filter(phone_type=phone_type)[0]
-        except ObjectDoesNotExist:
-            pass
-        except IndexError:
-            pass            
+
+    @classmethod
+    def get_primary_or_none(cls, queryset):
+        # iterate through all uses the prefetch_related cache
+        for item in queryset:
+            if item.primary:
+                return item
         return None
-    primary_phone = property(phone_number)       
+
+    @property
+    def primary_address(self):
+        return self.get_primary_or_none(self.organisationaddress_set.all())
+
+    @property
+    def primary_phone(self):
+        return self.get_primary_or_none(self.organisationphonenumber_set.all())
 
 
 def generate_filename(instance, filename):
