@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta
+import json
+from u2flib_server import u2f_v2
+from django.utils import timezone
 from django.utils.timezone import now
 
 from django.conf import settings
@@ -65,11 +68,33 @@ class EmailAuthenticationForm(AuthenticationForm):
 
 class U2FForm(forms.Form):
     response = forms.CharField(label=_('Response'), widget=forms.HiddenInput())
+    challenges = forms.CharField(label=_('Challenges'), widget=forms.HiddenInput())
 
     def __init__(self, device=None, **kwargs):
         self.user = kwargs.pop('user')
         self.device = device
         super(U2FForm, self).__init__(**kwargs)
+
+    def clean(self):
+        try:
+            from sso.auth.models import U2FDevice
+            response = json.loads(self.cleaned_data.get('response'))
+            challenges = json.loads(self.cleaned_data.get('challenges'))
+            # find the right challenge, the based on the key the user inserted
+            challenge = [c for c in challenges if c['keyHandle'] == response['keyHandle']][0]
+            device = U2FDevice.objects.get(user=self.user, key_handle=response['keyHandle'])
+            login_counter, touch_asserted = u2f_v2.verify_authenticate(
+                device.to_json(),
+                challenge,
+                response,
+            )
+            # TODO: store login_counter and verify it's increasing
+            device.last_used = timezone.now()
+            device.save(update_fields=["last_used"])
+        except Exception as e:
+            raise forms.ValidationError(str(e))
+
+        return self.cleaned_data
 
 
 class AuthenticationTokenForm(forms.Form):

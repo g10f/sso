@@ -328,7 +328,7 @@ def deploy(conf='dev'):
 
     with cd(code_dir):
         branch = configuration.get('branch', 'master')
-        fabtools.require.git.working_copy('git@bitbucket.org:dwbn/sso.git', path='src', branch=branch)
+        fabtools.require.git.working_copy('git@bitbucket.org:g10f/sso.git', path='src', branch=branch)
         sudo("chown www-data:www-data -R  ./src")
         sudo("chmod g+w -R  ./src")
     

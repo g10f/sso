@@ -75,8 +75,7 @@
         {% if backup_tokens %}
             <p>{% trans "As a last resort, you can use a backup token:" %}</p>
             <p>
-                <button name="wizard_goto_step" type="submit" value="backup"
-                        class="btn btn-default btn-block">{% trans "Use Backup Token" %}</button>
+                <button name="wizard_goto_step" type="submit" value="backup" class="btn btn-default btn-block">{% trans "Use Backup Token" %}</button>
             </p>
         {% endif %}
 
@@ -94,7 +93,7 @@
             var form = document.getElementById('u2f-form');
             form.response.value = JSON.stringify(resp);
             if (!handleU2FError(resp)) {
-                form.submit();
+                //form.submit();
             }
         })
     </script>
