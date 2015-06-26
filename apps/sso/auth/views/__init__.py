@@ -123,6 +123,7 @@ class TokenView(FormView):
     user = None
     device = None
     expiry = 0
+    challenges = None
 
     @method_decorator(sensitive_post_parameters())
     @method_decorator(never_cache)
@@ -136,7 +137,6 @@ class TokenView(FormView):
         self.user = get_user_model().objects.get(pk=state['user_id'])
         self.user.backend = state['backend']
         self.device = Device.objects.get(user=self.user, pk=self.kwargs['device_id'])
-        self.challenges = self.device.challenges()
         return self.device.login_form_class
 
     def get_template_names(self):
@@ -177,7 +177,6 @@ class TokenView(FormView):
                 }
                 other_devices.append(device_info)
 
-        context['challenges'] = self.challenges
         context['other_devices'] = other_devices
         context['device'] = self.device
         redirect_url = get_safe_login_redirect_url(self.request)
@@ -187,8 +186,11 @@ class TokenView(FormView):
 
     def get_initial(self):
         initial = super(TokenView, self).get_initial()
-        if self.device.challenges is not None:
-            initial.update({'challenges': self.challenges})
+        if self.request.method == 'GET':
+            initial.update({'challenges': self.device.challenges()})
+        else:
+            initial.update({'challenges': self.request.POST['challenges']})
+
         return initial
 
     def form_valid(self, form):
