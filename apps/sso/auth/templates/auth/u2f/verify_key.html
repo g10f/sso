@@ -88,7 +88,7 @@
     </div>
 
     <script>
-        var challenges = {{ challenges|safe }};
+        var challenges = {{ form.initial.challenges|safe }};
         u2f.sign(challenges, function (resp) {
             var form = document.getElementById('u2f-form');
             form.response.value = JSON.stringify(resp);
