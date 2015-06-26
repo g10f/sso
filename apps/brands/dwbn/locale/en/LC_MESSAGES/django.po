@@ -267,8 +267,9 @@ msgctxt "Organisation Type"
 msgid "Group & Retreat"
 msgstr "Buddhist Group & Retreat"
 
-msgid "Log in with your %(brand)s account"
-msgstr "Log in with your Diamond Way account"
+# brand
+#msgid "Log in with your %(brand)s account"
+#msgstr "Log in with your Diamond Way account"
 
-msgid "Welcome, at the %(brand)s Single Sign-On home page."
-msgstr "Welcome, at the Diamond Way Single Sign-On home page."
+#msgid "Welcome, at the %(brand)s Single Sign-On home page."
+#msgstr "Welcome, at the Diamond Way Single Sign-On home page."

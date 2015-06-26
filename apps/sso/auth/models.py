@@ -4,6 +4,8 @@ from binascii import unhexlify
 import json
 import logging
 import time
+from django.contrib.auth import user_logged_in
+from django.dispatch import receiver
 
 import requests
 from u2flib_server import u2f_v2
@@ -12,14 +14,25 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
-from sso.auth.forms import AuthenticationTokenForm, U2FForm
-from sso.auth.oath import TOTP
-from sso.auth.utils import random_hex, hex_validator
 from django.utils import timezone
 from sso.models import AbstractBaseModel
 from sso.utils.translation import string_format
+from sso.auth.oath import TOTP
+from sso.auth.utils import random_hex, hex_validator
+from sso.auth import SESSION_AUTH_DATE, DEVICE_KEY
+from sso.auth.forms import AuthenticationTokenForm, U2FForm
 
 logger = logging.getLogger(__name__)
+
+
+@receiver(user_logged_in)
+def add_auth_info_to_session(request, user, **kwargs):
+    expiry = getattr(user, '_auth_session_expiry', 0)
+    device_id = getattr(user, '_auth_device_id', None)
+    request.session.set_expiry(expiry)
+    request.session[SESSION_AUTH_DATE] = long(time.time())
+    if device_id:
+        request.session[DEVICE_KEY] = device_id
 
 
 class Device(AbstractBaseModel):
@@ -44,7 +57,7 @@ class Device(AbstractBaseModel):
                 return getattr(self, device)
 
     def challenges(self):
-        return self.get_child().challenges
+        return self.get_child().challenges()
 
     @property
     def image(self):
@@ -99,13 +112,12 @@ class U2FDevice(Device):
         ordering = ['order', 'name']
 
     def __unicode__(self):
-        return u"%s:%s" % (self.__class__.__name__, self.user)
+        return u"%s:%s" % (self.__class__.__name__, self.user_id)
 
     @classmethod
     def setup_template(cls):
         return 'auth/include/u2f_profile.html'
 
-    @property
     def challenges(self):
         u2f_devices = U2FDevice.objects.filter(user=self.user, confirmed=True)
         challenges = [
@@ -201,13 +213,12 @@ class TOTPDevice(Device):
         ordering = ['order', 'name']
 
     def __unicode__(self):
-        return u"%s:%s" % (self.__class__.__name__, self.user)
+        return u"%s:%s" % (self.__class__.__name__, self.user_id)
 
     @classmethod
     def setup_template(cls):
         return 'auth/include/totp_profile.html'
 
-    @property
     def challenges(self):
         return None
 
@@ -301,13 +312,12 @@ class TwilioSMSDevice(Device):
         ordering = ['order', 'name']
 
     def __unicode__(self):
-        return u"%s:%s:%s" % (self.__class__.__name__, self.user, self.number)
+        return u"%s:%s:%s" % (self.__class__.__name__, self.user_id, self.number)
 
     @classmethod
     def setup_template(cls):
         return 'auth/include/phone_profile.html'
 
-    @property
     def challenges(self):
         return None
 

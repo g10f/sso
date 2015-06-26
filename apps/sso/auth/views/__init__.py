@@ -1,10 +1,10 @@
 import urllib
 import logging
+
 from django.views.decorators.cache import never_cache
 from django.views.decorators.debug import sensitive_post_parameters
 from django.utils.decorators import method_decorator
 from django.conf import settings
-
 from django.shortcuts import redirect
 from django.contrib import messages
 from django.views.generic.edit import FormView
@@ -12,12 +12,11 @@ from django.contrib.auth import REDIRECT_FIELD_NAME, get_user_model, BACKEND_SES
 from django.core import signing
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.utils.translation import ugettext_lazy as _
-
 from sso.auth.forms import EmailAuthenticationForm, AuthenticationTokenForm
 from sso.auth.models import Device
 from sso.auth.utils import get_safe_login_redirect_url, get_request_param, get_device_classes
 from sso.oauth2.models import get_oauth2_cancel_url
-from sso.auth import auth_login
+from django.contrib.auth import login as auth_login
 from throttle.decorators import throttle
 
 SALT = 'sso.auth.views.LoginView'
@@ -103,7 +102,9 @@ class LoginView(FormView):
 
         else:
             self.success_url = redirect_url
-            auth_login(self.request, user, expiry)
+            user._auth_session_expiry = expiry
+
+            auth_login(self.request, user)
 
         return super(LoginView, self).form_valid(form)
 
@@ -131,8 +132,11 @@ class TokenView(FormView):
 
     def get_form_class(self):
         state = signing.loads(self.kwargs['user_data'], salt=SALT)
+        self.expiry = state['expiry']
         self.user = get_user_model().objects.get(pk=state['user_id'])
+        self.user.backend = state['backend']
         self.device = Device.objects.get(user=self.user, pk=self.kwargs['device_id'])
+        self.challenges = self.device.challenges()
         return self.device.login_form_class
 
     def get_template_names(self):
@@ -143,13 +147,6 @@ class TokenView(FormView):
 
     def get_form_kwargs(self):
         kwargs = super(TokenView, self).get_form_kwargs()
-
-        state = signing.loads(self.kwargs['user_data'], salt=SALT)
-        self.expiry = state['expiry']
-        self.user = get_user_model().objects.get(pk=state['user_id'])
-        self.user.backend = state['backend']
-        self.device = Device.objects.get(user=self.user, pk=self.kwargs['device_id'])
-
         kwargs['user'] = self.user
         kwargs['device'] = self.device
         return kwargs
@@ -180,7 +177,7 @@ class TokenView(FormView):
                 }
                 other_devices.append(device_info)
 
-        context['challenges'] = self.device.challenges
+        context['challenges'] = self.challenges
         context['other_devices'] = other_devices
         context['device'] = self.device
         redirect_url = get_safe_login_redirect_url(self.request)
@@ -188,9 +185,17 @@ class TokenView(FormView):
         context['display'] = get_request_param(self.request, 'display', 'page')
         return context
 
+    def get_initial(self):
+        initial = super(TokenView, self).get_initial()
+        if self.device.challenges is not None:
+            initial.update({'challenges': self.challenges})
+        return initial
+
     def form_valid(self, form):
         redirect_url = get_safe_login_redirect_url(self.request)
-        auth_login(self.request, form.user, self.expiry, self.device.id)
-
+        user = form.user
+        user._auth_device_id = self.device.id
+        user._auth_session_expiry = self.expiry
+        auth_login(self.request, form.user)
         self.success_url = redirect_url
         return super(TokenView, self).form_valid(form)

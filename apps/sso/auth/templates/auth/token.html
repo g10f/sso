@@ -2,13 +2,13 @@
 {% load i18n static %}
 
 {% block extrastyle %}
-{% if brand == "DWBN" %}
-<style type="text/css">
-body {
-	padding-top: 0;
-}
-</style>
-{% endif %}
+    {% if brand == "DWBN" %}
+        <style type="text/css">
+            body {
+                padding-top: 0;
+            }
+        </style>
+    {% endif %}
 {% endblock extrastyle %}
 
 {% block title %}{% trans 'Log in' %}{% endblock %}
@@ -16,9 +16,13 @@ body {
 {% block bodyclass %}dwbn-{{ display }}{% endblock %}
 
 {% block navbar %}
-{% if brand == "DWBN" %}
-<div id="dwbn-logo-header"><div class=" container"><div id="dwbn-diamondway-logo">&nbsp;</div></div></div>
-{% endif %}
+    {% if brand == "DWBN" %}
+        <div id="dwbn-logo-header">
+            <div class=" container">
+                <div id="dwbn-diamondway-logo">&nbsp;</div>
+            </div>
+        </div>
+    {% endif %}
 {% endblock navbar %}
 
 
@@ -75,8 +79,7 @@ body {
         {% if backup_tokens %}
             <p>{% trans "As a last resort, you can use a backup token:" %}</p>
             <p>
-                <button name="wizard_goto_step" type="submit" value="backup"
-                        class="btn btn-default btn-block">{% trans "Use Backup Token" %}</button>
+                <button name="wizard_goto_step" type="submit" value="backup" class="btn btn-default btn-block">{% trans "Use Backup Token" %}</button>
             </p>
         {% endif %}
         {% if cancel_url %}
