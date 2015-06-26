@@ -88,7 +88,7 @@ class U2FForm(forms.Form):
                 challenge,
                 response,
             )
-            # TODO: store login_counter and verify it's increasing
+            # TODO: store login_counter and verify it's increasing 
             device.last_used = timezone.now()
             device.save(update_fields=["last_used"])
         except Exception as e:
