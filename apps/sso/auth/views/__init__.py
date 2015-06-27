@@ -189,7 +189,7 @@ class TokenView(FormView):
         if self.request.method == 'GET':
             initial.update({'challenges': self.device.challenges()})
         else:
-            initial.update({'challenges': self.request.POST['challenges']})
+            initial.update({'challenges': self.request.POST.get('challenges')})
 
         return initial
 
