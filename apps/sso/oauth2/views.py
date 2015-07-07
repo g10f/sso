@@ -203,7 +203,7 @@ def is_login_required(request, client_state):
         return True, two_factor
 
     max_age = get_request_param(request, 'max_age')
-    if not is_recent_auth_time(request, max_age):
+    if max_age and not is_recent_auth_time(request, max_age):
         return True, two_factor
 
     user_has_device = user.device_set.filter(confirmed=True).exists()
