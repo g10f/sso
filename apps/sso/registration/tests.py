@@ -16,11 +16,11 @@ class RegistrationTest(TestCase):
                 'test_user_data.json']
 
     def setUp(self):
-        os.environ['RECAPTCHA_TESTING'] = 'True'
+        os.environ['NORECAPTCHA_TESTING'] = 'True'
         self.client = Client()
     
     def tearDown(self):
-        del os.environ['RECAPTCHA_TESTING']
+        del os.environ['NORECAPTCHA_TESTING']
     
     def get_url_path_from_mail(self):
         outbox = getattr(mail, 'outbox')
@@ -52,7 +52,7 @@ class RegistrationTest(TestCase):
             'known_person2_last_name': 'known_person2_last_name',
             'country': 81,
             'city': 'Megacity',
-            'recaptcha_response_field': 'xyz'
+            'g-recaptcha-response': 'xyz'
         }
         response = self.client.post(reverse('registration:registration_register'), data=data)
         self.assertFormError(response, 'form', 'captcha', ['Incorrect, please try again.'])
@@ -78,7 +78,7 @@ class RegistrationTest(TestCase):
             'country': 81,
             'city': 'Megacity',
             'organisation': organisation.pk,
-            'recaptcha_response_field': 'PASSED'
+            'g-recaptcha-response': 'PASSED'
 
         }
         response = self.client.post(reverse('registration:registration_register'), data=data)
@@ -86,7 +86,7 @@ class RegistrationTest(TestCase):
 
         # captcha is only displayed once.
         # the second time a signed value is used
-        del data['recaptcha_response_field']
+        del data['g-recaptcha-response']
         data['state'] = response.context['form'].data['state']
 
         data[response.context['stage_field']] = "2"
