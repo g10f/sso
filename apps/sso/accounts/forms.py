@@ -5,7 +5,7 @@ import datetime
 from mimetypes import guess_extension
 import logging
 
-from captcha.fields import ReCaptchaField
+from nocaptcha_recaptcha.fields import NoReCaptchaField
 import pytz
 
 from django.utils.timezone import now
@@ -550,9 +550,9 @@ class UserSelfRegistrationForm2(UserSelfRegistrationForm):
         super(UserSelfRegistrationForm2, self).__init__(data, *args, **kwargs)
         
         if self.is_captcha_needed():
-            self.fields['captcha'] = ReCaptchaField(label=_('Prove you are human'),
-                                                    help_text=_('Please enter the words you see in the box, in order and separated by a space. Doing so helps prevent automated programs from abusing this service.'), 
-                                                    error_messages={'captcha_invalid': _('Incorrect, please try again.')}, attrs={'theme': 'clean'})
+            self.fields['captcha'] = NoReCaptchaField()
+            #                help_text=_('Please enter the words you see in the box, in order and separated by a space. Doing so helps prevent automated programs from abusing this service.'),
+            #                error_messages={'captcha_invalid': _('Incorrect, please try again.')}, attrs={'theme': 'clean'})
 
     def is_captcha_needed(self):
         max_age = 300

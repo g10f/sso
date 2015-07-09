@@ -171,7 +171,7 @@ INSTALLED_APPS = (
     'django.contrib.gis',
     'formtools',
     'sorl.thumbnail',
-    'captcha',
+    'nocaptcha_recaptcha',
     'passwords',
     'l10n',
     'smart_selects',
@@ -219,9 +219,9 @@ REGISTRATION = {
     'TOKEN_EXPIRATION_DAYS': 7,
     'ACTIVATION_EXPIRATION_DAYS': 60,
 }
-RECAPTCHA_PUBLIC_KEY = '6LccjewSAAAAAPcFZmUtuzRVkU6hhOona0orqgKh'
-RECAPTCHA_PRIVATE_KEY = '6LccjewSAAAAAAhJzHuEyVV40AYApL6CpmjqlmX8'
-RECAPTCHA_USE_SSL = True
+
+NORECAPTCHA_SITE_KEY = '6LccjewSAAAAAPcFZmUtuzRVkU6hhOona0orqgKh'
+NORECAPTCHA_SECRET_KEY = '6LccjewSAAAAAAhJzHuEyVV40AYApL6CpmjqlmX8'
 
 SESSION_COOKIE_HTTPONLY = False
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 7 * 2  # 2 weeks

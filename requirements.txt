@@ -9,7 +9,7 @@ oauthlib
 simplejson
 sorl-thumbnail
 pillow
-django-recaptcha
+django-nocaptcha-recaptcha
 pytz
 geopy
 qrcode
