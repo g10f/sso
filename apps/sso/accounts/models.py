@@ -60,6 +60,8 @@ class Application(models.Model):
     global_navigation = models.BooleanField(_('global navigation'),
                                             help_text=_('Designates whether this application should be shown in the global navigation bar.'), default=True)
     is_active = models.BooleanField(_('active'), default=True, help_text=_('Designates whether this application should be provided.'))
+    redirect_to_after_first_login = models.BooleanField(_('redirect to after first login'), default=False,
+                                                        help_text=_('Designates whether the user should redirected to this app after the first login.'))
     objects = ApplicationManager()
     
     class Meta:
@@ -199,6 +201,16 @@ class UserManager(BaseUserManager):
 
     def get_by_email(self, email):
         return self.filter(useremail__email__iexact=email).prefetch_related('useremail_set').get()
+
+
+def get_applicationrole_ids(user_id, filter=None):
+    approles1 = ApplicationRole.objects.filter(user__id=user_id).only("id").values_list('id', flat=True)
+    approles2 = ApplicationRole.objects.filter(roleprofile__user__id=user_id).only("id").values_list('id', flat=True)
+    if filter is not None:
+        approles1 = approles1.filter(filter)
+        approles2 = approles2.filter(filter)
+    # to get a list of distinct values, we create first a set and then a list
+    return list(set(chain(approles1, approles2)))
 
 
 def generate_filename(instance, filename):
@@ -408,10 +420,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @memoize
     def get_applicationrole_ids(self):
-        approles1 = ApplicationRole.objects.filter(user=self).only("id").values_list('id', flat=True)
-        approles2 = ApplicationRole.objects.filter(roleprofile__user=self).only("id").values_list('id', flat=True)
-        # to get a list of distinct values, we create first a set and then a list
-        return list(set(chain(approles1, approles2)))
+        return get_applicationrole_ids(self.id)
 
     @memoize
     def get_applicationroles(self):

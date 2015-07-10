@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_decode
 from django.conf import settings
@@ -21,11 +22,14 @@ from sso.oauth2.models import allowed_hosts
 from sso.forms.helpers import ErrorList, ChangedDataList, log_change
 from sso.utils.url import get_safe_redirect_uri, update_url
 from sso.accounts.tokens import email_confirm_token_generator
-from sso.accounts.models import User, UserAddress, UserPhoneNumber, UserEmail
+from sso.accounts.models import User, UserAddress, UserPhoneNumber, UserEmail, get_applicationrole_ids, Application
 from sso.accounts.email import send_useremail_confirmation
 from sso.accounts.forms import PasswordResetForm, SetPasswordForm, PasswordChangeForm, ContactForm, AddressForm, PhoneNumberForm, \
     SelfUserEmailForm, SetPictureAndPasswordForm
 from sso.accounts.forms import UserSelfProfileForm, UserSelfProfileDeleteForm, CenterSelfProfileForm
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 LOGIN_FORM_KEY = 'login_form_key'
@@ -373,7 +377,7 @@ def password_create_confirm(request, uidb64=None, token=None, template_name='acc
     form for entering a  password and a picture
     """
     assert uidb64 is not None and token is not None  # checked by URLconf
-    post_reset_redirect = reverse('accounts:password_create_complete')
+    post_reset_redirect = reverse('accounts:password_create_complete', args=[uidb64])
     try:
         uid = urlsafe_base64_decode(uidb64)
         user = User._default_manager.get(pk=uid)
@@ -396,15 +400,29 @@ def password_create_confirm(request, uidb64=None, token=None, template_name='acc
         title = _('Password create unsuccessful')
     context = {
         'form': form,
-        'title': title,
+            'title': title,
         'validlink': validlink,
     }
     return TemplateResponse(request, template_name, context)
 
 
-def password_create_complete(request):
+def password_create_complete(request, uidb64=None):
     from django.contrib.auth.views import password_reset_complete
+    login_url = resolve_url(settings.LOGIN_URL)
+    if uidb64 is not None:
+        # try to find the first application with redirect_to_after_first_login
+        try:
+            uid = urlsafe_base64_decode(uidb64)
+            applicationrole_ids = get_applicationrole_ids(uid, Q(application__redirect_to_after_first_login=True))
+            if applicationrole_ids:
+                app = Application.objects.distinct().filter(applicationrole__in=applicationrole_ids, is_active=True).first()
+                if app is not None and app.url:
+                    login_url = update_url(login_url, {REDIRECT_FIELD_NAME: app.url})
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist) as e:
+            logger.exception(e)
+
     defaults = {
+        'extra_context': {'login_url': login_url},
         'template_name': 'accounts/password_create_complete.html',
     }
     return password_reset_complete(request, **defaults)
