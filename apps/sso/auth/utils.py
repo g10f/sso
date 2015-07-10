@@ -19,6 +19,7 @@ from django.utils.decorators import method_decorator
 from django.apps import apps as django_apps
 from http.util import get_request_param
 from sso.auth import SESSION_AUTH_DATE
+from sso.utils.url import is_safe_ext_url
 
 logger = logging.getLogger(__name__)
 
@@ -109,9 +110,12 @@ def devices_for_user(user, confirmed=True):
 
 
 def get_safe_login_redirect_url(request):
+    from sso.oauth2.models import allowed_hosts
+
     redirect_to = get_request_param(request, REDIRECT_FIELD_NAME, '')
     # Ensure the user-originating redirection url is safe.
-    if not is_safe_url(url=redirect_to, host=request.get_host()):
+    # allow external hosts, for redirect after password_create_complete
+    if not is_safe_ext_url(redirect_to, set(allowed_hosts())):
         return resolve_url(settings.LOGIN_REDIRECT_URL)
     else:
         return redirect_to
