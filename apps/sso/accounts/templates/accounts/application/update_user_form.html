@@ -78,6 +78,8 @@
                 {% include 'include/_field.html' with field=form.organisations %}
                 {% include 'include/_field.html' with field=form.is_center %}
                 {% include 'include/_field.html' with field=form.is_active %}
+                {% include 'include/_user_field.html' with field=form.created_by_user %}
+
                 {% include 'accounts/includes/_profiles_field.html' with field=form.role_profiles %}
 
                 {% if perms.registration.change_registrationprofile %}
