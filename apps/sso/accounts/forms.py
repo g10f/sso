@@ -627,6 +627,7 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
                                               help_text=_('Groups of application roles that are assigned together.'))
 
     extend_validity = forms.BooleanField(label=_('Extend validity'), widget=bootstrap.CheckboxInput(), required=False)
+    created_by_user = forms.CharField(label=_("Created by"), required=False, widget=bootstrap.TextInput(attrs={'disabled': ''}))
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request')
@@ -642,6 +643,10 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
         
         initial = kwargs.get('initial', {})
         initial.update(user_data)
+
+        created_by_user = self.user.created_by_user
+        initial['created_by_user'] = created_by_user if created_by_user else ''
+
         kwargs['initial'] = initial
         super(UserProfileForm, self).__init__(*args, **kwargs)
 
