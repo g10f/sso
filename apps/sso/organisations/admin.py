@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.contrib.gis import admin as gis_admin
 from django.contrib.admin import SimpleListFilter
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.admin.utils import model_ngettext
 
 from l10n.models import Country
 from .models import OrganisationAddress, OrganisationPhoneNumber
@@ -103,6 +104,7 @@ class OrganisationAdmin(gis_admin.OSMGeoAdmin):
     
     list_select_related = ('email',)
     ordering = ['name']
+    actions = ['mark_uses_user_activation']
     save_on_top = True
     search_fields = ('email__email', 'name', 'homepage', 'uuid')
     inlines = [PhoneNumber_Inline, Address_Inline]
@@ -123,6 +125,10 @@ class OrganisationAdmin(gis_admin.OSMGeoAdmin):
           ['notes'],
           'classes': ['collapse', 'wide'], }),
     ]
+
+    def mark_uses_user_activation(self, request, queryset):
+        n = queryset.update(uses_user_activation=True)
+        self.message_user(request, _("Successfully updated %(count)d %(items)s.") % {"count": n, "items": model_ngettext(self.opts, n)})
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         """
