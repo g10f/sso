@@ -42,6 +42,7 @@ class Command(BaseCommand):
         random.seed()
         for user in User.objects.filter(is_active=True, is_service=False, is_center=False,
                                         organisations__uses_user_activation=True,
+                                        organisations=organisation,
                                         valid_until__isnull=True):
             valid_until = now() + timedelta(days=random.randint(options['from'], options['days']))
             if not options['test']:
