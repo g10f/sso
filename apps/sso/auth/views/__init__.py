@@ -112,6 +112,7 @@ class LoginView(FormView):
         context = super(LoginView, self).get_context_data(**kwargs)
         redirect_url = get_safe_login_redirect_url(self.request)
         context['cancel_url'] = get_oauth2_cancel_url(redirect_url)
+        context['site_name'] = settings.SSO_SITE_NAME
         context['display'] = get_request_param(self.request, 'display', 'page')
         return context
 
