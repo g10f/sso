@@ -162,7 +162,7 @@ class OrganisationEmailAdminForm(OrganisationBaseForm):
             msg = _('The email address of the center must be ending with %(domain)s') % {'domain': SSO_ORGANISATION_EMAIL_DOMAIN}
             raise ValidationError(msg)
         
-        if Email.objects.filter(email__iexact=email_value).exclude(organisation=self.instance).exists():
+        if Email.objects.filter(email=email_value).exclude(organisation=self.instance).exists():
             msg = _('The email address already exists')
             raise ValidationError(msg)
             
@@ -336,7 +336,7 @@ class AdminRegionForm(BaseForm):
             msg = _('The email address of the center must be ending with %(domain)s') % {'domain': SSO_ORGANISATION_EMAIL_DOMAIN}
             raise ValidationError(msg)
         
-        if Email.objects.filter(email__iexact=email_value).exclude(adminregion=self.instance).exists():
+        if Email.objects.filter(email=email_value).exclude(adminregion=self.instance).exists():
             msg = _('The email address already exists')
             raise ValidationError(msg)
             
@@ -393,7 +393,7 @@ class OrganisationCountryForm(BaseForm):
             msg = _('The email address of the center must be ending with %(domain)s') % {'domain': SSO_ORGANISATION_EMAIL_DOMAIN}
             raise ValidationError(msg)
         
-        if Email.objects.filter(email__iexact=email_value).exclude(organisationcountry=self.instance).exists():
+        if Email.objects.filter(email=email_value).exclude(organisationcountry=self.instance).exists():
             msg = _('The email address already exists')
             raise ValidationError(msg)
             

@@ -24,6 +24,7 @@ TWO_FACTOR_PARAM = 'two_factor'
 
 logger = logging.getLogger(__name__)
 
+
 def is_otp_login(user, is_two_factor_required):
     if hasattr(user, 'sso_auth_profile'):
         profile = user.sso_auth_profile

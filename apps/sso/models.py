@@ -4,6 +4,7 @@ from mimetypes import guess_extension
 import os
 import re
 import uuid
+from django.db.models import fields
 
 from django.utils.crypto import get_random_string
 from django.forms import forms
@@ -40,6 +41,12 @@ def clean_picture(picture, max_upload_size):
         else:
             raise forms.ValidationError(_('File type is not supported'))
     return picture
+
+
+class CaseInsensitiveEmailField(fields.EmailField):
+
+    def db_type(self, connection):
+        return "citext"
 
 
 class AbstractBaseModelManager(models.Manager):

@@ -378,7 +378,7 @@ class SelfUserEmailForm(forms.Form):
         cleaned_data = super(SelfUserEmailForm, self).clean()
         if 'email' in cleaned_data:
             email = cleaned_data["email"]
-            qs = UserEmail.objects.filter(email__iexact=email)
+            qs = UserEmail.objects.filter(email=email)
             if qs.exists():
                 raise forms.ValidationError(self.error_messages['duplicate_email'] % {'email': email})
 

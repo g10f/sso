@@ -12,7 +12,10 @@ Prepare a development environment
 3. install virtualenvwrapper: sudo pip install virtualenvwrapper
 4. create virtualenv for sso:  mkvirtualenv sso
 5. install sso requirements in the virtualenv with: pip install -r requirements.txt
-6. create the database with ./manage.py syncdb 
+6. install postgresql
+7. update template1 database for using citext extension in tests:  sudo -u postgres psql -c "CREATE EXTENSION IF NOT EXISTS citext;" template1
+8. create the database with ./manage.py syncdb
+
 
 Deploy to AWS
 --------------

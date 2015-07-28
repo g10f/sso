@@ -217,6 +217,8 @@ def deploy_database(db_name):
     # fabtools.require.postgres.server()
     fabtools.require.postgres.user(db_name, db_name)
     fabtools.require.postgres.database(db_name, db_name)
+    fabtools.require.deb.package('postgresql-contrib')  # for citext
+    fabtools.postgres._run_as_pg('''psql -c "CREATE EXTENSION IF NOT EXISTS citext;" %(db_name)s''' % {'db_name': db_name})
     fabtools.postgres._run_as_pg('''psql -c "CREATE EXTENSION IF NOT EXISTS postgis;" %(db_name)s''' % {'db_name': db_name})
     fabtools.postgres._run_as_pg('''psql -c "ALTER TABLE spatial_ref_sys OWNER TO %(db_name)s;" %(db_name)s''' % {'db_name': db_name})
 
@@ -315,7 +317,7 @@ def deploy(conf='dev'):
     virtualenv = configuration['virtualenv']
     db_name = configuration['db_name']
     env.host_string = configuration['host_string']
-    
+
     code_dir = '/proj/%s' % server_name
 
     user = 'ubuntu'

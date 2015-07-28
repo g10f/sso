@@ -128,7 +128,7 @@ def load_buddhistcenters(url):
         return None
     
     def get_email(value):
-        email = Email.objects.filter(email__iexact=value).first()
+        email = Email.objects.filter(email=value).first()
         if not email:
             email = Email(email=value.lower(), email_type=CENTER_EMAIL_TYPE)
             email.save()
