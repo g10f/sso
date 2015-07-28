@@ -26,7 +26,7 @@ from django.utils.timezone import now
 from django.utils.translation import pgettext_lazy, ugettext_lazy as _
 from django.utils.text import capfirst
 from l10n.models import Country
-from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary, get_filename
+from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary, get_filename, CaseInsensitiveEmailField
 from sso.organisations.models import AdminRegion, Organisation
 from sso.emails.models import GroupEmailManager
 from sso.decorators import memoize
@@ -156,7 +156,7 @@ class RoleProfile(AbstractBaseModel):
 
 class UserEmail(AbstractBaseModel):
     MAX_EMAIL_ADRESSES = 2
-    email = models.EmailField(_('email address'), max_length=254, unique=True)
+    email = CaseInsensitiveEmailField(_('email address'), max_length=254, unique=True)
     confirmed = models.BooleanField(_('confirmed'), default=False)
     primary = models.BooleanField(_('primary'), default=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
@@ -196,11 +196,11 @@ class UserManager(BaseUserManager):
                                  **extra_fields)
 
     def get_by_confirmed_or_primary_email(self, email):
-        q = Q(useremail__email__iexact=email) & (Q(useremail__confirmed=True) | Q(useremail__primary=True))
+        q = Q(useremail__email=email) & (Q(useremail__confirmed=True) | Q(useremail__primary=True))
         return self.filter(q).prefetch_related('useremail_set').get()
 
     def get_by_email(self, email):
-        return self.filter(useremail__email__iexact=email).prefetch_related('useremail_set').get()
+        return self.filter(useremail__email=email).prefetch_related('useremail_set').get()
 
 
 def get_applicationrole_ids(user_id, filter=None):

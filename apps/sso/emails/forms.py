@@ -89,7 +89,7 @@ class EmailManagerInlineForm(BaseTabularInlineForm):
 
     def clean_manager_email(self):
         manager_email = self.cleaned_data['manager_email']
-        if not get_user_model().objects.filter(useremail__email__iexact=manager_email).exists():
+        if not get_user_model().objects.filter(useremail__email=manager_email).exists():
             msg = _('The user does not exists')
             raise ValidationError(msg)
             
@@ -98,7 +98,7 @@ class EmailManagerInlineForm(BaseTabularInlineForm):
     def save(self, commit=True):
         if 'manager_email' in self.changed_data:
             manager_email = self.cleaned_data['manager_email']
-            manager = get_user_model().objects.get(useremail__email__iexact=manager_email)
+            manager = get_user_model().objects.get(useremail__email=manager_email)
             self.instance.manager = manager
 
         instance = super(EmailManagerInlineForm, self).save(commit)
@@ -134,7 +134,7 @@ class GroupEmailForm(BaseForm):
         the new email address must ..
         """
         email_value = self.cleaned_data['email_value']
-        if Email.objects.filter(email__iexact=email_value).exclude(groupemail=self.instance).exists():
+        if Email.objects.filter(email=email_value).exclude(groupemail=self.instance).exists():
             msg = _('The email address already exists')
             raise ValidationError(msg)
             

@@ -36,7 +36,7 @@ def update_guide_emails():
     for (email_value, guide_email) in guide_emails.items():
         name = guide_email['City']
         try:
-            email_obj = Email.objects.get(email__iexact=email_value)
+            email_obj = Email.objects.get(email=email_value)
             if email_obj.groupemail_set.exists():
                 group_email = email_obj.groupemail_set.first()
                 group_email.is_guide_email = True
@@ -74,7 +74,7 @@ def update_center_forwards():
               
         email_value = forward['DWBEmail'].lower()
         try:
-            email_obj = Email.objects.get(email__iexact=email_value, email_type=CENTER_EMAIL_TYPE)
+            email_obj = Email.objects.get(email=email_value, email_type=CENTER_EMAIL_TYPE)
             
             forward_value = forward['ForwardEmail'].lower()
             if forward_value:
@@ -163,7 +163,7 @@ def update_email_groups():
     for (email, group) in groups.items():
         name = email.split('@')[0].title()
         try:
-            email_obj = Email.objects.get(email__iexact=email)
+            email_obj = Email.objects.get(email=email)
         except ObjectDoesNotExist:
             email_obj = Email.objects.create(email=email.lower(), email_type=GROUP_EMAIL_TYPE, permission=group['permission'])
             GroupEmail.objects.get_or_create(name=name, email=email_obj)
@@ -200,7 +200,7 @@ def update_countries():
         
         email = country.lower()
         try:
-            email_obj = Email.objects.get(email__iexact=email)  # , email_type=COUNTRY_EMAIL_TYPE)
+            email_obj = Email.objects.get(email=email)  # , email_type=COUNTRY_EMAIL_TYPE)
         except ObjectDoesNotExist:
             email_obj = Email.objects.create(email=email.lower(), email_type=COUNTRY_EMAIL_TYPE, permission=PERM_DWB)
         if email_obj.email_type != COUNTRY_EMAIL_TYPE:
