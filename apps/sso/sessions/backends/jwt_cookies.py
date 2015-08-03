@@ -1,4 +1,5 @@
 import logging
+from jwt import InvalidTokenError
 from django.conf import settings
 
 from django.core import signing
@@ -19,7 +20,7 @@ class SessionStore(SignedCookiesSessionStore):
         try:
             parsed = loads_jwt(self.session_key)
             return parsed
-        except (signing.BadSignature, ValueError) as e:
+        except (signing.BadSignature, ValueError, InvalidTokenError) as e:
             logger.exception("load error: %s", e)
             self.create()
         return {}

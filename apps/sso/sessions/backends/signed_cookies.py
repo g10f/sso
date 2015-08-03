@@ -3,7 +3,6 @@ from django.conf import settings
 
 from django.core import signing
 from django.contrib.sessions.backends.signed_cookies import SessionStore as SignedCookiesSessionStore
-from sso.oauth2.crypt import loads_jwt, make_jwt
 
 
 class SessionStore(SignedCookiesSessionStore):

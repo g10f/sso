@@ -3,6 +3,9 @@ import json
 import base64
 import hashlib
 import logging
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.serialization import load_pem_public_key
+from jwt import InvalidTokenError
 
 from http.util import get_request_param
 from django.views.decorators.cache import never_cache, cache_page, cache_control
@@ -25,7 +28,7 @@ from sso.auth.views import TWO_FACTOR_PARAM
 from sso.utils.url import base_url
 from sso.utils.convert import pack_bigint
 from sso.api.response import JsonHttpResponse
-from .crypt import key, loads_jwt, BadSignature
+from .crypt import loads_jwt
 from .server import server
 from .models import Client
 
@@ -241,7 +244,7 @@ def authorize(request):
                     parsed = loads_jwt(id_token)
                     if parsed['sub'] != request.user.uuid.hex:
                         raise LoginRequiredError(state=credentials.get('state'))
-                except BadSignature, e:  # maybe Token used too late
+                except InvalidTokenError, e:  # maybe Token used too late
                     logger.exception(e)
                     raise LoginRequiredError(state=credentials.get('state'))
 
@@ -294,7 +297,7 @@ def tokeninfo(request):
 
     except oauth2.OAuth2Error as e:
         return HttpResponse(content=e.json, status=e.status_code, content_type='application/json')
-    except BadSignature as e:
+    except InvalidTokenError as e:
         error = oauth2.InvalidRequestError(description=str(e))
         return HttpResponse(content=error.json, status=error.status_code, content_type='application/json')
     except Exception as e:
@@ -316,22 +319,25 @@ def approval(request):
 
 @cache_page(60 * 60)
 def certs(request):
-    return JsonHttpResponse({key.id: key.cert}, request)
+    return JsonHttpResponse({settings.CERTS['default']['uuid']: settings.CERTS['default']['certificate']}, request)
 
 
 @cache_page(60 * 60)
 def jwks(request):
+
     """
     jwks_uri view (http://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata)
     """
+    key = load_pem_public_key(settings.CERTS['default']['public_key'], backend=default_backend())
+    public_numbers = key.public_numbers()
     data = {
         "keys": [{
             "kty": "RSA",
             "alg": "RS256",
             "use": "sig",
-            "kid": key.id,
-            "n": base64.b64encode(pack_bigint(key.rsa.key.n)),
-            "e": base64.b64encode(pack_bigint(key.rsa.key.e))
+            "kid": settings.CERTS['default']['uuid'],
+            "n": base64.b64encode(pack_bigint(public_numbers.n)),
+            "e": base64.b64encode(pack_bigint(public_numbers.e))
         }]
     }
     return JsonHttpResponse(data, request)
