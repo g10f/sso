@@ -6,7 +6,6 @@ python-memcached
 docutils
 pycrypto
 oauthlib
-simplejson
 sorl-thumbnail
 pillow
 django-nocaptcha-recaptcha

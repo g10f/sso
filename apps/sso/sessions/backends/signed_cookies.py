@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
 
 from django.core import signing
 from django.contrib.sessions.backends.signed_cookies import SessionStore as SignedCookiesSessionStore
@@ -6,6 +7,7 @@ from sso.oauth2.crypt import loads_jwt, make_jwt
 
 
 class SessionStore(SignedCookiesSessionStore):
+    salt = "signed_cookies"
 
     def load(self):
         """
@@ -14,7 +16,11 @@ class SessionStore(SignedCookiesSessionStore):
         raises BadSignature if signature fails.
         """
         try:
-            return loads_jwt(self.session_key)
+            return signing.loads(self.session_key,
+                serializer=self.serializer,
+                # This doesn't handle non-default expiry dates, see #19201
+                max_age=settings.SESSION_COOKIE_AGE,
+                salt=self.salt)
         except (signing.BadSignature, ValueError):
             self.create()
         return {}
@@ -27,4 +33,7 @@ class SessionStore(SignedCookiesSessionStore):
         session key.
         """
         session_cache = getattr(self, '_session_cache', {})
-        return make_jwt(session_cache)
+        return signing.dumps(session_cache, compress=True,
+            salt=self.salt,
+            serializer=self.serializer)
+
