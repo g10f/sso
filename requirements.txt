@@ -4,7 +4,8 @@ gunicorn
 psycopg2
 python-memcached
 docutils
-pycrypto
+pyjwt
+cryptography
 oauthlib
 sorl-thumbnail
 pillow
@@ -13,6 +14,8 @@ pytz
 geopy
 qrcode
 requests
+# for python-u2flib-server
+M2Crypto
 python-u2flib-server
 # for local testing only
 #selenium
