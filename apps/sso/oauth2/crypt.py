@@ -77,7 +77,7 @@ def _json_encode(data):
     return json.dumps(data, separators=(',', ':'))
 
 
-def make_jwt(claim_set):
+def make_jwt(claim_set, max_age=MAX_AGE):
     """Make a signed JWT.
 
     See http://self-issued.info/docs/draft-jones-json-web-token.html.
@@ -92,7 +92,7 @@ def make_jwt(claim_set):
     if "iat" not in claim_set:
         claim_set["iat"] = int(time.time())  # add  issued at time
     if "exp" not in claim_set:
-        claim_set["exp"] = int(time.time()) + MAX_AGE  # add  issued at time
+        claim_set["exp"] = int(time.time()) + max_age  # add  expired at time
 
     segments = [
         _urlsafe_b64encode(_json_encode(header)),
@@ -142,8 +142,6 @@ def loads_jwt(jwt):
     exp = parsed.get('exp')
     if exp is None:
         raise BadSignature('No exp field in token: %s' % json_body)
-    if exp >= now + MAX_TOKEN_LIFETIME_SECS:
-        raise BadSignature('exp field too far in future: %s' % json_body)
     latest = exp + CLOCK_SKEW_SECS
 
     if now < earliest:

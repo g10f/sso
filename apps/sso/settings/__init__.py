@@ -160,6 +160,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'sso.oauth2.middleware.OAuthAuthenticationMiddleware',
+    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',  # Allows a user’s sessions to be invalidated when their password changes.
     'sso.auth.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -236,8 +237,8 @@ SESSION_COOKIE_HTTPONLY = False
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 7 * 2  # 2 weeks
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = False
-# SESSION_ENGINE = 'sso.sessions.backends'
-SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+SESSION_ENGINE = 'sso.sessions.backends.signed_cookies'
+# SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 CSRF_COOKIE_HTTPONLY = True
 CSRF_COOKIE_AGE = None 
 CSRF_FAILURE_VIEW = 'sso.views.csrf.csrf_failure'

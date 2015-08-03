@@ -103,7 +103,7 @@ class LoginView(FormView):
 
         else:
             self.success_url = redirect_url
-            user._auth_session_expiry = expiry
+            user._auth_session_expiry = expiry  # used to update the session at user_logged_in signal
 
             auth_login(self.request, user)
 

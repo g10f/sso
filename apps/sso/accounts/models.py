@@ -3,14 +3,11 @@ from itertools import chain
 import re
 import logging
 import uuid
-from datetime import timedelta
-from urlparse import urlparse
 
 from sorl import thumbnail
 
-from django.core.cache import cache
 from django.core.urlresolvers import reverse
-from django.utils.crypto import get_random_string
+from django.utils.crypto import get_random_string, salted_hmac
 from django.core import validators
 from django.db import models
 from django.db.models import Q
@@ -22,7 +19,6 @@ from django.contrib.auth.models import Group, Permission, \
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.utils import timezone
-from django.utils.timezone import now
 from django.utils.translation import pgettext_lazy, ugettext_lazy as _
 from django.utils.text import capfirst
 from l10n.models import Country
@@ -34,7 +30,6 @@ from sso.registration import default_username_generator
 from sso.registration.models import RegistrationProfile
 from sso.utils.loaddata import disable_for_loaddata
 from current_user.models import CurrentUserField
-
 
 logger = logging.getLogger(__name__)
 
@@ -265,6 +260,13 @@ class User(AbstractBaseUser, PermissionsMixin):
             ("read_user", "Can read user data"),
             ("access_all_users", "Can access all users"),
         )
+
+    def get_session_auth_hash(self):
+        """
+        Returns an HMAC of the password field.
+        """
+        key_salt = "_auth_user_hash"
+        return salted_hmac(key_salt, self.password).hexdigest()
 
     def get_full_name(self):
         """

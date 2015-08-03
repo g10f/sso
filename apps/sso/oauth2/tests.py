@@ -150,12 +150,12 @@ class OAuth2Tests(OAuth2BaseTestCase):
         query_dict = get_query_dict(response['Location'])
         
         self.assertIn('error', query_dict)
-        self.assertDictContainsSubset({'error': 'mismatching_redirect_uri'}, query_dict)
+        self.assertDictContainsSubset({'error': 'invalid_request'}, query_dict)
         
         self.assertEqual(urlparse.urlsplit(response['Location'])[2], reverse('oauth2:oauth2_error'))
         
         response = self.client.get(response['Location'])
-        self.assertEqual(response.context['error'], 'mismatching_redirect_uri')
+        self.assertEqual(response.context['error'], 'invalid_request')
 
     def test_login_and_get_code_max_age_failure(self):
         self.client.login(username='GunnarScherf', password='gsf')
