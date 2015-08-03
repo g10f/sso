@@ -196,6 +196,7 @@ def deploy_debian():
     fabtools.require.deb.package('libwebp-dev')
     fabtools.require.deb.package('tcl8.5-dev')
     fabtools.require.deb.package('tk8.5-dev')
+    fabtools.require.deb.package('libffi-dev')
     fabtools.require.deb.package('python-tk')
     # pillow ubuntu 14.04
     # fabtools.require.deb.package('libtiff5-dev')

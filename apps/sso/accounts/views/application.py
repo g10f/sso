@@ -51,6 +51,9 @@ class UserDeleteView(DeleteView):
     def get_context_data(self, **kwargs):
         context = super(UserDeleteView, self).get_context_data(**kwargs)
         context['cancel_url'] = reverse('accounts:update_user', args=[self.object.uuid.hex])
+        # the user is initialized from the ViewClass with the user to delete
+        # so reinitialize it with the request user
+        context['user'] = self.request.user
         return context
 
 
