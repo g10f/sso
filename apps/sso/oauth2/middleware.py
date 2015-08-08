@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
+from jwt import InvalidTokenError
 from django.utils.functional import SimpleLazyObject, empty
 from django.contrib import auth
 from django.contrib.auth import get_user_model
-from django.core import signing
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils.crypto import constant_time_compare
 
@@ -50,7 +50,8 @@ def get_auth_data_from_token(access_token):
         scopes = set()
         if data.get('scope'):
             scopes = set(data['scope'].split())
-    except (ObjectDoesNotExist, signing.BadSignature, ValueError):
+    except (ObjectDoesNotExist, InvalidTokenError, ValueError), e:
+        logger.warning(e)
         return auth.models.AnonymousUser(), None, set()
     return user, client, scopes
 
