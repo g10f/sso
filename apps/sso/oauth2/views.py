@@ -7,7 +7,6 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
 from jwt import InvalidTokenError
 
-from http.util import get_request_param
 from django.views.decorators.cache import never_cache, cache_page, cache_control
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.clickjacking import xframe_options_exempt
@@ -15,6 +14,7 @@ from django.views.generic import TemplateView
 from django.utils.crypto import get_random_string
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_str
+from django.utils.six.moves.urllib.parse import urlparse, urlunparse, urlsplit, urlunsplit
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse, QueryDict
 from django.conf import settings
@@ -28,14 +28,11 @@ from sso.auth.views import TWO_FACTOR_PARAM
 from sso.utils.url import base_url
 from sso.utils.convert import pack_bigint
 from sso.api.response import JsonHttpResponse
+from sso.utils.http import get_request_param
 from .crypt import loads_jwt
 from .server import server
 from .models import Client
 
-try:
-    from urllib.parse import urlparse, urlunparse, urlsplit, urlunsplit
-except ImportError:     # Python 2
-    from urlparse import urlparse, urlunparse, urlsplit, urlunsplit
 
 logger = logging.getLogger(__name__)
 
@@ -244,7 +241,7 @@ def authorize(request):
                     parsed = loads_jwt(id_token)
                     if parsed['sub'] != request.user.uuid.hex:
                         raise LoginRequiredError(state=credentials.get('state'))
-                except InvalidTokenError, e:  # maybe Token used too late
+                except InvalidTokenError as e:  # maybe Token used too late
                     logger.exception(e)
                     raise LoginRequiredError(state=credentials.get('state'))
 

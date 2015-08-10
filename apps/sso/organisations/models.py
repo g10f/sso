@@ -248,9 +248,9 @@ class Organisation(AbstractBaseModel):
         if self.location:
             try:
                 return TzWorld.objects.only('tzid').get(geom__contains=self.location).tzid
-            except ObjectDoesNotExist, e:
+            except ObjectDoesNotExist as e:
                 logger.warning(e)
-            except MultipleObjectsReturned, e:
+            except MultipleObjectsReturned as e:
                 logger.exception(e)
         return ""
 

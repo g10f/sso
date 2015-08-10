@@ -12,7 +12,7 @@ from django.conf import settings
 from sorl.thumbnail.shortcuts import get_thumbnail
 from django.utils.encoding import force_text
 from django.utils.html import format_html
-
+from django.utils import six
 
 class Widget(forms.Widget):
     def __init__(self, attrs=None, **kwargs):
@@ -258,7 +258,7 @@ class SelectDateWidget(Widget):
             year_val, month_val, day_val = value.year, value.month, value.day
         except AttributeError:
             year_val = month_val = day_val = None
-            if isinstance(value, basestring):
+            if isinstance(value, six.string_types):
                 if settings.USE_L10N:
                     try:
                         input_format = get_format('DATE_INPUT_FORMATS')[0]

@@ -28,7 +28,7 @@ def update_email_confirmed_flag():
         if not user_email.confirmed:
             user_email.confirmed = True
             user_email.save(update_fields=['confirmed'])
-            print user_email
+            print(user_email)
 
 
 def clean_pictures():
@@ -44,7 +44,7 @@ def clean_pictures():
                     fname1 = os.path.join(subdir, f)
                     fname2 = os.path.join(settings.MEDIA_ROOT, str(picture))
                     if not os.path.samefile(fname1, fname2):
-                        print fname1
+                        print(fname1)
                         os.remove(fname1)
             
     
@@ -61,4 +61,4 @@ def remove_profile():
     user_list = User.objects.filter(is_center=False, role_profiles=centerprofile)
     for user in user_list:
         user.role_profiles.remove(centerprofile)
-        print user
+        print(user)

@@ -50,7 +50,7 @@ def get_auth_data_from_token(access_token):
         scopes = set()
         if data.get('scope'):
             scopes = set(data['scope'].split())
-    except (ObjectDoesNotExist, InvalidTokenError, ValueError), e:
+    except (ObjectDoesNotExist, InvalidTokenError, ValueError) as e:
         logger.warning(e)
         return auth.models.AnonymousUser(), None, set()
     return user, client, scopes

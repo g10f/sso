@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-import urlparse
+from django.utils.six.moves.urllib.parse import urlsplit
+
 import json
 import base64
 from time import sleep, time
@@ -13,12 +14,12 @@ from sso.auth import SESSION_AUTH_DATE
 
 
 def get_query_dict(url):
-    scheme, netloc, path, query_string, fragment = urlparse.urlsplit(url)  # @UnusedVariable
+    scheme, netloc, path, query_string, fragment = urlsplit(url)  # @UnusedVariable
     query_dict = QueryDict(query_string).copy()
     return query_dict
 
-def get_fragment_dict(url):        
-    scheme, netloc, path, query_string, fragment = urlparse.urlsplit(url)  # @UnusedVariable
+def get_fragment_dict(url):
+    scheme, netloc, path, query_string, fragment = urlsplit(url)  # @UnusedVariable
     fragment_dict = QueryDict(fragment).copy()
     return fragment_dict
 
@@ -152,7 +153,7 @@ class OAuth2Tests(OAuth2BaseTestCase):
         self.assertIn('error', query_dict)
         self.assertDictContainsSubset({'error': 'invalid_request'}, query_dict)
         
-        self.assertEqual(urlparse.urlsplit(response['Location'])[2], reverse('oauth2:oauth2_error'))
+        self.assertEqual(urlsplit(response['Location'])[2], reverse('oauth2:oauth2_error'))
         
         response = self.client.get(response['Location'])
         self.assertEqual(response.context['error'], 'invalid_request')
@@ -173,7 +174,7 @@ class OAuth2Tests(OAuth2BaseTestCase):
         response = self.client.get(reverse('oauth2:authorize'), data=authorize_data)
         # check if the response is a redirect to the login page
         self.assertEqual(response.status_code, 302)
-        path = urlparse.urlsplit(response['Location'])[2]
+        path = urlsplit(response['Location'])[2]
         self.assertEqual(path, reverse('auth:login'))
         
     def test_get_implicit_id_token_and_access_token(self):

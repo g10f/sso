@@ -2,8 +2,8 @@
 import time
 import json
 import calendar
-import urlparse
 import logging
+from django.utils.six.moves.urllib.parse import urlsplit
 
 from django.contrib.auth import authenticate, get_user_model
 from django.core import signing
@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_iss_from_absolute_uri(abs_uri):
-    (scheme, netloc, path, query, fragment) = urlparse.urlsplit(abs_uri)  # @UnusedVariable
+    (scheme, netloc, path, query, fragment) = urlsplit(abs_uri)  # @UnusedVariable
     return "%s://%s" % (scheme, netloc)
 
  
@@ -269,7 +269,7 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
             data = loads_jwt(BearerToken.objects.get(refresh_token__token=refresh_token).access_token)
             request.scopes = data['scope'].split()
             return True
-        except Exception, e:
+        except Exception as e:
             logger.error('confirm_scopes Error: %s' % e)
             return False
         

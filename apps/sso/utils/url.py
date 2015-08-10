@@ -1,9 +1,8 @@
 import logging
-from urlparse import urlparse, urlsplit, urlunsplit
-
+from django.utils.six.moves.urllib.parse import urlparse, urlsplit, urlunsplit
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import QueryDict
-from http.util import get_request_param
+from sso.utils.http import get_request_param
 
 
 logger = logging.getLogger(__name__)

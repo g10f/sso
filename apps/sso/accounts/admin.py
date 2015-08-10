@@ -12,6 +12,7 @@ from django.contrib.auth import get_user_model
 from django.core import urlresolvers
 from django.utils.safestring import mark_safe
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils import six
 from django.utils.translation import ugettext_lazy as _
 from sorl.thumbnail.admin import AdminImageMixin
 
@@ -114,7 +115,7 @@ class BaseFilter(SimpleListFilter):
         qs = self.get_lookup_qs(request, model_admin)
         rg = [('-', _('(None)'))]
         for entry in qs:
-            rg.append((str(entry.id), unicode(entry)))
+            rg.append((str(entry.id), six.text_type(entry)))
         return rg
     
     def queryset(self, request, queryset):

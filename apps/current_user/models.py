@@ -1,7 +1,8 @@
 from django.db import models
 from django.conf import settings
 
-import registration
+from . import registration
+
 
 class CurrentUserField(models.ForeignKey):
     def __init__(self, created_by_only=False, **kwargs):

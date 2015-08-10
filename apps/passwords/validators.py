@@ -5,6 +5,7 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 from django.utils.encoding import smart_unicode
 from django.conf import settings
+from django.utils.six.moves import range
 
 COMMON_SEQUENCES = [
     "0123456789",
@@ -117,9 +118,9 @@ class BaseSimilarityValidator(object):
             return m
 
         row1 = [0] * (n + 1)
-        for i in xrange(0, m):
+        for i in range(0, m):
             row2 = [i + 1]
-            for j in xrange(0, n):
+            for j in range(0, n):
                 cost = (needle[i] != haystack[j])
                 row2.append(min(row1[j + 1] + 1, row2[j] + 1, row1[j] + cost))
             row1 = row2

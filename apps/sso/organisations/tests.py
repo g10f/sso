@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import urlparse
+from django.utils.six.moves.urllib.parse import urlsplit
 import re
 from django.conf import settings
 from django.core import mail
@@ -24,7 +24,7 @@ class OrganisationssTest(TestCase):
         self.assertEqual(len(outbox), 1)
         urls = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', outbox[0].body)
         self.assertEqual(len(urls), 1)
-        scheme, netloc, path, query_string, fragment = urlparse.urlsplit(urls[0])  # @UnusedVariable
+        scheme, netloc, path, query_string, fragment = urlsplit(urls[0])  # @UnusedVariable
         return path
 
     def test_add_organisation_by_country_admin(self):

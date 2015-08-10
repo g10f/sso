@@ -32,7 +32,7 @@ class Command(NoArgsCommand):
             organisations__iso2_code__in=['CZ', 'SK', 'PL', 'RU', 'UA', 'RO', 'RS', 'HR', 'GR', 'BG', 'EE', 'LV']).\
             exclude(application_roles__in=[cee_dharmashop_user, cee_dharmashop_guest])
         for user in users:
-            print user.get_full_name()
+            print(user.get_full_name())
             for app_role in cee_app_roles:
                 user.application_roles.add(app_role)
                 # pass

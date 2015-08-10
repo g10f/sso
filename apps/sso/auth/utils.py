@@ -1,9 +1,8 @@
 import base64
-import StringIO
+from django.utils.six import StringIO
 import time
 from binascii import unhexlify, hexlify
 from os import urandom
-from urllib import quote, urlencode
 import logging
 
 import qrcode
@@ -17,9 +16,10 @@ from django.shortcuts import resolve_url
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.utils.decorators import method_decorator
 from django.apps import apps as django_apps
-from http.util import get_request_param
+from sso.utils.http import get_request_param
 from sso.auth import SESSION_AUTH_DATE
 from sso.utils.url import is_safe_ext_url
+from django.utils.six.moves.urllib.parse import quote, urlencode
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +39,7 @@ def is_recent_auth_time(request, max_age=None):
         if max_age is None:
             return True
 
-        now = long(time.time())
+        now = int(time.time())
         session_auth_date = request.session[SESSION_AUTH_DATE]
         return session_auth_date + int(max_age) >= now
     return True
@@ -208,6 +208,6 @@ def get_qrcode_data_url(key, username, issuer):
 
     # Make and return QR code
     img = qrcode.make(otpauth_url, image_factory=PilImage, box_size=3)
-    output = StringIO.StringIO()
+    output = StringIO()
     img.save(output)
     return "data:image/png;base64,%s" % base64.b64encode(output.getvalue())

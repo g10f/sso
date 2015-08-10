@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 import csv
 import codecs
-import cStringIO
 import logging
+from django.utils.six import StringIO
+from django.utils import six
 
 logger = logging.getLogger(__name__)    
 
@@ -24,7 +25,7 @@ def csv_map(reader, key_row=0):
     try:
         for row in reader:
             if not row:
-                print "Warning: empty row"
+                print("Warning: empty row")
                 continue
             try:
                 n += 1
@@ -37,13 +38,13 @@ def csv_map(reader, key_row=0):
                     newrow[_get_text(first_row[j])] = _get_text(k)
                 
                 yield _get_text(row[key_row]), newrow 
-            except Exception, e:
+            except Exception as e:
                 msg = "Error while reading row: %s " % row
-                print msg
+                print(msg)
                 logger.exception(msg)
-    except csv.Error, e:
+    except csv.Error as e:
         msg = 'line %d: %s' % (reader.line_num, e)
-        print msg
+        print(msg)
         logger.exception(msg)
         
     
@@ -63,7 +64,7 @@ def list_from_csv(reader):
 def unicode_csv_reader(utf8_data, dialect=csv.excel, **kwargs):
     csv_reader = csv.reader(utf8_data, dialect=dialect, **kwargs)
     for row in csv_reader:
-        yield [unicode(cell, 'utf-8-sig') for cell in row]
+        yield [six.text_type(cell, 'utf-8-sig') for cell in row]
 
 class UTF8Recoder:
     """
@@ -90,7 +91,7 @@ class UnicodeReader:
 
     def next(self):  # @ReservedAssignment
         row = self.reader.next()
-        return [unicode(s, "utf-8") for s in row]
+        return [six.text_type(s, "utf-8") for s in row]
 
     def __iter__(self):
         return self
@@ -103,7 +104,7 @@ class UnicodeWriter:
 
     def __init__(self, f, dialect=csv.excel, encoding="utf-8", **kwds):
         # Redirect output to a queue
-        self.queue = cStringIO.StringIO()
+        self.queue = StringIO()
         self.writer = csv.writer(self.queue, dialect=dialect, **kwds)
         self.stream = f
         self.encoder = codecs.getincrementalencoder(encoding)()

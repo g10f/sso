@@ -25,7 +25,7 @@ class SessionStore(SignedCookiesSessionStore):
                 parsed["_auth_user_backend"] = "sso.auth.backends.EmailBackend"
             return parsed
         except (signing.BadSignature, ValueError, InvalidTokenError) as e:
-            logger.exception("load error: %s", e)
+            logger.warning("load error: %s", e)
             self.create()
         return {}
 

@@ -4,8 +4,10 @@ from django.utils.safestring import mark_safe
 from django.apps import apps
 from django.contrib.admin.templatetags.admin_static import static
 from django import forms
+from django.utils import six
 import locale
 from smart_selects.utils import unicode_sorter
+
 
 class ChainedSelect(Select):
     def __init__(self, app_name, model_name, chain_field, model_field, show_all, auto_choose, manager=None, attrs=None, *args, **kwargs):
@@ -73,9 +75,9 @@ class ChainedSelect(Select):
                         except:  # give up
                             objects_filter = {}
                 filtered = list(apps.get_model(self.app_name, self.model_name).objects.filter(**objects_filter).distinct())
-                filtered.sort(cmp=locale.strcoll, key=lambda x: unicode_sorter(unicode(x)))
+                filtered.sort(cmp=locale.strcoll, key=lambda x: unicode_sorter(six.text_type(x)))
                 for choice in filtered:
-                    final_choices.append((choice.pk, unicode(choice)))
+                    final_choices.append((choice.pk, six.text_type(choice)))
             except IndexError:
                 pass
         if len(final_choices) > 1:

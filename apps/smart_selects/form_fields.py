@@ -2,6 +2,7 @@ from smart_selects.widgets import ChainedSelect
 from django.forms.models import ModelChoiceField
 from django.forms import ChoiceField
 from django.apps import apps
+from django.utils import six
 
 
 class ChainedModelChoiceField(ModelChoiceField):
@@ -43,10 +44,10 @@ class GroupedModelSelect(ModelChoiceField):
         final = [("", self.empty_label or "---------"), ]
         group = None
         for item in self.queryset:
-            if not group or group[0] != unicode(getattr(item, self.order_field)):
+            if not group or group[0] != six.text_type(getattr(item, self.order_field)):
                 if group:
                     final.append(group)
-                group = [unicode(getattr(item, self.order_field)), []]
+                group = [six.text_type(getattr(item, self.order_field)), []]
             group[1].append(self.make_choice(item))
         return final
 

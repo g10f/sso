@@ -181,7 +181,7 @@ class JsonDetailView(JSONResponseMixin, PermissionMixin, BaseDetailView):
             self.object = self.get_object()  # update object
             context = self.get_context_data(object=self.object)
             return self.render_to_response(context, status=status_code)
-        except Http404, e:
+        except Http404 as e:
             if self.create_object_with_put:
                 return self.create(request, *args, **kwargs)
             raise ObjectDoesNotExist(str(e))

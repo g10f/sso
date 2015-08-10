@@ -2,7 +2,7 @@ from datetime import date
 from django.conf import settings
 from django.utils.http import int_to_base36, base36_to_int
 from django.utils.crypto import constant_time_compare, salted_hmac
-
+from django.utils import six
 
 class RegistrationTokenGenerator(object):
     """
@@ -55,8 +55,8 @@ class RegistrationTokenGenerator(object):
         # Ensure results are consistent across DB backends
         registered_timestamp = profile.date_registered.replace(microsecond=0, tzinfo=None)
 
-        value = (unicode(profile.id) + unicode(profile.is_validated) +
-                 unicode(registered_timestamp) + unicode(timestamp))
+        value = (six.text_type(profile.id) + six.text_type(profile.is_validated) +
+                 six.text_type(registered_timestamp) + six.text_type(timestamp))
         hash = salted_hmac(key_salt, value).hexdigest()[::2]  # @ReservedAssignment
         return "%s-%s" % (ts_b36, hash)
 

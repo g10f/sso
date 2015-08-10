@@ -14,7 +14,7 @@ class Command(NoArgsCommand):
     def handle(self, *args, **options):
         try:
             update_location()
-        except Exception, e: 
+        except Exception as e:
             logger.error(e)        
 
 

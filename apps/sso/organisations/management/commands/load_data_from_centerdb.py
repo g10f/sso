@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-import urllib2
 import json
 import decimal 
 from django.utils.dateparse import parse_date
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import NoArgsCommand
+from django.utils.six.moves.urllib.request import Request, urlopen
 from ...models import Organisation, OrganisationAddress, OrganisationPhoneNumber, OrganisationCountry
 from sso.emails.models import Email, CENTER_EMAIL_TYPE
 
@@ -25,13 +25,13 @@ class Command(NoArgsCommand):
             self.url = args[0]
         try:
             load_buddhistcenters(self.url)
-        except Exception, e: 
+        except Exception as e:
             logger.error(e)        
         
 
 def get_json(url):
-    conn = urllib2.Request(url)
-    f = urllib2.urlopen(conn)
+    conn = Request(url)
+    f = urlopen(conn)
     return json.load(f, encoding="utf-8")
 
 
@@ -123,7 +123,7 @@ def load_buddhistcenters(url):
             country = Country.objects.get(iso2_code=value)
             OrganisationCountry.objects.get_or_create(country=country)
             return country
-        except ObjectDoesNotExist, e:
+        except ObjectDoesNotExist as e:
             logger.warning("exception %s, country_id: %s", str(e), value)            
         return None
     

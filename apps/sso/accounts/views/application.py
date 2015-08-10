@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta
 import logging
-from urlparse import urlunsplit
+from django.utils.six.moves.urllib.parse import urlunsplit
 
 from django.db.models.expressions import F
 from django.conf import settings
