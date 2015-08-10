@@ -7,8 +7,10 @@ logger = logging.getLogger(__name__)
 
 MAX_AGE = 3600  # one hour
 
+_algorithms = ["RS256", "HS256"]
 
-def make_jwt(payload, max_age=MAX_AGE):
+
+def make_jwt(payload, max_age=MAX_AGE, algorithm="RS256"):
     """Make a signed JWT.
     See http://self-issued.info/docs/draft-jones-json-web-token.html.
     Args:
@@ -21,12 +23,27 @@ def make_jwt(payload, max_age=MAX_AGE):
     if "exp" not in payload:
         payload["exp"] = int(time.time()) + max_age  # add  expired at time
 
-    return encode(payload, key=settings.CERTS['default']['private_key'], algorithm='RS256')
+    if algorithm not in _algorithms:
+        raise NotImplementedError('Algorithm %s not supported', algorithm)
+
+    if algorithm == "RS256":
+        key = settings.CERTS['default']['private_key']
+    elif algorithm == "HS256":
+        key = settings.SECRET_KEY
+
+    return encode(payload, key=key, algorithm=algorithm)
 
 
-def loads_jwt(jwt):
+def loads_jwt(jwt, algorithm="RS256"):
     """
     Reverse of make_jwt(), raises InvalidTokenError if something fails.
     """
-    return decode(jwt, algorithms="RS256", key=settings.CERTS['default']['public_key'],
-                  options={"verify_aud": False, "require_exp": True, "require_iat": True})
+    if algorithm not in _algorithms:
+        raise NotImplementedError('Algorithm %s not supported', algorithm)
+
+    if algorithm == "RS256":
+        key = settings.CERTS['default']['public_key']
+    elif algorithm == "HS256":
+        key = settings.SECRET_KEY
+
+    return decode(jwt, algorithms=[algorithm], key=key, options={"verify_aud": False, "require_exp": True, "require_iat": True})

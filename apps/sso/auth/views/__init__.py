@@ -69,8 +69,7 @@ class LoginView(FormView):
             expiry = 0 if session.get_expire_at_browser_close() else settings.SESSION_COOKIE_AGE
             backend = session[BACKEND_SESSION_KEY]
             device = is_otp_login(user, self.is_two_factor_required)
-            challenge = device.generate_challenge()
-            logger.debug(challenge)
+            device.generate_challenge()
             display = request.GET.get('display')
             token_url = self.get_token_url(user.id, expiry, redirect_url, backend, display, device.id)
             return redirect(token_url)
@@ -93,8 +92,7 @@ class LoginView(FormView):
 
         if device:
             try:
-                challenge = device.generate_challenge()
-                logger.debug(challenge)
+                device.generate_challenge()
                 display = self.request.GET.get('display')
                 self.success_url = self.get_token_url(user.id, expiry, redirect_url, user.backend, display, device.id)
             except StandardError, e:

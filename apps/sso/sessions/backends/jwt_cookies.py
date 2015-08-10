@@ -19,7 +19,7 @@ class SessionStore(SignedCookiesSessionStore):
         raises BadSignature if signature fails.
         """
         try:
-            parsed = loads_jwt(self.session_key)
+            parsed = loads_jwt(self.session_key, algorithm="HS256")
             parsed = map_keys(parsed, inv_key_map)
             if "_auth_user_backend" not in parsed:
                 parsed["_auth_user_backend"] = "sso.auth.backends.EmailBackend"
@@ -42,5 +42,4 @@ class SessionStore(SignedCookiesSessionStore):
             del session_cache["_auth_user_backend"]
         session_cache["iss"] = settings.SSO_BASE_URL
 
-        logger.debug("session_cache: %s", session_cache)
-        return make_jwt(session_cache, max_age=settings.SESSION_COOKIE_AGE)
+        return make_jwt(session_cache, max_age=settings.SESSION_COOKIE_AGE, algorithm="HS256")
