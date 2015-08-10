@@ -346,7 +346,7 @@ LOGGING = {
 try:
     from local_settings import *
 except:
-    print "WARNING: Can not load local_settings files"
+    print("WARNING: Can not load local_settings files")
     SECRET_KEY = '&+!e83r6z$#s(^l^0im#+*7y0s%1#kz%b3qfief)%msrzid-_n'
     CERTS = {
         'default': {

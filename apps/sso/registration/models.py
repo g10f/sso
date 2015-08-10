@@ -13,7 +13,7 @@ from django.utils.http import urlsafe_base64_encode
 from django.core.mail import send_mail
 from django.core import urlresolvers
 from django.contrib.auth.tokens import default_token_generator as default_pwd_reset_token_generator
-from tokens import default_token_generator
+from .tokens import default_token_generator
 from current_user.models import CurrentUserField
 from sso.utils.translation import i18n_email_msg_and_subj
 

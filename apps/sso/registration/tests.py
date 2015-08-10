@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import urlparse
+from django.utils.six.moves.urllib.parse import urlsplit
 import re
 import os
 
@@ -27,7 +27,7 @@ class RegistrationTest(TestCase):
         self.assertGreater(len(outbox), 0)
         urls = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', outbox[-1].body)
         self.assertEqual(len(urls), 1)
-        scheme, netloc, path, query_string, fragment = urlparse.urlsplit(urls[0])  # @UnusedVariable
+        scheme, netloc, path, query_string, fragment = urlsplit(urls[0])  # @UnusedVariable
         return path
 
     def test_default_username_generator(self):
@@ -93,7 +93,7 @@ class RegistrationTest(TestCase):
         data[response.context['hash_field']] = response.context['hash_value']
 
         response = self.client.post(reverse('registration:registration_register'), data=data)
-        print response.content
+        print(response.content)
         self.assertEqual(response.status_code, 302)
 
         path = self.get_url_path_from_mail()

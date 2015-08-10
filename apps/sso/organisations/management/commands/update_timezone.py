@@ -16,7 +16,7 @@ class Command(NoArgsCommand):
     def handle(self, *args, **options):
         try:
             update_timezone()
-        except Exception, e: 
+        except Exception as e:
             logger.error(e)        
 
 

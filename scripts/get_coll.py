@@ -40,13 +40,13 @@ class FileCache(object):
         try:
             with open(self.path, 'r') as f:
                 self.data = json.load(f)
-        except Exception, e:
+        except Exception as e:
             pass
 
     def get(self, key, default=None):
         try:
             return self.data.get(key, default)
-        except Exception, e:
+        except Exception as e:
             pass
 
     def set(self, key, value):
@@ -228,7 +228,7 @@ def main():
     client = ApiClient(base_uri, client_id, client_secret)
     try:
         client.load_collection(resource, args)
-    except Exception, e:
+    except Exception as e:
         logger.exception(e)
 
 

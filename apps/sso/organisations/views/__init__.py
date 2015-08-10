@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import csv
 import logging
-from urlparse import urlunsplit
+from django.utils.six.moves.urllib.parse import urlunsplit
 from django.http.response import HttpResponse
 from django.contrib import messages
 from django.utils.encoding import force_text

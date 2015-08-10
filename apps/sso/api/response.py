@@ -5,7 +5,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.utils.http import same_origin
 from django.http import HttpResponse
 from django.utils.translation import ugettext as _
-from http.http_status import *  # @UnusedWildImport
+from sso.utils.http import *  # @UnusedWildImport
 
 import logging
 

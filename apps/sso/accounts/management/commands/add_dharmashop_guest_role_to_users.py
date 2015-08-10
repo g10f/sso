@@ -44,5 +44,5 @@ class Command(NoArgsCommand):
         users = User.objects.filter(organisations__isnull=False).filter(is_active=True).exclude(pk__in=[o.id for o in q])
         
         for user in users:
-            print user.get_full_name()
+            print(user.get_full_name())
             user.add_default_roles()

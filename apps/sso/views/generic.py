@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-from urlparse import urlunsplit
+from django.utils.six.moves.urllib.parse import urlunsplit
 import logging
 
 from django.contrib import messages

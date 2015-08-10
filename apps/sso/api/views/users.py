@@ -20,12 +20,12 @@ from sso.accounts.models import ApplicationRole, User
 from sso.accounts.email import send_account_created_email
 from sso.organisations.models import Organisation
 from sso.registration import default_username_generator
-from http.http_status import *  # @UnusedWildImport
 from sso.oauth2.decorators import client_required
 from sso.utils.url import base_url, update_url, absolute_url
 from sso.api.decorators import api_user_passes_test, catch_errors
 from sso.api.response import JsonHttpResponse
 from sso.utils.parse import parse_datetime_with_timezone_support
+from sso.utils.http import *  # @UnusedWildImport
 
 import logging
 

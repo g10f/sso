@@ -30,7 +30,7 @@ def add_auth_info_to_session(request, user, **kwargs):
     expiry = getattr(user, '_auth_session_expiry', 0)
     device_id = getattr(user, '_auth_device_id', None)
     request.session.set_expiry(expiry)
-    request.session[SESSION_AUTH_DATE] = long(time.time())
+    request.session[SESSION_AUTH_DATE] = int(time.time())
     if device_id:
         request.session[DEVICE_KEY] = device_id
 

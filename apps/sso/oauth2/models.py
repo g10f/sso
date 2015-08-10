@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import urlparse
+from django.utils.six.moves.urllib.parse import urlparse, urlsplit, urlunsplit
 from django.core.cache import cache
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
@@ -18,11 +18,11 @@ logger = logging.getLogger(__name__)
 
 
 def replace_query_param(url, attr, val):    
-    (scheme, netloc, path, query, fragment) = urlparse.urlsplit(url)
+    (scheme, netloc, path, query, fragment) = urlsplit(url)
     query_dict = QueryDict(query).copy()
     query_dict[attr] = val
     query = query_dict.urlencode()
-    return urlparse.urlunsplit((scheme, netloc, path, query, fragment))
+    return urlunsplit((scheme, netloc, path, query, fragment))
 
 
 def check_redirect_uri(client, redirect_uri):
@@ -37,7 +37,7 @@ def get_oauth2_cancel_url(redirect_to):
     If the redirect_to parameter comes from OAuth2 it contains a redirect_uri, to
     which we want to redirect if the user cancels login
     """
-    query_dict = QueryDict(urlparse.urlsplit(redirect_to).query)
+    query_dict = QueryDict(urlsplit(redirect_to).query)
     if ('redirect_uri'in query_dict) and ('client_id' in query_dict):
         redirect_uri = query_dict['redirect_uri']
         try:
@@ -83,12 +83,12 @@ class ClientManager(AbstractBaseModelManager):
         """
         allowed_hosts = cache.get('allowed_hosts', set())
         if not allowed_hosts:
-            allowed_hosts.add(urlparse.urlparse(settings.SSO_BASE_URL)[1])
+            allowed_hosts.add(urlparse(settings.SSO_BASE_URL)[1])
             for client in self.filter(is_active=True):
                 redirect_uris = client.redirect_uris.split() + [client.default_redirect_uri]
                 for redirect_uri in redirect_uris:
                     if redirect_uri:
-                        netloc = urlparse.urlparse(redirect_uri)[1]
+                        netloc = urlparse(redirect_uri)[1]
                         if netloc:
                             allowed_hosts.add(netloc)
             cache.set('allowed_hosts', set(allowed_hosts))

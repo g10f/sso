@@ -195,7 +195,7 @@ def map_dict2dict(mapping, source_dict, with_defaults=False):
                 if parser is not None:
                     try:
                         new_value = parser(source_dict[key])
-                    except Exception, e:
+                    except Exception as e:
                         logger.exception('could not parse value: %s' % source_dict[key])
                         raise e
                 else:

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-from urlparse import urlunsplit
+from django.utils.six.moves.urllib.parse import urlunsplit
 
 from django.contrib import messages
 from django.shortcuts import get_object_or_404

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 from django.core.urlresolvers import reverse
-from http.http_status import *  # @UnusedWildImport
+from sso.utils.http import *  # @UnusedWildImport
 
 from sso.oauth2.tests import OAuth2BaseTestCase
 
@@ -18,7 +18,7 @@ class ApiTests(OAuth2BaseTestCase):
         uri = reverse('api:v1_user', kwargs={'uuid': 'a8992f0348634f76b0dac2de4e4c83ee'})        
         response = self.client.put(uri, data=self.data, HTTP_AUTHORIZATION=authorization)
         # client_id not allowed
-        self.assertEqual(response.status_code, HTTP_401_UNAUTHORIZED) 
+        self.assertEqual(response.status_code, HTTP_401_UNAUTHORIZED)
         
         authorization = self.get_authorization(client_id='68bfae12a58541548def243e223053fb')
         response = self.client.put(uri, data=self.data, HTTP_AUTHORIZATION=authorization)
