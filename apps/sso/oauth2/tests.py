@@ -3,14 +3,12 @@ from django.utils.six.moves.urllib.parse import urlsplit
 
 import json
 import base64
-from time import sleep, time
-from django.conf import settings
+from time import sleep
 
 from django.http import QueryDict, SimpleCookie
 from django.test import TestCase
-from django.test.client import Client
 from django.core.urlresolvers import reverse
-from sso.auth import SESSION_AUTH_DATE
+from sso.test.client import SSOClient
 
 
 def get_query_dict(url):
@@ -64,7 +62,7 @@ class OAuth2BaseTestCase(TestCase):
     _state = 'eyJub25jZSI6Ik1sSllaUlc3VWdGdyIsInByb3ZpZGVyIjoyLCJuZXh0IjoiLyJ9'
 
     def setUp(self):
-        self.client = Client()
+        self.client = SSOClient()
     
     def logout(self):
         self.client.logout()

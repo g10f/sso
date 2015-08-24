@@ -16,19 +16,28 @@ OAUTH2_CLIENT = {
     'scope': 'openid profile email',
     'response_type': 'code',
     'redirect_uri': 'http://localhost:3001/test',
-    'client_id': os.environ['CLIENT_ID'],
-    'client_secret': os.environ['CLIENT_SECRET'],
-    'username': os.environ['USERNAME'],
-    'password': os.environ['PASSWORD'],
+    'client_id': "31e873e25a614988815544cb00e66ba3",
+    'client_secret': "e0]GN+Rp@O3H}}CDnKxl",
+    'username': "test@g10f.de",
+    'password': ".h!~c.R-rq6e!WY#[rXZ",
 }
 
 # OAUTH2_CLIENT["host"] = 'https://sso.g10f.de'
 # OAUTH2_CLIENT["redirect_uri"] = 'https://sso.g10f.de/test'
-OAUTH2_CLIENT["host"] = 'https://sso-dev.dwbn.org'
+# OAUTH2_CLIENT["host"] = 'https://sso-dev.dwbn.org'
 # OAUTH2_CLIENT["redirect_uri"] = 'https://sso-dev.dwbn.org/test'
-OAUTH2_CLIENT["redirect_uri"] = 'urn:ietf:wg:oauth:2.0:oob'
-# OAUTH2_CLIENT["host"] = 'http://localhost:8000'
-# OAUTH2_CLIENT["redirect_uri"] = 'urn:ietf:wg:oauth:2.0:oob'
+#OAUTH2_CLIENT["redirect_uri"] = 'urn:ietf:wg:oauth:2.0:oob'
+
+if "CLIENT_ID" in os.environ:
+    OAUTH2_CLIENT["client_id"] = os.environ['CLIENT_ID']
+if "USERNAME" in os.environ:
+    OAUTH2_CLIENT["username"] = os.environ['USERNAME']
+if "PASSWORD" in os.environ:
+    OAUTH2_CLIENT["password"] = os.environ['PASSWORD']
+if "CLIENT_SECRET" in os.environ:
+    OAUTH2_CLIENT["client_secret"] = os.environ['CLIENT_SECRET']
+
+
 
 
 class UserBehavior(TaskSet):    
@@ -84,6 +93,7 @@ class UserBehavior(TaskSet):
         content = json.loads(response.content)
         # print(content)
         # get userinfo
+        return
         headers = {
             'accept': 'application/json',
             'authorization': '%s %s' % (content['token_type'], content['access_token'])

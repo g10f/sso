@@ -1,10 +1,12 @@
+import logging
 from django.core.exceptions import ObjectDoesNotExist
-# from django.db.models import Q
-# from django.contrib.auth import get_user_model
 from sso.accounts.models import User
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.models import Permission
 import re
+
+logger = logging.getLogger(__name__)
+
 
 EMAIL_RE = re.compile(
     r"(^[-!#$%&'*+/=?^_`{}|~0-9A-Z]+(\.[-!#$%&'*+/=?^_`{}|~0-9A-Z]+)*"  # dot-atom
@@ -29,6 +31,15 @@ class SSOBackend(ModelBackend):
             perms = perms.values_list('content_type__app_label', 'codename').order_by()
             user_obj._sso_group_perm_cache = set(["%s.%s" % (ct, name) for ct, name in perms])
         return user_obj._sso_group_perm_cache
+
+    def get_user(self, user_id):
+        try:
+            return User.objects.get(uuid=user_id)
+        except User.DoesNotExist:
+            return None
+        except Exception as e:
+            logger.error(e)
+        return None
 
 
 class EmailBackend(SSOBackend):

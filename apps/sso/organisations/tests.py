@@ -4,17 +4,17 @@ import re
 from django.conf import settings
 from django.core import mail
 from django.test import TestCase
-from django.test.client import Client
 from django.core.urlresolvers import reverse
 from sso.organisations.models import OrganisationCountry, Organisation
 from sso.accounts.models import User, update_or_create_organisation_account
+from sso.test.client import SSOClient
 
 
 class OrganisationssTest(TestCase):
     fixtures = ['roles.json', 'app_roles.json', 'test_l10n_data.xml', 'test_organisation_data.json', 'test_app_roles.json', 'test_user_data.json']
 
     def setUp(self):
-        self.client = Client()
+        self.client = SSOClient()
     
     def tearDown(self):
         pass

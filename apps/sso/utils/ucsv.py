@@ -55,16 +55,19 @@ def dic_from_csv(reader, key_row=0):
         
     return dic
 
+
 def list_from_csv(reader):
     row_list = [] 
     for key, row in csv_map(reader):  # @UnusedVariable
         row_list.append(row)
     return row_list
 
+
 def unicode_csv_reader(utf8_data, dialect=csv.excel, **kwargs):
     csv_reader = csv.reader(utf8_data, dialect=dialect, **kwargs)
     for row in csv_reader:
         yield [six.text_type(cell, 'utf-8-sig') for cell in row]
+
 
 class UTF8Recoder:
     """
@@ -78,6 +81,7 @@ class UTF8Recoder:
 
     def next(self):  # @ReservedAssignment
         return self.reader.next().encode("utf-8")
+
 
 class UnicodeReader:
     """
@@ -95,6 +99,7 @@ class UnicodeReader:
 
     def __iter__(self):
         return self
+
 
 class UnicodeWriter:
     """

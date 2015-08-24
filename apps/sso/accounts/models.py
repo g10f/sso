@@ -260,14 +260,6 @@ class User(AbstractBaseUser, PermissionsMixin):
             ("read_user", "Can read user data"),
             ("access_all_users", "Can access all users"),
         )
-
-    def get_session_auth_hash(self):
-        """
-        Returns an HMAC of the password field.
-        """
-        key_salt = "_auth_user_hash"
-        return salted_hmac(key_salt, self.password).hexdigest()
-
     def get_full_name(self):
         """
         Returns the first_name plus the last_name, with a space in between.
@@ -355,7 +347,6 @@ class User(AbstractBaseUser, PermissionsMixin):
             last_modified_list += [obj.last_modified for obj in self.userphonenumber_set.all()]
         else:
             last_modified_list += self.userphonenumber_set.values_list("last_modified", flat=True)
-        
         last_modified = max(last_modified_list)
         return last_modified
 
@@ -941,9 +932,12 @@ def update_user(sender, instance, created, **kwargs):
         instance.save()
 
 
-"""
-@receiver(user_logged_in)
-def add_cache_key(request, user, **kwargs):
-    cache_key = ",".join([org.uuid.hex for org in user.get_profile().organisations.all().only('uuid')[:10]])
-    request.session['_auth_cache_key'] = cache_key
-"""
+@receiver(signals.post_save, sender=UserEmail)
+def update_last_modified(sender, instance, created, **kwargs):
+    """
+    A signal receiver which updates the last_modified date for
+    the user.
+    """
+    user = instance.user
+    user.last_modified = timezone.now()
+    user.save(update_fields=['last_modified'])

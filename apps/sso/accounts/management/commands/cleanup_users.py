@@ -1,15 +1,11 @@
 # -*- coding: utf-8 -*-
 import os
+import logging
+
 from django.core.management.base import BaseCommand
 from django.conf import settings
-from django.utils.dateformat import format
 from sso.registration.models import RegistrationProfile
-
-from sso.utils.ucsv import UnicodeReader, UnicodeWriter, dic_from_csv
-
 from sso.accounts.models import User, RoleProfile
-
-import logging
 from django.core.exceptions import ObjectDoesNotExist
 
 logger = logging.getLogger(__name__)
