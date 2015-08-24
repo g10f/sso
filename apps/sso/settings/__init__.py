@@ -19,7 +19,6 @@ else:
     DEBUG = False
     LOCAL_DEV = False
 
-TEMPLATE_DEBUG = DEBUG
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))  # django 1.7 settings
 
 SSO_BRAND = 'G10F'
@@ -117,13 +116,13 @@ STATIC_URL = '/static/'
 
 if DEBUG:
     # don't use cached loader
-    TEMPLATE_LOADERS = [
+    LOADERS = [
         'django.template.loaders.filesystem.Loader',
         'django.template.loaders.app_directories.Loader',
         'django.template.loaders.eggs.Loader',
     ]
 else:
-    TEMPLATE_LOADERS = [
+    LOADERS = [
         ('django.template.loaders.cached.Loader', (
             'django.template.loaders.filesystem.Loader',
             'django.template.loaders.app_directories.Loader',
@@ -150,7 +149,8 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'sso.context_processors.settings',
             ],
-            'loaders': TEMPLATE_LOADERS
+            'loaders': LOADERS,
+            'debug': DEBUG
         },
     },
 ]

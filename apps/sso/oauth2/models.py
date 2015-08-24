@@ -5,7 +5,6 @@ from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.conf import settings
-# from django.contrib.auth.signals import user_logged_in
 from django.http import QueryDict
 from django.utils.translation import ugettext_lazy as _
 from sso.accounts.models import Application
@@ -127,10 +126,6 @@ class Client(AbstractBaseModel):
     def client_id(self):
         return self.uuid.hex
 
-    def get_session_auth_hash(self):
-        key_salt = "sso.oauth2.models.Client"
-        return salted_hmac(key_salt, self.client_secret).hexdigest()
-        
     def get_absolute_url(self):
         return reverse('oauth2:client.details.json', args=[str(self.id)])
 

@@ -126,7 +126,7 @@ def openid_configuration(request):
         "certs_uri": '%s%s' % (base_uri, reverse('oauth2:certs')),
         "profile_uri": '%s%s' % (base_uri, reverse('accounts:profile'))
     }
-    return JsonHttpResponse(configuration, request)
+    return JsonHttpResponse(configuration, request, allow_jsonp=True)
 
 
 class SessionView(TemplateView):

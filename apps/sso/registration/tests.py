@@ -5,11 +5,12 @@ import os
 
 from django.core import mail
 from django.test import TestCase
-from django.test.client import Client
 from django.core.urlresolvers import reverse
 
 from sso.registration import default_username_generator
 from sso.organisations.models import Organisation
+from sso.test.client import SSOClient
+
 
 class RegistrationTest(TestCase):
     fixtures = ['roles.json', 'app_roles.json', 'test_l10n_data.xml', 'test_organisation_data.json', 'test_app_roles.json',
@@ -17,7 +18,7 @@ class RegistrationTest(TestCase):
 
     def setUp(self):
         os.environ['NORECAPTCHA_TESTING'] = 'True'
-        self.client = Client()
+        self.client = SSOClient()
     
     def tearDown(self):
         del os.environ['NORECAPTCHA_TESTING']

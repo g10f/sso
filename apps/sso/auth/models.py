@@ -25,16 +25,6 @@ from sso.auth.forms import AuthenticationTokenForm, U2FForm
 logger = logging.getLogger(__name__)
 
 
-@receiver(user_logged_in)
-def add_auth_info_to_session(request, user, **kwargs):
-    expiry = getattr(user, '_auth_session_expiry', 0)
-    device_id = getattr(user, '_auth_device_id', None)
-    request.session.set_expiry(expiry)
-    request.session[SESSION_AUTH_DATE] = int(time.time())
-    if device_id:
-        request.session[DEVICE_KEY] = device_id
-
-
 class Device(AbstractBaseModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, help_text="The user that this device belongs to.")
     name = models.CharField(max_length=255, blank=True, help_text="The human-readable name of this device.")

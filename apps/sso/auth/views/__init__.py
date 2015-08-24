@@ -12,31 +12,17 @@ from django.contrib.auth import REDIRECT_FIELD_NAME, get_user_model, BACKEND_SES
 from django.core import signing
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.utils.translation import ugettext_lazy as _
+from throttle.decorators import throttle
 from sso.auth.forms import EmailAuthenticationForm, AuthenticationTokenForm
 from sso.auth.models import Device
 from sso.auth.utils import get_safe_login_redirect_url, get_request_param, get_device_classes
 from sso.oauth2.models import get_oauth2_cancel_url
-from django.contrib.auth import login as auth_login
-from throttle.decorators import throttle
+from sso.auth import is_otp_login, auth_login
 
 SALT = 'sso.auth.views.LoginView'
 TWO_FACTOR_PARAM = 'two_factor'
 
 logger = logging.getLogger(__name__)
-
-
-def is_otp_login(user, is_two_factor_required):
-    if hasattr(user, 'sso_auth_profile'):
-        profile = user.sso_auth_profile
-        if (profile.default_device and profile.is_otp_enabled) or (profile.default_device and is_two_factor_required):
-            return profile.default_device
-
-    if is_two_factor_required:
-        # if the user has not enabled two_factor as default but a confirmed device
-        # we return the first device of the user
-        return user.device_set.filter(confirmed=True).first()
-
-    return None
 
 
 class LoginView(FormView):

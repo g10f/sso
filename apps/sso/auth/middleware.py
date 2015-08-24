@@ -4,6 +4,7 @@ from sso.auth import DEVICE_KEY
 
 logger = logging.getLogger(__name__)
 
+
 class IsVerified(object):
     """ A pickle-friendly lambda. """
     def __init__(self, user):
@@ -21,6 +22,7 @@ http://schemas.openid.net/pape/policies/2007/06/phishing-resistant
 http://schemas.openid.net/pape/policies/2007/06/multi-factor
 http://schemas.openid.net/pape/policies/2007/06/multi-factor-physical
 """
+
 
 class OTPMiddleware(object):
     """

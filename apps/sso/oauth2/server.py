@@ -14,6 +14,7 @@ from oauthlib import oauth2, uri_validate
 from oauthlib.oauth2.rfc6749.tokens import random_token_generator
 from .models import BearerToken, RefreshToken, AuthorizationCode, Client, check_redirect_uri
 from .crypt import loads_jwt, make_jwt, MAX_AGE
+from sso.auth import get_session_auth_hash
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +43,7 @@ def default_token_generator(request, max_age=MAX_AGE, refresh_token=False):
             'scope': ' '.join(request.scopes),  # custom, required
             # session authentication hash,
             # see django.contrib.auth.middleware.SessionAuthenticationMiddleware
-            'sa_hash': request.client.get_session_auth_hash(),  # custom, required
+            'at_hash': get_session_auth_hash(user, request.client),  # custom, required
         }
         return make_jwt(claim_set)
 
