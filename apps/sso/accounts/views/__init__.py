@@ -27,6 +27,8 @@ from sso.accounts.email import send_useremail_confirmation
 from sso.accounts.forms import PasswordResetForm, SetPasswordForm, PasswordChangeForm, ContactForm, AddressForm, PhoneNumberForm, \
     SelfUserEmailForm, SetPictureAndPasswordForm
 from sso.accounts.forms import UserSelfProfileForm, UserSelfProfileDeleteForm, CenterSelfProfileForm
+from sso.auth import update_session_auth_hash
+
 import logging
 
 logger = logging.getLogger(__name__)
@@ -54,20 +56,36 @@ def contact(request):
     return render(request, 'accounts/contact_form.html', dictionary)
 
 
+@sensitive_post_parameters()
+@csrf_protect
+@login_required
 def password_change(request):
     """
     Handles the "change password" task -- both form display and validation.
     """
     from django.contrib.auth.views import password_change
     redirect_uri = get_safe_redirect_uri(request, allowed_hosts())
-    success_url = update_url(reverse('accounts:password_change_done'), {'redirect_uri': redirect_uri})
-    defaults = {
-        'extra_context': {'redirect_uri': redirect_uri},
-        'password_change_form': PasswordChangeForm,
-        'post_change_redirect': success_url,
-        'template_name': 'accounts/password_change_form.html',
+    post_change_redirect = update_url(reverse('accounts:password_change_done'), {'redirect_uri': redirect_uri})
+    template_name = 'accounts/password_change_form.html'
+    if request.method == "POST":
+        form = PasswordChangeForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            form.save()
+            # Updating the password logs out all other sessions for the user
+            # except the current one if
+            # django.contrib.auth.middleware.SessionAuthenticationMiddleware
+            # is enabled.
+            update_session_auth_hash(request, form.user)
+            return HttpResponseRedirect(post_change_redirect)
+    else:
+        form = PasswordChangeForm(user=request.user)
+    context = {
+        'form': form,
+        'title': _('Password change'),
     }
-    return password_change(request, **defaults)
+    context.update({'redirect_uri': redirect_uri})
+
+    return TemplateResponse(request,template_name, context)
 
 
 def password_change_done(request):
