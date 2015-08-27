@@ -96,6 +96,20 @@ def get_session_auth_hash(user, client=None):
     return salted_hmac(key_salt, data).hexdigest()
 
 
+def update_session_auth_hash(request, user):
+    """
+    Updating a user's password logs out all sessions for the user if
+    django.contrib.auth.middleware.SessionAuthenticationMiddleware is enabled.
+
+    This function takes the current request and the updated user object from
+    which the new session hash will be derived and updates the session hash
+    appropriately to prevent a password change from logging out the session
+    from which the password was changed.
+    """
+    if request.user == user:
+        request.session[HASH_SESSION_KEY] = get_session_auth_hash(user)
+
+
 def get_user(request, client=None):
     """
     Returns the user model instance associated with the given request session.
