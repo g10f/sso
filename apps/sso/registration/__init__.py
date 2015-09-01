@@ -1,6 +1,5 @@
 import re
 from django.utils.text import capfirst
-from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import get_user_model
 
 
@@ -36,7 +35,7 @@ def default_username_generator(first_name, last_name, user=None):
     username_pattern = r'%s(?P<no>[0-9]+)' % username
     prog = re.compile(username_pattern)
     for user in users:
-        m = prog.match(user.username)  # we should alway find a match, because of the filter
+        m = prog.match(user.username)  # we should always find a match, because of the filter
         result = m.groupdict()
         no = 0 if not result['no'] else result['no']
         existing.add(int(no))

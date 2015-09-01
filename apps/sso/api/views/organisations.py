@@ -25,6 +25,7 @@ class OrganisationMixin(object):
             'is_private': obj.is_private,
             'name': u'%s' % obj.name,
             'name_native': u'%s' % obj.name_native,
+            'slug': u'%s' % obj.slug,
             'email': u'%s' % obj.email,
             'founded': obj.founded,
             'center_type': obj.center_type,

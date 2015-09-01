@@ -1,4 +1,6 @@
 import logging
+import re
+from django.utils.text import slugify
 
 from pytz import timezone
 from sorl import thumbnail
@@ -8,7 +10,7 @@ from django.conf import settings
 from django.db import models
 from django.contrib.gis.db import models as gis_models
 from django.contrib.gis import measure
-from django.db.models.signals import post_delete
+from django.db.models.signals import post_delete, pre_save
 from django.dispatch import receiver
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
@@ -189,6 +191,7 @@ class Organisation(AbstractBaseModel):
                                      limit_choices_to={'is_active': True}) 
     email = models.ForeignKey(Email, verbose_name=_("email address"), blank=True, null=True, limit_choices_to={'email_type': CENTER_EMAIL_TYPE},
                               on_delete=models.SET_NULL)
+    slug = models.SlugField(_("Slug Name"), unique=True, help_text=_("Used for URLs, auto-generated from name if blank"), max_length=255)
     homepage = models.URLField(_("homepage"), blank=True,)
     google_plus_page = URLFieldEx(domain='plus.google.com', verbose_name=_("Google+ page"), blank=True)
     facebook_page = URLFieldEx(domain='www.facebook.com', verbose_name=_("Facebook page"), blank=True)
@@ -419,3 +422,45 @@ def post_delete_phone(sender, instance, **kwargs):
 def post_delete_address(sender, instance, **kwargs):
     if instance:
         instance.organisation.save(update_fields=['last_modified'])
+
+
+def default_unique_slug_generator(slug, organisation=None):
+    """
+    search for existing slugs and create a new one with a not existing number
+    after slug if necessary
+    """
+
+    if organisation is not None:
+        exists = Organisation.objects.filter(slug=slug).exclude(pk=organisation.pk).exists()
+    else:
+        exists = Organisation.objects.filter(slug=slug).exists()
+    if not exists:
+        return slug
+
+    slug_pattern = r'^%s-([0-9]+)$' % slug
+    organisations = Organisation.objects.filter(slug__regex=slug_pattern)
+
+    existing = set()
+    slug_pattern = r'%s-(?P<no>[0-9]+)' % slug
+    prog = re.compile(slug_pattern)
+    for organisation in organisations:
+        m = prog.match(organisation.slug)  # we should always find a match, because of the filter
+        result = m.groupdict()
+        no = 0 if not result['no'] else result['no']
+        existing.add(int(no))
+
+    new_no = 1
+    while new_no in existing:
+        new_no += 1
+
+    slug = u"%s-%d" % (slug, new_no)
+    return slug
+
+
+@receiver(pre_save, sender=Organisation)
+def create_slug(sender, instance, raw, **kwargs):
+    if instance.slug == "":
+        if raw:
+            instance.slug = slugify(instance.name)
+        else:
+            instance.slug = default_unique_slug_generator(slugify(instance.name), instance)
