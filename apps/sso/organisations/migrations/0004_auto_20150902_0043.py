@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='organisation',
             name='slug',
-            field=models.SlugField(help_text='Used for URLs, auto-generated from name if blank', unique=True, max_length=255, verbose_name='Slug Name'),
+            field=models.SlugField(max_length=255, blank=True, help_text='Used for URLs, auto-generated from name if blank', unique=True, verbose_name='Slug Name'),
         ),
     ]

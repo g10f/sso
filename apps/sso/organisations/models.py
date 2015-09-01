@@ -191,7 +191,7 @@ class Organisation(AbstractBaseModel):
                                      limit_choices_to={'is_active': True}) 
     email = models.ForeignKey(Email, verbose_name=_("email address"), blank=True, null=True, limit_choices_to={'email_type': CENTER_EMAIL_TYPE},
                               on_delete=models.SET_NULL)
-    slug = models.SlugField(_("Slug Name"), unique=True, help_text=_("Used for URLs, auto-generated from name if blank"), max_length=255)
+    slug = models.SlugField(_("Slug Name"), blank=True, unique=True, help_text=_("Used for URLs, auto-generated from name if blank"), max_length=255)
     homepage = models.URLField(_("homepage"), blank=True,)
     google_plus_page = URLFieldEx(domain='plus.google.com', verbose_name=_("Google+ page"), blank=True)
     facebook_page = URLFieldEx(domain='www.facebook.com', verbose_name=_("Facebook page"), blank=True)
