@@ -4,7 +4,7 @@ from django.utils.http import urlsafe_base64_decode
 from django.conf import settings
 from django.shortcuts import render, redirect, resolve_url
 from django.views.decorators.debug import sensitive_post_parameters
-from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
 from django.views.decorators.cache import never_cache
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth import REDIRECT_FIELD_NAME, logout as auth_logout
@@ -387,6 +387,7 @@ def delete_profile(request):
 
 
 # Doesn't need csrf_protect since no-one can guess the URL
+@csrf_exempt
 @sensitive_post_parameters()
 @never_cache
 def password_create_confirm(request, uidb64=None, token=None, template_name='accounts/password_create_confirm.html'):
