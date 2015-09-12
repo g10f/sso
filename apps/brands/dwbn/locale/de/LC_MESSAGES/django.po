@@ -275,6 +275,12 @@ msgctxt "Organisation Type"
 msgid "Group & Retreat"
 msgstr "Buddhistische Gruppe & Retreatstelle"
 
+msgid "Please select a profile picture and enter your new password twice so we can verify you typed it in correctly."
+msgstr "Willkommen im \"Diamond Way Buddhism Network\" (DWBN). "
+"Du hast es fast geschafft. Bitte lade ein Bild von Deinem strahlendem Gesicht hoch und wähle ein Passwort aus. "
+"Anschließend kannst Du Dich anmelden und genießen."
+
+
 # brand
 #msgid "Log in with your %(brand)s account"
 #msgstr "Mit Deinem Diamantweg-Konto anmelden"

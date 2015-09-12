@@ -4,8 +4,6 @@ from binascii import unhexlify
 import json
 import logging
 import time
-from django.contrib.auth import user_logged_in
-from django.dispatch import receiver
 
 import requests
 from u2flib_server import u2f_v2
@@ -19,7 +17,6 @@ from sso.models import AbstractBaseModel
 from sso.utils.translation import string_format
 from sso.auth.oath import TOTP
 from sso.auth.utils import random_hex, hex_validator
-from sso.auth import SESSION_AUTH_DATE, DEVICE_KEY
 from sso.auth.forms import AuthenticationTokenForm, U2FForm
 
 logger = logging.getLogger(__name__)
