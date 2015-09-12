@@ -152,7 +152,6 @@ def update_object_from_dict(destination, source_dict, key_mapping=None):
         transformation = None
 
         if key in key_mapping:
-            field_name = key_mapping[key]            
             if isinstance(key_mapping[key], tuple):
                 (field_name, transformation) = key_mapping[key]
             else:

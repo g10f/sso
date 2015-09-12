@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
-import decimal 
+import decimal
+import uuid
 from django.utils.dateparse import parse_date
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.management.base import NoArgsCommand
@@ -64,7 +65,7 @@ def update_adresses(addresses, organisation):
             country = Country.objects.get(iso2_code=address_item['country_iso2_code'])
             address, created = OrganisationAddress.objects.get_or_create(address_type=address_type[0], organisation=organisation, defaults={'country': country})
             address_item['country'] = country
-            update_object_from_dict(address, address_item, key_mapping={'is_default_postal': 'primary', 'state': 'region' })
+            update_object_from_dict(address, address_item, key_mapping={'is_default_postal': 'primary', 'state': 'region'})
         else:
             try:
                 address = OrganisationAddress.objects.get(address_type=address_type[0], organisation=organisation)
@@ -140,6 +141,9 @@ def load_buddhistcenters(url):
         if value is None:
             return value        
         return decimal.Decimal(str(value))
+
+    def to_uuid(value):
+        return uuid.UUID(value)
     
     key_mapping = {
         'centertype': 'center_type',
@@ -149,7 +153,8 @@ def load_buddhistcenters(url):
         'founded': ('founded', parse_date),
         'country_iso2_code': ('country', get_country),
         'email': ('email', get_email),
-        'alias': 'name_native'
+        'alias': 'name_native',
+        'uuid': ('uuid', to_uuid)
     }
     
     buddhistcenters = get_json(url)
