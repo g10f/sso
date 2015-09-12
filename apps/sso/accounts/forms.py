@@ -296,7 +296,7 @@ class UserAddForm(forms.ModelForm):
         self.fields['role_profiles'].choices = [(role_profile.id, role_profile) for role_profile in user.get_administrable_role_profiles()]
         # add custom data
         self.fields['role_profiles'].dictionary = {str(role_profile.id): role_profile for role_profile in user.get_administrable_role_profiles()}
-        self.fields['organisation'].queryset = user.get_administrable_user_organisations()
+        self.fields['organisation'].queryset = user.get_administrable_user_organisations().filter(is_active=True)
         if not user.has_perm("accounts.access_all_users"):
             self.fields['organisation'].required = True
 
