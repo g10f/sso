@@ -543,8 +543,41 @@ UserList.permissions_tests = {
 @login_required
 @permission_required(["accounts.access_all_users", "accounts.read_user"], raise_exception=True)
 def user_emails(request):
+    qs = UserEmail.objects.filter(user__is_active=True, user__is_center=False, user__last_login__isnull=False, primary=True)
+
+    username = request.GET.get('q', None)
+    if username:
+        qs = qs.filter(Q(user__first_name__icontains=username) | Q(user__last_name__icontains=username))
+
+    country_group_id = request.GET.get('country_group_id', None)
+    if country_group_id:
+        qs = qs.filter(user__organisations__country__organisationcountry__country_groups__uuid=country_group_id)
+
+    country = request.GET.get('country', None)
+    if country:
+        qs = qs.filter(user__organisations__country__iso2_code__iexact=country)
+
+    region_id = request.GET.get('region_id', None)
+    if region_id:
+        qs = qs.filter(user__organisations__admin_region__uuid=region_id)
+
+    org_id = request.GET.get('org_id', None)
+    if org_id:
+        qs = qs.filter(user__organisations__uuid=org_id)
+
+    app_uuid = request.GET.get('app_id', None)
+    if app_uuid:
+        qs = qs.filter(user__application_roles__application__uuid=app_uuid)
+
+    modified_since = request.GET.get('modified_since', None)
+    if modified_since:  # parse modified_since
+        parsed = parse_datetime_with_timezone_support(modified_since)
+        if parsed is None:
+            raise ValueError("can not parse %s" % modified_since)
+        qs = qs.filter(Q(user__last_modified__gte=parsed) | Q(user__useraddress__last_modified__gte=parsed) | Q(user__userphonenumber__last_modified__gte=parsed))
+
     email_list = []
-    for user_email in UserEmail.objects.filter(user__is_active=True, user__is_center=False, user__last_login__isnull=False, primary=True):
+    for user_email in qs:
         email_list.append(user_email.email + '\n')
 
     response = HttpResponse(content_type='text')

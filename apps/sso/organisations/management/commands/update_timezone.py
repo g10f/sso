@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
-import datetime
 import logging
-
-import pytz
 
 from django.core.management.base import NoArgsCommand
 from sso.organisations.models import Organisation
