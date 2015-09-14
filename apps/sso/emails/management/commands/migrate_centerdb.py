@@ -17,7 +17,16 @@ logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
     help = 'Update Groups'  # @ReservedAssignment
-    
+
+    """
+    _country_groups.txt
+    _regions.txt
+    centerlist.txt
+    emailliste.txt
+    mailinglistmembers_gunnar.txt
+    centerforwards_gunnar.txt
+    guide_email_gunnar.txt
+    """
     def handle(self, *args, **options):
         update_country_groups()
         update_centers()
@@ -37,8 +46,8 @@ def update_guide_emails():
         name = guide_email['City']
         try:
             email_obj = Email.objects.get(email=email_value)
-            if email_obj.groupemail_set.exists():
-                group_email = email_obj.groupemail_set.first()
+            if email_obj.groupemail:
+                group_email = email_obj.groupemail
                 group_email.is_guide_email = True
                 group_email.name = name
                 group_email.save()
@@ -212,4 +221,4 @@ def update_countries():
             organisation_country.save()
         except ObjectDoesNotExist:
             country = Country.objects.get(iso2_code=iso2_code)
-            organisation_country = OrganisationCountry.objects.create(country=country, email=email_obj)
+            OrganisationCountry.objects.create(country=country, email=email_obj)

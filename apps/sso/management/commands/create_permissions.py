@@ -4,7 +4,6 @@ from django.apps import apps
 
 from django.db import DEFAULT_DB_ALIAS
 from django.core.management.base import BaseCommand
-# from django.db.models import get_models, get_app
 from django.contrib.auth.management import create_permissions
 
 
