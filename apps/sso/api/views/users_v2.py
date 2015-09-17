@@ -67,7 +67,7 @@ API_USER_MAPPING = {
     'birth_date': {'name': 'dob', 'parser': _parse_date},
     'homepage': 'homepage',
     'language': 'language',
-    'uuid': 'uuid'  # this value is created in JsonDetailView.create from the url
+    'uuid': 'uuid',  # this value is created in JsonDetailView.create from the url
 }
 API_ADDRESS_MAP = {
     'address_type': {'name': 'address_type', 'validate': lambda x: len(x) > 0, 'default': UserAddress.ADDRESSTYPE_CHOICES[0][0]}, 
@@ -336,7 +336,9 @@ class UserDetailView(UserMixin, JsonDetailView):
 
     def save_object_data(self, request, data):
         obj = self.object
+
         object_data = map_dict2dict(API_USER_MAPPING, data)
+        object_data['is_active'] = True
         
         # if 'email' not in object_data:
         #    raise ValueError(_("E-mail value is missing"))
