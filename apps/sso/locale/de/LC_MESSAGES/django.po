@@ -2108,10 +2108,8 @@ msgid "Move app to other device"
 msgstr ""
 
 #: auth/templates/auth/include/u2f_profile.html:3
-#, fuzzy
-#| msgid "Log in with your %(brand)s account"
 msgid "Login with your U2F Device"
-msgstr "Mit Deinem %(brand)s-Konto anmelden"
+msgstr "Mit Deinem U2F-Gerät anmelden"
 
 #: auth/templates/auth/login.html:28
 #, python-format

@@ -70,6 +70,15 @@ class LastLogin(object):
         return 'last_login'
 
 
+class OrganisationField(object):
+    verbose_name = _('organisation')
+    sortable = True
+    ordering_field = 'organisations'
+
+    def __str__(self):
+        return 'organisation'
+
+
 class ValidUntil(object):
     verbose_name = _('valid until')
     sortable = True
@@ -93,9 +102,9 @@ class UserList(ListView):
     @property
     def list_display(self):
         if settings.SSO_VALIDATION_PERIOD_IS_ACTIVE:
-            return ['username', 'picture', 'first_name', 'last_name', _('primary email'), LastLogin(), 'date_joined', ValidUntil()]
+            return ['username', 'picture', 'last_name', _('primary email'), OrganisationField(),LastLogin(), 'date_joined', ValidUntil()]
         else:
-            return ['username', 'picture', 'first_name', 'last_name', _('primary email'), LastLogin(), 'date_joined']
+            return ['username', 'picture', 'last_name', _('primary email'), OrganisationField(),LastLogin(), 'date_joined']
 
     def get_queryset(self):
         """
@@ -104,7 +113,8 @@ class UserList(ListView):
         """
         user = self.request.user
 
-        qs = super(UserList, self).get_queryset().only('uuid', 'last_login', 'username', 'first_name', 'last_name', 'date_joined', 'picture', 'valid_until').prefetch_related('useremail_set')
+        qs = super(UserList, self).get_queryset().only('uuid', 'last_login', 'username', 'first_name', 'last_name', 'date_joined', 'picture', 'valid_until')\
+            .prefetch_related('useremail_set', 'organisations')
         qs = user.filter_administrable_users(qs)
             
         self.cl = main.ChangeList(self.request, self.model, self.list_display, default_ordering=[OrderByWithNulls(F('last_login'), descending=True)])

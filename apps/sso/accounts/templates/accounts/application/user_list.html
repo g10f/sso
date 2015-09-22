@@ -53,7 +53,9 @@
                             {% if user_obj.picture %}<a href="{{ user_obj.picture.url }}">{% thumbnail user_obj.picture "30x30" crop="center" as im %}
                                 <img class="dwbn-icon-user" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="">{% endthumbnail %}</a>{% endif %}
                         </td>
+                        {% comment %}
                         <td>{{ user_obj.first_name }}</td>
+                        {% endcomment %}
                         <td>{{ user_obj.last_name }}</td>
                         <td>
                             {% with primary_email=user_obj.primary_email %}
@@ -62,6 +64,7 @@
                                 {% endif %}
                             {% endwith %}
                         </td>
+                        <td>{{ user_obj.organisations.first.name|default_if_none:"" }}</td>
                         <td>{{ user_obj.last_login|date:"Y-m-d H:i" }}</td>
                         <td>{{ user_obj.date_joined|date:"Y-m-d H:i" }}</td>
                         {% if sso_validation_period_is_active %}
