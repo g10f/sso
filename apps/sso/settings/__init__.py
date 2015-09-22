@@ -341,17 +341,12 @@ LOGGING = {
     },
 }
 
-
-# Load the local settings
-try:
-    from local_settings import *
-except:
-    print("WARNING: Can not load local_settings files")
-    SECRET_KEY = '&+!e83r6z$#s(^l^0im#+*7y0s%1#kz%b3qfief)%msrzid-_n'
-    CERTS = {
-        'default': {
-            'uuid': 'f1aafae7b7764055926078b32fe81e5b',
-            'public_key': """-----BEGIN PUBLIC KEY-----
+# overwrite the secrets in your local_settings.py
+SECRET_KEY = '7pvncv391)#rz%dhocfmic_#+(p**284lnsx2j#s)$n5ln-hnk'
+CERTS = {
+    'default': {
+        'uuid': 'f1aafae7b7764055926078b32fe81e5b',
+        'public_key': """-----BEGIN PUBLIC KEY-----
 MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC6B4KKFYlfMCM236RqBAs7pR+6
 TtyYicTRJv/amdUSWC3LwMkZhneFx/NflaRR24DwLjoYAiVoNDFn7NEfUCyqzo0u
 6daXmT95axOl7xUCpIC6TJB4kg5sZXiatvAmYURGIDC9DvbDcfpj0mAd4iVqpggw
@@ -386,5 +381,11 @@ XznDRAGdP4gqBsiN8J3jij9j1kYNKFwaFWfua1sGAonbJRas3cezhUD57PpiQnhp
 vvmsEC0q1M/PA1HgfK8YoVttgp1j2i5rCpwnMRxewK609gP+79P+j8hBBhK/c+Ho
 9GB1oNtr9KHp6BpxXPo+Ag==
 -----END CERTIFICATE-----"""
-        }         
-    }    
+    }
+}
+
+# Load the local settings
+try:
+    from local_settings import *
+except:
+    print("WARNING: Can not load local_settings files")
