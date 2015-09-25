@@ -120,9 +120,18 @@ class OrganisationList(OrganisationMixin, JsonListView):
                                                                            'organisationphonenumber_set', 'organisationpicture_set').distinct()
         
         is_active = self.request.GET.get('is_active', None)
-        if is_active:
-            is_active = is_active in ['True', 'true', '1', 'yes', 'Yes', 'Y', 'y']
-            qs = qs.filter(is_active=is_active)
+        if is_active in ['True', 'true', '1', 'yes', 'Yes', 'Y', 'y']:
+            qs = qs.filter(is_active=True)
+        elif is_active in ['False', 'false', '0', 'no', 'No', 'N', 'n']:
+            qs = qs.filter(is_active=False)
+
+        with_unofficial = self.request.GET.get('with_unofficial', 'False')
+        if with_unofficial not in ['True', 'true', '1', 'yes', 'Yes', 'Y', 'y']:
+            qs = qs.exclude(center_type='4')  # exclude Contact
+
+        org_type = self.request.GET.get('org_type', None)
+        if org_type is not None:
+            qs = qs.filter(center_type=org_type)
 
         name = self.request.GET.get('q', None)
         if name:
