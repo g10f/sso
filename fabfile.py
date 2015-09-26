@@ -134,6 +134,22 @@ os.environ['DEBUG'] = ""
 os.environ['THROTTELING_DISABLED'] = "False"
 """
 
+@task
+def migrate_centerdb(conf='dev'):
+    configuration = configurations.get(conf)
+    virtualenv = configuration['virtualenv']
+    db_name = configuration['db_name']
+    env.host_string = configuration['host_string']
+
+    python = '/envs/%(virtualenv)s/bin/python' % {'virtualenv': virtualenv}
+
+    fabtools.postgres._run_as_pg('''psql -c "TRUNCATE TABLE emails_emailforward CASCADE;" %(db_name)s''' % {'db_name': db_name})
+    fabtools.postgres._run_as_pg('''psql -c "TRUNCATE TABLE emails_emailalias CASCADE;" %(db_name)s''' % {'db_name': db_name})
+    fabtools.postgres._run_as_pg('''psql -c "TRUNCATE TABLE emails_groupemail CASCADE;" %(db_name)s''' % {'db_name': db_name})
+
+    sudo("%s ./src/apps/manage.py migrate_centerdb" % python, user='www-data', group='www-data')
+    sudo("%s ./src/apps/manage.py update_location" % python, user='www-data', group='www-data')
+
 
 @task
 def compileless(version='1.0.15'):
