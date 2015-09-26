@@ -140,6 +140,8 @@ def migrate_centerdb(conf='dev'):
     virtualenv = configuration['virtualenv']
     db_name = configuration['db_name']
     env.host_string = configuration['host_string']
+    server_name = configuration['server_name']
+    code_dir = '/proj/%s' % server_name
 
     python = '/envs/%(virtualenv)s/bin/python' % {'virtualenv': virtualenv}
 
@@ -147,8 +149,9 @@ def migrate_centerdb(conf='dev'):
     fabtools.postgres._run_as_pg('''psql -c "TRUNCATE TABLE emails_emailalias CASCADE;" %(db_name)s''' % {'db_name': db_name})
     fabtools.postgres._run_as_pg('''psql -c "TRUNCATE TABLE emails_groupemail CASCADE;" %(db_name)s''' % {'db_name': db_name})
 
-    sudo("%s ./src/apps/manage.py migrate_centerdb" % python, user='www-data', group='www-data')
-    sudo("%s ./src/apps/manage.py update_location" % python, user='www-data', group='www-data')
+    with cd(code_dir):
+        sudo("%s ./src/apps/manage.py migrate_centerdb" % python, user='www-data', group='www-data')
+        sudo("%s ./src/apps/manage.py update_location" % python, user='www-data', group='www-data')
 
 
 @task
