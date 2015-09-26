@@ -45,6 +45,7 @@ SSO_VALIDATION_PERIOD_DAYS = 365  # accounts must be prolonged after 1 year
 SSO_ADMIN_MAX_AGE = 60 * 30  # 30 min max age for admin pages
 SSO_ORGANISATION_EMAIL_DOMAIN = '@g10f.de'
 SSO_CREATE_ACCOUNT_FOR_ORGANISATION = True
+SSO_GOOGLE_GEO_API_KEY = 'insert your key'
 
 OTP_DEVICES = [
     'sso_auth.TOTPDevice',

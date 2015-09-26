@@ -45,13 +45,13 @@ def update_guide_emails():
     for (email_value, guide_email) in guide_emails.items():
         name = guide_email['City']
         try:
-            email_obj = Email.objects.get(email=email_value)
-            if email_obj.groupemail:
+            email_obj = Email.objects.get(email=email_value.lower())
+            try:
                 group_email = email_obj.groupemail
                 group_email.is_guide_email = True
                 group_email.name = name
                 group_email.save()
-            else:
+            except ObjectDoesNotExist:
                 GroupEmail.objects.create(name=name, email=email_obj, is_guide_email=True)
                 
         except ObjectDoesNotExist:
@@ -132,20 +132,26 @@ def update_centers():
 
     file_name = os.path.join(settings.BASE_DIR, '../data/migration/centerlist.txt')
     with open(file_name, 'rb') as csvfile:
-        reader = UnicodeReader(csvfile, encoding="ISO-8859-1", delimiter=';')      
+        reader = UnicodeReader(csvfile, encoding="UTF-8", delimiter=';')
         centers = dic_from_csv(reader)
     
     for centerid in centers:
         center = centers[centerid]
         try:
+            save = False
             organisation = Organisation.objects.get(centerid=centerid)
-            if center['Subregion_ID'] in regions:
+            if (center['Subregion_ID'] in regions) and (organisation.admin_region != regions[center['Subregion_ID']]['admin_region']):
                 organisation.admin_region = regions[center['Subregion_ID']]['admin_region']
-            organisation.coordinates_type = center['Coordinates']
+                save = True
+            if organisation.coordinates_type != center['Coordinates']:
+                organisation.coordinates_type = center['Coordinates']
+                save = True
             if not organisation.email and center['DWBEmail']:
                 defaults = {'email_type': CENTER_EMAIL_TYPE, 'permission': PERM_EVERYBODY}
                 organisation.email = Email.objects.get_or_create(email=center['DWBEmail'].lower(), defaults=defaults)[0]
-            organisation.save()
+                save = True
+            if save:
+                organisation.save()
                 
         except ObjectDoesNotExist:
             logger.warning("Center %s not found" % center)

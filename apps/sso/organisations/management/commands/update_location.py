@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.core.management.base import NoArgsCommand
 from django.contrib.gis import geos
+from django.conf import settings
 from geopy.geocoders import GoogleV3
 from ...models import Organisation
 
@@ -20,7 +21,7 @@ class Command(NoArgsCommand):
 
 def geocode_address(address, components=None):
     address = address.encode('utf-8')
-    geocoder = GoogleV3(api_key='AIzaSyAKW01tWxJuX5zuWf1w8Uahyr2DF5nd7dk', scheme='https')
+    geocoder = GoogleV3(api_key=settings.SSO_GOOGLE_GEO_API_KEY, scheme='https')
     return geocoder.geocode(address)
 
 
