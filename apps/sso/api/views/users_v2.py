@@ -545,7 +545,13 @@ UserList.permissions_tests = {
 @login_required
 @permission_required(["accounts.access_all_users", "accounts.read_user"], raise_exception=True)
 def user_emails(request):
-    qs = UserEmail.objects.filter(user__is_active=True, user__is_center=False, user__last_login__isnull=False, primary=True)
+    qs = UserEmail.objects.filter(user__is_active=True, user__last_login__isnull=False, primary=True)
+
+    is_center = request.GET.get('is_center', None)
+    if is_center in ['True', 'true', '1', 'yes', 'Yes', 'Y', 'y']:
+        qs = qs.filter(user__is_center=True)
+    elif is_center in ['False', 'false', '0', 'no', 'No', 'N', 'n']:
+        qs = qs.filter(user__is_center=False)
 
     username = request.GET.get('q', None)
     if username:
