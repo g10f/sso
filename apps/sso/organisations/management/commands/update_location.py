@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
+from time import sleep
 from django.core.management.base import NoArgsCommand
 from django.contrib.gis import geos
 from django.conf import settings
 from geopy.geocoders import GoogleV3
 from ...models import Organisation
 
-import logging 
+import logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -20,6 +22,7 @@ class Command(NoArgsCommand):
 
 
 def geocode_address(address, components=None):
+    sleep(0.1)  # google allows max. 10 request per second
     address = address.encode('utf-8')
     geocoder = GoogleV3(api_key=settings.SSO_GOOGLE_GEO_API_KEY, scheme='https')
     return geocoder.geocode(address)
