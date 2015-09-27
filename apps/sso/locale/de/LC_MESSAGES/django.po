@@ -2459,7 +2459,7 @@ msgstr "Alle Berechtigungen"
 
 #: emails/views.py:131
 msgid "My Emails"
-msgstr "E-Mail Adressen"
+msgstr "Meine E-Mail Adressen"
 
 #: emails/views.py:146
 msgid "Active emails"
