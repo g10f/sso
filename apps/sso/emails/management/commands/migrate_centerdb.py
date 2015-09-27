@@ -40,7 +40,7 @@ def update_guide_emails():
     file_name = os.path.join(settings.BASE_DIR, '../data/migration/guide_email_gunnar.txt')
     with open(file_name, 'rb') as csvfile:
         reader = UnicodeReader(csvfile, delimiter=';')      
-        guide_emails = dic_from_csv(reader, key_row=1)
+        guide_emails = dic_from_csv(reader, key_column=1)
 
     for (email_value, guide_email) in guide_emails.items():
         name = guide_email['City']

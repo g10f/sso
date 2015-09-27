@@ -18,7 +18,7 @@ def _get_text(value):
         return value
 
 
-def csv_map(reader, key_row=0):
+def csv_map(reader, key_column=0):
     first_row = []
     n = 0
     
@@ -37,7 +37,7 @@ def csv_map(reader, key_row=0):
                 for j, k in enumerate(row): 
                     newrow[_get_text(first_row[j])] = _get_text(k)
                 
-                yield _get_text(row[key_row]), newrow 
+                yield _get_text(row[key_column]), newrow
             except Exception as e:
                 msg = "Error while reading row: %s " % row
                 print(msg)
@@ -48,9 +48,9 @@ def csv_map(reader, key_row=0):
         logger.exception(msg)
         
     
-def dic_from_csv(reader, key_row=0):
+def dic_from_csv(reader, key_column=0):
     dic = {}
-    for key, row in csv_map(reader, key_row):
+    for key, row in csv_map(reader, key_column):
         dic[key] = row
         
     return dic
