@@ -66,28 +66,30 @@
             {% endblock %}
         </div>
     </div>
-    <br><br>
-    <h4>{% trans 'Email forwardings' %}</h4>
+    {% if has_groupmail_access %}
+        <br><br>
+        <h4>{% trans 'Email forwardings' %}</h4>
 
-    <table class="table table-condensed">
-        <thead>
-        <tr>
-            <th scope="col">{% trans 'Email forwarding' %}</th>
-            <th scope="col">{% trans 'Action' %}</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        {% for email in object.email.emailforward_set.all %}
+        <table class="table table-condensed">
+            <thead>
             <tr>
-                <td>{{ email.forward|default_if_none:"" }}</td>
-                <td>{% if has_groupmail_access %}<a class="btn btn-default"
-                                                    href="{% url 'emails:emailforward_confirm_delete' object.uuid.hex email.pk %}"
-                                                    title="{% trans 'Delete' %}"><i
-                        class="glyphicon glyphicon-trash"></i> {% trans 'Delete' %}</a>{% endif %}</td>
+                <th scope="col">{% trans 'Email forwarding' %}</th>
+                <th scope="col">{% trans 'Action' %}</th>
             </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+
+            <tbody>
+            {% for email in object.email.emailforward_set.all %}
+                <tr>
+                    <td>{{ email.forward|default_if_none:"" }}</td>
+                    <td><a class="btn btn-default"
+                           href="{% url 'emails:emailforward_confirm_delete' object.uuid.hex email.pk %}"
+                           title="{% trans 'Delete' %}"><i
+                            class="glyphicon glyphicon-trash"></i> {% trans 'Delete' %}</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
 {% endblock %}
 

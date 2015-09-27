@@ -63,6 +63,10 @@ class GroupEmailBaseView(object):
     model = GroupEmail
     slug_field = slug_url_kwarg = 'uuid'
     
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(GroupEmailBaseView, self).dispatch(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         context = {}
         if self.object and self.request.user.is_authenticated():
