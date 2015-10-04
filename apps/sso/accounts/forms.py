@@ -717,16 +717,16 @@ class AppAdminUserProfileForm(mixins.UserRolesMixin, forms.Form):
         kwargs['initial'] = initial
         super(AppAdminUserProfileForm, self).__init__(*args, **kwargs)
 
-        self.fields['application_roles'].queryset = self.request.user.get_administrable_application_roles()
-        self.fields['role_profiles'].choices = [(role_profile.id, role_profile) for role_profile in self.request.user.get_administrable_role_profiles()]
+        self.fields['application_roles'].queryset = self.request.user.get_administrable_app_admin_application_roles()
+        self.fields['role_profiles'].choices = [(role_profile.id, role_profile) for role_profile in self.request.user.get_administrable_app_admin_role_profiles()]
         # add custom data
-        self.fields['role_profiles'].dictionary = {str(role_profile.id): role_profile for role_profile in self.request.user.get_administrable_role_profiles()}
+        self.fields['role_profiles'].dictionary = {str(role_profile.id): role_profile for role_profile in self.request.user.get_administrable_app_admin_role_profiles()}
 
     def save(self):
         cd = self.cleaned_data
         current_user = self.request.user
 
-        self.update_user_m2m_fields('application_roles', current_user)
-        self.update_user_m2m_fields('role_profiles', current_user)
+        self.update_user_m2m_fields('application_roles', current_user, admin_attribute_format='get_administrable_app_admin_%s')
+        self.update_user_m2m_fields('role_profiles', current_user, admin_attribute_format='get_administrable_app_admin_%s')
 
         return self.user

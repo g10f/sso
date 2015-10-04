@@ -23,8 +23,11 @@
                     </li>
                     <li class="{% if active_navigation == "countries" %}active{% endif %}"><a href="{% url 'organisations:organisationcountry_list' %}">{% trans 'Countries' %}</a></li>
                     <li class="{% if active_navigation == "organisations" %}active{% endif %}"><a href="{% url 'organisations:organisation_list' %}">{% trans 'Organisations' %}</a></li>
-                    {% if user.is_user_admin or user.is_app_admin %}
+                    {% if user.is_user_admin %}
                         <li class="{% if active_navigation == "users" %}active{% endif %}"><a href="{% url 'accounts:user_list' %}">{% trans 'Users' %}</a></li>
+                    {% endif %}
+                    {% if user.is_app_admin %}
+                        <li class="{% if active_navigation == "app_roles" %}active{% endif %}"><a href="{% url 'accounts:app_admin_user_list' %}">{% trans 'User Roles' %}</a></li>
                     {% endif %}
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">

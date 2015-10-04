@@ -30,9 +30,14 @@
             <i class="glyphicon glyphicon-list"></i> {% trans 'Registrations' %}<span class="badge">{{ user.get_count_of_registrationprofiles }}</span></a>
     {% endif %}
 
-    {% if user.is_user_admin or user.is_app_admin %}
+    {% if user.is_user_admin %}
         <a class="list-group-item" href="{% url 'accounts:user_list' %}">
             <i class="glyphicon glyphicon-list"></i> {% trans 'Users' %}</a>
+    {% endif %}
+
+    {% if user.is_app_admin %}
+        <a class="list-group-item" href="{% url 'accounts:app_admin_user_list' %}">
+            <i class="glyphicon glyphicon-list"></i> {% trans 'User Roles' %}</a>
     {% endif %}
 
     {% if perms.accounts.change_user %}

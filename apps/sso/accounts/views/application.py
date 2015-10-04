@@ -57,10 +57,6 @@ class UserDeleteView(DeleteView):
         return context
 
 
-def has_user_list_access(user):
-    return user.is_user_admin or user.is_app_admin
-
-
 class LastLogin(object):
     verbose_name = _('last login')
     sortable = True
@@ -95,7 +91,7 @@ class UserList(ListView):
     IS_ACTIVE_CHOICES = (('1', _('Active Users')), ('2', _('Inactive Users')))
 
     @method_decorator(admin_login_required)
-    @method_decorator(user_passes_test(has_user_list_access))
+    @method_decorator(user_passes_test(lambda u: u.is_user_admin))
     def dispatch(self, request, *args, **kwargs):
         return super(UserList, self).dispatch(request, *args, **kwargs)
 
@@ -183,6 +179,92 @@ class UserList(ListView):
         return super(UserList, self).get_context_data(**context)
     
 
+class AppAdminUserList(ListView):
+    template_name = 'accounts/application/app_admin_user_list.html'
+    model = get_user_model()
+
+    @method_decorator(admin_login_required)
+    @method_decorator(user_passes_test(lambda u: u.is_app_admin))
+    def dispatch(self, request, *args, **kwargs):
+        return super(AppAdminUserList, self).dispatch(request, *args, **kwargs)
+
+    @property
+    def list_display(self):
+        return ['username', 'picture', 'last_name', _('primary email'), OrganisationField(),LastLogin(), 'date_joined']
+
+    def get_queryset(self):
+        """
+        Get the list of items for this view. This must be an iterable, and may
+        be a queryset (in which qs-specific behavior will be enabled).
+        """
+        user = self.request.user
+
+        qs = super(AppAdminUserList, self).get_queryset().only('uuid', 'last_login', 'username', 'first_name', 'last_name', 'date_joined', 'picture', 'valid_until')\
+            .prefetch_related('useremail_set', 'organisations')
+        qs = user.filter_administrable_app_admin_users(qs)
+
+        self.cl = main.ChangeList(self.request, self.model, self.list_display, default_ordering=[OrderByWithNulls(F('last_login'), descending=True)])
+        # apply filters
+        qs = UserSearchFilter().apply(self, qs)
+        qs = CountryFilter().apply(self, qs)
+        qs = AdminRegionFilter().apply(self, qs)
+        qs = CenterFilter().apply(self, qs)
+        qs = ApplicationRoleFilter().apply(self, qs)
+        qs = RoleProfileFilter().apply(self, qs)
+        qs = IsActiveFilter().apply(self, qs, default='1')
+
+        # Set ordering.
+        ordering = self.cl.get_ordering(self.request, qs)
+        qs = qs.order_by(*ordering).distinct()
+        return qs
+
+    def get_context_data(self, **kwargs):
+        user = self.request.user
+        headers = list(self.cl.result_headers())
+        num_sorted_fields = 0
+        for h in headers:
+            if h['sortable'] and h['sorted']:
+                num_sorted_fields += 1
+
+        countries = user.get_administrable_app_admin_user_countries()
+        country_filter = CountryFilter().get(self, countries)
+
+        centers = Organisation.objects.none()
+        application_roles = user.get_administrable_application_roles()
+        role_profiles = user.get_administrable_app_admin_role_profiles()
+        admin_regions = user.get_administrable_app_admin_user_regions()
+
+        if self.country:
+            centers = user.get_administrable_app_admin_user_organisations().filter(country=self.country)
+            if self.admin_region:
+                centers = centers.filter(admin_region=self.admin_region)
+            if self.center:
+                application_roles = application_roles.filter(user__organisations__in=[self.center]).distinct()
+                role_profiles = role_profiles.filter(user__organisations__in=[self.center]).distinct()
+            else:
+                application_roles = application_roles.filter(user__organisations__in=centers).distinct()
+                role_profiles = role_profiles.filter(user__organisations__in=centers).distinct()
+
+        admin_region_filter = AdminRegionFilter().get(self, admin_regions)
+        center_filter = CenterFilter().get(self, centers)
+        application_role_filter = ApplicationRoleFilter().get(self, application_roles)
+        role_profile_filter = RoleProfileFilter().get(self, role_profiles)
+
+        filters = [country_filter, admin_region_filter, center_filter, role_profile_filter, application_role_filter]
+
+        context = {
+            'result_headers': headers,
+            'num_sorted_fields': num_sorted_fields,
+            'search_var': main.SEARCH_VAR,
+            'page_var': main.PAGE_VAR,
+            'query': self.request.GET.get(main.SEARCH_VAR, ''),
+            'cl': self.cl,
+            'filters': filters
+        }
+        context.update(kwargs)
+        return super(AppAdminUserList, self).get_context_data(**context)
+
+
 @admin_login_required
 @permission_required('accounts.add_user', raise_exception=True)
 def add_user(request, template='accounts/application/add_user_form.html'):
@@ -221,7 +303,8 @@ def add_user_done(request, uuid, template='accounts/application/add_user_done.ht
 
     
 @admin_login_required
-@permission_required('accounts.change_user', raise_exception=True)
+@user_passes_test(lambda u: u.is_user_admin)
+#@permission_required('accounts.change_user', raise_exception=True)
 def update_user(request, uuid, template='accounts/application/update_user_form.html'):
     if not request.user.has_user_access(uuid):
         raise PermissionDenied
@@ -306,9 +389,9 @@ def update_user(request, uuid, template='accounts/application/update_user_form.h
 
 
 @admin_login_required
-@user_passes_test(has_user_list_access)
-def update_user_app_roles(request, uuid, template='accounts/application/update_user_app_roles_form.html'):
-    if not request.user.has_user_access(uuid):
+@user_passes_test(lambda u: u.is_app_admin)
+def app_admin_update_user(request, uuid, template='accounts/application/app_admin_update_user_form.html'):
+    if not request.user.has_app_admin_user_access(uuid):
         raise PermissionDenied
     user = get_object_or_404(get_user_model(), uuid=uuid)
 
@@ -324,10 +407,10 @@ def update_user_app_roles(request, uuid, template='accounts/application/update_u
             msg_dict = {'name': force_text(get_user_model()._meta.verbose_name), 'obj': force_text(user)}
             if "_continue" in request.POST:
                 msg = _('The %(name)s "%(obj)s" was changed successfully. You may edit it again below.') % msg_dict
-                success_url = reverse('accounts:update_user_app_roles', args=[user.uuid.hex])
+                success_url = reverse('accounts:app_admin_update_user', args=[user.uuid.hex])
             else:
                 msg = _('The %(name)s "%(obj)s" was changed successfully.') % msg_dict
-                success_url = reverse('accounts:user_list') + "?" + request.GET.urlencode()
+                success_url = reverse('accounts:app_admin_user_list') + "?" + request.GET.urlencode()
             messages.add_message(request, level=messages.SUCCESS, message=msg, fail_silently=True)
             return HttpResponseRedirect(success_url)
 
@@ -341,9 +424,9 @@ def update_user_app_roles(request, uuid, template='accounts/application/update_u
 
     # get the role profiles where the administrable application_roles also appear, excluding
     # the role profiles the current user has admin rights for
-    application_roles = request.user.get_administrable_application_roles()
-    pks = request.user.get_administrable_role_profiles().values_list('pk', flat=True)
-    role_profiles = user.role_profiles.filter(application_roles__in=application_roles).exclude(pk__in=pks)
+    application_roles = request.user.get_administrable_app_admin_application_roles()
+    pks = request.user.get_administrable_app_admin_role_profiles().values_list('pk', flat=True)
+    role_profiles = user.role_profiles.filter(application_roles__in=application_roles).exclude(pk__in=pks).distinct()
     dictionary = {'form': form, 'errors': errors, 'media': media, 'active': active,
                   'role_profiles': role_profiles,
                   'application_roles': application_roles,
