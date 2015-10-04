@@ -472,7 +472,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         get a queryset for the admin
         """
-        if self.is_app_admin:
+        if self.is_app_admin():
             return ApplicationRole.objects.filter(application__applicationadmin__admin=self)
         else:
             return ApplicationRole.objects.none()
@@ -481,7 +481,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_administrable_app_admin_role_profiles(self):
         # all role profiles the user has, with adequate inheritable flag
         role_profiles = self.role_profiles.none()
-        if self.is_app_admin:
+        if self.is_app_admin():
             role_profiles = RoleProfile.objects.filter(roleprofileadmin__admin=self)
 
         return role_profiles.prefetch_related('application_roles', 'application_roles__role', 'application_roles__application').distinct()
@@ -532,7 +532,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         if self.is_global_app_admin:
             return Country.objects.filter(organisation__isnull=False).distinct()
-        elif self.is_app_admin:
+        elif self.is_app_admin():
             return Country.objects.filter(
                 Q(organisation__admin_region__in=self.app_admin_regions.all()) |  # for admin regions without a associated country
                 Q(organisation__in=self.organisations.all()) | Q(adminregion__in=self.app_admin_regions.all()) | Q(pk__in=self.app_admin_countries.all())).distinct()
@@ -546,7 +546,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         if self.is_global_app_admin:
             return Organisation.objects.all().select_related('country', 'email')
-        elif self.is_app_admin:
+        elif self.is_app_admin():
             return Organisation.objects.filter(
                 Q(pk__in=self.organisations.all()) | Q(admin_region__in=self.app_admin_regions.all()) | Q(country__in=self.app_admin_countries.all())).select_related('country', 'email').distinct()
         else:
@@ -559,7 +559,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         if self.is_global_app_admin:
             return AdminRegion.objects.all()
-        elif self.is_app_admin:
+        elif self.is_app_admin():
             return AdminRegion.objects.filter(Q(organisation__in=self.organisations.all()) | Q(pk__in=self.app_admin_regions.all()) | Q(country__in=self.app_admin_countries.all())).distinct()
         else:
             return AdminRegion.objects.none()
@@ -679,23 +679,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         # filter the users for who the authenticated user can manage app_roles
         if self.is_global_app_admin:
             qs = qs.filter(is_superuser=False)
-        elif self.is_app_admin:
+        elif self.is_app_admin():
             organisations = self.get_administrable_app_admin_user_organisations()
             q = Q(is_superuser=False) & Q(organisations__in=organisations)
             qs = qs.filter(q).distinct()
         else:
             qs = User.objects.none()
         return qs
-
-    """
-    @property
-    def is_global_admin(self):
-        return self.has_perm("accounts.access_all_users")
-
-    @property
-    def is_admin(self):
-        return self.is_user_admin or self.is_app_admin
-    """
 
     @property
     def is_global_user_admin(self):
@@ -709,9 +699,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def is_global_app_admin(self):
-        return self.is_app_admin and self.has_perm("accounts.app_admin_access_all_users")
+        return self.is_app_admin() and self.has_perm("accounts.app_admin_access_all_users")
 
-    @property
+    @memoize
     def is_app_admin(self):
         return self.applicationadmin_set.exists() or self.roleprofileadmin_set.exists()
 

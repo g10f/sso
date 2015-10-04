@@ -184,7 +184,7 @@ class AppAdminUserList(ListView):
     model = get_user_model()
 
     @method_decorator(admin_login_required)
-    @method_decorator(user_passes_test(lambda u: u.is_app_admin))
+    @method_decorator(user_passes_test(lambda u: u.is_app_admin()))
     def dispatch(self, request, *args, **kwargs):
         return super(AppAdminUserList, self).dispatch(request, *args, **kwargs)
 
@@ -199,7 +199,8 @@ class AppAdminUserList(ListView):
         """
         user = self.request.user
 
-        qs = super(AppAdminUserList, self).get_queryset().only('uuid', 'last_login', 'username', 'first_name', 'last_name', 'date_joined', 'picture', 'valid_until')\
+        qs = super(AppAdminUserList, self).get_queryset().only('uuid', 'last_login', 'username', 'first_name', 'last_name', 'date_joined',
+                                                               'picture', 'valid_until')\
             .prefetch_related('useremail_set', 'organisations')
         qs = user.filter_administrable_app_admin_users(qs)
 
@@ -304,7 +305,7 @@ def add_user_done(request, uuid, template='accounts/application/add_user_done.ht
     
 @admin_login_required
 @user_passes_test(lambda u: u.is_user_admin)
-#@permission_required('accounts.change_user', raise_exception=True)
+@permission_required('accounts.change_user', raise_exception=True)
 def update_user(request, uuid, template='accounts/application/update_user_form.html'):
     if not request.user.has_user_access(uuid):
         raise PermissionDenied
@@ -389,7 +390,7 @@ def update_user(request, uuid, template='accounts/application/update_user_form.h
 
 
 @admin_login_required
-@user_passes_test(lambda u: u.is_app_admin)
+@user_passes_test(lambda u: u.is_app_admin())
 def app_admin_update_user(request, uuid, template='accounts/application/app_admin_update_user_form.html'):
     if not request.user.has_app_admin_user_access(uuid):
         raise PermissionDenied
