@@ -355,7 +355,8 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
     list_filter = (SuperuserFilter, ) + ('is_staff', 'is_center', 'is_service', 'is_active', LoggedInFilter, 'groups', ApplicationAdminApplicationFilter, RoleProfileAdminRoleProfileFilter,
                                          UserAssociatedSystemFilter, UserRegionListFilter,
                                          RoleProfilesFilter, ExcludeRoleProfilesFilter, ApplicationRolesFilter)  # ,UserOrganisationsListFilter, CreatedByUserFilter, LastModifiedUserFilter
-    filter_horizontal = DjangoUserAdmin.filter_horizontal + ('admin_countries', 'admin_regions', 'groups', 'application_roles', 'role_profiles', 'organisations')
+    filter_horizontal = DjangoUserAdmin.filter_horizontal + ('admin_countries', 'admin_regions', 'groups', 'application_roles', 'role_profiles', 'organisations', 'app_admin_countries',
+                                                             'app_admin_regions')
     ordering = ['-last_login', '-first_name', '-last_name']
     actions = ['mark_info_mail']
     inlines = [UserEmailInline, PhoneNumberInline, AddressInline, UserAssociatedSystemInline]
@@ -365,16 +366,21 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         (_('Personal info'), {
             'fields': ('first_name', 'last_name', 'gender', 'dob', 'homepage', 'language', 'uuid', 'is_center', 'is_service', 'is_subscriber', 'picture'),
             'classes': ['wide']}),
-        (_('Important dates'), {'fields': ('valid_until', 'last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user'), 'classes': ['wide']}),
-        (_('AppRoles'), {'fields': ('admin_countries', 'admin_regions', 'assigned_organisations', 'organisations', 'application_roles', 'role_profiles'), 'classes': ['collapse', 'wide']}),
-        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'), 'classes': ['collapse', 'wide']}),
+        (_('Important dates'), {'fields': ('valid_until', 'last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user',
+                                           'assigned_organisations'), 'classes': ['wide']}),
+        (_('Organisations'), {'fields': ('organisations', ), 'classes': ['collapse', 'wide']}),
+        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'role_profiles', 'application_roles', 'groups', 'user_permissions'), 'classes': ['collapse', 'wide']}),
+        (_('User admin'), {'fields': ('admin_countries', 'admin_regions'), 'classes': ['collapse', 'wide']}),
+        (_('App admin'), {'fields': ('app_admin_countries', 'app_admin_regions'), 'classes': ['collapse', 'wide']}),
         (_('Notes'), {'fields': ('notes',), 'classes': ['collapse', 'wide']}),
     )
     non_su_fieldsets = (
         (None, {'fields': ('username', ), 'classes': ['wide']}),
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'uuid', 'is_center', 'is_subscriber'), 'classes': ['wide']}),
-        (_('Important dates'), {'fields': ('last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user'), 'classes': ['wide']}),
-        (_('AppRoles'), {'fields': ('is_active', 'assigned_organisations', 'organisations', 'application_roles', 'role_profiles'), 'classes': ['collapse', 'wide']}),
+        (_('Important dates'), {'fields': ('last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user',
+                                           'assigned_organisations'), 'classes': ['wide']}),
+        (_('Organisations'), {'fields': ('organisations', ), 'classes': ['collapse', 'wide']}),
+        (_('Permissions'), {'fields': ('is_active', 'role_profiles', 'application_roles'), 'classes': ['collapse', 'wide']}),
     )
     readonly_fields = ['assigned_organisations', 'is_subscriber', 'get_last_modified_by_user', 'last_modified', 'get_created_by_user']
     non_su_readonly_fields = ['uuid', 'assigned_organisations', 'is_subscriber', 'username', 'last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user']
