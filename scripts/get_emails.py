@@ -5,6 +5,7 @@ import argparse
 from base64 import b64encode
 from urllib import urlencode
 
+
 def get(conn, uri, access_token=None):
     """
     HTTP GET request with an optional authorization header with the access_token 
@@ -40,6 +41,7 @@ def get_access_token_with_client_credentials(conn, client_id, client_secret):
         raise Exception('authorization', json_response)
     else:
         return json_response
+
 
 def main():
     # command line arguments setup
