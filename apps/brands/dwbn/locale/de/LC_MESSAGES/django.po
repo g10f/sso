@@ -46,7 +46,7 @@ msgid ""
 "Designates that the role will be deleted in case of a change of the "
 "organisation."
 msgstr ""
-"Gibt an, ob die Anwendungsrolle bei einem swechsel gelöscht wird."
+"Gibt an, ob die Anwendungsrolle bei einem Zentrumswechsel gelöscht wird."
 
 msgid "organisations"
 msgstr "Zentren"
@@ -282,8 +282,8 @@ msgstr "Willkommen im \"Diamond Way Buddhism Network\" (DWBN). "
 
 
 # brand
-#msgid "Log in with your %(brand)s account"
-#msgstr "Mit Deinem Diamantweg-Konto anmelden"
+msgid "Log in with your %(brand)s account"
+msgstr "Diamond Way Buddhist Network Anmeldung"
 
-#msgid "Welcome, at the %(brand)s Single Sign-On home page."
-#msgstr "Willkommen auf der Diamantweg Single Sign-On Startseite"
+msgid "Welcome, at the %(brand)s Single Sign-On home page."
+msgstr "Willkommen auf der 'Diamond Way Buddhist Network' Single Sign-On Startseite"

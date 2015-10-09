@@ -273,8 +273,8 @@ msgstr "Welcome to our Diamond Way Buddhism Network (DWBN). "
 "After that you can login and enjoy."
 
 # brand
-#msgid "Log in with your %(brand)s account"
-#msgstr "Log in with your Diamond Way account"
+msgid "Log in with your %(brand)s account"
+msgstr "Diamond Way Buddhist Network Sign-In"
 
-#msgid "Welcome, at the %(brand)s Single Sign-On home page."
-#msgstr "Welcome, at the Diamond Way Single Sign-On home page."
+msgid "Welcome, at the %(brand)s Single Sign-On home page."
+msgstr "Welcome, at the Diamond Way Buddhist Network Single Sign-On home page."
