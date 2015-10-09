@@ -179,7 +179,8 @@ def update_email_groups():
         name = email.split('@')[0].title()
         try:
             email_obj = Email.objects.get(email=email)
-            GroupEmail.objects.get_or_create(name=name, email=email_obj)
+            # only create a GroupEmail if the Email does not exist
+            # GroupEmail.objects.get_or_create(name=name, email=email_obj)
         except ObjectDoesNotExist:
             email_obj = Email.objects.create(email=email.lower(), email_type=GROUP_EMAIL_TYPE, permission=group['permission'])
             GroupEmail.objects.get_or_create(name=name, email=email_obj)
