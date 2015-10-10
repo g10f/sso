@@ -3,7 +3,7 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from sso.accounts.models import User  # , Interaction
+from sso.accounts.models import User
 from django.utils.timezone import now
 from sso.organisations.models import Organisation
 
@@ -14,9 +14,9 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('-t', '--test', dest='test', action='store_true', help='Test mode, show affected accounts without activating expiration.')
-        parser.add_argument('-d', '--days', action='store', dest='days', type=int, default=30, help='days till the accounts expire'),
-        parser.add_argument('-f', '--from', action='store', dest='from', type=int, default=7, help='days from when the accounts expires'),
-        parser.add_argument('-o', '--orgid', action='store', dest='orgid', required=True, help='activate users from orgid.'),
+        parser.add_argument('-d', '--days', action='store', dest='days', type=int, default=30, help='days till the accounts expire')
+        parser.add_argument('-f', '--from', action='store', dest='from', type=int, default=7, help='days from when the accounts expires')
+        parser.add_argument('orgid', help='activate users from orgid.')
 
     def handle(self, *args, **options):
         if not settings.SSO_VALIDATION_PERIOD_IS_ACTIVE:
