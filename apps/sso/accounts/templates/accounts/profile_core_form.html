@@ -9,8 +9,8 @@
 <script src="{% static "js/formsets-1.1.js" %}"></script>
 {% endblock extrascript %}
 
-{% block navbar %}{% include global_navigation_template with active_navigation="profile" %}{% endblock navbar %}
-{% block left_content %}{% include navigation_template with active_navigation="profile" %}{% endblock left_content %}
+{% block navbar %}{% include 'include/global_navigation.html' with active_navigation="profile" %}{% endblock navbar %}
+{% block left_content %}{% include 'include/_navigation.html' with active_navigation="profile" %}{% endblock left_content %}
 
 {% block breadcrumb %}
 <ol class="breadcrumb">

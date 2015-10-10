@@ -35,7 +35,7 @@
     <![endif]-->
 
     {% block navbar %}
-        {% include global_navigation_template %}
+        {% include 'include/global_navigation.html' %}
     {% endblock navbar %}
 
     <div class="{% block containerclass %}container{% endblock %}">
@@ -45,7 +45,7 @@
             <main role="main">
                 <aside>
                     {% block left_content %}
-                        {% include navigation_template %}
+                        {% include 'include/_navigation.html' %}
                     {% endblock left_content %}
                 </aside>
                 <section>

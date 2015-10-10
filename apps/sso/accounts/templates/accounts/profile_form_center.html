@@ -4,7 +4,7 @@
 
 {% block title %}{% trans 'Profile' %}{% endblock %}
 
-{% block left_content %}{% include navigation_template with active_navigation="profile" %}{% endblock left_content %}
+{% block left_content %}{% include 'include/_navigation.html' with active_navigation="profile" %}{% endblock left_content %}
 
 {% block extrascript %}
 {{ media }}

@@ -12,7 +12,7 @@
     </ol>
 {% endblock breadcrumb %}
 
-{% block left_content %}{% include navigation_template with active_navigation="auth_profile" %}{% endblock left_content %}
+{% block left_content %}{% include 'include/_navigation.html' with active_navigation="auth_profile" %}{% endblock left_content %}
 
 {% block right_content %}
     <form class="form-horizontal" action="" method="post">{% csrf_token %}

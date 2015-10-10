@@ -5,7 +5,7 @@
 
 {% block extrascript %}{{ form.media }}{% endblock extrascript %}
 
-{% block left_content %}{% include navigation_template with active_navigation="organisation_create" %}{% endblock left_content %}
+{% block left_content %}{% include 'include/_navigation.html' with active_navigation="organisation_create" %}{% endblock left_content %}
 
 {% block breadcrumb %}
     <ol class="breadcrumb">
