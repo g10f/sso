@@ -24,6 +24,7 @@ from sso.organisations import admin as org_admin
 from sso.auth import models as sso_auth_models
 from sso.auth import admin as sso_auth_admin
 
+
 class SSOAdminSite(admin.AdminSite):
     """
     copy of django admin view with:
@@ -53,6 +54,10 @@ class SSOAdminSite(admin.AdminSite):
         if not getattr(view, 'csrf_exempt', False):
             inner = csrf_protect(inner)
         return update_wrapper(inner, view)
+
+    @never_cache
+    def login(self, request, extra_context=None):
+        return HttpResponseRedirect(reverse('auth:login'))
 
     def has_permission(self, request):
         """
