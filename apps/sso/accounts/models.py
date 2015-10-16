@@ -3,9 +3,7 @@ from itertools import chain
 import re
 import logging
 import uuid
-
 from sorl import thumbnail
-
 from django.core.urlresolvers import reverse
 from django.utils.crypto import get_random_string
 from django.core import validators
@@ -30,6 +28,7 @@ from sso.registration import default_username_generator
 from sso.registration.models import RegistrationProfile
 from sso.utils.loaddata import disable_for_loaddata
 from current_user.models import CurrentUserField
+from sso.utils.email import send_html_mail
 
 logger = logging.getLogger(__name__)
 
@@ -222,7 +221,6 @@ class User(AbstractBaseUser, PermissionsMixin):
                                 validators=[validators.RegexValidator(re.compile(r"^[\w.@+-]+$", flags=re.UNICODE), _('Enter a valid username.'), 'invalid')])
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
     last_name = models.CharField(_('last name'), max_length=30, blank=True)
-    # email = models.EmailField(_('email address'), blank=True)
     is_staff = models.BooleanField(_('staff status'), default=False, help_text=_('Designates whether the user can log into this admin site.'))
     is_active = models.BooleanField(_('active'), default=True, db_index=True, help_text=_('Designates whether this user should be treated as active. Unselect this instead of deleting accounts.'))
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
@@ -282,7 +280,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         email = self.primary_email()
         assert(email is not None)
 
-        send_mail(subject, message, from_email, [email.email], **kwargs)
+        if 'html_message' in kwargs and kwargs['html_message']:
+            return send_html_mail(subject, message, kwargs['html_message'], [email.email], fail_silently=kwargs.get('fail_silently', True))
+        else:
+            return send_mail(subject, message, from_email, [email.email], **kwargs)
 
     def primary_email(self):
         # iterate through useremail_set.all because useremail_set is cached

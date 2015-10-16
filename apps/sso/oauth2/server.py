@@ -145,7 +145,7 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
     # Token request
     def authenticate_client(self, request, *args, **kwargs):
         # Whichever authentication method suits you, HTTP Basic might work
-        if request.grant_type in ['client_credentials', 'password']:  
+        if request.grant_type in ['client_credentials', 'password', 'refresh_token']:
             # http://tools.ietf.org/html/rfc6749#section-4.4
             if 'HTTP_AUTHORIZATION' in request.headers:
                 # client credentials grant type
@@ -217,7 +217,8 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
     def save_bearer_token(self, token, request, *args, **kwargs):
         bearer_token = BearerToken.objects.create(client=request.client, access_token=token['access_token'], user=request.user)
         if 'refresh_token' in token:
-            RefreshToken.objects.create(token=token['refresh_token'], bearer_token=bearer_token)
+            otp_device = getattr(request.user, 'otp_device', None)
+            RefreshToken.objects.create(token=token['refresh_token'], bearer_token=bearer_token)  # , otp_device=otp_device)
         
     def invalidate_authorization_code(self, client_id, code, request, *args, **kwargs):
         # Authorization codes are used once, invalidate it when a Bearer token
@@ -268,11 +269,10 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
         # request.
         try:
             data = loads_jwt(BearerToken.objects.get(refresh_token__token=refresh_token).access_token)
-            request.scopes = data['scope'].split()
-            return True
+            return data['scope'].split()
         except Exception as e:
             logger.error('confirm_scopes Error: %s' % e)
-            return False
+            return []
         
     def validate_user(self, username, password, client, request, *args, **kwargs):
         # legacy client's can use grant_type=password
