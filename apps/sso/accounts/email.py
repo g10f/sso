@@ -1,7 +1,6 @@
 import datetime
 import logging
 
-#from email.mime.image import MIMEImage
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator as default_pwd_reset_token_generator
 from django.contrib.sites.shortcuts import get_current_site

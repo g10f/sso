@@ -175,6 +175,7 @@ class RefreshToken(models.Model):
     """
     bearer_token = models.OneToOneField(BearerToken, verbose_name=_('bearer token'), related_name='refresh_token')
     token = models.CharField(_('token'), max_length=2048, unique=True)
+    # otp_device = models.ForeignKey(Device, null=True, on_delete=models.SET_NULL)
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)
     
     @property

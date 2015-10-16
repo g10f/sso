@@ -28,12 +28,12 @@ class Command(BaseCommand):
     guide_email_gunnar.txt
     """
     def handle(self, *args, **options):
-        update_country_groups()
-        update_centers()
-        update_countries()
+        # update_country_groups()
+        # update_centers()
+        # update_countries()
         update_email_groups()
-        update_center_forwards()
-        update_guide_emails()
+        # update_center_forwards()
+        # update_guide_emails()
 
 
 def update_guide_emails():

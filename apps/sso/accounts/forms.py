@@ -144,9 +144,10 @@ class PasswordResetForm(DjangoPasswordResetForm):
 
     def save(self, domain_override=None,
              subject_template_name='registration/password_reset_subject.txt',
-             email_template_name='registration/password_reset_email.html',
+             email_template_name='registration/password_reset_email.txt',
+             html_email_template_name='registration/password_reset_email.html',
              use_https=False, token_generator=default_token_generator,
-             from_email=None, request=None, html_email_template_name=None):
+             from_email=None, request=None):
         email = self.cleaned_data["email"]
         current_site = get_current_site(request)
         site_name = settings.SSO_SITE_NAME
@@ -173,7 +174,9 @@ class PasswordResetForm(DjangoPasswordResetForm):
         # Email subject *must not* contain newlines
         subject = ''.join(subject.splitlines())
         message = loader.render_to_string(email_template_name, c)
-        user.email_user(subject, message, from_email)
+        html_message = None  # loader.render_to_string(html_email_template_name, c)
+
+        user.email_user(subject, message, from_email, html_message=html_message)
 
 
 class SetPictureAndPasswordForm(SetPasswordForm):

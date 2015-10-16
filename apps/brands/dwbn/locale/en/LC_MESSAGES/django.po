@@ -277,4 +277,4 @@ msgid "Log in with your %(brand)s account"
 msgstr "Diamond Way Buddhist Network Sign-In"
 
 msgid "Welcome, at the %(brand)s Single Sign-On home page."
-msgstr "Welcome, at the Diamond Way Buddhist Network Single Sign-On home page."
+msgstr "Welcome, at the Diamond Way Buddhist Network 'Single Sign-On' home page."
