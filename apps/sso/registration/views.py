@@ -111,8 +111,8 @@ class UserRegistrationList(ListView):
         # apply filters
         qs = RegistrationSearchFilter().apply(self, qs) 
         qs = CountryFilter().apply(self, qs) 
-        qs = CheckBackFilter().apply(self, qs) 
-        qs = IsAccessDeniedFilter().apply(self, qs) 
+        qs = CheckBackFilter().apply(self, qs, default='2')
+        qs = IsAccessDeniedFilter().apply(self, qs, default='2')
         qs = IsVerifiedFilter().apply(self, qs) 
         
         ordering = self.cl.get_ordering(self.request, qs)
