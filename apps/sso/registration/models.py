@@ -48,12 +48,72 @@ def send_user_validated_email(registration_profile, request):
         admin_url = urlresolvers.reverse("registration:update_user_registration", args=(registration_profile.pk,))
         email = subject + u"\n %s://%s%s" % (protocol, domain, admin_url)
         send_mail(subject, email, None, final_recipient_list)
-        
-        
+
+
+def send_access_denied_email(user, request,
+                             email_template_name='registration/email/access_denied_email.txt',
+                             subject_template_name='registration/email/access_denied_subject.txt'
+                             ):
+    use_https = request.is_secure()
+    current_site = get_current_site(request)
+    site_name = settings.SSO_SITE_NAME
+    domain = current_site.domain
+
+    if hasattr(settings, "SSO_REGISTRATION_CONTACT_EMAIL"):
+        from_email = settings.SSO_REGISTRATION_CONTACT_EMAIL
+    else:
+        from_email = None  # use default from_mail
+
+    c = {
+        'brand': settings.SSO_BRAND,
+        'from_email': from_email,
+        'email': user.primary_email(),
+        'username': user.username,
+        'domain': domain,
+        'site_name': site_name,
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+        'protocol': use_https and 'https' or 'http',
+    }
+    # use the user language or the default language (en-us)
+    language = user.language if user.language else settings.LANGUAGE_CODE
+    message, subject = i18n_email_msg_and_subj(c, email_template_name, subject_template_name, language)
+    user.email_user(subject, message, from_email)
+
+
+def send_check_back_email(user, request,
+                          email_template_name='registration/email/check_back_email.txt',
+                          subject_template_name='registration/email/check_back_subject.txt'
+                          ):
+    use_https = request.is_secure()
+    current_site = get_current_site(request)
+    site_name = settings.SSO_SITE_NAME
+    domain = current_site.domain
+
+    if hasattr(settings, "SSO_REGISTRATION_CONTACT_EMAIL"):
+        from_email = settings.SSO_REGISTRATION_CONTACT_EMAIL
+    else:
+        from_email = None  # use default from_mail
+
+    c = {
+        'brand': settings.SSO_BRAND,
+        'from_email': from_email,
+        'email': user.primary_email(),
+        'username': user.username,
+        'domain': domain,
+        'site_name': site_name,
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+        'protocol': use_https and 'https' or 'http',
+    }
+    # use the user language or the default language (en-us)
+    language = user.language if user.language else settings.LANGUAGE_CODE
+    message, subject = i18n_email_msg_and_subj(c, email_template_name, subject_template_name, language)
+    user.email_user(subject, message, from_email)
+
+
 def send_set_password_email(user, request, token_generator=default_pwd_reset_token_generator,
                             from_email=None,
-                            email_template_name='registration/set_password_email.txt',
-                            subject_template_name='registration/set_password_subject.txt'
+                            email_template_name='registration/email/set_password_email.txt',
+                            subject_template_name='registration/email/set_password_subject.txt'
                             ):
     use_https = request.is_secure()
     current_site = get_current_site(request)
@@ -78,8 +138,8 @@ def send_set_password_email(user, request, token_generator=default_pwd_reset_tok
 
 
 def send_validation_email(registration_profile, request, token_generator=default_token_generator,
-                          email_template_name='registration/validation_email.txt',
-                          subject_template_name='registration/validation_email_subject.txt'
+                          email_template_name='registration/email/validation_email.txt',
+                          subject_template_name='registration/email/validation_email_subject.txt'
                           ):
     use_https = request.is_secure()
     current_site = get_current_site(request)

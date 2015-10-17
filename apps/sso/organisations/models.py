@@ -1,10 +1,10 @@
 import logging
 import re
-from django.utils.text import slugify
 
 from pytz import timezone
 from sorl import thumbnail
 
+from django.utils.text import slugify
 from django.utils.timezone import localtime, now
 from django.conf import settings
 from django.db import models

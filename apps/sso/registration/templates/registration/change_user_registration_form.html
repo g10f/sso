@@ -100,6 +100,8 @@
           <a class="btn btn-default" href="{% url 'registration:delete_user_registration' form.user.pk %}">{% trans 'Delete' %}</a>
           <button type="submit" class="btn btn-default" name="_save">{% trans 'Save' %}</button>
 	      <button type="submit" class="btn btn-default" name="_continue">{% trans 'Save and continue editing' %}</button>
+	      <button type="submit" class="btn btn-default" name="_deny">{% trans 'Save and deny' %}</button>
+	      <button type="submit" class="btn btn-default" name="_check_back">{% trans 'Save and mark for check back' %}</button>
 	      <button type="submit" class="btn btn-primary">{% trans 'Save and activate' %}</button>
       </div>
      </div>
