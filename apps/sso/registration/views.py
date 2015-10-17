@@ -16,7 +16,7 @@ from sso.auth.decorators import admin_login_required
 from sso.organisations.models import is_validation_period_active_for_user
 from sso.views import main
 from sso.views.generic import SearchFilter, ViewChoicesFilter, ViewQuerysetFilter, ListView
-from .models import RegistrationProfile, RegistrationManager, send_user_validated_email, send_set_password_email
+from .models import RegistrationProfile, RegistrationManager, send_user_validated_email, send_set_password_email, send_check_back_email, send_access_denied_email
 from .forms import RegistrationProfileForm
 from .tokens import default_token_generator
 
@@ -168,21 +168,26 @@ def update_user_registration(request, pk, template='registration/change_user_reg
     if request.method == 'POST':
         registrationprofile_form = RegistrationProfileForm(request.POST, instance=registrationprofile, request=request)
         if registrationprofile_form.is_valid(): 
-            msg = ""
-            success_url = ""
-            msg_dict = {'name': force_text(get_user_model()._meta.verbose_name), 'obj': force_text(registrationprofile)}         
+            msg_dict = {'name': force_text(get_user_model()._meta.verbose_name), 'obj': force_text(registrationprofile)}
+            success_url = reverse('registration:user_registration_list') + "?" + request.GET.urlencode()
             if "_continue" in request.POST:
                 registrationprofile = registrationprofile_form.save()
                 msg = _('The %(name)s "%(obj)s" was changed successfully. You may edit it again below.') % msg_dict
                 success_url = reverse('registration:update_user_registration', args=[registrationprofile.pk])
             elif "_save" in request.POST:
-                registrationprofile = registrationprofile_form.save()
+                registrationprofile_form.save()
                 msg = _('The %(name)s "%(obj)s" was changed successfully.') % msg_dict
-                success_url = reverse('registration:user_registration_list') + "?" + request.GET.urlencode()
+            elif "_deny" in request.POST:
+                registrationprofile_form.save(deny=True)
+                msg = _('Access denied for %(obj)s.') % msg_dict
+                send_access_denied_email(registrationprofile.user, request)
+            elif "_check_back" in request.POST:
+                registrationprofile_form.save(check_back=True)
+                msg = _('The %(name)s "%(obj)s" was saved successfully.') % msg_dict
+                send_check_back_email(registrationprofile.user, request)
             else:
                 registrationprofile = registrationprofile_form.save(activate=True)
                 msg = _('The %(name)s "%(obj)s" was activated successfully.') % msg_dict
-                success_url = reverse('registration:user_registration_list') + "?" + request.GET.urlencode()
                 send_set_password_email(registrationprofile.user, request)
             
             messages.add_message(request, level=messages.SUCCESS, message=msg, fail_silently=True)

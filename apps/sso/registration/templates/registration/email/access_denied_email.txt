@@ -1,0 +1,9 @@
+{% load i18n %}{% autoescape off %}
+{% blocktrans %}Thank you for registering an account at {{ site_name }}.{% endblocktrans %}
+
+{% trans 'Unfortunately, your registration could not be accepted since both references could not be found. Please send us two valid references.' %}
+
+{% blocktrans %}The {{ site_name }} registration team{% endblocktrans %}
+{{ from_email }}
+
+{% endautoescape %}

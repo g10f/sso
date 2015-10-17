@@ -119,7 +119,7 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
 
         self.fields['organisations'].queryset = current_user.get_administrable_user_organisations()
 
-    def save(self, activate=False):
+    def save(self, activate=None, deny=None, check_back=None):
         cd = self.cleaned_data
         current_user = self.request.user
         # registrationprofile data
@@ -131,8 +131,12 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
         self.registrationprofile.is_access_denied = cd['is_access_denied']
         if current_user.has_perm('registration.verify_users'):
             self.registrationprofile.verified_by_user = current_user if cd['is_verified'] else None
-        
-        self.registrationprofile.save()        
+        if check_back is not None:
+            self.registrationprofile.check_back = check_back
+        if deny is not None:
+            self.registrationprofile.is_access_denied = deny
+
+        self.registrationprofile.save()
         
         # user data
         self.user.username = cd['username']
@@ -145,9 +149,12 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
         self.update_user_m2m_fields('role_profiles', current_user)
         self.update_user_m2m_fields('organisations', current_user)
         
-        if activate:
-            self.user.is_active = True
-            self.user.set_password(get_random_string(40))
+        if activate is not None:
+            self.user.is_active = activate
+            if activate:
+                self.user.set_password(get_random_string(40))
+        if deny is not None and deny:
+            self.user.is_active = False
 
         organisation = self.cleaned_data['organisations']
         if is_validation_period_active(organisation):

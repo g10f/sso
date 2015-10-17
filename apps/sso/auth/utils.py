@@ -1,15 +1,12 @@
 import base64
-from django.utils.six import StringIO
 import time
+import qrcode
 from binascii import unhexlify, hexlify
 from os import urandom
-import logging
-
-import qrcode
 
 from django.utils import lru_cache
 from django.utils import six
-from django.utils.http import is_safe_url
+from django.utils.six import StringIO
 from django.core.exceptions import ValidationError
 from django.conf import settings
 from django.shortcuts import resolve_url
@@ -20,6 +17,8 @@ from sso.utils.http import get_request_param
 from sso.auth import SESSION_AUTH_DATE
 from sso.utils.url import is_safe_ext_url
 from django.utils.six.moves.urllib.parse import quote, urlencode
+
+import logging
 
 logger = logging.getLogger(__name__)
 

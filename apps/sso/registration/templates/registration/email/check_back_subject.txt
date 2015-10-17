@@ -1,0 +1,3 @@
+{% load i18n %}{% autoescape off %}
+{% blocktrans %}{{ brand }} registration reference is invalid{% endblocktrans %}
+{% endautoescape %}
