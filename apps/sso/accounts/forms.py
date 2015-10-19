@@ -161,6 +161,7 @@ class PasswordResetForm(DjangoPasswordResetForm):
             logger.error("user has unusable password")
         expiration_date = now() + datetime.timedelta(settings.PASSWORD_RESET_TIMEOUT_DAYS)
         c = {
+            'first_name': user.first_name,
             'email': user.primary_email(),
             'domain': domain,
             'site_name': site_name,
@@ -629,7 +630,7 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
     role_profiles = forms.MultipleChoiceField(required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
                                               help_text=_('Groups of application roles that are assigned together.'))
 
-    extend_validity = forms.BooleanField(label=_('Extend validity'), widget=bootstrap.CheckboxInput(), required=False)
+    # extend_validity = forms.BooleanField(label=_('Extend validity'), widget=bootstrap.CheckboxInput(), required=False)
     created_by_user = forms.CharField(label=_("Created by"), required=False, widget=bootstrap.TextInput(attrs={'disabled': ''}))
 
     def __init__(self, *args, **kwargs):
@@ -668,11 +669,11 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
             return username
         raise forms.ValidationError(self.error_messages['duplicate_username'])
 
-    def save(self):
+    def save(self, extend_validity=False):
         cd = self.cleaned_data
         current_user = self.request.user
         
-        if cd['extend_validity']:
+        if extend_validity:
             self.user.valid_until = now() + datetime.timedelta(days=settings.SSO_VALIDATION_PERIOD_DAYS)
         self.user.username = cd['username']
         self.user.first_name = cd['first_name']

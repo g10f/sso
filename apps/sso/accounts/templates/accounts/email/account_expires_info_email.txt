@@ -1,4 +1,5 @@
 {% load i18n %}{% autoescape off %}
+{% blocktrans %}Hi {{ first_name }}.{% endblocktrans %}
 
 {% if has_expired %}{% blocktrans %}Your account {{ email }} at {{ site_name }} has expired at {{ expiration_date }}.{% endblocktrans %}{% else %}
 {% blocktrans %}You account {{ email }}  at {{ site_name }} will expire at {{ expiration_date }}.{% endblocktrans %}{% endif %}
