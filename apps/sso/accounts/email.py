@@ -29,6 +29,7 @@ def send_account_created_email(user, request, token_generator=default_pwd_reset_
     email = user.primary_email()
     c = {
         'email': email,
+        'first_name': user.first_name,
         'username': user.username,
         'domain': domain,
         'site_name': site_name,
@@ -58,6 +59,7 @@ def send_useremail_confirmation(user_email, request, token_generator=email_confi
     user = user_email.user
     c = {
         'user_email': user_email.email,
+        'first_name': user.first_name,
         'username': user.username,
         'domain': domain,
         'site_name': site_name,
@@ -83,6 +85,7 @@ def send_account_expires_info(user, base_url, from_email=None,
     email = user.primary_email()
     c = {
         'email': email,
+        'first_name': user.first_name,
         'username': user.username,
         'site_name': site_name,
         'base_url': base_url,

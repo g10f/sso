@@ -1,4 +1,5 @@
 {% load i18n %}{% autoescape off %}
+{% blocktrans %}Hi {{ first_name }}.{% endblocktrans %}
 
 {% blocktrans %}You recently entered a new email address into {{ site_name }}.
 To confirm your email, follow the link below:{% endblocktrans %}

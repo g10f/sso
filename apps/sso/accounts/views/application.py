@@ -323,7 +323,9 @@ def update_user(request, uuid, template='accounts/application/update_user_form.h
         user_email_inline_formset = UserEmailInlineFormSet(request.POST, instance=user)
 
         if form.is_valid() and user_email_inline_formset.is_valid():
-            user = form.save()
+            extend_validity = "_extend_validity" in request.POST
+
+            user = form.save(extend_validity)
             user_email_inline_formset.save()
 
             if not user.useremail_set.exists():

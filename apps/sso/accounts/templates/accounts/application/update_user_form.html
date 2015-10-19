@@ -69,7 +69,7 @@
                 {% include 'include/_field.html' with field=form.username %}
                 {% if is_validation_period_active %}
                     {% include 'include/_static_field.html' with field=form.valid_until %}
-                    {% include 'include/_field.html' with field=form.extend_validity %}
+                    {#% include 'include/_field.html' with field=form.extend_validity %#}
                 {% endif %}
                 {% include 'include/_field.html' with field=form.first_name %}
                 {% include 'include/_field.html' with field=form.last_name %}
@@ -140,6 +140,9 @@
                     <button type="submit" class="btn btn-default" name="_resend_invitation">{% trans 'Save and resend Invitation Mail' %}</button>
                 {% endif %}
                 <button type="submit" class="btn btn-default" name="_continue">{% trans 'Save and continue editing' %}</button>
+                {% if is_validation_period_active %}
+                    <button type="submit" class="btn btn-default" name="_extend_validity">{% trans 'Save and extend validity' %}</button>
+                {% endif %}
                 <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
             </div>
         </div>
