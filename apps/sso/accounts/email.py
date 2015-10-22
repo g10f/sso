@@ -1,6 +1,7 @@
 import datetime
 import logging
-
+from django.core.urlresolvers import reverse
+from django.db.models import Q
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator as default_pwd_reset_token_generator
 from django.contrib.sites.shortcuts import get_current_site
@@ -8,6 +9,7 @@ from django.core.mail import send_mail
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.utils.timezone import now
+from sso.accounts.models import User
 from sso.accounts.tokens import email_confirm_token_generator
 from sso.utils.translation import i18n_email_msg_and_subj
 
@@ -83,11 +85,18 @@ def send_account_expires_info(user, base_url, from_email=None,
     site_name = settings.SSO_SITE_NAME
     expiration_date = user.valid_until
     email = user.primary_email()
+    organisations_q = Q()
+    for organisation in user.organisations.all():
+        organisations_q |= Q(organisations=organisation)
+    admins = User.objects.filter(organisations_q, role_profiles__uuid=settings.SSO_ORG_ADMIN_ROLE_PROFILE_UUID)
     c = {
         'email': email,
         'first_name': user.first_name,
         'username': user.username,
+        'profile_url': base_url + reverse('accounts:profile'),
         'site_name': site_name,
+        'days': (expiration_date - now()).days,
+        'admins': admins,
         'base_url': base_url,
         'expiration_date': expiration_date,
         'has_expired': expiration_date < now()

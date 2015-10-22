@@ -280,6 +280,10 @@ msgstr "Willkommen im \"Diamond Way Buddhism Network\" (DWBN). "
 "Du hast es fast geschafft. Bitte lade ein Bild von Deinem strahlendem Gesicht hoch und wähle ein Passwort aus. "
 "Anschließend kannst Du Dich anmelden und genießen."
 
+#: accounts/templates/accounts/email/account_expires_info_email.txt:5
+msgid "Please meet one of your admins to prolong it:"
+msgstr "Bitte wende Dich zum Verlängern an einen Zentrums-Administrator:"
+
 
 # brand
 msgid "Log in with your %(brand)s account"

@@ -1,3 +1,3 @@
 {% load i18n %}{% autoescape off %}
-{% blocktrans %}{{ site_name }} Account expires{% endblocktrans %}
+{% blocktrans %}Your {{ site_name }} Account expires in {{ days }} days{% endblocktrans %}
 {% endautoescape %}

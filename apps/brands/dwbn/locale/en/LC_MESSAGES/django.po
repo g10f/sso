@@ -272,6 +272,10 @@ msgstr "Welcome to our Diamond Way Buddhism Network (DWBN). "
 "You are almost there. Please upload a picture of your bright face and choose a password. "
 "After that you can login and enjoy."
 
+#: accounts/templates/accounts/email/account_expires_info_email.txt:5
+msgid "Please meet one of your admins to prolong it:"
+msgstr "Please meet one of your center admins to prolong it:"
+
 # brand
 msgid "Log in with your %(brand)s account"
 msgstr "Diamond Way Buddhist Network Sign-In"
