@@ -1,13 +1,11 @@
 {% load i18n %}{% autoescape off %}
-{% blocktrans %}Hi {{ first_name }}.{% endblocktrans %}
+{% blocktrans %}Dear {{ first_name }},{% endblocktrans %}
+{% if has_expired %}{% blocktrans %}your {{ site_name }} account {{ email }} has expired at {{ expiration_date }}.{% endblocktrans %}{% else %}
+{% blocktrans %}your {{ site_name }} account {{ email }} ({{ profile_url }}) will expire in {{ days }} days ({{ expiration_date }}).{% endblocktrans %}{% endif %}
+{% blocktrans %}Please meet one of your admins to prolong it:{% endblocktrans %}
+{% for admin in admins %}
+* {{ admin.first_name }} {{ admin.last_name }}{% endfor %}
 
-{% if has_expired %}{% blocktrans %}Your account {{ email }} at {{ site_name }} has expired at {{ expiration_date }}.{% endblocktrans %}{% else %}
-{% blocktrans %}You account {{ email }}  at {{ site_name }} will expire at {{ expiration_date }}.{% endblocktrans %}{% endif %}
-
-{% blocktrans %}Please contact the user administrator at your organisation to renew your account.{% endblocktrans %}
-
-
-{% blocktrans %}The {{ site_name }} team{% endblocktrans %}
-{{ base_url }}{% url 'home' %}
+{% blocktrans %}Your {{ site_name }} team{% endblocktrans %}
 
 {% endautoescape %}

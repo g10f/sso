@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-10-19 22:55+0200\n"
+"POT-Creation-Date: 2015-10-22 16:43+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1106,7 +1106,6 @@ msgid "Cancel"
 msgstr ""
 
 #: accounts/templates/accounts/email/account_created_email.txt:2
-#: accounts/templates/accounts/email/account_expires_info_email.txt:2
 #: accounts/templates/accounts/email/password_reset_email.txt:2
 #: accounts/templates/accounts/email/useremail_confirm_email.txt:2
 #, python-format
@@ -1142,7 +1141,6 @@ msgid "This page will expire on %(date)s."
 msgstr ""
 
 #: accounts/templates/accounts/email/account_created_email.txt:14
-#: accounts/templates/accounts/email/account_expires_info_email.txt:10
 #: accounts/templates/accounts/email/password_reset_email.html:42
 #: accounts/templates/accounts/email/password_reset_email.txt:12
 #: accounts/templates/accounts/email/useremail_confirm_email.txt:13
@@ -1156,27 +1154,36 @@ msgstr ""
 msgid "A user account at %(site_name)s was created for you"
 msgstr ""
 
+#: accounts/templates/accounts/email/account_expires_info_email.txt:2
+#, python-format
+msgid "Dear %(first_name)s,"
+msgstr ""
+
+#: accounts/templates/accounts/email/account_expires_info_email.txt:3
+#, python-format
+msgid ""
+"your %(site_name)s account %(email)s has expired at %(expiration_date)s."
+msgstr ""
+
 #: accounts/templates/accounts/email/account_expires_info_email.txt:4
 #, python-format
 msgid ""
-"Your account %(email)s at %(site_name)s has expired at %(expiration_date)s."
+"your %(site_name)s account %(email)s (%(profile_url)s) will expire in "
+"%(days)s days (%(expiration_date)s)."
 msgstr ""
 
 #: accounts/templates/accounts/email/account_expires_info_email.txt:5
-#, python-format
-msgid ""
-"You account %(email)s  at %(site_name)s will expire at %(expiration_date)s."
+msgid "Please meet one of your admins to prolong it:"
 msgstr ""
 
-#: accounts/templates/accounts/email/account_expires_info_email.txt:7
-msgid ""
-"Please contact the user administrator at your organisation to renew your "
-"account."
+#: accounts/templates/accounts/email/account_expires_info_email.txt:9
+#, python-format
+msgid "Your %(site_name)s team"
 msgstr ""
 
 #: accounts/templates/accounts/email/account_expires_info_email_subject.txt:2
 #, python-format
-msgid "%(site_name)s Account expires"
+msgid "Your %(site_name)s Account expires in %(days)s days"
 msgstr ""
 
 #: accounts/templates/accounts/email/change_email.html:5
@@ -1847,7 +1854,7 @@ msgstr ""
 msgid "%(brand)s Single Sign-On Site administration"
 msgstr ""
 
-#: api/response.py:57
+#: api/response.py:60
 msgid "The request requires user authentication"
 msgstr ""
 
