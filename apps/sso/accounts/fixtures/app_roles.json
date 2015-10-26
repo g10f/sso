@@ -385,7 +385,7 @@
   {
     "model": "accounts.roleprofile",
     "fields": {
-      "name": "Diamondway Member",
+      "name": "Member Role",
       "uuid": "b4caab335bbc4c90a6f552f7f13aa410",
       "last_modified": "2012-03-23T07:00:46.076Z"
     }
@@ -393,7 +393,15 @@
   {
     "model": "accounts.roleprofile",
     "fields": {
-      "name": "Center Admin",
+      "name": "Guest Role",
+      "uuid": "9859f78da9a44491bf3d807d10993ce7",
+      "last_modified": "2015-10-26T07:00:46.076Z"
+    }
+  },
+  {
+    "model": "accounts.roleprofile",
+    "fields": {
+      "name": "Organisation Admin",
       "uuid": "1593284b238c4a1cabf291e573205508",
       "last_modified": "2012-03-23T07:00:46.076Z",
       "application_roles": [

@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 import os
 import logging
+from django.db.models.aggregates import Count
+from django.db.models.query_utils import Q
 
 from django.core.management.base import BaseCommand
 from django.conf import settings
-from sso.registration.models import RegistrationProfile
-from sso.accounts.models import User, RoleProfile
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils.timezone import now
+from sso.accounts.models import User, RoleProfile
 
 logger = logging.getLogger(__name__)
 
@@ -15,16 +17,35 @@ class Command(BaseCommand):
     help = 'Cleanup Users'  # @ReservedAssignment
     
     def handle(self, *args, **options):
-        update_email_confirmed_flag()
+        check_validation()
 
 
-def update_email_confirmed_flag():
-    for registration_profile in RegistrationProfile.objects.filter(is_validated=True).prefetch_related('user__useremail_set'):
-        user_email = registration_profile.user.primary_email()
-        if not user_email.confirmed:
-            user_email.confirmed = True
-            user_email.save(update_fields=['confirmed'])
-            print(user_email)
+def check_validation():
+    if not settings.SSO_VALIDATION_PERIOD_IS_ACTIVE:
+        print("SSO_VALIDATION_PERIOD_IS_ACTIVE is False")
+        return
+
+    try:
+        guest_profile = RoleProfile.objects.get(uuid=settings.SSO_DEFAULT_GUEST_PROFILE_UUID)
+    except ObjectDoesNotExist:
+        print("no SSO_DEFAULT_GUEST_PROFILE_UUID available")
+        return
+
+    profiles = [guest_profile]
+    has_already_guest_status = Q(application_roles=None) & Q(c=len(profiles))
+    for profile in profiles:
+        has_already_guest_status &= Q(role_profiles=profile)
+
+    q = Q(valid_until__isnull=True) | has_already_guest_status
+    users = User.objects.annotate(c=Count('role_profiles')).filter(valid_until__lt=now()).exclude(q)
+    if not settings.SSO_VALIDATION_PERIOD_IS_ACTIVE_FOR_ALL:
+        users = users.filter(organisations__uses_user_activation=True)
+
+    print("Assigning guest status to:")
+    for user in users:
+        user.application_roles = []
+        user.role_profiles = [guest_profile]
+        print(" %s" % user)
 
 
 def clean_pictures():
