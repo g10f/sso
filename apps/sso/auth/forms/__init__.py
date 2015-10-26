@@ -44,6 +44,7 @@ class EmailAuthenticationForm(AuthenticationForm):
             raise forms.ValidationError(self.error_messages['whitespaces'], code='whitespaces')
         return data
 
+    """
     def confirm_login_allowed(self, user):
         super(EmailAuthenticationForm, self).confirm_login_allowed(user)
 
@@ -64,7 +65,7 @@ class EmailAuthenticationForm(AuthenticationForm):
                     self.error_messages['expired'] % msg,
                     code='expired',
                 )
-
+    """
 
 class U2FForm(forms.Form):
     response = forms.CharField(label=_('Response'), widget=forms.HiddenInput())
