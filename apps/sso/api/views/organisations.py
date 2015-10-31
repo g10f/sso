@@ -20,7 +20,6 @@ class OrganisationMixin(object):
         data = {
             '@id': "%s%s" % (base, reverse('api:v2_organisation', kwargs={'uuid': obj.uuid.hex})),
             'id': u'%s' % obj.uuid.hex,
-            'centerid': u'%s' % obj.centerid,  # legacy id, should be removed when the resync ist done
             'is_active': obj.is_active,
             'is_private': obj.is_private,
             'name': u'%s' % obj.name,
@@ -39,6 +38,8 @@ class OrganisationMixin(object):
                 '@id': "%s%s" % (base, reverse('api:v2_country', kwargs={'iso2_code': obj.country.iso2_code})),
             }
         }
+        if obj.centerid:  # legacy id, should be removed when the resync ist done
+            data['centerid'] = obj.centerid
         if obj.timezone:
             data['timezone'] = obj.timezone
             # data['utc_offset'] = localtime(now(), timezone(obj.timezone)).strftime('%z')
