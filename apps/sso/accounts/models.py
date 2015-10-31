@@ -967,6 +967,10 @@ def update_or_create_organisation_account(organisation, old_email_value, new_ema
 
     try:
         if old_email_value:
+            # if another UserEmail with the new email exists, delete it
+            if new_email_value.lower() != old_email_value.lower():
+                UserEmail.objects.filter(email=new_email_value).delete()
+            # get the existing organisation account
             organisation_account = User.objects.get_by_email(old_email_value)
         else:
             organisation_account = User.objects.get_by_email(new_email_value)

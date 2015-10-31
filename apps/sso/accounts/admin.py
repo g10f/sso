@@ -200,7 +200,7 @@ class ApplicationAdminApplicationFilter(BaseFilter):
     field_path = 'applicationadmin__application'
 
     def get_lookup_qs(self, request, model_admin):
-        return Application.objects.filter(applicationadmin__application__isnull=False)
+        return Application.objects.filter(applicationadmin__application__isnull=False).distinct()
 
 
 class RoleProfileAdminRoleProfileFilter(BaseFilter):
