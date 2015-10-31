@@ -1,60 +1,70 @@
 {% extends 'base_site.html' %}
-{% load i18n list tz static %}
+{% load i18n list tz static thumbnail %}
 
 {% block title %}{% trans 'Organisations' %}{% endblock %}
 
 {% block nav_organisations_organisation_list_class %}active{% endblock %}
 
 {% block breadcrumb %}
-<ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li class="active">{% trans 'Organisations' %}</li>
-</ol> 
+    <ol class="breadcrumb">
+        <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+        <li class="active">{% trans 'Organisations' %}</li>
+    </ol>
 {% endblock breadcrumb %}
 
 {% block navbar %}{% include 'include/global_navigation.html' with active_navigation="organisations" %}{% endblock navbar %}
-    
+
 {% block content %}
-<div class="row">
-	<div class="col-sm-12">
-	    {% if messages %}{% for message in messages %}
-	       <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
-	    {% endif %}
-	</div>
-</div><!-- /.row -->
+    <div class="row">
+        <div class="col-sm-12">
+            {% if messages %}{% for message in messages %}
+                <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
+            {% endif %}
+        </div>
+    </div><!-- /.row -->
 
-<div class="row dwbn-filter-row">
-	<div class="col-sm-3">
-       {% include 'include/_search_form.html' %}
-    </div>
-	
-	<div class="col-sm-9">
-       {% for filter in filters %}{% if filter %} 
-       {% include filter.template_name with filter=filter %}
-       {% endif %}{% endfor %}
-       <button type="button" class="btn btn-default geo-location {% if cl.params.latlng %}active{% endif %}" data-href="{% query_string cl 'latlng' '' %}"><span class="glyphicon glyphicon-globe"></span> {% trans 'Distance' %}</button>
-        <a class="btn btn-default pull-right" href="{% url 'organisations:organisation_list_csv' type='csv' %}" role="button" title="{% trans 'Download' %}"><span class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
-    </div><!-- /.col-sm-9 -->
-</div>
+    <div class="row dwbn-filter-row">
+        <div class="col-sm-3">
+            {% include 'include/_search_form.html' %}
+        </div>
 
-<main>
-    <div class="col-sm-12 table-responsive">
-	   <table class="table table-bordered table-striped">
-	       {% include "include/table_header.html" %}
-	       <tbody>
-	           {% for object in object_list %}
-	           <tr> 
-	               <td><a href="{% url 'organisations:organisation_detail' object.uuid.hex %}">{{ object.name }}</a></td>
-	               <td>{{ object.email|default_if_none:"" }}</td>
-	               <td>{% if object.google_maps_url %}<a href="{{ object.google_maps_url }}">{% trans 'Google Maps' %} <span class="glyphicon glyphicon-map-marker"></span></a>{% endif %}</td>
-	               <td>{{ object.country.iso2_code }}</td>
-                   <td>{{ object.founded|date:"Y-m-d" }}</td>
-                   {% if cl.params.latlng %}<td>{% if object.distance %}{{ object.distance.km|floatformat }} km{% endif %}</td>{% endif %}
-	           </tr>
-	           {% endfor %}
-	       </tbody>
-	   </table>
-	   {% if is_paginated %}{% pagination page_obj cl %}{% endif %}
+        <div class="col-sm-9">
+            {% for filter in filters %}{% if filter %}
+                {% include filter.template_name with filter=filter %}
+            {% endif %}{% endfor %}
+            <button type="button" class="btn btn-default geo-location {% if cl.params.latlng %}active{% endif %}" data-href="{% query_string cl 'latlng' '' %}"><span
+                    class="glyphicon glyphicon-globe"></span> {% trans 'Distance' %}</button>
+            <a class="btn btn-default pull-right" href="{% url 'organisations:organisation_list_csv' type='csv' %}" role="button" title="{% trans 'Download' %}"><span
+                    class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
+        </div>
+        <!-- /.col-sm-9 -->
     </div>
-</main>
+
+    <main>
+        <div class="col-sm-12 table-responsive">
+            <table class="table table-bordered table-striped">
+                {% include "include/table_header.html" %}
+                <tbody>
+                {% for object in object_list %}
+                    <tr>
+                        <td><a href="{% url 'organisations:organisation_detail' object.uuid.hex %}">{{ object.name }}</a></td>
+                        {% with object.organisationpicture_set.first.picture as picture %}
+                        <td>
+                            {% if picture %}<a href="{{ picture.url }}">{% thumbnail picture "30x30" crop="center" as im %}
+                                <img class="dwbn-icon-user" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="">{% endthumbnail %}</a>{% endif %}
+                        </td>
+                        {% endwith %}
+                        <td>{{ object.email|default_if_none:"" }}</td>
+                        <td>{% if object.google_maps_url %}<a href="{{ object.google_maps_url }}">{% trans 'Google Maps' %} <span class="glyphicon glyphicon-map-marker"></span></a>{% endif %}</td>
+                        <td>{{ object.country.iso2_code }}</td>
+                        <td>{{ object.founded|date:"Y-m-d" }}</td>
+                        {% if cl.params.latlng %}
+                            <td>{% if object.distance %}{{ object.distance.km|floatformat }} km{% endif %}</td>{% endif %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% if is_paginated %}{% pagination page_obj cl %}{% endif %}
+        </div>
+    </main>
 {% endblock content %}

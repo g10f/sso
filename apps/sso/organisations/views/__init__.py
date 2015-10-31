@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 import csv
 import logging
+
 from django.utils.six.moves.urllib.parse import urlunsplit
 from django.http.response import HttpResponse
 from django.contrib import messages
 from django.utils.encoding import force_text
-
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required, permission_required
@@ -15,7 +15,6 @@ from django.utils.translation import ugettext_lazy as _
 from django.http import HttpResponseRedirect
 from django.forms.models import inlineformset_factory
 from l10n.models import Country
-from sso.utils.ucsv import UnicodeWriter
 from sso.views import main
 from sso.emails.models import EmailForward, Email, EmailAlias
 from sso.organisations.models import AdminRegion, Organisation, OrganisationPicture
@@ -344,7 +343,7 @@ class Distance(object):
 class OrganisationList(ListView):
     template_name = 'organisations/organisation_list.html'
     model = Organisation
-    list_display = ['name', 'email', 'google maps', 'country', 'founded']
+    list_display = ['name', _('picture'), 'email', 'google maps', 'country', 'founded']
     
     def get_list_display(self):
         latlng = self.request.GET.get('latlng', '')
@@ -371,7 +370,7 @@ class OrganisationList(ListView):
         be a queryset (in which qs-specific behavior will be enabled).
         """
         self.cl = main.ChangeList(self.request, self.model, self.get_list_display(), default_ordering=self.get_default_ordering())
-        qs = super(OrganisationList, self).get_queryset().only('location', 'uuid', 'name', 'email', 'country', 'founded').select_related('country', 'email')
+        qs = super(OrganisationList, self).get_queryset().only('location', 'uuid', 'name', 'email', 'country', 'founded').prefetch_related('country', 'email', 'organisationpicture_set')
         
         # apply filters
         qs = MyOrganisationsFilter().apply(self, qs) 
