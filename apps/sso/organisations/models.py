@@ -292,7 +292,7 @@ class Organisation(AbstractBaseModel):
             return u'%s' % self.name
 
     def get_near_organisations(self):
-        return get_near_organisations(self.location).exclude(pk=self.pk)[:10]
+        return get_near_organisations(self.location, qs=Organisation.objects.filter(is_active=True).exclude(pk=self.pk))[:10]
 
     @models.permalink
     def get_absolute_url(self):
