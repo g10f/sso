@@ -63,7 +63,6 @@ def password_change(request):
     """
     Handles the "change password" task -- both form display and validation.
     """
-    from django.contrib.auth.views import password_change
     redirect_uri = get_safe_redirect_uri(request, allowed_hosts())
     post_change_redirect = update_url(reverse('accounts:password_change_done'), {'redirect_uri': redirect_uri})
     template_name = 'accounts/password_change_form.html'
@@ -82,8 +81,8 @@ def password_change(request):
     context = {
         'form': form,
         'title': _('Password change'),
+        'redirect_uri': redirect_uri
     }
-    context.update({'redirect_uri': redirect_uri})
 
     return TemplateResponse(request,template_name, context)
 
@@ -202,13 +201,16 @@ def confirm_email(request, uidb64, token, post_reset_redirect=None):
 @login_required
 @user_passes_test(lambda user: not user.is_center)
 def emails(request):
+    redirect_uri = get_safe_redirect_uri(request, allowed_hosts())
+    post_change_redirect = update_url(reverse('accounts:emails'), {'redirect_uri': redirect_uri})
+
     user = request.user
     if request.method == 'POST':
         if 'send_confirmation' in request.POST:
             user_email = UserEmail.objects.get(id=request.POST['send_confirmation'])
             send_useremail_confirmation(user_email, request)
             messages.success(request, _('Confirmation email was sent to \"%(email)s\".') % {'email': user_email})
-            return redirect('accounts:emails')
+            return redirect(post_change_redirect)
         elif 'delete' in request.POST:
             try:
                 user_email = UserEmail.objects.get(id=request.POST['delete'])
@@ -217,14 +219,14 @@ def emails(request):
             except UserEmail.DoesNotExist:
                 # may be a double click on the delete button
                 pass
-            return redirect('accounts:emails')
+            return redirect(post_change_redirect)
         elif 'set_primary' in request.POST:
             user_email = UserEmail.objects.get(id=request.POST['set_primary'])
             user_email.primary = True
             user_email.save()
             UserEmail.objects.filter(user=user_email.user, primary=True).exclude(pk=user_email.pk).update(primary=False)
             messages.success(request, _("The email \"%(email)s\" was changed successfully.") % {'email': user_email})
-            return redirect('accounts:emails')
+            return redirect(post_change_redirect)
         else:
             form = SelfUserEmailForm(request.POST)
             if form.is_valid():
@@ -235,12 +237,16 @@ def emails(request):
                 msg += _('Confirmation email was sent to \"%(email)s\".') % {'email': user_email}
                 messages.success(request, msg)
                 send_useremail_confirmation(user_email, request)
-                return redirect('accounts:emails')
+                return redirect(post_change_redirect)
     else:
         form = SelfUserEmailForm(initial={'user': user.id})
 
-    dictionary = {'form': form, 'max_email_adresses': UserEmail.MAX_EMAIL_ADRESSES}
-    return render(request, 'accounts/user_email_detail.html', dictionary)
+    context = {
+        'form': form,
+        'max_email_adresses': UserEmail.MAX_EMAIL_ADRESSES,
+        'redirect_uri': redirect_uri
+    }
+    return render(request, 'accounts/user_email_detail.html', context)
 
 
 def get_profile_success_url(request, redirect_uri):

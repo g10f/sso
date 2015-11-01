@@ -114,6 +114,11 @@
             {% endfor %}
             </tbody>
         </table>
+        <div class="form-group">
+            {% block submit_group %}
+                {% if redirect_uri %}<a class="btn btn-default" href="{{ redirect_uri }}">{% trans 'Back' %}</a>{% endif %}
+            {% endblock submit_group %}
+        </div>
     </form>
 {% endblock %}
 
