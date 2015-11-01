@@ -25,6 +25,7 @@ from sso.views.generic import ListView, SearchFilter
 
 logger = logging.getLogger(__name__)
 
+
 class OrganisationChangeDetailView(DetailView):
     model = OrganisationChange
 
@@ -49,7 +50,6 @@ class OrganisationChangeDetailView(DetailView):
 
         context.update(kwargs)
         return super(OrganisationChangeDetailView, self).get_context_data(**context)
-
 
 
 class OrganisationChangeUpdateView(SingleObjectTemplateResponseMixin, ModelFormMixin, ProcessFormView):
