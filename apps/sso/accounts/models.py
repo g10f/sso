@@ -357,7 +357,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @classmethod
     def get_primary_or_none(cls, queryset):
-        # iterate through all uses the prefetch_related cache
+        # iterate through all items, uses the prefetch_related cache
         for item in queryset:
             if item.primary:
                 return item
@@ -443,11 +443,6 @@ class User(AbstractBaseUser, PermissionsMixin):
                                                                    is_inheritable_by_org_admin=True).select_related()
             else:
                 application_roles = ApplicationRole.objects.none()
-
-            """
-            if self.is_app_admin:
-                application_roles |= ApplicationRole.objects.filter(application__applicationadmin__admin=self)
-            """
             return application_roles
     
     @memoize
@@ -462,10 +457,6 @@ class User(AbstractBaseUser, PermissionsMixin):
                 role_profiles = self.role_profiles.filter(is_inheritable_by_org_admin=True)
             else:
                 role_profiles = self.role_profiles.none()
-            """
-            if self.is_app_admin:
-                role_profiles |= RoleProfile.objects.filter(roleprofileadmin__admin=self)
-            """
             return role_profiles.prefetch_related('application_roles', 'application_roles__role', 'application_roles__application').distinct()
     
     @memoize
@@ -667,10 +658,10 @@ class User(AbstractBaseUser, PermissionsMixin):
         if self.is_superuser:
             pass
         elif self.is_global_user_admin:
-            qs = qs.filter(is_superuser=False)
+            qs = qs.filter(is_superuser=False, is_service=False)
         elif self.is_user_admin:
             organisations = self.get_administrable_user_organisations()
-            q = Q(is_superuser=False) & Q(organisations__in=organisations)
+            q = Q(is_superuser=False) & Q(is_service=False) & Q(organisations__in=organisations)
             qs = qs.filter(q).distinct()
         else:
             qs = User.objects.none()
@@ -679,10 +670,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     def filter_administrable_app_admin_users(self, qs):
         # filter the users for who the authenticated user can manage app_roles
         if self.is_global_app_admin:
-            qs = qs.filter(is_superuser=False)
+            qs = qs.filter(is_superuser=False, is_service=False)
         elif self.is_app_admin():
             organisations = self.get_administrable_app_admin_user_organisations()
-            q = Q(is_superuser=False) & Q(organisations__in=organisations)
+            q = Q(is_superuser=False) & Q(is_service=False) & Q(organisations__in=organisations)
             qs = qs.filter(q).distinct()
         else:
             qs = User.objects.none()
@@ -738,8 +729,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         if self.is_superuser:
             return True
-        elif self.has_perm("accounts.access_all_users"): 
-            return not User.objects.get(uuid=uuid).is_superuser
+        elif self.has_perm("accounts.access_all_users"):
+            user = User.objects.get(uuid=uuid)
+            return not user.is_superuser and not user.is_service
         else:
             return User.objects.filter(Q(uuid=uuid) & (Q(organisations__user=self) | Q(organisations__admin_region__user=self) | Q(organisations__country__user=self))).exists()
 
@@ -979,7 +971,7 @@ def update_or_create_organisation_account(organisation, old_email_value, new_ema
             organisation_account = User()
             organisation_account.set_password(get_random_string(40))
         else:
-            # organisation is not activ and no user account exists, so don't create one
+            # organisation is not active and no user account exists, so don't create one
             pass
 
     if organisation_account:
