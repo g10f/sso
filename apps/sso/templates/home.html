@@ -32,16 +32,15 @@
             </ul>
         {% endif %}
     {% else %}
-        <h3>{% blocktrans %}Welcome, at the {{ brand }} Single Sign-On home page.{% endblocktrans %}</h3>
-
+        <h3>{% blocktrans %}One account. All of {{ site_name }}.{% endblocktrans %}</h3>
         <p>
-            {% blocktrans %}Would you like <a href="{{ login_url }}">to log yourself</a> in?{% endblocktrans %}
+            {% blocktrans %}<a href="{{ login_url }}">Sign in with your {{ brand }} Account</a> and use all {{ site_name }} services.{% endblocktrans %}
         </p>
 
         {% url 'registration:registration_register' as registration_register_url %}
         {% if registration_register_url and registration_open %}
         <p>        
-        {% blocktrans %}New at {{ site_name }}? <a href="{{ registration_register_url }}">Sign up</a>{% endblocktrans %}.
+        {% blocktrans %}New at {{ site_name }}? <a href="{{ registration_register_url }}">Register</a>{% endblocktrans %}.
         </p>
         {% endif %}
     {% endif %}

@@ -69,7 +69,7 @@ body {
        {% url 'registration:registration_register' as registration_register_url %}
        {% if registration_register_url and registration_open %}
        <div class="registration_link">
-           {% blocktrans %}New at {{ site_name }}? <a href="{{ registration_register_url }}">Sign up</a>{% endblocktrans %}.
+           {% blocktrans %}New at {{ site_name }}? <a href="{{ registration_register_url }}">Register</a>{% endblocktrans %}.
        </div>
        {% endif %}
        {% endif %}

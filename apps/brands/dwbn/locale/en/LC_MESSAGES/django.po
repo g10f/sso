@@ -280,5 +280,8 @@ msgstr "Please meet one of your center admins to prolong it:"
 msgid "Log in with your %(brand)s account"
 msgstr "Diamond Way Buddhist Network Sign-In"
 
-msgid "Welcome, at the %(brand)s Single Sign-On home page."
-msgstr "Welcome, at the Diamond Way Buddhist Network 'Single Sign-On' home page."
+#msgid "Welcome, at the %(brand)s Single Sign-On home page."
+#msgstr "Welcome, at the Diamond Way Buddhist Network 'Single Sign-On' home page."
+
+msgid "This account is inactive."
+msgstr "Sorry, your account is inactive. Please go to the user admin at your center."
