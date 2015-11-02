@@ -38,6 +38,9 @@ class UserRegistrationDeleteView(DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super(UserRegistrationDeleteView, self).get_context_data(**kwargs)
+        # remove the the key with the name registration 'user' from the context,
+        # because this would overwrite the current logged in user in the template
+        context.pop('user')
         context['cancel_url'] = reverse('registration:update_user_registration', args=[self.object.registrationprofile.pk])
         return context
     
