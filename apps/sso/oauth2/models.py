@@ -10,7 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 from sso.accounts.models import Application
 from sso.auth.models import Device
 from sso.models import AbstractBaseModel, AbstractBaseModelManager
-from django.utils.crypto import get_random_string, salted_hmac
+from django.utils.crypto import get_random_string
 
 import logging
 logger = logging.getLogger(__name__)
