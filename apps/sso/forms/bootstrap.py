@@ -14,6 +14,7 @@ from django.utils.encoding import force_text
 from django.utils.html import format_html
 from django.utils import six
 
+
 class Widget(forms.Widget):
     def __init__(self, attrs=None, **kwargs):
         # add form-control class
