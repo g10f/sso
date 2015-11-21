@@ -63,7 +63,7 @@ class OrganisationCountryUpdateView(OrganisationCountryBaseView, FormsetsUpdateV
         formsets = []
         if self.request.method == 'GET' or 'email' not in self.form.changed_data:
             email_forward_inline_formset = get_optional_inline_formset(self.request, self.object.email, Email, 
-                                                                       model=EmailForward, form=EmailForwardOnlyInlineForm, max_num=10)
+                                                                       model=EmailForward, form=EmailForwardOnlyInlineForm, max_num=20)
             email_alias_inline_formset = get_optional_inline_formset(self.request, self.object.email, Email, 
                                                                      model=EmailAlias, form=EmailAliasInlineForm, max_num=6)
             
