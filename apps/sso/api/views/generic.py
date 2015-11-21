@@ -1,24 +1,22 @@
 # -*- coding: utf-8 -*-
 import json
+import logging
 from uuid import UUID
 
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
-from django.http import HttpResponse, Http404
 from django.db import transaction
-from django.views.generic.detail import BaseDetailView
-from django.views.generic.list import BaseListView
+from django.forms.models import model_to_dict
+from django.http import HttpResponse, Http404
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.vary import vary_on_headers
-from django.forms.models import model_to_dict
-from django.conf import settings
+from django.views.generic.detail import BaseDetailView
+from django.views.generic.list import BaseListView
+from sso.api.decorators import catch_errors
+from sso.api.response import JsonHttpResponse
 from sso.auth.utils import is_browser_client
 from sso.oauth2.models import allowed_hosts
 from sso.utils.url import base_url, update_url, is_safe_ext_url
-from sso.api.decorators import catch_errors
-from sso.api.response import JsonHttpResponse
-
-import logging
 
 logger = logging.getLogger(__name__)
 
