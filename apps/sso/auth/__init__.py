@@ -3,7 +3,6 @@ import uuid
 import time
 from django.conf import settings
 from django.contrib.auth import rotate_token, user_logged_in, load_backend, BACKEND_SESSION_KEY
-from django.contrib.auth.models import AnonymousUser
 from django.utils.crypto import constant_time_compare, salted_hmac
 
 logger = logging.getLogger(__name__)
@@ -115,6 +114,7 @@ def get_user(request, client=None):
     Returns the user model instance associated with the given request session.
     If no user is retrieved an instance of `AnonymousUser` is returned.
     """
+    from django.contrib.auth.models import AnonymousUser
     user = None
     try:
         user_id = _get_user_session_key(request)
