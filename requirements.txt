@@ -8,7 +8,8 @@ pyjwt
 cryptography
 oauthlib
 sorl-thumbnail
-pillow
+# pillow 3.0 has a bug https://github.com/python-pillow/Pillow/issues/1497
+pillow==2.9.0
 django-nocaptcha-recaptcha
 pytz
 geopy

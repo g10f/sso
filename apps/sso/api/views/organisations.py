@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+from sorl.thumbnail import get_thumbnail
 
 from django.core.urlresolvers import reverse
 from django.db.models import Q
@@ -91,7 +92,10 @@ class OrganisationMixin(object):
                     'title': picture.title,
                     'description': picture.description,
                     'order': picture.order,
-                    'url': absolute_url(request, picture.picture.url)
+                    'url': absolute_url(request, picture.picture.url),
+                    '30x30': absolute_url(request, get_thumbnail(picture.picture, "30x30", crop="center").url),
+                    '70x70': absolute_url(request, get_thumbnail(picture.picture, "70x70", crop="center").url),
+                    '180x180': absolute_url(request, get_thumbnail(picture.picture, "180x180", crop="center").url)
                 } for picture in obj.organisationpicture_set.all()
             }
 

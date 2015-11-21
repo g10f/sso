@@ -6,6 +6,7 @@ import fabtools
 
 env.use_ssh_config = True
 env.apps = ['sso', 'brands/dwbn']
+# env.msg_source_apps['sso']
 
 configurations = {
     'dev': {'host_string': 'sso.dwbn.org', 'server_name': 'sso-dev.dwbn.org', 'app': 'sso', 'virtualenv': 'sso-dev', 'db_name': 'sso_dev', 'branch': 'master'},
@@ -155,9 +156,12 @@ def migrate_centerdb(conf='dev'):
 
 
 @task
-def compileless(version='1.0.15'):
-    for style in ['default', 'dwbn', 'vw', 'dwbn2', 'dwbn3', 'dwbn4']:
-        local('lessc ./apps/sso/static/less/%(style)s.less ./apps/sso/static/css/%(style)s-%(version)s.css' %{'style': style, 'version': version})
+def compileless(version='1.0.16'):
+    brands = {'dwbn': ['dwbn', 'dwbn2', 'dwbn3', 'dwbn4'], 'vw': ['vw']}
+    local('lessc ./apps/sso/static/less/default.less ./apps/sso/static/css/%(style)s-%(version)s.css' %{'style': 'default', 'version': version})
+    for brand, styles in brands.items():
+        for style in styles:
+            local('lessc --include-path=./apps/sso/static/less/ ./apps/brands/%(brand)s/static/less/%(style)s.less ./apps/brands/%(brand)s/static/css/%(style)s-%(version)s.css' %{'brand': brand, 'style': style, 'version': version})
 
 
 @task
@@ -169,7 +173,7 @@ def compilemessages():
 
 @task
 def makemessages():
-    for app in env.apps:
+    for app in ['sso']:
         with lcd('apps/%s' % app):
             local('~/envs/sso/bin/django-admin.py makemessages -a')
             local('~/envs/sso/bin/django-admin.py makemessages -d djangojs -a')
