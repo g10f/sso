@@ -3,9 +3,9 @@ import hashlib
 import base64
 from binascii import b2a_hex
 from django.contrib.auth.hashers import BasePasswordHasher, mask_hash
-from django.utils.datastructures import SortedDict
 from django.utils.translation import ugettext_noop as _
 from django.utils.crypto import constant_time_compare
+from collections import OrderedDict
 
 
 class OsCommerceMD5PasswordHasher(BasePasswordHasher):
@@ -31,7 +31,7 @@ class OsCommerceMD5PasswordHasher(BasePasswordHasher):
     def safe_summary(self, encoded):
         algorithm, salt, hash = encoded.split('$', 2)  # @ReservedAssignment
         assert algorithm == self.algorithm
-        return SortedDict([
+        return OrderedDict([
             (_('algorithm'), algorithm),
             (_('salt'), mask_hash(salt, show=2)),
             (_('hash'), mask_hash(hash)),
@@ -70,7 +70,7 @@ class MoinSha1PasswordHasher(BasePasswordHasher):
         assert algorithm == self.algorithm
         data = base64.decodestring(hash)
         
-        return SortedDict([ 
+        return OrderedDict([
             (_('algorithm'), self.algorithm),
             (_('salt'), mask_hash(b2a_hex(data[20:]), show=2)),
             (_('hash'), mask_hash(b2a_hex(data[:20]))),
