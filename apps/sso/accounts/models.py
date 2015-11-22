@@ -124,7 +124,7 @@ class ApplicationRole(models.Model):
         verbose_name_plural = _('application roles')
     
     def natural_key(self):
-        return self.application.natural_key(), self.role.natural_key()
+        return self.application.natural_key() + self.role.natural_key()
     
     def __unicode__(self):
         return u"%s - %s" % (self.application, self.role)
