@@ -6,7 +6,7 @@
 {% block breadcrumb %}
     <ol class="breadcrumb">
         <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-        <li><a href="{% url 'organisations:adminregion_list' %}">{% trans 'Countries' %}</a></li>
+        <li><a href="{% url 'organisations:organisationcountry_list' %}">{% trans 'Countries' %}</a></li>
         <li class="active">{% trans 'Country Details' %}</li>
     </ol>
 {% endblock breadcrumb %}
@@ -41,6 +41,11 @@
     <div class="row">
         <div class="dwbn-label">{% trans 'Email address' %}:</div>
         <div class="dwbn-content">{{ object.email|default_if_none:"" }}</div>
+    </div>
+
+    <div class="row">
+        <div class="dwbn-label">{% trans 'Organisations' %}:</div>
+        <div class="dwbn-content"><a href="{% url 'organisations:organisation_list'  %}?country={{ object.country.pk }}">{% trans 'Organisations' %}</a></div>
     </div>
 
     {% if perms.organisations.change_organisationcountry and has_country_access %}
