@@ -156,7 +156,7 @@ def migrate_centerdb(conf='dev'):
 
 
 @task
-def compileless(version='1.0.16'):
+def compileless(version='1.0.17'):
     brands = {'dwbn': ['dwbn', 'dwbn2', 'dwbn3', 'dwbn4'], 'vw': ['vw']}
     local('lessc ./apps/sso/static/less/default.less ./apps/sso/static/css/%(style)s-%(version)s.css' %{'style': 'default', 'version': version})
     for brand, styles in brands.items():
