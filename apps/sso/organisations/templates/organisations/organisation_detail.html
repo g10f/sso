@@ -24,9 +24,9 @@
 {% endif %}
     <div class="row">
         {% for org_pic in object.organisationpicture_set.all %}
-        <div class="col-xs-6 col-md-3">
+        <div class="col-sm-6 col-md-4">
             <div class="thumbnail">
-            <a href="{{ org_pic.picture.url }}">{% thumbnail org_pic.picture "180x180" crop="center" as im %}
+            <a href="{{ org_pic.picture.url }}">{% thumbnail org_pic.picture "240x240" crop="center" as im %}
                 <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="">{% endthumbnail %}</a>
             <h4>{{ org_pic.title }}</h4>
             <p>{{ org_pic.description }}</p>

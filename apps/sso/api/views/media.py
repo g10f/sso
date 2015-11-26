@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from mimetypes import guess_extension
+from sorl.thumbnail import get_thumbnail
+
 from django.views.decorators.csrf import csrf_exempt
 from django.core.urlresolvers import reverse
 from django.utils.crypto import get_random_string
@@ -45,9 +47,9 @@ def modify_permission(request, obj):
             if user.uuid == obj.uuid:
                 return True, None
             else:
-                if (not user.has_perm('accounts.change_user')):
+                if not user.has_perm('accounts.change_user'):
                     return False, "User has no permission '%s" % 'accounts.change_user'
-                elif (not user.has_user_access(obj.uuid)):
+                elif not user.has_user_access(obj.uuid):
                     return False, "User has no access to object"
                 else:
                     return True, None
@@ -83,6 +85,11 @@ class UserPictureDetailView(JsonDetailView):
         }
         if obj.picture:
             data['url'] = absolute_url(request, obj.picture.url)
+            data['30x30'] = absolute_url(request, get_thumbnail(obj.picture, "30x30", crop="center").url)
+            data['60x60'] = absolute_url(request, get_thumbnail(obj.picture, "60x60", crop="center").url)
+            data['120x120'] = absolute_url(request, get_thumbnail(obj.picture, "120x120", crop="center").url)
+            data['240x240'] = absolute_url(request, get_thumbnail(obj.picture, "240x240", crop="center").url)
+            data['480x480'] = absolute_url(request, get_thumbnail(obj.picture, "480x480", crop="center").url)
         return data
 
     def delete_object(self, request, obj):
@@ -95,9 +102,9 @@ class UserPictureDetailView(JsonDetailView):
         self.check_permission('create', self.object) 
         
         content_length = int(request.META['CONTENT_LENGTH'])
-        if (content_length <= 0):
+        if content_length <= 0:
             raise ValueError('content_lenght <= 0')
-        if (content_length > User.MAX_PICTURE_SIZE):
+        if content_length > User.MAX_PICTURE_SIZE:
             raise ValueError('content_lenght exceeds maximum of %d.' % User.MAX_PICTURE_SIZE)
         
         content_type = request.META['CONTENT_TYPE']
