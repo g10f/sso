@@ -193,8 +193,9 @@ class FormsetsUpdateView(generic.UpdateView):
         return True
     
     def get_context_data(self, **kwargs):
-        form = kwargs.get("form")
-        
+        context = super(FormsetsUpdateView, self).get_context_data(**kwargs)
+
+        form = context.get("form")
         media = self.media + form.media
         formsets = self.formsets
         for fs in formsets:
@@ -211,10 +212,8 @@ class FormsetsUpdateView(generic.UpdateView):
                         active = formset.prefix
                         break
         
-        context = {'formsets': formsets, 'media': media, 'active': active, 'errors': errors}
-        context.update(kwargs)
-        
-        return super(FormsetsUpdateView, self).get_context_data(**context)
+        context.update({'formsets': formsets, 'media': media, 'active': active, 'errors': errors})
+        return context
         
     def post(self, request, *args, **kwargs):
         """
