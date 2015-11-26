@@ -29,7 +29,7 @@ def paginator_number(page, i, cl):
     Generates an individual page index link in a paginated list.
     """
     if i == DOT:
-        return '<li class="disabled"><a href="#">&hellip;</a></li>'
+        return format_html('<li class="disabled"><a href="#">&hellip;</a></li>')
     elif i == page.number:
         return format_html('<li class="active"><a href="#">{0}</a></li>', i)
     else:

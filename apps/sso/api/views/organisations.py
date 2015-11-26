@@ -94,8 +94,10 @@ class OrganisationMixin(object):
                     'order': picture.order,
                     'url': absolute_url(request, picture.picture.url),
                     '30x30': absolute_url(request, get_thumbnail(picture.picture, "30x30", crop="center").url),
-                    '70x70': absolute_url(request, get_thumbnail(picture.picture, "70x70", crop="center").url),
-                    '180x180': absolute_url(request, get_thumbnail(picture.picture, "180x180", crop="center").url)
+                    '60x60': absolute_url(request, get_thumbnail(picture.picture, "60x60", crop="center").url),
+                    '120x120': absolute_url(request, get_thumbnail(picture.picture, "120x120", crop="center").url),
+                    '240x240': absolute_url(request, get_thumbnail(picture.picture, "240x240", crop="center").url),
+                    '480x480': absolute_url(request, get_thumbnail(picture.picture, "480x480", crop="center").url),
                 } for picture in obj.organisationpicture_set.all()
             }
 

@@ -124,9 +124,11 @@ class UserMixin(object):
 
         if details:
             if obj.picture:
-                data['picture']['url_30x30'] = absolute_url(request, get_thumbnail(obj.picture, "30x30", crop="center").url)
-                data['picture']['url_70x70'] = absolute_url(request, get_thumbnail(obj.picture, "70x70", crop="center").url)
-                data['picture']['url_180x180'] = absolute_url(request, get_thumbnail(obj.picture, "180x180", crop="center").url)
+                data['picture']['30x30'] = absolute_url(request, get_thumbnail(obj.picture, "30x30", crop="center").url)
+                data['picture']['60x60'] = absolute_url(request, get_thumbnail(obj.picture, "60x60", crop="center").url)
+                data['picture']['120x120'] = absolute_url(request, get_thumbnail(obj.picture, "120x120", crop="center").url)
+                data['picture']['240x240'] = absolute_url(request, get_thumbnail(obj.picture, "240x240", crop="center").url)
+                data['picture']['480x480'] = absolute_url(request, get_thumbnail(obj.picture, "480x480", crop="center").url)
 
             data['organisations'] = {
                 organisation.uuid.hex: {
