@@ -66,7 +66,7 @@
      */
 	$('[data-formset-type="tabular"]').each(function(){
 	  var formset_prefix = $(this).data('formset-prefix');
-	  $("#" + formset_prefix + "-group .tabular.inline-related tbody tr").tabularFormset({
+	  $("#" + formset_prefix + "-group .tabular.inline-related tbody tr.tabular").tabularFormset({
 	    prefix: formset_prefix,
 	    staticPrefix: $(this).data('static-prefix'),
 	    addText: $(this).data('add-text'),

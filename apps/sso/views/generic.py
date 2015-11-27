@@ -170,7 +170,7 @@ class FormsetsUpdateView(generic.UpdateView):
         
     @property
     def media(self):
-        js = ['formsets-1.1.js']
+        js = ['formsets-1.2.js']
         return forms.Media(js=[static('js/%s' % url) for url in js]) 
 
     @property
