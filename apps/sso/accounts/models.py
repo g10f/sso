@@ -5,7 +5,6 @@ import logging
 import uuid
 from sorl import thumbnail
 from django.core.urlresolvers import reverse
-from django.utils.crypto import get_random_string
 from django.core import validators
 from django.db import models
 from django.db.models import Q
@@ -18,17 +17,16 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.utils import timezone
 from django.utils.translation import pgettext_lazy, ugettext_lazy as _
-from django.utils.text import capfirst
 from l10n.models import Country
 from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary, get_filename, CaseInsensitiveEmailField
 from sso.organisations.models import AdminRegion, Organisation
 from sso.emails.models import GroupEmailManager
 from sso.decorators import memoize
-from sso.registration import default_username_generator
 from sso.registration.models import RegistrationProfile
 from sso.utils.loaddata import disable_for_loaddata
 from current_user.models import CurrentUserField
 from sso.utils.email import send_html_mail
+from sso.signals import default_roles
 
 logger = logging.getLogger(__name__)
 
@@ -36,9 +34,6 @@ logger = logging.getLogger(__name__)
 # SUPERUSER_ROLE = 'Superuser'
 # STAFF_ROLE = 'Staff'
 # USER_ROLE = 'User'
-
-DS108_EU = '35efc492b8f54f1f86df9918e8cc2b3d'
-DS108_CEE = '2139dc55af8b42ec84a1ce9fd25fdf18'
 
 
 class ApplicationManager(models.Manager):
@@ -796,34 +791,19 @@ class User(AbstractBaseUser, PermissionsMixin):
         if hasattr(self, 'otp_device'):
             return self.otp_device is not None
         return False
-    
-    @property
-    def default_dharmashop_roles(self):
-        ds_roles = []  # [{'uuid': 'e4a281ef13e1484b93fe4b7cc66374c8', 'roles': ['User']}]  # Dharma Shop 108 Home]
-        roles = ['Guest', 'User'] if self.is_center else ['Guest']
-        organisation = self.organisations.first()
-        if organisation:                
-            if organisation.country.iso2_code in ['CZ', 'SK', 'PL', 'RU', 'UA', 'RO', 'RS', 'HR', 'GR', 'BG', 'EE', 'LV']:
-                # Dharma Shop 108 - Central and East Europe
-                ds_roles += [{'uuid': DS108_CEE, 'roles': roles}]
-            else:
-                # Dharma Shop 108 - West Europe
-                ds_roles += [{'uuid': DS108_EU, 'roles': roles}]
-        return ds_roles
 
     def add_default_roles(self):
-        app_roles_dict_array = self.default_dharmashop_roles
-        self.add_roles(app_roles_dict_array)
-        
-        default_role_profile = self.get_default_role_profile()
-        if default_role_profile:
-            self.role_profiles.add(default_role_profile) 
+        app_roles = []
+        role_profiles = [self.get_default_role_profile()]
 
-        if self.is_center:  # for center accounts from streaming database
-            default_admin_profile = self.get_default_admin_profile()
-            if default_admin_profile:
-                self.role_profiles.add(default_admin_profile)
-        
+        # enable brand specific modification
+        default_roles.send_robust(sender=self.__class__, user=self, app_roles=app_roles, role_profiles=role_profiles)
+
+        self.add_roles(app_roles)
+
+        for role_profile in role_profiles:
+            self.role_profiles.add(role_profile)
+
     def add_roles(self, app_roles_dict_array):
         # get or create Roles
         for app_roles_dict_item in app_roles_dict_array:
@@ -943,62 +923,6 @@ class ApplicationAdmin(AbstractBaseModel):
         unique_together = (("application", "admin"),)
         verbose_name = _('application admin')
         verbose_name_plural = _('application admins')
-
-
-def update_or_create_organisation_account(organisation, old_email_value, new_email_value):
-    """
-    If a organisation was created or updated, we create or update a user account (the 'organisation' user)
-    with the same email address.
-    old_email_value can be None if there was no email for the organisation before or the organisation was just created
-    """
-    first_name = 'BuddhistCenter'
-    last_name = capfirst(organisation.name)
-
-    is_active = organisation.is_active
-    organisation_account = None
-
-    try:
-        if old_email_value:
-            # if another UserEmail with the new email exists, delete it
-            if new_email_value.lower() != old_email_value.lower():
-                UserEmail.objects.filter(email=new_email_value).delete()
-            # get the existing organisation account
-            organisation_account = User.objects.get_by_email(old_email_value)
-        else:
-            organisation_account = User.objects.get_by_email(new_email_value)
-    except ObjectDoesNotExist:
-        if is_active:
-            organisation_account = User()
-            organisation_account.set_password(get_random_string(40))
-        else:
-            # organisation is not active and no user account exists, so don't create one
-            pass
-
-    if organisation_account:
-        username = default_username_generator(first_name, last_name, user=organisation_account)
-        organisation_account.first_name = first_name
-        organisation_account.last_name = last_name
-        organisation_account.username = username
-        organisation_account.is_center = True
-        organisation_account.is_active = organisation.is_active
-        organisation_account.save()
-
-        organisation_account.create_primary_email(new_email_value, confirmed=True, delete_others=True)
-
-        organisation_account.organisations = [organisation]
-        organisation_account.add_default_roles()
-
-
-@receiver(signals.m2m_changed, sender=User.organisations.through)
-@disable_for_loaddata
-def user_organisation_changed(sender, instance, action, **kwargs):
-    """
-    Add regional dharmashop role if the user has no dharmashop role
-    """
-    if action == 'post_add' and settings.SSO_ADD_DHARMASHOP_ROLE:
-        app_roles_dict_array = instance.default_dharmashop_roles
-        if not instance.application_roles.filter(application__uuid__in=[DS108_CEE, DS108_EU]).exists():
-            instance.add_roles(app_roles_dict_array)
 
 
 @receiver(signals.post_save, sender=User)

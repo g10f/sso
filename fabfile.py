@@ -5,7 +5,7 @@ from fabric.api import *
 import fabtools
 
 env.use_ssh_config = True
-env.apps = ['sso', 'brands/dwbn']
+env.apps = ['sso']
 # env.msg_source_apps['sso']
 
 configurations = {
@@ -157,11 +157,7 @@ def migrate_centerdb(conf='dev'):
 
 @task
 def compileless(version='1.0.17'):
-    brands = {'dwbn': ['dwbn', 'dwbn2', 'dwbn3', 'dwbn4'], 'vw': ['vw']}
     local('lessc ./apps/sso/static/less/default.less ./apps/sso/static/css/%(style)s-%(version)s.css' %{'style': 'default', 'version': version})
-    for brand, styles in brands.items():
-        for style in styles:
-            local('lessc --include-path=./apps/sso/static/less/ ./apps/brands/%(brand)s/static/less/%(style)s.less ./apps/brands/%(brand)s/static/css/%(style)s-%(version)s.css' %{'brand': brand, 'style': style, 'version': version})
 
 
 @task
@@ -391,7 +387,7 @@ def deploy(conf='dev'):
     context = {'code_dir': code_dir}
     fabtools.require.files.template_file(config_filename, template_contents=LOGROTATE_TEMPLATE, context=context, use_sudo=True)
     """
-    
+
     python = '/envs/%(virtualenv)s/bin/python' % {'virtualenv': virtualenv}
     with cd(code_dir):
         update_dir_settings(code_dir + '/logs')

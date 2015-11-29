@@ -37,13 +37,11 @@ SSO_DEFAULT_ROLE_PROFILE_UUID = UUID('b4caab335bbc4c90a6f552f7f13aa410')
 SSO_DEFAULT_GUEST_PROFILE_UUID = UUID('9859f78da9a44491bf3d807d10993ce7')
 SSO_DEFAULT_ADMIN_PROFILE_UUID = UUID('1593284b238c4a1cabf291e573205508')
 SSO_SHOW_ADDRESS_AND_PHONE_FORM = True  # Address and Phone number in profile form
-SSO_ADD_DHARMASHOP_ROLE = False
 SSO_VALIDATION_PERIOD_IS_ACTIVE = True  # accounts must be prolonged
 SSO_VALIDATION_PERIOD_IS_ACTIVE_FOR_ALL = False  # all accounts must be prolonged, not only account from marked centers
 SSO_VALIDATION_PERIOD_DAYS = 365  # accounts must be prolonged after 1 year
 SSO_ADMIN_MAX_AGE = 60 * 30  # 30 min max age for admin pages
 SSO_ORGANISATION_EMAIL_DOMAIN = '@g10f.de'
-SSO_CREATE_ACCOUNT_FOR_ORGANISATION = True
 SSO_GOOGLE_GEO_API_KEY = 'insert your key'
 SSO_EMAIL_LOGO = ""
 SSO_ORG_ADMIN_ROLE_PROFILE_UUID = UUID('c38b3bb3-8886-4b71-a589-8afb67239041')
@@ -59,8 +57,6 @@ OTP_TWILIO_AUTH = ''
 OTP_TWILIO_FROM = ''
 OTP_TWILIO_NO_DELIVERY = True
 OTP_TWILIO_TOKEN_VALIDITY = 300  # seconds
-
-LOCALE_PATHS = ()
 
 EMAIL_SUBJECT_PREFIX = '[SSO] '
 
@@ -109,9 +105,8 @@ USE_TZ = True
 STATIC_ROOT = os.path.join(BASE_DIR, '../../static/htdocs/sso/static')
 MEDIA_ROOT = os.path.join(BASE_DIR, '../../static/htdocs/sso/media')
 
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'sso/static'),
-)
+LOCALE_PATHS = ()
+STATICFILES_DIRS = ()
 
 MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
@@ -136,7 +131,6 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, 'sso/templates'),
         ],
         # 'APP_DIRS': True,  # must not be set if loaders is set
         'OPTIONS': {

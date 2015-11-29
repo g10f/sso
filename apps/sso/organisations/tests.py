@@ -1,12 +1,8 @@
 # -*- coding: utf-8 -*-
-from django.utils.six.moves.urllib.parse import urlsplit
-import re
 from django.conf import settings
-from django.core import mail
 from django.test import TestCase
 from django.core.urlresolvers import reverse
 from sso.organisations.models import OrganisationCountry, Organisation
-from sso.accounts.models import User, update_or_create_organisation_account
 from sso.test.client import SSOClient
 
 
@@ -18,14 +14,6 @@ class OrganisationssTest(TestCase):
     
     def tearDown(self):
         pass
-    
-    def get_url_path_from_mail(self):
-        outbox = getattr(mail, 'outbox')
-        self.assertEqual(len(outbox), 1)
-        urls = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', outbox[0].body)
-        self.assertEqual(len(urls), 1)
-        scheme, netloc, path, query_string, fragment = urlsplit(urls[0])  # @UnusedVariable
-        return path
 
     def test_add_organisation_by_country_admin(self):
         self.client.login(username='CountryAdmin', password='gsf')
@@ -55,80 +43,3 @@ class OrganisationssTest(TestCase):
         organisation = Organisation.objects.get(name="New Center")
         self.assertEqual(organisation.country, country)
         self.assertIsNotNone(organisation.uuid)
-        
-        if not settings.SSO_CREATE_ACCOUNT_FOR_ORGANISATION:
-            update_or_create_organisation_account(organisation, None, 'newcenter' + settings.SSO_ORGANISATION_EMAIL_DOMAIN)
-
-        # check that a new center account was created
-        user = User.objects.get_by_email('newcenter' + settings.SSO_ORGANISATION_EMAIL_DOMAIN)
-
-        self.assertTrue(user.is_center)
-
-        self.assertIn(organisation, user.organisations.all())
-
-        # check admin profile of center account
-        default_admin_profile = User.get_default_admin_profile()
-        self.assertIn(default_admin_profile, user.role_profiles.all())
-
-        # check if the center account can edit the center
-        # first reset the password because the account was just created and has a random password
-        # then login with the new password and try changing the center data
-        response = self.client.post(reverse('accounts:password_reset'),
-                                    data={'email': 'newcenter' + settings.SSO_ORGANISATION_EMAIL_DOMAIN})
-        self.assertEqual(response.status_code, 302)
-
-        new_password = 'gsf1zghxyz'
-        path = self.get_url_path_from_mail()
-        response = self.client.post(path,
-                                    data={'new_password1': new_password, 'new_password2': new_password})
-        self.assertEqual(response.status_code, 302)
-        self.client.login(username='newcenter' + settings.SSO_ORGANISATION_EMAIL_DOMAIN, password=new_password)
-        # update center
-        org_id = organisation.pk
-        email_id = organisation.email.pk
-        data = {
-            'coordinates_type': 3,
-            'emailforward_set-0-email': email_id,
-            'emailforward_set-0-forward': 'gunnar@g10f.de',
-            'emailforward_set-0-id': '',
-            'emailforward_set-INITIAL_FORMS': 0,
-            'emailforward_set-MAX_NUM_FORMS': 10,
-            'emailforward_set-MIN_NUM_FORMS': 0,
-            'emailforward_set-TOTAL_FORMS': 1,
-            'founded_day': 23,
-            'founded_month': 10,
-            'founded_year': 2014,
-            'homepage': 'http://newcenter.de/',
-            'location': 'SRID=3857;POINT(1286998.028908273 6131762.443410875)',
-            'organisationaddress_set-0-address_type': 'meditation',
-            'organisationaddress_set-0-addressee': 'Zentrum New',
-            'organisationaddress_set-0-city': 'München',
-            'organisationaddress_set-0-country': 'DE',
-            'organisationaddress_set-0-id': '',
-            'organisationaddress_set-0-organisation': org_id,
-            'organisationaddress_set-0-postal_code': 38122,
-            'organisationaddress_set-0-region': '',
-            'organisationaddress_set-0-street_address': 'Kramerstr. 19a',
-            'organisationaddress_set-INITIAL_FORMS': 0,
-            'organisationaddress_set-MAX_NUM_FORMS': 2,
-            'organisationaddress_set-MIN_NUM_FORMS': 0,
-            'organisationaddress_set-TOTAL_FORMS': 1,
-            'organisationphonenumber_set-0-id': '',
-            'organisationphonenumber_set-0-organisation': org_id,
-            'organisationphonenumber_set-0-phone': '+49 (0531) 123456',
-            'organisationphonenumber_set-0-phone_type': 'home',
-            'organisationphonenumber_set-INITIAL_FORMS': 0,
-            'organisationphonenumber_set-MAX_NUM_FORMS': 6,
-            'organisationphonenumber_set-MIN_NUM_FORMS': 0,
-            'organisationphonenumber_set-TOTAL_FORMS': 1,
-        }
-        response = self.client.post(reverse('organisations:organisation_update', args=[organisation.uuid.hex]), data=data)
-        self.assertEqual(response.status_code, 302)
-
-        # request the new data
-        response = self.client.get(reverse('organisations:organisation_detail', args=[organisation.uuid.hex]))
-        self.assertEqual(response.status_code, 200)
-        obj = response.context['object']
-        self.assertEqual(obj.organisationaddress_set.all()[0].addressee, 'Zentrum New')
-        self.assertEqual(obj.organisationphonenumber_set.all()[0].phone, '+49 (0531) 123456')
-        self.assertEqual(obj.email.emailforward_set.all()[0].forward, 'gunnar@g10f.de')
