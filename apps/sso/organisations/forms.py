@@ -6,14 +6,15 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.forms import ModelChoiceField, ModelMultipleChoiceField, ValidationError
 from l10n.models import Country
-from sso.accounts.models import update_or_create_organisation_account
 from sso.forms import bootstrap, BaseForm, BaseTabularInlineForm, BLANK_CHOICE_DASH, BaseStackedInlineForm
 from sso.forms.fields import EmailFieldLower
 from sso.emails.models import Email, EmailForward, CENTER_EMAIL_TYPE, REGION_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, PERM_EVERYBODY, PERM_DWB
+from sso.signals import update_or_create_organisation_account
 from .models import OrganisationPhoneNumber, OrganisationAddress, Organisation, AdminRegion, OrganisationCountry, CountryGroup, OrganisationPicture
 from sso.models import clean_picture
 
-SSO_ORGANISATION_EMAIL_DOMAIN = getattr(settings, 'SSO_ORGANISATION_EMAIL_DOMAIN', '@diamondway-center.org')
+SSO_ORGANISATION_EMAIL_DOMAIN = getattr(settings, 'SSO_ORGANISATION_EMAIL_DOMAIN', '@g10f.de')
+
 
 class OrganisationPictureForm(BaseStackedInlineForm):
     order = forms.IntegerField(label=_("Order"), required=False, widget=bootstrap.Select(choices=BLANK_CHOICE_DASH + zip(range(3), range(3))))
@@ -190,8 +191,10 @@ class OrganisationEmailAdminForm(OrganisationBaseForm):
                 self.instance.email = email
                 
         instance = super(OrganisationEmailAdminForm, self).save(commit)
-        if settings.SSO_CREATE_ACCOUNT_FOR_ORGANISATION:
-            update_or_create_organisation_account(self.instance, old_email_value, new_email_value)
+
+        # enable brand specific modification
+        update_or_create_organisation_account.send_robust(sender=self.__class__, organisation=self.instance, old_email_value=old_email_value,
+                                                          new_email_value=new_email_value)
         return instance
 
 
