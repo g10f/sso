@@ -44,7 +44,6 @@ SSO_ADMIN_MAX_AGE = 60 * 30  # 30 min max age for admin pages
 SSO_ORGANISATION_EMAIL_DOMAIN = '@g10f.de'
 SSO_GOOGLE_GEO_API_KEY = 'insert your key'
 SSO_EMAIL_LOGO = ""
-SSO_ORG_ADMIN_ROLE_PROFILE_UUID = UUID('c38b3bb3-8886-4b71-a589-8afb67239041')
 
 OTP_DEVICES = [
     'sso_auth.TOTPDevice',

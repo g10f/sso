@@ -21,3 +21,6 @@ python-u2flib-server
 # for local testing only
 #selenium
 #uritemplate
+# themes
+#git+https://bitbucket.org/g10f/sso-dwbn-theme
+#git+https://bitbucket.org/g10f/sso-vw-theme

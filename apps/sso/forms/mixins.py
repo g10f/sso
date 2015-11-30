@@ -46,7 +46,7 @@ class UserRolesMixin(object):
         cd = self.cleaned_data.get(attribute_name)
         try:
             if isinstance(cd, list):  # role_profiles
-                new_value_set = set(cd)
+                new_value_set = set([int(x) for x in cd])  # convert strings list to int set
             else:  # queryset
                 new_value_set = set(cd.values_list('id', flat=True))
         except AttributeError:
