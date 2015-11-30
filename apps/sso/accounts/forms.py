@@ -33,7 +33,7 @@ from sso.organisations.models import Organisation, is_validation_period_active
 from sso.registration import default_username_generator
 from sso.registration.forms import UserSelfRegistrationForm
 from sso.forms import bootstrap, mixins, BLANK_CHOICE_DASH, BaseForm
-
+from sso.signals import extend_user_validity
 
 logger = logging.getLogger(__name__)
 
@@ -673,9 +673,11 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
     def save(self, extend_validity=False):
         cd = self.cleaned_data
         current_user = self.request.user
-        
-        if extend_validity:
-            self.user.valid_until = now() + datetime.timedelta(days=settings.SSO_VALIDATION_PERIOD_DAYS)
+
+        self.update_user_m2m_fields('application_roles', current_user)
+        self.update_user_m2m_fields('role_profiles', current_user)
+        self.update_user_m2m_fields('organisations', current_user)
+
         self.user.username = cd['username']
         self.user.first_name = cd['first_name']
         self.user.last_name = cd['last_name']
@@ -684,11 +686,13 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
         self.user.is_active = cd['is_active']
         self.user.is_center = cd['is_center']
         self.user.notes = cd['notes']
-        self.user.save()
 
-        self.update_user_m2m_fields('application_roles', current_user)
-        self.update_user_m2m_fields('role_profiles', current_user)
-        self.update_user_m2m_fields('organisations', current_user)
+        if extend_validity:
+            # enable brand specific modification
+            self.user.valid_until = now() + datetime.timedelta(days=settings.SSO_VALIDATION_PERIOD_DAYS)
+            extend_user_validity.send_robust(sender=self.__class__, user=self.user)
+
+        self.user.save()
 
         return self.user
 

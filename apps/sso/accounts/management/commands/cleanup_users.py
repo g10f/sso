@@ -22,13 +22,13 @@ class Command(BaseCommand):
 
 def check_validation():
     if not settings.SSO_VALIDATION_PERIOD_IS_ACTIVE:
-        print("SSO_VALIDATION_PERIOD_IS_ACTIVE is False")
+        # print("SSO_VALIDATION_PERIOD_IS_ACTIVE is False")
         return
 
     try:
         guest_profile = RoleProfile.objects.get(uuid=settings.SSO_DEFAULT_GUEST_PROFILE_UUID)
     except ObjectDoesNotExist:
-        print("no SSO_DEFAULT_GUEST_PROFILE_UUID available")
+        # print("no SSO_DEFAULT_GUEST_PROFILE_UUID available")
         return
 
     profiles = [guest_profile]
@@ -41,11 +41,11 @@ def check_validation():
     if not settings.SSO_VALIDATION_PERIOD_IS_ACTIVE_FOR_ALL:
         users = users.filter(organisations__uses_user_activation=True)
 
-    print("Assigning guest status to:")
+    # print("Assigning guest status to:")
     for user in users:
         user.application_roles = []
         user.role_profiles = [guest_profile]
-        print(" %s" % user)
+        # print(" %s" % user)
 
 
 def clean_pictures():
@@ -63,19 +63,3 @@ def clean_pictures():
                     if not os.path.samefile(fname1, fname2):
                         print(fname1)
                         os.remove(fname1)
-            
-    
-def update_center_usernames():
-    centers = User.objects.filter(is_center=True, username__endswith='@diamondway-center.org')
-    for center in centers:
-        center.last_name = center.last_name.capitalize()        
-        center.username = center.first_name + center.last_name
-        center.save()
-        
-    
-def remove_profile():
-    centerprofile = RoleProfile.objects.get(uuid=settings.SSO_DEFAULT_ADMIN_PROFILE_UUID)
-    user_list = User.objects.filter(is_center=False, role_profiles=centerprofile)
-    for user in user_list:
-        user.role_profiles.remove(centerprofile)
-        print(user)
