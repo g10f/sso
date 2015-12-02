@@ -18,13 +18,13 @@ from django.core.mail import send_mail
 from django.utils import timezone
 from django.utils.translation import pgettext_lazy, ugettext_lazy as _
 from l10n.models import Country
+from current_user.models import CurrentUserField
 from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary, get_filename, CaseInsensitiveEmailField
 from sso.organisations.models import AdminRegion, Organisation
 from sso.emails.models import GroupEmailManager
 from sso.decorators import memoize
 from sso.registration.models import RegistrationProfile
 from sso.utils.loaddata import disable_for_loaddata
-from current_user.models import CurrentUserField
 from sso.utils.email import send_html_mail
 from sso.signals import default_roles
 
