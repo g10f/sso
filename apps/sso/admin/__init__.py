@@ -23,6 +23,7 @@ from sso.organisations import models as org_models
 from sso.organisations import admin as org_admin
 from sso.auth import models as sso_auth_models
 from sso.auth import admin as sso_auth_admin
+from sso.utils.translation import string_format
 
 
 class SSOAdminSite(admin.AdminSite):
@@ -30,8 +31,8 @@ class SSOAdminSite(admin.AdminSite):
     copy of django admin view with:
     - redirecting to accounts:login instead of admin:login
     """
-    site_title = _('%(brand)s SSO site admin') % {'brand': settings.SSO_BRAND}
-    site_header = _('%(brand)s Single Sign-On Site administration') % {'brand': settings.SSO_BRAND}
+    site_title = string_format(_('%(brand)s SSO site admin') , {'brand': settings.SSO_BRAND})
+    site_header = string_format(_('%(brand)s SSO administration'), {'brand': settings.SSO_BRAND})
 
     def admin_view(self, view, cacheable=False):
         def inner(request, *args, **kwargs):
