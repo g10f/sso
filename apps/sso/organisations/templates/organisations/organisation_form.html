@@ -86,7 +86,7 @@
                 {% block submit_group %}
                     {% if redirect_uri %}<a class="btn btn-default" href="{{ redirect_uri }}">{% trans 'Back' %}</a>{% endif %}
                     {% if perms.organisations.delete_organisation %}
-                        <a class="btn btn-default" href="{% url 'organisations:organisation_delete' object.uuid.hex %}">{% trans 'Delete' %}</a>
+                        <a class="btn btn-default" href="{% url 'organisations:organisation_delete' object.uuid.hex %}">{% trans 'Delete Organisation' %}</a>
                     {% endif %}
                     <button type="submit" class="btn btn-default" name="_continue">{% trans 'Save and continue editing' %}</button>
                     <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
