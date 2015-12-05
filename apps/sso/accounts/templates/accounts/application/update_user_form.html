@@ -131,7 +131,7 @@
         <div class="form-group">
             <div class="dwbn-form-control_lg">
                 {% if perms.accounts.delete_user and not form.user.is_active %}
-                    <a class="btn btn-default" href="{% url 'accounts:delete_user' form.user.uuid.hex %}">{% trans 'Delete' %}</a>
+                    <a class="btn btn-default" href="{% url 'accounts:delete_user' form.user.uuid.hex %}">{% trans 'Delete User' %}</a>
                 {% endif %}
                 {% if perms.accounts.add_user %}
                     <button type="submit" class="btn btn-default" name="_addanother">{% trans 'Save and add another' %}</button>

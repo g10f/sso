@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 class HttpResponseTooManyRequests(HttpResponse):
-    status_code = 403  # mayby 429 is better?
+    status_code = 403  # maybe 429 is better?
     
     
 def throttle(method='POST', duration=15, max_calls=1, response=None):

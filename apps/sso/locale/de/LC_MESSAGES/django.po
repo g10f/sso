@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-05 19:15+0100\n"
+"POT-Creation-Date: 2015-12-05 20:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1028,22 +1028,10 @@ msgid "Registration"
 msgstr "Registrierung"
 
 #: accounts/templates/accounts/application/update_user_form.html:134
-#: accounts/templates/accounts/delete_profile_form.html:35
-#: accounts/templates/accounts/profile_core_form.html:55
-#: accounts/templates/accounts/profile_form.html:80
-#: accounts/templates/accounts/profile_form_center.html:51
-#: accounts/templates/accounts/user_email_detail.html:109
-#: auth/templates/auth/include/phone_profile.html:25
-#: auth/templates/auth/include/totp_profile.html:31
-#: auth/templates/auth/include/u2f_profile.html:25
-#: emails/templates/emails/groupemail_detail.html:87
-#: emails/templates/emails/groupemail_detail.html:88
-#: organisations/templates/organisations/organisation_detail.html:129
-#: organisations/templates/organisations/organisation_form.html:89
-#: registration/templates/admin/registration/registrationprofile/change_form.html:9
-#: registration/templates/registration/change_user_registration_form.html:100
-msgid "Delete"
-msgstr ""
+#: accounts/templates/accounts/user_confirm_delete.html:4
+#: accounts/templates/accounts/user_confirm_delete.html:9
+msgid "Delete User"
+msgstr "Benutzer Löschen"
 
 #: accounts/templates/accounts/application/update_user_form.html:137
 msgid "Save and add another"
@@ -1097,6 +1085,22 @@ msgstr "Profil löschen"
 #: accounts/templates/accounts/delete_profile_form.html:20
 msgid "Do you want to delete your account?"
 msgstr "Möchtest Du dein Konto löschen?"
+
+#: accounts/templates/accounts/delete_profile_form.html:35
+#: accounts/templates/accounts/profile_core_form.html:55
+#: accounts/templates/accounts/profile_form.html:80
+#: accounts/templates/accounts/profile_form_center.html:51
+#: accounts/templates/accounts/user_email_detail.html:109
+#: auth/templates/auth/include/phone_profile.html:25
+#: auth/templates/auth/include/totp_profile.html:31
+#: auth/templates/auth/include/u2f_profile.html:25
+#: emails/templates/emails/groupemail_detail.html:87
+#: emails/templates/emails/groupemail_detail.html:88
+#: organisations/templates/organisations/organisation_detail.html:129
+#: registration/templates/admin/registration/registrationprofile/change_form.html:9
+#: registration/templates/registration/change_user_registration_form.html:100
+msgid "Delete"
+msgstr ""
 
 #: accounts/templates/accounts/delete_profile_form.html:36
 #: accounts/templates/accounts/login_profile_form.html:41
@@ -1551,11 +1555,6 @@ msgstr ""
 #: accounts/templates/accounts/profile_form_center.html:23
 msgid "My account"
 msgstr "Mein Konto"
-
-#: accounts/templates/accounts/user_confirm_delete.html:4
-#: accounts/templates/accounts/user_confirm_delete.html:9
-msgid "Delete User"
-msgstr ""
 
 #: accounts/templates/accounts/user_confirm_delete.html:15
 msgid "Delete user"
@@ -2962,6 +2961,7 @@ msgstr "Meine Organisation"
 
 #: organisations/templates/organisations/organisation_confirm_delete.html:4
 #: organisations/templates/organisations/organisation_confirm_delete.html:10
+#: organisations/templates/organisations/organisation_form.html:89
 msgid "Delete Organisation"
 msgstr "Organisation Löschen"
 
@@ -3777,3 +3777,7 @@ msgstr ""
 #: views/csrf.py:10
 msgid "CSRF verification failed. Request aborted."
 msgstr ""
+
+#~| msgid "Delete Organisation"
+#~ msgid "Delete organisation"
+#~ msgstr "Organisation Löschen"

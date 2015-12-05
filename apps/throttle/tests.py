@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from .decorators import throttle
 
+
 class ThrottleTest(test.TestCase):
     """
     Throttle decorator test suite
