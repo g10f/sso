@@ -1,39 +1,38 @@
 # -*- coding: utf-8 -*-
-from collections import OrderedDict
-import re
 import datetime
-from mimetypes import guess_extension
 import logging
+import re
+from collections import OrderedDict
+from mimetypes import guess_extension
 
-from nocaptcha_recaptcha.fields import NoReCaptchaField
 import pytz
+from nocaptcha_recaptcha.fields import NoReCaptchaField
 
-from django.utils.timezone import now
 from django import forms
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.contrib.auth.forms import PasswordResetForm as DjangoPasswordResetForm
+from django.contrib.auth.forms import SetPasswordForm as DjangoSetPasswordForm
+from django.contrib.auth.forms import UserChangeForm
+from django.contrib.auth.tokens import default_token_generator
+from django.contrib.sites.shortcuts import get_current_site
+from django.core import signing
+from django.core.exceptions import ObjectDoesNotExist
+from django.forms.models import model_to_dict
+from django.template import loader
 from django.utils.crypto import get_random_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.utils.text import capfirst
+from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
-from django.forms.models import model_to_dict
-from django.template import loader
-from django.core.exceptions import ObjectDoesNotExist
-from django.core import signing
-from django.contrib.sites.shortcuts import get_current_site
-from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import UserChangeForm
-from django.contrib.auth.forms import PasswordResetForm as DjangoPasswordResetForm
-from django.contrib.auth.forms import SetPasswordForm as DjangoSetPasswordForm
-from django.contrib.auth.tokens import default_token_generator
-from passwords.fields import PasswordField
-from .models import User, UserAddress, UserPhoneNumber, UserEmail, OrganisationChange
+from sso.forms import bootstrap, mixins, BLANK_CHOICE_DASH, BaseForm
 from sso.forms.fields import EmailFieldLower
 from sso.organisations.models import Organisation, is_validation_period_active
 from sso.registration import default_username_generator
 from sso.registration.forms import UserSelfRegistrationForm
-from sso.forms import bootstrap, mixins, BLANK_CHOICE_DASH, BaseForm
 from sso.signals import extend_user_validity
+from .models import User, UserAddress, UserPhoneNumber, UserEmail, OrganisationChange
 
 logger = logging.getLogger(__name__)
 
@@ -77,7 +76,7 @@ class SetPasswordForm(DjangoSetPasswordForm):
 
     When the user has no confirmed emails, then the primary email will be confirmed by save
     """
-    new_password1 = PasswordField(label=_("New password"), widget=bootstrap.PasswordInput())
+    new_password1 = forms.CharField(label=_("New password"), widget=bootstrap.PasswordInput())
     new_password2 = forms.CharField(label=_("New password confirmation"), widget=bootstrap.PasswordInput())
 
     def save(self, commit=True):
@@ -93,7 +92,7 @@ class PasswordChangeForm(DjangoSetPasswordForm):
     their old password.
     """
     old_password = forms.CharField(label=_("Old password"), widget=bootstrap.PasswordInput())
-    new_password1 = PasswordField(label=_("New password"), widget=bootstrap.PasswordInput())
+    new_password1 = forms.CharField(label=_("New password"), widget=bootstrap.PasswordInput())
     new_password2 = forms.CharField(label=_("New password confirmation"), widget=bootstrap.PasswordInput())
 
     error_messages = dict(SetPasswordForm.error_messages, **{

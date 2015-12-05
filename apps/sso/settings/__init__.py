@@ -167,6 +167,8 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'sso.urls'
 
 INSTALLED_APPS = (
+    'sso',
+    'password',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -177,10 +179,8 @@ INSTALLED_APPS = (
     'formtools',
     'sorl.thumbnail',
     'nocaptcha_recaptcha',
-    'passwords',
     'l10n',
     'smart_selects',
-    'sso',
     'sso.emails',
     'sso.organisations',
     'sso.accounts',
@@ -242,14 +242,13 @@ if not(LOCAL_DEV or TEST):
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 
-PASSWORD_COMPLEXITY = {  # You can ommit any or all of these for no limit for that particular set
-    "UPPER": 0,       # Uppercase
-    "LOWER": 0,       # Lowercase
-    "DIGITS": 1,      # Digits
-    "PUNCTUATION": 0,  # Punctuation (string.punctuation)
-    "NON ASCII": 0,   # Non Ascii (ord() >= 128)
-    "WORDS": 0        # Words (substrings seperates by a whitespace)
-}
+AUTH_PASSWORD_VALIDATORS = [{
+    'NAME': 'password.validation.MinimumLengthValidator',
+}, {
+    'NAME': 'password.validation.CommonPasswordValidator',
+}, {
+    'NAME': 'password.validation.DigitsValidator'
+}]
 
 # Configure logging
 if DEBUG:
