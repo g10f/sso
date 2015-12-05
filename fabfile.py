@@ -5,7 +5,7 @@ from fabric.api import *
 import fabtools
 
 env.use_ssh_config = True
-env.apps = ['sso']
+env.apps = ['sso', 'password']
 # env.msg_source_apps['sso']
 
 configurations = {
@@ -169,7 +169,7 @@ def compilemessages():
 
 @task
 def makemessages():
-    for app in ['sso']:
+    for app in env.apps:
         with lcd('apps/%s' % app):
             local('~/envs/sso/bin/django-admin.py makemessages -a')
             local('~/envs/sso/bin/django-admin.py makemessages -d djangojs -a')

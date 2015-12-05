@@ -1,3 +1,5 @@
+from django.contrib.auth.password_validation import password_validators_help_texts
+
 from django.db.models import Q
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_decode
@@ -24,8 +26,8 @@ from sso.utils.url import get_safe_redirect_uri, update_url
 from sso.accounts.tokens import email_confirm_token_generator
 from sso.accounts.models import User, UserAddress, UserPhoneNumber, UserEmail, get_applicationrole_ids, Application
 from sso.accounts.email import send_useremail_confirmation
-from sso.accounts.forms import PasswordResetForm, SetPasswordForm, PasswordChangeForm, ContactForm, AddressForm, PhoneNumberForm, \
-    SelfUserEmailForm, SetPictureAndPasswordForm
+from sso.accounts.forms import PasswordResetForm, SetPasswordForm, ContactForm, AddressForm, PhoneNumberForm, \
+    SelfUserEmailForm, SetPictureAndPasswordForm, PasswordChangeForm
 from sso.accounts.forms import UserSelfProfileForm, UserSelfProfileDeleteForm, CenterSelfProfileForm
 from sso.auth import update_session_auth_hash
 
@@ -79,6 +81,7 @@ def password_change(request):
     else:
         form = PasswordChangeForm(user=request.user)
     context = {
+        'password_validators_help_texts': password_validators_help_texts(),
         'form': form,
         'title': _('Password change'),
         'redirect_uri': redirect_uri
@@ -425,8 +428,9 @@ def password_create_confirm(request, uidb64=None, token=None, template_name='acc
         title = _('Password create unsuccessful')
     context = {
         'form': form,
-            'title': title,
+        'title': title,
         'validlink': validlink,
+        'password_validators_help_texts': password_validators_help_texts(),
     }
     return TemplateResponse(request, template_name, context)
 
@@ -480,6 +484,7 @@ def password_reset_confirm(request, uidb64=None, token=None):
         'set_password_form': SetPasswordForm,
         'post_reset_redirect': reverse('accounts:password_reset_complete'),
         'template_name': 'accounts/password_reset_confirm.html',
+        'extra_context': {'password_validators_help_texts': password_validators_help_texts()},
     }
     return password_reset_confirm(request, uidb64, token, **defaults)
 

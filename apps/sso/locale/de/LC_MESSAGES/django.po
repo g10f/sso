@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-05 00:22+0100\n"
+"POT-Creation-Date: 2015-12-05 19:15+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -32,9 +32,9 @@ msgstr ""
 msgid "(None)"
 msgstr ""
 
-#: accounts/admin.py:133 accounts/forms.py:42 accounts/forms.py:285
-#: accounts/forms.py:441 accounts/forms.py:523 accounts/forms.py:548
-#: accounts/forms.py:626 accounts/forms.py:628 accounts/forms.py:712
+#: accounts/admin.py:133 accounts/forms.py:41 accounts/forms.py:284
+#: accounts/forms.py:440 accounts/forms.py:522 accounts/forms.py:547
+#: accounts/forms.py:625 accounts/forms.py:627 accounts/forms.py:711
 #: accounts/templates/accounts/user_confirm_delete.html:39
 #: accounts/views/filter.py:54 emails/admin.py:44 organisations/models.py:231
 #: registration/forms.py:59
@@ -70,8 +70,8 @@ msgstr "Anwendungsadmin"
 msgid "Role Profile Admin"
 msgstr "Rollenprofiladmin"
 
-#: accounts/admin.py:234 accounts/forms.py:287 accounts/forms.py:631
-#: accounts/forms.py:714
+#: accounts/admin.py:234 accounts/forms.py:286 accounts/forms.py:630
+#: accounts/forms.py:713
 #: accounts/templates/accounts/application/add_user_done.html:48
 #: registration/forms.py:63
 msgid "Role profiles"
@@ -135,7 +135,7 @@ msgstr "User Admin"
 msgid "App admin"
 msgstr "Anwendungsadmin"
 
-#: accounts/admin.py:375 accounts/forms.py:284 accounts/forms.py:630
+#: accounts/admin.py:375 accounts/forms.py:283 accounts/forms.py:629
 #: accounts/models.py:238
 #: accounts/templates/accounts/application/add_user_done.html:59
 #: accounts/templates/accounts/user_confirm_delete.html:33
@@ -162,11 +162,11 @@ msgstr ""
 msgid "Send info email"
 msgstr ""
 
-#: accounts/forms.py:54
+#: accounts/forms.py:53
 msgid "The new organisation is the same as the old organisation!"
 msgstr ""
 
-#: accounts/forms.py:67
+#: accounts/forms.py:66
 #: accounts/templates/accounts/application/add_user_done.html:27
 #: emails/forms.py:75 emails/templates/emails/groupemail_detail.html.py:26
 #: organisations/forms.py:123
@@ -174,7 +174,7 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: accounts/forms.py:68 accounts/forms.py:375 accounts/forms.py:507
+#: accounts/forms.py:67 accounts/forms.py:374 accounts/forms.py:506
 #: accounts/templates/accounts/organisationchange_accept.html:51
 #: accounts/templates/accounts/user_confirm_delete.html:28
 #: accounts/templates/accounts/user_email_detail.html:62
@@ -189,31 +189,31 @@ msgstr ""
 msgid "Email address"
 msgstr "E-Mail Adresse"
 
-#: accounts/forms.py:69
+#: accounts/forms.py:68
 msgid "Subject"
 msgstr ""
 
-#: accounts/forms.py:70
+#: accounts/forms.py:69
 msgid "Message"
 msgstr ""
 
-#: accounts/forms.py:80 accounts/forms.py:96
+#: accounts/forms.py:79 accounts/forms.py:95
 msgid "New password"
 msgstr ""
 
-#: accounts/forms.py:81 accounts/forms.py:97
+#: accounts/forms.py:80 accounts/forms.py:96
 msgid "New password confirmation"
 msgstr ""
 
-#: accounts/forms.py:95
+#: accounts/forms.py:94
 msgid "Old password"
 msgstr ""
 
-#: accounts/forms.py:100
+#: accounts/forms.py:99
 msgid "Your old password was entered incorrectly. Please enter it again."
 msgstr "Dein altes Passwort war verkehrt, bitte gib es erneut ein."
 
-#: accounts/forms.py:126
+#: accounts/forms.py:125
 msgid ""
 "That email address doesn't have an associated user account. Are you sure "
 "you've registered?"
@@ -221,14 +221,14 @@ msgstr ""
 "Diese E-Mail-Adresse ist keinem Benutzer zugeordnet. Sicher, dass es die "
 "richtige ist?"
 
-#: accounts/forms.py:127
+#: accounts/forms.py:126
 msgid ""
 "The user account associated with this email address cannot reset the "
 "password."
 msgstr ""
 "Der Benutzer mit dieser E-Mail-Adresse kann das Passwort nicht zurücksetzen."
 
-#: accounts/forms.py:129 accounts/forms.py:278 accounts/forms.py:711
+#: accounts/forms.py:128 accounts/forms.py:277 accounts/forms.py:710
 #: accounts/templates/accounts/application/add_user_done.html:39
 #: emails/forms.py:74 emails/models.py:61
 #: emails/templates/emails/groupemail_detail.html:19
@@ -236,11 +236,11 @@ msgstr ""
 msgid "Email"
 msgstr ""
 
-#: accounts/forms.py:188
+#: accounts/forms.py:187
 msgid "Profile picture"
 msgstr "Profilbild"
 
-#: accounts/forms.py:198 accounts/forms.py:459 models.py:33
+#: accounts/forms.py:197 accounts/forms.py:458 models.py:33
 #, python-format
 msgid ""
 "Please keep filesize under %(filesize)s. Current filesize "
@@ -249,24 +249,24 @@ msgstr ""
 "Bitte Dateien mit einer Größe unter %(filesize)s hochladen. Aktuelle "
 "Dateigröße %(current_filesize)s."
 
-#: accounts/forms.py:207 accounts/forms.py:468 models.py:42
+#: accounts/forms.py:206 accounts/forms.py:467 models.py:42
 msgid "File type is not supported"
 msgstr "Dateitype wird nicht unterstützt"
 
-#: accounts/forms.py:225 auth/forms/__init__.py:26 auth/forms/__init__.py:28
+#: accounts/forms.py:224 auth/forms/__init__.py:26 auth/forms/__init__.py:28
 msgid "Password"
 msgstr ""
 
-#: accounts/forms.py:226
+#: accounts/forms.py:225
 msgid "Password confirmation"
 msgstr ""
 
-#: accounts/forms.py:226
+#: accounts/forms.py:225
 msgid "Enter the same password as above, for verification."
 msgstr ""
 
-#: accounts/forms.py:227 accounts/forms.py:279 accounts/forms.py:418
-#: accounts/forms.py:505 accounts/forms.py:619 accounts/forms.py:709
+#: accounts/forms.py:226 accounts/forms.py:278 accounts/forms.py:417
+#: accounts/forms.py:504 accounts/forms.py:618 accounts/forms.py:708
 #: accounts/templates/accounts/application/add_user_done.html:31
 #: accounts/templates/accounts/organisationchange_accept.html:39
 #: accounts/templates/accounts/user_confirm_delete.html:18
@@ -276,8 +276,8 @@ msgstr ""
 msgid "First name"
 msgstr "Vorname"
 
-#: accounts/forms.py:228 accounts/forms.py:280 accounts/forms.py:419
-#: accounts/forms.py:506 accounts/forms.py:620 accounts/forms.py:710
+#: accounts/forms.py:227 accounts/forms.py:279 accounts/forms.py:418
+#: accounts/forms.py:505 accounts/forms.py:619 accounts/forms.py:709
 #: accounts/templates/accounts/application/add_user_done.html:35
 #: accounts/templates/accounts/organisationchange_accept.html:45
 #: accounts/templates/accounts/user_confirm_delete.html:23
@@ -287,114 +287,114 @@ msgstr "Vorname"
 msgid "Last name"
 msgstr "Nachname"
 
-#: accounts/forms.py:231
+#: accounts/forms.py:230
 msgid "The two password fields didn't match."
 msgstr ""
 
-#: accounts/forms.py:266 accounts/forms.py:417 accounts/forms.py:504
-#: accounts/forms.py:617 accounts/forms.py:708 registration/forms.py:39
+#: accounts/forms.py:265 accounts/forms.py:416 accounts/forms.py:503
+#: accounts/forms.py:616 accounts/forms.py:707 registration/forms.py:39
 msgid "Username"
 msgstr ""
 
-#: accounts/forms.py:267 accounts/models.py:215
+#: accounts/forms.py:266 accounts/models.py:215
 msgid "Required. 30 characters or fewer. Letters, digits and @/./+/-/_ only."
 msgstr ""
 
-#: accounts/forms.py:270
+#: accounts/forms.py:269
 msgid "This value may contain only letters, numbers and @/./+/-/_ characters."
 msgstr ""
 
-#: accounts/forms.py:279 accounts/models.py:217 registration/forms.py:175
+#: accounts/forms.py:278 accounts/models.py:217 registration/forms.py:175
 msgid "first name"
 msgstr ""
 
-#: accounts/forms.py:280 accounts/models.py:218 registration/forms.py:176
+#: accounts/forms.py:279 accounts/models.py:218 registration/forms.py:176
 msgid "last name"
 msgstr ""
 
-#: accounts/forms.py:281 accounts/forms.py:421 accounts/forms.py:621
+#: accounts/forms.py:280 accounts/forms.py:420 accounts/forms.py:620
 #: registration/forms.py:49 registration/forms.py:187
 msgid "Gender"
 msgstr "Geschlecht"
 
-#: accounts/forms.py:282 accounts/forms.py:422 accounts/forms.py:622
+#: accounts/forms.py:281 accounts/forms.py:421 accounts/forms.py:621
 #: registration/forms.py:50 registration/forms.py:188
 msgid "Date of birth"
 msgstr "Geburtsdatum"
 
-#: accounts/forms.py:286 accounts/forms.py:629 accounts/forms.py:713
+#: accounts/forms.py:285 accounts/forms.py:628 accounts/forms.py:712
 #: accounts/templates/accounts/application/add_user_done.html:54
 #: registration/forms.py:60
 msgid "Application roles"
 msgstr "Anwendungsrollen"
 
-#: accounts/forms.py:288 accounts/forms.py:632 accounts/forms.py:715
+#: accounts/forms.py:287 accounts/forms.py:631 accounts/forms.py:714
 #: registration/forms.py:64
 msgid "Groups of application roles that are assigned together."
 msgstr "Gruppen von Anwendungsrollen, die zusammen vergeben werden."
 
-#: accounts/forms.py:291 accounts/forms.py:615 accounts/forms.py:706
+#: accounts/forms.py:290 accounts/forms.py:614 accounts/forms.py:705
 #: api/views/users_v2.py:370 registration/forms.py:36
 #: registration/forms.py:173
 msgid "A user with that email address already exists."
 msgstr "Die E-Mail Adresse wird schon verwendet"
 
-#: accounts/forms.py:379
+#: accounts/forms.py:378
 #, python-format
 msgid "The email address \"%(email)s\" is already in use."
 msgstr "Die E-Mail Adresse \"%(email)s\" wird schon benutzt."
 
-#: accounts/forms.py:420
+#: accounts/forms.py:419
 msgid "Picture"
 msgstr "Bild"
 
-#: accounts/forms.py:424 emails/templates/emails/groupemail_detail.html.py:30
+#: accounts/forms.py:423 emails/templates/emails/groupemail_detail.html.py:30
 #: organisations/templates/organisations/adminregion_detail.html:34
 #: organisations/templates/organisations/organisation_detail.html:40
 #: organisations/templates/organisations/organisationcountry_detail.html:31
 msgid "Homepage"
 msgstr ""
 
-#: accounts/forms.py:425 accounts/forms.py:508 registration/forms.py:47
+#: accounts/forms.py:424 accounts/forms.py:507 registration/forms.py:47
 #: registration/forms.py:185
 msgid "Language"
 msgstr "Sprache"
 
-#: accounts/forms.py:426 accounts/forms.py:509 registration/forms.py:48
+#: accounts/forms.py:425 accounts/forms.py:508 registration/forms.py:48
 #: registration/forms.py:186
 msgid "Timezone"
 msgstr "Zeitzone"
 
-#: accounts/forms.py:429 accounts/forms.py:614 accounts/forms.py:705
+#: accounts/forms.py:428 accounts/forms.py:613 accounts/forms.py:704
 #: registration/forms.py:35 registration/forms.py:172
 msgid "A user with that username already exists."
 msgstr ""
 
-#: accounts/forms.py:441
+#: accounts/forms.py:440
 msgid "Please use the contact form for a request to change this value."
 msgstr "Bitte verwende das Kontaktformular um diesen Wert ändern zu lassen."
 
-#: accounts/forms.py:503
+#: accounts/forms.py:502
 msgid "Account type"
 msgstr "Benutzerkontotyp"
 
-#: accounts/forms.py:514
+#: accounts/forms.py:513
 msgid "Organisation Account"
 msgstr "Organisationskonto"
 
-#: accounts/forms.py:514
+#: accounts/forms.py:513
 msgid "Member Account"
 msgstr "Mitgliedskonto"
 
-#: accounts/forms.py:550 models.py:98
+#: accounts/forms.py:549 models.py:98
 msgid "State"
 msgstr "Bundesland"
 
-#: accounts/forms.py:618
+#: accounts/forms.py:617
 msgid "Valid until"
 msgstr "Gültig bis"
 
-#: accounts/forms.py:624 emails/forms.py:112
+#: accounts/forms.py:623 emails/forms.py:112
 #: emails/templates/emails/groupemail_detail.html:34
 #: organisations/forms.py:124
 #: organisations/templates/organisations/adminregion_detail.html:38
@@ -403,7 +403,7 @@ msgstr "Gültig bis"
 msgid "Active"
 msgstr "Aktiv"
 
-#: accounts/forms.py:624 accounts/models.py:220
+#: accounts/forms.py:623 accounts/models.py:220
 msgid ""
 "Designates whether this user should be treated as active. Unselect this "
 "instead of deleting accounts."
@@ -411,7 +411,7 @@ msgstr ""
 "Legt fest, ob dieser Benutzer aktiv ist. Kann deaktiviert werden, anstatt "
 "den Benutzer zu löschen."
 
-#: accounts/forms.py:626 accounts/models.py:234
+#: accounts/forms.py:625 accounts/models.py:234
 msgid ""
 "Designates that this user is representing a organisation and not a private "
 "person."
@@ -419,7 +419,7 @@ msgstr ""
 "Legt fest, ob dieser Benutzer eine Organisation präsentiert und keine "
 "private Person."
 
-#: accounts/forms.py:635
+#: accounts/forms.py:634
 msgid "Created by"
 msgstr "Angelegt von"
 
@@ -1249,16 +1249,6 @@ msgstr "Meine Organisation wechseln"
 msgid "Your password must fulfill the following requirements:"
 msgstr "Dein Passwort muss die folgenden Anforderungen erfüllen:"
 
-#: accounts/templates/accounts/includes/password_requirements.html:4
-#, python-format
-msgid "Must be %(MIN_LENGTH)s characters or more"
-msgstr "Muss %(MIN_LENGTH)s oder mehr Zeichen enthalten"
-
-#: accounts/templates/accounts/includes/password_requirements.html:10
-#, python-format
-msgid "Must contain %(DIGITS)s or more digits"
-msgstr ""
-
 #: accounts/templates/accounts/logged_out.html:6
 #: auth/templates/auth/logged_out.html:6
 msgid "Thanks for spending some quality time with the Web site today."
@@ -1411,7 +1401,7 @@ msgstr ""
 #: accounts/templates/accounts/password_change_form.html:4
 #: accounts/templates/accounts/password_change_form.html:12
 #: accounts/templates/accounts/password_change_form.html:18
-#: accounts/views/__init__.py:83
+#: accounts/views/__init__.py:86
 msgid "Password change"
 msgstr ""
 
@@ -1506,7 +1496,7 @@ msgid "Password reset"
 msgstr ""
 
 #: accounts/templates/accounts/password_reset_confirm.html:10
-#: accounts/views/__init__.py:414
+#: accounts/views/__init__.py:417
 msgid "Enter new password"
 msgstr ""
 
@@ -1654,27 +1644,27 @@ msgstr ""
 msgid "Send mail"
 msgstr "E-Mail Senden"
 
-#: accounts/views/__init__.py:126
+#: accounts/views/__init__.py:129
 msgid "Logged out"
 msgstr ""
 
-#: accounts/views/__init__.py:186
+#: accounts/views/__init__.py:189
 msgid "The confirmation was not succesfull, please resend the confirmation."
 msgstr ""
 "Die Bestätigung war nicht erfolgreich, bitte versende erneut eine "
 "Bestätigungsemail."
 
-#: accounts/views/__init__.py:190
+#: accounts/views/__init__.py:193
 #, python-format
 msgid "Your email address \"%(email)s\" was already confirmed successfully."
 msgstr "Deine E-Mail Adresse \"%(email)s\" wurde schon bestätigt."
 
-#: accounts/views/__init__.py:194
+#: accounts/views/__init__.py:197
 #, python-format
 msgid "Your email address \"%(email)s\" was confirmed successfully."
 msgstr "Deine E-Mail Adresse \"%(email)s\" wurde erfolgreich bestätigt."
 
-#: accounts/views/__init__.py:196
+#: accounts/views/__init__.py:199
 msgid ""
 "The confirmation message has probably already expired, please resend the "
 "confirmation."
@@ -1682,38 +1672,38 @@ msgstr ""
 "Die Bestätigungsemail ist wahrscheinlich veraltet, bitte versende erneut "
 "eine Bestätigungsemail."
 
-#: accounts/views/__init__.py:212 accounts/views/__init__.py:237
+#: accounts/views/__init__.py:215 accounts/views/__init__.py:240
 #, python-format
 msgid "Confirmation email was sent to \"%(email)s\"."
 msgstr ""
 "Eine E-Mail zur Bestätigung der E-Mail Adresse wurde an \"%(email)s\" "
 "versendet."
 
-#: accounts/views/__init__.py:218
+#: accounts/views/__init__.py:221
 #, python-format
 msgid "The email \"%(email)s\" was deleted successfully."
 msgstr "Die  E-Mail Adresse \"%(email)s\" wurde erfolgreich gelöscht."
 
-#: accounts/views/__init__.py:228
+#: accounts/views/__init__.py:231
 #, python-format
 msgid "The email \"%(email)s\" was changed successfully."
 msgstr "Die E-Mail Adresse \"%(email)s\" wurde erfolgreich geändert."
 
-#: accounts/views/__init__.py:236
+#: accounts/views/__init__.py:239
 msgid "Thank you. Your data were saved."
 msgstr "Vielen Dank, Deine Eingaben wurden gespeichert."
 
-#: accounts/views/__init__.py:258
+#: accounts/views/__init__.py:261
 msgid "Your profile was changed successfully. You may edit it again below."
 msgstr ""
 "Dein Benutzerprofil wurde erfolgreich geändert. Du kannst die Daten unten "
 "erneut ändern."
 
-#: accounts/views/__init__.py:264
+#: accounts/views/__init__.py:267
 msgid "Thank you. Your profile was saved."
 msgstr "Vielen Dank, Deine Eingaben wurden gespeichert."
 
-#: accounts/views/__init__.py:425
+#: accounts/views/__init__.py:428
 msgid "Password create unsuccessful"
 msgstr "Fehler beim Passwort Anlegen"
 
@@ -1848,13 +1838,13 @@ msgstr "zu Organisation"
 msgid "from organisation"
 msgstr "von Organisation"
 
-#: admin/__init__.py:33
+#: admin/__init__.py:34
 #, python-format
 msgid "%(brand)s SSO site admin"
 msgstr "%(brand)s SSO Administration"
 
-#: admin/__init__.py:34
-#| msgid "Administration"
+#: admin/__init__.py:35
+#, python-format
 msgid "%(brand)s SSO administration"
 msgstr "%(brand)s SSO Administration"
 
@@ -1868,7 +1858,7 @@ msgid "More"
 msgstr "Mehr"
 
 #: api/views/users.py:95 api/views/users_v2.py:446
-#: templates/admin/base_site.html:24
+#: templates/admin/base_site.html:26
 #: templates/include/global_navigation.html:43
 msgid "Log out"
 msgstr ""
@@ -3633,23 +3623,23 @@ msgid ""
 "email and should be fixed shortly. Thanks for your patience."
 msgstr ""
 
-#: templates/admin/base_site.html:5
+#: templates/admin/base_site.html:7
 msgid "Site admin"
 msgstr ""
 
-#: templates/admin/base_site.html:8 templates/include/_navigation.html.py:5
+#: templates/admin/base_site.html:10 templates/include/_navigation.html:5
 msgid "Administration"
 msgstr "Administration"
 
-#: templates/admin/base_site.html:13
+#: templates/admin/base_site.html:15
 msgid "View site"
 msgstr ""
 
-#: templates/admin/base_site.html:18
+#: templates/admin/base_site.html:20
 msgid "Documentation"
 msgstr ""
 
-#: templates/admin/base_site.html:22
+#: templates/admin/base_site.html:24
 msgid "Change password"
 msgstr ""
 
