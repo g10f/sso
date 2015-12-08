@@ -25,6 +25,7 @@ from sso.organisations.forms import OrganisationAddressForm, OrganisationPhoneNu
     OrganisationRegionAdminForm, OrganisationCenterAdminForm, OrganisationRegionAdminCreateForm, OrganisationCountryAdminCreateForm, OrganisationPictureForm
 from sso.forms.helpers import get_optional_inline_formset
 from sso.utils.url import get_safe_redirect_uri
+from sso.utils.ucsv import UnicodeWriter
 from sso.oauth2.models import allowed_hosts
 
 logger = logging.getLogger(__name__)
@@ -435,15 +436,17 @@ def organisation_list_csv(request, type):
     else:
         response = HttpResponse(content_type='text;charset=utf-8;')
 
-    writer = csv.writer(response, quoting=csv.QUOTE_MINIMAL)
+    writer = UnicodeWriter(response, quoting=csv.QUOTE_MINIMAL)
+    row = ["name", "homepage", "email", "primary_phone", "country", "addressee", "street_address", "city", "postal_code"]
+    writer.writerow(row)
     for organisation in Organisation.objects.filter(is_active=True).prefetch_related('country', 'email', 'organisationphonenumber_set', 'organisationaddress_set', 'organisationaddress_set__country'):
-        row = [organisation.name, organisation.homepage, str(organisation.email), str(organisation.country), str(organisation.primary_phone)]
+        row = [organisation.name, organisation.homepage, str(organisation.email), str(organisation.primary_phone), str(organisation.country)]
 
         primary_address = organisation.primary_address
         if not organisation.is_private and primary_address:
-            row += [primary_address.addressee, primary_address.street_address, primary_address.city, primary_address.postal_code, str(primary_address.country)]
+            row += [primary_address.addressee, primary_address.street_address, primary_address.city, primary_address.postal_code]
         else:
-            row += ['', '', '', '', '']
+            row += ['', '', '', '']
 
         writer.writerow(row)
 
