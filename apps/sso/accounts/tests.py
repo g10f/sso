@@ -70,7 +70,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         # check that login with new_mail is possible
         self.login_test(username='test@g10f.de', password='gsf')
 
-    @override_settings(SSO_EMAIL_CONFIRM_TIMEOUT_MINUTES=-1)  # immideate timeout
+    @override_settings(SSO_EMAIL_CONFIRM_TIMEOUT_MINUTES=-1)  # immediate timeout
     def test_self_failing_confirmation(self):
         self.login(username='GunnarScherf', password='gsf')
         new_email = "test@g10f.de"
