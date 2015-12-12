@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-05 20:48+0100\n"
+"POT-Creation-Date: 2015-12-12 19:42+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -653,7 +653,7 @@ msgstr "Designates that role can inherited by a center admin."
 #: accounts/models.py:237
 #: accounts/templates/accounts/application/app_admin_update_user_form.html:44
 #: accounts/templates/accounts/application/update_user_form.html:61
-#: organisations/models.py:347 organisations/views/__init__.py:346
+#: organisations/models.py:347 organisations/views/__init__.py:347
 msgid "picture"
 msgstr ""
 
@@ -722,24 +722,24 @@ msgstr ""
 msgid "Business"
 msgstr ""
 
-#: accounts/models.py:856 accounts/models.py:877 organisations/models.py:379
+#: accounts/models.py:856 accounts/models.py:877 organisations/models.py:380
 msgid "Other"
 msgstr ""
 
-#: accounts/models.py:859 organisations/models.py:361
+#: accounts/models.py:859 organisations/models.py:362
 msgid "address type"
 msgstr ""
 
-#: accounts/models.py:872 organisations/models.py:375
+#: accounts/models.py:872 organisations/models.py:376
 msgctxt "phone number"
 msgid "Home"
 msgstr ""
 
-#: accounts/models.py:873 organisations/models.py:376
+#: accounts/models.py:873 organisations/models.py:377
 msgid "Mobile"
 msgstr ""
 
-#: accounts/models.py:875 organisations/models.py:378
+#: accounts/models.py:875 organisations/models.py:379
 msgid "Fax"
 msgstr ""
 
@@ -747,11 +747,11 @@ msgstr ""
 msgid "Pager"
 msgstr ""
 
-#: accounts/models.py:879 organisations/models.py:382
+#: accounts/models.py:879 organisations/models.py:383
 msgid "phone type"
 msgstr ""
 
-#: accounts/models.py:879 organisations/models.py:382
+#: accounts/models.py:879 organisations/models.py:383
 msgid "Mobile, home, office, etc."
 msgstr ""
 
@@ -1543,7 +1543,7 @@ msgstr ""
 #: organisations/templates/organisations/adminregion_detail.html:30
 #: organisations/templates/organisations/organisation_detail.html:79
 #: organisations/templates/organisations/organisationcountry_detail.html:27
-#: organisations/views/__init__.py:304 organisations/views/region.py:120
+#: organisations/views/__init__.py:305 organisations/views/region.py:120
 #: registration/forms.py:45 registration/forms.py:183 registration/views.py:57
 msgid "Country"
 msgstr ""
@@ -1703,7 +1703,7 @@ msgid ""
 msgstr ""
 
 #: accounts/views/application.py:346 accounts/views/application.py:412
-#: organisations/views/__init__.py:67 registration/views.py:178
+#: organisations/views/__init__.py:68 registration/views.py:178
 #: views/generic.py:237
 #, python-format
 msgid ""
@@ -1719,7 +1719,7 @@ msgid ""
 msgstr ""
 
 #: accounts/views/application.py:353 accounts/views/application.py:415
-#: organisations/views/__init__.py:75 registration/views.py:182
+#: organisations/views/__init__.py:76 registration/views.py:182
 #: views/generic.py:240
 #, python-format
 msgid "The %(name)s \"%(obj)s\" was changed successfully."
@@ -1734,20 +1734,20 @@ msgid "Change user roles"
 msgstr ""
 
 #: accounts/views/filter.py:22 emails/views.py:151
-#: organisations/views/__init__.py:293 organisations/views/country.py:118
+#: organisations/views/__init__.py:294 organisations/views/country.py:118
 #: organisations/views/region.py:142
 msgid "active/inactive"
 msgstr ""
 
 #: accounts/views/filter.py:23 emails/views.py:152
-#: organisations/views/__init__.py:294 organisations/views/country.py:119
+#: organisations/views/__init__.py:295 organisations/views/country.py:119
 #: organisations/views/region.py:143 registration/views.py:66
 #: registration/views.py:76 registration/views.py:86
 msgid "All"
 msgstr ""
 
 #: accounts/views/filter.py:35 accounts/views/filter.py:96
-#: organisations/views/__init__.py:305 organisations/views/region.py:121
+#: organisations/views/__init__.py:306 organisations/views/region.py:121
 #: registration/views.py:58
 msgid "All Countries"
 msgstr ""
@@ -1755,13 +1755,13 @@ msgstr ""
 #: accounts/views/filter.py:44 accounts/views/filter.py:105 emails/admin.py:43
 #: emails/models.py:28 organisations/models.py:125
 #: organisations/templates/organisations/organisation_detail.html:83
-#: organisations/views/__init__.py:314
+#: organisations/views/__init__.py:315
 #, fuzzy
 msgid "Region"
 msgstr "Center"
 
 #: accounts/views/filter.py:45 accounts/views/filter.py:106
-#: organisations/views/__init__.py:315
+#: organisations/views/__init__.py:316
 #, fuzzy
 msgid "All Regions"
 msgstr "Center"
@@ -2855,22 +2855,23 @@ msgstr "Centers"
 
 #: organisations/models.py:358
 #, fuzzy
-msgid "Meditation"
+msgid "Physical Address"
 msgstr "Center"
 
 #: organisations/models.py:359
-msgid "Post Only"
-msgstr ""
+#, fuzzy
+msgid "Postal Address"
+msgstr "Center"
 
-#: organisations/models.py:363
+#: organisations/models.py:364
 msgid "care of (c/o)"
 msgstr ""
 
-#: organisations/models.py:377
+#: organisations/models.py:378
 msgid "Mobile#2"
 msgstr ""
 
-#: organisations/models.py:380
+#: organisations/models.py:381
 msgid "Other#2"
 msgstr ""
 
@@ -3067,35 +3068,35 @@ msgstr ""
 msgid "Country Data"
 msgstr ""
 
-#: organisations/views/__init__.py:286
+#: organisations/views/__init__.py:287
 #, fuzzy
 msgid "Organisation Type"
 msgstr "Centers"
 
-#: organisations/views/__init__.py:287
+#: organisations/views/__init__.py:288
 #, fuzzy
 msgid "All Organisation Types"
 msgstr "Centers"
 
-#: organisations/views/__init__.py:292
+#: organisations/views/__init__.py:293
 #, fuzzy
 #| msgid "Organisations"
 msgid "Active Organisations"
 msgstr "Centers"
 
-#: organisations/views/__init__.py:292
+#: organisations/views/__init__.py:293
 #, fuzzy
 #| msgid "Organisations"
 msgid "Inactive Organisations"
 msgstr "Centers"
 
-#: organisations/views/__init__.py:322
+#: organisations/views/__init__.py:323
 #, fuzzy
 #| msgid "Organisations"
 msgid "My Organisations"
 msgstr "Centers"
 
-#: organisations/views/__init__.py:336
+#: organisations/views/__init__.py:337
 msgid "distance"
 msgstr ""
 
@@ -3741,58 +3742,3 @@ msgstr ""
 #: views/csrf.py:10
 msgid "CSRF verification failed. Request aborted."
 msgstr ""
-
-#, fuzzy
-#~| msgid "Organisation"
-#~ msgid "Delete organisation"
-#~ msgstr "Center"
-
-#, fuzzy
-#~ msgid "Change Organisation"
-#~ msgstr "Centers"
-
-#, fuzzy
-#~ msgctxt "Center"
-#~ msgid "Organisation Type"
-#~ msgstr "Centers"
-
-#, fuzzy
-#~ msgctxt "Group"
-#~ msgid "Organisation Type"
-#~ msgstr "Centers"
-
-#, fuzzy
-#~ msgctxt "Retreat"
-#~ msgid "Organisation Type"
-#~ msgstr "Centers"
-
-#, fuzzy
-#~ msgctxt "Contact"
-#~ msgid "Organisation Type"
-#~ msgstr "Centers"
-
-#, fuzzy
-#~ msgctxt "Center & Retreat"
-#~ msgid "Organisation Type"
-#~ msgstr "Centers"
-
-#, fuzzy
-#~ msgctxt "Group & Retreat"
-#~ msgid "Organisation Type"
-#~ msgstr "Centers"
-
-#, fuzzy
-#~ msgid "Update My Center"
-#~ msgstr "Center"
-
-#, fuzzy
-#~ msgid "Select Permission"
-#~ msgstr "Center"
-
-#, fuzzy
-#~ msgid "Select My Regions"
-#~ msgstr "Center"
-
-#, fuzzy
-#~ msgid "Region List"
-#~ msgstr "Center"

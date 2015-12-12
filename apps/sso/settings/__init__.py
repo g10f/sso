@@ -11,13 +11,13 @@ try:
 except:
     RUNNING_DEVSERVER = False
 
+RUNNING_TEST = 'test' in sys.argv
+
 if RUNNING_DEVSERVER:
     INTERNAL_IPS = ('127.0.0.1',)
     DEBUG = True
-    LOCAL_DEV = True
 else:
     DEBUG = False
-    LOCAL_DEV = False
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))  # django 1.7 settings
 
@@ -47,8 +47,8 @@ SSO_EMAIL_LOGO = ""
 
 OTP_DEVICES = [
     'sso_auth.TOTPDevice',
-    # 'sso_auth.TwilioSMSDevice',
     'sso_auth.U2FDevice',
+    # 'sso_auth.TwilioSMSDevice',
 ]
 
 OTP_TWILIO_ACCOUNT = ''
@@ -58,9 +58,6 @@ OTP_TWILIO_NO_DELIVERY = True
 OTP_TWILIO_TOKEN_VALIDITY = 300  # seconds
 
 EMAIL_SUBJECT_PREFIX = '[SSO] '
-
-hostname = socket.gethostname().upper()
-TEST = 'test' in sys.argv
 
 ADMINS = (
     ('Gunnar Scherf', 'webmaster@g10f.de'),
@@ -238,7 +235,7 @@ CSRF_COOKIE_HTTPONLY = True
 CSRF_COOKIE_AGE = None 
 CSRF_FAILURE_VIEW = 'sso.views.csrf.csrf_failure'
 
-if not(LOCAL_DEV or TEST):
+if not (RUNNING_DEVSERVER or RUNNING_TEST):
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 

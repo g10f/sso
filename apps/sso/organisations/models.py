@@ -354,10 +354,11 @@ class OrganisationPicture(AbstractBaseModel):
 
 
 class OrganisationAddress(AbstractBaseModel, AddressMixin):
-    ADDRESSTYPE_CHOICES = (
-        ('meditation', _('Meditation')),
-        ('post', _('Post Only')),
-    )        
+    ADDRESSTYPE_CHOICES = getattr(settings, "SSO_ORG_ADDRESSTYPE_CHOICES", [
+        ('physical', _('Physical Address')),
+        ('postal', _('Postal Address'))
+    ])
+
     address_type = models.CharField(_("address type"), choices=ADDRESSTYPE_CHOICES, max_length=20)
     organisation = models.ForeignKey(Organisation)
     careof = models.CharField(_('care of (c/o)'), default='', blank=True, max_length=80)
