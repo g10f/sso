@@ -29,8 +29,8 @@
                 </div>
             {% endif %}
 
-            {# Geocoding button, only active for address_type meditation #}
-            <div class="form-group geocode {% if inline_form.instance.address_type != 'meditation' %}hidden{% endif %}">
+            {# Geocoding button, only active for address_type physical #}
+            <div class="form-group geocode {% if inline_form.instance.address_type != 'physical' %}hidden{% endif %}">
                 <label class="control-label"></label>
                 <div class="dwbn-form-control">
                     <button data-loading-text="{% trans 'Loading data ...' %}" autocomplete="off" class="btn btn-info geocode" type="button">{% trans 'Geocode address' %}</button>
