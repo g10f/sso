@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-12 19:42+0100\n"
+"POT-Creation-Date: 2015-12-12 22:34+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -726,24 +726,24 @@ msgstr "Zuhause"
 msgid "Business"
 msgstr "Geschäftlich"
 
-#: accounts/models.py:856 accounts/models.py:877 organisations/models.py:380
+#: accounts/models.py:856 accounts/models.py:877 organisations/models.py:379
 msgid "Other"
 msgstr "Andere"
 
-#: accounts/models.py:859 organisations/models.py:362
+#: accounts/models.py:859 organisations/models.py:361
 msgid "address type"
 msgstr "Adressart"
 
-#: accounts/models.py:872 organisations/models.py:376
+#: accounts/models.py:872 organisations/models.py:375
 msgctxt "phone number"
 msgid "Home"
 msgstr "Privat"
 
-#: accounts/models.py:873 organisations/models.py:377
+#: accounts/models.py:873 organisations/models.py:376
 msgid "Mobile"
 msgstr "Handy"
 
-#: accounts/models.py:875 organisations/models.py:379
+#: accounts/models.py:875 organisations/models.py:378
 msgid "Fax"
 msgstr ""
 
@@ -751,11 +751,11 @@ msgstr ""
 msgid "Pager"
 msgstr ""
 
-#: accounts/models.py:879 organisations/models.py:383
+#: accounts/models.py:879 organisations/models.py:382
 msgid "phone type"
 msgstr "Telefontyp"
 
-#: accounts/models.py:879 organisations/models.py:383
+#: accounts/models.py:879 organisations/models.py:382
 msgid "Mobile, home, office, etc."
 msgstr "Handy, privat, Büro, etc."
 
@@ -2892,22 +2892,24 @@ msgid "organisation pictures"
 msgstr "Zentrumsbilder"
 
 #: organisations/models.py:358
+msgctxt "organisation address"
 msgid "Physical Address"
 msgstr "Hausadresse"
 
 #: organisations/models.py:359
+msgctxt "organisation address"
 msgid "Postal Address"
 msgstr "Postanschrift"
 
-#: organisations/models.py:364
+#: organisations/models.py:363
 msgid "care of (c/o)"
 msgstr "erreichbar über (c/o)"
 
-#: organisations/models.py:378
+#: organisations/models.py:377
 msgid "Mobile#2"
 msgstr "Handy#2"
 
-#: organisations/models.py:381
+#: organisations/models.py:380
 msgid "Other#2"
 msgstr "Andere#2"
 
@@ -3007,10 +3009,6 @@ msgstr ""
 #: organisations/templates/organisations/organisation_detail.html:94
 msgid "Private"
 msgstr "Privat"
-
-#: organisations/templates/organisations/organisation_detail.html:102
-msgid "Address"
-msgstr "Adresse"
 
 #: organisations/templates/organisations/organisation_detail.html:103
 msgid "Addressee"
