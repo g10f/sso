@@ -4,6 +4,7 @@ from sorl.thumbnail import get_thumbnail
 
 from django.core.urlresolvers import reverse
 from django.db.models import Q
+from django.conf import settings
 from sso.utils.url import base_url, absolute_url
 from sso.utils.parse import parse_datetime_with_timezone_support
 from sso.organisations.models import Organisation, get_near_organisations
@@ -15,8 +16,15 @@ logger = logging.getLogger(__name__)
 
 class OrganisationMixin(object):
     model = Organisation
+    api_mappings = getattr(settings, 'SSO_API_MAPPINGS', {})
 
     def get_object_data(self, request, obj, details=False):
+        # TODO: phase out
+        def map_address_type(address_type):
+            if 'organisation__address__address_type' not in self.api_mappings:
+                return address_type
+            return self.api_mappings['organisation__address__address_type'].get(address_type, address_type)
+
         base = base_url(request)
         data = {
             '@id': "%s%s" % (base, reverse('api:v2_organisation', kwargs={'uuid': obj.uuid.hex})),
@@ -68,7 +76,7 @@ class OrganisationMixin(object):
             if not obj.is_private:
                 data['addresses'] = {
                     address.uuid.hex: {
-                        'address_type': address.address_type,
+                        'address_type': map_address_type(address.address_type),
                         'careof': address.careof,
                         'name': address.addressee,
                         'street_address': address.street_address,
