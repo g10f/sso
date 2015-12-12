@@ -4,6 +4,7 @@
  * @author Gunnar Scherf
  * @requires jQuery 
  */
+
 (function($) {
     function init_osm_widget(){
 		/*
@@ -37,6 +38,32 @@
 		     */
 	    	var geodjango_widget = new MapWidget(options);
 	    	$(this).prev(".clear_features").click(function(){geodjango_widget.clearFeatures();});
+
+            $("button.geocode").on('click', function() {
+                var $btn = $(this).button('loading');
+                var formset_prefix = $(this).parents(".dynamic-organisationaddress_set").attr("id");
+                var data = getAddressData(formset_prefix);
+                var request = $.ajax({
+                    url: 'https://nominatim.openstreetmap.org/search',
+                    dataType: "jsonp",
+                    jsonp: "json_callback",
+                    data: data
+                });
+                request.done(function(data) {
+                    if (data.length == 0){
+                        displayError(formset_prefix, gettext("No location found"));
+                    }
+                    else{
+                        var point = new OpenLayers.Geometry.Point(data[0].lon, data[0].lat).transform(new OpenLayers.Projection("EPSG:4326"), geodjango_widget.map.getProjectionObject());
+                        var feature = new OpenLayers.Feature.Vector(point);
+                        geodjango_widget.layers.vector.addFeatures(feature);
+                        geodjango_widget.map.setCenter([point.x, point.y]);
+                        displaySuccess(formset_prefix, gettext("The map was updated with the new coordinates. Press the 'Save' button for saving the new coordinates."));
+                    }
+                    $btn.button('reset');
+                });
+            });
+
 		});
     }
 	$(function() {
@@ -44,8 +71,55 @@
             init_osm_widget();
         });
         init_osm_widget();
+        $(".address_type").change(function() {
+            address_type_changed($(this));
+        });
+    });
+    /*
+    hide or display the geocoding part. geocoding is only shown for the physical address
+     */
+    function address_type_changed($select_element) {
+        var formset_prefix = $select_element.parents(".dynamic-organisationaddress_set").attr("id");
+        if ($select_element.val() != "physical"){
+            $("#" + formset_prefix).find("div.form-group.geocode").addClass("hidden");
 
-	});
+        } else {
+            $("#" + formset_prefix).find("div.form-group.geocode").removeClass("hidden");
+        }
+    }
+    /*
+    get the address information from the html form
+     */
+    function getAddressData(formset_prefix) {
+        var postalcode = $("#id_" + formset_prefix + "-postal_code").val();
+        var street = $("#id_" + formset_prefix + "-street_address").val();
+        var city = $("#id_" + formset_prefix + "-city").val();
+        var country = $("#id_" + formset_prefix + "-country").val();
+        var county = $("#id_" + formset_prefix + "-region").val();
+        return {
+            limit: 2,
+            format: "jsonv2",
+            street: street,
+            city: city,
+            country: country,
+            postalcode: postalcode,
+            county: county
+        };
+    }
+    function displaySuccess(formset_prefix, message) {
+        var msg_id = "#" + formset_prefix + "-js_message";
+        var html = '<div id="' + msg_id + '" class="alert alert-success alert-dismissible fade in" role="alert">' +
+            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button><p>' +
+            message + '</p></div>';
+        $(msg_id).empty().append(html);
+    }
+    function displayError(formset_prefix, message) {
+        var msg_id = "#" + formset_prefix + "-js_message";
+        var html = '<div id="' + msg_id + '" class="message alert alert-danger alert-dismissible fade in" role="alert">' +
+            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button><p>' +
+            message + '</p></div>';
+        $(msg_id).empty().append(html);
+    }
 })(jQuery);
 
 /*
@@ -66,7 +140,7 @@ OpenLayers.Util.properFeatures = function(features, geom_type) {
         features = new OpenLayers.Feature.Vector(geom);
     }
     return features;
-}
+};
 
 /**
  * @requires OpenLayers/Format/WKT.js
@@ -182,8 +256,7 @@ OpenLayers.Format.DjangoWKT = OpenLayers.Class(OpenLayers.Format.WKT, {
             geometry.transform(this.internalProjection, this.externalProjection);
         }
         var wktType = type == 'collection' ? 'GEOMETRYCOLLECTION' : type.toUpperCase();
-        var data = wktType + '(' + this.extract[type].apply(this, [geometry]) + ')';
-        return data;
+        return wktType + '(' + this.extract[type].apply(this, [geometry]) + ')';
     },
 
     /**
@@ -323,7 +396,7 @@ MapWidget.prototype.get_ewkt = function(feat) {
 };
 
 MapWidget.prototype.read_wkt = function(wkt) {
-    var prefix = 'SRID=' + this.options.map_srid + ';'
+    var prefix = 'SRID=' + this.options.map_srid + ';';
     if (wkt.indexOf(prefix) === 0) {
         wkt = wkt.slice(prefix.length);
     }
