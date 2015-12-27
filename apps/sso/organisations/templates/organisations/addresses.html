@@ -12,9 +12,7 @@
         <div class="inline-related{% if forloop.last %} empty-form last-related{% endif %}"
              id="{{ formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
             <div>
-                <strong>{{ formset.form.opts.verbose_name|title }}:&nbsp;<span
-                        class="inline_label">{% if inline_form.original %}{{ inline_form.original }}{% else %}#
-                    {{ forloop.counter }}{% endif %}</span></strong>
+                <strong>{{ formset.form.opts.verbose_name|title }}:&nbsp;<span class="inline_label">{% if inline_form.original %}{{ inline_form.original }}{% else %}# {{ forloop.counter }}{% endif %}</span></strong>
                 {% if formset.can_delete and inline_form.fields.id.initial %}
                     <div class="delete">
                         <div>{{ inline_form.DELETE.label_tag }}&nbsp;</div>
