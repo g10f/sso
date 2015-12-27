@@ -67,7 +67,7 @@ class Email(AbstractBaseModel):
 
 class EmailForward(AbstractBaseModel):
     email = models.ForeignKey(Email, verbose_name=_('email address'))
-    forward = models.EmailField(_('email forwarding address'), max_length=254)
+    forward = CaseInsensitiveEmailField(_('email forwarding address'), max_length=254)
     primary = models.BooleanField(_("primary"), help_text=_('Designates the email address, which can only changed by users with special administration rights.'), default=False)
     
     class Meta(AbstractBaseModel.Meta):
@@ -82,7 +82,7 @@ class EmailForward(AbstractBaseModel):
 
 class EmailAlias(AbstractBaseModel):
     email = models.ForeignKey(Email, verbose_name=_('email address'))
-    alias = models.EmailField(_('email alias address'), unique=True, max_length=254)
+    alias = CaseInsensitiveEmailField(_('email alias address'), unique=True, max_length=254)
     
     class Meta(AbstractBaseModel.Meta):
         unique_together = (("email", "alias"),)

@@ -2,7 +2,6 @@
 # Django settings for sso project.
 import os
 import sys
-import socket
 from uuid import UUID
 from django.core.urlresolvers import reverse_lazy
 
