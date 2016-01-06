@@ -1,0 +1,3 @@
+{% load i18n %}{% autoescape off %}
+{% blocktrans with name=user.get_full_name %}Registration of {{ name }} completed{% endblocktrans %}
+{% endautoescape %}

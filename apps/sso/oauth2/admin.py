@@ -5,7 +5,7 @@ from django.core import urlresolvers
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-from models import AuthorizationCode, BearerToken, RefreshToken, Client
+# from models import AuthorizationCode, BearerToken, RefreshToken, Client
 
 logger = logging.getLogger(__name__)
    
@@ -79,7 +79,7 @@ class RefreshTokenAdmin(admin.ModelAdmin):
     bearer_token_link.admin_order_field = 'bearer_token'
 
 
-admin.site.register(AuthorizationCode, AuthorizationCodeAdmin)
-admin.site.register(BearerToken, BearerTokenAdmin)
-admin.site.register(RefreshToken, RefreshTokenAdmin)
-admin.site.register(Client, ClientAdmin)
+# admin.site.register(AuthorizationCode, AuthorizationCodeAdmin)
+# admin.site.register(BearerToken, BearerTokenAdmin)
+# admin.site.register(RefreshToken, RefreshTokenAdmin)
+# admin.site.register(Client, ClientAdmin)
