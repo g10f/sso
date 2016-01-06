@@ -1,31 +1,32 @@
 import datetime
-from django.contrib.auth import get_user_model
 
-from django.utils.timezone import now
+from current_user.models import CurrentUserField
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.contrib.auth.tokens import default_token_generator as default_pwd_reset_token_generator
+from django.contrib.sites.shortcuts import get_current_site
+from django.core import urlresolvers
+from django.core.mail import send_mail
 from django.db import models
 from django.db.models import Q
-from django.contrib.sites.shortcuts import get_current_site
-from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
-from django.core.mail import send_mail
-from django.core import urlresolvers
-from django.contrib.auth.tokens import default_token_generator as default_pwd_reset_token_generator
-from .tokens import default_token_generator
-from current_user.models import CurrentUserField
+from django.utils.timezone import now
+from django.utils.translation import ugettext_lazy as _
 from sso.utils.translation import i18n_email_msg_and_subj
+from .tokens import default_token_generator
 
 
-def send_user_validated_email(registration_profile, request):
+def send_user_validated_email(registration_profile, request,
+                              email_template_name='registration/email/user_validated_email.txt',
+                              subject_template_name='registration/email/user_validated_email_subject.txt'):
     """
     Information for registration admins, that a new user registered.
     """
     registration_admin_group = settings.REGISTRATION.get('REGISTRATION_ADMIN_GROUP', 'RegistrationAdmin')
     recipient_list = get_user_model().objects.filter(groups__name=registration_admin_group)
 
-    # recipient_list = User.objects.filter(useremail__email__in=email_recipient_list)
     user_organisations = registration_profile.user.organisations.all()
     
     # add only admins of the new registered user to the final recipient list
@@ -43,11 +44,19 @@ def send_user_validated_email(registration_profile, request):
         protocol = 'https' if request.is_secure() else 'http'
         current_site = get_current_site(request)
         domain = current_site.domain
-        
-        subject = u"Validation for %s completed" % registration_profile.user.get_full_name()
-        admin_url = urlresolvers.reverse("registration:update_user_registration", args=(registration_profile.pk,))
-        email = subject + u"\n %s://%s%s" % (protocol, domain, admin_url)
-        send_mail(subject, email, None, final_recipient_list)
+        user = registration_profile.user
+
+        c = {
+            'protocol': protocol,
+            'domain': domain,
+            'admin_url': urlresolvers.reverse("registration:update_user_registration", args=(registration_profile.pk,)),
+            'user': user,
+            'registration_profile': registration_profile,
+            'organisations': u', '.join([x.__unicode__() for x in user.organisations.all()]),
+        }
+        message, subject = i18n_email_msg_and_subj(c, email_template_name, subject_template_name)
+
+        send_mail(subject, message, None, final_recipient_list)
 
 
 def send_access_denied_email(user, request,

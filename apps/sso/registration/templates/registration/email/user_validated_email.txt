@@ -1,0 +1,9 @@
+{% load i18n %}
+{% blocktrans with name=user.get_full_name %}Registration of {{ name }} completed.{% endblocktrans %}
+
+{{ protocol }}://{{ domain }}{{ admin_url }}
+
+{% trans 'Organisations' %}: {{ organisations }}
+{% trans 'Reference#1' %}: {{ registration_profile.known_person1_first_name}} {{ registration_profile.known_person1_last_name }}
+{% trans 'Reference#2' %}: {{ registration_profile.known_person2_first_name}} {{ registration_profile.known_person2_last_name }}
+

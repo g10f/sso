@@ -107,7 +107,7 @@ class RegistrationTest(TestCase):
         # admin reads his mail box
         outbox = getattr(mail, 'outbox')
         fullname = 'first_name' + ' ' + 'last_name'
-        self.assertNotEqual(outbox[-1].subject.find('Validation for %s completed' % fullname), -1)
+        self.assertNotEqual(outbox[-1].subject.find('Registration of %s completed' % fullname), -1)
         path = self.get_url_path_from_mail()
 
         return path, data

@@ -8,17 +8,18 @@ from django.core import urlresolvers
 from django.utils.safestring import mark_safe
 from .models import RegistrationProfile, RegistrationManager, send_set_password_email, send_validation_email
 
+
 class ExpiredFilter(SimpleListFilter):
     parameter_name = 'expired'
     title = _('expired')
 
     def lookups(self, request, model_admin):
         return [('1', _('Yes')), ('0', _('No'))]
-    
+
     def queryset(self, request, queryset):
-        if self.value() == '1':            
+        if self.value() == '1':
             return queryset.filter(RegistrationManager.expired_q())
-        elif self.value() == '0':            
+        elif self.value() == '0':
             return queryset.exclude(RegistrationManager.expired_q())
         else:
             return queryset.all()
@@ -30,11 +31,11 @@ class IsActiveFilter(SimpleListFilter):
 
     def lookups(self, request, model_admin):
         return [('1', _('Yes')), ('0', _('No'))]
-    
+
     def queryset(self, request, queryset):
-        if self.value() == '1':            
+        if self.value() == '1':
             return queryset.filter(user__is_active=True)
-        elif self.value() == '0':            
+        elif self.value() == '0':
             return queryset.filter(user__is_active=False)
         else:
             return queryset.all()
@@ -47,14 +48,14 @@ class RegistrationAdmin(admin.ModelAdmin):
     search_fields = ('user__username', 'user__first_name', 'user__last_name', 'user__useremail__email')
     date_hierarchy = 'date_registered'
     list_filter = ['is_validated', ExpiredFilter, IsActiveFilter, 'check_back']
-    list_select_related = True    
+    list_select_related = True
     readonly_fields = ['last_modified', 'is_active', 'user_link']
     fieldsets = [
         (None,
          {'fields':
-          ['user', 'user_link', 'last_modified', 'date_registered', 'is_validated', 'is_active', 'about_me',
-           'known_person1_first_name', 'known_person2_first_name', 'known_person1_last_name', 'known_person2_last_name',
-           'check_back', 'is_access_denied', 'verified_by_user'],
+              ['user', 'user_link', 'last_modified', 'date_registered', 'is_validated', 'is_active', 'about_me',
+               'known_person1_first_name', 'known_person2_first_name', 'known_person1_last_name', 'known_person2_last_name',
+               'check_back', 'is_access_denied', 'verified_by_user'],
           'classes': ['wide']}), ]
 
     def get_queryset(self, request):
@@ -62,16 +63,18 @@ class RegistrationAdmin(admin.ModelAdmin):
 
     def is_active(self, obj):
         return obj.user.is_active
+
     is_active.boolean = True
     is_active.short_description = _('active')
-     
+
     def primary_email(self, obj):
         return obj.user.primary_email()
-        
+
     def user_link(self, obj):
         user = obj.user
         url = urlresolvers.reverse('admin:%s_%s_change' % (user._meta.app_label, user._meta.module_name), args=[user.pk], current_app=self.admin_site.name)
         return mark_safe(u'<a href="%s">%s</a>' % (url, user))
+
     user_link.allow_tags = True
     user_link.short_description = _('user')
 
@@ -82,7 +85,7 @@ class RegistrationAdmin(admin.ModelAdmin):
                 name = force_unicode(opts.verbose_name)
             else:
                 name = force_unicode(opts.verbose_name_plural)
-        
+
             msg = ungettext("%(count)s %(name)s was %(action_result_text)s.",
                             "%(count)s %(name)s were %(action_result_text)s.",
                             changecount) % {'count': changecount,
@@ -98,8 +101,9 @@ class RegistrationAdmin(admin.ModelAdmin):
             user.save()
             changecount += 1
             send_set_password_email(user, request)
-            
+
         self.user_message(request, changecount, _('activated'))
+
     activate.short_description = _('Activate users')
 
     def delete_expired(self, request, queryset):
@@ -108,8 +112,9 @@ class RegistrationAdmin(admin.ModelAdmin):
         for profile in expired_profiles:
             profile.user.delete()
         self.user_message(request, changecount, _('deleted'))
+
     delete_expired.short_description = _('Delete inactive, expired and not validated users')
-        
+
     def validate_users(self, request, queryset):
         """
         validates the selected users, if they are not alrady
@@ -122,6 +127,7 @@ class RegistrationAdmin(admin.ModelAdmin):
             profile.save()
             changecount += 1
         self.user_message(request, changecount)
+
     validate_users.short_description = _("Mark profiles as validated")
 
     def resend_validation_email(self, request, queryset):
@@ -131,11 +137,12 @@ class RegistrationAdmin(admin.ModelAdmin):
             send_validation_email(profile, request)
             changecount += 1
         self.user_message(request, changecount, _('an email sent'))
+
     resend_validation_email.short_description = _("Re-send validation emails")
 
     def save_model(self, request, obj, form, change):
         obj.save()
         if "_activate" in request.POST:
             self.activate(request, [obj])
-        
-admin.site.register(RegistrationProfile, RegistrationAdmin)
+
+# admin.site.register(RegistrationProfile, RegistrationAdmin)

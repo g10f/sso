@@ -1,4 +1,4 @@
-from l10n.models import Country, AdminArea
+from l10n.models import AdminArea  # , Country
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
@@ -35,4 +35,4 @@ class CountryOptions(admin.ModelAdmin):
     inlines = [AdminAreaInline]
 
 
-admin.site.register(Country, CountryOptions)
+# admin.site.register(Country, CountryOptions)
