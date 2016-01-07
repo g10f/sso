@@ -9,7 +9,7 @@ cryptography
 oauthlib
 sorl-thumbnail
 # pillow 3.0 has a bug https://github.com/python-pillow/Pillow/issues/1497
-pillow==2.9.0
+pillow
 django-nocaptcha-recaptcha
 pytz
 geopy

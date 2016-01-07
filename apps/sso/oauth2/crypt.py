@@ -24,7 +24,7 @@ def make_jwt(payload, max_age=MAX_AGE, algorithm="RS256"):
         payload["exp"] = int(time.time()) + max_age  # add  expired at time
 
     if algorithm == "RS256":
-        key = settings.CERTS['default']['private_key']
+        key = settings.CERTS['default']['PRIVATE_KEY']
     elif algorithm == "HS256":
         key = settings.SECRET_KEY
     else:

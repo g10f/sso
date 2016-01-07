@@ -231,7 +231,7 @@ SESSION_SAVE_EVERY_REQUEST = False
 SESSION_ENGINE = 'sso.sessions.backends.jwt_cookies'
 # SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 CSRF_COOKIE_HTTPONLY = True
-CSRF_COOKIE_AGE = None 
+CSRF_COOKIE_AGE = None
 CSRF_FAILURE_VIEW = 'sso.views.csrf.csrf_failure'
 
 if not (RUNNING_DEVSERVER or RUNNING_TEST):
@@ -342,7 +342,7 @@ TtyYicTRJv/amdUSWC3LwMkZhneFx/NflaRR24DwLjoYAiVoNDFn7NEfUCyqzo0u
 6daXmT95axOl7xUCpIC6TJB4kg5sZXiatvAmYURGIDC9DvbDcfpj0mAd4iVqpggw
 F1xFEy/YPkMMHSqQ4wIDAQAB
 -----END PUBLIC KEY-----""",
-            'private_key': """-----BEGIN PRIVATE KEY-----
+        'PRIVATE_KEY': """-----BEGIN PRIVATE KEY-----
 MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBALoHgooViV8wIzbf
 pGoECzulH7pO3JiJxNEm/9qZ1RJYLcvAyRmGd4XH81+VpFHbgPAuOhgCJWg0MWfs
 0R9QLKrOjS7p1peZP3lrE6XvFQKkgLpMkHiSDmxleJq28CZhREYgML0O9sNx+mPS
@@ -358,7 +358,7 @@ uQXS2auZqpo405wiWJxgxRl+9CKRbKVmmjUiwAXZ4bBk9RQHgCjdAkEAxBosr42t
 0f4HxvKywdHMBvDqDzUulOmiEYFBi2D3iCXhJywTIeTTy1wdY5L+KciRvoAujrjJ
 71Ejrx9zYuIiEQ==
 -----END PRIVATE KEY-----""",
-            'certificate': """-----BEGIN CERTIFICATE-----
+        'certificate': """-----BEGIN CERTIFICATE-----
 MIIB7DCCAVWgAwIBAgIRALPILBkCAk5ikXGBjE2OcTEwDQYJKoZIhvcNAQEFBQAw
 FzEVMBMGA1UEAxMMc3NvLmR3Ym4ub3JnMB4XDTEzMDUwNTA5MTExMloXDTE0MDUw
 NTA5MTExMlowFzEVMBMGA1UEAxMMc3NvLmR3Ym4ub3JnMIGfMA0GCSqGSIb3DQEB
