@@ -626,7 +626,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @memoize
     def get_count_of_registrationprofiles(self):
-        qs = RegistrationProfile.objects.filter(is_access_denied=False, user__is_active=False, is_validated=True, check_back=False)
+        qs = RegistrationProfile.objects.filter(is_access_denied=False, user__is_active=False, is_validated=True, check_back=False, user__last_login__isnull=True)
         return RegistrationProfile.objects.filter_administrable_registrationprofiles(self, qs).count()
 
     @memoize
