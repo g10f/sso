@@ -18,6 +18,8 @@ requests
 # for python-u2flib-server
 M2Crypto
 python-u2flib-server
+# python3 python-u2flib-server
+#git+https://github.com/moreati/python-u2flib-server
 # for local testing only
 #selenium
 #uritemplate
