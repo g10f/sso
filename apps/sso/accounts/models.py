@@ -1,32 +1,31 @@
 # -*- coding: utf-8 -*-
-from itertools import chain
-import re
 import logging
+import re
 import uuid
+from itertools import chain
+
 from sorl import thumbnail
-from django.core.urlresolvers import reverse
-from django.core import validators
-from django.db import models
-from django.db.models import Q
+
+from current_user.models import CurrentUserField
 from django.conf import settings
-from django.dispatch import receiver
-from django.db.models import signals
 from django.contrib.auth.models import Group, Permission, \
     PermissionsMixin, AbstractBaseUser, BaseUserManager
+from django.core import validators
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
+from django.core.urlresolvers import reverse
+from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import pgettext_lazy, ugettext_lazy as _
 from l10n.models import Country
-from current_user.models import CurrentUserField
+from sso.decorators import memoize
+from sso.emails.models import GroupEmailManager
 from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary, get_filename, CaseInsensitiveEmailField
 from sso.organisations.models import AdminRegion, Organisation
-from sso.emails.models import GroupEmailManager
-from sso.decorators import memoize
 from sso.registration.models import RegistrationProfile
-from sso.utils.loaddata import disable_for_loaddata
-from sso.utils.email import send_html_mail
 from sso.signals import default_roles
+from sso.utils.email import send_html_mail
 
 logger = logging.getLogger(__name__)
 
@@ -923,22 +922,3 @@ class ApplicationAdmin(AbstractBaseModel):
         unique_together = (("application", "admin"),)
         verbose_name = _('application admin')
         verbose_name_plural = _('application admins')
-
-
-@receiver(signals.post_save, sender=User)
-@disable_for_loaddata
-def update_user(sender, instance, created, **kwargs):
-    if created and instance.last_modified_by_user:
-        instance.created_by_user = instance.last_modified_by_user
-        instance.save()
-
-
-@receiver(signals.post_save, sender=UserEmail)
-def update_last_modified(sender, instance, created, **kwargs):
-    """
-    A signal receiver which updates the last_modified date for
-    the user.
-    """
-    user = instance.user
-    user.last_modified = timezone.now()
-    user.save(update_fields=['last_modified'])

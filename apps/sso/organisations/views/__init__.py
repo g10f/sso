@@ -180,8 +180,6 @@ class OrganisationPictureUpdateView(OrganisationBaseView, FormsetsUpdateView):
         return [picture_inline_formset]
 
 
-# TODO: last_modified when an address or phone_number is deleted
-
 class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
     form_classes = {
         'center': OrganisationCenterAdminForm,

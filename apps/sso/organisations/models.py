@@ -4,25 +4,20 @@ import re
 from pytz import timezone
 from sorl import thumbnail
 
-from django.utils.text import slugify
-from django.utils.timezone import localtime, now
 from django.conf import settings
-from django.db import models
-from django.contrib.gis.db import models as gis_models
-from django.contrib.gis import measure
-from django.db.models.signals import post_delete, pre_save
-from django.dispatch import receiver
 from django.contrib.auth import get_user_model
+from django.contrib.gis import measure
+from django.contrib.gis.db import models as gis_models
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+from django.db import models
+from django.utils.timezone import localtime, now
 from django.utils.translation import pgettext_lazy, ugettext_lazy as _
 from l10n.models import Country
 from smart_selects.db_fields import ChainedForeignKey
-from sso.fields import URLFieldEx
-from sso.utils.loaddata import disable_for_loaddata
-from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary, get_filename
-from sso.emails.models import Email, CENTER_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, REGION_EMAIL_TYPE, COUNTRY_GROUP_EMAIL_TYPE
 from sso.decorators import memoize
-
+from sso.emails.models import Email, CENTER_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, REGION_EMAIL_TYPE, COUNTRY_GROUP_EMAIL_TYPE
+from sso.fields import URLFieldEx
+from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary, get_filename
 
 logger = logging.getLogger(__name__)
 
@@ -391,13 +386,6 @@ class OrganisationPhoneNumber(AbstractBaseModel, PhoneNumberMixin):
         ensure_single_primary(organisation.organisationphonenumber_set.all())
         
 
-@receiver(post_delete, sender=Organisation)
-@disable_for_loaddata
-def post_delete_center_account(sender, instance, **kwargs):
-    if instance.email:
-        deactivate_center_account(instance.email)
-
-
 def deactivate_center_account(email):
     """
     deactivate the center user account if the center was deleted
@@ -408,20 +396,6 @@ def deactivate_center_account(email):
         user.save()
     except ObjectDoesNotExist:
         pass
-
-
-@receiver(post_delete, sender=OrganisationPhoneNumber)
-@disable_for_loaddata
-def post_delete_phone(sender, instance, **kwargs):
-    if instance:
-        instance.organisation.save(update_fields=['last_modified'])
-
-
-@receiver(post_delete, sender=OrganisationAddress)
-@disable_for_loaddata
-def post_delete_address(sender, instance, **kwargs):
-    if instance:
-        instance.organisation.save(update_fields=['last_modified'])
 
 
 def default_unique_slug_generator(slug, organisation=None):
@@ -455,12 +429,3 @@ def default_unique_slug_generator(slug, organisation=None):
 
     slug = u"%s-%d" % (slug, new_no)
     return slug
-
-
-@receiver(pre_save, sender=Organisation)
-def create_slug(sender, instance, raw, **kwargs):
-    if instance.slug == "":
-        if raw:
-            instance.slug = slugify(instance.name)
-        else:
-            instance.slug = default_unique_slug_generator(slugify(instance.name), instance)
