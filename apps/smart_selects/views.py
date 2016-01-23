@@ -7,7 +7,8 @@ from django.utils import six
 import locale
 from smart_selects.utils import unicode_sorter
 
-@cache_page(60) 
+
+@cache_page(60)
 def filterchain(request, app, model, field, value, manager=None):
     Model = apps.get_model(app, model)
     if value == '0':
@@ -26,7 +27,8 @@ def filterchain(request, app, model, field, value, manager=None):
     content = json.dumps(result)
     return HttpResponse(content, content_type='application/json')
 
-@cache_page(60) 
+
+@cache_page(60)
 def filterchain_all(request, app, model, field, value):
     Model = get_model(app, model)
     if value == '0':

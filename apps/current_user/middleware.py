@@ -4,6 +4,7 @@ from django.utils.decorators import decorator_from_middleware
 
 import registration
 
+
 class CurrentUserMiddleware(object):
     def process_request(self, request):
         if request.method in ('GET', 'HEAD', 'OPTIONS', 'TRACE'):
@@ -28,5 +29,6 @@ class CurrentUserMiddleware(object):
     def process_response(self, request, response):
         signals.pre_save.disconnect(dispatch_uid=request)
         return response
+
 
 record_current_user = decorator_from_middleware(CurrentUserMiddleware)

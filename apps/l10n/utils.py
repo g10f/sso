@@ -20,6 +20,7 @@ decimal_separator = re.compile(r'(\d)\.(\d)')
 
 UNSET = object()
 
+
 def lookup_translation(obj, attr, language_code=None, version=-1):
     """Get a translated attribute by language.
 
@@ -121,7 +122,7 @@ def moneyfmt(val, currency_code=None, wrapcents='', places=None):
     else:
         val = abs(val)
         key = 'negative'
-    
+
     # If we've been passed places, modify the format to use the new value
     if places is None or places == '':
         fmt = currency[key]
