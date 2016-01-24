@@ -33,23 +33,3 @@ class ChainedForeignKey(ForeignKey):
         }
         defaults.update(kwargs)
         return super(ChainedForeignKey, self).formfield(**defaults)
-
-
-class GroupedForeignKey(ForeignKey):
-    """
-    Opt Grouped Field
-    """
-    def __init__(self, to, group_field, **kwargs):
-        self.group_field = group_field
-        self._choices = True
-        ForeignKey.__init__(self, to, **kwargs)
-
-    def formfield(self, **kwargs):
-        defaults = {
-            'form_class': form_fields.GroupedModelSelect,
-            'queryset': self.rel.to._default_manager.complex_filter(self.rel.limit_choices_to),
-            'to_field_name': self.rel.field_name,
-            'order_field': self.group_field,
-        }
-        defaults.update(kwargs)
-        return super(ForeignKey, self).formfield(**defaults)

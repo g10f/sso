@@ -18,7 +18,7 @@ js_info_dict = {
 }
 
 urlpatterns = [
-    url(r'^jsi18n/$', javascript_catalog, js_info_dict),
+    url(r'^jsi18n/$', javascript_catalog, js_info_dict, name='jsi18n'),
     url(r'^admin/', include(sso_admin_site.urls)),
     url(r'^$', home, name='home'),
     url(r'^privacy/$', TemplateView.as_view(template_name="privacy.html"), name='privacy'),
