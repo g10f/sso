@@ -4,9 +4,8 @@
 {% block title %}{% trans 'Organisation Details' %}{% endblock %}
 
 {% block extrascript %}{{ media }}
-    <script src="{% url 'django.views.i18n.javascript_catalog' %}"></script>
+    <script src="{% url 'jsi18n' %}"></script>
 {% endblock extrascript %}
-
 
 {% block breadcrumb %}
     <ol class="breadcrumb">
