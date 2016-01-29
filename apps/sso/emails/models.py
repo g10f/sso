@@ -98,7 +98,7 @@ class EmailAlias(AbstractBaseModel):
 
 class GroupEmail(AbstractBaseModel):
     name = models.CharField(_("name"), blank=True, default='', max_length=255)
-    email = models.OneToOneField(Email, verbose_name=_("email address"), limit_choices_to=Q(email_type=GROUP_EMAIL_TYPE)|Q(email_type=COUNTRY_GROUP_EMAIL_TYPE))
+    email = models.OneToOneField(Email, verbose_name=_("email address"), limit_choices_to=Q(email_type=GROUP_EMAIL_TYPE) | Q(email_type=COUNTRY_GROUP_EMAIL_TYPE))
     homepage = models.URLField(_("homepage"), blank=True, default='')
     is_guide_email = models.BooleanField(_('guide email'), default=False)
     is_active = models.BooleanField(_('active'), default=True, help_text=_('Designates whether this email should be treated as '

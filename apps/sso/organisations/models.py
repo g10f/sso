@@ -60,7 +60,7 @@ class CountryGroup(AbstractBaseModel):
     name = models.CharField(_("name"), max_length=255)
     email = models.OneToOneField(Email, verbose_name=_("email address"), blank=True, null=True, limit_choices_to={'email_type': COUNTRY_GROUP_EMAIL_TYPE})
     homepage = models.URLField(_("homepage"), blank=True,)
-    
+
     class Meta(AbstractBaseModel.Meta):
         verbose_name = _('Country group')
         verbose_name_plural = _('Country groups')
@@ -72,7 +72,7 @@ class CountryGroup(AbstractBaseModel):
 
 class OrganisationCountry(AbstractBaseModel):
     country = models.OneToOneField(Country, verbose_name=_("country"), null=True, limit_choices_to={'active': True})
-    country_groups = models.ManyToManyField(CountryGroup, blank=True)
+    country_groups = models.ManyToManyField(CountryGroup, blank=True, related_name='countries')
     homepage = models.URLField(_("homepage"), blank=True,)
     email = models.ForeignKey(Email, verbose_name=_("email address"), blank=True, null=True, limit_choices_to={'email_type': COUNTRY_EMAIL_TYPE},
                               on_delete=models.SET_NULL)
