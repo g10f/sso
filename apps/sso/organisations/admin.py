@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+from django.contrib.admin.widgets import FilteredSelectMultiple
+
+from django import forms
+
 from django.contrib import admin
 from django.contrib.gis import admin as gis_admin
 from django.contrib.admin import SimpleListFilter
@@ -6,8 +10,9 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.admin.utils import model_ngettext
 
 from l10n.models import Country
-from .models import OrganisationAddress, OrganisationPhoneNumber
+from .models import OrganisationAddress, OrganisationPhoneNumber, OrganisationCountry, CountryGroup
 from sso.emails.models import Email, CENTER_EMAIL_TYPE
+
 
 class CountryListFilter(SimpleListFilter):
     title = _('Country')
@@ -32,7 +37,7 @@ class CountryListFilter(SimpleListFilter):
 
 class AdminRegionAdmin(admin.ModelAdmin):
     list_display = ('name', 'uuid', 'last_modified')
-    list_filter = (CountryListFilter, )
+    list_filter = (CountryListFilter,)
     date_hierarchy = 'last_modified'
     search_fields = ('name', 'uuid')
 
@@ -42,21 +47,51 @@ class AdminRegionAdmin(admin.ModelAdmin):
         """
         if db_field.name == "country":
             kwargs["queryset"] = Country.objects.filter(organisationcountry__isnull=False)
-        
+
         return super(AdminRegionAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+
+class CountryGroupAdminForm(forms.ModelForm):
+    """
+    see https://snipt.net/chrisdpratt/symmetrical-manytomany-filter-horizontal-in-django-admin/
+    """
+    countries = forms.ModelMultipleChoiceField(queryset=OrganisationCountry.objects.all(), required=False, widget=FilteredSelectMultiple(verbose_name=_('Countries'), is_stacked=False))
+
+    class Meta:
+        model = CountryGroup
+        fields = ('name', 'homepage', 'email')
+
+    def __init__(self, *args, **kwargs):
+        super(CountryGroupAdminForm, self).__init__(*args, **kwargs)
+
+        if self.instance and self.instance.pk:
+            self.fields['countries'].initial = self.instance.countries.all()
+
+    def save(self, commit=True):
+        country_group = super(CountryGroupAdminForm, self).save(commit=False)
+
+        if commit:
+            country_group.save()
+
+        if country_group.pk:
+            country_group.countries = self.cleaned_data['countries']
+            self.save_m2m()
+
+        return country_group
 
 
 class CountryGroupAdmin(admin.ModelAdmin):
     list_display = ('name', 'email', 'homepage', 'last_modified')
     date_hierarchy = 'last_modified'
     search_fields = ('name', 'email', 'homepage', 'uuid')
+    form = CountryGroupAdminForm
 
 
 class OrganisationCountryAdmin(admin.ModelAdmin):
     list_select_related = ('country', 'email')
     list_display = ('country', 'homepage', 'email', 'last_modified')
     list_filter = ('country__continent', 'country__active', 'country_groups')
-    filter_horizontal = ('country_groups', )
+    filter_horizontal = ('country_groups',)
     date_hierarchy = 'last_modified'
     search_fields = ('country__name', 'uuid')
 
@@ -68,9 +103,9 @@ class Address_Inline(admin.StackedInline):
     fieldsets = [
         (None,
          {'fields':
-          ['address_type', 'addressee', 'street_address', 'careof', 'postal_code', 'city',
-           'country', 'state', 'primary', ],
-          'classes': ['wide'], }),
+              ['address_type', 'addressee', 'street_address', 'careof', 'postal_code', 'city',
+               'country', 'state', 'primary', ],
+          'classes': ['wide'],}),
     ]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -79,7 +114,7 @@ class Address_Inline(admin.StackedInline):
         """
         if db_field.name == "country":
             kwargs["queryset"] = Country.objects.filter(organisationcountry__isnull=False)
-        
+
         return super(Address_Inline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
@@ -94,14 +129,14 @@ class PhoneNumber_Inline(admin.TabularInline):
     fieldsets = [
         (None,
          {'fields':
-          ['phone_type', 'phone', 'primary'],
-          'classes': ['wide'], }),
+              ['phone_type', 'phone', 'primary'],
+          'classes': ['wide'],}),
     ]
 
 
 class OrganisationAdmin(gis_admin.OSMGeoAdmin):
     openlayers_url = '//cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js'
-    
+
     list_select_related = ('email',)
     ordering = ['name']
     actions = ['mark_uses_user_activation']
@@ -112,18 +147,18 @@ class OrganisationAdmin(gis_admin.OSMGeoAdmin):
     date_hierarchy = 'founded'
     list_filter = ('is_active', 'is_private', 'uses_user_activation', 'coordinates_type', 'admin_region', 'country__continent', CountryListFilter, 'center_type',
                    'organisationaddress__address_type', 'organisationphonenumber__phone_type')
-    list_display = ('id', 'slug', 'name', 'name_native', 'email', 'last_modified', 'homepage_link', 'google_maps_link', )
+    list_display = ('id', 'slug', 'name', 'name_native', 'email', 'last_modified', 'homepage_link', 'google_maps_link',)
     fieldsets = [
         (None,
          {'fields':
-          ['uuid', 'centerid', 'name', 'name_native', 'slug', 'center_type', 'country', 'admin_region', 'founded', ('coordinates_type', 'google_maps_link'),
-           'location',
-           'email', 'homepage', 'is_active', 'is_private', 'uses_user_activation', 'last_modified'],
+              ['uuid', 'centerid', 'name', 'name_native', 'slug', 'center_type', 'country', 'admin_region', 'founded', ('coordinates_type', 'google_maps_link'),
+               'location',
+               'email', 'homepage', 'is_active', 'is_private', 'uses_user_activation', 'last_modified'],
           'classes': ['wide']}),
         (_('notes'),
          {'fields':
-          ['notes'],
-          'classes': ['collapse', 'wide'], }),
+              ['notes'],
+          'classes': ['collapse', 'wide'],}),
     ]
 
     def mark_uses_user_activation(self, request, queryset):
@@ -138,7 +173,7 @@ class OrganisationAdmin(gis_admin.OSMGeoAdmin):
             kwargs["queryset"] = Country.objects.filter(organisationcountry__isnull=False)
         if db_field.name == "email":
             kwargs["queryset"] = Email.objects.filter(email_type=CENTER_EMAIL_TYPE)
-        
+
         return super(OrganisationAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
     def save_model(self, request, obj, form, change):
