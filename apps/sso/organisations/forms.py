@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 import datetime
-from django.conf import settings
 
 from django import forms
-from django.utils.translation import ugettext_lazy as _
+from django.conf import settings
 from django.forms import ModelChoiceField, ModelMultipleChoiceField, ValidationError
+from django.utils.translation import ugettext_lazy as _
 from l10n.models import Country
+from sso.emails.models import Email, EmailForward, CENTER_EMAIL_TYPE, REGION_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, PERM_EVERYBODY, PERM_DWB
 from sso.forms import bootstrap, BaseForm, BaseTabularInlineForm, BLANK_CHOICE_DASH, BaseStackedInlineForm
 from sso.forms.fields import EmailFieldLower
-from sso.emails.models import Email, EmailForward, CENTER_EMAIL_TYPE, REGION_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, PERM_EVERYBODY, PERM_DWB
+from sso.models import clean_picture
 from sso.signals import update_or_create_organisation_account
 from .models import OrganisationPhoneNumber, OrganisationAddress, Organisation, AdminRegion, OrganisationCountry, CountryGroup, OrganisationPicture
-from sso.models import clean_picture
 
 SSO_ORGANISATION_EMAIL_DOMAIN = getattr(settings, 'SSO_ORGANISATION_EMAIL_DOMAIN', '@g10f.de')
 

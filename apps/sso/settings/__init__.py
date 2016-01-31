@@ -43,6 +43,9 @@ SSO_ADMIN_MAX_AGE = 60 * 30  # 30 min max age for admin pages
 SSO_ORGANISATION_EMAIL_DOMAIN = '@g10f.de'
 SSO_GOOGLE_GEO_API_KEY = 'insert your key'
 SSO_EMAIL_LOGO = ""
+SSO_DOMAIN = "sso.g10f.de"
+SSO_USE_HTTPS = True
+SSO_ASYNC_EMAILS = False  # send emails async via celery task
 
 OTP_DEVICES = [
     'sso_auth.TOTPDevice',
@@ -55,6 +58,20 @@ OTP_TWILIO_AUTH = ''
 OTP_TWILIO_FROM = ''
 OTP_TWILIO_NO_DELIVERY = True
 OTP_TWILIO_TOKEN_VALIDITY = 300  # seconds
+
+# Celery settings
+BROKER_URL = 'amqp://guest:guest@localhost//'
+BROKER_POOL_LIMIT = 1  # Will decrease connection usage
+BROKER_HEARTBEAT = 60  # Will detect stale connections faster
+BROKER_CONNECTION_TIMEOUT = 30  # May require a long timeout due to Linux DNS timeouts etc
+CELERY_RESULT_BACKEND = None
+CELERY_SEND_EVENTS = False  # Will not create celeryev.* queues
+CELERY_EVENT_QUEUE_EXPIRES = 60 * 30  # Will delete all celeryev. queues without consumers after 30 minutes.
+#: Only add pickle to this list if your broker is secured
+#: from unwanted access (see userguide/security.html)
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
 
 EMAIL_SUBJECT_PREFIX = '[SSO] '
 

@@ -15,6 +15,7 @@ pytz
 geopy
 qrcode
 requests
+celery
 # for python-u2flib-server
 M2Crypto
 python-u2flib-server

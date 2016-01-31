@@ -6,7 +6,6 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator as default_pwd_reset_token_generator
 from django.contrib.sites.shortcuts import get_current_site
 from django.core import urlresolvers
-from django.core.mail import send_mail
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
@@ -15,6 +14,8 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from sso.utils.translation import i18n_email_msg_and_subj
+from sso.utils.email import send_mail
+
 from .tokens import default_token_generator
 
 
@@ -55,8 +56,8 @@ def send_user_validated_email(registration_profile, request,
             'organisations': u', '.join([x.__unicode__() for x in user.organisations.all()]),
         }
         message, subject = i18n_email_msg_and_subj(c, email_template_name, subject_template_name)
-
-        send_mail(subject, message, None, final_recipient_list)
+        send_mail(subject, message, recipient_list=final_recipient_list)
+        # send_mail(subject, message, None, final_recipient_list)
 
 
 def send_access_denied_email(user, request,

@@ -102,6 +102,30 @@ server {
 }
 """
 
+RABBITMQ_MANAGEMENT_SITE_PROXY = """\
+server {
+    listen 443 ssl;
+    server_name %(server_name)s;
+    access_log acces.log;
+    error_log error.log;
+    location / {
+        client_body_buffer_size 128k;
+        proxy_send_timeout   90;
+        proxy_read_timeout   90;
+        proxy_buffer_size    4k;
+        proxy_buffers     16 32k;
+        proxy_busy_buffers_size 64k;
+        proxy_temp_file_write_size 64k;
+        proxy_connect_timeout 30s;
+        proxy_pass   http://localhost:15672;
+        proxy_set_header   Host   $host;
+        proxy_set_header   X-Real-IP  $remote_addr;
+        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+    }
+}
+"""
+
 REGISTRATION_TEMPLATE = """\
 server {
     listen 80;
@@ -298,8 +322,23 @@ def deploy_webserver(code_dir, server_name):
         fabtools.require.nginx.site('register.diamondway-buddhism.org', template_contents=REGISTRATION_TEMPLATE, docroot=docroot, target_name=server_name)
         
 
+@task
 def deploy_app():
-    pass
+    """
+    # erlang
+    run('wget http://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb')
+    sudo('dpkg -i erlang-solutions_1.0_all.deb')
+    # rabbitmq
+    sudo('apt-add-repository \'deb http://www.rabbitmq.com/debian/ testing main\'')
+    fabtools.deb.add_apt_key(url='https://www.rabbitmq.com/rabbitmq-signing-key-public.asc')
+
+    fabtools.deb.update_index()
+
+    fabtools.require.deb.package('rabbitmq-server')  # rabbitmq
+    sudo('rabbitmq-plugins enable rabbitmq_management')
+    """
+
+    # fabtools.require.nginx.site('rmq.g10f.de', template_contents=RABBITMQ_MANAGEMENT_SITE_PROXY)
 
 
 def setup_user(user):
@@ -387,6 +426,18 @@ def deploy(conf='dev'):
     context = {'code_dir': code_dir}
     fabtools.require.files.template_file(config_filename, template_contents=LOGROTATE_TEMPLATE, context=context, use_sudo=True)
     """
+
+    # Require a supervisor process for celery
+    # https://github.com/celery/celery/blob/3.1/extra/supervisord/celeryd.conf
+    fabtools.require.supervisor.process(
+        'celery',
+        command='/envs/%(virtualenv)s/bin/celery worker -A %(app) -c 1 -l info --without-gossip --without-mingle --heartbeat-interval 30' % {'virtualenv': virtualenv, 'app': app},
+        directory=code_dir + '/src/apps',
+        user='www-data',
+        numprocs=1,
+        killasgroup=True,
+        priority=1000
+        )
 
     python = '/envs/%(virtualenv)s/bin/python' % {'virtualenv': virtualenv}
     with cd(code_dir):
