@@ -66,7 +66,7 @@ BROKER_HEARTBEAT = 60  # Will detect stale connections faster
 BROKER_CONNECTION_TIMEOUT = 30  # May require a long timeout due to Linux DNS timeouts etc
 CELERY_RESULT_BACKEND = None
 CELERY_SEND_EVENTS = False  # Will not create celeryev.* queues
-CELERY_EVENT_QUEUE_EXPIRES = 60 * 30  # Will delete all celeryev. queues without consumers after 30 minutes.
+# CELERY_EVENT_QUEUE_EXPIRES = 60 * 30  # Will delete all celeryev. queues without consumers after 30 minutes.
 #: Only add pickle to this list if your broker is secured
 #: from unwanted access (see userguide/security.html)
 CELERY_ACCEPT_CONTENT = ['json']

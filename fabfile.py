@@ -430,8 +430,8 @@ def deploy(conf='dev'):
     # Require a supervisor process for celery
     # https://github.com/celery/celery/blob/3.1/extra/supervisord/celeryd.conf
     fabtools.require.supervisor.process(
-        'celery',
-        command='/envs/%(virtualenv)s/bin/celery worker -A %(app) -c 1 -l info --without-gossip --without-mingle --heartbeat-interval 30' % {'virtualenv': virtualenv, 'app': app},
+        'celery-%s' % server_name,
+        command='/envs/%(virtualenv)s/bin/celery worker -A %(app)s -c 1 -l info --without-gossip --without-mingle --heartbeat-interval 30' % {'virtualenv': virtualenv, 'app': app},
         directory=code_dir + '/src/apps',
         user='www-data',
         numprocs=1,
