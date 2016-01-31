@@ -12,7 +12,6 @@ from django.contrib.auth.models import Group, Permission, \
     PermissionsMixin, AbstractBaseUser, BaseUserManager
 from django.core import validators
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q
@@ -25,7 +24,7 @@ from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure
 from sso.organisations.models import AdminRegion, Organisation
 from sso.registration.models import RegistrationProfile
 from sso.signals import default_roles
-from sso.utils.email import send_html_mail
+from sso.utils.email import send_mail
 
 logger = logging.getLogger(__name__)
 
@@ -271,13 +270,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         Sends an email to this User.
         """
-        email = self.primary_email()
-        assert(email is not None)
-
-        if 'html_message' in kwargs and kwargs['html_message']:
-            return send_html_mail(subject, message, kwargs['html_message'], [email.email], fail_silently=kwargs.get('fail_silently', True))
-        else:
-            return send_mail(subject, message, from_email, [email.email], **kwargs)
+        recipient_list = [self.primary_email().email]
+        send_mail(subject, message, recipient_list, from_email=from_email, **kwargs)
 
     def primary_email(self):
         # iterate through useremail_set.all because useremail_set is cached
