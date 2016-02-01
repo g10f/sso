@@ -395,8 +395,8 @@ def deploy(conf='dev'):
     
     # local settings 
     fabtools.require.file('%(code_dir)s/src/apps/%(app)s/settings/local_settings.py' % {'code_dir': code_dir, 'app': app},
-                 source='apps/%(app)s/settings/local_%(server_name)s.py' % {'server_name': server_name, 'app': app},
-                 use_sudo=True, owner='www-data', group='www-data')
+                          source='apps/%(app)s/settings/local_%(server_name)s.py' % {'server_name': server_name, 'app': app},
+                          use_sudo=True, owner='www-data', group='www-data')
 
     """
     # python enviroment
@@ -421,12 +421,6 @@ def deploy(conf='dev'):
         user='www-data'
         )
 
-    # configure logrotate 
-    config_filename = '/etc/logrotate.d/%(server_name)s' % {'server_name': server_name}
-    context = {'code_dir': code_dir}
-    fabtools.require.files.template_file(config_filename, template_contents=LOGROTATE_TEMPLATE, context=context, use_sudo=True)
-    """
-
     # Require a supervisor process for celery
     # https://github.com/celery/celery/blob/3.1/extra/supervisord/celeryd.conf
     fabtools.require.supervisor.process(
@@ -438,6 +432,12 @@ def deploy(conf='dev'):
         killasgroup=True,
         priority=1000
         )
+
+    # configure logrotate 
+    config_filename = '/etc/logrotate.d/%(server_name)s' % {'server_name': server_name}
+    context = {'code_dir': code_dir}
+    fabtools.require.files.template_file(config_filename, template_contents=LOGROTATE_TEMPLATE, context=context, use_sudo=True)
+    """
 
     python = '/envs/%(virtualenv)s/bin/python' % {'virtualenv': virtualenv}
     with cd(code_dir):

@@ -194,7 +194,7 @@ class OrganisationEmailAdminForm(OrganisationBaseForm):
 
         # enable brand specific modification
         update_or_create_organisation_account.send_robust(sender=self.__class__, organisation=self.instance, old_email_value=old_email_value,
-                                                          new_email_value=new_email_value)
+                                                          new_email_value=new_email_value, user=self.user)
         return instance
 
 
