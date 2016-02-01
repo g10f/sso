@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 
 
 def send_account_created_email(user, request, token_generator=default_pwd_reset_token_generator,
-                               from_email=None,
                                email_template_name='accounts/email/account_created_email.txt',
                                subject_template_name='accounts/email/account_created_email_subject.txt',
                                async=None,
@@ -26,6 +25,8 @@ def send_account_created_email(user, request, token_generator=default_pwd_reset_
     current_site = get_current_site(request)
     site_name = settings.SSO_SITE_NAME
     domain = current_site.domain
+    user_primary_email = request.user.primary_email()
+    from_email = user_primary_email.email if user_primary_email else None
     expiration_date = now() + datetime.timedelta(settings.PASSWORD_RESET_TIMEOUT_DAYS)
     email = user.primary_email()
     c = {
@@ -47,7 +48,6 @@ def send_account_created_email(user, request, token_generator=default_pwd_reset_
 
 
 def send_useremail_confirmation(user_email, request, token_generator=email_confirm_token_generator,
-                                from_email=None,
                                 email_template_name='accounts/email/useremail_confirm_email.txt',
                                 subject_template_name='accounts/email/useremail_confirm_email_subject.txt'
                                 ):
@@ -65,11 +65,10 @@ def send_useremail_confirmation(user_email, request, token_generator=email_confi
         'domain': domain,
         'site_name': site_name,
         'uid': urlsafe_base64_encode(force_bytes(user_email.pk)),
-        'token': email_confirm_token_generator.make_token(user_email),
+        'token': token_generator.make_token(user_email),
         'protocol': use_https and 'https' or 'http',
         'expiration_date': expiration_date
     }
     # use the user language or the current language from the browser
     message, subject = i18n_email_msg_and_subj(c, email_template_name, subject_template_name, user.language)
-    send_mail(subject, message, recipient_list=[user_email.email], from_email=from_email, fail_silently=settings.DEBUG)
-    # send_mail(subject, message, from_email, [user_email.email], fail_silently=settings.DEBUG)
+    send_mail(subject, message, recipient_list=[user_email.email], fail_silently=settings.DEBUG)

@@ -57,7 +57,6 @@ def send_user_validated_email(registration_profile, request,
         }
         message, subject = i18n_email_msg_and_subj(c, email_template_name, subject_template_name)
         send_mail(subject, message, recipient_list=final_recipient_list)
-        # send_mail(subject, message, None, final_recipient_list)
 
 
 def send_access_denied_email(user, request,
