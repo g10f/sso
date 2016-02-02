@@ -60,6 +60,7 @@ OTP_TWILIO_NO_DELIVERY = True
 OTP_TWILIO_TOKEN_VALIDITY = 300  # seconds
 
 # Celery settings
+BROKER_USE_SSL = True
 BROKER_URL = 'amqp://guest:guest@localhost//'
 BROKER_POOL_LIMIT = 1  # Will decrease connection usage
 BROKER_HEARTBEAT = 60  # Will detect stale connections faster
