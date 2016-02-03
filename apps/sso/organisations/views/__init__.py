@@ -3,30 +3,31 @@ import csv
 import logging
 
 from django.utils.six.moves.urllib.parse import urlunsplit
-from django.http.response import HttpResponse
+
 from django.contrib import messages
-from django.utils.encoding import force_text
-from django.core.urlresolvers import reverse
-from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required, permission_required
-from django.views.generic import DeleteView, DetailView, CreateView
-from django.utils.decorators import method_decorator
-from django.utils.translation import ugettext_lazy as _
-from django.http import HttpResponseRedirect
+from django.core.exceptions import PermissionDenied
+from django.core.urlresolvers import reverse
 from django.forms.models import inlineformset_factory
+from django.http import HttpResponseRedirect
+from django.http.response import HttpResponse
+from django.utils.decorators import method_decorator
+from django.utils.encoding import force_text
+from django.utils.translation import ugettext_lazy as _
+from django.views.generic import DeleteView, DetailView, CreateView
 from l10n.models import Country
-from sso.views import main
-from sso.emails.models import EmailForward, Email, EmailAlias
-from sso.organisations.models import AdminRegion, Organisation, OrganisationPicture
-from sso.views.generic import FormsetsUpdateView, ListView, SearchFilter, ViewChoicesFilter, ViewQuerysetFilter, ViewButtonFilter
-from sso.organisations.models import OrganisationAddress, OrganisationPhoneNumber, get_near_organisations
 from sso.emails.forms import AdminEmailForwardInlineForm, EmailForwardInlineForm, EmailAliasInlineForm
+from sso.emails.models import EmailForward, Email, EmailAlias
+from sso.forms.helpers import get_optional_inline_formset
+from sso.oauth2.models import allowed_hosts
 from sso.organisations.forms import OrganisationAddressForm, OrganisationPhoneNumberForm, OrganisationCountryAdminForm, \
     OrganisationRegionAdminForm, OrganisationCenterAdminForm, OrganisationRegionAdminCreateForm, OrganisationCountryAdminCreateForm, OrganisationPictureForm
-from sso.forms.helpers import get_optional_inline_formset
-from sso.utils.url import get_safe_redirect_uri
+from sso.organisations.models import AdminRegion, Organisation, OrganisationPicture
+from sso.organisations.models import OrganisationAddress, OrganisationPhoneNumber, get_near_organisations
 from sso.utils.ucsv import UnicodeWriter
-from sso.oauth2.models import allowed_hosts
+from sso.utils.url import get_safe_redirect_uri
+from sso.views import main
+from sso.views.generic import FormsetsUpdateView, ListView, SearchFilter, ViewChoicesFilter, ViewQuerysetFilter, ViewButtonFilter
 
 logger = logging.getLogger(__name__)
 
@@ -343,6 +344,8 @@ class OrganisationList(ListView):
     template_name = 'organisations/organisation_list.html'
     model = Organisation
     list_display = ['name', _('picture'), 'email', 'google maps', 'country', 'founded']
+    filename = None
+    export = False
     
     def get_list_display(self):
         latlng = self.request.GET.get('latlng', '')
@@ -368,32 +371,8 @@ class OrganisationList(ListView):
         Get the list of items for this view. This must be an iterable, and may
         be a queryset (in which qs-specific behavior will be enabled).
         """
-        self.cl = main.ChangeList(self.request, self.model, self.get_list_display(), default_ordering=self.get_default_ordering())
         qs = super(OrganisationList, self).get_queryset().only('location', 'uuid', 'name', 'email', 'country', 'founded').prefetch_related('country', 'email', 'organisationpicture_set')
-        
-        # apply filters
-        qs = MyOrganisationsFilter().apply(self, qs) 
-        qs = OrganisationSearchFilter().apply(self, qs) 
-        qs = CenterTypeFilter().apply(self, qs)
-        qs = CountryFilter().apply(self, qs)
-        qs = AdminRegionFilter().apply(self, qs)
-        # offer is_active filter only for admins
-        if self.request.user.is_organisation_admin:  
-            qs = IsActiveFilter().apply(self, qs)
-        else:
-            qs = qs.filter(is_active=True)
-
-        latlng = self.request.GET.get('latlng', '')
-        if latlng:
-            from django.contrib.gis import geos
-            (lat, lng) = tuple(latlng.split(','))
-            point = geos.fromstr("POINT(%s %s)" % (lng, lat))
-            qs = get_near_organisations(point, None, qs, False)            
-
-        # Set ordering.
-        ordering = self.cl.get_ordering(self.request, qs)
-        qs = qs.order_by(*ordering)
-        return qs.distinct()
+        return self.apply_filters(qs)
 
     def get_context_data(self, **kwargs):
         headers = list(self.cl.result_headers())
@@ -424,28 +403,60 @@ class OrganisationList(ListView):
         context.update(kwargs)
         return super(OrganisationList, self).get_context_data(**context)
 
-
-@login_required
-def organisation_list_csv(request, type):
-    # Create the HttpResponse object with the appropriate CSV header.
-    if type == 'csv':
-        response = HttpResponse(content_type='text/csv;charset=utf-8;')
-        response['Content-Disposition'] = 'attachment; filename="organisations.csv"'
-    else:
-        response = HttpResponse(content_type='text;charset=utf-8;')
-
-    writer = UnicodeWriter(response, quoting=csv.QUOTE_MINIMAL)
-    row = ["name", "homepage", "email", "primary_phone", "country", "addressee", "street_address", "city", "postal_code"]
-    writer.writerow(row)
-    for organisation in Organisation.objects.filter(is_active=True).prefetch_related('country', 'email', 'organisationphonenumber_set', 'organisationaddress_set', 'organisationaddress_set__country'):
-        row = [organisation.name, organisation.homepage, str(organisation.email), str(organisation.primary_phone), str(organisation.country)]
-
-        primary_address = organisation.primary_address
-        if not organisation.is_private and primary_address:
-            row += [primary_address.addressee, primary_address.street_address, primary_address.city, primary_address.postal_code]
+    def get(self, request, *args, **kwargs):
+        if self.export:
+            return self.get_export()
         else:
-            row += ['', '', '', '']
+            return super(OrganisationList, self).get(self, request, *args, **kwargs)
 
+    def apply_filters(self, qs):
+        # create the change list, which is required for apply filter
+        self.cl = main.ChangeList(self.request, self.model, self.get_list_display(), default_ordering=self.get_default_ordering())
+
+        qs = MyOrganisationsFilter().apply(self, qs)
+        qs = OrganisationSearchFilter().apply(self, qs)
+        qs = CenterTypeFilter().apply(self, qs)
+        qs = CountryFilter().apply(self, qs)
+        qs = AdminRegionFilter().apply(self, qs)
+        # offer is_active filter only for admins
+        if self.request.user.is_organisation_admin:
+            qs = IsActiveFilter().apply(self, qs)
+        else:
+            qs = qs.filter(is_active=True)
+
+        latlng = self.request.GET.get('latlng', '')
+        if latlng:
+            from django.contrib.gis import geos
+            (lat, lng) = tuple(latlng.split(','))
+            point = geos.fromstr("POINT(%s %s)" % (lng, lat))
+            qs = get_near_organisations(point, None, qs, False)
+
+        # Set ordering.
+        ordering = self.cl.get_ordering(self.request, qs)
+        qs = qs.order_by(*ordering)
+        return qs.distinct()
+
+    def get_export(self):
+        qs = Organisation.objects.filter(is_active=True).prefetch_related('country', 'admin_region', 'email', 'organisationphonenumber_set', 'organisationaddress_set', 'organisationaddress_set__country')
+        qs = self.apply_filters(qs)
+
+        response = HttpResponse(content_type=self.content_type)
+        if self.filename:
+            response['Content-Disposition'] = 'attachment; filename="%s"' % self.filename
+
+        writer = UnicodeWriter(response, quoting=csv.QUOTE_MINIMAL)
+        row = ["name", "homepage", "email", "primary_phone", "country", "admin_region", "addressee", "street_address", "city", "postal_code"]
         writer.writerow(row)
+        for organisation in qs:
+            admin_region = unicode(organisation.admin_region) if organisation.admin_region else u''
+            row = [organisation.name, organisation.homepage, unicode(organisation.email), unicode(organisation.primary_phone), unicode(organisation.country), admin_region]
 
-    return response
+            primary_address = organisation.primary_address
+            if not organisation.is_private and primary_address:
+                row += [primary_address.addressee, primary_address.street_address, primary_address.city, primary_address.postal_code]
+            else:
+                row += ['', '', '', '']
+
+            writer.writerow(row)
+
+        return response
