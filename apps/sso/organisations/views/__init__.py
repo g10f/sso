@@ -437,7 +437,8 @@ class OrganisationList(ListView):
         return qs.distinct()
 
     def get_export(self):
-        qs = Organisation.objects.filter(is_active=True).prefetch_related('country', 'admin_region', 'email', 'organisationphonenumber_set', 'organisationaddress_set', 'organisationaddress_set__country')
+        qs = Organisation.objects.prefetch_related('country', 'admin_region', 'email', 'organisationphonenumber_set',
+                                                                          'organisationaddress_set', 'organisationaddress_set__country')
         qs = self.apply_filters(qs)
 
         response = HttpResponse(content_type=self.content_type)
@@ -445,11 +446,12 @@ class OrganisationList(ListView):
             response['Content-Disposition'] = 'attachment; filename="%s"' % self.filename
 
         writer = UnicodeWriter(response, quoting=csv.QUOTE_MINIMAL)
-        row = ["name", "homepage", "email", "primary_phone", "country", "admin_region", "addressee", "street_address", "city", "postal_code"]
+        row = ["name", "is_active", "homepage", "email", "primary_phone", "country", "admin_region", "addressee", "street_address", "city", "postal_code"]
         writer.writerow(row)
         for organisation in qs:
             admin_region = unicode(organisation.admin_region) if organisation.admin_region else u''
-            row = [organisation.name, organisation.homepage, unicode(organisation.email), unicode(organisation.primary_phone), unicode(organisation.country), admin_region]
+            row = [organisation.name, unicode(organisation.is_active), organisation.homepage, unicode(organisation.email), unicode(organisation.primary_phone),
+                   unicode(organisation.country), admin_region]
 
             primary_address = organisation.primary_address
             if not organisation.is_private and primary_address:
