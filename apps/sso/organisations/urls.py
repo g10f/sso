@@ -4,7 +4,8 @@ from views import region, country
  
 urlpatterns = [
     url(r'^$', views.OrganisationList.as_view(), name='organisation_list'),
-    url(r'^export.(?P<type>(txt|csv))$', views.organisation_list_csv, name='organisation_list_csv'),
+    url(r'^export.csv$', views.OrganisationList.as_view(export=True, filename="organisations.csv", content_type='text/csv;charset=utf-8;'), name='organisation_list_csv'),
+    url(r'^export.txt$', views.OrganisationList.as_view(export=True, content_type='text;charset=utf-8;'), name='organisation_list_txt'),
     url(r'^me/$', views.MyOrganisationDetailView.as_view(), name='my_organisation_detail'),
     url(r'^(?P<uuid>[a-z0-9]{32})/$', views.OrganisationDetailView.as_view(), name='organisation_detail'),
     url(r'^(?P<uuid>[a-z0-9]{32})/update/$', views.OrganisationUpdateView.as_view(), name='organisation_update'),
