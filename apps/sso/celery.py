@@ -15,7 +15,7 @@ app.config_from_object('django.conf:settings')
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 
 
-@app.task
+@app.task(ignore_result=True)
 def send_mail_task(subject, message, recipient_list, from_email=None, html_message=None, fail_silently=False, **kwargs):
     if html_message is not None:
         from sso.utils.email import send_html_mail
