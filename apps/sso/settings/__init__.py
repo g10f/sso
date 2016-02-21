@@ -85,7 +85,7 @@ DEFAULT_FROM_EMAIL = 'webmaster@g10f.de'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.postgis',  # 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',  # 'django.db.backends.postgresql',
         'NAME': 'sso',
         'USER': 'sso',
         'PASSWORD': 'sso',
