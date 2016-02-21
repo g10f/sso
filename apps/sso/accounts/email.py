@@ -72,3 +72,13 @@ def send_useremail_confirmation(user_email, request, token_generator=email_confi
     # use the user language or the current language from the browser
     message, subject = i18n_email_msg_and_subj(c, email_template_name, subject_template_name, user.language)
     send_mail(subject, message, recipient_list=[user_email.email], fail_silently=settings.DEBUG)
+
+
+def send_mail_managers(subject, message, fail_silently=False, from_email=None, html_message=None):
+    """Sends a message to the managers, as defined by the MANAGERS setting."""
+    if not settings.MANAGERS:
+        return
+    recipient_list = [a[1] for a in settings.MANAGERS]
+    subject = '%s%s' % (settings.EMAIL_SUBJECT_PREFIX, subject)
+
+    send_mail(subject, message, from_email=from_email, recipient_list=recipient_list, fail_silently=fail_silently, html_message=html_message)

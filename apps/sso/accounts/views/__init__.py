@@ -25,7 +25,7 @@ from sso.forms.helpers import ErrorList, ChangedDataList, log_change
 from sso.utils.url import get_safe_redirect_uri, update_url
 from sso.accounts.tokens import email_confirm_token_generator
 from sso.accounts.models import User, UserAddress, UserPhoneNumber, UserEmail, get_applicationrole_ids, Application
-from sso.accounts.email import send_useremail_confirmation
+from sso.accounts.email import send_useremail_confirmation, send_mail_managers
 from sso.accounts.forms import PasswordResetForm, SetPasswordForm, ContactForm, AddressForm, PhoneNumberForm, \
     SelfUserEmailForm, SetPictureAndPasswordForm, PasswordChangeForm
 from sso.accounts.forms import UserSelfProfileForm, UserSelfProfileDeleteForm, CenterSelfProfileForm
@@ -45,7 +45,8 @@ def contact(request):
         if form.is_valid():
             cd = form.cleaned_data
             html_message = render_to_string('accounts/email/contact_email.html', cd)
-            mail_managers(cd['subject'], strip_tags(html_message), html_message=html_message)
+            send_mail_managers(cd['subject'], message=strip_tags(html_message), html_message=html_message, from_email=cd['email'],
+                               fail_silently=settings.DEBUG)
             return redirect('accounts:contact_thanks')
     else:
         initial = {}
