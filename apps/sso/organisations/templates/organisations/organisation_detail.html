@@ -113,7 +113,7 @@
 	<div class="row"><div class="dwbn-label">{{ phone_number.get_phone_type_display }} {% trans 'Phone' %}: </div><div class="dwbn-content">{{ phone_number }}</div></div>
 	{% endfor %}{% endif %}
 	
-    <h4>{% trans 'Nearest Organisations' %}</h4>
+    <h4>{% trans 'Nearest Organisations' %} {% if organisation.neighbour_distance != None %}(< {{ organisation.neighbour_measure_distance.km|floatformat }} km){% endif %}</h4>
 	{% for organisation in object.get_near_organisations %}
     <div class="row"><div class="dwbn-label"><a href="{% url 'organisations:organisation_detail' organisation.uuid.hex %}">{{ organisation.name }}:</a> </div><div class="dwbn-content">{{ organisation.distance.km|floatformat }} km</div></div>
 	{% endfor %} 

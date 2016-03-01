@@ -47,6 +47,8 @@ class OrganisationMixin(object):
                 '@id': "%s%s" % (base, reverse('api:v2_country', kwargs={'iso2_code': obj.country.iso2_code})),
             }
         }
+        if obj.neighbour_distance:
+            data['neighbour_distance'] = float(obj.neighbour_distance)
         if obj.centerid:  # legacy id, should be removed when the resync ist done
             data['centerid'] = obj.centerid
         if obj.timezone:

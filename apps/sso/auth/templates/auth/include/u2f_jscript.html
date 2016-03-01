@@ -1,10 +1,6 @@
 {% load static %}
 <script src="{% static 'js/vendor/bowser.min.js' %}"></script>
-{% if debug %}
-    <script src="chrome-extension://pfboblefjcgdjicmnffhdgionmgcdmne/u2f-api.js"></script>
-{% else %}
-    <script src="{% static "js/vendor/u2f-api.js" %}"></script>
-{% endif %}
+<script src="{% static "js/vendor/u2f-api.js" %}"></script>
 <script>
     // TODO: put into its own file
     $(function() {
