@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-12-12 22:34+0100\n"
+"POT-Creation-Date: 2016-03-01 22:28+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,18 +16,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: static/js/gis/OLMapWidget-1.0.2.js:54
-msgid "More than one location found"
-msgstr "Es wurden mehrere Position gefunden"
-
-#: static/js/gis/OLMapWidget-1.0.2.js:57 static/js/gis/OLMapWidget-1.0.3.js:54
+#: static/js/gis/OLMapWidget-1.0.4.js:54
 msgid "No location found"
 msgstr "Es wurde keine Position gefunden"
 
-#: static/js/gis/OLMapWidget-1.0.2.js:64 static/js/gis/OLMapWidget-1.0.3.js:61
+#: static/js/gis/OLMapWidget-1.0.4.js:61
 msgid ""
 "The map was updated with the new coordinates. Press the 'Save' button for "
 "saving the new coordinates."
 msgstr ""
 "Die Koordinaten in der Karte wurden aktualisiert. Zum Speichern der neuen "
 "Koordinaten bitte \"Sichern\" drücken."
+
+#~ msgid "More than one location found"
+#~ msgstr "Es wurden mehrere Position gefunden"

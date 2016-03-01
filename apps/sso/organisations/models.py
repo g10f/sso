@@ -214,7 +214,7 @@ class Organisation(AbstractBaseModel):
     uses_user_activation = models.BooleanField(_("uses activation"),
                                                help_text=_('Designates whether this organisation uses the new user activation process.'),
                                                default=False)
-
+    neighbour_distance = models.DecimalField(_("neighbour distance"), help_text=_('Nearest neighbour distance [m].'), max_digits=8, decimal_places=0, blank=True, null=True)
     objects = GeoManager()
 
     class Meta(AbstractBaseModel.Meta):
@@ -240,6 +240,13 @@ class Organisation(AbstractBaseModel):
 
         super(Organisation, self).save(force_insert, force_update, *args, **kwargs)
         self._original_location = self.location
+
+    @property
+    def neighbour_measure_distance(self):
+        if self.neighbour_distance:
+            return measure.Distance(**{'m': self.neighbour_distance})
+        else:
+            return None
 
     @property
     def timezone_from_location(self):
@@ -287,7 +294,10 @@ class Organisation(AbstractBaseModel):
             return u'%s' % self.name
 
     def get_near_organisations(self):
-        return get_near_organisations(self.location, qs=Organisation.objects.filter(is_active=True).exclude(pk=self.pk))[:10]
+        if self.neighbour_distance is not None:
+            return get_near_organisations(self.location, distance_from_point={'m': self.neighbour_distance}, qs=Organisation.objects.filter(is_active=True).exclude(pk=self.pk))
+        else:
+            return get_near_organisations(self.location, qs=Organisation.objects.filter(is_active=True).exclude(pk=self.pk))[:10]
 
     @models.permalink
     def get_absolute_url(self):
