@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from django.utils.timezone import now
+
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -57,6 +59,7 @@ class Country(models.Model):
     active = models.BooleanField(_('Country is active'), default=True)
     continent = models.CharField(_('Continent'), choices=CONTINENTS, max_length=2)
     admin_area = models.CharField(_('Administrative Area'), choices=AREAS, max_length=2, null=True, blank=True)
+    last_modified = models.DateTimeField(_('last modified'), auto_now_add=True)
 
     class Meta:
         verbose_name = _('Country')

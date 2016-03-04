@@ -14,7 +14,7 @@ from sso.organisations.models import AdminRegion, Organisation
 
 
 class AccountsSeleniumTests(SSOSeleniumTests):
-    fixtures = ['roles.json', 'test_l10n_data.xml', 'app_roles.json', 'test_organisation_data.json', 'test_app_roles.json', 'test_user_data.json']
+    fixtures = ['roles.json', 'test_l10n_data.json', 'app_roles.json', 'test_organisation_data.json', 'test_app_roles.json', 'test_user_data.json']
     
     def login_test(self, username, password, test_success=True):
         self.login(username=username, password=password)

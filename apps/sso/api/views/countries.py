@@ -23,7 +23,7 @@ class CountryMixin(object):
             'name': u'%s' % str(obj),
             'email': u'%s' % obj.email,
             'homepage': obj.homepage,
-            'last_modified': obj.last_modified,
+            'last_modified': obj.get_last_modified_deep(),
             'continent': {
                 'code': obj.country.continent,
                 'name': obj.country.get_continent_display(),
@@ -71,6 +71,6 @@ class CountryList(CountryMixin, JsonListView):
             parsed = parse_datetime_with_timezone_support(modified_since)
             if parsed is None:
                 raise ValueError("can not parse %s" % modified_since)
-            qs = qs.filter(Q(last_modified__gte=parsed))
+            qs = qs.filter(Q(last_modified__gte=parsed) | Q(country__last_modified__gte=parsed) )
 
         return qs

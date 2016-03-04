@@ -28,11 +28,12 @@ class CountryOptions(admin.ModelAdmin):
         self.message_user(request, _("%s successfully marked as inactive") % message_bit)
     make_inactive.short_description = _("Mark selected countries as inactive")
     
-    list_display = ('printable_name', 'iso2_code', 'active')
+    list_display = ('printable_name', 'iso2_code', 'active', 'last_modified')
     list_filter = ('continent', 'active')
     search_fields = ('name', 'iso2_code', 'iso3_code')
     actions = ('make_active', 'make_inactive')
     inlines = [AdminAreaInline]
+    date_hierarchy = 'last_modified'
 
 
 # admin.site.register(Country, CountryOptions)
