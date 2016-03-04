@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-01 22:28+0100\n"
+"POT-Creation-Date: 2016-03-04 10:24+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2895,8 +2895,8 @@ msgid "neighbour distance"
 msgstr "Entfernung Nachbarn"
 
 #: organisations/models.py:217
-msgid "Nearest neighbour distance [m]."
-msgstr "Nächste Nachbarn Entfernung [m]"
+msgid "Distance used for neighbour calculations [km]."
+msgstr "Entfernung zur Berechnung der nächsten Nachbarn [km]"
 
 #: organisations/models.py:316
 msgid "Maps"
@@ -3423,6 +3423,7 @@ msgid "Set your password on %(site_name)s"
 msgstr "Wähle Dein Passwort auf %(site_name)s"
 
 #: registration/templates/registration/email/user_validated_email.txt:2
+#, python-format
 msgid "Registration of %(name)s completed."
 msgstr "Registrierung von %(name)s abgeschlossen"
 
@@ -3435,6 +3436,7 @@ msgid "Reference#2"
 msgstr ""
 
 #: registration/templates/registration/email/user_validated_email_subject.txt:2
+#, python-format
 msgid "Registration of %(name)s completed"
 msgstr "Registrierung von %(name)s abgeschlossen"
 

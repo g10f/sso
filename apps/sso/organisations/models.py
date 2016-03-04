@@ -214,7 +214,7 @@ class Organisation(AbstractBaseModel):
     uses_user_activation = models.BooleanField(_("uses activation"),
                                                help_text=_('Designates whether this organisation uses the new user activation process.'),
                                                default=False)
-    neighbour_distance = models.DecimalField(_("neighbour distance"), help_text=_('Nearest neighbour distance [m].'), max_digits=8, decimal_places=0, blank=True, null=True)
+    neighbour_distance = models.DecimalField(_("neighbour distance"), help_text=_('Distance used for neighbour calculations [km].'), max_digits=8, decimal_places=3, blank=True, null=True)
     objects = GeoManager()
 
     class Meta(AbstractBaseModel.Meta):
@@ -244,7 +244,7 @@ class Organisation(AbstractBaseModel):
     @property
     def neighbour_measure_distance(self):
         if self.neighbour_distance:
-            return measure.Distance(**{'m': self.neighbour_distance})
+            return measure.Distance(**{'km': self.neighbour_distance})
         else:
             return None
 
@@ -295,7 +295,7 @@ class Organisation(AbstractBaseModel):
 
     def get_near_organisations(self):
         if self.neighbour_distance is not None:
-            return get_near_organisations(self.location, distance_from_point={'m': self.neighbour_distance}, qs=Organisation.objects.filter(is_active=True).exclude(pk=self.pk))
+            return get_near_organisations(self.location, distance_from_point={'km': self.neighbour_distance}, qs=Organisation.objects.filter(is_active=True).exclude(pk=self.pk))
         else:
             return get_near_organisations(self.location, qs=Organisation.objects.filter(is_active=True).exclude(pk=self.pk))[:10]
 

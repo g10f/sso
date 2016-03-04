@@ -107,7 +107,7 @@ class OrganisationBaseForm(BaseForm):
             # 'timezone': bootstrap.ReadOnlyWidget(),
             # 'can_publish': bootstrap.CheckboxInput(),
             'location': bootstrap.OSMWidget(),
-            'neighbour_distance': bootstrap.TextInput(attrs={'type': 'number'}),
+            'neighbour_distance': bootstrap.TextInput(attrs={'type': 'number', 'step': '0.001'}),
         }
 
     def __init__(self, *args, **kwargs):
