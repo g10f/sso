@@ -48,7 +48,7 @@ class OrganisationMixin(object):
             }
         }
         if obj.neighbour_distance:
-            data['neighbour_distance'] = float(obj.neighbour_distance)
+            data['neighbour_distance'] = "%.1f km" % obj.neighbour_distance
         if obj.centerid:  # legacy id, should be removed when the resync ist done
             data['centerid'] = obj.centerid
         if obj.timezone:
