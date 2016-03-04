@@ -91,6 +91,13 @@ class OrganisationCountry(AbstractBaseModel):
     def get_absolute_url(self):
         return 'organisations:organisationcountry_detail', (), {'uuid': self.uuid.hex, }
 
+    @memoize
+    def get_last_modified_deep(self):
+        last_modified_list = [self.last_modified, self.country.last_modified]
+
+        last_modified = max(last_modified_list)
+        return last_modified
+
 
 class ActiveAdminRegionManager(models.Manager):
     """

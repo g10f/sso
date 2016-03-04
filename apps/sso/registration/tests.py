@@ -13,7 +13,7 @@ from sso.test.client import SSOClient
 
 
 class RegistrationTest(TestCase):
-    fixtures = ['roles.json', 'app_roles.json', 'test_l10n_data.xml', 'test_organisation_data.json', 'test_app_roles.json',
+    fixtures = ['roles.json', 'app_roles.json', 'test_l10n_data.json', 'test_organisation_data.json', 'test_app_roles.json',
                 'test_user_data.json']
 
     def setUp(self):

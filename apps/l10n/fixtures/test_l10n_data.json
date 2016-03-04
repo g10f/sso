@@ -1,0 +1,32 @@
+[
+  {
+    "model": "l10n.country",
+    "pk": 59,
+    "fields": {
+      "iso2_code": "DK",
+      "name": "DENMARK",
+      "printable_name": "Denmark",
+      "iso3_code": "DNK",
+      "numcode": 208,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 81,
+    "fields": {
+      "iso2_code": "DE",
+      "name": "GERMANY",
+      "printable_name": "Germany",
+      "iso3_code": "DEU",
+      "numcode": 276,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  }
+]

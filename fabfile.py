@@ -425,7 +425,7 @@ def deploy(conf='dev'):
     # https://github.com/celery/celery/blob/3.1/extra/supervisord/celeryd.conf
     fabtools.require.supervisor.process(
         'celery-%s' % server_name,
-        command='/envs/%(virtualenv)s/bin/celery worker -A %(app)s -c 1 -l info --without-gossip --without-mingle --heartbeat-interval 30' % {'virtualenv': virtualenv, 'app': app},
+        command='/envs/%(virtualenv)s/bin/celery worker -A %(app)s -c 1 -l info --without-gossip --without-mingle --without-heartbeat' % {'virtualenv': virtualenv, 'app': app},
         directory=code_dir + '/src/apps',
         user='www-data',
         numprocs=1,
@@ -444,6 +444,7 @@ def deploy(conf='dev'):
         update_dir_settings(code_dir + '/logs')
         migrate_data(python, server_name, code_dir, app)
         sudo("supervisorctl restart %(server_name)s" % {'server_name': server_name})
+        sudo("supervisorctl restart %(server_name)s" % {'server_name': 'celery-%s' % server_name,})
         sudo("%s ./src/apps/manage.py collectstatic --noinput" % python)
         update_dir_settings(code_dir + '/logs')
 

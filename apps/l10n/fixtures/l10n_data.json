@@ -1,0 +1,3662 @@
+[
+  {
+    "model": "l10n.country",
+    "pk": 1,
+    "fields": {
+      "iso2_code": "AF",
+      "name": "AFGHANISTAN",
+      "printable_name": "Afghanistan",
+      "iso3_code": "AFG",
+      "numcode": 4,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 2,
+    "fields": {
+      "iso2_code": "AX",
+      "name": "ALAND ISLANDS",
+      "printable_name": "\u00c5land Islands",
+      "iso3_code": "ALA",
+      "numcode": 248,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 3,
+    "fields": {
+      "iso2_code": "AL",
+      "name": "ALBANIA",
+      "printable_name": "Albania",
+      "iso3_code": "ALB",
+      "numcode": 8,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 4,
+    "fields": {
+      "iso2_code": "DZ",
+      "name": "ALGERIA",
+      "printable_name": "Algeria",
+      "iso3_code": "DZA",
+      "numcode": 12,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 5,
+    "fields": {
+      "iso2_code": "AS",
+      "name": "AMERICAN SAMOA",
+      "printable_name": "American Samoa",
+      "iso3_code": "ASM",
+      "numcode": 16,
+      "active": true,
+      "continent": "OC",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 6,
+    "fields": {
+      "iso2_code": "AD",
+      "name": "ANDORRA",
+      "printable_name": "Andorra",
+      "iso3_code": "AND",
+      "numcode": 20,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 7,
+    "fields": {
+      "iso2_code": "AO",
+      "name": "ANGOLA",
+      "printable_name": "Angola",
+      "iso3_code": "AGO",
+      "numcode": 24,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 8,
+    "fields": {
+      "iso2_code": "AI",
+      "name": "ANGUILLA",
+      "printable_name": "Anguilla",
+      "iso3_code": "AIA",
+      "numcode": 660,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 9,
+    "fields": {
+      "iso2_code": "AQ",
+      "name": "ANTARCTICA",
+      "printable_name": "Antarctica",
+      "iso3_code": "ATA",
+      "numcode": 10,
+      "active": true,
+      "continent": "AN",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 10,
+    "fields": {
+      "iso2_code": "AG",
+      "name": "ANTIGUA AND BARBUDA",
+      "printable_name": "Antigua and Barbuda",
+      "iso3_code": "ATG",
+      "numcode": 28,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 11,
+    "fields": {
+      "iso2_code": "AR",
+      "name": "ARGENTINA",
+      "printable_name": "Argentina",
+      "iso3_code": "ARG",
+      "numcode": 32,
+      "active": true,
+      "continent": "SA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 12,
+    "fields": {
+      "iso2_code": "AM",
+      "name": "ARMENIA",
+      "printable_name": "Armenia",
+      "iso3_code": "ARM",
+      "numcode": 51,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 13,
+    "fields": {
+      "iso2_code": "AW",
+      "name": "ARUBA",
+      "printable_name": "Aruba",
+      "iso3_code": "ABW",
+      "numcode": 533,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 14,
+    "fields": {
+      "iso2_code": "AU",
+      "name": "AUSTRALIA",
+      "printable_name": "Australia",
+      "iso3_code": "AUS",
+      "numcode": 36,
+      "active": true,
+      "continent": "OC",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 15,
+    "fields": {
+      "iso2_code": "AT",
+      "name": "AUSTRIA",
+      "printable_name": "Austria",
+      "iso3_code": "AUT",
+      "numcode": 40,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 16,
+    "fields": {
+      "iso2_code": "AZ",
+      "name": "AZERBAIJAN",
+      "printable_name": "Azerbaijan",
+      "iso3_code": "AZE",
+      "numcode": 31,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 17,
+    "fields": {
+      "iso2_code": "BS",
+      "name": "BAHAMAS",
+      "printable_name": "Bahamas",
+      "iso3_code": "BHS",
+      "numcode": 44,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 18,
+    "fields": {
+      "iso2_code": "BH",
+      "name": "BAHRAIN",
+      "printable_name": "Bahrain",
+      "iso3_code": "BHR",
+      "numcode": 48,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 19,
+    "fields": {
+      "iso2_code": "BD",
+      "name": "BANGLADESH",
+      "printable_name": "Bangladesh",
+      "iso3_code": "BGD",
+      "numcode": 50,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 20,
+    "fields": {
+      "iso2_code": "BB",
+      "name": "BARBADOS",
+      "printable_name": "Barbados",
+      "iso3_code": "BRB",
+      "numcode": 52,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 21,
+    "fields": {
+      "iso2_code": "BY",
+      "name": "BELARUS",
+      "printable_name": "Belarus",
+      "iso3_code": "BLR",
+      "numcode": 112,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 22,
+    "fields": {
+      "iso2_code": "BE",
+      "name": "BELGIUM",
+      "printable_name": "Belgium",
+      "iso3_code": "BEL",
+      "numcode": 56,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 23,
+    "fields": {
+      "iso2_code": "BZ",
+      "name": "BELIZE",
+      "printable_name": "Belize",
+      "iso3_code": "BLZ",
+      "numcode": 84,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 24,
+    "fields": {
+      "iso2_code": "BJ",
+      "name": "BENIN",
+      "printable_name": "Benin",
+      "iso3_code": "BEN",
+      "numcode": 204,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 25,
+    "fields": {
+      "iso2_code": "BM",
+      "name": "BERMUDA",
+      "printable_name": "Bermuda",
+      "iso3_code": "BMU",
+      "numcode": 60,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 26,
+    "fields": {
+      "iso2_code": "BT",
+      "name": "BHUTAN",
+      "printable_name": "Bhutan",
+      "iso3_code": "BTN",
+      "numcode": 64,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 27,
+    "fields": {
+      "iso2_code": "BO",
+      "name": "BOLIVIA",
+      "printable_name": "Bolivia",
+      "iso3_code": "BOL",
+      "numcode": 68,
+      "active": true,
+      "continent": "SA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 28,
+    "fields": {
+      "iso2_code": "BA",
+      "name": "BOSNIA AND HERZEGOVINA",
+      "printable_name": "Bosnia and Herzegovina",
+      "iso3_code": "BIH",
+      "numcode": 70,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 29,
+    "fields": {
+      "iso2_code": "BW",
+      "name": "BOTSWANA",
+      "printable_name": "Botswana",
+      "iso3_code": "BWA",
+      "numcode": 72,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 30,
+    "fields": {
+      "iso2_code": "BV",
+      "name": "BOUVET ISLAND",
+      "printable_name": "Bouvet Island",
+      "iso3_code": "BVT",
+      "numcode": 74,
+      "active": true,
+      "continent": "AN",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 31,
+    "fields": {
+      "iso2_code": "BR",
+      "name": "BRAZIL",
+      "printable_name": "Brazil",
+      "iso3_code": "BRA",
+      "numcode": 76,
+      "active": true,
+      "continent": "SA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 32,
+    "fields": {
+      "iso2_code": "IO",
+      "name": "BRITISH INDIAN OCEAN TERRITORY",
+      "printable_name": "British Indian Ocean Territory",
+      "iso3_code": "IOT",
+      "numcode": 86,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 33,
+    "fields": {
+      "iso2_code": "BN",
+      "name": "BRUNEI DARUSSALAM",
+      "printable_name": "Brunei Darussalam",
+      "iso3_code": "BRN",
+      "numcode": 96,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 34,
+    "fields": {
+      "iso2_code": "BG",
+      "name": "BULGARIA",
+      "printable_name": "Bulgaria",
+      "iso3_code": "BGR",
+      "numcode": 100,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 35,
+    "fields": {
+      "iso2_code": "BF",
+      "name": "BURKINA FASO",
+      "printable_name": "Burkina Faso",
+      "iso3_code": "BFA",
+      "numcode": 854,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 36,
+    "fields": {
+      "iso2_code": "BI",
+      "name": "BURUNDI",
+      "printable_name": "Burundi",
+      "iso3_code": "BDI",
+      "numcode": 108,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 37,
+    "fields": {
+      "iso2_code": "KH",
+      "name": "CAMBODIA",
+      "printable_name": "Cambodia",
+      "iso3_code": "KHM",
+      "numcode": 116,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 38,
+    "fields": {
+      "iso2_code": "CM",
+      "name": "CAMEROON",
+      "printable_name": "Cameroon",
+      "iso3_code": "CMR",
+      "numcode": 120,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 39,
+    "fields": {
+      "iso2_code": "CA",
+      "name": "CANADA",
+      "printable_name": "Canada",
+      "iso3_code": "CAN",
+      "numcode": 124,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 40,
+    "fields": {
+      "iso2_code": "CV",
+      "name": "CAPE VERDE",
+      "printable_name": "Cape Verde",
+      "iso3_code": "CPV",
+      "numcode": 132,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 41,
+    "fields": {
+      "iso2_code": "KY",
+      "name": "CAYMAN ISLANDS",
+      "printable_name": "Cayman Islands",
+      "iso3_code": "CYM",
+      "numcode": 136,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 42,
+    "fields": {
+      "iso2_code": "CF",
+      "name": "CENTRAL AFRICAN REPUBLIC",
+      "printable_name": "Central African Republic",
+      "iso3_code": "CAF",
+      "numcode": 140,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 43,
+    "fields": {
+      "iso2_code": "TD",
+      "name": "CHAD",
+      "printable_name": "Chad",
+      "iso3_code": "TCD",
+      "numcode": 148,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 44,
+    "fields": {
+      "iso2_code": "CL",
+      "name": "CHILE",
+      "printable_name": "Chile",
+      "iso3_code": "CHL",
+      "numcode": 152,
+      "active": true,
+      "continent": "SA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 45,
+    "fields": {
+      "iso2_code": "CN",
+      "name": "CHINA",
+      "printable_name": "China",
+      "iso3_code": "CHN",
+      "numcode": 156,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 46,
+    "fields": {
+      "iso2_code": "CX",
+      "name": "CHRISTMAS ISLAND",
+      "printable_name": "Christmas Island",
+      "iso3_code": "CXR",
+      "numcode": 162,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 47,
+    "fields": {
+      "iso2_code": "CC",
+      "name": "COCOS (KEELING) ISLANDS",
+      "printable_name": "Cocos (Keeling) Islands",
+      "iso3_code": "CCK",
+      "numcode": 166,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 48,
+    "fields": {
+      "iso2_code": "CO",
+      "name": "COLOMBIA",
+      "printable_name": "Colombia",
+      "iso3_code": "COL",
+      "numcode": 170,
+      "active": true,
+      "continent": "SA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 49,
+    "fields": {
+      "iso2_code": "KM",
+      "name": "COMOROS",
+      "printable_name": "Comoros",
+      "iso3_code": "COM",
+      "numcode": 174,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 50,
+    "fields": {
+      "iso2_code": "CG",
+      "name": "CONGO",
+      "printable_name": "Congo",
+      "iso3_code": "COG",
+      "numcode": 178,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 51,
+    "fields": {
+      "iso2_code": "CD",
+      "name": "CONGO, THE DEMOCRATIC REPUBLIC OF THE",
+      "printable_name": "Democratic Republic of the Congo",
+      "iso3_code": "COD",
+      "numcode": 180,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 52,
+    "fields": {
+      "iso2_code": "CK",
+      "name": "COOK ISLANDS",
+      "printable_name": "Cook Islands",
+      "iso3_code": "COK",
+      "numcode": 184,
+      "active": true,
+      "continent": "OC",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 53,
+    "fields": {
+      "iso2_code": "CR",
+      "name": "COSTA RICA",
+      "printable_name": "Costa Rica",
+      "iso3_code": "CRI",
+      "numcode": 188,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 54,
+    "fields": {
+      "iso2_code": "CI",
+      "name": "COTE D'IVOIRE",
+      "printable_name": "C\u00f4te d'Ivoire",
+      "iso3_code": "CIV",
+      "numcode": 384,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 55,
+    "fields": {
+      "iso2_code": "HR",
+      "name": "CROATIA",
+      "printable_name": "Croatia",
+      "iso3_code": "HRV",
+      "numcode": 191,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 56,
+    "fields": {
+      "iso2_code": "CU",
+      "name": "CUBA",
+      "printable_name": "Cuba",
+      "iso3_code": "CUB",
+      "numcode": 192,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 57,
+    "fields": {
+      "iso2_code": "CY",
+      "name": "CYPRUS",
+      "printable_name": "Cyprus",
+      "iso3_code": "CYP",
+      "numcode": 196,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 58,
+    "fields": {
+      "iso2_code": "CZ",
+      "name": "CZECH REPUBLIC",
+      "printable_name": "Czech Republic",
+      "iso3_code": "CZE",
+      "numcode": 203,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 59,
+    "fields": {
+      "iso2_code": "DK",
+      "name": "DENMARK",
+      "printable_name": "Denmark",
+      "iso3_code": "DNK",
+      "numcode": 208,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 60,
+    "fields": {
+      "iso2_code": "DJ",
+      "name": "DJIBOUTI",
+      "printable_name": "Djibouti",
+      "iso3_code": "DJI",
+      "numcode": 262,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 61,
+    "fields": {
+      "iso2_code": "DM",
+      "name": "DOMINICA",
+      "printable_name": "Dominica",
+      "iso3_code": "DMA",
+      "numcode": 212,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 62,
+    "fields": {
+      "iso2_code": "DO",
+      "name": "DOMINICAN REPUBLIC",
+      "printable_name": "Dominican Republic",
+      "iso3_code": "DOM",
+      "numcode": 214,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 63,
+    "fields": {
+      "iso2_code": "EC",
+      "name": "ECUADOR",
+      "printable_name": "Ecuador",
+      "iso3_code": "ECU",
+      "numcode": 218,
+      "active": true,
+      "continent": "SA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 64,
+    "fields": {
+      "iso2_code": "EG",
+      "name": "EGYPT",
+      "printable_name": "Egypt",
+      "iso3_code": "EGY",
+      "numcode": 818,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 65,
+    "fields": {
+      "iso2_code": "SV",
+      "name": "EL SALVADOR",
+      "printable_name": "El Salvador",
+      "iso3_code": "SLV",
+      "numcode": 222,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 66,
+    "fields": {
+      "iso2_code": "GQ",
+      "name": "EQUATORIAL GUINEA",
+      "printable_name": "Equatorial Guinea",
+      "iso3_code": "GNQ",
+      "numcode": 226,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 67,
+    "fields": {
+      "iso2_code": "ER",
+      "name": "ERITREA",
+      "printable_name": "Eritrea",
+      "iso3_code": "ERI",
+      "numcode": 232,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 68,
+    "fields": {
+      "iso2_code": "EE",
+      "name": "ESTONIA",
+      "printable_name": "Estonia",
+      "iso3_code": "EST",
+      "numcode": 233,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 69,
+    "fields": {
+      "iso2_code": "ET",
+      "name": "ETHIOPIA",
+      "printable_name": "Ethiopia",
+      "iso3_code": "ETH",
+      "numcode": 231,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 70,
+    "fields": {
+      "iso2_code": "FK",
+      "name": "FALKLAND ISLANDS (MALVINAS)",
+      "printable_name": "Falkland Islands (Malvinas)",
+      "iso3_code": "FLK",
+      "numcode": 238,
+      "active": true,
+      "continent": "SA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 71,
+    "fields": {
+      "iso2_code": "FO",
+      "name": "FAROE ISLANDS",
+      "printable_name": "Faeroe Islands",
+      "iso3_code": "FRO",
+      "numcode": 234,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 72,
+    "fields": {
+      "iso2_code": "FJ",
+      "name": "FIJI",
+      "printable_name": "Fiji",
+      "iso3_code": "FJI",
+      "numcode": 242,
+      "active": true,
+      "continent": "OC",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 73,
+    "fields": {
+      "iso2_code": "FI",
+      "name": "FINLAND",
+      "printable_name": "Finland",
+      "iso3_code": "FIN",
+      "numcode": 246,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 74,
+    "fields": {
+      "iso2_code": "FR",
+      "name": "FRANCE",
+      "printable_name": "France",
+      "iso3_code": "FRA",
+      "numcode": 250,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 75,
+    "fields": {
+      "iso2_code": "GF",
+      "name": "FRENCH GUIANA",
+      "printable_name": "French Guiana",
+      "iso3_code": "GUF",
+      "numcode": 254,
+      "active": true,
+      "continent": "SA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 76,
+    "fields": {
+      "iso2_code": "PF",
+      "name": "FRENCH POLYNESIA",
+      "printable_name": "French Polynesia",
+      "iso3_code": "PYF",
+      "numcode": 258,
+      "active": true,
+      "continent": "OC",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 77,
+    "fields": {
+      "iso2_code": "TF",
+      "name": "FRENCH SOUTHERN TERRITORIES",
+      "printable_name": "French Southern Territories",
+      "iso3_code": "ATF",
+      "numcode": 260,
+      "active": true,
+      "continent": "AN",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 78,
+    "fields": {
+      "iso2_code": "GA",
+      "name": "GABON",
+      "printable_name": "Gabon",
+      "iso3_code": "GAB",
+      "numcode": 266,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 79,
+    "fields": {
+      "iso2_code": "GM",
+      "name": "GAMBIA",
+      "printable_name": "Gambia",
+      "iso3_code": "GMB",
+      "numcode": 270,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 80,
+    "fields": {
+      "iso2_code": "GE",
+      "name": "GEORGIA",
+      "printable_name": "Georgia",
+      "iso3_code": "GEO",
+      "numcode": 268,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 81,
+    "fields": {
+      "iso2_code": "DE",
+      "name": "GERMANY",
+      "printable_name": "Germany",
+      "iso3_code": "DEU",
+      "numcode": 276,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 82,
+    "fields": {
+      "iso2_code": "GH",
+      "name": "GHANA",
+      "printable_name": "Ghana",
+      "iso3_code": "GHA",
+      "numcode": 288,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 83,
+    "fields": {
+      "iso2_code": "GI",
+      "name": "GIBRALTAR",
+      "printable_name": "Gibraltar",
+      "iso3_code": "GIB",
+      "numcode": 292,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 84,
+    "fields": {
+      "iso2_code": "GR",
+      "name": "GREECE",
+      "printable_name": "Greece",
+      "iso3_code": "GRC",
+      "numcode": 300,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 85,
+    "fields": {
+      "iso2_code": "GL",
+      "name": "GREENLAND",
+      "printable_name": "Greenland",
+      "iso3_code": "GRL",
+      "numcode": 304,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 86,
+    "fields": {
+      "iso2_code": "GD",
+      "name": "GRENADA",
+      "printable_name": "Grenada",
+      "iso3_code": "GRD",
+      "numcode": 308,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 87,
+    "fields": {
+      "iso2_code": "GP",
+      "name": "GUADELOUPE",
+      "printable_name": "Guadeloupe",
+      "iso3_code": "GLP",
+      "numcode": 312,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 88,
+    "fields": {
+      "iso2_code": "GU",
+      "name": "GUAM",
+      "printable_name": "Guam",
+      "iso3_code": "GUM",
+      "numcode": 316,
+      "active": true,
+      "continent": "OC",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 89,
+    "fields": {
+      "iso2_code": "GT",
+      "name": "GUATEMALA",
+      "printable_name": "Guatemala",
+      "iso3_code": "GTM",
+      "numcode": 320,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 90,
+    "fields": {
+      "iso2_code": "GG",
+      "name": "GUERNSEY",
+      "printable_name": "Guernsey",
+      "iso3_code": "GGY",
+      "numcode": 831,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 91,
+    "fields": {
+      "iso2_code": "GN",
+      "name": "GUINEA",
+      "printable_name": "Guinea",
+      "iso3_code": "GIN",
+      "numcode": 324,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 92,
+    "fields": {
+      "iso2_code": "GW",
+      "name": "GUINEA-BISSAU",
+      "printable_name": "Guinea-Bissau",
+      "iso3_code": "GNB",
+      "numcode": 624,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 93,
+    "fields": {
+      "iso2_code": "GY",
+      "name": "GUYANA",
+      "printable_name": "Guyana",
+      "iso3_code": "GUY",
+      "numcode": 328,
+      "active": true,
+      "continent": "SA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 94,
+    "fields": {
+      "iso2_code": "HT",
+      "name": "HAITI",
+      "printable_name": "Haiti",
+      "iso3_code": "HTI",
+      "numcode": 332,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 95,
+    "fields": {
+      "iso2_code": "HM",
+      "name": "HEARD ISLAND AND MCDONALD ISLANDS",
+      "printable_name": "Heard Island and Mcdonald Islands",
+      "iso3_code": "HMD",
+      "numcode": 334,
+      "active": true,
+      "continent": "AN",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 96,
+    "fields": {
+      "iso2_code": "VA",
+      "name": "HOLY SEE (VATICAN CITY STATE)",
+      "printable_name": "Holy See",
+      "iso3_code": "VAT",
+      "numcode": 336,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 97,
+    "fields": {
+      "iso2_code": "HN",
+      "name": "HONDURAS",
+      "printable_name": "Honduras",
+      "iso3_code": "HND",
+      "numcode": 340,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 98,
+    "fields": {
+      "iso2_code": "HK",
+      "name": "HONG KONG",
+      "printable_name": "Hong Kong",
+      "iso3_code": "HKG",
+      "numcode": 344,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 99,
+    "fields": {
+      "iso2_code": "HU",
+      "name": "HUNGARY",
+      "printable_name": "Hungary",
+      "iso3_code": "HUN",
+      "numcode": 348,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 100,
+    "fields": {
+      "iso2_code": "IS",
+      "name": "ICELAND",
+      "printable_name": "Iceland",
+      "iso3_code": "ISL",
+      "numcode": 352,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 101,
+    "fields": {
+      "iso2_code": "IN",
+      "name": "INDIA",
+      "printable_name": "India",
+      "iso3_code": "IND",
+      "numcode": 356,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 102,
+    "fields": {
+      "iso2_code": "ID",
+      "name": "INDONESIA",
+      "printable_name": "Indonesia",
+      "iso3_code": "IDN",
+      "numcode": 360,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 103,
+    "fields": {
+      "iso2_code": "IR",
+      "name": "IRAN, ISLAMIC REPUBLIC OF",
+      "printable_name": "Iran, Islamic Republic of",
+      "iso3_code": "IRN",
+      "numcode": 364,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 104,
+    "fields": {
+      "iso2_code": "IQ",
+      "name": "IRAQ",
+      "printable_name": "Iraq",
+      "iso3_code": "IRQ",
+      "numcode": 368,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 105,
+    "fields": {
+      "iso2_code": "IE",
+      "name": "IRELAND",
+      "printable_name": "Ireland",
+      "iso3_code": "IRL",
+      "numcode": 372,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 106,
+    "fields": {
+      "iso2_code": "IM",
+      "name": "ISLE OF MAN",
+      "printable_name": "Isle of Man",
+      "iso3_code": "IMN",
+      "numcode": 833,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 107,
+    "fields": {
+      "iso2_code": "IL",
+      "name": "ISRAEL",
+      "printable_name": "Israel",
+      "iso3_code": "ISR",
+      "numcode": 376,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 108,
+    "fields": {
+      "iso2_code": "IT",
+      "name": "ITALY",
+      "printable_name": "Italy",
+      "iso3_code": "ITA",
+      "numcode": 380,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 109,
+    "fields": {
+      "iso2_code": "JM",
+      "name": "JAMAICA",
+      "printable_name": "Jamaica",
+      "iso3_code": "JAM",
+      "numcode": 388,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 110,
+    "fields": {
+      "iso2_code": "JP",
+      "name": "JAPAN",
+      "printable_name": "Japan",
+      "iso3_code": "JPN",
+      "numcode": 392,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 111,
+    "fields": {
+      "iso2_code": "JE",
+      "name": "JERSEY",
+      "printable_name": "Jersey",
+      "iso3_code": "JEY",
+      "numcode": 832,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 112,
+    "fields": {
+      "iso2_code": "JO",
+      "name": "JORDAN",
+      "printable_name": "Jordan",
+      "iso3_code": "JOR",
+      "numcode": 400,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 113,
+    "fields": {
+      "iso2_code": "KZ",
+      "name": "KAZAKHSTAN",
+      "printable_name": "Kazakhstan",
+      "iso3_code": "KAZ",
+      "numcode": 398,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 114,
+    "fields": {
+      "iso2_code": "KE",
+      "name": "KENYA",
+      "printable_name": "Kenya",
+      "iso3_code": "KEN",
+      "numcode": 404,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 115,
+    "fields": {
+      "iso2_code": "KI",
+      "name": "KIRIBATI",
+      "printable_name": "Kiribati",
+      "iso3_code": "KIR",
+      "numcode": 296,
+      "active": true,
+      "continent": "OC",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 116,
+    "fields": {
+      "iso2_code": "KP",
+      "name": "KOREA, DEMOCRATIC PEOPLE'S REPUBLIC OF",
+      "printable_name": "Democratic People's Republic of Korea",
+      "iso3_code": "PRK",
+      "numcode": 408,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 117,
+    "fields": {
+      "iso2_code": "KR",
+      "name": "KOREA, REPUBLIC OF",
+      "printable_name": "South Korea",
+      "iso3_code": "KOR",
+      "numcode": 410,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 118,
+    "fields": {
+      "iso2_code": "KW",
+      "name": "KUWAIT",
+      "printable_name": "Kuwait",
+      "iso3_code": "KWT",
+      "numcode": 414,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 119,
+    "fields": {
+      "iso2_code": "KG",
+      "name": "KYRGYZSTAN",
+      "printable_name": "Kyrgyzstan",
+      "iso3_code": "KGZ",
+      "numcode": 417,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 120,
+    "fields": {
+      "iso2_code": "LA",
+      "name": "LAO PEOPLE'S DEMOCRATIC REPUBLIC",
+      "printable_name": "Lao People's Democratic Republic",
+      "iso3_code": "LAO",
+      "numcode": 418,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 121,
+    "fields": {
+      "iso2_code": "LV",
+      "name": "LATVIA",
+      "printable_name": "Latvia",
+      "iso3_code": "LVA",
+      "numcode": 428,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 122,
+    "fields": {
+      "iso2_code": "LB",
+      "name": "LEBANON",
+      "printable_name": "Lebanon",
+      "iso3_code": "LBN",
+      "numcode": 422,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 123,
+    "fields": {
+      "iso2_code": "LS",
+      "name": "LESOTHO",
+      "printable_name": "Lesotho",
+      "iso3_code": "LSO",
+      "numcode": 426,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 124,
+    "fields": {
+      "iso2_code": "LR",
+      "name": "LIBERIA",
+      "printable_name": "Liberia",
+      "iso3_code": "LBR",
+      "numcode": 430,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 125,
+    "fields": {
+      "iso2_code": "LY",
+      "name": "LIBYAN ARAB JAMAHIRIYA",
+      "printable_name": "Libyan Arab Jamahiriya",
+      "iso3_code": "LBY",
+      "numcode": 434,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 126,
+    "fields": {
+      "iso2_code": "LI",
+      "name": "LIECHTENSTEIN",
+      "printable_name": "Liechtenstein",
+      "iso3_code": "LIE",
+      "numcode": 438,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 127,
+    "fields": {
+      "iso2_code": "LT",
+      "name": "LITHUANIA",
+      "printable_name": "Lithuania",
+      "iso3_code": "LTU",
+      "numcode": 440,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 128,
+    "fields": {
+      "iso2_code": "LU",
+      "name": "LUXEMBOURG",
+      "printable_name": "Luxembourg",
+      "iso3_code": "LUX",
+      "numcode": 442,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 129,
+    "fields": {
+      "iso2_code": "MO",
+      "name": "MACAO",
+      "printable_name": "Macao Special Administrative Region of China",
+      "iso3_code": "MAC",
+      "numcode": 446,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 130,
+    "fields": {
+      "iso2_code": "MK",
+      "name": "MACEDONIA, THE FORMER YUGOSLAV REPUBLIC OF",
+      "printable_name": "Macedonia",
+      "iso3_code": "MKD",
+      "numcode": 807,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 131,
+    "fields": {
+      "iso2_code": "MG",
+      "name": "MADAGASCAR",
+      "printable_name": "Madagascar",
+      "iso3_code": "MDG",
+      "numcode": 450,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 132,
+    "fields": {
+      "iso2_code": "MW",
+      "name": "MALAWI",
+      "printable_name": "Malawi",
+      "iso3_code": "MWI",
+      "numcode": 454,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 133,
+    "fields": {
+      "iso2_code": "MY",
+      "name": "MALAYSIA",
+      "printable_name": "Malaysia",
+      "iso3_code": "MYS",
+      "numcode": 458,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 134,
+    "fields": {
+      "iso2_code": "MV",
+      "name": "MALDIVES",
+      "printable_name": "Maldives",
+      "iso3_code": "MDV",
+      "numcode": 462,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 135,
+    "fields": {
+      "iso2_code": "ML",
+      "name": "MALI",
+      "printable_name": "Mali",
+      "iso3_code": "MLI",
+      "numcode": 466,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 136,
+    "fields": {
+      "iso2_code": "MT",
+      "name": "MALTA",
+      "printable_name": "Malta",
+      "iso3_code": "MLT",
+      "numcode": 470,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 137,
+    "fields": {
+      "iso2_code": "MH",
+      "name": "MARSHALL ISLANDS",
+      "printable_name": "Marshall Islands",
+      "iso3_code": "MHL",
+      "numcode": 584,
+      "active": true,
+      "continent": "OC",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 138,
+    "fields": {
+      "iso2_code": "MQ",
+      "name": "MARTINIQUE",
+      "printable_name": "Martinique",
+      "iso3_code": "MTQ",
+      "numcode": 474,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 139,
+    "fields": {
+      "iso2_code": "MR",
+      "name": "MAURITANIA",
+      "printable_name": "Mauritania",
+      "iso3_code": "MRT",
+      "numcode": 478,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 140,
+    "fields": {
+      "iso2_code": "MU",
+      "name": "MAURITIUS",
+      "printable_name": "Mauritius",
+      "iso3_code": "MUS",
+      "numcode": 480,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 141,
+    "fields": {
+      "iso2_code": "YT",
+      "name": "MAYOTTE",
+      "printable_name": "Mayotte",
+      "iso3_code": "MYT",
+      "numcode": 175,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 142,
+    "fields": {
+      "iso2_code": "MX",
+      "name": "MEXICO",
+      "printable_name": "Mexico",
+      "iso3_code": "MEX",
+      "numcode": 484,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 143,
+    "fields": {
+      "iso2_code": "FM",
+      "name": "MICRONESIA, FEDERATED STATES OF",
+      "printable_name": "Micronesia, Federated States of",
+      "iso3_code": "FSM",
+      "numcode": 583,
+      "active": true,
+      "continent": "OC",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 144,
+    "fields": {
+      "iso2_code": "MD",
+      "name": "MOLDOVA, REPUBLIC OF",
+      "printable_name": "Moldova",
+      "iso3_code": "MDA",
+      "numcode": 498,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 145,
+    "fields": {
+      "iso2_code": "MC",
+      "name": "MONACO",
+      "printable_name": "Monaco",
+      "iso3_code": "MCO",
+      "numcode": 492,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 146,
+    "fields": {
+      "iso2_code": "MN",
+      "name": "MONGOLIA",
+      "printable_name": "Mongolia",
+      "iso3_code": "MNG",
+      "numcode": 496,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 147,
+    "fields": {
+      "iso2_code": "ME",
+      "name": "MONTENEGRO",
+      "printable_name": "Montenegro",
+      "iso3_code": "MNE",
+      "numcode": 499,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 148,
+    "fields": {
+      "iso2_code": "MS",
+      "name": "MONTSERRAT",
+      "printable_name": "Montserrat",
+      "iso3_code": "MSR",
+      "numcode": 500,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 149,
+    "fields": {
+      "iso2_code": "MA",
+      "name": "MOROCCO",
+      "printable_name": "Morocco",
+      "iso3_code": "MAR",
+      "numcode": 504,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 150,
+    "fields": {
+      "iso2_code": "MZ",
+      "name": "MOZAMBIQUE",
+      "printable_name": "Mozambique",
+      "iso3_code": "MOZ",
+      "numcode": 508,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 151,
+    "fields": {
+      "iso2_code": "MM",
+      "name": "MYANMAR",
+      "printable_name": "Myanmar",
+      "iso3_code": "MMR",
+      "numcode": 104,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 152,
+    "fields": {
+      "iso2_code": "NA",
+      "name": "NAMIBIA",
+      "printable_name": "Namibia",
+      "iso3_code": "NAM",
+      "numcode": 516,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 153,
+    "fields": {
+      "iso2_code": "NR",
+      "name": "NAURU",
+      "printable_name": "Nauru",
+      "iso3_code": "NRU",
+      "numcode": 520,
+      "active": true,
+      "continent": "OC",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 154,
+    "fields": {
+      "iso2_code": "NP",
+      "name": "NEPAL",
+      "printable_name": "Nepal",
+      "iso3_code": "NPL",
+      "numcode": 524,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 155,
+    "fields": {
+      "iso2_code": "NL",
+      "name": "NETHERLANDS",
+      "printable_name": "Netherlands",
+      "iso3_code": "NLD",
+      "numcode": 528,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 156,
+    "fields": {
+      "iso2_code": "AN",
+      "name": "NETHERLANDS ANTILLES",
+      "printable_name": "Netherlands Antilles",
+      "iso3_code": "ANT",
+      "numcode": 530,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 157,
+    "fields": {
+      "iso2_code": "NC",
+      "name": "NEW CALEDONIA",
+      "printable_name": "New Caledonia",
+      "iso3_code": "NCL",
+      "numcode": 540,
+      "active": true,
+      "continent": "OC",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 158,
+    "fields": {
+      "iso2_code": "NZ",
+      "name": "NEW ZEALAND",
+      "printable_name": "New Zealand",
+      "iso3_code": "NZL",
+      "numcode": 554,
+      "active": true,
+      "continent": "OC",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 159,
+    "fields": {
+      "iso2_code": "NI",
+      "name": "NICARAGUA",
+      "printable_name": "Nicaragua",
+      "iso3_code": "NIC",
+      "numcode": 558,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 160,
+    "fields": {
+      "iso2_code": "NE",
+      "name": "NIGER",
+      "printable_name": "Niger",
+      "iso3_code": "NER",
+      "numcode": 562,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 161,
+    "fields": {
+      "iso2_code": "NG",
+      "name": "NIGERIA",
+      "printable_name": "Nigeria",
+      "iso3_code": "NGA",
+      "numcode": 566,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 162,
+    "fields": {
+      "iso2_code": "NU",
+      "name": "NIUE",
+      "printable_name": "Niue",
+      "iso3_code": "NIU",
+      "numcode": 570,
+      "active": true,
+      "continent": "OC",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 163,
+    "fields": {
+      "iso2_code": "NF",
+      "name": "NORFOLK ISLAND",
+      "printable_name": "Norfolk Island",
+      "iso3_code": "NFK",
+      "numcode": 574,
+      "active": true,
+      "continent": "OC",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 164,
+    "fields": {
+      "iso2_code": "MP",
+      "name": "NORTHERN MARIANA ISLANDS",
+      "printable_name": "Northern Mariana Islands",
+      "iso3_code": "MNP",
+      "numcode": 580,
+      "active": true,
+      "continent": "OC",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 165,
+    "fields": {
+      "iso2_code": "NO",
+      "name": "NORWAY",
+      "printable_name": "Norway",
+      "iso3_code": "NOR",
+      "numcode": 578,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 166,
+    "fields": {
+      "iso2_code": "OM",
+      "name": "OMAN",
+      "printable_name": "Oman",
+      "iso3_code": "OMN",
+      "numcode": 512,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 167,
+    "fields": {
+      "iso2_code": "PK",
+      "name": "PAKISTAN",
+      "printable_name": "Pakistan",
+      "iso3_code": "PAK",
+      "numcode": 586,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 168,
+    "fields": {
+      "iso2_code": "PW",
+      "name": "PALAU",
+      "printable_name": "Palau",
+      "iso3_code": "PLW",
+      "numcode": 585,
+      "active": true,
+      "continent": "OC",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 169,
+    "fields": {
+      "iso2_code": "PS",
+      "name": "PALESTINIAN TERRITORY, OCCUPIED",
+      "printable_name": "Occupied Palestinian Territory",
+      "iso3_code": "PSE",
+      "numcode": 275,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 170,
+    "fields": {
+      "iso2_code": "PA",
+      "name": "PANAMA",
+      "printable_name": "Panama",
+      "iso3_code": "PAN",
+      "numcode": 591,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 171,
+    "fields": {
+      "iso2_code": "PG",
+      "name": "PAPUA NEW GUINEA",
+      "printable_name": "Papua New Guinea",
+      "iso3_code": "PNG",
+      "numcode": 598,
+      "active": true,
+      "continent": "OC",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 172,
+    "fields": {
+      "iso2_code": "PY",
+      "name": "PARAGUAY",
+      "printable_name": "Paraguay",
+      "iso3_code": "PRY",
+      "numcode": 600,
+      "active": true,
+      "continent": "SA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 173,
+    "fields": {
+      "iso2_code": "PE",
+      "name": "PERU",
+      "printable_name": "Peru",
+      "iso3_code": "PER",
+      "numcode": 604,
+      "active": true,
+      "continent": "SA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 174,
+    "fields": {
+      "iso2_code": "PH",
+      "name": "PHILIPPINES",
+      "printable_name": "Philippines",
+      "iso3_code": "PHL",
+      "numcode": 608,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 175,
+    "fields": {
+      "iso2_code": "PN",
+      "name": "PITCAIRN",
+      "printable_name": "Pitcairn",
+      "iso3_code": "PCN",
+      "numcode": 612,
+      "active": true,
+      "continent": "OC",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 176,
+    "fields": {
+      "iso2_code": "PL",
+      "name": "POLAND",
+      "printable_name": "Poland",
+      "iso3_code": "POL",
+      "numcode": 616,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 177,
+    "fields": {
+      "iso2_code": "PT",
+      "name": "PORTUGAL",
+      "printable_name": "Portugal",
+      "iso3_code": "PRT",
+      "numcode": 620,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 178,
+    "fields": {
+      "iso2_code": "PR",
+      "name": "PUERTO RICO",
+      "printable_name": "Puerto Rico",
+      "iso3_code": "PRI",
+      "numcode": 630,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 179,
+    "fields": {
+      "iso2_code": "QA",
+      "name": "QATAR",
+      "printable_name": "Qatar",
+      "iso3_code": "QAT",
+      "numcode": 634,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 180,
+    "fields": {
+      "iso2_code": "RE",
+      "name": "REUNION",
+      "printable_name": "R\u00e9union",
+      "iso3_code": "REU",
+      "numcode": 638,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 181,
+    "fields": {
+      "iso2_code": "RO",
+      "name": "ROMANIA",
+      "printable_name": "Romania",
+      "iso3_code": "ROU",
+      "numcode": 642,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 182,
+    "fields": {
+      "iso2_code": "RU",
+      "name": "RUSSIAN FEDERATION",
+      "printable_name": "Russia",
+      "iso3_code": "RUS",
+      "numcode": 643,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 183,
+    "fields": {
+      "iso2_code": "RW",
+      "name": "RWANDA",
+      "printable_name": "Rwanda",
+      "iso3_code": "RWA",
+      "numcode": 646,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 184,
+    "fields": {
+      "iso2_code": "SH",
+      "name": "SAINT HELENA",
+      "printable_name": "Saint Helena",
+      "iso3_code": "SHN",
+      "numcode": 654,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 185,
+    "fields": {
+      "iso2_code": "KN",
+      "name": "SAINT KITTS AND NEVIS",
+      "printable_name": "Saint Kitts and Nevis",
+      "iso3_code": "KNA",
+      "numcode": 659,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 186,
+    "fields": {
+      "iso2_code": "LC",
+      "name": "SAINT LUCIA",
+      "printable_name": "Saint Lucia",
+      "iso3_code": "LCA",
+      "numcode": 662,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 187,
+    "fields": {
+      "iso2_code": "PM",
+      "name": "SAINT PIERRE AND MIQUELON",
+      "printable_name": "Saint Pierre and Miquelon",
+      "iso3_code": "SPM",
+      "numcode": 666,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 188,
+    "fields": {
+      "iso2_code": "VC",
+      "name": "SAINT VINCENT AND THE GRENADINES",
+      "printable_name": "Saint Vincent and the Grenadines",
+      "iso3_code": "VCT",
+      "numcode": 670,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 189,
+    "fields": {
+      "iso2_code": "WS",
+      "name": "SAMOA",
+      "printable_name": "Samoa",
+      "iso3_code": "WSM",
+      "numcode": 882,
+      "active": true,
+      "continent": "OC",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 190,
+    "fields": {
+      "iso2_code": "SM",
+      "name": "SAN MARINO",
+      "printable_name": "San Marino",
+      "iso3_code": "SMR",
+      "numcode": 674,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 191,
+    "fields": {
+      "iso2_code": "ST",
+      "name": "SAO TOME AND PRINCIPE",
+      "printable_name": "Sao Tome and Principe",
+      "iso3_code": "STP",
+      "numcode": 678,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 192,
+    "fields": {
+      "iso2_code": "SA",
+      "name": "SAUDI ARABIA",
+      "printable_name": "Saudi Arabia",
+      "iso3_code": "SAU",
+      "numcode": 682,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 193,
+    "fields": {
+      "iso2_code": "SN",
+      "name": "SENEGAL",
+      "printable_name": "Senegal",
+      "iso3_code": "SEN",
+      "numcode": 686,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 194,
+    "fields": {
+      "iso2_code": "RS",
+      "name": "SERBIA",
+      "printable_name": "Serbia",
+      "iso3_code": "SRB",
+      "numcode": 688,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 195,
+    "fields": {
+      "iso2_code": "SC",
+      "name": "SEYCHELLES",
+      "printable_name": "Seychelles",
+      "iso3_code": "SYC",
+      "numcode": 690,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 196,
+    "fields": {
+      "iso2_code": "SL",
+      "name": "SIERRA LEONE",
+      "printable_name": "Sierra Leone",
+      "iso3_code": "SLE",
+      "numcode": 694,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 197,
+    "fields": {
+      "iso2_code": "SG",
+      "name": "SINGAPORE",
+      "printable_name": "Singapore",
+      "iso3_code": "SGP",
+      "numcode": 702,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 198,
+    "fields": {
+      "iso2_code": "SK",
+      "name": "SLOVAKIA",
+      "printable_name": "Slovakia",
+      "iso3_code": "SVK",
+      "numcode": 703,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 199,
+    "fields": {
+      "iso2_code": "SI",
+      "name": "SLOVENIA",
+      "printable_name": "Slovenia",
+      "iso3_code": "SVN",
+      "numcode": 705,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 200,
+    "fields": {
+      "iso2_code": "SB",
+      "name": "SOLOMON ISLANDS",
+      "printable_name": "Solomon Islands",
+      "iso3_code": "SLB",
+      "numcode": 90,
+      "active": true,
+      "continent": "OC",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 201,
+    "fields": {
+      "iso2_code": "SO",
+      "name": "SOMALIA",
+      "printable_name": "Somalia",
+      "iso3_code": "SOM",
+      "numcode": 706,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 202,
+    "fields": {
+      "iso2_code": "ZA",
+      "name": "SOUTH AFRICA",
+      "printable_name": "South Africa",
+      "iso3_code": "ZAF",
+      "numcode": 710,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 203,
+    "fields": {
+      "iso2_code": "GS",
+      "name": "SOUTH GEORGIA AND THE SOUTH SANDWICH ISLANDS",
+      "printable_name": "South Georgia and the South Sandwich Islands",
+      "iso3_code": "SGS",
+      "numcode": 239,
+      "active": true,
+      "continent": "AN",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 204,
+    "fields": {
+      "iso2_code": "ES",
+      "name": "SPAIN",
+      "printable_name": "Spain",
+      "iso3_code": "ESP",
+      "numcode": 724,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 205,
+    "fields": {
+      "iso2_code": "LK",
+      "name": "SRI LANKA",
+      "printable_name": "Sri Lanka",
+      "iso3_code": "LKA",
+      "numcode": 144,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 206,
+    "fields": {
+      "iso2_code": "SD",
+      "name": "SUDAN",
+      "printable_name": "Sudan",
+      "iso3_code": "SDN",
+      "numcode": 736,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 207,
+    "fields": {
+      "iso2_code": "SR",
+      "name": "SURINAME",
+      "printable_name": "Suriname",
+      "iso3_code": "SUR",
+      "numcode": 740,
+      "active": true,
+      "continent": "SA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 208,
+    "fields": {
+      "iso2_code": "SJ",
+      "name": "SVALBARD AND JAN MAYEN",
+      "printable_name": "Svalbard and Jan Mayen Islands",
+      "iso3_code": "SJM",
+      "numcode": 744,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 209,
+    "fields": {
+      "iso2_code": "SZ",
+      "name": "SWAZILAND",
+      "printable_name": "Swaziland",
+      "iso3_code": "SWZ",
+      "numcode": 748,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 210,
+    "fields": {
+      "iso2_code": "SE",
+      "name": "SWEDEN",
+      "printable_name": "Sweden",
+      "iso3_code": "SWE",
+      "numcode": 752,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 211,
+    "fields": {
+      "iso2_code": "CH",
+      "name": "SWITZERLAND",
+      "printable_name": "Switzerland",
+      "iso3_code": "CHE",
+      "numcode": 756,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 212,
+    "fields": {
+      "iso2_code": "SY",
+      "name": "SYRIAN ARAB REPUBLIC",
+      "printable_name": "Syrian Arab Republic",
+      "iso3_code": "SYR",
+      "numcode": 760,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 213,
+    "fields": {
+      "iso2_code": "TW",
+      "name": "TAIWAN, PROVINCE OF CHINA",
+      "printable_name": "Taiwan, Province of China",
+      "iso3_code": "TWN",
+      "numcode": 158,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 214,
+    "fields": {
+      "iso2_code": "TJ",
+      "name": "TAJIKISTAN",
+      "printable_name": "Tajikistan",
+      "iso3_code": "TJK",
+      "numcode": 762,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 215,
+    "fields": {
+      "iso2_code": "TZ",
+      "name": "TANZANIA, UNITED REPUBLIC OF",
+      "printable_name": "United Republic of Tanzania",
+      "iso3_code": "TZA",
+      "numcode": 834,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 216,
+    "fields": {
+      "iso2_code": "TH",
+      "name": "THAILAND",
+      "printable_name": "Thailand",
+      "iso3_code": "THA",
+      "numcode": 764,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 217,
+    "fields": {
+      "iso2_code": "TL",
+      "name": "TIMOR-LESTE",
+      "printable_name": "Timor-Leste",
+      "iso3_code": "TLS",
+      "numcode": 626,
+      "active": true,
+      "continent": "OC",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 218,
+    "fields": {
+      "iso2_code": "TG",
+      "name": "TOGO",
+      "printable_name": "Togo",
+      "iso3_code": "TGO",
+      "numcode": 768,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 219,
+    "fields": {
+      "iso2_code": "TK",
+      "name": "TOKELAU",
+      "printable_name": "Tokelau",
+      "iso3_code": "TKL",
+      "numcode": 772,
+      "active": true,
+      "continent": "OC",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 220,
+    "fields": {
+      "iso2_code": "TO",
+      "name": "TONGA",
+      "printable_name": "Tonga",
+      "iso3_code": "TON",
+      "numcode": 776,
+      "active": true,
+      "continent": "OC",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 221,
+    "fields": {
+      "iso2_code": "TT",
+      "name": "TRINIDAD AND TOBAGO",
+      "printable_name": "Trinidad and Tobago",
+      "iso3_code": "TTO",
+      "numcode": 780,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 222,
+    "fields": {
+      "iso2_code": "TN",
+      "name": "TUNISIA",
+      "printable_name": "Tunisia",
+      "iso3_code": "TUN",
+      "numcode": 788,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 223,
+    "fields": {
+      "iso2_code": "TR",
+      "name": "TURKEY",
+      "printable_name": "Turkey",
+      "iso3_code": "TUR",
+      "numcode": 792,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 224,
+    "fields": {
+      "iso2_code": "TM",
+      "name": "TURKMENISTAN",
+      "printable_name": "Turkmenistan",
+      "iso3_code": "TKM",
+      "numcode": 795,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 225,
+    "fields": {
+      "iso2_code": "TC",
+      "name": "TURKS AND CAICOS ISLANDS",
+      "printable_name": "Turks and Caicos Islands",
+      "iso3_code": "TCA",
+      "numcode": 796,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 226,
+    "fields": {
+      "iso2_code": "TV",
+      "name": "TUVALU",
+      "printable_name": "Tuvalu",
+      "iso3_code": "TUV",
+      "numcode": 798,
+      "active": true,
+      "continent": "OC",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 227,
+    "fields": {
+      "iso2_code": "UG",
+      "name": "UGANDA",
+      "printable_name": "Uganda",
+      "iso3_code": "UGA",
+      "numcode": 800,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 228,
+    "fields": {
+      "iso2_code": "UA",
+      "name": "UKRAINE",
+      "printable_name": "Ukraine",
+      "iso3_code": "UKR",
+      "numcode": 804,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 229,
+    "fields": {
+      "iso2_code": "AE",
+      "name": "UNITED ARAB EMIRATES",
+      "printable_name": "United Arab Emirates",
+      "iso3_code": "ARE",
+      "numcode": 784,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 230,
+    "fields": {
+      "iso2_code": "GB",
+      "name": "UNITED KINGDOM",
+      "printable_name": "United Kingdom",
+      "iso3_code": "GBR",
+      "numcode": 826,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 231,
+    "fields": {
+      "iso2_code": "US",
+      "name": "UNITED STATES",
+      "printable_name": "United States",
+      "iso3_code": "USA",
+      "numcode": 840,
+      "active": true,
+      "continent": "NA",
+      "admin_area": "st",
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 232,
+    "fields": {
+      "iso2_code": "UM",
+      "name": "UNITED STATES MINOR OUTLYING ISLANDS",
+      "printable_name": "United States Minor Outlying Islands",
+      "iso3_code": "UMI",
+      "numcode": 581,
+      "active": true,
+      "continent": "OC",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 233,
+    "fields": {
+      "iso2_code": "UY",
+      "name": "URUGUAY",
+      "printable_name": "Uruguay",
+      "iso3_code": "URY",
+      "numcode": 858,
+      "active": true,
+      "continent": "SA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 234,
+    "fields": {
+      "iso2_code": "UZ",
+      "name": "UZBEKISTAN",
+      "printable_name": "Uzbekistan",
+      "iso3_code": "UZB",
+      "numcode": 860,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 235,
+    "fields": {
+      "iso2_code": "VU",
+      "name": "VANUATU",
+      "printable_name": "Vanuatu",
+      "iso3_code": "VUT",
+      "numcode": 548,
+      "active": true,
+      "continent": "OC",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 236,
+    "fields": {
+      "iso2_code": "VE",
+      "name": "VENEZUELA",
+      "printable_name": "Venezuela",
+      "iso3_code": "VEN",
+      "numcode": 862,
+      "active": true,
+      "continent": "SA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 237,
+    "fields": {
+      "iso2_code": "VN",
+      "name": "VIET NAM",
+      "printable_name": "Viet Nam",
+      "iso3_code": "VNM",
+      "numcode": 704,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 238,
+    "fields": {
+      "iso2_code": "VG",
+      "name": "VIRGIN ISLANDS, BRITISH",
+      "printable_name": "British Virgin Islands",
+      "iso3_code": "VGB",
+      "numcode": 92,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 239,
+    "fields": {
+      "iso2_code": "VI",
+      "name": "VIRGIN ISLANDS, U.S.",
+      "printable_name": "United States Virgin Islands",
+      "iso3_code": "VIR",
+      "numcode": 850,
+      "active": true,
+      "continent": "NA",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 240,
+    "fields": {
+      "iso2_code": "WF",
+      "name": "WALLIS AND FUTUNA",
+      "printable_name": "Wallis and Futuna Islands",
+      "iso3_code": "WLF",
+      "numcode": 876,
+      "active": true,
+      "continent": "OC",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 241,
+    "fields": {
+      "iso2_code": "EH",
+      "name": "WESTERN SAHARA",
+      "printable_name": "Western Sahara",
+      "iso3_code": "ESH",
+      "numcode": 732,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 242,
+    "fields": {
+      "iso2_code": "YE",
+      "name": "YEMEN",
+      "printable_name": "Yemen",
+      "iso3_code": "YEM",
+      "numcode": 887,
+      "active": true,
+      "continent": "AS",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 243,
+    "fields": {
+      "iso2_code": "ZM",
+      "name": "ZAMBIA",
+      "printable_name": "Zambia",
+      "iso3_code": "ZMB",
+      "numcode": 894,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  },
+  {
+    "model": "l10n.country",
+    "pk": 244,
+    "fields": {
+      "iso2_code": "ZW",
+      "name": "ZIMBABWE",
+      "printable_name": "Zimbabwe",
+      "iso3_code": "ZWE",
+      "numcode": 716,
+      "active": true,
+      "continent": "AF",
+      "admin_area": null,
+      "last_modified": "2016-03-04T16:52:15.174Z"
+    }
+  }
+]
