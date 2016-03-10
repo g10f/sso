@@ -152,7 +152,7 @@ class OrganisationList(OrganisationMixin, JsonListView):
 
         name = self.request.GET.get('q', None)
         if name:
-            qs = qs.filter(name__icontains=name)
+            qs = qs.filter(Q(name__icontains=name) | Q(name_native__icontains=name))
 
         country_group_id = self.request.GET.get('country_group_id', None)
         if country_group_id:
