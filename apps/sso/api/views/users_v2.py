@@ -2,6 +2,7 @@
 import logging
 from uuid import UUID
 
+from django.utils.crypto import get_random_string
 from sorl.thumbnail import get_thumbnail
 
 from django.http.response import HttpResponse
@@ -19,7 +20,7 @@ from sso.auth.utils import is_recent_auth_time
 from sso.utils.url import base_url, absolute_url
 from sso.utils.parse import parse_datetime_with_timezone_support
 from l10n.models import Country
-from sso.accounts.models import UserAddress, UserPhoneNumber, User, UserEmail
+from sso.accounts.models import UserAddress, UserPhoneNumber, User, UserEmail, ApplicationRole
 from sso.accounts.email import send_account_created_email
 from sso.organisations.models import Organisation
 from sso.registration import default_username_generator
@@ -377,8 +378,21 @@ class UserDetailView(UserMixin, JsonDetailView):
             object_data['username'] = default_username_generator(capfirst(object_data['first_name']), capfirst(object_data['last_name']))
         
         self.object = self.model(**object_data)
+        self.object.set_password(get_random_string(40))
         self.object.save()
-        # self.object.refresh_from_db()
+
+        # create initial app roles
+        applications = data.get('applications', {}).items()
+        if len(applications) > 0:
+            initial_application_roles = []
+            administrable_application_role_ids = set(request.user.get_administrable_application_roles().all().values_list('id', flat=True))
+            for application_uuid, application_data in applications:
+                application_roles = ApplicationRole.objects.filter(application__uuid=application_uuid, role__name__in=application_data['roles'])
+                for application_role in application_roles:
+                    if application_role.id in administrable_application_role_ids:
+                        initial_application_roles += [application_role]
+            self.object.application_roles = initial_application_roles
+
         self.object.role_profiles = [User.get_default_role_profile()]
 
         self.object.create_primary_email(email=data['email'])
@@ -387,7 +401,7 @@ class UserDetailView(UserMixin, JsonDetailView):
             self._update_user_organisation(data)
         else:
             raise ValueError(_("Organisation is missing."))
-        
+
         self._save_user_details(data, 'addresses', API_ADDRESS_MAP, UserAddress, update_existing=False)
         self._save_user_details(data, 'phone_numbers', API_PHONE_MAP, UserPhoneNumber, update_existing=False)
         

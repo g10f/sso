@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import json
 
+from django.utils.crypto import get_random_string
+
 from django.views.generic import View
 from django.views.decorators.vary import vary_on_headers
 from django.utils.decorators import method_decorator
@@ -278,7 +280,7 @@ class UserDetailView(View):
             # new user            
             username = default_username_generator(first_name, last_name)
             user = User(first_name=first_name, last_name=last_name, username=username)
-            user.set_password("")
+            user.set_password(get_random_string(40))
             
             application_roles = []
             for application_uuid, application_data in userinfo.get('applications', {}).items():
