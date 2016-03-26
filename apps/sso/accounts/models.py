@@ -240,6 +240,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     language = models.CharField(_('language'), max_length=254, choices=settings.LANGUAGES, blank=True)
     timezone = models.CharField(_('timezone'), blank=True, max_length=254)
     valid_until = models.DateTimeField(_('valid until'), blank=True, null=True)
+    last_ip = models.GenericIPAddressField(_('last ip address'), blank=True, null=True)
 
     objects = UserManager()
 
