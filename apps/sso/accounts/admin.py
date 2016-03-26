@@ -366,7 +366,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         (_('Personal info'), {
             'fields': ('first_name', 'last_name', 'gender', 'dob', 'homepage', 'language', 'uuid', 'is_center', 'is_service', 'is_subscriber', 'picture'),
             'classes': ['wide']}),
-        (_('Important dates'), {'fields': ('valid_until', 'last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user',
+        (_('Important dates'), {'fields': ('valid_until', 'last_login', 'last_ip', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user',
                                            'assigned_organisations'), 'classes': ['wide']}),
         (_('Organisations'), {'fields': ('organisations', ), 'classes': ['collapse', 'wide']}),
         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'role_profiles', 'application_roles', 'groups', 'user_permissions'), 'classes': ['collapse', 'wide']}),
