@@ -2,6 +2,7 @@ from __future__ import with_statement
 import posixpath
 
 from fabric.api import *
+from fabric.contrib import files
 import fabtools
 
 env.use_ssh_config = True
@@ -11,8 +12,8 @@ env.apps = ['sso', 'password']
 configurations = {
     'dev': {'host_string': 'sso.dwbn.org', 'server_name': 'sso-dev.dwbn.org', 'app': 'sso', 'virtualenv': 'sso-dev', 'db_name': 'sso_dev', 'branch': 'master'},
     'prod': {'host_string': 'sso.dwbn.org', 'server_name': 'sso.dwbn.org', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'sso', 'branch': 'master'},
-    'g10f': {'host_string': 'g10f', 'server_name': 'sso.g10f.de', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'sso', 'branch': 'master'},
-    'elsapro': {'host_string': 'g10f', 'server_name': 'sso.elsapro.com', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'vw_sso', 'branch': 'master'},
+    'g10f': {'host_string': 'hsh', 'server_name': 'sso.g10f.de', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'sso', 'branch': 'master'},
+    'elsapro': {'host_string': 'hsh', 'server_name': 'sso.elsapro.com', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'vw_sso', 'branch': 'master'},
 }
 
 LOGROTATE_TEMPLATE = """\
@@ -102,27 +103,57 @@ server {
 }
 """
 
-RABBITMQ_MANAGEMENT_SITE_PROXY = """\
+HTTP2_PROXIED_SITE_TEMPLATE = """\
+upstream %(server_name)s.backend {
+    server unix:/tmp/%(server_name)s.gunicorn.sock;
+}
 server {
-    listen 443 ssl;
+    listen [::]:80;
+    listen      80;
     server_name %(server_name)s;
-    access_log acces.log;
-    error_log error.log;
-    location / {
-        client_body_buffer_size 128k;
-        proxy_send_timeout   90;
-        proxy_read_timeout   90;
-        proxy_buffer_size    4k;
-        proxy_buffers     16 32k;
-        proxy_busy_buffers_size 64k;
-        proxy_temp_file_write_size 64k;
-        proxy_connect_timeout 30s;
-        proxy_pass   http://localhost:15672;
-        proxy_set_header   Host   $host;
-        proxy_set_header   X-Real-IP  $remote_addr;
-        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto https;
+    # path for static files
+    root %(docroot)s;
+    return 301 https://%(server_name)s$request_uri;
+}
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    # listen 443 ssl default_server;
+    server_name %(server_name)s;
+    add_header Strict-Transport-Security max-age=31536000;
+    ssl_certificate /etc/letsencrypt/live/%(cert)s/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/%(cert)s/privkey.pem;
+    ssl_dhparam /etc/nginx/dhparam.pem;
+
+    # path for static files
+    root %(docroot)s;
+
+    try_files $uri @proxied;
+
+    # Media: images, video, audio, HTC, WebFonts
+    location /static {
+        include %(code_dir)s/config/nginx.expired.conf;
+        include %(code_dir)s/config/nginx.webfonts.conf;
     }
+    location /media {
+        include %(code_dir)s/config/nginx.expired.conf;
+    }
+
+    location @proxied {
+        # limit_req zone=sso burst=10 nodelay;
+        add_header X-UA-Compatible IE=edge;
+        add_header Strict-Transport-Security max-age=31536000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_redirect off;
+        proxy_pass http://%(server_name)s.backend;
+    }
+    location ~ ^/robots.txt$ {alias /proj/static/htdocs/%(server_name)s/static/txt/robots.txt; }
+
+    error_log                %(code_dir)s/logs/nginx-error.log error;
+    access_log               %(code_dir)s/logs/nginx-access.log;
 }
 """
 
@@ -229,7 +260,11 @@ def update_debian():
     sudo('reboot')
     
 
-def deploy_debian():
+@task
+def deploy_debian(conf='dev'):
+    configuration = configurations.get(conf)
+    env.host_string = configuration['host_string']
+
     # pillow
     fabtools.require.deb.package('libtiff4-dev')
     fabtools.require.deb.package('libjpeg8-dev')
@@ -237,26 +272,32 @@ def deploy_debian():
     fabtools.require.deb.package('libfreetype6-dev')
     fabtools.require.deb.package('liblcms2-dev')
     fabtools.require.deb.package('libwebp-dev')
-    fabtools.require.deb.package('tcl8.5-dev')
-    fabtools.require.deb.package('tk8.5-dev')
-    fabtools.require.deb.package('libffi-dev')
     fabtools.require.deb.package('python-tk')
+    # fabtools.require.deb.package('tcl8.5-dev')
+    # fabtools.require.deb.package('tk8.5-dev')
+    # fabtools.require.deb.package('libffi-dev')
     # pillow ubuntu 14.04
-    # fabtools.require.deb.package('libtiff5-dev')
-    # fabtools.require.deb.package('tcl8.6-dev')
-    # fabtools.require.deb.package('tk8.6-dev')
+    fabtools.require.deb.package('libtiff5-dev')
+    fabtools.require.deb.package('tcl8.6-dev')
+    fabtools.require.deb.package('tk8.6-dev')
     # postgres
     fabtools.require.deb.package('libpq-dev')
     # Geospatial libraries
     fabtools.require.deb.package('binutils')
     fabtools.require.deb.package('libproj-dev')
     fabtools.require.deb.package('gdal-bin')
-    fabtools.require.deb.package('postgresql-9.1-postgis-2.0')  # postgresql-9.3-postgis-2.1
+    fabtools.require.deb.package('postgresql-9.3-postgis-2.1')
+    # fabtools.require.deb.package('postgresql-9.1-postgis-2.0')
 
     fabtools.require.deb.package('swig')  # required for python-u2flib-server
 
 
-def deploy_database(db_name):
+@task
+def deploy_database(conf='dev'):
+    configuration = configurations.get(conf)
+    env.host_string = configuration['host_string']
+    db_name = configuration['db_name']
+
     # Require a PostgreSQL server
     # fabtools.require.postgres.server()
     fabtools.require.postgres.user(db_name, db_name)
@@ -323,22 +364,30 @@ def deploy_webserver(code_dir, server_name):
         
 
 @task
-def deploy_app():
-    """
-    # erlang
-    run('wget http://packages.erlang-solutions.com/erlang-solutions_1.0_all.deb')
-    sudo('dpkg -i erlang-solutions_1.0_all.deb')
-    # rabbitmq
-    sudo('apt-add-repository \'deb http://www.rabbitmq.com/debian/ testing main\'')
-    fabtools.deb.add_apt_key(url='https://www.rabbitmq.com/rabbitmq-signing-key-public.asc')
+def deploy_http2_webserver(conf='dev'):
+    configuration = configurations.get(conf)
+    env.host_string = configuration['host_string']
+    server_name = configuration['server_name']
+    app = configuration['app']
+    code_dir = '/proj/%s' % server_name
 
-    fabtools.deb.update_index()
+    if not files.exists('/etc/nginx/dhparam.pem', use_sudo=True):
+        sudo('openssl dhparam -out /etc/nginx/dhparam.pem 2048')
 
-    fabtools.require.deb.package('rabbitmq-server')  # rabbitmq
-    sudo('rabbitmq-plugins enable rabbitmq_management')
-    """
+    # Require an nginx server proxying to our app
+    docroot = '/proj/static/htdocs/%(server_name)s' % {'server_name': server_name}
+    context = {'server_name': server_name, 'host_string': env.host_string, 'code_dir': code_dir}
 
-    # fabtools.require.nginx.site('rmq.g10f.de', template_contents=RABBITMQ_MANAGEMENT_SITE_PROXY)
+    fabtools.require.directory('%(code_dir)s/logs' % context, use_sudo=True, owner="www-data", mode='770')
+    fabtools.require.directory('%(code_dir)s/config' % context, use_sudo=True, owner="www-data", mode='770')
+    fabtools.require.directory(docroot, use_sudo=True, owner="www-data", mode='770')
+
+    fabtools.require.nginx.server()
+
+    fabtools.require.files.template_file('%(code_dir)s/config/nginx.expired.conf' % context, template_contents=NGINX_EXPIRED_TEMPLATE, use_sudo=True, owner='www-data', group='www-data')
+    fabtools.require.files.template_file('%(code_dir)s/config/nginx.webfonts.conf' % context, template_contents=NGINX_WEBFONTS_TEMPLATE, use_sudo=True, owner='www-data', group='www-data')
+
+    fabtools.require.nginx.site(server_name, template_contents=HTTP2_PROXIED_SITE_TEMPLATE, docroot=docroot, code_dir=code_dir, cert=server_name)
 
 
 def setup_user(user):
@@ -381,11 +430,11 @@ def deploy(conf='dev'):
 
     user = 'ubuntu'
     # setup_user(user)
-    # fabtools.require.files.directory(code_dir)
-    # deploy_debian()
+    fabtools.require.files.directory(code_dir)
+    # deploy_debian(conf)
     # deploy_webserver(code_dir, server_name)
     # fabtools.user.modify(name=user, extra_groups=['www-data'])
-    # deploy_database(db_name)
+    # deploy_database(conf)
 
     with cd(code_dir):
         branch = configuration.get('branch', 'master')
@@ -405,8 +454,7 @@ def deploy(conf='dev'):
         with cd(code_dir):
             fabtools.require.python.requirements('src/requirements.txt')
     
-    fabtools.require.file('/envs/%(virtualenv)s/lib/python2.7/sitecustomize.py' % {'virtualenv': virtualenv}, source='apps/sitecustomize.py')
-    
+    # fabtools.require.file('/envs/%(virtualenv)s/lib/python2.7/sitecustomize.py' % {'virtualenv': virtualenv}, source='apps/sitecustomize.py')
     # configure gunicorn
     fabtools.require.directory('%(code_dir)s/config' % {'code_dir': code_dir}, use_sudo=True, owner="www-data", mode='770')
     config_filename = '%(code_dir)s/config/gunicorn_%(server_name)s.py' % {'code_dir': code_dir, 'server_name': server_name}
@@ -441,6 +489,7 @@ def deploy(conf='dev'):
 
     python = '/envs/%(virtualenv)s/bin/python' % {'virtualenv': virtualenv}
     with cd(code_dir):
+        fabtools.require.files.directory(code_dir + '/logs')
         update_dir_settings(code_dir + '/logs')
         migrate_data(python, server_name, code_dir, app)
         sudo("supervisorctl restart %(server_name)s" % {'server_name': server_name})

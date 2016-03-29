@@ -67,6 +67,7 @@ class EmailAuthenticationForm(AuthenticationForm):
                 )
     """
 
+
 class U2FForm(forms.Form):
     response = forms.CharField(label=_('Response'), widget=forms.HiddenInput())
     challenges = forms.CharField(label=_('Challenges'), widget=forms.HiddenInput())
