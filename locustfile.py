@@ -38,8 +38,6 @@ if "CLIENT_SECRET" in os.environ:
     OAUTH2_CLIENT["client_secret"] = os.environ['CLIENT_SECRET']
 
 
-
-
 class UserBehavior(TaskSet):    
     @property
     def authentication_uri(self):
