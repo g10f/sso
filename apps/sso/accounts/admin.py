@@ -276,7 +276,7 @@ class SuperuserFilter(SimpleListFilter):
 
 class LoggedInFilter(SimpleListFilter):
     title = _('logged in')
-    parameter_name = 'last_login__isnull'
+    parameter_name = 'last_login__notnull'
 
     def lookups(self, request, model_admin):
         return [('True', _('Yes')), ('False', _('No'))]

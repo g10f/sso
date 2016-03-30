@@ -551,13 +551,26 @@ class User(AbstractBaseUser, PermissionsMixin):
         return a list of all organisations the user has admin rights on
         """
         if self.has_perms(["organisations.change_organisation", "organisations.access_all_organisations"]):
-            return Organisation.objects.all().select_related('country', 'email')
+            return Organisation.objects.all().prefetch_related('country', 'email', 'organisationpicture_set')
         elif self.has_perm("organisations.change_organisation"):
             return Organisation.objects.filter(
-                Q(user=self) | Q(admin_region__user=self) | Q(country__user=self)).select_related('country', 'email').distinct()
+                Q(user=self) | Q(admin_region__user=self) | Q(country__user=self)).prefetch_related('country', 'email', 'organisationpicture_set').distinct()
         else:
             return Organisation.objects.none()
-    
+
+    @memoize
+    def administrable_organisations_exists(self):
+        """
+        return if the user has admin rights on organisations
+        """
+        if self.has_perms(["organisations.change_organisation", "organisations.access_all_organisations"]):
+            return Organisation.objects.all().exists()
+        elif self.has_perm("organisations.change_organisation"):
+            return Organisation.objects.filter(
+                Q(user=self) | Q(admin_region__user=self) | Q(country__user=self)).exists()
+        else:
+            return False
+
     @memoize
     def get_assignable_organisation_countries(self):
         """
