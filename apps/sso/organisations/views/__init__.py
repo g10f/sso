@@ -322,7 +322,7 @@ class MyOrganisationsFilter(ViewButtonFilter):
     select_text = _('My Organisations')
     
     def apply(self, view, qs, default=''):
-        if not view.request.user.is_superuser and view.request.user.get_administrable_organisations().exists():
+        if not view.request.user.is_superuser and view.request.user.administrable_organisations_exists():
             value = self.get_value_from_query_param(view, default)
             if value:
                 qs = view.request.user.get_administrable_organisations()
@@ -330,7 +330,7 @@ class MyOrganisationsFilter(ViewButtonFilter):
             return qs
         else:
             return qs
-        
+
 
 class Distance(object):
     verbose_name = _('distance')

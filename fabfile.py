@@ -12,8 +12,8 @@ env.apps = ['sso', 'password']
 configurations = {
     'dev': {'host_string': 'sso.dwbn.org', 'server_name': 'sso-dev.dwbn.org', 'app': 'sso', 'virtualenv': 'sso-dev', 'db_name': 'sso_dev', 'branch': 'master'},
     'prod': {'host_string': 'sso.dwbn.org', 'server_name': 'sso.dwbn.org', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'sso', 'branch': 'master'},
-    'g10f': {'host_string': 'hsh', 'server_name': 'sso.g10f.de', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'sso', 'branch': 'master'},
-    'elsapro': {'host_string': 'hsh', 'server_name': 'sso.elsapro.com', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'vw_sso', 'branch': 'master'},
+    'g10f': {'host_string': 'g10f', 'server_name': 'sso.g10f.de', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'sso', 'branch': 'master'},
+    'elsapro': {'host_string': 'g10f', 'server_name': 'sso.elsapro.com', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'vw_sso', 'branch': 'master'},
 }
 
 LOGROTATE_TEMPLATE = """\
