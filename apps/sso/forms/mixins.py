@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from sso.signals import user_m2m_field_updated
 
 
 def ids_from_objs(listobject):
@@ -28,6 +29,11 @@ class UserRolesMixin(object):
             user_attribute.remove(*remove_values)
         if new_value_set:
             user_attribute.add(*new_value_set)
+
+        if remove_values or new_value_set:
+            # enable brand specific modification
+            user_m2m_field_updated.send_robust(sender=self.__class__, user=self.user, attribute_name=attribute_name,
+                                               delete_pk_list=list(remove_values), add_pk_list=list(new_value_set))
 
     def update_user_m2m_fields_from_list(self, attribute_name, current_user, admin_attribute_format='get_administrable_%s'):
         """
