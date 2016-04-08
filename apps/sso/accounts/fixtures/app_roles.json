@@ -411,5 +411,33 @@
         ]
       ]
     }
+  },
+  {
+    "model": "accounts.roleprofile",
+    "fields": {
+      "name": "Region Admin",
+      "uuid": "027d79f0a6784539a6aada57651643cc",
+      "last_modified": "2012-03-23T07:00:46.076Z",
+      "application_roles": [
+        [
+          "fa467234b81e4838a009e38d9e655d18",
+          "Region"
+        ]
+      ]
+    }
+  },
+  {
+    "model": "accounts.roleprofile",
+    "fields": {
+      "name": "Country Admin",
+      "uuid": "9be8e53c659e44509d91d6ca166c63b5",
+      "last_modified": "2012-03-23T07:00:46.076Z",
+      "application_roles": [
+        [
+          "fa467234b81e4838a009e38d9e655d18",
+          "Country"
+        ]
+      ]
+    }
   }
 ]
