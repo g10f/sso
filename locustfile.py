@@ -24,9 +24,9 @@ OAUTH2_CLIENT = {
 
 # OAUTH2_CLIENT["host"] = 'https://sso.g10f.de'
 # OAUTH2_CLIENT["redirect_uri"] = 'https://sso.g10f.de/test'
-# OAUTH2_CLIENT["host"] = 'https://sso-dev.dwbn.org'
+OAUTH2_CLIENT["host"] = 'https://sso-dev.dwbn.org'
 # OAUTH2_CLIENT["redirect_uri"] = 'https://sso-dev.dwbn.org/test'
-#OAUTH2_CLIENT["redirect_uri"] = 'urn:ietf:wg:oauth:2.0:oob'
+OAUTH2_CLIENT["redirect_uri"] = 'urn:ietf:wg:oauth:2.0:oob'
 
 if "CLIENT_ID" in os.environ:
     OAUTH2_CLIENT["client_id"] = os.environ['CLIENT_ID']
@@ -65,7 +65,7 @@ class UserBehavior(TaskSet):
             "username": OAUTH2_CLIENT['username'], 
             "password": OAUTH2_CLIENT['password'],
             "csrfmiddlewaretoken": pq("input[name='csrfmiddlewaretoken']").val(),
-            "goji.csrf.Token": pq("input[name='goji.csrf.Token']").val(),
+            #"goji.csrf.Token": pq("input[name='goji.csrf.Token']").val(),
             "login_form_key": "login_form",
             "next": pq("input[name='next']").val()
         }
