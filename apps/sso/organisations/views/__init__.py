@@ -274,7 +274,7 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
                 formsets += [email_alias_inline_formset]
 
         return formsets
-    
+
 
 class OrganisationSearchFilter(SearchFilter):
     search_names = ['name__icontains', 'email__email__icontains', 'name_native__icontains', 'organisationaddress__city__icontains', 'organisationaddress__city_native__icontains']
