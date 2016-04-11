@@ -59,15 +59,15 @@ OTP_TWILIO_FROM = ''
 OTP_TWILIO_NO_DELIVERY = True
 OTP_TWILIO_TOKEN_VALIDITY = 300  # seconds
 
-# Celery settings
+# Celery settings see https://www.cloudamqp.com/docs/celery.html
 BROKER_USE_SSL = False
 BROKER_URL = 'amqp://guest:guest@localhost//'
 BROKER_POOL_LIMIT = 1  # Will decrease connection usage
-BROKER_HEARTBEAT = 60  # Will detect stale connections faster
+BROKER_HEARTBEAT = None  # We're using TCP keep-alive instead
 BROKER_CONNECTION_TIMEOUT = 30  # May require a long timeout due to Linux DNS timeouts etc
 CELERY_RESULT_BACKEND = None
 CELERY_SEND_EVENTS = False  # Will not create celeryev.* queues
-CELERY_EVENT_QUEUE_EXPIRES = 60 * 30  # Will delete all celeryev. queues without consumers after 30 minutes.
+CELERY_EVENT_QUEUE_EXPIRES = 60  # Will delete all celeryev. queues without consumers after 1 minute.
 #: Only add pickle to this list if your broker is secured
 #: from unwanted access (see userguide/security.html)
 CELERY_ACCEPT_CONTENT = ['json']
