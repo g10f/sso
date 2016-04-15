@@ -63,11 +63,11 @@ OTP_TWILIO_TOKEN_VALIDITY = 300  # seconds
 BROKER_USE_SSL = False
 BROKER_URL = 'amqp://guest:guest@localhost//'
 BROKER_POOL_LIMIT = 1  # Will decrease connection usage
-BROKER_HEARTBEAT = 60
+BROKER_HEARTBEAT = None
 BROKER_CONNECTION_TIMEOUT = 30  # May require a long timeout due to Linux DNS timeouts etc
 CELERY_RESULT_BACKEND = None
 CELERY_SEND_EVENTS = False  # Will not create celeryev.* queues
-CELERY_EVENT_QUEUE_EXPIRES = 60  # Will delete all celeryev. queues without consumers after 1 minute.
+# CELERY_EVENT_QUEUE_EXPIRES = 60  # Will delete all celeryev. queues without consumers after 1 minute.
 #: Only add pickle to this list if your broker is secured
 #: from unwanted access (see userguide/security.html)
 CELERY_ACCEPT_CONTENT = ['json']
