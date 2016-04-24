@@ -25,8 +25,8 @@ from oauthlib import oauth2
 from oauthlib.common import urlencode, urlencoded, quote
 from sso.auth.utils import is_recent_auth_time
 from sso.auth.views import TWO_FACTOR_PARAM
+from sso.utils.convert import long_to_base64
 from sso.utils.url import base_url
-from sso.utils.convert import pack_bigint
 from sso.api.response import JsonHttpResponse
 from sso.utils.http import get_request_param
 from .crypt import loads_jwt
@@ -335,8 +335,8 @@ def jwks(request):
             "alg": "RS256",
             "use": "sig",
             "kid": settings.CERTS['default']['uuid'],
-            "n": base64.b64encode(pack_bigint(public_numbers.n)),
-            "e": base64.b64encode(pack_bigint(public_numbers.e))
+            "n": long_to_base64(public_numbers.n),
+            "e": long_to_base64(public_numbers.e)
         }]
     }
     return JsonHttpResponse(data, request)
