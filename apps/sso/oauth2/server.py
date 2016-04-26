@@ -41,10 +41,14 @@ def default_token_generator(request, max_age=MAX_AGE, refresh_token=False):
             'iat': int(time.time()),  # required
             'acr': '1' if user.is_verified else '0',
             'scope': ' '.join(request.scopes),  # custom, required
+            'email': str(user.primary_email()),  # custom
+            'name': user.username,   # custom
             # session authentication hash,
             # see django.contrib.auth.middleware.SessionAuthenticationMiddleware
             'at_hash': get_session_auth_hash(user, request.client),  # custom, required
         }
+        if request.client.application:
+            claim_set['roles'] = ' '.join(user.get_roles_by_app(request.client.application.uuid).values_list('name', flat=True))  # custom
         return make_jwt(claim_set)
 
 
@@ -71,7 +75,7 @@ def default_idtoken_generator(request, max_age=MAX_AGE, refresh_token=False):
             'given_name': user.first_name,  # custom
             'family_name': user.last_name,  # custom
         }
-        if request.client.application:            
+        if request.client.application:
             claim_set['roles'] = ' '.join(user.get_roles_by_app(request.client.application.uuid).values_list('name', flat=True))  # custom
         return make_jwt(claim_set)
 
