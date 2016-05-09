@@ -158,7 +158,14 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
                     request.client_id, request.client_secret = http_authorization[1].decode("base64").split(":")
                 
         try:
-            request.client = Client.objects.get(uuid=request.client_id, client_secret=request.client_secret, is_active=True)
+            # 1. check the client_id
+            client = Client.objects.get(uuid=request.client_id, is_active=True)
+            # 2. check client_secret except for native clients
+            if client.type != "native" and client.client_secret != request.client_secret:
+                raise ObjectDoesNotExist('client_secret does not match')
+            request.client = client
+
+            # 3. check that a user is associated to the client for grant_type == 'client_credentials'
             if request.grant_type == 'client_credentials':
                 user = request.client.user
                 if user:
