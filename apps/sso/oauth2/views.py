@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
 import json
-import base64
 import hashlib
 import logging
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
 from jwt import InvalidTokenError
 
+from django.http.response import HttpResponseRedirectBase
 from django.views.decorators.cache import never_cache, cache_page, cache_control
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.generic import TemplateView
 from django.utils.crypto import get_random_string
 from django.utils.decorators import method_decorator
-from django.utils.encoding import force_str
+from django.utils.encoding import force_str, force_text, iri_to_uri
 from django.utils.six.moves.urllib.parse import urlparse, urlunparse, urlsplit, urlunsplit
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse, QueryDict
@@ -83,16 +83,16 @@ def pop_query_param(url, param_name):
 
 class HttpOAuth2ResponseRedirect(HttpResponseRedirect):
     """
-    handle the special case of locally installed clients, which can send urn:ietf:wg:oauth:2.0:oob
-    as the redirect uri. This uri gets mapped to a uri of this identity provider
+    don't check the location, because this was already done in OAuth2RequestValidator::validate_redirect_uri
+    and we have custom schemas for android and iOS apps
     """
-    allowed_schemes = ['http', 'https']
 
     def __init__(self, redirect_to, *args, **kwargs):
         if redirect_to.startswith('urn:ietf:wg:oauth:2.0:oob'):
             redirect_to = redirect_to.replace('urn:ietf:wg:oauth:2.0:oob', reverse('oauth2:approval'), 1)
-            
-        super(HttpOAuth2ResponseRedirect, self).__init__(redirect_to, *args, **kwargs)
+
+        super(HttpResponseRedirectBase, self).__init__(*args, **kwargs)
+        self['Location'] = iri_to_uri(redirect_to)
 
 
 @cache_page(60 * 60)
