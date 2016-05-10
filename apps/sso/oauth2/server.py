@@ -279,7 +279,7 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
         # access token if the client did not specify a scope during the
         # request.
         try:
-            data = loads_jwt(BearerToken.objects.get(refresh_token__token=refresh_token).access_token)
+            data = loads_jwt(BearerToken.objects.get(refresh_token__token=refresh_token).access_token, verify=False)
             return data['scope'].split()
         except Exception as e:
             logger.error('confirm_scopes Error: %s' % e)
