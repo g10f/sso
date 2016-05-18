@@ -299,8 +299,8 @@ class OpenIDConnectBearerToken(oauth2.BearerToken):
     """
     Bearer token with OpenIDConnect id_token where the access token is equal the id_token
     """
-    def __init__(self, request_validator=None):
-        super(OpenIDConnectBearerToken, self).__init__(request_validator, token_generator=default_token_generator)
+    def __init__(self, request_validator=None, expires_in=None):
+        super(OpenIDConnectBearerToken, self).__init__(request_validator, token_generator=default_token_generator, expires_in=expires_in)
         self.idtoken_generator = default_idtoken_generator
 
     def create_token(self, request, refresh_token=False):
@@ -458,7 +458,7 @@ class OAuthServer(oauth2.AuthorizationEndpoint, oauth2.TokenEndpoint, oauth2.Res
     def __init__(self, request_validator, *args, **kwargs):
         oidc_auth_grant = OpenIDConnectAuthorizationCodeGrant(request_validator)
         oidc_implicit_grant = OpenIDConnectImplicitGrant(request_validator)
-        bearer = OpenIDConnectBearerToken(request_validator)
+        bearer = OpenIDConnectBearerToken(request_validator, expires_in=MAX_AGE)
         refresh_grant = oauth2.RefreshTokenGrant(request_validator)
         # implicit_grant = oauth2.ImplicitGrant(request_validator)
         client_credentials = oauth2.ClientCredentialsGrant(request_validator)
