@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 import os
 import logging
+
+from datetime import timedelta
+
 from django.db.models.aggregates import Count
 from django.db.models.query_utils import Q
 
@@ -22,30 +25,37 @@ class Command(BaseCommand):
 
 def check_validation():
     if not settings.SSO_VALIDATION_PERIOD_IS_ACTIVE:
-        # print("SSO_VALIDATION_PERIOD_IS_ACTIVE is False")
         return
 
     try:
         guest_profile = RoleProfile.objects.get(uuid=settings.SSO_DEFAULT_GUEST_PROFILE_UUID)
     except ObjectDoesNotExist:
-        # print("no SSO_DEFAULT_GUEST_PROFILE_UUID available")
         return
 
-    profiles = [guest_profile]
-    has_already_guest_status = Q(application_roles=None) & Q(c=len(profiles))
-    for profile in profiles:
-        has_already_guest_status &= Q(role_profiles=profile)
-
-    q = Q(valid_until__isnull=True) | has_already_guest_status
-    users = User.objects.annotate(c=Count('role_profiles')).filter(valid_until__lt=now()).exclude(q)
+    # 1. Assign Guest Profile to expired user accounts
+    has_already_guest_status = Q(application_roles=None) & Q(count_profiles=1) & Q(role_profiles=guest_profile)
+    expired_users = User.objects.annotate(count_profiles=Count('role_profiles')).filter(valid_until__lt=now()).exclude(has_already_guest_status)
     if not settings.SSO_VALIDATION_PERIOD_IS_ACTIVE_FOR_ALL:
-        users = users.filter(organisations__uses_user_activation=True)
+        expired_users = expired_users.filter(organisations__uses_user_activation=True)
 
-    # print("Assigning guest status to:")
-    for user in users:
-        user.application_roles = []
-        user.role_profiles = [guest_profile]
-        # print(" %s" % user)
+    logger.info("Expired Users:")
+    logger.debug("-----------------------------------------")
+    for expired_user in expired_users:
+        expired_user.application_roles.clear()
+        expired_user.role_profiles = [guest_profile]
+        logger.debug("%s" % expired_user)
+
+    # 2. user with valid_until__isnull=True and a center which uses user activation will be expire in 30 days
+    new_users = User.objects.annotate(count_profiles=Count('role_profiles'))\
+        .filter(is_active=True, valid_until__isnull=True, is_service=False, is_center=False, organisations__uses_user_activation=True)\
+        .exclude(has_already_guest_status)
+
+    logger.debug("new Users:")
+    logger.debug("-----------------------------------------")
+    for new_user in new_users:
+        new_user.valid_until = now() + timedelta(days=30)
+        new_user.save(update_fields=['valid_until'])
+        logger.debug("%s" % new_user)
 
 
 def clean_pictures():
