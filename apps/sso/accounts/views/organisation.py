@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 import logging
+
 from django.utils.six.moves.urllib.parse import urlunsplit
 
 from django.contrib import messages
-from django.shortcuts import get_object_or_404
-from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
-from django.http import HttpResponseRedirect
-from django.views.generic import DetailView, FormView
-from django.utils.decorators import method_decorator
 from django.core.urlresolvers import reverse, reverse_lazy
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
+from django.utils.decorators import method_decorator
+from django.utils.translation import ugettext_lazy as _
+from django.views.generic import DetailView, FormView
 from django.views.generic.detail import SingleObjectTemplateResponseMixin
 from django.views.generic.edit import ProcessFormView, ModelFormMixin
 from sso.accounts.forms import OrganisationChangeForm, OrganisationChangeAcceptForm
@@ -57,7 +58,7 @@ class OrganisationChangeUpdateView(SingleObjectTemplateResponseMixin, ModelFormM
     like BaseUpdateView, but
     - self.object is initialized from the current user (self.request.user.organisationchange) so that add new and update is handled
     - redirect_uri is saved
-    - form user is initialized with current user is
+    - form user is initialized with current user
     """
     model = OrganisationChange
     form_class = OrganisationChangeForm
@@ -154,7 +155,7 @@ class OrganisationChangeAcceptView(FormView):
             user.save()
             self.organisationchange.delete()
 
-            # remove user related permissions
+            # remove organisation related permissions
             organisation_related_application_roles = ApplicationRole.objects.filter(is_organisation_related=True)
             user.application_roles.remove(*list(organisation_related_application_roles))
 

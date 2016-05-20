@@ -1,32 +1,17 @@
 {% extends "base.html" %}
 {% load i18n static %}
 
-{% block extrastyle %}
-{% if brand == "DWBN" %}
-<style type="text/css">
-body {
-	padding-top: 0;
-}
-</style>
-{% endif %}
-{% endblock extrastyle %}
-
 {% block title %}{% trans 'Log in' %}{% endblock %}
 
 {% block bodyclass %}dwbn-{{ display }}{% endblock %}
 
-{% block navbar %}
-{% if brand == "DWBN" %}
-<div id="dwbn-logo-header"><div class=" container"><div id="dwbn-diamondway-logo">&nbsp;</div></div></div>
-{% endif %}
-{% endblock navbar %}
-
-
 {% block content %}
 <form class="dwbn-form-signin" method="post" id="login-form">{% csrf_token %}
 
+    {% block form-signin-heading %}
     <h3 class="dwbn-form-signin-heading">{% blocktrans %}Log in with your {{ brand }} account{% endblocktrans %}</h3>
-    
+    {% endblock %}
+
     {% if messages %}{% for message in messages %}
         <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
     {% endif %}

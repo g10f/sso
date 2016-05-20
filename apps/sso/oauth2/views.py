@@ -100,7 +100,7 @@ def openid_configuration(request):
     """
     http://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig
     """
-    base_uri = base_url(request)
+    base_uri = base_url(request)  # 'http://10.0.2.2:8000'  # for android local client test
     configuration = {
         "issuer": base_uri,
         "authorization_endpoint": '%s%s' % (base_uri, reverse('oauth2:authorize')),
