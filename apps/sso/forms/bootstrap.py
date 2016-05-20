@@ -80,9 +80,9 @@ class ReadOnlyWidget(forms.Widget):
 class YesNoWidget(ReadOnlyWidget):
     def render(self, name, value, attrs=None):
         if value:
-            value = '<span class="glyphicon glyphicon-ok-sign"></span>'
+            value = '<span class="glyphicon glyphicon-check"></span>'
         else:
-            value = '<span class="glyphicon glyphicon-minus-sign"></span>'
+            value = '<span class="glyphicon glyphicon-unchecked""></span>'
         return super(YesNoWidget, self).render(name, value, attrs)
             
     
