@@ -1,30 +1,9 @@
 {% extends "base.html" %}
 {% load i18n static %}
 
-{% block extrastyle %}
-    {% if brand == "DWBN" %}
-        <style type="text/css">
-            body {
-                padding-top: 0;
-            }
-        </style>
-    {% endif %}
-{% endblock extrastyle %}
-
 {% block title %}{% trans 'Log in' %}{% endblock %}
 
 {% block bodyclass %}dwbn-{{ display }}{% endblock %}
-
-{% block navbar %}
-    {% if brand == "DWBN" %}
-        <div id="dwbn-logo-header">
-            <div class=" container">
-                <div id="dwbn-diamondway-logo">&nbsp;</div>
-            </div>
-        </div>
-    {% endif %}
-{% endblock navbar %}
-
 
 {% block content %}
     <form class="dwbn-form-signin" action="" method="post">{% csrf_token %}

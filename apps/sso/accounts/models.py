@@ -4,6 +4,7 @@ import re
 import uuid
 from itertools import chain
 
+from django.db.utils import IntegrityError
 from sorl import thumbnail
 
 from current_user.models import CurrentUserField
@@ -828,6 +829,9 @@ class User(AbstractBaseUser, PermissionsMixin):
                 self.application_roles.add(*app_roles)
             except ObjectDoesNotExist:
                 logger.warning("Application %s does not exist" % app_roles_dict_item['uuid'])
+            except IntegrityError as e:
+                # programming error?
+                logger.exception(e)
 
 
 class OrganisationChange(AbstractBaseModel):

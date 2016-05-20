@@ -12,14 +12,14 @@ env.apps = ['sso', 'password']
 configurations = {
     'dev': {'host_string': 'sso.dwbn.org', 'server_name': 'sso-dev.dwbn.org', 'app': 'sso', 'virtualenv': 'sso-dev', 'db_name': 'sso_dev', 'branch': 'master'},
     'prod': {'host_string': 'sso.dwbn.org', 'server_name': 'sso.dwbn.org', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'sso', 'branch': 'master'},
-    'g10f': {'host_string': 'g10f', 'server_name': 'sso.g10f.de', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'sso', 'branch': 'master'},
+    'g10f': {'host_string': 'g10f', 'server_name': 'sso.g10f.de', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'sso', 'branch': 'master', 'bind': "127.0.0.1:8080", 'server': '127.0.0.1:6081'},
     'elsapro': {'host_string': 'g10f', 'server_name': 'sso.elsapro.com', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'vw_sso', 'branch': 'master'},
 }
 
 LOGROTATE_TEMPLATE = """\
 %(code_dir)s/logs/*.log {
     monthly
-    missingokv
+    missingok
     rotate 12
     compress
     delaycompress
@@ -105,7 +105,7 @@ server {
 
 HTTP2_PROXIED_SITE_TEMPLATE = """\
 upstream %(server_name)s.backend {
-    server unix:/tmp/%(server_name)s.gunicorn.sock;
+    server %(server)s;
 }
 server {
     listen [::]:80;
@@ -182,7 +182,7 @@ ssl_ciphers 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA
 GUNICORN_TEMPLATE = """\
 import multiprocessing
 import os
-bind = "unix:/tmp/%(server_name)s.gunicorn.sock"
+bind = "%(bind)s"
 workers = multiprocessing.cpu_count() + 2
 pythonpath = '%(code_dir)s/src/apps'
 errorlog = '%(code_dir)s/logs/gunicorn-error.log'
@@ -387,7 +387,8 @@ def deploy_http2_webserver(conf='dev'):
     fabtools.require.files.template_file('%(code_dir)s/config/nginx.expired.conf' % context, template_contents=NGINX_EXPIRED_TEMPLATE, use_sudo=True, owner='www-data', group='www-data')
     fabtools.require.files.template_file('%(code_dir)s/config/nginx.webfonts.conf' % context, template_contents=NGINX_WEBFONTS_TEMPLATE, use_sudo=True, owner='www-data', group='www-data')
 
-    fabtools.require.nginx.site(server_name, template_contents=HTTP2_PROXIED_SITE_TEMPLATE, docroot=docroot, code_dir=code_dir, cert=server_name)
+    server = configuration.get('server', configuration.get('bind', "unix:/tmp/%s.gunicorn.sock" % server_name))
+    fabtools.require.nginx.site(server_name, template_contents=HTTP2_PROXIED_SITE_TEMPLATE, docroot=docroot, code_dir=code_dir, cert=server_name, server=server)
 
 
 def setup_user(user):
@@ -407,6 +408,19 @@ def update_dir_settings(directory):
     sudo("chown www-data:www-data -R %s" % directory)  
     sudo("chmod 0660 -R %s" % directory)
     sudo("chmod +X %s" % directory)
+
+
+@task
+def dwbn_activate_expiration(center_id, conf='dev'):
+    configuration = configurations.get(conf)
+    server_name = configuration['server_name']
+    virtualenv = configuration['virtualenv']
+    code_dir = '/proj/%s' % server_name
+    env.host_string = configuration['host_string']
+    python = '/envs/%(virtualenv)s/bin/python' % {'virtualenv': virtualenv}
+
+    with cd(code_dir):
+        run("%(python)s ./src/apps/manage.py dwbn_activate_expiration %(center_id)s" % {'python': python, 'center_id': center_id})
 
 
 @task
@@ -455,10 +469,12 @@ def deploy(conf='dev'):
             fabtools.require.python.requirements('src/requirements.txt')
     
     # fabtools.require.file('/envs/%(virtualenv)s/lib/python2.7/sitecustomize.py' % {'virtualenv': virtualenv}, source='apps/sitecustomize.py')
+    """
     # configure gunicorn
+    bind = configuration.get('bind', "unix:/tmp/%s.gunicorn.sock" % server_name)
     fabtools.require.directory('%(code_dir)s/config' % {'code_dir': code_dir}, use_sudo=True, owner="www-data", mode='770')
     config_filename = '%(code_dir)s/config/gunicorn_%(server_name)s.py' % {'code_dir': code_dir, 'server_name': server_name}
-    context = {'server_name': server_name, 'code_dir': code_dir}
+    context = {'bind': bind, 'code_dir': code_dir}
     fabtools.require.files.template_file(config_filename, template_contents=GUNICORN_TEMPLATE, context=context, use_sudo=True)
     
     # Require a supervisor process for our app
@@ -485,7 +501,6 @@ def deploy(conf='dev'):
     config_filename = '/etc/logrotate.d/%(server_name)s' % {'server_name': server_name}
     context = {'code_dir': code_dir}
     fabtools.require.files.template_file(config_filename, template_contents=LOGROTATE_TEMPLATE, context=context, use_sudo=True)
-    """
 
     python = '/envs/%(virtualenv)s/bin/python' % {'virtualenv': virtualenv}
     with cd(code_dir):
