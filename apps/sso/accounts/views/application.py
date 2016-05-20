@@ -25,7 +25,7 @@ from sso.views.generic import ListView
 from sso.accounts.models import User, UserEmail
 from sso.accounts.email import send_account_created_email
 from sso.organisations.models import Organisation, is_validation_period_active
-from sso.accounts.forms import UserAddForm, UserProfileForm, UserEmailForm, AppAdminUserProfileForm
+from sso.accounts.forms import UserAddForm, UserProfileForm, UserEmailForm, AppAdminUserProfileForm, CenterProfileForm
 from sso.forms.helpers import ChangedDataList, log_change, ErrorList
 from filter import AdminRegionFilter, ApplicationRoleFilter, CenterFilter, CountryFilter, IsActiveFilter, RoleProfileFilter, UserSearchFilter
 from sso.views.main import OrderByWithNulls
@@ -302,15 +302,8 @@ def add_user_done(request, uuid, template='accounts/application/add_user_done.ht
     data = {'new_user': new_user, 'redirect_uri': redirect_uri, 'title': _('Add user')}
     return render(request, template, data)
 
-    
-@admin_login_required
-@user_passes_test(lambda u: u.is_user_admin)
-@permission_required('accounts.change_user', raise_exception=True)
-def update_user(request, uuid, template='accounts/application/update_user_form.html'):
-    if not request.user.has_user_access(uuid):
-        raise PermissionDenied
-    user = get_object_or_404(get_user_model(), uuid=uuid)
 
+def _update_standard_user(request, user, template='accounts/application/update_user_form.html'):
     if user.useremail_set.count() == 0:
         useremail_extra = 1
     else:
@@ -389,6 +382,56 @@ def update_user(request, uuid, template='accounts/application/update_user_form.h
     dictionary = {'form': form, 'errors': errors, 'formsets': formsets, 'media': media, 'active': active,
                   'logged_in': logged_in, 'is_validation_period_active': is_validation_period_active(user_organisation), 'title': _('Change user')}
     return render(request, template, dictionary)
+
+
+def _update_center_account(request, user, template='accounts/application/update_center_form.html'):
+    if request.method == 'POST':
+        form = CenterProfileForm(request.POST, instance=user, request=request)
+
+        if form.is_valid():
+            user = form.save()
+
+            change_message = ChangedDataList(form, []).change_message()
+            log_change(request, user, change_message)
+
+            msg_dict = {'name': force_text(get_user_model()._meta.verbose_name), 'obj': force_text(user)}
+            if "_addanother" in request.POST:
+                msg = _('The %(name)s "%(obj)s" was changed successfully. You may add another %(name)s below.') % msg_dict
+                success_url = reverse('accounts:add_user')
+            elif "_continue" in request.POST:
+                msg = _('The %(name)s "%(obj)s" was changed successfully. You may edit it again below.') % msg_dict
+                success_url = reverse('accounts:update_user', args=[user.uuid.hex])
+            else:
+                msg = _('The %(name)s "%(obj)s" was changed successfully.') % msg_dict
+                success_url = reverse('accounts:user_list') + "?" + request.GET.urlencode()
+            messages.add_message(request, level=messages.SUCCESS, message=msg, fail_silently=True)
+            return HttpResponseRedirect(success_url)
+
+    else:
+        form = CenterProfileForm(instance=user, request=request)
+
+    if (user.last_login is None) or (user.last_login - user.date_joined) < timedelta(seconds=1):
+        logged_in = False
+    else:
+        logged_in = True
+
+    dictionary = {'form': form, 'logged_in': logged_in, 'title': _('Change user')}
+    return render(request, template, dictionary)
+
+
+@admin_login_required
+@user_passes_test(lambda u: u.is_user_admin)
+@permission_required('accounts.change_user', raise_exception=True)
+def update_user(request, uuid):
+    if not request.user.has_user_access(uuid):
+        raise PermissionDenied
+    user = get_object_or_404(get_user_model(), uuid=uuid)
+
+    # we use different forms for different kind of users
+    if getattr(user, 'is_center', True):
+        return _update_center_account(request, user)
+    else:
+        return _update_standard_user(request, user)
 
 
 @admin_login_required

@@ -501,8 +501,6 @@ class CenterSelfProfileForm(forms.Form):
     """
     account_type = bootstrap.ReadOnlyField(label=_("Account type"))
     username = bootstrap.ReadOnlyField(label=_("Username"))
-    first_name = bootstrap.ReadOnlyField(label=_('First name'))
-    last_name = bootstrap.ReadOnlyField(label=_('Last name'))
     email = bootstrap.ReadOnlyField(label=_('Email address'))
     language = forms.ChoiceField(label=_("Language"), required=False, choices=(BLANK_CHOICE_DASH + sorted(list(settings.LANGUAGES), key=lambda x: x[1])), widget=bootstrap.Select())
     timezone = forms.ChoiceField(label=_("Timezone"), required=False, choices=BLANK_CHOICE_DASH + zip(pytz.common_timezones, pytz.common_timezones), widget=bootstrap.Select())
@@ -622,8 +620,6 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
                           widget=bootstrap.SelectDateWidget(years=range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1), required=False))
     is_active = forms.BooleanField(label=_('Active'), help_text=_('Designates whether this user should be treated as active. Unselect this instead of deleting accounts.'),
                                    widget=bootstrap.CheckboxInput(), required=False)
-    is_center = forms.BooleanField(label=_('Organisation'), help_text=_('Designates that this user is representing a organisation and not a private person.'),
-                                   widget=bootstrap.CheckboxInput(), required=False)
     organisations = forms.ModelChoiceField(queryset=None, required=False, label=_("Organisation"), widget=bootstrap.Select())
     application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
     notes = forms.CharField(label=_("Notes"), required=False, max_length=1024, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
@@ -683,7 +679,6 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
         self.user.gender = cd['gender']
         self.user.dob = cd['dob']
         self.user.is_active = cd['is_active']
-        self.user.is_center = cd['is_center']
         self.user.notes = cd['notes']
 
         if extend_validity:
@@ -691,6 +686,56 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
             self.user.valid_until = now() + datetime.timedelta(days=settings.SSO_VALIDATION_PERIOD_DAYS)
             extend_user_validity.send_robust(sender=self.__class__, user=self.user)
 
+        self.user.save()
+
+        return self.user
+
+
+class CenterProfileForm(mixins.UserRolesMixin, forms.Form):
+    """
+    Form for SSO Staff for editing Center Accounts
+    """
+    account_type = bootstrap.ReadOnlyField(label=_("Account type"))
+    username = bootstrap.ReadOnlyField(label=_("Username"))
+    email = bootstrap.ReadOnlyField(label=_('Email address'))
+
+    is_active = forms.BooleanField(label=_('Active'), help_text=_('Designates whether this user should be treated as active. Unselect this instead of deleting accounts.'),
+                                   widget=bootstrap.CheckboxInput(), required=False)
+    notes = forms.CharField(label=_("Notes"), required=False, max_length=1024, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
+    application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
+    role_profiles = forms.MultipleChoiceField(required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
+                                              help_text=_('Groups of application roles that are assigned together.'))
+
+    created_by_user = forms.CharField(label=_("Created by"), required=False, widget=bootstrap.TextInput(attrs={'disabled': ''}))
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request')
+        self.user = kwargs.pop('instance')
+        user_data = model_to_dict(self.user)
+        user_data['account_type'] = _('Organisation Account') if self.user.is_center else _('Member Account')
+        user_data['email'] = str(self.user.primary_email())
+        initial = kwargs.get('initial', {})
+        initial.update(user_data)
+        kwargs['initial'] = initial
+        super(CenterProfileForm, self).__init__(*args, **kwargs)
+
+        self.fields['application_roles'].queryset = self.request.user.get_administrable_application_roles()
+        self.fields['role_profiles'].choices = [(role_profile.id, role_profile) for role_profile in self.request.user.get_administrable_role_profiles()]
+        # add custom data
+        self.fields['role_profiles'].dictionary = {str(role_profile.id): role_profile for role_profile in self.request.user.get_administrable_role_profiles()}
+
+        if self.user.organisations.exists():
+            organisation = u', '.join([x.__unicode__() for x in self.user.organisations.all()])
+            organisation_field = bootstrap.ReadOnlyField(initial=organisation, label=_("Organisation"))
+            self.fields['organisation'] = organisation_field
+
+    def save(self, extend_validity=False):
+        cd = self.cleaned_data
+        current_user = self.request.user
+        self.update_user_m2m_fields('application_roles', current_user)
+        self.update_user_m2m_fields('role_profiles', current_user)
+        self.user.is_active = cd['is_active']
+        self.user.notes = cd['notes']
         self.user.save()
 
         return self.user
