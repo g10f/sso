@@ -12,7 +12,7 @@ from django.utils.crypto import get_random_string
 from django.utils import timezone
 from oauthlib import oauth2, uri_validate
 from oauthlib.oauth2.rfc6749.tokens import random_token_generator
-from .models import BearerToken, RefreshToken, AuthorizationCode, Client, check_redirect_uri
+from .models import BearerToken, RefreshToken, AuthorizationCode, Client, check_redirect_uri, CONFIDENTIAL_CLIENTS
 from .crypt import loads_jwt, make_jwt, MAX_AGE
 from sso.auth import get_session_auth_hash
 
@@ -148,6 +148,7 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
 
     # Token request
     def authenticate_client(self, request, *args, **kwargs):
+        # is called for confidential clients
         # Whichever authentication method suits you, HTTP Basic might work
         if request.grant_type in ['client_credentials', 'password', 'refresh_token']:
             # http://tools.ietf.org/html/rfc6749#section-4.4
@@ -159,11 +160,11 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
                 
         try:
             # 1. check the client_id
-            client = Client.objects.get(uuid=request.client_id, is_active=True)
+            client = self._get_client(request.client_id, request)
             # 2. check client_secret except for native clients
-            if client.type != "native" and client.client_secret != request.client_secret:
+            # if client.type != "native" and client.client_secret != request.client_secret:
+            if client.client_secret != request.client_secret:
                 raise ObjectDoesNotExist('client_secret does not match')
-            request.client = client
 
             # 3. check that a user is associated to the client for grant_type == 'client_credentials'
             if request.grant_type == 'client_credentials':
@@ -184,8 +185,14 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
         return False
 
     def authenticate_client_id(self, client_id, request, *args, **kwargs):
-        # Don't allow public (non-authenticated) clients
-        return False
+        # is called for non-confidential clients
+        # Ensure client_id belong to a non-confidential client.
+        client = self._get_client(client_id, request)
+        if client.type in CONFIDENTIAL_CLIENTS:
+            return False
+        else:
+            request.client_id = client_id
+            return True
 
     def validate_code(self, client_id, code, client, request, *args, **kwargs):
         # Validate the code belongs to the client. Add associated scopes
@@ -293,7 +300,17 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
             request.user = user
             return True
         return False
-    
+
+    def client_authentication_required(self, request, *args, **kwargs):
+        client = self._get_client(request.client_id, request)
+        if client.type in CONFIDENTIAL_CLIENTS:
+            return True
+        else:
+            return False
+
+    def revoke_token(self, token, token_type_hint, request, *args, **kwargs):
+        RefreshToken.objects.filter(token=token).delete()
+
 
 class OpenIDConnectBearerToken(oauth2.BearerToken):
     """
@@ -452,7 +469,7 @@ class OpenIDConnectImplicitGrant(oauth2.ImplicitGrant):
         }
 
 
-class OAuthServer(oauth2.AuthorizationEndpoint, oauth2.TokenEndpoint, oauth2.ResourceEndpoint):
+class OAuthServer(oauth2.AuthorizationEndpoint, oauth2.TokenEndpoint, oauth2.ResourceEndpoint, oauth2.RevocationEndpoint):
     """An  endpoint featuring authorization code and implicit grant types."""
 
     def __init__(self, request_validator, *args, **kwargs):
@@ -478,6 +495,7 @@ class OAuthServer(oauth2.AuthorizationEndpoint, oauth2.TokenEndpoint, oauth2.Res
                                                    },
                                       default_token_type=bearer)
         oauth2.ResourceEndpoint.__init__(self, default_token='Bearer', token_types={'Bearer': bearer})
+        oauth2.RevocationEndpoint.__init__(self, request_validator, supported_token_types=('refresh_token', ))
 
 
 server = OAuthServer(OAuth2RequestValidator())

@@ -106,6 +106,7 @@ def openid_configuration(request):
         "authorization_endpoint": '%s%s' % (base_uri, reverse('oauth2:authorize')),
         "token_endpoint": '%s%s' % (base_uri, reverse('oauth2:token')),
         "userinfo_endpoint": '%s%s' % (base_uri, reverse('api:v2_users_me')),
+        "revocation_endpoint": '%s%s' % (base_uri, reverse('oauth2:revoke')),
         "jwks_uri": '%s%s' % (base_uri, reverse('oauth2:jwks')),
         "scopes_supported": 
             ['openid', 'profile', 'email', 'role', 'offline_access', 'address', 'phone', 'users', 'picture'],
@@ -126,7 +127,7 @@ def openid_configuration(request):
         "end_session_endpoint": '%s%s' % (base_uri, reverse('accounts:logout')),
         "check_session_iframe": '%s%s' % (base_uri, reverse('oauth2:session')),
         "certs_uri": '%s%s' % (base_uri, reverse('oauth2:certs')),
-        "profile_uri": '%s%s' % (base_uri, reverse('accounts:profile'))
+        "profile_uri": '%s%s' % (base_uri, reverse('accounts:profile')),
     }
     return JsonHttpResponse(configuration, request, allow_jsonp=True)
 
@@ -271,6 +272,16 @@ def token(request):
     uri, http_method, body, headers = extract_params(request)
     credentials = {}
     headers, body, status = server.create_token_response(uri, http_method, body, headers, credentials)
+    response = HttpResponse(content=body, status=status)
+    for k, v in headers.items():
+        response[k] = v
+    return response
+
+
+@csrf_exempt
+def revoke(request):
+    uri, http_method, body, headers = extract_params(request)
+    headers, body, status = server.create_revocation_response(uri, http_method=http_method, body=body, headers=headers)
     response = HttpResponse(content=body, status=status)
     for k, v in headers.items():
         response[k] = v
