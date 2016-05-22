@@ -70,6 +70,8 @@ CLIENT_TYPES = [
     ('trusted', _('Trusted Client'))  # grant_type=password
 ]
 
+CONFIDENTIAL_CLIENTS = ['web', 'service', 'trusted']
+
 
 def get_default_secret():
     return get_random_string(30)

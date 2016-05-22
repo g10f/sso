@@ -4,6 +4,7 @@ import views
 urlpatterns = [
     url(r'^client/(?P<object_id>.+)/$', views.client_details, name='client.details.json'),
     url(r'^authorize/$', views.authorize, name='authorize'),
+    url(r'^revoke/$', views.revoke, name='revoke'),
     url(r'^certs/$', views.certs, name='certs'),
     url(r'^jwks/$', views.jwks, name='jwks'),    
     url(r'^token/$', views.token, name='token'),
