@@ -3,6 +3,7 @@ from django.conf import settings
 
 register = template.Library()
 
+
 @register.inclusion_tag("googleanalytics/tracker.html")
 def show_tracker(secure=False):
     """

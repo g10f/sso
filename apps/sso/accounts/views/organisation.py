@@ -20,6 +20,7 @@ from sso.accounts.views.filter import OrganisationChangeCountryFilter, Organisat
 from sso.auth.decorators import admin_login_required
 from sso.oauth2.models import allowed_hosts
 from sso.organisations.models import is_validation_period_active
+from sso.signals import user_organisation_change_request
 from sso.utils.url import get_safe_redirect_uri
 from sso.views import main
 from sso.views.generic import ListView, SearchFilter
@@ -124,7 +125,12 @@ class OrganisationChangeUpdateView(SingleObjectTemplateResponseMixin, ModelFormM
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        return super(OrganisationChangeUpdateView, self).form_valid(form)
+        response = super(OrganisationChangeUpdateView, self).form_valid(form)
+        if 'organisation' in form.changed_data:
+            # enable brand specific modification
+            user_organisation_change_request.send_robust(sender=self.__class__, organisation_change=form.instance)
+
+        return response
 
 
 class OrganisationChangeAcceptView(FormView):
