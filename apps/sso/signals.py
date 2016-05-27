@@ -11,3 +11,6 @@ extend_user_validity = django.dispatch.Signal(providing_args=["user"])
 
 # a user m2m field was updated in the frontend application
 user_m2m_field_updated = django.dispatch.Signal(providing_args=["user", "attribute_name", "delete_pk_list", "add_pk_list"])
+
+# a user want's to change the organisation
+user_organisation_change_request = django.dispatch.Signal(providing_args=["organisation_change"])

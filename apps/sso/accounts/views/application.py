@@ -163,7 +163,7 @@ class UserList(ListView):
         filters = [country_filter, admin_region_filter, center_filter, role_profile_filter, application_role_filter]
         if user.is_user_admin:
             filters += [IsActiveFilter().get(self)]
-        
+
         context = {
             'result_headers': headers,
             'num_sorted_fields': num_sorted_fields,

@@ -1,5 +1,6 @@
 {% extends 'base_site.html' %}
 {% load i18n list tz static thumbnail %}
+{% load accounts %}
 
 {% block title %}{% trans 'User List' %}{% endblock %}
 
@@ -66,7 +67,7 @@
                         <td>{{ user_obj.last_login|date:"Y-m-d H:i" }}</td>
                         <td>{{ user_obj.date_joined|date:"Y-m-d H:i" }}</td>
                         {% if sso_validation_period_is_active %}
-                            <td>{{ user_obj.valid_until|date:"Y-m-d H:i" }}</td>
+                            <td class="{{ user_obj|valid_until_class }}">{{ user_obj.valid_until|date:"Y-m-d H:i" }}</td>
                         {% endif %}
                     </tr>
                 {% endfor %}
