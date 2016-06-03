@@ -41,7 +41,7 @@
 	           {% for object in object_list %}
 	           <tr> 
 	               <td><a class="" href="{% url 'accounts:organisationchange_accept' object.pk %}">{{ object.user.username }}</a></td>
-	               <td>{{ object.user.organisations.first }}</td>
+	               <td>{{ object.user.organisations.first|default_if_none:"" }}</td>
 	               <td>{{ object.organisation }}</td>
 	               <td>{{ object.reason }}</td>
 	               <td>{{ object.user.primary_email|default_if_none:"" }}</td>
