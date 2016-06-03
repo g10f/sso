@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-03 21:51+0200\n"
+"POT-Creation-Date: 2016-06-03 22:01+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1765,15 +1765,15 @@ msgstr "Benutzer hinzufügen"
 msgid "The account %(username)s has no email address!"
 msgstr "Zu dem Konto %(username)s wurde keine E-Mail Adresse angegeben!"
 
-#: accounts/views/application.py:336 accounts/views/application.py:402
+#: accounts/views/application.py:336 accounts/views/application.py:401
 #, python-format
 msgid ""
 "The %(name)s \"%(obj)s\" was changed successfully. You may add another "
 "%(name)s below."
 msgstr ""
 
-#: accounts/views/application.py:339 accounts/views/application.py:405
-#: accounts/views/application.py:458 organisations/views/__init__.py:69
+#: accounts/views/application.py:339 accounts/views/application.py:404
+#: accounts/views/application.py:457 organisations/views/__init__.py:69
 #: registration/views.py:178 views/generic.py:237
 #, python-format
 msgid ""
@@ -1790,18 +1790,18 @@ msgstr ""
 "%(name)s \"%(obj)s\" wurde erfolgreich geändert und eine Email Einladung "
 "wurde erneut versendet."
 
-#: accounts/views/application.py:346 accounts/views/application.py:408
-#: accounts/views/application.py:461 organisations/views/__init__.py:77
+#: accounts/views/application.py:346 accounts/views/application.py:407
+#: accounts/views/application.py:460 organisations/views/__init__.py:77
 #: registration/views.py:182 views/generic.py:240
 #, python-format
 msgid "The %(name)s \"%(obj)s\" was changed successfully."
 msgstr ""
 
-#: accounts/views/application.py:386 accounts/views/application.py:421
+#: accounts/views/application.py:385 accounts/views/application.py:420
 msgid "Change user"
 msgstr "Benutzer bearbeiten"
 
-#: accounts/views/application.py:482
+#: accounts/views/application.py:481
 msgid "Change user roles"
 msgstr "Benutzer Rollen bearbeiten"
 
