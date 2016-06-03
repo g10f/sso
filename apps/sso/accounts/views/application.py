@@ -22,7 +22,7 @@ from sso.oauth2.models import allowed_hosts
 from sso.auth.decorators import admin_login_required
 from sso.views import main
 from sso.views.generic import ListView
-from sso.accounts.models import User, UserEmail
+from sso.accounts.models import User, UserEmail, ApplicationRole
 from sso.accounts.email import send_account_created_email
 from sso.organisations.models import Organisation, is_validation_period_active
 from sso.accounts.forms import UserAddForm, UserProfileForm, UserEmailForm, AppAdminUserProfileForm, CenterProfileForm
@@ -379,7 +379,9 @@ def _update_standard_user(request, user, template='accounts/application/update_u
     except ObjectDoesNotExist:
         user_organisation = None
 
-    dictionary = {'form': form, 'errors': errors, 'formsets': formsets, 'media': media, 'active': active,
+    app_roles_by_profile = {str(id) for id in ApplicationRole.objects.filter(roleprofile__user__id=user.pk).only("id").values_list('id', flat=True)}
+
+    dictionary = {'form': form, 'errors': errors, 'formsets': formsets, 'media': media, 'active': active, 'app_roles_by_profile': app_roles_by_profile,
                   'logged_in': logged_in, 'is_validation_period_active': is_validation_period_active(user_organisation), 'title': _('Change user')}
     return render(request, template, dictionary)
 

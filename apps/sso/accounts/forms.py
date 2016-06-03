@@ -621,7 +621,8 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
     is_active = forms.BooleanField(label=_('Active'), help_text=_('Designates whether this user should be treated as active. Unselect this instead of deleting accounts.'),
                                    widget=bootstrap.CheckboxInput(), required=False)
     organisations = forms.ModelChoiceField(queryset=None, required=False, label=_("Organisation"), widget=bootstrap.Select())
-    application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
+    application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"),
+                                                       help_text=_('* Application roles wich are included by role profiles'))
     notes = forms.CharField(label=_("Notes"), required=False, max_length=1024, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
     role_profiles = forms.MultipleChoiceField(required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
                                               help_text=_('Groups of application roles that are assigned together.'))
