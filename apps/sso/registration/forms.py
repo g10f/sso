@@ -57,7 +57,8 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
     verified_by_user = forms.CharField(label=_("Verified by"), help_text=_('administrator who verified the user'), required=False, widget=bootstrap.TextInput(attrs={'disabled': ''}))
     is_verified = forms.BooleanField(label=_("Is verified"), help_text=_('Designates if the user was verified by another administrator'), required=False)    
     organisations = forms.ModelChoiceField(queryset=None, label=_("Organisation"), widget=bootstrap.Select(), required=False)
-    application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple, label=_("Application roles"))
+    application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple, label=_("Application roles"),
+                                                       help_text=_('* Application roles which are included by role profiles'))
     check_back = forms.BooleanField(label=_("Check back"), help_text=_('Designates if there are open questions to check.'), required=False)    
     is_access_denied = forms.BooleanField(label=_("Access denied"), help_text=_('Designates if access is denied to the user.'), required=False)    
     role_profiles = forms.MultipleChoiceField(required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),

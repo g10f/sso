@@ -12,6 +12,7 @@ from django.utils.decorators import method_decorator
 from l10n.models import Country
 from django.utils.encoding import force_text
 from django.core.urlresolvers import reverse, reverse_lazy
+from sso.accounts.models import ApplicationRole
 from sso.auth.decorators import admin_login_required
 from sso.organisations.models import is_validation_period_active_for_user
 from sso.views import main
@@ -198,7 +199,9 @@ def update_user_registration(request, pk, template='registration/change_user_reg
     else:
         registrationprofile_form = RegistrationProfileForm(instance=registrationprofile, request=request)
 
-    data = {'form': registrationprofile_form, 'title': _('Edit registration')}
+    app_roles_by_profile = {str(id) for id in ApplicationRole.objects.filter(roleprofile__user__id=registrationprofile.user.pk).only("id").values_list('id', flat=True)}
+
+    data = {'form': registrationprofile_form, 'app_roles_by_profile': app_roles_by_profile, 'title': _('Edit registration')}
     return render(request, template, data)
 
 
