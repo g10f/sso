@@ -71,7 +71,8 @@
         </div>        
    
       <div class="tab-pane" id="app_roles">
-      {#% comment %#}
+        {% include 'accounts/includes/_app_roles_field.html' with field=form.application_roles %}
+        {% comment %}
             {% with field=form.application_roles %}
             <div class="form-group {% if field.errors %}has-error{% endif %}">
                <div class="dwbn-form-control_lg">
@@ -79,7 +80,7 @@
                </div>
             </div>
             {% endwith %}
-      {#% endcomment %#}
+        {% endcomment %}
       </div>
         
 		<div class="tab-pane" id="notes">
