@@ -1,5 +1,5 @@
-<div class="form-group">
-  <label class="control-label">{{ field.label }}</label> 
+<div class="form-group {{ extra_class }}">
+  <label class="control-label" >{{ field.label }}</label>
   <div class="dwbn-form-control">
        <p class="form-control-static">{{ field.value|default_if_none:"" }}</p>
   </div>

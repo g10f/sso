@@ -46,13 +46,13 @@
 
         <div class="tab-content">
             <div class="tab-pane {% if not active or active == "object" %}active{% endif %}" id="object">
-
+                {% if not form.user.is_active %}
+                    {% include 'include/_static_field.html' with field=form.status extra_class="bg-danger" %}
+                {% endif %}
                 {% include 'include/_field.html' with field=form.account_type %}
                 {% include 'include/_field.html' with field=form.username %}
                 {% include 'include/_field.html' with field=form.organisation %}
                 {% include 'include/_field.html' with field=form.email %}
-                {% include 'include/_field.html' with field=form.is_active %}
-
                 {% include 'accounts/includes/_profiles_field.html' with field=form.role_profiles %}
             </div>
             <div class="tab-pane" id="app_roles">
@@ -83,6 +83,11 @@
 
         <div class="form-group">
             <div class="dwbn-form-control_lg">
+                {% if form.user.is_active %}
+                    <button type="submit" class="btn btn-danger" name="_deactivate">{% trans 'Block User' %}</button>
+                {% else %}
+                    <button type="submit" class="btn btn-success" name="_activate">{% trans 'Activate User' %}</button>
+                {% endif %}
                 {% if perms.accounts.delete_user and not form.user.is_active %}
                     <a class="btn btn-default" href="{% url 'accounts:delete_user' form.user.uuid.hex %}">{% trans 'Delete User' %}</a>
                 {% endif %}
