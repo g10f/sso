@@ -618,8 +618,7 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
     gender = forms.ChoiceField(label=_('Gender'), required=False, choices=(BLANK_CHOICE_DASH + User.GENDER_CHOICES), widget=bootstrap.Select())
     dob = forms.DateField(label=_('Date of birth'), required=False,
                           widget=bootstrap.SelectDateWidget(years=range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1), required=False))
-    is_active = forms.BooleanField(label=_('Active'), help_text=_('Designates whether this user should be treated as active. Unselect this instead of deleting accounts.'),
-                                   widget=bootstrap.CheckboxInput(), required=False)
+    status = bootstrap.ReadOnlyField(label=_('Status'))
     organisations = forms.ModelChoiceField(queryset=None, required=False, label=_("Organisation"), widget=bootstrap.Select())
     application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"),
                                                        help_text=_('* Application roles which are included by role profiles'))
@@ -634,6 +633,7 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
         self.request = kwargs.pop('request')
         self.user = kwargs.pop('instance')
         user_data = model_to_dict(self.user)
+        user_data['status'] = _('active') if self.user.is_active else _('blocked')
         try:
             # the user should have exactly 1 center 
             user_data['organisations'] = self.user.organisations.first()
@@ -666,7 +666,7 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
             return username
         raise forms.ValidationError(self.error_messages['duplicate_username'])
 
-    def save(self, extend_validity=False):
+    def save(self, extend_validity=False, activate=None):
         cd = self.cleaned_data
         current_user = self.request.user
 
@@ -679,7 +679,8 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
         self.user.last_name = cd['last_name']
         self.user.gender = cd['gender']
         self.user.dob = cd['dob']
-        self.user.is_active = cd['is_active']
+        if activate is not None:
+            self.user.is_active = activate
         self.user.notes = cd['notes']
 
         if extend_validity:
@@ -697,11 +698,9 @@ class CenterProfileForm(mixins.UserRolesMixin, forms.Form):
     Form for SSO Staff for editing Center Accounts
     """
     account_type = bootstrap.ReadOnlyField(label=_("Account type"))
+    status = bootstrap.ReadOnlyField(label=_('Status'))
     username = bootstrap.ReadOnlyField(label=_("Username"))
     email = bootstrap.ReadOnlyField(label=_('Email address'))
-
-    is_active = forms.BooleanField(label=_('Active'), help_text=_('Designates whether this user should be treated as active. Unselect this instead of deleting accounts.'),
-                                   widget=bootstrap.CheckboxInput(), required=False)
     notes = forms.CharField(label=_("Notes"), required=False, max_length=1024, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
     application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
     role_profiles = forms.MultipleChoiceField(required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
@@ -714,6 +713,7 @@ class CenterProfileForm(mixins.UserRolesMixin, forms.Form):
         self.user = kwargs.pop('instance')
         user_data = model_to_dict(self.user)
         user_data['account_type'] = _('Organisation Account') if self.user.is_center else _('Member Account')
+        user_data['status'] = _('active') if self.user.is_active else _('blocked')
         user_data['email'] = str(self.user.primary_email())
         initial = kwargs.get('initial', {})
         initial.update(user_data)
@@ -730,13 +730,14 @@ class CenterProfileForm(mixins.UserRolesMixin, forms.Form):
             organisation_field = bootstrap.ReadOnlyField(initial=organisation, label=_("Organisation"))
             self.fields['organisation'] = organisation_field
 
-    def save(self, extend_validity=False):
+    def save(self, extend_validity=False, activate=None):
         cd = self.cleaned_data
         current_user = self.request.user
         self.update_user_m2m_fields('application_roles', current_user)
         self.update_user_m2m_fields('role_profiles', current_user)
-        self.user.is_active = cd['is_active']
         self.user.notes = cd['notes']
+        if activate is not None:
+            self.user.is_active = activate
         self.user.save()
 
         return self.user

@@ -316,9 +316,15 @@ def _update_standard_user(request, user, template='accounts/application/update_u
         user_email_inline_formset = UserEmailInlineFormSet(request.POST, instance=user)
 
         if form.is_valid() and user_email_inline_formset.is_valid():
+            activate = None
+            if "_deactivate" in request.POST:
+                activate = False
+            elif "_activate" in request.POST:
+                activate = True
+
             extend_validity = "_extend_validity" in request.POST
 
-            user = form.save(extend_validity)
+            user = form.save(extend_validity, activate=activate)
             user_email_inline_formset.save()
 
             if not user.useremail_set.exists():
@@ -332,6 +338,7 @@ def _update_standard_user(request, user, template='accounts/application/update_u
             log_change(request, user, change_message)
 
             msg_dict = {'name': force_text(get_user_model()._meta.verbose_name), 'obj': force_text(user)}
+            msg = ''
             if "_addanother" in request.POST:
                 msg = _('The %(name)s "%(obj)s" was changed successfully. You may add another %(name)s below.') % msg_dict
                 success_url = reverse('accounts:add_user')
@@ -342,10 +349,16 @@ def _update_standard_user(request, user, template='accounts/application/update_u
                 send_account_created_email(user, request)
                 msg = _('The %(name)s "%(obj)s" was changed successfully and the invitation email was resend.') % msg_dict
                 success_url = reverse('accounts:update_user', args=[user.uuid.hex])
+            elif "_deactivate" in request.POST:
+                success_url = reverse('accounts:update_user', args=[user.uuid.hex])
+            elif "_activate" in request.POST:
+                msg = _('The %(name)s "%(obj)s" was activated successfully.') % msg_dict
+                success_url = reverse('accounts:update_user', args=[user.uuid.hex])
             else:
                 msg = _('The %(name)s "%(obj)s" was changed successfully.') % msg_dict
                 success_url = reverse('accounts:user_list') + "?" + request.GET.urlencode()
-            messages.add_message(request, level=messages.SUCCESS, message=msg, fail_silently=True)
+            if msg:
+                messages.add_message(request, level=messages.SUCCESS, message=msg, fail_silently=True)
             return HttpResponseRedirect(success_url)
 
     else:
@@ -391,22 +404,34 @@ def _update_center_account(request, user, template='accounts/application/update_
         form = CenterProfileForm(request.POST, instance=user, request=request)
 
         if form.is_valid():
-            user = form.save()
+            activate = None
+            if "_deactivate" in request.POST:
+                activate = False
+            elif "_activate" in request.POST:
+                activate = True
+            user = form.save(activate=activate)
 
             change_message = ChangedDataList(form, []).change_message()
             log_change(request, user, change_message)
 
             msg_dict = {'name': force_text(get_user_model()._meta.verbose_name), 'obj': force_text(user)}
+            msg = ''
             if "_addanother" in request.POST:
                 msg = _('The %(name)s "%(obj)s" was changed successfully. You may add another %(name)s below.') % msg_dict
                 success_url = reverse('accounts:add_user')
             elif "_continue" in request.POST:
                 msg = _('The %(name)s "%(obj)s" was changed successfully. You may edit it again below.') % msg_dict
                 success_url = reverse('accounts:update_user', args=[user.uuid.hex])
+            elif "_deactivate" in request.POST:
+                success_url = reverse('accounts:update_user', args=[user.uuid.hex])
+            elif "_activate" in request.POST:
+                msg = _('The %(name)s "%(obj)s" was activated successfully.') % msg_dict
+                success_url = reverse('accounts:update_user', args=[user.uuid.hex])
             else:
                 msg = _('The %(name)s "%(obj)s" was changed successfully.') % msg_dict
                 success_url = reverse('accounts:user_list') + "?" + request.GET.urlencode()
-            messages.add_message(request, level=messages.SUCCESS, message=msg, fail_silently=True)
+            if msg:
+                messages.add_message(request, level=messages.SUCCESS, message=msg, fail_silently=True)
             return HttpResponseRedirect(success_url)
 
     else:

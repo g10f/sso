@@ -3,8 +3,10 @@ import os
 from django.core.urlresolvers import reverse
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from selenium.webdriver.firefox.webdriver import WebDriver
-
+# from selenium.webdriver.firefox.webdriver import WebDriver
+# from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from selenium.webdriver.chrome.webdriver import WebDriver
 
 class SSOSeleniumTests(StaticLiveServerTestCase):
     # fixtures = ['user_data.json']
@@ -12,6 +14,11 @@ class SSOSeleniumTests(StaticLiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         os.environ['THROTTELING_DISABLED'] = 'True'
+        # capabilities = DesiredCapabilities.FIREFOX.copy()
+        # capabilities['marionette'] = True
+        # capabilities['binary'] = '/opt/mozilla/geckodriver'
+        # cls.selenium = WebDriver(firefox_binary=FirefoxBinary(log_file=open('./ff.log', 'w')))
+        # cls.selenium = WebDriver(capabilities=capabilities)
         cls.selenium = WebDriver()
         super(SSOSeleniumTests, cls).setUpClass()
 
