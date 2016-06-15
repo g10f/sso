@@ -2,6 +2,8 @@
 import logging
 from collections import OrderedDict
 
+import sys
+
 from django.core.management.base import BaseCommand
 from django.utils.translation import get_language_info
 from django.utils.translation.trans_real import get_supported_language_variant
@@ -92,7 +94,7 @@ def _iso2_2_language():
         language = iso2_2_language.get(iso2_code)
 
         if language is None:
-            print 'missing: ', iso2_code
+            print('missing: ', iso2_code)
             continue
 
         if country_languages.get(iso2_code) is None:
@@ -105,7 +107,7 @@ def _iso2_2_language():
     # print country_languages
     cl = OrderedDict(sorted(country_languages.items(), key=lambda t: t[0]))
     for key in cl:
-        print "\t'{}': '{}',  # {} -> {}".format(key, cl[key]['language_info']['code'], cl[key]['country'], cl[key]['language_info']['name'])
+        print("\t'{}': '{}',  # {} -> {}".format(key, cl[key]['language_info']['code'], cl[key]['country'], cl[key]['language_info']['name']))
 
 
 def update_user_language():
@@ -114,3 +116,5 @@ def update_user_language():
         iso2_code = country.iso2_code.lower()
         user.language = iso2_2_language[iso2_code]
         user.save(update_fields=['language'])
+        sys.stdout.write('.')
+        sys.stdout.flush()
