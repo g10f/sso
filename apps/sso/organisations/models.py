@@ -10,6 +10,7 @@ from django.contrib.gis import measure
 from django.contrib.gis.db import models as gis_models
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db import models
+from django.utils import six
 from django.utils.timezone import localtime, now
 from django.utils.translation import pgettext_lazy, ugettext_lazy as _
 from l10n.models import Country
@@ -331,20 +332,29 @@ class Organisation(AbstractBaseModel):
     homepage_link.short_description = _('homepage')
 
     @classmethod
-    def get_primary_or_none(cls, queryset):
-        # iterate through all uses the prefetch_related cache
-        for item in queryset:
-            if item.primary:
-                return item
-        return None
+    def get_primary_or_none(cls, queryset, **kwargs):
+        # the primary flag is not used instead return the type specified in kwargs or the first item
+        if len(queryset) == 0:
+            return None
+        elif len(queryset) == 1:
+            return queryset.first()
+        else:
+            try:
+                attr, value = six.next(six.iteritems(kwargs))
+                for item in queryset:
+                    if getattr(item, attr) == value:
+                        return item
+            except StopIteration:
+                pass
+            return queryset.first()
 
     @property
     def primary_address(self):
-        return self.get_primary_or_none(self.organisationaddress_set.all())
+        return self.get_primary_or_none(self.organisationaddress_set.all(), address_type='physical')
 
     @property
     def primary_phone(self):
-        return self.get_primary_or_none(self.organisationphonenumber_set.all())
+        return self.get_primary_or_none(self.organisationphonenumber_set.all(), phone_type='home')
 
 
 def generate_filename(instance, filename):
