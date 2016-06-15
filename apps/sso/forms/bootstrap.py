@@ -13,6 +13,7 @@ from sorl.thumbnail.shortcuts import get_thumbnail
 from django.utils.encoding import force_text
 from django.utils.html import format_html
 from django.utils import six
+from django.utils.translation import ugettext as _
 
 
 class Widget(forms.Widget):
@@ -199,9 +200,25 @@ class Select(Widget, forms.Select):
 
 
 class SelectMultiple(Widget, forms.SelectMultiple):
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, choices=()):
         self.add_required()
         return super(SelectMultiple, self).render(name, value, attrs)
+
+
+class SelectMultipleWithCurrently(SelectMultiple):
+    def __init__(self, attrs=None,  currently=None):
+        super(SelectMultipleWithCurrently, self).__init__(attrs)
+        self.currently = currently
+
+    def render(self, name, value, attrs=None, choices=()):
+        html = super(SelectMultipleWithCurrently, self).render(name, value, attrs)
+        if self.currently is not None:
+            html = format_html(
+                u'<p class="form-control-static">{} {}</p>{}',
+                _('Currently:'), self.currently,
+                 html
+            )
+        return html
 
 
 class CheckboxInput(forms.CheckboxInput):
