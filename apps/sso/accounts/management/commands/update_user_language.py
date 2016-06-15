@@ -20,6 +20,7 @@ class Command(BaseCommand):
         update_user_language()
 
 iso2_2_language = {
+    'am': 'ru',  # Armenia -> Russian
     'ar': 'es',  # Argentina -> Spanish
     'at': 'de',  # Austria -> German
     'au': 'en-au',  # Australia -> Australian English
