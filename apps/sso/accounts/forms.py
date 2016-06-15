@@ -634,14 +634,10 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
         self.user = kwargs.pop('instance')
         user_data = model_to_dict(self.user)
         user_data['status'] = _('active') if self.user.is_active else _('blocked')
-        try:
-            # the user should have exactly 1 center 
+
+        if self.user.organisations.count() == 1:
             user_data['organisations'] = self.user.organisations.first()
-        except ObjectDoesNotExist:
-            # center is optional
-            # logger.error("User without center?", exc_info=1)
-            pass
-        
+
         initial = kwargs.get('initial', {})
         initial.update(user_data)
 
@@ -652,11 +648,18 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
         super(UserProfileForm, self).__init__(*args, **kwargs)
 
         self.fields['application_roles'].queryset = self.request.user.get_administrable_application_roles()
+        # role_profiles field with custom data to show application_roles for each role profile, without a query for every role profile
         self.fields['role_profiles'].choices = [(role_profile.id, role_profile) for role_profile in self.request.user.get_administrable_role_profiles()]
-        # add custom data
         self.fields['role_profiles'].dictionary = {str(role_profile.id): role_profile for role_profile in self.request.user.get_administrable_role_profiles()}
 
+        if self.user.organisations.count() > 1:
+            self.fields['organisations'] = forms.ModelMultipleChoiceField(queryset=None, required=False,
+                                                                          widget=bootstrap.SelectMultipleWithCurrently(currently=u', '.join([x.__unicode__() for x in self.user.organisations.all()])),
+                                                                          label=_("Organisation"))
         self.fields['organisations'].queryset = self.request.user.get_administrable_user_organisations()
+
+    def clean(self):
+        return self.cleaned_data
 
     def clean_username(self):
         username = self.cleaned_data["username"]
