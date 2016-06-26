@@ -15,9 +15,10 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from sso.accounts.models import ApplicationRole
 from sso.auth.decorators import admin_login_required
 from sso.organisations.models import is_validation_period_active_for_user
+from sso.signals import user_registration_completed
 from sso.views import main
 from sso.views.generic import SearchFilter, ViewChoicesFilter, ViewQuerysetFilter, ListView
-from .models import RegistrationProfile, RegistrationManager, send_user_validated_email, send_set_password_email, send_check_back_email, send_access_denied_email
+from .models import RegistrationProfile, RegistrationManager, send_set_password_email, send_check_back_email, send_access_denied_email
 from .forms import RegistrationProfileForm
 from .tokens import default_token_generator
 
@@ -233,7 +234,9 @@ def validation_confirm(request, uidb64=None, token=None, token_generator=default
                 profile.is_validated = True
                 profile.save()
                 profile.user.confirm_primary_email_if_no_confirmed()
-                send_user_validated_email(profile, request)
+                # enable brand specific modification
+                user_registration_completed.send_robust(sender=None, user_registration=profile)
+                # send_user_validated_email(profile, request)
                 return HttpResponseRedirect(redirect_url)
             
     context = {
@@ -241,3 +244,4 @@ def validation_confirm(request, uidb64=None, token=None, token_generator=default
         'validlink': validlink,
     }
     return TemplateResponse(request, template, context)
+

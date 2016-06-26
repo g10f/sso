@@ -2,10 +2,8 @@ import datetime
 
 from current_user.models import CurrentUserField
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator as default_pwd_reset_token_generator
 from django.contrib.sites.shortcuts import get_current_site
-from django.core import urlresolvers
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
@@ -14,49 +12,8 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from sso.utils.translation import i18n_email_msg_and_subj
-from sso.utils.email import send_mail
 
 from .tokens import default_token_generator
-
-
-def send_user_validated_email(registration_profile, request,
-                              email_template_name='registration/email/user_validated_email.txt',
-                              subject_template_name='registration/email/user_validated_email_subject.txt'):
-    """
-    Information for registration admins, that a new user registered.
-    """
-    registration_admin_group = settings.REGISTRATION.get('REGISTRATION_ADMIN_GROUP', 'RegistrationAdmin')
-    recipient_list = get_user_model().objects.filter(groups__name=registration_admin_group)
-
-    user_organisations = registration_profile.user.organisations.all()
-    
-    # add only admins of the new registered user to the final recipient list
-    final_recipient_list = []
-    for user in recipient_list:
-        if user.is_global_user_admin:
-            final_recipient_list.append(str(user.primary_email()))
-            continue
-        for organisation in user_organisations:
-            if user.has_organisation_user_access(organisation.uuid):
-                final_recipient_list.append(str(user.primary_email()))
-                break
-
-    if len(final_recipient_list) > 0:
-        protocol = 'https' if request.is_secure() else 'http'
-        current_site = get_current_site(request)
-        domain = current_site.domain
-        user = registration_profile.user
-
-        c = {
-            'protocol': protocol,
-            'domain': domain,
-            'admin_url': urlresolvers.reverse("registration:update_user_registration", args=(registration_profile.pk,)),
-            'user': user,
-            'registration_profile': registration_profile,
-            'organisations': u', '.join([x.__unicode__() for x in user.organisations.all()]),
-        }
-        message, subject = i18n_email_msg_and_subj(c, email_template_name, subject_template_name)
-        send_mail(subject, message, recipient_list=final_recipient_list)
 
 
 def send_access_denied_email(user, request,
@@ -68,10 +25,7 @@ def send_access_denied_email(user, request,
     site_name = settings.SSO_SITE_NAME
     domain = current_site.domain
 
-    if hasattr(settings, "SSO_REGISTRATION_CONTACT_EMAIL"):
-        from_email = settings.SSO_REGISTRATION_CONTACT_EMAIL
-    else:
-        from_email = None  # use default from_mail
+    from_email = settings.REGISTRATION.get('CONTACT_EMAIL', None)
 
     c = {
         'brand': settings.SSO_BRAND,
@@ -98,10 +52,7 @@ def send_check_back_email(user, request,
     site_name = settings.SSO_SITE_NAME
     domain = current_site.domain
 
-    if hasattr(settings, "SSO_REGISTRATION_CONTACT_EMAIL"):
-        from_email = settings.SSO_REGISTRATION_CONTACT_EMAIL
-    else:
-        from_email = None  # use default from_mail
+    from_email = settings.REGISTRATION.get('CONTACT_EMAIL', None)
 
     c = {
         'brand': settings.SSO_BRAND,

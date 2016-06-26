@@ -14,3 +14,6 @@ user_m2m_field_updated = django.dispatch.Signal(providing_args=["user", "attribu
 
 # a user want's to change the organisation
 user_organisation_change_request = django.dispatch.Signal(providing_args=["organisation_change"])
+
+# a user has finished registration with the email validation
+user_registration_completed = django.dispatch.Signal(providing_args=["user_registration"])
