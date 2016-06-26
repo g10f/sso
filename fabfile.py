@@ -10,7 +10,7 @@ env.apps = ['sso', 'password']
 # env.msg_source_apps['sso']
 
 configurations = {
-    'dev': {'host_string': 'sso.dwbn.org', 'server_name': 'sso-dev.dwbn.org', 'app': 'sso', 'virtualenv': 'sso-dev', 'db_name': 'sso_dev', 'branch': 'is_active'},
+    'dev': {'host_string': 'sso.dwbn.org', 'server_name': 'sso-dev.dwbn.org', 'app': 'sso', 'virtualenv': 'sso-dev', 'db_name': 'sso_dev', 'branch': 'master'},
     'prod': {'host_string': 'sso.dwbn.org', 'server_name': 'sso.dwbn.org', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'sso', 'branch': 'master'},
     'g10f': {'host_string': 'g10f', 'server_name': 'sso.g10f.de', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'sso', 'branch': 'master', 'bind': "127.0.0.1:8080", 'server': '127.0.0.1:6081'},
     'elsapro': {'host_string': 'g10f', 'server_name': 'sso.elsapro.com', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'vw_sso', 'branch': 'master'},
@@ -70,7 +70,7 @@ server {
     return 301 https://$server_name$request_uri;
 }
 server {
-    listen 443 ssl default_server;
+    listen 443 ssl;
     server_name %(server_name)s;
 
     # path for static files
@@ -98,6 +98,9 @@ server {
         proxy_redirect off;
         proxy_pass http://%(server_name)s.backend;
     }
+    location ~ ^/robots.txt$ {alias /proj/static/htdocs/%(server_name)s/static/txt/robots.txt; }
+    location ~ ^/favicon.ico$ {alias /proj/static/htdocs/%(server_name)s/static/ico/favicon.ico; }
+
     error_log                 /proj/%(server_name)s/logs/nginx-error.log error;
     access_log                /proj/%(server_name)s/logs/nginx-access.log;
 }
@@ -151,6 +154,7 @@ server {
         proxy_pass http://%(server_name)s.backend;
     }
     location ~ ^/robots.txt$ {alias /proj/static/htdocs/%(server_name)s/static/txt/robots.txt; }
+    location ~ ^/favicon.ico$ {alias /proj/static/htdocs/%(server_name)s/static/ico/favicon.ico; }
 
     error_log                %(code_dir)s/logs/nginx-error.log error;
     access_log               %(code_dir)s/logs/nginx-access.log;
@@ -171,12 +175,14 @@ NGINX_SSL_TEMPLATE = """\
 ssl_certificate           /proj/g10f/certs/certificate.crt;
 ssl_certificate_key       /proj/g10f/certs/certificate.key;
 ssl_dhparam               /proj/g10f/certs/dh2048.pem;
-ssl_session_cache         builtin:1000  shared:SSL:10m;
+ssl_session_timeout 1d;
+ssl_session_cache shared:SSL:50m;
+#ssl_session_cache         builtin:1000  shared:SSL:10m;
 ssl_prefer_server_ciphers on;
 add_header                Strict-Transport-Security "max-age=63072000;";
 ssl_protocols             TLSv1 TLSv1.1 TLSv1.2;
 #ssl_ciphers 'AES128+EECDH:AES128+EDH';
-ssl_ciphers 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384
+ssl_ciphers 'ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS';
 """
 
 GUNICORN_TEMPLATE = """\
@@ -338,7 +344,13 @@ def update_timezones(db_name):
         # sudo('rm -R world')
 
 
-def deploy_webserver(code_dir, server_name):
+@task
+def deploy_webserver(conf='dev'):
+    configuration = configurations.get(conf)
+    env.host_string = configuration['host_string']
+    server_name = configuration['server_name']
+    code_dir = '/proj/%s' % server_name
+
     # Require an nginx server proxying to our app
     docroot = '/proj/static/htdocs/%(server_name)s' % {'server_name': server_name}    
     context = {'certroot': '/proj/g10f/certs', 'server_name': server_name, 'host_string': env.host_string, 'code_dir': code_dir}
