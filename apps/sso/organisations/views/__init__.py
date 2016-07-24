@@ -11,6 +11,7 @@ from django.core.urlresolvers import reverse
 from django.forms.models import inlineformset_factory
 from django.http import HttpResponseRedirect
 from django.http.response import HttpResponse
+from django.utils import six
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
@@ -438,7 +439,7 @@ class OrganisationList(ListView):
 
     def get_export(self):
         qs = Organisation.objects.prefetch_related('country', 'admin_region', 'email', 'organisationphonenumber_set',
-                                                                          'organisationaddress_set', 'organisationaddress_set__country')
+                                                   'organisationaddress_set', 'organisationaddress_set__country')
         qs = self.apply_filters(qs)
 
         response = HttpResponse(content_type=self.content_type)
@@ -449,9 +450,9 @@ class OrganisationList(ListView):
         row = ["name", "is_active", "homepage", "email", "primary_phone", "country", "admin_region", "addressee", "street_address", "city", "postal_code"]
         writer.writerow(row)
         for organisation in qs:
-            admin_region = unicode(organisation.admin_region) if organisation.admin_region else u''
-            row = [organisation.name, unicode(organisation.is_active), organisation.homepage, unicode(organisation.email), unicode(organisation.primary_phone),
-                   unicode(organisation.country), admin_region]
+            admin_region = six.text_type(organisation.admin_region) if organisation.admin_region else six.text_type('')
+            row = [organisation.name, six.text_type(organisation.is_active), organisation.homepage, six.text_type(organisation.email), six.text_type(organisation.primary_phone),
+                   six.text_type(organisation.country), admin_region]
 
             primary_address = organisation.primary_address
             if not organisation.is_private and primary_address:

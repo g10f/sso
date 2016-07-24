@@ -137,43 +137,6 @@ def logout(request, next_page=None,
         # Redirect to this page until the session has been cleared.
         return HttpResponseRedirect(next_page or request.path)
 
-"""
-@sensitive_post_parameters()
-@never_cache
-@throttle(duration=30, max_calls=12)
-def login(request, template_name='accounts/login.html'):
-    # Displays the login form for the given HttpRequest.
-    def get_safe_login_redirect_url(request, redirect_to):
-        # Ensure the user-originating redirection url is safe.
-        if not is_safe_url(url=redirect_to, host=request.get_host()):
-            return resolve_url(settings.LOGIN_REDIRECT_URL)
-        else:
-            return redirect_to
-
-    redirect_to = get_request_param(request, REDIRECT_FIELD_NAME, '')
-    display = get_request_param(request, 'display', 'page')  # popup or page
-    cancel_url = get_oauth2_cancel_url(redirect_to)
-    form = None
-
-    if request.method == "POST":
-        form = EmailAuthenticationForm(data=request.POST)
-        if form.is_valid():
-            redirect_to = get_safe_login_redirect_url(request, redirect_to)
-            # Okay, security checks complete. Log the user in.
-            user = form.get_user()
-            expiry = settings.SESSION_COOKIE_AGE if form.cleaned_data.get('remember_me', False) else 0
-            auth_login(request, user, expiry)
-
-            return HttpResponseRedirect(redirect_to)
-
-    initial = {'remember_me': not request.session.get_expire_at_browser_close()}
-    context = {
-        'form': form or EmailAuthenticationForm(request, initial=initial),
-        'display': display,
-        'cancel_url': cancel_url,
-    }
-    return TemplateResponse(request, template_name, context)
-"""
 
 
 @login_required

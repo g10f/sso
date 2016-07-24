@@ -18,4 +18,3 @@ def valid_until_class(user):
         return 'alert alert-warning'
     else:
         return 'alert alert-danger'
-    return ''

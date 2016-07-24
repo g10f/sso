@@ -31,7 +31,7 @@
             <div class="form-group geocode {% if inline_form.instance.address_type != 'physical' %}hidden{% endif %}">
                 <label class="control-label"></label>
                 <div class="dwbn-form-control">
-                    <button data-loading-text="{% trans 'Loading data ...' %}" autocomplete="off" class="btn btn-info geocode" type="button">{% trans 'Geocode address' %}</button>
+                    <button data-loading-text="{% trans 'Loading data ...' %}" class="btn btn-info geocode" type="button">{% trans 'Geocode address' %}</button>
                     <span class="help-block">{% trans 'Update the geographic coordinates from address data.' %}</span>
                     <div id="{{ formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}__prefix__{% endif %}-js_message"></div>
                 </div>
