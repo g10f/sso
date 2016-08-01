@@ -2,7 +2,7 @@
 import struct
 import base64
 
-# helper functions copyd from https://github.com/rohe/pyjwkest/blob/master/src/jwkest/__init__.py
+# helper functions copied from https://github.com/rohe/pyjwkest/blob/master/src/jwkest/__init__.py
 
 
 def long2intarr(long_int):
