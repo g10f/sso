@@ -438,7 +438,7 @@ def password_reset(request, is_admin_site=False):
         'subject_template_name': 'accounts/email/password_reset_subject.txt',
         'password_reset_form': PasswordResetForm
     }
-    return password_reset(request, is_admin_site=False, **defaults)
+    return password_reset(request, **defaults)
 
 
 def password_reset_confirm(request, uidb64=None, token=None):

@@ -261,8 +261,8 @@ class JsonListView(JSONResponseMixin, PermissionMixin, BaseListView):
         self_url = update_url(page_base_url, self.request.GET)
         data = {
             'member': [self.get_object_data(self.request, obj) for obj in context['object_list']],
+            'total_items': context['paginator'].count
         }
-        data['total_items'] = context['paginator'].count
         if context['is_paginated']:
             data['items_per_page'] = context['paginator'].per_page
 
