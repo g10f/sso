@@ -63,6 +63,6 @@ def home(request):
         "postal_code": "schema:postalCode",        
         "region": "schema:addressRegion",
         "address_type": "schema:contactType",
-        "primary": "http://dwbn.org/primary",  # custom property
+        "primary": "http://g10f.de/primary",  # custom property
     }]
 """

@@ -13,3 +13,4 @@
 /apps/sso/settings/local_*.py
 /apps/gunicorn.conf
 start.sh
+local_fabconfig.py

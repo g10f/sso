@@ -45,10 +45,10 @@ def get_access_token_with_client_credentials(conn, client_id, client_secret):
 
 def main():
     # command line arguments setup
-    parser = argparse.ArgumentParser(description='DWBN IAM API Request')
+    parser = argparse.ArgumentParser(description='IAM API Request')
     parser.add_argument('client_id')
     parser.add_argument('client_secret')
-    parser.add_argument('-d', '--host', default='sso.dwbn.org')
+    parser.add_argument('-d', '--host', default='sso.g10f.de')
     args = parser.parse_args()
     
     conn = httplib.HTTPSConnection(args.host)

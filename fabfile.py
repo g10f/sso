@@ -5,16 +5,16 @@ from fabric.api import *
 from fabric.contrib import files
 import fabtools
 
+try:
+    from local_fabconfig import configurations
+except:
+    configurations = {
+        'g10f': {'host_string': 'g10f', 'server_name': 'sso.g10f.de', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'sso', 'branch': 'master', 'bind': "127.0.0.1:8080", 'server': '127.0.0.1:6081'},
+    }
+
 env.use_ssh_config = True
 env.apps = ['sso', 'password']
 # env.msg_source_apps['sso']
-
-configurations = {
-    'dev': {'host_string': 'sso.dwbn.org', 'server_name': 'sso-dev.dwbn.org', 'app': 'sso', 'virtualenv': 'sso-dev', 'db_name': 'sso_dev', 'branch': 'master'},
-    'prod': {'host_string': 'sso.dwbn.org', 'server_name': 'sso.dwbn.org', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'sso', 'branch': 'master'},
-    'g10f': {'host_string': 'g10f', 'server_name': 'sso.g10f.de', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'sso', 'branch': 'master', 'bind': "127.0.0.1:8080", 'server': '127.0.0.1:6081'},
-    'elsapro': {'host_string': 'g10f', 'server_name': 'sso.elsapro.com', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'vw_sso', 'branch': 'master'},
-}
 
 LOGROTATE_TEMPLATE = """\
 %(code_dir)s/logs/*.log {
@@ -423,7 +423,7 @@ def update_dir_settings(directory):
 
 
 @task
-def dwbn_activate_expiration(center_id, conf='dev'):
+def activate_expiration(center_id, conf='dev'):
     configuration = configurations.get(conf)
     server_name = configuration['server_name']
     virtualenv = configuration['virtualenv']
