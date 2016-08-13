@@ -4,29 +4,23 @@ from pyquery import PyQuery
 from urllib import urlencode
 from uritemplate import expand
 from locust import HttpLocust, TaskSet, task
+
 try:
     from urllib.parse import urlsplit
 except ImportError:  # Python 2
     from urlparse import urlsplit
-
 
 OAUTH2_CLIENT = {
     'host': 'http://localhost:3001',
     'grant_type': 'authorization_code',
     'scope': 'openid profile email',
     'response_type': 'code',
-    'redirect_uri': 'http://localhost:3001/test',
+    'redirect_uri': 'urn:ietf:wg:oauth:2.0:oob',
     'client_id': "31e873e25a614988815544cb00e66ba3",
     'client_secret': "e0]GN+Rp@O3H}}CDnKxl",
     'username': "test@g10f.de",
-    'password': ".h!~c.R-rq6e!WY#[rXZ",
+    'password': ".h!~c.R-rq6e!WY#[rXZ"
 }
-
-# OAUTH2_CLIENT["host"] = 'https://sso.g10f.de'
-# OAUTH2_CLIENT["redirect_uri"] = 'https://sso.g10f.de/test'
-OAUTH2_CLIENT["host"] = 'https://sso-dev.dwbn.org'
-# OAUTH2_CLIENT["redirect_uri"] = 'https://sso-dev.dwbn.org/test'
-OAUTH2_CLIENT["redirect_uri"] = 'urn:ietf:wg:oauth:2.0:oob'
 
 if "CLIENT_ID" in os.environ:
     OAUTH2_CLIENT["client_id"] = os.environ['CLIENT_ID']
@@ -38,7 +32,7 @@ if "CLIENT_SECRET" in os.environ:
     OAUTH2_CLIENT["client_secret"] = os.environ['CLIENT_SECRET']
 
 
-class UserBehavior(TaskSet):    
+class UserBehavior(TaskSet):
     @property
     def authentication_uri(self):
         query = {
@@ -49,7 +43,7 @@ class UserBehavior(TaskSet):
             'redirect_uri': OAUTH2_CLIENT['redirect_uri']
         }
         return "%s?%s" % (self.openid_configuration['authorization_endpoint'], urlencode(query))
-    
+
     def on_start(self):
         """ on_start is called when a Locust start before any task is scheduled """
         response = self.client.get('/.well-known/openid-configuration')
@@ -62,20 +56,20 @@ class UserBehavior(TaskSet):
         pq = PyQuery(response.content)
         headers = {"referer": response.request.url}
         data = {
-            "username": OAUTH2_CLIENT['username'], 
+            "username": OAUTH2_CLIENT['username'],
             "password": OAUTH2_CLIENT['password'],
             "csrfmiddlewaretoken": pq("input[name='csrfmiddlewaretoken']").val(),
-            #"goji.csrf.Token": pq("input[name='goji.csrf.Token']").val(),
+            # "goji.csrf.Token": pq("input[name='goji.csrf.Token']").val(),
             "login_form_key": "login_form",
             "next": pq("input[name='next']").val()
         }
         response = self.client.post(response.request.path_url, data=data, headers=headers)
         pq = PyQuery(response.content)
         code = pq("#code").val()
-        
+
         # user logout, because we have now a auth code to authenticate 
         self.client.get(self.openid_configuration['end_session_endpoint'])
-        
+
         # use the auth code to get a token
         data = {
             'grant_type': OAUTH2_CLIENT['grant_type'],
@@ -98,8 +92,8 @@ class UserBehavior(TaskSet):
         }
         response = self.client.get(self.openid_configuration['userinfo_endpoint'], headers=headers)
         # print(response.content)
-        
-    #@task
+
+    # @task
     def index(self):
         self.client.get("/")
 

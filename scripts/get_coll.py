@@ -203,10 +203,10 @@ class ApiClient(object):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='DWBN IAM API Request')
+    parser = argparse.ArgumentParser(description='IAM API Request')
     parser.add_argument('client_id')
     parser.add_argument('client_secret')
-    parser.add_argument('-b', '--base_uri', help='The base_uri of the API ..', default='https://sso.dwbn.org')
+    parser.add_argument('-b', '--base_uri', help='The base_uri of the API ..', default='https://sso.g10f.de')
     parser.add_argument('-r', '--resource', help='the resource name of the collection from the API EntryPoint (see https://<host>/api/ )', default='organisations')
     
     # uri template parameters

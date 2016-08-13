@@ -122,13 +122,13 @@ def openid_configuration(request):
             ["page", "popup"],
         "subject_types_supported":
             ["public"],
-        "service_documentation":
-            "https://wiki.dwbn.org/general/AccessAndIdentityManagement",
         "end_session_endpoint": '%s%s' % (base_uri, reverse('accounts:logout')),
         "check_session_iframe": '%s%s' % (base_uri, reverse('oauth2:session')),
         "certs_uri": '%s%s' % (base_uri, reverse('oauth2:certs')),
         "profile_uri": '%s%s' % (base_uri, reverse('accounts:profile')),
     }
+    if settings.SSO_SERVICE_DOCUMENTATION:
+        configuration['service_documentation'] = settings.SSO_SERVICE_DOCUMENTATION
     return JsonHttpResponse(configuration, request, allow_jsonp=True)
 
 
