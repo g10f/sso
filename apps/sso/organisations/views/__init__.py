@@ -446,7 +446,7 @@ class OrganisationList(ListView):
         if self.filename:
             response['Content-Disposition'] = 'attachment; filename="%s"' % self.filename
 
-        writer = UnicodeWriter(response, quoting=csv.QUOTE_MINIMAL)
+        writer = UnicodeWriter(response, quoting=csv.QUOTE_ALL)
         row = ["name", "is_active", "homepage", "email", "primary_phone", "country", "admin_region", "addressee", "street_address", "city", "postal_code"]
         writer.writerow(row)
         for organisation in qs:
