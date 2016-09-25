@@ -47,6 +47,7 @@ SSO_EMAIL_LOGO = ""
 SSO_DOMAIN = "sso.g10f.de"
 SSO_USE_HTTPS = True
 SSO_ASYNC_EMAILS = False  # send emails async via celery task
+SSO_NOREPLY_EMAIL = None
 
 OTP_DEVICES = [
     'sso_auth.TOTPDevice',
