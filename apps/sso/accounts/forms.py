@@ -414,6 +414,7 @@ class UserSelfProfileForm(forms.Form):
     Form for the user himself to change editable values
     """
     username = bootstrap.ReadOnlyField(label=_("Username"))
+    valid_until = bootstrap.ReadOnlyField(label=_("Valid until"))
     first_name = forms.CharField(label=_('First name'), max_length=30, widget=bootstrap.TextInput())
     last_name = forms.CharField(label=_('Last name'), max_length=30, widget=bootstrap.TextInput())
     picture = forms.ImageField(label=_('Picture'), required=False, widget=bootstrap.ImageWidget())

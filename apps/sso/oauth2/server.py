@@ -233,7 +233,8 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
             return False            
 
     def save_bearer_token(self, token, request, *args, **kwargs):
-        bearer_token = BearerToken.objects.create(client=request.client, access_token=token['access_token'], user=request.user)
+        if 'access_token' in token:
+            bearer_token = BearerToken.objects.create(client=request.client, access_token=token['access_token'], user=request.user)
         if 'refresh_token' in token:
             otp_device = getattr(request.user, 'otp_device', None)
             RefreshToken.objects.create(token=token['refresh_token'], bearer_token=bearer_token)  # , otp_device=otp_device)

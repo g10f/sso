@@ -39,6 +39,9 @@
     
     {% include 'include/_picture_field.html' with field=form.picture %} 
     {% include 'include/_field.html' with field=form.username %}
+    {% if is_validation_period_active %}
+        {% include 'include/_static_field.html' with field=form.valid_until %}
+    {% endif %}
     {% include 'accounts/includes/_organisation_field.html' with field=form.organisation %}
     {% include 'include/_field.html' with field=form.first_name %}
     {% include 'include/_field.html' with field=form.last_name %}
