@@ -1,4 +1,5 @@
 from django.contrib.auth.password_validation import password_validators_help_texts
+from django.core.exceptions import ObjectDoesNotExist
 
 from django.db.models import Q
 from django.contrib.auth.tokens import default_token_generator
@@ -22,6 +23,7 @@ from django.utils.translation import ugettext as _
 from django.forms.models import inlineformset_factory
 from sso.oauth2.models import allowed_hosts
 from sso.forms.helpers import ErrorList, ChangedDataList, log_change
+from sso.organisations.models import is_validation_period_active
 from sso.utils.url import get_safe_redirect_uri, update_url
 from sso.accounts.tokens import email_confirm_token_generator
 from sso.accounts.models import User, UserAddress, UserPhoneNumber, UserEmail, get_applicationrole_ids, Application
@@ -277,7 +279,12 @@ def profile_core(request, redirect_uri=None):
     else:
         form = UserSelfProfileForm(instance=user)
 
-    dictionary = {'form': form, 'redirect_uri': redirect_uri}
+    try:
+        user_organisation = user.organisations.first()
+    except ObjectDoesNotExist:
+        user_organisation = None
+
+    dictionary = {'form': form, 'redirect_uri': redirect_uri, 'is_validation_period_active': is_validation_period_active(user_organisation)}
     return render(request, 'accounts/profile_core_form.html', dictionary)
     
 
@@ -338,8 +345,13 @@ def profile_with_address_and_phone(request, redirect_uri=None):
                     active = formset.prefix
                     break
 
+    try:
+        user_organisation = user.organisations.first()
+    except ObjectDoesNotExist:
+        user_organisation = None
+
     dictionary = {'form': form, 'errors': errors, 'formsets': formsets, 'media': media, 'active': active,
-                  'redirect_uri': redirect_uri}
+                  'redirect_uri': redirect_uri, 'is_validation_period_active': is_validation_period_active(user_organisation)}
     return render(request, 'accounts/profile_form.html', dictionary)
 
 
