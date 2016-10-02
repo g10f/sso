@@ -30,7 +30,7 @@
 		"name" : "Test Client - javascript",
 		"application" : ["bc0ee635a536491eb8e7fbe5749e8111"],
 		"redirect_uris" : "http://localhost",
-		"client_secret" : "geheim",
+		"client_secret" : "",
 		"user" : null,
 		"type" : "javascript"
 	}
