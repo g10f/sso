@@ -1,14 +1,27 @@
 # -*- coding: utf-8 -*-
 import logging
 
+from django import forms
 from django.core import urlresolvers
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-# from models import AuthorizationCode, BearerToken, RefreshToken, Client
+from sso.oauth2.models import CONFIDENTIAL_CLIENTS
 
 logger = logging.getLogger(__name__)
    
+
+class ClientAdminForm(forms.ModelForm):
+    def clean(self):
+        cleaned_data = super(ClientAdminForm, self).clean()
+        type = cleaned_data.get("type")
+        client_secret = cleaned_data.get("client_secret")
+
+        if type and client_secret:
+            # Only do something if both fields are valid so far.
+            if type not in CONFIDENTIAL_CLIENTS and client_secret:
+                self.add_error('client_secret', "Client secret must be empty for non-confidential client types")
+
 
 class ClientAdmin(admin.ModelAdmin):
     list_display = ('name', 'uuid', 'application', 'type', 'user', 'is_active')
@@ -16,6 +29,7 @@ class ClientAdmin(admin.ModelAdmin):
     fields = ('application', 'type', 'name', 'uuid', 'client_secret', 'redirect_uris', 'scopes', 'user', 'notes', 'is_active', 'last_modified')
     readonly_fields = ('last_modified', )
     list_select_related = ('application', 'user')
+    form = ClientAdminForm
 
 
 class BearerTokenAdmin(admin.ModelAdmin):
@@ -77,9 +91,3 @@ class RefreshTokenAdmin(admin.ModelAdmin):
     bearer_token_link.allow_tags = True
     bearer_token_link.short_description = _('bearer token')
     bearer_token_link.admin_order_field = 'bearer_token'
-
-
-# admin.site.register(AuthorizationCode, AuthorizationCodeAdmin)
-# admin.site.register(BearerToken, BearerTokenAdmin)
-# admin.site.register(RefreshToken, RefreshTokenAdmin)
-# admin.site.register(Client, ClientAdmin)
