@@ -123,7 +123,9 @@ class AdminRegion(AbstractBaseModel, ExtraManager):
                                  on_delete=models.SET_NULL)
     is_active = models.BooleanField(_('active'), default=True, help_text=_('Designates whether this region should be treated as '
                                                                            'active. Unselect this instead of deleting the region.'))
-    
+    slug = models.SlugField(_("Slug Name"), blank=True, unique=True,
+                            help_text=_("Used for URLs, auto-generated from name if blank"), max_length=255)
+
     class Meta(AbstractBaseModel.Meta):
         verbose_name = _('Region')
         verbose_name_plural = _('Regions')
@@ -425,27 +427,27 @@ def deactivate_center_account(email):
         pass
 
 
-def default_unique_slug_generator(slug, organisation=None):
+def default_unique_slug_generator(slug, model, obj=None):
     """
     search for existing slugs and create a new one with a not existing number
     after slug if necessary
     """
 
-    if organisation is not None:
-        exists = Organisation.objects.filter(slug=slug).exclude(pk=organisation.pk).exists()
+    if obj is not None:
+        exists = model.objects.filter(slug=slug).exclude(pk=obj.pk).exists()
     else:
-        exists = Organisation.objects.filter(slug=slug).exists()
+        exists = model.objects.filter(slug=slug).exists()
     if not exists:
         return slug
 
     slug_pattern = r'^%s-([0-9]+)$' % slug
-    organisations = Organisation.objects.filter(slug__regex=slug_pattern)
+    objects = model.objects.filter(slug__regex=slug_pattern)
 
     existing = set()
     slug_pattern = r'%s-(?P<no>[0-9]+)' % slug
     prog = re.compile(slug_pattern)
-    for organisation in organisations:
-        m = prog.match(organisation.slug)  # we should always find a match, because of the filter
+    for obj in objects:
+        m = prog.match(obj.slug)  # we should always find a match, because of the filter
         result = m.groupdict()
         no = 0 if not result['no'] else result['no']
         existing.add(int(no))

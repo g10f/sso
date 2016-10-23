@@ -2,12 +2,12 @@
 from __future__ import unicode_literals
 from django.utils.text import slugify
 
-from django.db import models, migrations
+from django.db import migrations
 from sso.organisations.models import default_unique_slug_generator
 
 
 def update_slug(apps, reverse=False):
-    # We can't import the Person model directly as it may be a newer
+    # We can't import the Organisation model directly as it may be a newer
     # version than this migration expects. We use the historical version.
     Organisation = apps.get_model("organisations", "Organisation")
     if reverse:
@@ -18,7 +18,7 @@ def update_slug(apps, reverse=False):
     else:
         organisations = Organisation.objects.filter(slug="")
         for organisation in organisations:
-            organisation.slug = default_unique_slug_generator(slugify(organisation.name), organisation)
+            organisation.slug = default_unique_slug_generator(slugify(organisation.name), Organisation, organisation)
             organisation.save(update_fields=['slug', 'last_modified'])
 
 
