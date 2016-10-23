@@ -62,7 +62,7 @@ class CountryGroupList(CountryGroupMixin, JsonListView):
 
         country = self.request.GET.get('country', None)
         if country:
-            qs = qs.filter(organisationcountry__country__iso2_code__iexact=country)
+            qs = qs.filter(countries__country__iso2_code__iexact=country)
 
         modified_since = self.request.GET.get('modified_since', None)
         if modified_since:  # parse modified_since
