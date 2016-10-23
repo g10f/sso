@@ -19,7 +19,8 @@ class RegionMixin(object):
         data = {
             '@id': "%s%s" % (base, reverse('api:v2_region', kwargs={'uuid': obj.uuid.hex})),
             'id': u'%s' % obj.uuid.hex,
-            'name': u'%s' % str(obj),
+            'name': u'%s' % obj.name,
+            'slug': u'%s' % obj.slug,
             'email': u'%s' % obj.email if obj.email else "",
             'homepage': obj.homepage,
             'last_modified': obj.last_modified,
