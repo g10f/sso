@@ -50,6 +50,7 @@ class Application(models.Model):
     is_active = models.BooleanField(_('active'), default=True, help_text=_('Designates whether this application should be provided.'))
     redirect_to_after_first_login = models.BooleanField(_('redirect to after first login'), default=False,
                                                         help_text=_('Designates whether the user should redirected to this app after the first login.'))
+    notes = models.TextField(_("Notes"), blank=True, max_length=2048)
     objects = ApplicationManager()
     
     class Meta:
