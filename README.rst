@@ -6,7 +6,7 @@ SSO
 Prepare a development environment
 ----------------------------------
 1. get python >= 2.7
-2. install pip package manager
+2. install pip package manager ( already installed if you're using Python 2 >=2.7.9 or Python 3 >=3.4 - https://pip.pypa.io/en/stable/installing/ - you might need tu update it via: ``` pip install -U pip ```)
 3. install virtualenvwrapper: sudo pip install virtualenvwrapper
 4. create virtualenv for sso:  mkvirtualenv sso
 5. install sso requirements in the virtualenv with: pip install -r requirements.txt
