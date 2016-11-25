@@ -42,6 +42,7 @@
     
     <div class="tab-content">
         <div class="tab-pane active" id="user">
+            {% include 'include/_static_picture_field.html' with field=form.user.picture %}
             {% include 'include/_field.html' with field=form.username %}
 			{% include 'include/_field.html' with field=form.first_name %}
 			{% include 'include/_field.html' with field=form.last_name %}

@@ -184,7 +184,10 @@ class SetPictureAndPasswordForm(SetPasswordForm):
     """
     for new created users with an optional picture field
     """
-    picture = forms.ImageField(label=_('Profile picture'), required=False, widget=bootstrap.ImageWidget())
+    def __init__(self, user, *args, **kwargs):
+        super(SetPictureAndPasswordForm, self).__init__(user, *args, **kwargs)
+        if not user.picture:
+            self.fields['picture'] = forms.ImageField(label=_('Profile picture'), widget=bootstrap.ImageWidget())
 
     def clean_picture(self):
         from django.template.defaultfilters import filesizeformat
@@ -210,7 +213,7 @@ class SetPictureAndPasswordForm(SetPasswordForm):
         cd = self.cleaned_data
         if 'picture' in self.changed_data:
             self.user.picture.delete(save=False)
-        self.user.picture = cd['picture'] if cd['picture'] else None
+            self.user.picture = cd['picture'] if cd['picture'] else None
 
         self.user = super(SetPictureAndPasswordForm, self).save(commit)
         return self.user

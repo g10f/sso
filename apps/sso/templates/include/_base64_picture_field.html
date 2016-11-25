@@ -1,0 +1,19 @@
+{% load i18n %}
+
+<div id="base64-image" class="form-group form-group-file {% if field.errors %}has-error{% endif %}"
+     data-max-size="250px" data-max-file-size="{{ max_file_size }}">
+    <label class="control-label" for="id_{{ field.html_name }}">{{ field.label }}{% if field.field.required %}*{% endif %}</label>
+    <div class="dwbn-form-control">
+        <div>
+            <img class="img-thumbnail" style="width: 240px; height: 240px;"/>
+        </div>
+            <div class="btn btn-default btn-file">
+                <span class="">{% trans 'Select image' %}</span>
+                <input type="file" name="_dummy">
+                {{ field }}
+            </div>
+            <a href="#" class="btn btn-default btn-remove hidden">{% trans 'Remove' %}</a>
+            <span class="help-block-file help-block">{% if field.help_text or field.errors %}{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}{% endif %}</span>
+    </div>
+</div>
+

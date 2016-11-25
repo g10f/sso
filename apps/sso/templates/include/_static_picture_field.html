@@ -1,0 +1,9 @@
+{% load i18n thumbnail %}
+<div class="form-group">
+    <label class="control-label">{% trans 'picture' %}</label>
+
+    <div class="dwbn-form-control">
+        {% thumbnail field "240x240" crop="center" as im %}
+            <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">{% endthumbnail %}
+    </div>
+</div>

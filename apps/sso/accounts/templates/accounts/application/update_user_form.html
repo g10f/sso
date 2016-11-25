@@ -60,15 +60,7 @@
                 {% if not form.user.is_active %}
                     {% include 'include/_static_field.html' with field=form.status extra_class="bg-danger" %}
                 {% endif %}
-                <div class="form-group">
-                    <label class="control-label">{% trans 'picture' %}</label>
-
-                    <div class="dwbn-form-control">
-                        {% thumbnail form.user.picture "240x240" crop="center" as im %}
-                            <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">{% endthumbnail %}
-                    </div>
-                </div>
-
+                {% include 'include/_static_picture_field.html' with field=form.user.picture %}
                 {% include 'include/_field.html' with field=form.username %}
                 {% if is_validation_period_active %}
                     {% include 'include/_static_field.html' with field=form.valid_until %}
