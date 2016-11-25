@@ -3,9 +3,14 @@ Forms and validation code for user registration.
 """
 import datetime
 import logging
+from base64 import b64decode
+from mimetypes import guess_extension
+
 import pytz
+import re
 
 from django import forms
+from django.core.files.base import ContentFile
 from django.db import transaction
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -17,6 +22,7 @@ from django.utils.text import capfirst
 from django.forms.models import model_to_dict
 from django.shortcuts import redirect
 from formtools.preview import FormPreview
+
 from l10n.models import Country
 from .models import RegistrationProfile, send_validation_email
 from . import default_username_generator
@@ -176,6 +182,7 @@ class UserSelfRegistrationForm(forms.Form):
     first_name = forms.CharField(label=_('First name'), required=True, max_length=30, widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('first name'))}))
     last_name = forms.CharField(label=_('Last name'), required=True, max_length=30, widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('last name'))}))
     email = forms.EmailField(label=_('Email'), required=True, widget=bootstrap.EmailInput())
+    base64_picture = forms.CharField(label=_('Picture'), widget=bootstrap.HiddenInput)
     known_person1_first_name = forms.CharField(label=_("First name"), max_length=100, widget=bootstrap.TextInput())
     known_person1_last_name = forms.CharField(label=_("Last name"), max_length=100, widget=bootstrap.TextInput())
     known_person2_first_name = forms.CharField(label=_("First name"), max_length=100, widget=bootstrap.TextInput())
@@ -197,7 +204,36 @@ class UserSelfRegistrationForm(forms.Form):
         except ObjectDoesNotExist:
             return email
         raise forms.ValidationError(self.error_messages['duplicate_email'])
-    
+
+    def clean_base64_picture(self):
+        from django.template.defaultfilters import filesizeformat
+        max_upload_size = User.MAX_PICTURE_SIZE  # 5 MB
+
+        base64_picture = self.cleaned_data["base64_picture"]
+        try:
+            content_type, image_content = base64_picture.split(',', 1)
+            content_type = re.findall('data:(\w+/\w+);base64', content_type)[0]
+
+            if base64_picture and content_type:
+                base_content_type = content_type.split('/')[0]
+                if base_content_type in ['image']:
+                    # mimetypes.guess_extension return jpe which is quite uncommon for jpeg
+                    if content_type == 'image/jpeg':
+                        file_ext = '.jpg'
+                    else:
+                        file_ext = guess_extension(content_type)
+                    name = "%s%s" % (get_random_string(7, allowed_chars='abcdefghijklmnopqrstuvwxyz0123456789'), file_ext)
+                    picture = ContentFile(b64decode(image_content), name=name)
+                    if picture._size > max_upload_size:
+                        raise forms.ValidationError(_('Please keep filesize under %(filesize)s. Current filesize %(current_filesize)s') %
+                                                    {'filesize': filesizeformat(max_upload_size), 'current_filesize': filesizeformat(picture._size)})
+
+                else:
+                    raise forms.ValidationError(_('File type is not supported'))
+            return picture
+        except StandardError as e:
+            raise forms.ValidationError(e.message)
+
     def clean(self):
         """
         if the user clicks the edit_again button a ValidationError is raised, to
@@ -222,6 +258,9 @@ class UserSelfRegistrationForm(forms.Form):
         new_user.dob = data.get('dob')    
         new_user.is_active = False
         new_user.set_unusable_password()
+        if 'base64_picture' in data:
+            new_user.picture = data.get('base64_picture')
+
         new_user.save()
 
         new_user.create_primary_email(email=data.get('email'))
@@ -252,7 +291,7 @@ class UserSelfRegistrationFormPreview(FormPreview):
     def get_context(self, request, form):
         """Context for template rendering."""
         context = super(UserSelfRegistrationFormPreview, self).get_context(request, form)
-        context.update({'site_name': settings.SSO_SITE_NAME, 'title': _('User registration')})
+        context.update({'site_name': settings.SSO_SITE_NAME, 'title': _('User registration'), 'max_file_size': User.MAX_PICTURE_SIZE})
         return context
     
     @transaction.atomic

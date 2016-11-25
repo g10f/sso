@@ -29,7 +29,7 @@ SSO_APP_UUID = UUID('fa467234b81e4838a009e38d9e655d18')
 SSO_BROWSER_CLIENT_ID = UUID('ca96cd88bc2740249d0def68221cba88')
 SSO_STREAMING_UUID = UUID('c362bea58c67457fa32234e3178285c4')
 SSO_STYLE = 'default'
-SSO_STYLE_VERSION = '1.0.17'
+SSO_STYLE_VERSION = '1.0.18'
 SSO_LESS = False
 SSO_FAVICON = 'ico/favicon.ico'
 SSO_EMAIL_CONFIRM_TIMEOUT_MINUTES = 60
@@ -267,18 +267,9 @@ AUTH_PASSWORD_VALIDATORS = [{
     'NAME': 'password.validation.DigitsValidator'
 }]
 
-# Configure logging
-if DEBUG:
-    LOGGING_LEVEL = 'DEBUG'
-else:
-    LOGGING_LEVEL = 'INFO'
-
 LOGGING_HANDLERS = ['mail_admins', 'error', ]
 if DEBUG:
     LOGGING_HANDLERS += ['debug', 'console']
-
-ERROR_LOGFILE = "../../logs/sso-django-error.log"
-INFO_LOGFILE = "../../logs/sso-django-info.log"
 
 LOGGING = {
     'version': 1,
@@ -293,61 +284,52 @@ LOGGING = {
     },
     'filters': {
         'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
+            '()': 'django.utils.log.RequireDebugFalse',
         },
         'require_debug_true': {
             '()': 'django.utils.log.RequireDebugTrue',
         },
     },
     'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'null': {
+            'class': 'logging.NullHandler',
+        },
         'mail_admins': {
             'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler',
             'formatter': 'verbose',
         },
-        'error': {
-            'level': 'WARNING',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, ERROR_LOGFILE),
-            'maxBytes': 1024 * 1024 * 5,  # 5 MB
-            'backupCount': 5,
-            'formatter': 'verbose',
-        },
-        'debug': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(BASE_DIR, INFO_LOGFILE),
-            'maxBytes': 1024 * 1024 * 5,  # 5 MB
-            'backupCount': 5,
-            'formatter': 'verbose',
-        },
-        'console': {
-            'level': 'INFO',
-            'filters': ['require_debug_true'],
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple'
-        },
     },
     'loggers': {
         'django.request': {
-            'handlers': ['mail_admins', 'error', ],
-            'level': 'WARNING',
-            'propagate': False,
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
         },
         'sso': {
             'handlers': LOGGING_HANDLERS,
-            'level': LOGGING_LEVEL,
+            'level': 'DEBUG',
             'propagate': False,
         },
         'django.db.backends': {
-            'handlers': ['console', 'error', 'debug'],
+            'handlers': ['console'],
             'propagate': False,
+            'level': 'WARNING',
+        },
+        'py.warnings': {
+            'handlers': ['console'],
             'level': 'WARNING',
         },
     },
     'root': {
-        'level': 'INFO',
+        'level': 'DEBUG',
         'handlers': LOGGING_HANDLERS,
     },
 }

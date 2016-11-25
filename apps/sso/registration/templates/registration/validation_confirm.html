@@ -11,7 +11,7 @@
 
     <h3>{% trans 'Confirm Registration' %}</h3>
     
-    <p> {% blocktrans %}Please confirm registration and validate your email address <b>{{ email }}</b>.{% endblocktrans %}</p>
+    <p> {% blocktrans %}If you registered a new account with the email <b>{{ email }}</b>, please confirm your registration.{% endblocktrans %}</p>
     
     {% if form.errors %}
         <div class="alert alert-danger">

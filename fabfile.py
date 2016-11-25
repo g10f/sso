@@ -185,6 +185,30 @@ ssl_protocols             TLSv1 TLSv1.1 TLSv1.2;
 ssl_ciphers 'ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS';
 """
 
+NGINX_SSL_TEMPLATE2 = """\
+ssl_session_timeout 1d;
+ssl_session_cache shared:SSL:50m;
+ssl_session_tickets off;
+
+# Diffie-Hellman parameter for DHE ciphersuites, recommended 2048 bits
+ssl_dhparam /etc/nginx/dhparam.pem;
+
+# intermediate configuration. tweak to your needs.
+# ssl_protocols TLSv1 TLSv1.1 TLSv1.2; # already in nginx.conf
+ssl_ciphers 'ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS';
+# ssl_prefer_server_ciphers on; # already in nginx.conf
+
+# HSTS (ngx_http_headers_module is required) (15768000 seconds = 6 months)
+add_header Strict-Transport-Security max-age=15768000;
+
+# OCSP Stapling ---
+# fetch OCSP records from URL in ssl_certificate and cache them
+ssl_stapling on;
+ssl_stapling_verify on;
+
+resolver 8.8.8.8;
+"""
+
 GUNICORN_TEMPLATE = """\
 import multiprocessing
 import os
@@ -194,6 +218,14 @@ pythonpath = '%(code_dir)s/src/apps'
 errorlog = '%(code_dir)s/logs/gunicorn-error.log'
 os.environ['DEBUG'] = ""
 os.environ['THROTTELING_DISABLED'] = "False"
+"""
+
+RENEW_CERT_SCRIPT = """\
+#!/bin/sh
+service nginx stop >/dev/null 2>&1
+sleep 2
+letsencrypt renew
+service nginx start >/dev/null 2>&1
 """
 
 @task
@@ -217,7 +249,7 @@ def migrate_centerdb(conf='dev'):
 
 
 @task
-def compileless(version='1.0.17'):
+def compileless(version='1.0.18'):
     local('lessc ./apps/sso/static/less/default.less ./apps/sso/static/css/%(style)s-%(version)s.css' %{'style': 'default', 'version': version})
 
 
@@ -259,7 +291,10 @@ def createsuperuser(conf='dev'):
     
 
 @task
-def update_debian():
+def update_debian(conf='dev'):
+    # skip for ubuntu 16
+    configuration = configurations.get(conf)
+    env.host_string = configuration['host_string']
     sudo('apt-add-repository ppa:ubuntugis/ppa')  # add gis repository
     fabtools.deb.update_index()
     fabtools.deb.upgrade(safe=False)
@@ -299,16 +334,31 @@ def deploy_debian(conf='dev'):
 
 
 @task
+def update_ubuntu16(conf='dev'):
+    configuration = configurations.get(conf)
+    env.host_string = configuration['host_string']
+
+    fabtools.require.deb.package('gcc')
+    fabtools.require.deb.package('unzip')
+    # postgres
+    fabtools.require.deb.package('libpq-dev')
+
+    fabtools.require.deb.package('libffi-dev')  # for cryptography
+
+
+@task
 def deploy_database(conf='dev'):
     configuration = configurations.get(conf)
     env.host_string = configuration['host_string']
     db_name = configuration['db_name']
 
     # Require a PostgreSQL server
-    # fabtools.require.postgres.server()
+    fabtools.require.postgres.server()
+    fabtools.require.deb.package('postgis')
+    fabtools.require.deb.package('postgresql-contrib')  # for citext
+    fabtools.require.deb.package('language-pack-en')  # for creating database  required (https://github.com/saz/puppet-locales/issues/28)
     fabtools.require.postgres.user(db_name, db_name)
     fabtools.require.postgres.database(db_name, db_name)
-    fabtools.require.deb.package('postgresql-contrib')  # for citext
     fabtools.postgres._run_as_pg('''psql -c "CREATE EXTENSION IF NOT EXISTS citext;" %(db_name)s''' % {'db_name': db_name})
     fabtools.postgres._run_as_pg('''psql -c "CREATE EXTENSION IF NOT EXISTS postgis;" %(db_name)s''' % {'db_name': db_name})
     fabtools.postgres._run_as_pg('''psql -c "ALTER TABLE spatial_ref_sys OWNER TO %(db_name)s;" %(db_name)s''' % {'db_name': db_name})
@@ -373,16 +423,35 @@ def deploy_webserver(conf='dev'):
     
     if env.host_string in ['dwbn']:
         fabtools.require.nginx.site('register.diamondway-buddhism.org', template_contents=REGISTRATION_TEMPLATE, docroot=docroot, target_name=server_name)
-        
+
+
+@task
+def deploy_letsencrypt(conf='dev'):
+    configuration = configurations.get(conf)
+    env.host_string = configuration['host_string']
+    server_name = configuration['server_name']
+
+    fabtools.require.deb.package('letsencrypt')
+
+    #sudo("service nginx stop")
+    #sudo("letsencrypt certonly --standalone -d '%(server_name)s' -d 'www.%(server_name)s' -m mail@g10f.de -n" % {'server_name': server_name})
+    #sudo("service nginx start")
+
+    # cron job for renew-certs
+    fabtools.require.files.directory('/proj/scripts')
+    renew_script = '/proj/scripts/renew-certs'
+    fabtools.require.file(renew_script, RENEW_CERT_SCRIPT)
+    fabtools.cron.add_daily('renew-certs', 'root', "%s" % renew_script)
+
 
 @task
 def deploy_http2_webserver(conf='dev'):
     configuration = configurations.get(conf)
     env.host_string = configuration['host_string']
     server_name = configuration['server_name']
-    app = configuration['app']
     code_dir = '/proj/%s' % server_name
 
+    fabtools.require.nginx.server()
     if not files.exists('/etc/nginx/dhparam.pem', use_sudo=True):
         sudo('openssl dhparam -out /etc/nginx/dhparam.pem 2048')
 
@@ -394,8 +463,7 @@ def deploy_http2_webserver(conf='dev'):
     fabtools.require.directory('%(code_dir)s/config' % context, use_sudo=True, owner="www-data", mode='770')
     fabtools.require.directory(docroot, use_sudo=True, owner="www-data", mode='770')
 
-    fabtools.require.nginx.server()
-
+    fabtools.require.files.template_file('/etc/nginx/conf.d/ssl.nginx.conf', template_contents=NGINX_SSL_TEMPLATE2, context=context, use_sudo=True)
     fabtools.require.files.template_file('%(code_dir)s/config/nginx.expired.conf' % context, template_contents=NGINX_EXPIRED_TEMPLATE, use_sudo=True, owner='www-data', group='www-data')
     fabtools.require.files.template_file('%(code_dir)s/config/nginx.webfonts.conf' % context, template_contents=NGINX_WEBFONTS_TEMPLATE, use_sudo=True, owner='www-data', group='www-data')
 
@@ -444,58 +512,28 @@ def prepare_deploy():
 
 
 @task
-def deploy(conf='dev'):
+def deploy_supervisor(conf='dev'):
     configuration = configurations.get(conf)
-    server_name = configuration['server_name']
-    app = configuration['app']
-    virtualenv = configuration['virtualenv']
-    db_name = configuration['db_name']
     env.host_string = configuration['host_string']
-
+    server_name = configuration['server_name']
+    virtualenv = configuration['virtualenv']
+    app = configuration['app']
     code_dir = '/proj/%s' % server_name
 
-    user = 'ubuntu'
-    # setup_user(user)
-    fabtools.require.files.directory(code_dir)
-    # deploy_debian(conf)
-    # deploy_webserver(code_dir, server_name)
-    # fabtools.user.modify(name=user, extra_groups=['www-data'])
-    # deploy_database(conf)
-
-    with cd(code_dir):
-        branch = configuration.get('branch', 'master')
-        fabtools.require.git.working_copy('git@bitbucket.org:g10f/sso.git', path='src', branch=branch)
-        sudo("chown www-data:www-data -R  ./src")
-        sudo("chmod g+w -R  ./src")
-    
-    # local settings 
-    fabtools.require.file('%(code_dir)s/src/apps/%(app)s/settings/local_settings.py' % {'code_dir': code_dir, 'app': app},
-                          source='apps/%(app)s/settings/local_%(server_name)s.py' % {'server_name': server_name, 'app': app},
-                          use_sudo=True, owner='www-data', group='www-data')
-
-    """
-    # python enviroment
-    fabtools.require.python.virtualenv('/envs/%s' % virtualenv)
-    with fabtools.python.virtualenv('/envs/%s' % virtualenv):
-        with cd(code_dir):
-            fabtools.require.python.requirements('src/requirements.txt')
-    
-    # fabtools.require.file('/envs/%(virtualenv)s/lib/python2.7/sitecustomize.py' % {'virtualenv': virtualenv}, source='apps/sitecustomize.py')
-    """
     # configure gunicorn
     bind = configuration.get('bind', "unix:/tmp/%s.gunicorn.sock" % server_name)
     fabtools.require.directory('%(code_dir)s/config' % {'code_dir': code_dir}, use_sudo=True, owner="www-data", mode='770')
     config_filename = '%(code_dir)s/config/gunicorn_%(server_name)s.py' % {'code_dir': code_dir, 'server_name': server_name}
     context = {'bind': bind, 'code_dir': code_dir}
     fabtools.require.files.template_file(config_filename, template_contents=GUNICORN_TEMPLATE, context=context, use_sudo=True)
-    
+
     # Require a supervisor process for our app
     fabtools.require.supervisor.process(
         server_name,
         command='/envs/%(virtualenv)s/bin/gunicorn -c %(config_filename)s %(app)s.wsgi:application' % {'virtualenv': virtualenv, 'config_filename': config_filename, 'app': app},
         directory=code_dir + '/src/apps',
         user='www-data'
-        )
+    )
 
     # Require a supervisor process for celery
     # https://github.com/celery/celery/blob/3.1/extra/supervisord/celeryd.conf
@@ -507,7 +545,50 @@ def deploy(conf='dev'):
         numprocs=1,
         killasgroup=True,
         priority=1000
-        )
+    )
+
+
+@task
+def deploy(conf='dev'):
+    configuration = configurations.get(conf)
+    env.host_string = configuration['host_string']
+    server_name = configuration['server_name']
+    app = configuration['app']
+    virtualenv = configuration['virtualenv']
+    db_name = configuration['db_name']
+
+    code_dir = '/proj/%s' % server_name
+
+    # user = 'ubuntu'
+    # setup_user(user)
+    fabtools.require.files.directory(code_dir)
+    # deploy_debian(conf)
+    # deploy_database(conf)
+    # deploy_letsencrypt(conf)
+    # deploy_http2_webserver(conf)
+    # fabtools.user.modify(name=user, extra_groups=['www-data'])
+
+    with cd(code_dir):
+        branch = configuration.get('branch', 'master')
+        fabtools.require.git.working_copy('https://bitbucket.org/g10f/sso.git', path='src', branch=branch)
+        sudo("chown www-data:www-data -R  ./src")
+        sudo("chmod g+w -R  ./src")
+    
+    # local settings 
+    fabtools.require.file('%(code_dir)s/src/apps/%(app)s/settings/local_settings.py' % {'code_dir': code_dir, 'app': app},
+                          source='apps/%(app)s/settings/local_%(server_name)s.py' % {'server_name': server_name, 'app': app},
+                          use_sudo=True, owner='www-data', group='www-data')
+
+    # python enviroment
+    """
+    fabtools.require.python.virtualenv('/envs/%s' % virtualenv)
+    with fabtools.python.virtualenv('/envs/%s' % virtualenv):
+        with cd(code_dir):
+            fabtools.require.python.requirements('src/requirements.txt')
+    """
+    # fabtools.require.file('/envs/%(virtualenv)s/lib/python2.7/sitecustomize.py' % {'virtualenv': virtualenv}, source='apps/sitecustomize.py')
+
+    deploy_supervisor(conf)
 
     # configure logrotate 
     config_filename = '/etc/logrotate.d/%(server_name)s' % {'server_name': server_name}

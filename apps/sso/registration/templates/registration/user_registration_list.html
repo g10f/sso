@@ -1,69 +1,73 @@
 {% extends 'base_site.html' %}
-{% load i18n list static tz %}
+{% load i18n list static tz thumbnail %}
 
 {% block title %}{% trans 'users' %}{% endblock %}
 
 {% block nav_registration_user_list_class %}active{% endblock %}
 
 {% block breadcrumb %}
-<ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li class="active">{% trans 'User Registration List' %}</li>
-</ol> 
+    <ol class="breadcrumb">
+        <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+        <li class="active">{% trans 'User Registration List' %}</li>
+    </ol>
 {% endblock breadcrumb %}
 
-{% block content %}   
-<div class="row">
-	<div class="col-sm-12">		
-		{% block messages %}
-		{% if messages %}
-			{% for message in messages %}
-				<div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">
-				  {{ message }}
-				</div>
-			{% endfor %}
-		{% endif %}
-		{% endblock messages %}
-	</div>
-</div>
-
-<div class="row dwbn-filter-row">
-    <div class="col-sm-3">
-       {% include 'include/_search_form.html' %}
+{% block content %}
+    <div class="row">
+        <div class="col-sm-12">
+            {% block messages %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endblock messages %}
+        </div>
     </div>
-        
-    <div class="col-sm-9">
-        {% for filter in filters %} 
-        {% include 'include/_list_filter.html' with filter=filter %}
-        {% endfor %}
-	</div>
-</div><!-- /.row -->
 
-<main>
-    <div class="col-sm-12 table-responsive">
-		<table class="table-bordered table-striped table">
-		  {% include "include/table_header.html" %}
-		  <tbody>
-		  {% for registration in object_list %}
-		    <tr>
-		      <td>
-		          <a class="" href="{% url 'registration:update_user_registration' registration.pk %}{{ cl.get_query_string }}">{{ registration.user }}</a>
-		      </td>
-              <td>{{ registration.user.primary_email }}</td>
-              <td>{{ registration.user.organisations.all|join:", " }}</td>
-              <td>{{ registration.date_registered|utc|date:"Y-m-d H:i" }}</td>
-              <td>
-              {% if registration.verified_by_user %}
-                <a class="" href="{% url 'accounts:update_user' registration.verified_by_user.uuid.hex %}{{ cl.get_query_string }}">{{ registration.verified_by_user }}</a>
-              {% endif %}
-              </td>
-              <td><i class="{% if registration.check_back %}glyphicon glyphicon glyphicon-exclamation-sign{% endif %}"></i></td>
-              <td><i class="{% if registration.is_access_denied %}glyphicon glyphicon glyphicon-minus-sign{% endif %}"></i></td>
-		    </tr>
-		  {% endfor %}
-		  </tbody>
-		</table>
-       {% block pagination %}{% if is_paginated %}{% pagination page_obj cl %}{% endif %}{% endblock %}
-    </div>
-</main>
+    <div class="row dwbn-filter-row">
+        <div class="col-sm-3">
+            {% include 'include/_search_form.html' %}
+        </div>
+
+        <div class="col-sm-9">
+            {% for filter in filters %}
+                {% include 'include/_list_filter.html' with filter=filter %}
+            {% endfor %}
+        </div>
+    </div><!-- /.row -->
+
+    <main>
+        <div class="col-sm-12 table-responsive">
+            <table class="table-bordered table-striped table">
+                {% include "include/table_header.html" %}
+                <tbody>
+                {% for registration in object_list %}
+                    <tr>
+                        <td>
+                            <a class="" href="{% url 'registration:update_user_registration' registration.pk %}{{ cl.get_query_string }}">{{ registration.user }}</a>
+                        </td>
+                        <td>
+                            {% if registration.user.picture %}<a href="{{ registration.user.picture.url }}">{% thumbnail registration.user.picture "30x30" crop="center" as im %}
+                                <img class="dwbn-icon-user" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="">{% endthumbnail %}</a>{% endif %}
+                        </td>
+                        <td>{{ registration.user.primary_email }}</td>
+                        <td>{{ registration.user.organisations.all|join:", " }}</td>
+                        <td>{{ registration.date_registered|utc|date:"Y-m-d H:i" }}</td>
+                        <td>
+                            {% if registration.verified_by_user %}
+                                <a class="" href="{% url 'accounts:update_user' registration.verified_by_user.uuid.hex %}{{ cl.get_query_string }}">{{ registration.verified_by_user }}</a>
+                            {% endif %}
+                        </td>
+                        <td><i class="{% if registration.check_back %}glyphicon glyphicon glyphicon-exclamation-sign{% endif %}"></i></td>
+                        <td><i class="{% if registration.is_access_denied %}glyphicon glyphicon glyphicon-minus-sign{% endif %}"></i></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            {% block pagination %}{% if is_paginated %}{% pagination page_obj cl %}{% endif %}{% endblock %}
+        </div>
+    </main>
 {% endblock %}

@@ -140,7 +140,6 @@ def logout(request, next_page=None,
         return HttpResponseRedirect(next_page or request.path)
 
 
-
 @login_required
 def confirm_email(request, uidb64, token, post_reset_redirect=None):
     if post_reset_redirect is None:

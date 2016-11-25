@@ -32,7 +32,7 @@ class UserRegistrationDeleteView(DeleteView):
         qs = super(UserRegistrationDeleteView, self).get_queryset()
         user = self.request.user
         return user.filter_administrable_users(qs)
-    
+
     @method_decorator(admin_login_required)
     @method_decorator(permission_required('registration.change_registrationprofile', raise_exception=True))
     def dispatch(self, request, *args, **kwargs):
@@ -45,10 +45,10 @@ class UserRegistrationDeleteView(DeleteView):
         context.pop('user')
         context['cancel_url'] = reverse('registration:update_user_registration', args=[self.object.registrationprofile.pk])
         return context
-    
+
 
 class RegistrationSearchFilter(SearchFilter):
-    search_names = ['user__username__icontains', 'user__first_name__icontains', 
+    search_names = ['user__username__icontains', 'user__first_name__icontains',
                     'user__last_name__icontains', 'user__useremail__email__icontains']
 
 
@@ -63,30 +63,30 @@ class CountryFilter(ViewQuerysetFilter):
 class IsVerifiedFilter(ViewChoicesFilter):
     name = 'is_verified'
     qs_name = 'verified_by_user__isnull'
-    choices = (('1', _('Verified Users')), ('2', _('Unverified Users')))  
+    choices = (('1', _('Verified Users')), ('2', _('Unverified Users')))
     select_text = _('verified filter')
     select_all_text = _("All")
-    
+
     def map_to_database(self, value):
         return False if (value.pk == "1") else True
 
 
 class CheckBackFilter(ViewChoicesFilter):
     name = 'check_back'
-    choices = (('1', _('Check Back Required')), ('2', _('No Check Back Required')))  
+    choices = (('1', _('Check Back Required')), ('2', _('No Check Back Required')))
     select_text = _('check back filter')
     select_all_text = _("All")
-    
+
     def map_to_database(self, value):
         return True if (value.pk == "1") else False
 
 
 class IsAccessDeniedFilter(ViewChoicesFilter):
     name = 'is_access_denied'
-    choices = (('1', _('Access Denied')), ('2', _('Access Not Denied')))  
+    choices = (('1', _('Access Denied')), ('2', _('Access Not Denied')))
     select_text = _('access denied filter')
     select_all_text = _("All")
-    
+
     def map_to_database(self, value):
         return True if (value.pk == "1") else False
 
@@ -94,36 +94,36 @@ class IsAccessDeniedFilter(ViewChoicesFilter):
 class UserRegistrationList(ListView):
     template_name = 'registration/user_registration_list.html'
     model = RegistrationProfile
-    list_display = ['user', 'email', 'center', 'date_registered', 'verified_by_user', 'check_back', 'is_access_denied']
-    
+    list_display = ['user', _('picture'), 'email', 'center', 'date_registered', 'verified_by_user', 'check_back', 'is_access_denied']
+
     @method_decorator(admin_login_required)
     @method_decorator(permission_required('registration.change_registrationprofile', raise_exception=True))
     def dispatch(self, request, *args, **kwargs):
         return super(UserRegistrationList, self).dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        qs = super(UserRegistrationList, self).get_queryset()\
-            .prefetch_related('user__organisations', 'user__organisations__country', 'user__useraddress_set', 'user__useraddress_set__country', 'user__useremail_set')\
+        qs = super(UserRegistrationList, self).get_queryset() \
+            .prefetch_related('user__organisations', 'user__organisations__country', 'user__useraddress_set', 'user__useraddress_set__country', 'user__useremail_set') \
             .filter(user__is_active=False, is_validated=True, user__last_login__isnull=True)
-        
+
         # display only users from centers where the logged in user has admin rights
         user = self.request.user
         qs = RegistrationManager.filter_administrable_registrationprofiles(user, qs)
-                
+
         # Set ordering.
         self.cl = main.ChangeList(self.request, self.model, self.list_display, default_ordering=['-date_registered'])
-        
+
         # apply filters
-        qs = RegistrationSearchFilter().apply(self, qs) 
-        qs = CountryFilter().apply(self, qs) 
+        qs = RegistrationSearchFilter().apply(self, qs)
+        qs = CountryFilter().apply(self, qs)
         qs = CheckBackFilter().apply(self, qs, default='2')
         qs = IsAccessDeniedFilter().apply(self, qs, default='2')
-        qs = IsVerifiedFilter().apply(self, qs) 
-        
+        qs = IsVerifiedFilter().apply(self, qs)
+
         ordering = self.cl.get_ordering(self.request, qs)
         qs = qs.order_by(*ordering)
         return qs
-     
+
     def get_context_data(self, **kwargs):
         """
         Get the context for this view.
@@ -133,19 +133,19 @@ class UserRegistrationList(ListView):
         for h in headers:
             if h['sortable'] and h['sorted']:
                 num_sorted_fields += 1
-        
+
         # list of centers of registrations where the user has admin rights
         user_organisations = self.request.user.get_administrable_user_organisations().filter(
-            user__is_active=False, 
+            user__is_active=False,
             user__registrationprofile__isnull=False,
             user__registrationprofile__is_validated=True)
         countries = Country.objects.filter(pk__in=user_organisations.values_list('country', flat=True))
-        
+
         country_filter = CountryFilter().get(self, countries)
         is_verified_filter = IsVerifiedFilter().get(self)
         check_back_filter = CheckBackFilter().get(self)
         is_access_denied_filter = IsAccessDeniedFilter().get(self)
-        
+
         filters = [country_filter, is_verified_filter, check_back_filter, is_access_denied_filter]
         context = {
             'result_headers': headers,
@@ -169,10 +169,10 @@ def update_user_registration(request, pk, template='registration/change_user_reg
     registrationprofile = get_object_or_404(RegistrationProfile, pk=pk)
     if not request.user.has_user_access(registrationprofile.user.uuid):
         raise PermissionDenied
-    
+
     if request.method == 'POST':
         registrationprofile_form = RegistrationProfileForm(request.POST, instance=registrationprofile, request=request)
-        if registrationprofile_form.is_valid(): 
+        if registrationprofile_form.is_valid():
             msg_dict = {'name': force_text(get_user_model()._meta.verbose_name), 'obj': force_text(registrationprofile)}
             success_url = reverse('registration:user_registration_list') + "?" + request.GET.urlencode()
             if "_continue" in request.POST:
@@ -194,7 +194,7 @@ def update_user_registration(request, pk, template='registration/change_user_reg
                 registrationprofile = registrationprofile_form.save(activate=True)
                 msg = _('The %(name)s "%(obj)s" was activated successfully.') % msg_dict
                 send_set_password_email(registrationprofile.user, request)
-            
+
             messages.add_message(request, level=messages.SUCCESS, message=msg, fail_silently=True)
             return HttpResponseRedirect(success_url)
     else:
@@ -229,7 +229,7 @@ def validation_confirm(request, uidb64=None, token=None, token_generator=default
             return HttpResponseRedirect(redirect_url)
         elif token_generator.check_token(profile, token):
             validlink = True
-            
+
             if request.method == 'POST':
                 profile.is_validated = True
                 profile.save()
@@ -238,7 +238,7 @@ def validation_confirm(request, uidb64=None, token=None, token_generator=default
                 user_registration_completed.send_robust(sender=None, user_registration=profile)
                 # send_user_validated_email(profile, request)
                 return HttpResponseRedirect(redirect_url)
-            
+
     context = {
         'email': profile.user.primary_email() if profile else None,
         'validlink': validlink,

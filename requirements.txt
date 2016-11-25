@@ -1,4 +1,4 @@
-django
+django==1.9.11
 django-formtools
 django-ipware
 gunicorn
@@ -7,7 +7,8 @@ python-memcached
 docutils
 pyjwt
 cryptography
-oauthlib
+'oauthlib<2'
+git+git://github.com/mariocesar/sorl-thumbnail@v12.3
 sorl-thumbnail
 pillow
 django-nocaptcha-recaptcha

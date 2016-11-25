@@ -1,5 +1,7 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# Gunnar Scherf <gunnar@g10f.de>, 2015.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
@@ -14,28 +16,29 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
+"%100>=11 && n%100<=14)? 2 : 3);\n"
 
 #: static/js/base64_image-1.0.0.js:70
+#, javascript-format
 msgid "Image is too large (max %skB)."
-msgstr "Das Bild ist zu groß (max %skB)."
+msgstr ""
 
 #: static/js/base64_image-1.0.0.js:80
 msgid "Image type is not allowed."
-msgstr "Bildtyp wird nicht unterstützt"
+msgstr ""
 
 #: static/js/base64_image-1.0.0.js:94
 msgid "Error loading image file."
-msgstr "Fehler beim Laden des Bilds"
+msgstr ""
 
 #: static/js/gis/OLMapWidget-1.0.4.js:54
 msgid "No location found"
-msgstr "Es wurde keine Position gefunden"
+msgstr ""
 
 #: static/js/gis/OLMapWidget-1.0.4.js:61
 msgid ""
 "The map was updated with the new coordinates. Press the 'Save' button for "
 "saving the new coordinates."
 msgstr ""
-"Die Koordinaten in der Karte wurden aktualisiert. Zum Speichern der neuen "
-"Koordinaten bitte \"Sichern\" drücken."

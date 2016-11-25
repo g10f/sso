@@ -37,7 +37,15 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.selenium.find_element_by_name("new_password2").send_keys(new_password)
         self.selenium.find_element_by_xpath('//button[@type="submit"]').click()
         self.wait_page_loaded()
-        
+
+    def set_create_password(self, path, new_password):
+        self.selenium.get('%s%s' % (self.live_server_url, path))
+        self.selenium.find_element_by_name("new_password1").send_keys(new_password)
+        self.selenium.find_element_by_name("new_password2").send_keys(new_password)
+        self.selenium.find_element_by_id("id_picture").send_keys("/usr/share/icons/gnome/32x32/emotes/face-angel.png")
+        self.selenium.find_element_by_xpath('//button[@type="submit"]').click()
+        self.wait_page_loaded()
+
     def test_login(self):
         # username = 'GunnarScherf'
         # password = 'gsf'
@@ -303,7 +311,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         path = self.get_url_path_from_mail()
         
         new_password = 'gsf1zghxyz'
-        self.set_reset_password(path, new_password)
+        self.set_create_password(path, new_password)
         
         # login as new user with the new password
         self.login_test(new_email, new_password)

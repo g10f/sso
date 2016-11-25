@@ -19,7 +19,7 @@ class RegistrationTokenGenerator(object):
 
     def check_token(self, profile, token):
         """
-        Check that a password reset token is correct for a given profile.
+        Check that the registration token is correct for a given profile.
         """
         # Parse the token
         try:
