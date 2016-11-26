@@ -1124,7 +1124,7 @@ msgstr "Profil löschen"
 
 #: accounts/templates/accounts/delete_profile_form.html:20
 msgid "Do you want to delete your account?"
-msgstr "Möchtest Du dein Konto löschen?"
+msgstr "Möchtest Du Dein Konto löschen?"
 
 #: accounts/templates/accounts/delete_profile_form.html:35
 #: accounts/templates/accounts/profile_core_form.html:58
@@ -3323,8 +3323,8 @@ msgstr "Dein Bild"
 msgid ""
 "Please use a photo of your face. We are using it also to validate your "
 "registration."
-msgstr "Bitte verwende ein Bild, das dein Gesicht zeigt. Wir verwenden es "
-"auch um deine Anmeldung zu prüfen."
+msgstr "Bitte verwende ein Bild, das Dein Gesicht zeigt. Wir verwenden es "
+"auch um Deine Anmeldung zu prüfen."
 
 #: registration/forms.py:190
 msgid ""
