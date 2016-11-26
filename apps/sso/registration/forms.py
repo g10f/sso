@@ -182,7 +182,7 @@ class UserSelfRegistrationForm(forms.Form):
     first_name = forms.CharField(label=_('First name'), required=True, max_length=30, widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('first name'))}))
     last_name = forms.CharField(label=_('Last name'), required=True, max_length=30, widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('last name'))}))
     email = forms.EmailField(label=_('Email'), required=True, widget=bootstrap.EmailInput())
-    base64_picture = forms.CharField(label=_('Picture'), widget=bootstrap.HiddenInput)
+    base64_picture = forms.CharField(label=_('Your picture'), help_text=_('Please use a photo of your face. We are using it also to validate your registration.'), widget=bootstrap.HiddenInput)
     known_person1_first_name = forms.CharField(label=_("First name"), max_length=100, widget=bootstrap.TextInput())
     known_person1_last_name = forms.CharField(label=_("Last name"), max_length=100, widget=bootstrap.TextInput())
     known_person2_first_name = forms.CharField(label=_("First name"), max_length=100, widget=bootstrap.TextInput())

@@ -249,7 +249,7 @@ def migrate_centerdb(conf='dev'):
 
 
 @task
-def compileless(version='1.0.18'):
+def compileless(version='1.0.19'):
     local('lessc ./apps/sso/static/less/default.less ./apps/sso/static/css/%(style)s-%(version)s.css' %{'style': 'default', 'version': version})
 
 

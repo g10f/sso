@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-20 22:37+0100\n"
+"POT-Creation-Date: 2016-11-26 13:31+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -35,10 +35,10 @@ msgstr ""
 msgid "(None)"
 msgstr ""
 
-#: accounts/admin.py:133 accounts/forms.py:41 accounts/forms.py:289
-#: accounts/forms.py:446 accounts/forms.py:526 accounts/forms.py:551
-#: accounts/forms.py:626 accounts/forms.py:662 accounts/forms.py:737
-#: accounts/forms.py:765
+#: accounts/admin.py:133 accounts/forms.py:41 accounts/forms.py:287
+#: accounts/forms.py:444 accounts/forms.py:524 accounts/forms.py:549
+#: accounts/forms.py:624 accounts/forms.py:660 accounts/forms.py:735
+#: accounts/forms.py:763
 #: accounts/templates/accounts/user_confirm_delete.html:39
 #: accounts/views/filter.py:54 emails/admin.py:44 organisations/models.py:236
 #: registration/forms.py:65
@@ -74,8 +74,8 @@ msgstr ""
 msgid "Role Profile Admin"
 msgstr ""
 
-#: accounts/admin.py:234 accounts/forms.py:291 accounts/forms.py:630
-#: accounts/forms.py:713 accounts/forms.py:767
+#: accounts/admin.py:234 accounts/forms.py:289 accounts/forms.py:628
+#: accounts/forms.py:711 accounts/forms.py:765
 #: accounts/templates/accounts/application/add_user_done.html:48
 #: registration/forms.py:70
 msgid "Role profiles"
@@ -140,8 +140,8 @@ msgstr ""
 msgid "App admin"
 msgstr ""
 
-#: accounts/admin.py:375 accounts/forms.py:288 accounts/forms.py:629
-#: accounts/forms.py:711 accounts/models.py:53 accounts/models.py:238
+#: accounts/admin.py:375 accounts/forms.py:286 accounts/forms.py:627
+#: accounts/forms.py:709 accounts/models.py:53 accounts/models.py:238
 #: accounts/templates/accounts/application/add_user_done.html:59
 #: accounts/templates/accounts/user_confirm_delete.html:33 oauth2/models.py:118
 #: registration/forms.py:46
@@ -183,8 +183,8 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-#: accounts/forms.py:67 accounts/forms.py:379 accounts/forms.py:510
-#: accounts/forms.py:710
+#: accounts/forms.py:67 accounts/forms.py:377 accounts/forms.py:508
+#: accounts/forms.py:708
 #: accounts/templates/accounts/organisationchange_accept.html:51
 #: accounts/templates/accounts/user_confirm_delete.html:28
 #: accounts/templates/accounts/user_email_detail.html:62
@@ -235,7 +235,7 @@ msgid ""
 "password."
 msgstr ""
 
-#: accounts/forms.py:128 accounts/forms.py:282 accounts/forms.py:764
+#: accounts/forms.py:128 accounts/forms.py:280 accounts/forms.py:762
 #: accounts/templates/accounts/application/add_user_done.html:39
 #: emails/forms.py:74 emails/models.py:63
 #: emails/templates/emails/groupemail_detail.html:19
@@ -243,11 +243,11 @@ msgstr ""
 msgid "Email"
 msgstr ""
 
-#: accounts/forms.py:187
+#: accounts/forms.py:190
 msgid "Profile picture"
 msgstr ""
 
-#: accounts/forms.py:202 accounts/forms.py:464 models.py:33
+#: accounts/forms.py:200 accounts/forms.py:462 models.py:33
 #: registration/forms.py:228
 #, python-format
 msgid ""
@@ -255,25 +255,25 @@ msgid ""
 "%(current_filesize)s"
 msgstr ""
 
-#: accounts/forms.py:211 accounts/forms.py:473 models.py:42
+#: accounts/forms.py:209 accounts/forms.py:471 models.py:42
 #: registration/forms.py:232
 msgid "File type is not supported"
 msgstr ""
 
-#: accounts/forms.py:229 auth/forms/__init__.py:26 auth/forms/__init__.py:28
+#: accounts/forms.py:227 auth/forms/__init__.py:26 auth/forms/__init__.py:28
 msgid "Password"
 msgstr ""
 
-#: accounts/forms.py:230
+#: accounts/forms.py:228
 msgid "Password confirmation"
 msgstr ""
 
-#: accounts/forms.py:230
+#: accounts/forms.py:228
 msgid "Enter the same password as above, for verification."
 msgstr ""
 
-#: accounts/forms.py:231 accounts/forms.py:283 accounts/forms.py:423
-#: accounts/forms.py:620 accounts/forms.py:762
+#: accounts/forms.py:229 accounts/forms.py:281 accounts/forms.py:421
+#: accounts/forms.py:618 accounts/forms.py:760
 #: accounts/templates/accounts/application/add_user_done.html:31
 #: accounts/templates/accounts/organisationchange_accept.html:39
 #: accounts/templates/accounts/user_confirm_delete.html:18
@@ -283,8 +283,8 @@ msgstr ""
 msgid "First name"
 msgstr ""
 
-#: accounts/forms.py:232 accounts/forms.py:284 accounts/forms.py:424
-#: accounts/forms.py:621 accounts/forms.py:763
+#: accounts/forms.py:230 accounts/forms.py:282 accounts/forms.py:422
+#: accounts/forms.py:619 accounts/forms.py:761
 #: accounts/templates/accounts/application/add_user_done.html:35
 #: accounts/templates/accounts/organisationchange_accept.html:45
 #: accounts/templates/accounts/user_confirm_delete.html:23
@@ -294,127 +294,127 @@ msgstr ""
 msgid "Last name"
 msgstr ""
 
-#: accounts/forms.py:235
+#: accounts/forms.py:233
 msgid "The two password fields didn't match."
 msgstr ""
 
-#: accounts/forms.py:270 accounts/forms.py:421 accounts/forms.py:509
-#: accounts/forms.py:618 accounts/forms.py:709 accounts/forms.py:761
+#: accounts/forms.py:268 accounts/forms.py:419 accounts/forms.py:507
+#: accounts/forms.py:616 accounts/forms.py:707 accounts/forms.py:759
 #: registration/forms.py:45
 msgid "Username"
 msgstr ""
 
-#: accounts/forms.py:271 accounts/models.py:215
+#: accounts/forms.py:269 accounts/models.py:215
 msgid "Required. 30 characters or fewer. Letters, digits and @/./+/-/_ only."
 msgstr ""
 
-#: accounts/forms.py:274
+#: accounts/forms.py:272
 msgid "This value may contain only letters, numbers and @/./+/-/_ characters."
 msgstr ""
 
-#: accounts/forms.py:283 accounts/models.py:217 registration/forms.py:182
+#: accounts/forms.py:281 accounts/models.py:217 registration/forms.py:182
 msgid "first name"
 msgstr ""
 
-#: accounts/forms.py:284 accounts/models.py:218 registration/forms.py:183
+#: accounts/forms.py:282 accounts/models.py:218 registration/forms.py:183
 msgid "last name"
 msgstr ""
 
-#: accounts/forms.py:285 accounts/forms.py:426 accounts/forms.py:622
+#: accounts/forms.py:283 accounts/forms.py:424 accounts/forms.py:620
 #: registration/forms.py:55 registration/forms.py:195
 msgid "Gender"
 msgstr ""
 
-#: accounts/forms.py:286 accounts/forms.py:427 accounts/forms.py:623
+#: accounts/forms.py:284 accounts/forms.py:425 accounts/forms.py:621
 #: registration/forms.py:56 registration/forms.py:196
 msgid "Date of birth"
 msgstr ""
 
-#: accounts/forms.py:290 accounts/forms.py:627 accounts/forms.py:712
-#: accounts/forms.py:766
+#: accounts/forms.py:288 accounts/forms.py:625 accounts/forms.py:710
+#: accounts/forms.py:764
 #: accounts/templates/accounts/application/add_user_done.html:54
 #: registration/forms.py:66
 msgid "Application roles"
 msgstr ""
 
-#: accounts/forms.py:292 accounts/forms.py:631 accounts/forms.py:714
-#: accounts/forms.py:768 registration/forms.py:71
+#: accounts/forms.py:290 accounts/forms.py:629 accounts/forms.py:712
+#: accounts/forms.py:766 registration/forms.py:71
 msgid "Groups of application roles that are assigned together."
 msgstr ""
 
-#: accounts/forms.py:295 accounts/forms.py:616 accounts/forms.py:759
+#: accounts/forms.py:293 accounts/forms.py:614 accounts/forms.py:757
 #: api/views/users_v2.py:371 registration/forms.py:42 registration/forms.py:180
 msgid "A user with that email address already exists."
 msgstr ""
 
-#: accounts/forms.py:383
+#: accounts/forms.py:381
 #, python-format
 msgid "The email address \"%(email)s\" is already in use."
 msgstr ""
 
-#: accounts/forms.py:422 accounts/forms.py:619
+#: accounts/forms.py:420 accounts/forms.py:617
 msgid "Valid until"
 msgstr ""
 
-#: accounts/forms.py:425 registration/forms.py:185
+#: accounts/forms.py:423
 msgid "Picture"
 msgstr ""
 
-#: accounts/forms.py:429 emails/templates/emails/groupemail_detail.html:30
+#: accounts/forms.py:427 emails/templates/emails/groupemail_detail.html:30
 #: organisations/templates/organisations/adminregion_detail.html:34
 #: organisations/templates/organisations/organisation_detail.html:40
 #: organisations/templates/organisations/organisationcountry_detail.html:31
 msgid "Homepage"
 msgstr ""
 
-#: accounts/forms.py:430 accounts/forms.py:511 registration/forms.py:53
+#: accounts/forms.py:428 accounts/forms.py:509 registration/forms.py:53
 #: registration/forms.py:193
 msgid "Language"
 msgstr ""
 
-#: accounts/forms.py:431 accounts/forms.py:512 registration/forms.py:54
+#: accounts/forms.py:429 accounts/forms.py:510 registration/forms.py:54
 #: registration/forms.py:194
 msgid "Timezone"
 msgstr ""
 
-#: accounts/forms.py:434 accounts/forms.py:615 accounts/forms.py:758
+#: accounts/forms.py:432 accounts/forms.py:613 accounts/forms.py:756
 #: registration/forms.py:41 registration/forms.py:179
 msgid "A user with that username already exists."
 msgstr ""
 
-#: accounts/forms.py:446
+#: accounts/forms.py:444
 msgid "Please use the contact form for a request to change this value."
 msgstr ""
 
-#: accounts/forms.py:508 accounts/forms.py:707
+#: accounts/forms.py:506 accounts/forms.py:705
 msgid "Account type"
 msgstr ""
 
-#: accounts/forms.py:517 accounts/forms.py:722
+#: accounts/forms.py:515 accounts/forms.py:720
 msgid "Organisation Account"
 msgstr ""
 
-#: accounts/forms.py:517 accounts/forms.py:722
+#: accounts/forms.py:515 accounts/forms.py:720
 msgid "Member Account"
 msgstr ""
 
-#: accounts/forms.py:553 models.py:98
+#: accounts/forms.py:551 models.py:98
 msgid "State"
 msgstr ""
 
-#: accounts/forms.py:625 accounts/forms.py:708
+#: accounts/forms.py:623 accounts/forms.py:706
 msgid "Status"
 msgstr ""
 
-#: accounts/forms.py:628 registration/forms.py:67
+#: accounts/forms.py:626 registration/forms.py:67
 msgid "* Application roles which are included by role profiles"
 msgstr ""
 
-#: accounts/forms.py:634 accounts/forms.py:716
+#: accounts/forms.py:632 accounts/forms.py:714
 msgid "Created by"
 msgstr ""
 
-#: accounts/forms.py:640 accounts/forms.py:723 accounts/models.py:50
+#: accounts/forms.py:638 accounts/forms.py:721 accounts/models.py:50
 #: accounts/models.py:220 emails/models.py:47 emails/models.py:104
 #: oauth2/models.py:116 organisations/models.py:80 organisations/models.py:124
 #: organisations/models.py:213 registration/admin.py:30
@@ -422,7 +422,7 @@ msgstr ""
 msgid "active"
 msgstr ""
 
-#: accounts/forms.py:640 accounts/forms.py:723
+#: accounts/forms.py:638 accounts/forms.py:721
 msgid "blocked"
 msgstr ""
 
@@ -916,7 +916,7 @@ msgstr ""
 #: organisations/templates/organisations/organisation_picture_update_form.html:36
 #: organisations/templates/organisations/organisationcountry_form.html:33
 #: registration/templates/registration/change_user_registration_form.html:28
-#: registration/templates/registration/registration_form.html:21
+#: registration/templates/registration/registration_form.html:22
 #: registration/templates/registration/validation_confirm.html:18
 msgid "Please correct the error below."
 msgstr ""
@@ -946,7 +946,7 @@ msgstr ""
 #: organisations/templates/organisations/organisation_picture_update_form.html:36
 #: organisations/templates/organisations/organisationcountry_form.html:33
 #: registration/templates/registration/change_user_registration_form.html:28
-#: registration/templates/registration/registration_form.html:21
+#: registration/templates/registration/registration_form.html:22
 #: registration/templates/registration/validation_confirm.html:18
 msgid "Please correct the errors below."
 msgstr ""
@@ -3212,6 +3212,16 @@ msgstr ""
 msgid "Designates if access is denied to the user."
 msgstr ""
 
+#: registration/forms.py:185
+msgid "Your picture"
+msgstr ""
+
+#: registration/forms.py:185
+msgid ""
+"Please use a photo of your face. We are using it also to validate your "
+"registration."
+msgstr ""
+
 #: registration/forms.py:190
 msgid ""
 "If you would like to tell us something about yourself, please do so in this "
@@ -3412,29 +3422,29 @@ msgstr ""
 msgid "Please check your email."
 msgstr ""
 
-#: registration/templates/registration/registration_form.html:9
+#: registration/templates/registration/registration_form.html:10
 msgid "Register for an account"
 msgstr ""
 
-#: registration/templates/registration/registration_form.html:13
+#: registration/templates/registration/registration_form.html:14
 #, python-format
 msgid "Sign up for %(site_name)s"
 msgstr ""
 
-#: registration/templates/registration/registration_form.html:17
+#: registration/templates/registration/registration_form.html:18
 msgid "You can edit your data here again."
 msgstr ""
 
-#: registration/templates/registration/registration_form.html:37
+#: registration/templates/registration/registration_form.html:38
 msgid "Please name a person who already has an account and can recommend you."
 msgstr ""
 
-#: registration/templates/registration/registration_form.html:40
+#: registration/templates/registration/registration_form.html:41
 msgid ""
 "Please name a second person who already has an account and can recommend you."
 msgstr ""
 
-#: registration/templates/registration/registration_form.html:49
+#: registration/templates/registration/registration_form.html:50
 msgid "Register"
 msgstr ""
 
