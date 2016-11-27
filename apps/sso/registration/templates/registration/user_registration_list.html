@@ -40,7 +40,7 @@
     </div><!-- /.row -->
 
     <main>
-        <div class="col-sm-12 table-responsive">
+        <div class="col-sm-12 ">
             <table class="table-bordered table-striped table">
                 {% include "include/table_header.html" %}
                 <tbody>
@@ -61,8 +61,11 @@
                                 <a class="" href="{% url 'accounts:update_user' registration.verified_by_user.uuid.hex %}{{ cl.get_query_string }}">{{ registration.verified_by_user }}</a>
                             {% endif %}
                         </td>
-                        <td><i class="{% if registration.check_back %}glyphicon glyphicon glyphicon-exclamation-sign{% endif %}"></i></td>
-                        <td><i class="{% if registration.is_access_denied %}glyphicon glyphicon glyphicon-minus-sign{% endif %}"></i></td>
+                        <td>{% if registration.check_back %}<span class="glyphicon glyphicon glyphicon-exclamation-sign"></span>{% endif %}</td>
+                        <td>{% if registration.is_access_denied %}<span class="glyphicon glyphicon glyphicon-minus-sign"></span>{% endif %}</td>
+                        <td>{% if registration.comment %}
+                            <button type="button" class="btn btn-sm btn-default" data-container="body" data-toggle="popover" data-html="true" data-trigger="hover click"
+                                    data-placement="top" data-content="{{ registration.comment }}"><span class="glyphicon glyphicon-paperclip"></span></button>{% endif %}</td>
                     </tr>
                 {% endfor %}
                 </tbody>
