@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-26 13:31+0100\n"
+"POT-Creation-Date: 2016-11-27 12:32+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -831,7 +831,7 @@ msgstr ""
 #: organisations/templates/organisations/organisationcountry_list.html:10
 #: registration/templates/registration/change_user_registration_form.html:6
 #: registration/templates/registration/user_registration_list.html:10
-#: templates/base.html:52 templates/home.html:13 templates/privacy.html:9
+#: templates/base.html:50 templates/home.html:13 templates/privacy.html:9
 #: views/__init__.py:15
 msgid "Home"
 msgstr ""
@@ -1065,7 +1065,7 @@ msgstr ""
 #: accounts/templates/accounts/contact_form.html:9
 #: accounts/templates/accounts/contact_form.html:15
 #: accounts/templates/accounts/contact_thanks.html:9
-#: accounts/templates/accounts/contact_thanks.html:15 templates/base.html:65
+#: accounts/templates/accounts/contact_thanks.html:15 templates/base.html:63
 msgid "Feedback"
 msgstr ""
 
@@ -3274,11 +3274,15 @@ msgstr ""
 msgid "access denied"
 msgstr ""
 
-#: registration/models.py:193
-msgid "registration profile"
+#: registration/models.py:186
+msgid "Comment"
 msgstr ""
 
 #: registration/models.py:194
+msgid "registration profile"
+msgstr ""
+
+#: registration/models.py:195
 msgid "registration profiles"
 msgstr ""
 
@@ -3598,11 +3602,11 @@ msgstr ""
 msgid "Change password"
 msgstr ""
 
-#: templates/base.html:61
+#: templates/base.html:59
 msgid "About us"
 msgstr ""
 
-#: templates/base.html:63 templates/privacy.html:5 templates/privacy.html:10
+#: templates/base.html:61 templates/privacy.html:5 templates/privacy.html:10
 #: templates/privacy.html:16
 msgid "Privacy"
 msgstr ""
