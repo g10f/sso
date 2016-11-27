@@ -183,7 +183,8 @@ class RegistrationProfile(models.Model):
     known_person2_last_name = models.CharField(_("last name of a another known person"), max_length=100, blank=True)
     check_back = models.BooleanField(_('check back'), default=False, help_text=_('Designates if there are open questions to check.'))
     is_access_denied = models.BooleanField(_('access denied'), default=False, db_index=True, help_text=_('Designates if access is denied to the user.'))
-    
+    comment = models.TextField(_("Comment"), max_length=2048, blank=True)
+
     objects = RegistrationManager()
     
     class Meta:

@@ -55,7 +55,7 @@ class RegistrationAdmin(admin.ModelAdmin):
          {'fields':
               ['user', 'user_link', 'last_modified', 'date_registered', 'is_validated', 'is_active', 'about_me',
                'known_person1_first_name', 'known_person2_first_name', 'known_person1_last_name', 'known_person2_last_name',
-               'check_back', 'is_access_denied', 'verified_by_user'],
+               'check_back', 'is_access_denied', 'verified_by_user', 'comment'],
           'classes': ['wide']}), ]
 
     def get_queryset(self, request):
