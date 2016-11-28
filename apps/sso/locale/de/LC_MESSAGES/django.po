@@ -3324,7 +3324,7 @@ msgid ""
 "Please use a photo of your face. We are using it also to validate your "
 "registration."
 msgstr ""
-"Bitte verwende ein Bild, das Dein Gesicht zeigt. Wir verwenden es auch um "
+"Bitte verwende ein Bild, dass Dein Gesicht zeigt. Wir verwenden es auch um "
 "Deine Anmeldung zu prüfen."
 
 #: registration/forms.py:190
