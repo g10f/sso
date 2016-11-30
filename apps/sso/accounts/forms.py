@@ -636,6 +636,7 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
         self.user = kwargs.pop('instance')
         user_data = model_to_dict(self.user)
         user_data['status'] = _('active') if self.user.is_active else _('blocked')
+        user_data['role_profiles'] = [str(role_profile.id) for role_profile in self.user.role_profiles.all()]
 
         if self.user.organisations.count() == 1:
             user_data['organisations'] = self.user.organisations.first()
@@ -720,6 +721,7 @@ class CenterProfileForm(mixins.UserRolesMixin, forms.Form):
         user_data['account_type'] = _('Organisation Account') if self.user.is_center else _('Member Account')
         user_data['status'] = _('active') if self.user.is_active else _('blocked')
         user_data['email'] = str(self.user.primary_email())
+        user_data['role_profiles'] = [str(role_profile.id) for role_profile in self.user.role_profiles.all()]
         initial = kwargs.get('initial', {})
         initial.update(user_data)
         kwargs['initial'] = initial
@@ -771,6 +773,7 @@ class AppAdminUserProfileForm(mixins.UserRolesMixin, forms.Form):
         user_data = model_to_dict(self.user)
         user_data['email'] = self.user.primary_email()
         user_data['organisations'] = u', '.join([x.__unicode__() for x in self.user.organisations.all()])
+        user_data['role_profiles'] = [str(role_profile.id) for role_profile in self.user.role_profiles.all()]
 
         initial = kwargs.get('initial', {})
         initial.update(user_data)

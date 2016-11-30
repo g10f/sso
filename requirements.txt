@@ -1,5 +1,6 @@
-django==1.9.11
-django-formtools
+django
+#django-formtools
+git+https://github.com/django/django-formtools.git
 django-ipware
 gunicorn
 psycopg2
