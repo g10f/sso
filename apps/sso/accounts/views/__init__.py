@@ -56,8 +56,8 @@ def contact(request):
             initial['name'] = request.user.get_full_name()
         form = ContactForm(initial=initial)
         
-    dictionary = {'form': form}
-    return render(request, 'accounts/contact_form.html', dictionary)
+    context = {'form': form}
+    return render(request, 'accounts/contact_form.html', context)
 
 
 @sensitive_post_parameters()
@@ -259,8 +259,8 @@ def profile_center_account(request, redirect_uri=None):
     else:
         form = CenterSelfProfileForm(instance=user)
 
-    dictionary = {'form': form, 'redirect_uri': redirect_uri}
-    return render(request, 'accounts/profile_form_center.html', dictionary)
+    context = {'form': form, 'redirect_uri': redirect_uri}
+    return render(request, 'accounts/profile_form_center.html', context)
 
 
 @login_required
@@ -283,8 +283,8 @@ def profile_core(request, redirect_uri=None):
     except ObjectDoesNotExist:
         user_organisation = None
 
-    dictionary = {'form': form, 'redirect_uri': redirect_uri, 'is_validation_period_active': is_validation_period_active(user_organisation)}
-    return render(request, 'accounts/profile_core_form.html', dictionary)
+    context = {'form': form, 'redirect_uri': redirect_uri, 'is_validation_period_active': is_validation_period_active(user_organisation)}
+    return render(request, 'accounts/profile_core_form.html', context)
     
 
 @login_required
@@ -349,9 +349,9 @@ def profile_with_address_and_phone(request, redirect_uri=None):
     except ObjectDoesNotExist:
         user_organisation = None
 
-    dictionary = {'form': form, 'errors': errors, 'formsets': formsets, 'media': media, 'active': active,
+    context = {'form': form, 'errors': errors, 'formsets': formsets, 'media': media, 'active': active,
                   'redirect_uri': redirect_uri, 'is_validation_period_active': is_validation_period_active(user_organisation)}
-    return render(request, 'accounts/profile_form.html', dictionary)
+    return render(request, 'accounts/profile_form.html', context)
 
 
 @login_required
@@ -365,8 +365,8 @@ def delete_profile(request):
             return redirect('home')
     else:
         form = UserSelfProfileDeleteForm(instance=user)
-    dictionary = {'form': form, }
-    return render(request, 'accounts/delete_profile_form.html', dictionary)
+    context = {'form': form, }
+    return render(request, 'accounts/delete_profile_form.html', context)
 
 
 # Doesn't need csrf_protect since no-one can guess the URL

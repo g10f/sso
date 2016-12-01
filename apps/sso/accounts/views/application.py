@@ -394,9 +394,9 @@ def _update_standard_user(request, user, template='accounts/application/update_u
 
     app_roles_by_profile = {str(id) for id in ApplicationRole.objects.filter(roleprofile__user__id=user.pk).only("id").values_list('id', flat=True)}
 
-    dictionary = {'form': form, 'errors': errors, 'formsets': formsets, 'media': media, 'active': active, 'app_roles_by_profile': app_roles_by_profile,
+    context = {'form': form, 'errors': errors, 'formsets': formsets, 'media': media, 'active': active, 'app_roles_by_profile': app_roles_by_profile,
                   'logged_in': logged_in, 'is_validation_period_active': is_validation_period_active(user_organisation), 'title': _('Change user')}
-    return render(request, template, dictionary)
+    return render(request, template, context)
 
 
 def _update_center_account(request, user, template='accounts/application/update_center_form.html'):
@@ -442,8 +442,8 @@ def _update_center_account(request, user, template='accounts/application/update_
     else:
         logged_in = True
 
-    dictionary = {'form': form, 'logged_in': logged_in, 'title': _('Change user')}
-    return render(request, template, dictionary)
+    context = {'form': form, 'logged_in': logged_in, 'title': _('Change user')}
+    return render(request, template, context)
 
 
 @admin_login_required
@@ -500,8 +500,8 @@ def app_admin_update_user(request, uuid, template='accounts/application/app_admi
     application_roles = request.user.get_administrable_app_admin_application_roles()
     pks = request.user.get_administrable_app_admin_role_profiles().values_list('pk', flat=True)
     role_profiles = user.role_profiles.filter(application_roles__in=application_roles).exclude(pk__in=pks).distinct()
-    dictionary = {'form': form, 'errors': errors, 'media': media, 'active': active,
+    context = {'form': form, 'errors': errors, 'media': media, 'active': active,
                   'role_profiles': role_profiles,
                   'application_roles': application_roles,
                   'title': _('Change user roles')}
-    return render(request, template, dictionary)
+    return render(request, template, context)
