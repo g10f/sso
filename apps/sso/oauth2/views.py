@@ -324,7 +324,7 @@ def approval(request):
     """
     state = request.GET.get('state', '')
     code = request.GET.get('code', '')    
-    return render(request, 'oauth2/approval.html', dictionary={'state': state, 'code': code})
+    return render(request, 'oauth2/approval.html', context={'state': state, 'code': code})
 
 
 @cache_page(60 * 60)
