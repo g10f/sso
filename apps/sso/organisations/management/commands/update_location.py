@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from time import sleep
-from django.core.management.base import NoArgsCommand
+from django.core.management.base import BaseCommand
 from django.contrib.gis import geos
 from django.conf import settings
 from geopy.geocoders import GoogleV3
@@ -11,7 +11,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class Command(NoArgsCommand):
+class Command(BaseCommand):
     help = "Update locations."  # @ReservedAssignment
     
     def handle(self, *args, **options):

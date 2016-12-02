@@ -1,13 +1,13 @@
 from datetime import timedelta
-from django.core.management.base import NoArgsCommand
+from django.core.management.base import BaseCommand
 from django.utils import timezone
 from ...models import AuthorizationCode, BearerToken 
 
 
-class Command(NoArgsCommand):
+class Command(BaseCommand):
     help = "Can be run as a cronjob or directly to clean out expired tokens."
 
-    def handle_noargs(self, **options):
+    def handle(self, **options):
         yesterday = timezone.now() - timedelta(0, 86400)
         five_minutes_ago = timezone.now() - timedelta(0, 300)
         # AuthorizationCode are short living, only to create a bearer token
