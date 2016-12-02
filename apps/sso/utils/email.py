@@ -26,7 +26,7 @@ def send_html_mail(subject, message, recipient_list, from_email, html_message, f
     msg_alternative.attach(msg_text)
     msg_alternative.attach(msg_html)
 
-    msg = EmailMessage(subject, None, from_email, recipient_list)
+    msg = EmailMessage(subject, '', from_email, recipient_list)
     msg.mixed_subtype = 'related'
     msg.attach(msg_alternative)
 
