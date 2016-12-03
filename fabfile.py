@@ -537,9 +537,11 @@ def deploy_supervisor(conf='dev'):
 
     # Require a supervisor process for celery
     # https://github.com/celery/celery/blob/3.1/extra/supervisord/celeryd.conf
+    logfile = code_dir + '/logs/celery-worker.log'
     fabtools.require.supervisor.process(
         'celery-%s' % server_name,
-        command='/envs/%(virtualenv)s/bin/celery worker -A %(app)s -c 1 -l info --without-gossip --without-mingle --without-heartbeat' % {'virtualenv': virtualenv, 'app': app},
+        command='/envs/%(virtualenv)s/bin/celery worker -A %(app)s -c 1 -l INFO -f %(logfile)s  --without-gossip --without-mingle --without-heartbeat' %
+                {'virtualenv': virtualenv, 'app': app, 'logfile': logfile},
         directory=code_dir + '/src/apps',
         user='www-data',
         numprocs=1,
