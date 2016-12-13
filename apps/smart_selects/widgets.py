@@ -38,7 +38,7 @@ class ChainedSelect(Select):
         js = ['smart_select.js']
         return forms.Media(js=[static("js/%s" % path) for path in js])
     
-    def render(self, name, value, attrs=None, choices=()):
+    def render(self, name, value, attrs=None):
         self.add_required()  # bootstrap
 
         if len(name.split('-')) > 1:  # formset
@@ -89,7 +89,7 @@ class ChainedSelect(Select):
             for ch in self.choices:
                 if ch not in final_choices:
                     final_choices.append(ch)
-        self.choices = ()
+        self.choices = final_choices
         final_attrs = self.build_attrs(attrs, name=name)
         if 'class' in final_attrs:
             final_attrs['class'] += ' chained'
@@ -98,5 +98,5 @@ class ChainedSelect(Select):
         final_attrs['data-chainfield'] = chain_field
         final_attrs['data-url'] = url
         final_attrs['data-empty_label'] = empty_label
-        output = super(ChainedSelect, self).render(name, value, final_attrs, choices=final_choices)
+        output = super(ChainedSelect, self).render(name, value, final_attrs)
         return mark_safe(output)
