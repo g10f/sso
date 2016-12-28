@@ -73,6 +73,11 @@ server {
     listen 443 ssl;
     server_name %(server_name)s;
 
+    add_header Strict-Transport-Security max-age=31536000;
+    ssl_certificate /etc/letsencrypt/live/%(cert)s/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/%(cert)s/privkey.pem;
+    ssl_dhparam /etc/nginx/dhparam.pem;
+
     # path for static files
     root %(docroot)s;
 
@@ -220,11 +225,20 @@ os.environ['DEBUG'] = ""
 os.environ['THROTTELING_DISABLED'] = "False"
 """
 
+RENEW_CERT_SCRIPT2 = """\
+#!/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+service nginx stop >/dev/null 2>&1
+sleep 2
+letsencrypt renew
+service nginx start >/dev/null 2>&1
+"""
+
 RENEW_CERT_SCRIPT = """\
 #!/bin/sh
 service nginx stop >/dev/null 2>&1
 sleep 2
-letsencrypt renew
+/opt/certbot/certbot-auto renew
 service nginx start >/dev/null 2>&1
 """
 
@@ -403,30 +417,36 @@ def deploy_webserver(conf='dev'):
 
     # Require an nginx server proxying to our app
     docroot = '/proj/static/htdocs/%(server_name)s' % {'server_name': server_name}    
-    context = {'certroot': '/proj/g10f/certs', 'server_name': server_name, 'host_string': env.host_string, 'code_dir': code_dir}
+    context = {  # 'certroot': '/proj/g10f/certs',
+        'server_name': server_name, 'host_string': env.host_string, 'code_dir': code_dir}
     
     fabtools.require.directory('%(code_dir)s/logs' % context, use_sudo=True, owner="www-data", mode='770')
     fabtools.require.directory('%(code_dir)s/config' % context, use_sudo=True, owner="www-data", mode='770')
     fabtools.require.directory(docroot, use_sudo=True, owner="www-data", mode='770')
     
     fabtools.require.nginx.server()
-    
+    if not files.exists('/etc/nginx/dhparam.pem', use_sudo=True):
+        sudo('openssl dhparam -out /etc/nginx/dhparam.pem 2048')
+
+    """
     fabtools.require.files.directory(context['certroot'], use_sudo=True, owner='www-data', group='www-data')
     fabtools.require.files.template_file('/etc/nginx/conf.d/ssl.nginx.conf', template_contents=NGINX_SSL_TEMPLATE, context=context, use_sudo=True)
     fabtools.require.file('%(certroot)s/certificate.crt' % context, source='certs/%(host_string)s.certificate.crt' % context, use_sudo=True, owner='www-data', group='www-data')
     fabtools.require.file('%(certroot)s/certificate.key' % context, source='certs/%(host_string)s.certificate.key' % context, use_sudo=True, owner='www-data', group='www-data')
     fabtools.require.file('%(certroot)s/dh2048.pem' % context, source='certs/%(host_string)s.dh2048.pem' % context, use_sudo=True, owner='www-data', group='www-data')
+    """
+
     fabtools.require.files.template_file('%(code_dir)s/config/nginx.expired.conf' % context, template_contents=NGINX_EXPIRED_TEMPLATE, use_sudo=True, owner='www-data', group='www-data')
     fabtools.require.files.template_file('%(code_dir)s/config/nginx.webfonts.conf' % context, template_contents=NGINX_WEBFONTS_TEMPLATE, use_sudo=True, owner='www-data', group='www-data')
     
-    fabtools.require.nginx.site(server_name, template_contents=PROXIED_SITE_TEMPLATE, docroot=docroot)
-    
+    fabtools.require.nginx.site(server_name, template_contents=PROXIED_SITE_TEMPLATE, docroot=docroot, cert=server_name)
+
     if env.host_string in ['dwbn']:
         fabtools.require.nginx.site('register.diamondway-buddhism.org', template_contents=REGISTRATION_TEMPLATE, docroot=docroot, target_name=server_name)
 
 
 @task
-def deploy_letsencrypt(conf='dev'):
+def deploy_letsencrypt2(conf='dev'):
     configuration = configurations.get(conf)
     env.host_string = configuration['host_string']
     server_name = configuration['server_name']
@@ -440,8 +460,33 @@ def deploy_letsencrypt(conf='dev'):
     # cron job for renew-certs
     fabtools.require.files.directory('/proj/scripts')
     renew_script = '/proj/scripts/renew-certs'
-    fabtools.require.file(renew_script, RENEW_CERT_SCRIPT)
+    fabtools.require.file(renew_script, RENEW_CERT_SCRIPT2)
+    sudo("chmod +x %s" % renew_script)
     fabtools.cron.add_daily('renew-certs', 'root', "%s" % renew_script)
+
+
+@task
+def deploy_letsencrypt(conf='dev'):
+    configuration = configurations.get(conf)
+    env.host_string = configuration['host_string']
+
+    fabtools.require.files.directory('/opt/certbot/', owner='gunnar', use_sudo=True)
+
+    with cd('/opt/certbot/'):
+        fabtools.require.file(url='https://dl.eff.org/certbot-auto', mode="a+x")
+
+    """
+    sudo("service nginx stop")
+    sudo("/opt/certbot/certbot-auto certonly --standalone  -d '%(server_name)s' -d 'www.%(server_name)s' -m mail@g10f.de -n" % {'server_name': server_name})
+    sudo("service nginx start")
+    """
+
+    # cron job for renew-certs
+    renew_script = '/proj/scripts/renew-certs'
+    fabtools.require.file(renew_script, RENEW_CERT_SCRIPT)
+    sudo("chmod +x %s" % renew_script)
+    fabtools.cron.add_daily('renew-certs', 'root', "%s" % renew_script)
+
 
 
 @task
@@ -573,7 +618,7 @@ def deploy(conf='dev'):
     with cd(code_dir):
         branch = configuration.get('branch', 'master')
         fabtools.require.git.working_copy('https://bitbucket.org/g10f/sso.git', path='src', branch=branch)
-        sudo("chown www-data:www-data -R  ./src")
+        sudo("chgrp www-data -R  ./src")
         sudo("chmod g+w -R  ./src")
     
     # local settings 
