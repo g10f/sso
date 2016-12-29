@@ -334,7 +334,6 @@ def certs(request):
 
 @cache_page(60 * 60)
 def jwks(request):
-
     """
     jwks_uri view (http://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata)
     """
