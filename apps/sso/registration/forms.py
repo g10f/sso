@@ -95,6 +95,10 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
             # center is optional
             # logger.error("User without center?", exc_info=1)
             pass
+
+        # initialize form correctly
+        user_data['role_profiles'] = [str(role_profile.id) for role_profile in self.user.role_profiles.all()]
+
         address_data = {}
         if self.user.useraddress_set.exists():
             useraddress = self.user.useraddress_set.first()
