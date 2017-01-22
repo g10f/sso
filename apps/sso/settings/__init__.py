@@ -224,9 +224,6 @@ AUTHENTICATION_BACKENDS = (
 PASSWORD_HASHERS = (
     'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
-    'django.contrib.auth.hashers.MD5PasswordHasher',
-    'sso.auth.hashers.MoinSha1PasswordHasher',
-    'sso.auth.hashers.OsCommerceMD5PasswordHasher',
 )
 POSTGIS_VERSION = (2, 0, 3)
 
@@ -266,73 +263,6 @@ AUTH_PASSWORD_VALIDATORS = [{
 }, {
     'NAME': 'password.validation.DigitsValidator'
 }]
-
-LOGGING_HANDLERS = ['mail_admins', 'error', ]
-if DEBUG:
-    LOGGING_HANDLERS += ['debug', 'console']
-
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
-        },
-        'simple': {
-            'format': '%(levelname)s %(message)s'
-        },
-    },
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse',
-        },
-        'require_debug_true': {
-            '()': 'django.utils.log.RequireDebugTrue',
-        },
-    },
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'filters': ['require_debug_true'],
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple'
-        },
-        'null': {
-            'class': 'logging.NullHandler',
-        },
-        'mail_admins': {
-            'level': 'ERROR',
-            'filters': ['require_debug_false'],
-            'class': 'django.utils.log.AdminEmailHandler',
-            'formatter': 'verbose',
-        },
-    },
-    'loggers': {
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
-        'sso': {
-            'handlers': LOGGING_HANDLERS,
-            'level': 'DEBUG',
-            'propagate': False,
-        },
-        'django.db.backends': {
-            'handlers': ['console'],
-            'propagate': False,
-            'level': 'WARNING',
-        },
-        'py.warnings': {
-            'handlers': ['console'],
-            'level': 'WARNING',
-        },
-    },
-    'root': {
-        'level': 'DEBUG',
-        'handlers': LOGGING_HANDLERS,
-    },
-}
 
 # overwrite the secrets in your local_settings.py
 SECRET_KEY = '7pvncv391)#rz%dhocfmic_#+(p**284lnsx2j#s)$n5ln-hnk'
