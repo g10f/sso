@@ -1,6 +1,5 @@
 django
-#django-formtools
-git+https://github.com/django/django-formtools.git
+django-formtools
 django-ipware
 gunicorn
 psycopg2
@@ -8,7 +7,7 @@ python-memcached
 docutils
 pyjwt
 cryptography
-'oauthlib<2'
+oauthlib
 git+git://github.com/mariocesar/sorl-thumbnail@v12.3
 sorl-thumbnail
 pillow
