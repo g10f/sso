@@ -35,15 +35,6 @@ class UserRolesMixin(object):
             user_m2m_field_updated.send_robust(sender=self.__class__, user=self.user, attribute_name=attribute_name,
                                                delete_pk_list=list(remove_values), add_pk_list=list(new_value_set))
 
-    def update_user_m2m_fields_from_list(self, attribute_name, current_user, admin_attribute_format='get_administrable_%s'):
-        """
-        get the new values from a MultipleChoiceField and the existing from a list
-        """
-        new_value_set = ids_from_choices(self.cleaned_data.get(attribute_name))
-        administrable_values = ids_from_objs(getattr(current_user, admin_attribute_format % attribute_name)())
-        
-        self._update_user_m2m(new_value_set, administrable_values, attribute_name)
-
     def update_user_m2m_fields(self, attribute_name, current_user, admin_attribute_format='get_administrable_%s'):
         """
         get the new values from a ModelMultipleChoiceField and the existing from a queryset
