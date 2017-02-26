@@ -35,3 +35,4 @@ class AccountsTest(TestCase):
         self.assertContains(response, reverse('accounts:app_admin_update_user', kwargs={'uuid': 'a8992f0348634f76b0dac2de4e4c83ee'}))
 
         response = self.client.get(reverse('accounts:app_admin_update_user', kwargs={'uuid': 'a8992f0348634f76b0dac2de4e4c83ee'}))
+        self.assertEqual(response.status_code, 200)
