@@ -96,7 +96,7 @@ class OrganisationBaseForm(BaseForm):
             'google_plus_page': bootstrap.URLInput(attrs={'size': 50}),
             'facebook_page': bootstrap.URLInput(attrs={'size': 50}),
             'twitter_page': bootstrap.URLInput(attrs={'size': 50}),
-            'country': bootstrap.Select(),
+            'organisation_country': bootstrap.Select(),
             'name': bootstrap.TextInput(attrs={'size': 50}), 
             'name_native': bootstrap.TextInput(attrs={'size': 50}),
             'founded': bootstrap.SelectDateWidget(years=years_to_display, required=False),
@@ -145,8 +145,7 @@ class OrganisationEmailAdminForm(OrganisationBaseForm):
     """
     email_type = CENTER_EMAIL_TYPE
     permission = PERM_EVERYBODY
-    email_value = EmailFieldLower(required=True, label=_("Email address"),
-                                  widget=bootstrap.EmailInput(attrs={'placeholder': 'name' + SSO_ORGANISATION_EMAIL_DOMAIN}))
+    email_value = EmailFieldLower(required=True, label=_("Email address"))
 
     def __init__(self, *args, **kwargs):
         super(OrganisationEmailAdminForm, self).__init__(*args, **kwargs)
@@ -160,7 +159,7 @@ class OrganisationEmailAdminForm(OrganisationBaseForm):
         the new email address must be ending with SSO_ORGANISATION_EMAIL_DOMAIN
         """
         email_value = self.cleaned_data['email_value']
-        if email_value[-len(SSO_ORGANISATION_EMAIL_DOMAIN):] != SSO_ORGANISATION_EMAIL_DOMAIN:
+        if SSO_ORGANISATION_EMAIL_DOMAIN and (email_value[-len(SSO_ORGANISATION_EMAIL_DOMAIN):] != SSO_ORGANISATION_EMAIL_DOMAIN):
             msg = _('The email address of the center must be ending with %(domain)s') % {'domain': SSO_ORGANISATION_EMAIL_DOMAIN}
             raise ValidationError(msg)
         
@@ -204,11 +203,11 @@ class OrganisationCountryAdminForm(OrganisationEmailAdminForm):
     A form for a country admin for update organisations
     """
     class Meta(OrganisationBaseForm.Meta):
-        fields = OrganisationBaseForm.Meta.fields + ('country', 'admin_region', 'name', 'center_type', 'is_active')  # , 'can_publish')
+        fields = OrganisationBaseForm.Meta.fields + ('organisation_country', 'admin_region', 'name', 'center_type', 'is_active')  # , 'can_publish')
 
     def __init__(self, *args, **kwargs):
         super(OrganisationCountryAdminForm, self).__init__(*args, **kwargs)
-        self.fields['country'].queryset = self.user.get_assignable_organisation_countries()
+        self.fields['organisation_country'].queryset = self.user.get_assignable_organisation_countries()
 
 
 class OrganisationRegionAdminForm(OrganisationEmailAdminForm):
@@ -290,7 +289,7 @@ class OrganisationRegionAdminCreateForm(OrganisationCountryAdminCreateForm):
         super(OrganisationRegionAdminCreateForm, self).__init__(*args, **kwargs)
         regions = self.user.get_assignable_organisation_regions()
         self.fields['admin_region'].queryset = regions
-        self.fields['country'].queryset = Country.objects.filter(adminregion__in=regions).distinct()
+        self.fields['organisation_country'].queryset = OrganisationCountry.objects.filter(adminregion__in=regions).distinct()
 
     def clean(self):
         """
@@ -298,10 +297,10 @@ class OrganisationRegionAdminCreateForm(OrganisationCountryAdminCreateForm):
         """
         cleaned_data = super(OrganisationBaseForm, self).clean()
         admin_region = cleaned_data.get("admin_region")
-        country = cleaned_data.get("country")
+        organisation_country = cleaned_data.get("organisation_country")
 
-        if admin_region and country:
-            if admin_region.country != country:
+        if admin_region and organisation_country:
+            if admin_region.organisation_country != organisation_country:
                 msg = _("The admin region is not valid for the selected country.")
                 # self.add_error('admin_region', msg)  #  django 1.7
                 self._errors["admin_region"] = self.error_class([msg])
@@ -311,21 +310,21 @@ class OrganisationRegionAdminCreateForm(OrganisationCountryAdminCreateForm):
 
 class AdminRegionForm(BaseForm):
     email_value = EmailFieldLower(required=True, label=_("Email address"), widget=bootstrap.EmailInput(attrs={'placeholder': 'name' + SSO_ORGANISATION_EMAIL_DOMAIN}))
-    country = ModelChoiceField(queryset=None, required=True, label=_("Country"), widget=bootstrap.Select())
+    organisation_country = ModelChoiceField(queryset=None, required=True, label=_("Country"), widget=bootstrap.Select())
     
     class Meta:
         model = AdminRegion        
-        fields = ('name', 'homepage', 'country', 'is_active')
+        fields = ('name', 'homepage', 'organisation_country', 'is_active')
         widgets = {
             'homepage': bootstrap.TextInput(attrs={'size': 50}),
-            'country': bootstrap.Select(),
+            'organisation_country': bootstrap.Select(),
             'name': bootstrap.TextInput(attrs={'size': 50}), 
         }
         
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')  # remove custom user keyword      
         super(AdminRegionForm, self).__init__(*args, **kwargs)
-        self.fields['country'].queryset = self.user.get_administrable_region_countries()
+        self.fields['organisation_country'].queryset = self.user.get_administrable_region_countries()
         if self.instance.email:
             self.fields['email_value'].initial = str(self.instance.email)
         else:
@@ -336,7 +335,7 @@ class AdminRegionForm(BaseForm):
         the new email address must be ending with SSO_ORGANISATION_EMAIL_DOMAIN
         """
         email_value = self.cleaned_data['email_value']
-        if email_value[-len(SSO_ORGANISATION_EMAIL_DOMAIN):] != SSO_ORGANISATION_EMAIL_DOMAIN:
+        if SSO_ORGANISATION_EMAIL_DOMAIN and email_value[-len(SSO_ORGANISATION_EMAIL_DOMAIN):] != SSO_ORGANISATION_EMAIL_DOMAIN:
             msg = _('The email address of the center must be ending with %(domain)s') % {'domain': SSO_ORGANISATION_EMAIL_DOMAIN}
             raise ValidationError(msg)
         
@@ -363,7 +362,7 @@ class AdminRegionForm(BaseForm):
     
     
 class OrganisationCountryForm(BaseForm):
-    email_value = EmailFieldLower(required=True, label=_("Email address"), widget=bootstrap.EmailInput(attrs={'placeholder': 'name' + SSO_ORGANISATION_EMAIL_DOMAIN}))
+    email_value = EmailFieldLower(required=True, label=_("Email address"))
     country_groups = ModelMultipleChoiceField(queryset=CountryGroup.objects.all(), required=False,
                                               widget=bootstrap.CheckboxSelectMultiple(), label=_("Country Groups"))
     country = ModelChoiceField(queryset=Country.objects.filter(organisationcountry__isnull=True), required=True, 
@@ -393,7 +392,7 @@ class OrganisationCountryForm(BaseForm):
         the new email address must be ending with SSO_ORGANISATION_EMAIL_DOMAIN
         """
         email_value = self.cleaned_data['email_value']
-        if email_value[-len(SSO_ORGANISATION_EMAIL_DOMAIN):] != SSO_ORGANISATION_EMAIL_DOMAIN:
+        if SSO_ORGANISATION_EMAIL_DOMAIN and email_value[-len(SSO_ORGANISATION_EMAIL_DOMAIN):] != SSO_ORGANISATION_EMAIL_DOMAIN:
             msg = _('The email address of the center must be ending with %(domain)s') % {'domain': SSO_ORGANISATION_EMAIL_DOMAIN}
             raise ValidationError(msg)
         

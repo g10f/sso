@@ -27,12 +27,22 @@ def phone(phone, phone_type='home', primary=True):
 
 
 class ApiTests(OAuth2BaseTestCase):
+    """
     data = json.dumps({
         'given_name': 'Test',
         'family_name': 'Myfamily',
         'email': 'new@g10f.de',
         'organisations': {'31664dd38ca4454e916e55fe8b1f0746': {}}
     })
+    """
+    data = {
+        'org_id': '31664dd38ca4454e916e55fe8b1f0745',
+        'user_id': 'a8992f0348634f76b0dac2de4e4c83ee',
+        'iso2_code': 'DE',
+        'country': 'DE',
+        'region_id': '0ebf2537fc664b7db285ea773c981404',
+        'country_group_id': 'f6b34d1cee944138800980fe48a2b26f'
+    }
 
     def get_url_from_api_home(self, name, kwargs=None):
         if kwargs is None:
@@ -40,6 +50,19 @@ class ApiTests(OAuth2BaseTestCase):
         response = self.client.get(reverse('api:home'))
         home = json.loads(response.content)
         return expand(home[name], kwargs)
+
+    def test_entry_point(self):
+        response = self.client.get(reverse('api:home'))
+        home = json.loads(response.content)
+        authorization = self.get_authorization(client_id="1811f02ed81b43b5bee1afe031e6198e", username="GlobalAdmin", password="secret007", scope="users")
+        self.longMessage = True
+        for entry in home:
+            if entry[0] != '@':
+                url = expand(home[entry], self.data)
+                response = self.client.get(url, HTTP_AUTHORIZATION=authorization)
+                if 'application/json' in response['Content-Type'].split(';'):
+                    self.assertNotIn('error', response.json(), url)
+                self.assertEqual(response.status_code, 200, "got %s on %s" % (response.status_code, url))
 
     def test_organisation_list(self):
         organisations_url = self.get_url_from_api_home('organisations')

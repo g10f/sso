@@ -144,7 +144,7 @@ class CheckboxFieldRenderer(forms.widgets.ChoiceFieldRenderer):
         start_tag = format_html('<div id="{0}">', id_) if id_ else '<div>'
         output = [start_tag]
         for widget in self:
-            output.append(format_html('<div class="checkbox">{0}</div>', force_text(widget)))
+            output.append(format_html(u'<div class="checkbox">{0}</div>', force_text(widget)))
         output.append('</div>')
         return mark_safe('\n'.join(output))
     

@@ -145,7 +145,7 @@ class UserList(ListView):
         admin_regions = user.get_administrable_user_regions()
 
         if self.country:
-            centers = user.get_administrable_user_organisations().filter(country=self.country)
+            centers = user.get_administrable_user_organisations().filter(organisation_country=self.country)
             if self.admin_region:
                 centers = centers.filter(admin_region=self.admin_region)
             if self.center:
@@ -236,7 +236,7 @@ class AppAdminUserList(ListView):
         admin_regions = user.get_administrable_app_admin_user_regions()
 
         if self.country:
-            centers = user.get_administrable_app_admin_user_organisations().filter(country=self.country)
+            centers = user.get_administrable_app_admin_user_organisations().filter(organisation_country=self.country)
             if self.admin_region:
                 centers = centers.filter(admin_region=self.admin_region)
             if self.center:

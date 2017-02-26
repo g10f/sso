@@ -1,3 +1,4 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.utils.six.moves.urllib.parse import urlunsplit
 import logging
 
@@ -88,7 +89,11 @@ class ViewQuerysetFilter(BaseFilter):
     def get_value_from_query_param(self, view, default):
         value = view.request.GET.get(self.name, default)
         if value:
-            return self.model.objects.get(pk=value)
+            try:
+                return self.model.objects.get(pk=value)
+            except ObjectDoesNotExist:
+                # return empty object
+                return self.model()
         else:
             return None
     

@@ -8,7 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from l10n.models import Country
 from sso.views import main
 from sso.emails.models import EmailForward, EmailAlias, Email
-from sso.organisations.models import AdminRegion
+from sso.organisations.models import AdminRegion, OrganisationCountry
 from sso.views.generic import FormsetsUpdateView, ListView, SearchFilter, ViewQuerysetFilter, ViewButtonFilter, ViewChoicesFilter
 from sso.emails.forms import EmailForwardOnlyInlineForm, EmailAliasInlineForm
 from sso.organisations.forms import AdminRegionForm
@@ -82,7 +82,7 @@ class AdminRegionUpdateView(AdminRegionBaseView, FormsetsUpdateView):
         """
         user = self.request.user
         obj = super(AdminRegionUpdateView, self).get_object(queryset)
-        if obj.country in user.get_assignable_organisation_countries():
+        if obj.organisation_country in user.get_assignable_organisation_countries():
             self.admin_type = 'country'
         else:
             self.admin_type = 'region'
@@ -115,8 +115,9 @@ class AdminRegionSearchFilter(SearchFilter):
 
 class CountryFilter(ViewQuerysetFilter):
     name = 'country'
-    model = Country
-    filter_list = Country.objects.filter(organisation__isnull=False).distinct()
+    qs_name = 'organisation_country'
+    model = OrganisationCountry
+    filter_list = OrganisationCountry.objects.all().prefetch_related('country')
     select_text = _('Country')
     select_all_text = _('All Countries')
 
@@ -160,14 +161,14 @@ class AdminRegionList(ListView):
         Get the list of items for this view. This must be an iterable, and may
         be a queryset (in which qs-specific behavior will be enabled).
         """
-        qs = super(AdminRegionList, self).get_queryset().select_related('country', 'email')
+        qs = super(AdminRegionList, self).get_queryset().select_related('organisation_country__country', 'email')
             
         self.cl = main.ChangeList(self.request, self.model, self.list_display, default_ordering=['name'])
 
         # apply filters
         qs = MyRegionsFilter().apply(self, qs)  
         qs = AdminRegionSearchFilter().apply(self, qs)  
-        qs = CountryFilter().apply(self, qs)  
+        qs = CountryFilter().apply(self, qs)
         if self.request.user.is_organisation_admin:  
             qs = IsActiveFilter().apply(self, qs)
         else:

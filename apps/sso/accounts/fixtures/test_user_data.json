@@ -54,6 +54,37 @@
   {
     "model": "accounts.user",
     "fields": {
+      "username": "ApplicationAdmin",
+      "first_name": "Application",
+      "last_name": "Admin",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "last_login": "2017-02-26T08:18:33.143Z",
+      "groups": [],
+      "user_permissions": [],
+      "password": "pbkdf2_sha256$10000$JuM5NUO9HJ7e$61H65Og8koE7TCu37DfS1AqshlDiqmL1skZ6EzjrrGg=",
+      "date_joined": "2017-02-26T07:18:33.143Z",
+      "uuid": "8b5ef43b30754ce4a6d769435019a83c",
+      "organisations": [["31664dd38ca4454e916e55fe8b1f0745"]],
+      "application_roles": [
+        [
+          "bc0ee635a536491eb8e7fbe5749e8111",
+          "Staff"
+        ],
+        [
+          "bc0ee635a536491eb8e7fbe5749e8111",
+          "Admin"
+        ]
+      ],
+      "is_subscriber": false,
+      "is_center": false,
+      "last_modified": "2017-02-26T07:18:33.143Z"
+    }
+  },
+  {
+    "model": "accounts.user",
+    "fields": {
       "username": "CenterAdmin",
       "first_name": "Center",
       "last_name": "Admin",
@@ -109,7 +140,7 @@
     "model": "accounts.user",
     "fields": {
       "username": "CountryAdmin",
-      "admin_countries": [81],
+      "admin_organisation_countries": [[ "6bc429702f9f442ea9717824a8d76d84" ]],
       "first_name": "Country",
       "last_name": "Admin",
       "is_active": true,
@@ -182,6 +213,14 @@
       "email": "country@g10f.de",
       "primary": true,
       "user": ["CountryAdmin"]
+    }
+  },
+  {
+    "model": "accounts.applicationadmin",
+    "fields": {
+      "application": ["bc0ee635a536491eb8e7fbe5749e8111"],
+      "admin": ["ApplicationAdmin"],
+      "last_modified": "2017-02-26T11:20:46.076Z"
     }
   }
 ]
