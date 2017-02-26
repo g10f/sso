@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
                 ('last_modified', models.DateTimeField(auto_now=True, verbose_name='last modified')),
                 ('name', models.CharField(max_length=255, verbose_name='name')),
                 ('homepage', models.URLField(blank=True, verbose_name='homepage')),
-                ('email_domain', models.CharField(blank=True, max_length=254, verbose_name='name')),
+                ('email_domain', models.CharField(blank=True, max_length=254, verbose_name='email domain')),
                 ('is_active', models.BooleanField(default=True, help_text='Designates whether this association should be treated as active. Unselect this instead of deleting the association.', verbose_name='active')),
                 ('is_external', models.BooleanField(default=False, help_text='Designates whether this association is managed externally.', verbose_name='external')),
                 ('is_selectable', models.BooleanField(default=True, help_text='Designates whether the organisations of this association can be selected by/assigned to users.', verbose_name='selectable')),

@@ -74,7 +74,7 @@ class CountryGroup(AbstractBaseModel):
 class Association(AbstractBaseModel):
     name = models.CharField(_("name"), max_length=255)
     homepage = models.URLField(_("homepage"), blank=True)
-    email_domain = models.CharField(_("name"), blank=True, max_length=254)
+    email_domain = models.CharField(_("email domain"), blank=True, max_length=254)
     is_active = models.BooleanField(_('active'), default=True, help_text=_('Designates whether this association should be treated as '
                                                                            'active. Unselect this instead of deleting the association.'))
     is_external = models.BooleanField(_('external'), default=False, help_text=_('Designates whether this association is managed externally.'))
