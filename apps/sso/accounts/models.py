@@ -699,7 +699,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @memoize
     def is_app_admin(self):
-        return self.applicationadmin_set.exists() or self.roleprofileadmin_set.exists() or self.is_superuser
+        return self.applicationadmin_set.exists() or self.roleprofileadmin_set.exists()
 
     @property
     def is_global_organisation_admin(self):
