@@ -14,7 +14,7 @@ from django.utils.encoding import force_text
 from django.core.urlresolvers import reverse, reverse_lazy
 from sso.accounts.models import ApplicationRole
 from sso.auth.decorators import admin_login_required
-from sso.organisations.models import is_validation_period_active_for_user
+from sso.organisations.models import is_validation_period_active_for_user, OrganisationCountry
 from sso.signals import user_registration_completed
 from sso.views import main
 from sso.views.generic import SearchFilter, ViewChoicesFilter, ViewQuerysetFilter, ListView
@@ -54,8 +54,8 @@ class RegistrationSearchFilter(SearchFilter):
 
 class CountryFilter(ViewQuerysetFilter):
     name = 'country'
-    qs_name = 'user__organisations__country'
-    model = Country
+    qs_name = 'user__organisations__organisation_country'
+    model = OrganisationCountry
     select_text = _('Country')
     select_all_text = _('All Countries')
 
@@ -103,7 +103,7 @@ class UserRegistrationList(ListView):
 
     def get_queryset(self):
         qs = super(UserRegistrationList, self).get_queryset() \
-            .prefetch_related('user__organisations', 'user__organisations__country', 'user__useraddress_set', 'user__useraddress_set__country', 'user__useremail_set') \
+            .prefetch_related('user__organisations', 'user__organisations__organisation_country__country', 'user__useraddress_set', 'user__useraddress_set__country', 'user__useremail_set') \
             .filter(user__is_active=False, is_validated=True, user__last_login__isnull=True)
 
         # display only users from centers where the logged in user has admin rights
@@ -139,7 +139,7 @@ class UserRegistrationList(ListView):
             user__is_active=False,
             user__registrationprofile__isnull=False,
             user__registrationprofile__is_validated=True)
-        countries = Country.objects.filter(pk__in=user_organisations.values_list('country', flat=True))
+        countries = OrganisationCountry.objects.filter(pk__in=user_organisations.values_list('organisation_country', flat=True)).prefetch_related('country')
 
         country_filter = CountryFilter().get(self, countries)
         is_verified_filter = IsVerifiedFilter().get(self)

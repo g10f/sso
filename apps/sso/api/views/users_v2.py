@@ -133,24 +133,24 @@ class UserMixin(object):
 
             data['organisations'] = {
                 organisation.uuid.hex: {
-                    'country': organisation.country.iso2_code,
+                    'country': organisation.organisation_country.country.iso2_code,
                     'name': organisation.name,
                     '@id': "%s%s" % (base, reverse('api:v2_organisation', kwargs={'uuid': organisation.uuid.hex}))
-                } for organisation in obj.organisations.all().prefetch_related('country')
+                } for organisation in obj.organisations.all().prefetch_related('organisation_country__country')
             }
             data['admin_regions'] = {
                 region.uuid.hex: {
-                    'country': region.country.iso2_code,
+                    'country': region.organisation_country.country.iso2_code,
                     'name': region.name,
                     '@id': "%s%s" % (base, reverse('api:v2_region', kwargs={'uuid': region.uuid.hex}))
-                } for region in obj.admin_regions.all().prefetch_related('country')
+                } for region in obj.admin_regions.all().prefetch_related('organisation_country__country')
             }
             data['admin_countries'] = {
-                country.iso2_code: {
-                    'code': country.iso2_code,
-                    'name': country.printable_name,
-                    '@id': "%s%s" % (base, reverse('api:v2_country', kwargs={'iso2_code': country.iso2_code}))
-                } for country in obj.admin_countries.all()
+                organisation_country.country.iso2_code: {
+                    'code': organisation_country.country.iso2_code,
+                    'name': organisation_country.country.printable_name,
+                    '@id': "%s%s" % (base, reverse('api:v2_country', kwargs={'iso2_code': organisation_country.country.iso2_code}))
+                } for organisation_country in obj.admin_organisation_countries.all()
             }
 
             if 'role' in scopes:
@@ -529,11 +529,11 @@ class UserList(UserMixin, JsonListView):
 
         country_group_id = self.request.GET.get('country_group_id', None)
         if country_group_id:
-            qs = qs.filter(organisations__country__organisationcountry__country_groups__uuid=country_group_id)
+            qs = qs.filter(organisations__organisation_country__country_groups__uuid=country_group_id)
         
         country = self.request.GET.get('country', None)
         if country:
-            qs = qs.filter(organisations__country__iso2_code__iexact=country)
+            qs = qs.filter(organisations__organisation_country__country__iso2_code__iexact=country)
         
         region_id = self.request.GET.get('region_id', None)
         if region_id:
@@ -580,11 +580,11 @@ def user_emails(request):
 
     country_group_id = request.GET.get('country_group_id', None)
     if country_group_id:
-        qs = qs.filter(user__organisations__country__organisationcountry__country_groups__uuid=country_group_id)
+        qs = qs.filter(user__organisations__organisation_country__country_groups__uuid=country_group_id)
 
     country = request.GET.get('country', None)
     if country:
-        qs = qs.filter(user__organisations__country__iso2_code__iexact=country)
+        qs = qs.filter(user__organisations__organisation_country__country__iso2_code__iexact=country)
 
     region_id = request.GET.get('region_id', None)
     if region_id:

@@ -1,30 +1,49 @@
-[ {
-	"model" : "organisations.organisationcountry",
-	"fields" : {
-		"uuid" : "6bc429702f9f442ea9717824a8d76d84",
-		"country" : 81,
-		"country_groups" : [],
-		"is_active" : true,
-		"last_modified" : "2014-08-29T19:33:38.430Z",
-		"homepage" : ""
-	}
-}, {
-	"model" : "organisations.organisationcountry",
-	"fields" : {
-		"uuid" : "9d0a8b1ad1794facb700d0a666d5ef17",
-		"country" : 59,
-		"country_groups" : [],
-		"is_active" : true,
-		"last_modified" : "2014-08-29T19:33:36.412Z",
-		"homepage" : ""
-	}
-}, {
+[
+  {
+    "model": "organisations.association",
+    "fields": {
+      "last_modified": "2013-04-28T16:56:13.807Z",
+      "uuid": "bad2e6edff274f2f900ff3dbb26e38ce",
+      "name": "Association 1"
+    }
+  },
+  {
+    "model": "organisations.countrygroup",
+    "fields": {
+      "name": "Test Country Group",
+      "uuid": "f6b34d1cee944138800980fe48a2b26f",
+      "last_modified": "2017-02-24T19:33:38.430Z",
+      "homepage": ""
+    }
+  },
+  {
+    "model": "organisations.organisationcountry",
+    "fields": {
+      "uuid": "6bc429702f9f442ea9717824a8d76d84",
+      "country": 81,
+      "country_groups": [["f6b34d1cee944138800980fe48a2b26f"]],
+      "is_active": true,
+      "last_modified": "2014-08-29T19:33:38.430Z",
+      "homepage": ""
+    }
+  },
+  {
+    "model": "organisations.organisationcountry",
+    "fields": {
+      "uuid": "9d0a8b1ad1794facb700d0a666d5ef17",
+      "country": 59,
+      "country_groups": [],
+      "is_active": true,
+      "last_modified": "2014-08-29T19:33:36.412Z",
+      "homepage": ""
+    }
+  }, {
 	"model" : "organisations.adminregion",
 	"fields" : {
 		"last_modified" : "2013-04-28T16:56:13.807Z",
 		"uuid" : "0ebf2537fc664b7db285ea773c981404",
 		"name" : "Region 1",
-		"country" : 81
+		"organisation_country" : [ "6bc429702f9f442ea9717824a8d76d84" ]
 	}
 }, {
 	"model" : "organisations.adminregion",
@@ -32,7 +51,7 @@
 		"last_modified" : "2013-04-28T16:56:23.067Z",
 		"uuid" : "1a5985f6a9fc4ead975de1291f8a65a9",
 		"name" : "Region 2",
-		"country" : 81
+		"organisation_country" : [ "6bc429702f9f442ea9717824a8d76d84" ]
 	}
 }, {
 	"model" : "organisations.organisation",
@@ -42,7 +61,7 @@
 		"admin_region" : [ "0ebf2537fc664b7db285ea773c981404" ],
 		"name" : "Test Center 1",
 		"center_type" : "1",
-		"country" : 81
+		"organisation_country" : [ "6bc429702f9f442ea9717824a8d76d84" ]
 	}
 }, {
 	"model" : "organisations.organisation",
@@ -52,6 +71,6 @@
 		"admin_region" : [ "0ebf2537fc664b7db285ea773c981404" ],
 		"name" : "Test Center 2",
 		"center_type" : "1",
-		"country" : 81
+		"organisation_country" : [ "6bc429702f9f442ea9717824a8d76d84" ]
 	}
 } ]

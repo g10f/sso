@@ -43,8 +43,8 @@ class OrganisationMixin(object):
             'twitter_page': obj.twitter_page,
             'last_modified': obj.get_last_modified_deep(),
             'country': {
-                'code': obj.country.iso2_code,
-                '@id': "%s%s" % (base, reverse('api:v2_country', kwargs={'iso2_code': obj.country.iso2_code})),
+                'code': obj.organisation_country.country.iso2_code,
+                '@id': "%s%s" % (base, reverse('api:v2_country', kwargs={'iso2_code': obj.organisation_country.country.iso2_code})),
             }
         }
         if obj.neighbour_distance:
@@ -119,7 +119,7 @@ class OrganisationDetailView(OrganisationMixin, JsonDetailView):
     operations = {}
     
     def get_queryset(self):
-        return super(OrganisationDetailView, self).get_queryset().prefetch_related('country', 'email', 'organisationaddress_set', 'organisationphonenumber_set',
+        return super(OrganisationDetailView, self).get_queryset().prefetch_related('organisation_country__country', 'email', 'organisationaddress_set', 'organisationphonenumber_set',
                                                                                    'organisationpicture_set')
 
     def get_object_data(self, request, obj):
@@ -133,7 +133,7 @@ class OrganisationDetailView(OrganisationMixin, JsonDetailView):
 class OrganisationList(OrganisationMixin, JsonListView):
     # TODO: caching
     def get_queryset(self):
-        qs = super(OrganisationList, self).get_queryset().prefetch_related('country', 'admin_region', 'email', 'organisationaddress_set',
+        qs = super(OrganisationList, self).get_queryset().prefetch_related('organisation_country__country', 'admin_region', 'email', 'organisationaddress_set',
                                                                            'organisationphonenumber_set', 'organisationpicture_set').distinct()
         
         is_active = self.request.GET.get('is_active', None)
@@ -156,11 +156,11 @@ class OrganisationList(OrganisationMixin, JsonListView):
 
         country_group_id = self.request.GET.get('country_group_id', None)
         if country_group_id:
-            qs = qs.filter(country__organisationcountry__country_groups__uuid=country_group_id)
+            qs = qs.filter(organisation_country__country_groups__uuid=country_group_id)
 
         country = self.request.GET.get('country', None)
         if country:
-            qs = qs.filter(country__iso2_code__iexact=country)
+            qs = qs.filter(organisation_country__country__iso2_code__iexact=country)
             
         region_id = self.request.GET.get('region_id', None)
         if region_id:

@@ -71,7 +71,49 @@ class CountryGroup(AbstractBaseModel):
         return u"%s" % self.name
 
 
-class OrganisationCountry(AbstractBaseModel):
+class Association(AbstractBaseModel):
+    name = models.CharField(_("name"), max_length=255)
+    homepage = models.URLField(_("homepage"), blank=True)
+    email_domain = models.CharField(_("name"), blank=True, max_length=254)
+    is_active = models.BooleanField(_('active'), default=True, help_text=_('Designates whether this association should be treated as '
+                                                                           'active. Unselect this instead of deleting the association.'))
+    is_external = models.BooleanField(_('external'), default=False, help_text=_('Designates whether this association is managed externally.'))
+    is_selectable = models.BooleanField(_('selectable'), default=True, help_text=_('Designates whether the organisations of this association can be selected by/assigned to users.'))
+
+    class Meta(AbstractBaseModel.Meta):
+        verbose_name = _('Association')
+        verbose_name_plural = _('Associations')
+        ordering = ['name']
+
+    def __unicode__(self):
+        return u"%s" % self.name
+
+    @models.permalink
+    def get_absolute_url(self):
+        return 'organisations:association_detail', (), {'uuid': self.uuid.hex, }
+
+
+def default_association():
+    return Association.objects.get_by_natural_key(settings.SSO_DEFAULT_ASSOCIATION_UUID).pk
+
+
+class ActiveOrganisationCountryManager(models.Manager):
+    """
+    custom manager for using in chained field
+    """
+    def get_queryset(self):
+        return super(ActiveOrganisationCountryManager, self).get_queryset().filter(is_active=True)
+
+
+class ExtraOrganisationCountryManager(models.Model):
+    active_objects = ActiveOrganisationCountryManager()
+
+    class Meta:
+        abstract = True
+
+
+class OrganisationCountry(AbstractBaseModel, ExtraOrganisationCountryManager):
+    association = models.ForeignKey(Association, verbose_name=_("association"), default=default_association, limit_choices_to={'is_active': True})
     country = models.OneToOneField(Country, verbose_name=_("country"), null=True, limit_choices_to={'active': True})
     country_groups = models.ManyToManyField(CountryGroup, blank=True, related_name='countries')
     homepage = models.URLField(_("homepage"), blank=True,)
@@ -118,7 +160,7 @@ class ExtraManager(models.Model):
 class AdminRegion(AbstractBaseModel, ExtraManager):
     name = models.CharField(_("name"), max_length=255)
     homepage = models.URLField(_("homepage"), blank=True)
-    country = models.ForeignKey(Country, verbose_name=_("country"), limit_choices_to={'active': True})
+    organisation_country = models.ForeignKey(OrganisationCountry, verbose_name=_("country"), null=True, limit_choices_to={'is_active': True})
     email = models.OneToOneField(Email, verbose_name=_("email address"), blank=True, null=True, limit_choices_to={'email_type': REGION_EMAIL_TYPE},
                                  on_delete=models.SET_NULL)
     is_active = models.BooleanField(_('active'), default=True, help_text=_('Designates whether this region should be treated as '
@@ -191,9 +233,9 @@ class Organisation(AbstractBaseModel):
 
     name = models.CharField(_("name"), max_length=255)
     name_native = models.CharField(_("name in native language"), max_length=255, blank=True)
-    country = models.ForeignKey(Country, verbose_name=_("country"), null=True, limit_choices_to={'active': True})
-    admin_region = ChainedForeignKey(AdminRegion, chained_field='country', chained_model_field="country", verbose_name=_("admin region"), blank=True, null=True,
-                                     limit_choices_to={'is_active': True}) 
+    organisation_country = models.ForeignKey(OrganisationCountry, verbose_name=_("country"), null=True, limit_choices_to={'is_active': True})
+    admin_region = ChainedForeignKey(AdminRegion, chained_field='organisation_country', chained_model_field="organisation_country", verbose_name=_("admin region"), blank=True, null=True,
+                                     limit_choices_to={'is_active': True})
     email = models.ForeignKey(Email, verbose_name=_("email address"), blank=True, null=True, limit_choices_to={'email_type': CENTER_EMAIL_TYPE},
                               on_delete=models.SET_NULL)
     slug = models.SlugField(_("Slug Name"), blank=True, unique=True, help_text=_("Used for URLs, auto-generated from name if blank"), max_length=255)
@@ -298,8 +340,8 @@ class Organisation(AbstractBaseModel):
         return last_modified
 
     def __unicode__(self):
-        if self.country:
-                return u'%s (%s)' % (self.name, self.country.iso2_code)
+        if self.organisation_country:
+            return u'%s (%s)' % (self.name, self.organisation_country.country.iso2_code)
         else:
             return u'%s' % self.name
 

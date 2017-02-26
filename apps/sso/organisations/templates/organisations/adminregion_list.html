@@ -44,7 +44,7 @@
 	               <td><a href="{% url 'organisations:adminregion_detail' object.uuid.hex %}">{{ object.name }}</a></td>
 	               <td>{{ object.email|default_if_none:"" }}</td>
 	               <td>{% if object.homepage %}<a href="{{ object.homepage }}">{{ object.homepage }}</a>{% endif %}</td>
-	               <td>{{ object.country.iso2_code }}</td>
+	               <td>{{ object.organisation_country.country.iso2_code }}</td>
 	           </tr>
 	           {% endfor %}
 	       </tbody>

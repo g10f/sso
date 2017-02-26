@@ -30,11 +30,11 @@ class CountryMixin(object):
             }
         }
         if details:
-            if ('users' in request.scopes) and (obj.country in request.user.get_administrable_user_countries()):
+            if ('users' in request.scopes) and (obj in request.user.get_administrable_user_countries()):
                 data['users'] = "%s%s?country=%s" % (base, reverse('api:v2_users'), obj.country.iso2_code)
-            if obj.country.organisation_set.exists():
+            if obj.organisation_set.exists():
                 data['organisations'] = "%s%s?country=%s" % (base, reverse('api:v2_organisations'), obj.country.iso2_code)
-            if obj.country.adminregion_set.exists():
+            if obj.adminregion_set.exists():
                 data['regions'] = "%s%s?country=%s" % (base, reverse('api:v2_regions'), obj.country.iso2_code)
             if obj.country_groups.all().exists():
                 data['country_groups'] = "%s%s?country=%s" % (base, reverse('api:v2_country_groups'), obj.country.iso2_code)

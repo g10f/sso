@@ -6,7 +6,7 @@ from sso.organisations.models import OrganisationCountry, Organisation
 from sso.test.client import SSOClient
 
 
-class OrganisationssTest(TestCase):
+class OrganisationsTest(TestCase):
     fixtures = ['roles.json', 'app_roles.json', 'test_l10n_data.json', 'test_organisation_data.json', 'test_app_roles.json', 'test_user_data.json']
 
     def setUp(self):
@@ -21,17 +21,18 @@ class OrganisationssTest(TestCase):
         
         self.assertEqual(response.status_code, 200)
         # CountryAdmin is admin of County 81
-        country = OrganisationCountry.objects.get(country__id=81).country
-        countries = response.context['form'].fields['country'].queryset
+        country = OrganisationCountry.objects.get(uuid='6bc429702f9f442ea9717824a8d76d84')
+        countries = response.context['form'].fields['organisation_country'].queryset
         self.assertEqual(len(countries), 1)
         self.assertEqual(country, countries[0])
+        email_domain = settings.SSO_ORGANISATION_EMAIL_DOMAIN if settings.SSO_ORGANISATION_EMAIL_DOMAIN else '@g10f.de'
         
         # create a new center
         data = {
             'name': 'New Center',
             'center_type': '2',
-            'country': 81,
-            'email_value': 'newcenter' + settings.SSO_ORGANISATION_EMAIL_DOMAIN,
+            'organisation_country': country.pk,
+            'email_value': 'newcenter' + email_domain,
             'email_forward': 'test@g10f.de',
             'coordinates_type': 3,
             'is_active': 'on'
@@ -41,5 +42,17 @@ class OrganisationssTest(TestCase):
         
         # check center attributes
         organisation = Organisation.objects.get(name="New Center")
-        self.assertEqual(organisation.country, country)
+        self.assertEqual(organisation.organisation_country, country)
         self.assertIsNotNone(organisation.uuid)
+
+    def test_region_list(self):
+        self.client.login(username='CountryAdmin', password='gsf')
+
+        response = self.client.get(reverse('organisations:adminregion_list'))
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(reverse('organisations:adminregion_list'), data={'country': OrganisationCountry.objects.first().pk})
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(reverse('organisations:adminregion_list'), data={'country': 99999})
+        self.assertEqual(response.status_code, 200)

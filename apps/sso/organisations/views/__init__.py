@@ -23,7 +23,7 @@ from sso.forms.helpers import get_optional_inline_formset
 from sso.oauth2.models import allowed_hosts
 from sso.organisations.forms import OrganisationAddressForm, OrganisationPhoneNumberForm, OrganisationCountryAdminForm, \
     OrganisationRegionAdminForm, OrganisationCenterAdminForm, OrganisationRegionAdminCreateForm, OrganisationCountryAdminCreateForm, OrganisationPictureForm
-from sso.organisations.models import AdminRegion, Organisation, OrganisationPicture
+from sso.organisations.models import AdminRegion, Organisation, OrganisationPicture, OrganisationCountry
 from sso.organisations.models import OrganisationAddress, OrganisationPhoneNumber, get_near_organisations
 from sso.utils.ucsv import UnicodeWriter
 from sso.utils.url import get_safe_redirect_uri
@@ -215,7 +215,7 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
         """
         user = self.request.user
         obj = super(OrganisationUpdateView, self).get_object(queryset)
-        if obj.country in user.get_assignable_organisation_countries():
+        if obj.organisation_country in user.get_assignable_organisation_countries():
             self.admin_type = 'country'
         elif obj.admin_region in user.get_assignable_organisation_regions():
             self.admin_type = 'region'
@@ -252,7 +252,7 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
         phone_number_inline_formset.forms += [phone_number_inline_formset.empty_form]
         formsets = [address_inline_formset, phone_number_inline_formset]
 
-        if self.request.method == 'GET' or 'email' not in self.form.changed_data:
+        if self.request.method == 'GET' or 'email' not in self.form.changed_data:  # TODO: is this still required, see also similar places
             if self.request.user.has_perm('organisations.add_organisation'):
                 email_forward_inline_formset = get_optional_inline_formset(self.request, self.object.email, Email, 
                                                                            model=EmailForward, form=AdminEmailForwardInlineForm, max_num=10)
@@ -300,8 +300,9 @@ class IsActiveFilter(ViewChoicesFilter):
 
 class CountryFilter(ViewQuerysetFilter):
     name = 'country'
-    model = Country
-    filter_list = Country.objects.filter(organisation__isnull=False).distinct()
+    qs_name = 'organisation_country'
+    model = OrganisationCountry
+    filter_list = OrganisationCountry.objects.all().prefetch_related('country')
     select_text = _('Country')
     select_all_text = _('All Countries')
     all_remove = 'center'
@@ -344,7 +345,7 @@ class Distance(object):
 class OrganisationList(ListView):
     template_name = 'organisations/organisation_list.html'
     model = Organisation
-    list_display = ['name', _('picture'), 'email', 'google maps', 'country', 'founded']
+    list_display = ['name', _('picture'), 'email', 'google maps', 'organisation_country', 'founded']
     filename = None
     export = False
     
@@ -372,7 +373,7 @@ class OrganisationList(ListView):
         Get the list of items for this view. This must be an iterable, and may
         be a queryset (in which qs-specific behavior will be enabled).
         """
-        qs = super(OrganisationList, self).get_queryset().only('location', 'uuid', 'name', 'email', 'country', 'founded').prefetch_related('country', 'email', 'organisationpicture_set')
+        qs = super(OrganisationList, self).get_queryset().only('location', 'uuid', 'name', 'email', 'organisation_country', 'founded').prefetch_related('organisation_country__country', 'email', 'organisationpicture_set')
         return self.apply_filters(qs)
 
     def get_context_data(self, **kwargs):
@@ -438,7 +439,7 @@ class OrganisationList(ListView):
         return qs.distinct()
 
     def get_export(self):
-        qs = Organisation.objects.prefetch_related('country', 'admin_region', 'email', 'organisationphonenumber_set',
+        qs = Organisation.objects.prefetch_related('organisation_country__country', 'admin_region', 'email', 'organisationphonenumber_set',
                                                    'organisationaddress_set', 'organisationaddress_set__country')
         qs = self.apply_filters(qs)
 

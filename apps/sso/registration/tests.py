@@ -143,3 +143,9 @@ class RegistrationTest(TestCase):
         # the user got an email for creating the password
         outbox = getattr(mail, 'outbox')
         self.assertNotEqual(outbox[-1].subject.find('Set your password'), -1)
+
+    def test_registration_list(self):
+        # admin logs in
+        self.client.login(username='GlobalAdmin', password='secret007')
+        response = self.client.get(reverse('registration:user_registration_list'))
+        self.assertEqual(response.status_code, 200)

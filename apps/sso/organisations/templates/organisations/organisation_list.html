@@ -56,7 +56,7 @@
                         {% endwith %}
                         <td>{{ object.email|default_if_none:"" }}</td>
                         <td>{% if object.google_maps_url %}<a href="{{ object.google_maps_url }}">{% trans 'Google Maps' %} <span class="glyphicon glyphicon-map-marker"></span></a>{% endif %}</td>
-                        <td>{{ object.country.iso2_code }}</td>
+                        <td>{{ object.organisation_country.country.iso2_code }}</td>
                         <td>{{ object.founded|date:"Y-m-d" }}</td>
                         {% if cl.params.latlng %}
                             <td>{% if object.distance %}{{ object.distance.km|floatformat }} km{% endif %}</td>{% endif %}

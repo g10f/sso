@@ -204,7 +204,7 @@ class OrganisationChangeList(ListView):
     def get_queryset(self):
         user = self.request.user
 
-        qs = super(OrganisationChangeList, self).get_queryset().prefetch_related('user__useremail_set', 'organisation__country')
+        qs = super(OrganisationChangeList, self).get_queryset().prefetch_related('user__useremail_set', 'organisation__organisation_country__country')
         qs = user.filter_administrable_organisationchanges(qs)
 
         self.cl = main.ChangeList(self.request, self.model, self.list_display, default_ordering=['-last_modified'])

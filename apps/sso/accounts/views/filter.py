@@ -6,8 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from l10n.models import Country
 from sso.views.generic import SearchFilter, ViewChoicesFilter, ViewQuerysetFilter
 from sso.accounts.models import ApplicationRole, RoleProfile
-from sso.organisations.models import AdminRegion, Organisation
-
+from sso.organisations.models import AdminRegion, Organisation, OrganisationCountry
 
 logger = logging.getLogger(__name__)
 
@@ -28,9 +27,8 @@ class IsActiveFilter(ViewChoicesFilter):
 
 class CountryFilter(ViewQuerysetFilter):
     name = 'country'
-    qs_name = 'organisations__country'
-    model = Country
-    filter_list = Country.objects.filter(organisation__isnull=False).distinct()
+    qs_name = 'organisations__organisation_country'
+    model = OrganisationCountry
     select_text = _('Country')
     select_all_text = _('All Countries')
     all_remove = 'admin_region,center'
@@ -89,9 +87,9 @@ class RoleProfileFilter(ViewQuerysetFilter):
 
 class OrganisationChangeCountryFilter(ViewQuerysetFilter):
     name = 'country'
-    qs_name = 'organisation__country'
-    model = Country
-    filter_list = Country.objects.filter(organisation__isnull=False).distinct()
+    qs_name = 'organisation__organisation_country'
+    model = OrganisationCountry
+    filter_list = OrganisationCountry.objects.filter(is_active=True).select_related('country')
     select_text = _('Country')
     select_all_text = _('All Countries')
     all_remove = 'admin_region'

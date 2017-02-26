@@ -73,7 +73,6 @@ class OrganisationCountryUpdateView(OrganisationCountryBaseView, FormsetsUpdateV
             if email_alias_inline_formset:
                 email_alias_inline_formset.forms += [email_alias_inline_formset.empty_form]
                 formsets += [email_alias_inline_formset]
-        
         return formsets
     
 
@@ -105,7 +104,7 @@ class MyCountriesFilter(ViewButtonFilter):
         if not view.request.user.is_superuser and view.request.user.get_administrable_countries().exists():
             value = self.get_value_from_query_param(view, default)
             if value:
-                qs = qs.filter(country__in=view.request.user.get_administrable_countries())
+                qs = view.request.user.get_administrable_countries()
             setattr(view, self.name, value)
             return qs
         else:

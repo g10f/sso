@@ -28,9 +28,9 @@ class CountryListFilter(SimpleListFilter):
 
     def queryset(self, request, queryset):
         if self.value() == '-':
-            return queryset.filter(country__isnull=True).distinct()
+            return queryset.filter(organisation_country__country__isnull=True).distinct()
         elif self.value():
-            return queryset.filter(country__id=self.value()).distinct()
+            return queryset.filter(organisation_country__country__id=self.value()).distinct()
         else:
             return queryset.all()
 
@@ -41,14 +41,11 @@ class AdminRegionAdmin(admin.ModelAdmin):
     date_hierarchy = 'last_modified'
     search_fields = ('name', 'uuid')
 
-    def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        """
-        display only countries where there is a corresponding entry in organisationcountry table 
-        """
-        if db_field.name == "country":
-            kwargs["queryset"] = Country.objects.filter(organisationcountry__isnull=False)
 
-        return super(AdminRegionAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+class AssociationAdmin(admin.ModelAdmin):
+    list_display = ('name', 'last_modified', 'is_active', 'is_external')
+    date_hierarchy = 'last_modified'
+    search_fields = ('name', 'uuid')
 
 
 class CountryGroupAdminForm(forms.ModelForm):
@@ -109,14 +106,11 @@ class Address_Inline(admin.StackedInline):
     ]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        """
-        display only countries where there is a corresponding entry in organisationcountry table 
-        """
+        # display only countries where there is a corresponding entry in organisationcountry table
         if db_field.name == "country":
             kwargs["queryset"] = Country.objects.filter(organisationcountry__isnull=False)
 
         return super(Address_Inline, self).formfield_for_foreignkey(db_field, request, **kwargs)
-
 
 class AddressAdmin(admin.ModelAdmin):
     list_display = ('organisation', 'city', 'address_type', 'addressee', 'addressee_add', 'careof')
@@ -136,8 +130,8 @@ class PhoneNumber_Inline(admin.TabularInline):
 
 class OrganisationAdmin(gis_admin.OSMGeoAdmin):
     openlayers_url = '//cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js'
-
-    list_select_related = ('email',)
+    list_select_related = ('email',
+                           )
     ordering = ['name']
     actions = ['mark_uses_user_activation']
     save_on_top = True
@@ -145,13 +139,13 @@ class OrganisationAdmin(gis_admin.OSMGeoAdmin):
     inlines = [PhoneNumber_Inline, Address_Inline]
     readonly_fields = ['uuid', 'last_modified', 'google_maps_link']
     date_hierarchy = 'founded'
-    list_filter = ('is_active', 'is_private', 'uses_user_activation', 'coordinates_type', 'admin_region', 'country__continent', CountryListFilter, 'center_type',
+    list_filter = ('is_active', 'is_private', 'uses_user_activation', 'coordinates_type', 'admin_region', 'organisation_country__country__continent', CountryListFilter, 'center_type',
                    'organisationaddress__address_type', 'organisationphonenumber__phone_type')
-    list_display = ('id', 'slug', 'name', 'name_native', 'email', 'last_modified', 'homepage_link', 'google_maps_link',)
+    list_display = ('slug', 'name', 'name_native', 'email', 'last_modified', 'homepage_link', 'google_maps_link',)
     fieldsets = [
         (None,
          {'fields':
-              ['uuid', 'centerid', 'name', 'name_native', 'slug', 'center_type', 'country', 'admin_region', 'founded', ('coordinates_type', 'google_maps_link'),
+              ['uuid', 'centerid', 'name', 'name_native', 'slug', 'center_type', 'organisation_country', 'admin_region', 'founded', ('coordinates_type', 'google_maps_link'),
                'location',
                'email', 'homepage', 'is_active', 'is_private', 'uses_user_activation', 'last_modified'],
           'classes': ['wide']}),
@@ -166,13 +160,11 @@ class OrganisationAdmin(gis_admin.OSMGeoAdmin):
         self.message_user(request, _("Successfully updated %(count)d %(items)s.") % {"count": n, "items": model_ngettext(self.opts, n)})
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
-        """
-        display only countries where there is a corresponding entry in organisationcountry table 
-        """
-        if db_field.name == "country":
-            kwargs["queryset"] = Country.objects.filter(organisationcountry__isnull=False)
         if db_field.name == "email":
             kwargs["queryset"] = Email.objects.filter(email_type=CENTER_EMAIL_TYPE)
+
+        if db_field.name == "organisation_country":
+            kwargs["queryset"] = OrganisationCountry.objects.filter(is_active=True).select_related('country')
 
         return super(OrganisationAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
