@@ -119,7 +119,7 @@ class OrganisationBaseForm(BaseForm):
 
 class OrganisationCenterAdminForm(OrganisationBaseForm):
     email_value = bootstrap.ReadOnlyField(label=_("Email address"))
-    country = bootstrap.ReadOnlyField(label=_("Country"))
+    organisation_country = bootstrap.ReadOnlyField(label=_("Country"))
     center_type = bootstrap.ReadOnlyField(label=_("Organisation type"))
     name = bootstrap.ReadOnlyField(label=_("Name"))
     is_active = bootstrap.ReadOnlyYesNoField(label=_("Active"))
@@ -132,7 +132,7 @@ class OrganisationCenterAdminForm(OrganisationBaseForm):
             self.fields['admin_region'] = bootstrap.ReadOnlyField(initial=self.instance.admin_region, label=_("Admin region"))
 
         self.fields['email_value'].initial = str(self.instance.email)
-        self.fields['country'].initial = self.instance.country
+        self.fields['organisation_country'].initial = self.instance.organisation_country
         self.fields['center_type'].initial = self.instance.get_center_type_display()
         self.fields['name'].initial = self.instance.name
         self.fields['is_active'].initial = self.instance.is_active
@@ -217,7 +217,7 @@ class OrganisationRegionAdminForm(OrganisationEmailAdminForm):
     # don't use the default ModelChoiceField, because the regions are restricted to the administrable_organisation_regions
     # of the region admin
     admin_region = ModelChoiceField(queryset=AdminRegion.objects.none(), required=True, label=_("Admin Region"), widget=bootstrap.Select())
-    country = bootstrap.ReadOnlyField(label=_("Country"))
+    organisation_country = bootstrap.ReadOnlyField(label=_("Country"))
 
     class Meta(OrganisationBaseForm.Meta):
         fields = OrganisationBaseForm.Meta.fields + ('admin_region', 'name', 'center_type', 'is_active')  # , 'can_publish')
@@ -225,7 +225,7 @@ class OrganisationRegionAdminForm(OrganisationEmailAdminForm):
     def __init__(self, *args, **kwargs):
         super(OrganisationRegionAdminForm, self).__init__(*args, **kwargs)
         self.fields['admin_region'].queryset = self.user.get_assignable_organisation_regions()
-        self.fields['country'].initial = str(self.instance.country)
+        self.fields['organisation_country'].initial = str(self.instance.organisation_country)
 
     def clean_admin_region(self):
         """
@@ -233,7 +233,7 @@ class OrganisationRegionAdminForm(OrganisationEmailAdminForm):
         """
         data = self.cleaned_data['admin_region']
 
-        if data.country != self.instance.country:
+        if data.organisation_country != self.instance.organisation_country:
             msg = _("The admin region is not valid for the selected country.")
             raise ValidationError(msg)
         return data
