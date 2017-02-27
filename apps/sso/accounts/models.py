@@ -593,7 +593,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         if self.has_perms(["organisations.change_organisation", "organisations.access_all_organisations"]):
             return AdminRegion.active_objects.all()
         elif self.has_perm("organisations.change_organisation"):
-            return AdminRegion.active_objects.filter(Q(user=self) | Q(country__user=self)).distinct()
+            return AdminRegion.active_objects.filter(Q(user=self) | Q(organisation_country__user=self)).distinct()
         else:
             return AdminRegion.objects.none()
 
