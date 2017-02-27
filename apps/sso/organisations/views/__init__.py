@@ -453,7 +453,7 @@ class OrganisationList(ListView):
         for organisation in qs:
             admin_region = six.text_type(organisation.admin_region) if organisation.admin_region else six.text_type('')
             row = [organisation.name, six.text_type(organisation.is_active), organisation.homepage, six.text_type(organisation.email), six.text_type(organisation.primary_phone),
-                   six.text_type(organisation.country), admin_region]
+                   six.text_type(organisation.organisation_country), admin_region]
 
             primary_address = organisation.primary_address
             if not organisation.is_private and primary_address:

@@ -45,7 +45,7 @@ class OrganisationsTest(TestCase):
         self.assertEqual(organisation.organisation_country, country)
         self.assertIsNotNone(organisation.uuid)
 
-    def test_region_list(self):
+    def test_some_list(self):
         self.client.login(username='CountryAdmin', password='gsf')
 
         response = self.client.get(reverse('organisations:adminregion_list'))
@@ -55,4 +55,7 @@ class OrganisationsTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
         response = self.client.get(reverse('organisations:adminregion_list'), data={'country': 99999})
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(reverse('organisations:organisation_list_txt'))
         self.assertEqual(response.status_code, 200)
