@@ -22,5 +22,6 @@ def settings(request):
         'favicon': site_settings.SSO_FAVICON,
         'sso_app_uuid': site_settings.SSO_APP_UUID,
         'registration_open': site_settings.REGISTRATION.get('OPEN', True),
-        'device_classes': get_device_classes()
+        'device_classes': get_device_classes(),
+        'email_management': site_settings.SSO_ORGANISATION_EMAIL_MANAGEMENT
         }

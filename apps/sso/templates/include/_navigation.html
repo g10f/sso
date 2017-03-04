@@ -5,7 +5,7 @@
             <i class="glyphicon glyphicon-wrench"></i> {% trans 'Administration' %}</a>
     {% endif %}
 
-    {% if user.is_groupemail_admin %}
+    {% if email_management and user.is_groupemail_admin %}
         <a class="list-group-item" href="{% url 'emails:groupemail_list' %}">
             <i class="glyphicon glyphicon-list"></i> {% trans 'Emails' %}</a>
     {% endif %}
