@@ -113,6 +113,7 @@
     "model": "accounts.user",
     "fields": {
       "username": "RegionAdmin",
+      "admin_regions": [["0ebf2537fc664b7db285ea773c981404"]],
       "first_name": "Region",
       "last_name": "Admin",
       "is_active": true,

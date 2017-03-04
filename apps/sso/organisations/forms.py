@@ -289,7 +289,7 @@ class OrganisationRegionAdminCreateForm(OrganisationCountryAdminCreateForm):
         super(OrganisationRegionAdminCreateForm, self).__init__(*args, **kwargs)
         regions = self.user.get_assignable_organisation_regions()
         self.fields['admin_region'].queryset = regions
-        self.fields['organisation_country'].queryset = OrganisationCountry.objects.filter(adminregion__in=regions).distinct()
+        self.fields['organisation_country'].queryset = OrganisationCountry.objects.filter(adminregion__in=regions, association__is_external=False).distinct()
 
     def clean(self):
         """
@@ -309,7 +309,7 @@ class OrganisationRegionAdminCreateForm(OrganisationCountryAdminCreateForm):
 
 
 class AdminRegionForm(BaseForm):
-    email_value = EmailFieldLower(required=True, label=_("Email address"), widget=bootstrap.EmailInput(attrs={'placeholder': 'name' + SSO_ORGANISATION_EMAIL_DOMAIN}))
+    email_value = EmailFieldLower(required=True, label=_("Email address"))
     organisation_country = ModelChoiceField(queryset=None, required=True, label=_("Country"), widget=bootstrap.Select())
     
     class Meta:
@@ -371,9 +371,10 @@ class OrganisationCountryForm(BaseForm):
     class Meta:
         model = OrganisationCountry
         
-        fields = ('homepage', 'country_groups', 'country', 'is_active')
+        fields = ('association', 'homepage', 'country_groups', 'country', 'is_active')
         widgets = {
             'homepage': bootstrap.TextInput(attrs={'size': 50}),
+            'association': bootstrap.Select(),
         }
 
     def __init__(self, *args, **kwargs):
