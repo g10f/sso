@@ -87,7 +87,7 @@ class CountryGroupAdmin(admin.ModelAdmin):
 class OrganisationCountryAdmin(admin.ModelAdmin):
     list_select_related = ('country', 'email')
     list_display = ('country', 'homepage', 'email', 'last_modified')
-    list_filter = ('country__continent', 'country__active', 'country_groups')
+    list_filter = ('association', 'country__continent', 'country__active', 'country_groups')
     filter_horizontal = ('country_groups',)
     date_hierarchy = 'last_modified'
     search_fields = ('country__name', 'uuid')
@@ -130,8 +130,7 @@ class PhoneNumber_Inline(admin.TabularInline):
 
 class OrganisationAdmin(gis_admin.OSMGeoAdmin):
     openlayers_url = '//cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js'
-    list_select_related = ('email',
-                           )
+    list_select_related = ('email',)
     ordering = ['name']
     actions = ['mark_uses_user_activation']
     save_on_top = True

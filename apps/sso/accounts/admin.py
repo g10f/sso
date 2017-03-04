@@ -355,7 +355,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
     list_filter = (SuperuserFilter, ) + ('is_staff', 'is_center', 'is_service', 'is_active', LoggedInFilter, 'groups', ApplicationAdminApplicationFilter, RoleProfileAdminRoleProfileFilter,
                                          UserAssociatedSystemFilter, UserRegionListFilter,
                                          RoleProfilesFilter, ExcludeRoleProfilesFilter, ApplicationRolesFilter)  # ,UserOrganisationsListFilter, CreatedByUserFilter, LastModifiedUserFilter
-    filter_horizontal = DjangoUserAdmin.filter_horizontal + ('admin_organisation_countries', 'admin_regions', 'groups', 'application_roles', 'role_profiles', 'organisations',
+    filter_horizontal = DjangoUserAdmin.filter_horizontal + ('admin_associations', 'admin_organisation_countries', 'admin_regions', 'groups', 'application_roles', 'role_profiles', 'organisations',
                                                              'app_admin_organisation_countries', 'app_admin_regions')
     ordering = ['-last_login', '-first_name', '-last_name']
     actions = ['mark_info_mail']
@@ -370,7 +370,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
                                            'assigned_organisations'), 'classes': ['wide']}),
         (_('Organisations'), {'fields': ('organisations', ), 'classes': ['collapse', 'wide']}),
         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'role_profiles', 'application_roles', 'groups', 'user_permissions'), 'classes': ['collapse', 'wide']}),
-        (_('User admin'), {'fields': ('admin_organisation_countries', 'admin_regions'), 'classes': ['collapse', 'wide']}),
+        (_('User admin'), {'fields': ('admin_associations', 'admin_organisation_countries', 'admin_regions'), 'classes': ['collapse', 'wide']}),
         (_('App admin'), {'fields': ('app_admin_organisation_countries', 'app_admin_regions'), 'classes': ['collapse', 'wide']}),
         (_('Notes'), {'fields': ('notes',), 'classes': ['collapse', 'wide']}),
     )
@@ -429,6 +429,9 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
 
         if db_field.name == "admin_organisation_countries":
             kwargs["queryset"] = user.get_administrable_user_countries()
+
+        if db_field.name == "admin_associations":
+            kwargs["queryset"] = user.get_administrable_user_associations()
 
         if db_field.name == "app_admin_organisation_countries":
             kwargs["queryset"] = user.get_administrable_app_admin_user_countries()

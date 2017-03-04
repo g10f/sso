@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
+
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required, permission_required
 from django.views.generic import DetailView, CreateView
@@ -61,7 +63,7 @@ class OrganisationCountryUpdateView(OrganisationCountryBaseView, FormsetsUpdateV
     
     def get_formsets(self):
         formsets = []
-        if self.request.method == 'GET' or 'email' not in self.form.changed_data:
+        if settings.SSO_ORGANISATION_EMAIL_MANAGEMENT:
             email_forward_inline_formset = get_optional_inline_formset(self.request, self.object.email, Email, 
                                                                        model=EmailForward, form=EmailForwardOnlyInlineForm, max_num=20)
             email_alias_inline_formset = get_optional_inline_formset(self.request, self.object.email, Email, 

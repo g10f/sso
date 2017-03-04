@@ -8,6 +8,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.gis import measure
 from django.contrib.gis.db import models as gis_models
+from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db import models
 from django.utils import six
@@ -97,6 +98,11 @@ def default_association():
     return Association.objects.get_by_natural_key(settings.SSO_DEFAULT_ASSOCIATION_UUID).pk
 
 
+def multiple_associations():
+    count = cache.get_or_set('association__count', Association.objects.count, )
+    return count > 1
+
+
 class ActiveOrganisationCountryManager(models.Manager):
     """
     custom manager for using in chained field
@@ -128,7 +134,10 @@ class OrganisationCountry(AbstractBaseModel, ExtraOrganisationCountryManager):
         ordering = ['country']
 
     def __unicode__(self):
-        return u"%s" % self.country
+        if multiple_associations():
+            return u"%s, %s" % (self.country, self.association)
+        else:
+            return u"%s" % self.country
 
     @models.permalink
     def get_absolute_url(self):
@@ -248,8 +257,6 @@ class Organisation(AbstractBaseModel):
     centerid = models.IntegerField(blank=True, help_text=_("id from the previous center DB (obsolete)"), null=True)
     founded = models.DateField(_("founded"), blank=True, null=True)
     coordinates_type = models.CharField(_('coordinates type'), max_length=1, choices=COORDINATES_TYPE_CHOICES, default='3', db_index=True, blank=True)
-    latitude = models.DecimalField(_("latitude"), max_digits=9, decimal_places=6, blank=True, null=True)
-    longitude = models.DecimalField(_("longitude"), max_digits=9, decimal_places=6, blank=True, null=True)
     location = gis_models.PointField(_("location"), geography=True, blank=True, null=True)
     timezone = models.CharField(_('timezone'), blank=True, max_length=254)
     is_active = models.BooleanField(_('active'),
@@ -341,7 +348,10 @@ class Organisation(AbstractBaseModel):
 
     def __unicode__(self):
         if self.organisation_country:
-            return u'%s (%s)' % (self.name, self.organisation_country.country.iso2_code)
+            if multiple_associations():
+                return u'%s, %s (%s)' % (self.name, self.organisation_country.association, self.organisation_country.country.iso2_code)
+            else:
+                return u'%s (%s)' % (self.name, self.organisation_country.country.iso2_code)
         else:
             return u'%s' % self.name
 

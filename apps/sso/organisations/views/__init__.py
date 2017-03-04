@@ -2,6 +2,7 @@
 import csv
 import logging
 
+from django.conf import settings
 from django.utils.six.moves.urllib.parse import urlunsplit
 
 from django.contrib import messages
@@ -252,21 +253,21 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
         phone_number_inline_formset.forms += [phone_number_inline_formset.empty_form]
         formsets = [address_inline_formset, phone_number_inline_formset]
 
-        if self.request.method == 'GET' or 'email' not in self.form.changed_data:  # TODO: is this still required, see also similar places
+        if settings.SSO_ORGANISATION_EMAIL_MANAGEMENT:
             if self.request.user.has_perm('organisations.add_organisation'):
-                email_forward_inline_formset = get_optional_inline_formset(self.request, self.object.email, Email, 
+                email_forward_inline_formset = get_optional_inline_formset(self.request, self.object.email, Email,
                                                                            model=EmailForward, form=AdminEmailForwardInlineForm, max_num=10)
             else:
                 email_forward_inline_formset = get_optional_inline_formset(self.request, self.object.email, Email,
-                                                                           model=EmailForward, form=EmailForwardInlineForm, max_num=10, 
+                                                                           model=EmailForward, form=EmailForwardInlineForm, max_num=10,
                                                                            queryset=EmailForward.objects.filter(primary=False))
-            
-            if self.admin_type in ['region', 'country']:    
-                email_alias_inline_formset = get_optional_inline_formset(self.request, self.object.email, Email, 
+
+            if self.admin_type in ['region', 'country']:
+                email_alias_inline_formset = get_optional_inline_formset(self.request, self.object.email, Email,
                                                                          model=EmailAlias, form=EmailAliasInlineForm, max_num=6)
             else:
                 email_alias_inline_formset = None
-            
+
             if email_forward_inline_formset:
                 email_forward_inline_formset.forms += [email_forward_inline_formset.empty_form]
                 formsets += [email_forward_inline_formset]

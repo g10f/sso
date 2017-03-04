@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from django.conf import settings
+
 from django.core.urlresolvers import reverse
 from django.core.exceptions import PermissionDenied
 from django.contrib.auth.decorators import login_required, permission_required
@@ -90,7 +92,7 @@ class AdminRegionUpdateView(AdminRegionBaseView, FormsetsUpdateView):
 
     def get_formsets(self):
         formsets = []
-        if self.request.method == 'GET' or 'email' not in self.form.changed_data:
+        if settings.SSO_ORGANISATION_EMAIL_MANAGEMENT:
             email_forward_inline_formset = get_optional_inline_formset(self.request, self.object.email, Email,
                                                                        model=EmailForward, form=EmailForwardOnlyInlineForm, max_num=10)
             if self.admin_type in ['country']:    
