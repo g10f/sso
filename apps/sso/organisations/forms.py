@@ -383,7 +383,7 @@ class OrganisationCountryForm(BaseForm):
             self.fields['email_value'].initial = str(self.instance.email)
         else:
             self.fields['email_value'].initial = SSO_ORGANISATION_EMAIL_DOMAIN
-        if self.instance.country:
+        if self.instance.pk is not None and self.instance.country:
             # readonly field for the update form
             self.fields['country_text'] = bootstrap.ReadOnlyField(initial=str(self.instance.country), label=_("Country"))
             del self.fields['country']
