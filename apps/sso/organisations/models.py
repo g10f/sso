@@ -102,7 +102,7 @@ def default_association():
 
 
 def multiple_associations():
-    count = cache.get_or_set('association__count', Association.objects.count, )
+    count = cache.get_or_set('association__count', Association.objects.count)
     return count > 1
 
 
