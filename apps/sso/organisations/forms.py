@@ -365,8 +365,6 @@ class OrganisationCountryForm(BaseForm):
     email_value = EmailFieldLower(required=True, label=_("Email address"))
     country_groups = ModelMultipleChoiceField(queryset=CountryGroup.objects.all(), required=False,
                                               widget=bootstrap.CheckboxSelectMultiple(), label=_("Country Groups"))
-    country = ModelChoiceField(queryset=Country.objects.filter(organisationcountry__isnull=True), required=True, 
-                               label=_("Country"), widget=bootstrap.Select())
 
     class Meta:
         model = OrganisationCountry
@@ -375,6 +373,7 @@ class OrganisationCountryForm(BaseForm):
         widgets = {
             'homepage': bootstrap.TextInput(attrs={'size': 50}),
             'association': bootstrap.Select(),
+            'country': bootstrap.Select(),
         }
 
     def __init__(self, *args, **kwargs):
@@ -386,10 +385,10 @@ class OrganisationCountryForm(BaseForm):
         if self.instance.pk is not None and self.instance.country:
             # readonly field for the update form
             self.fields['country_text'] = bootstrap.ReadOnlyField(initial=str(self.instance.country), label=_("Country"))
-            del self.fields['country']
-        if not multiple_associations():
+            self.fields['association_text'] = bootstrap.ReadOnlyField(initial=str(self.instance.association), label=_("Association"))
             del self.fields['association']
-            
+            del self.fields['country']
+
     def clean_email_value(self):
         """
         the new email address must be ending with SSO_ORGANISATION_EMAIL_DOMAIN

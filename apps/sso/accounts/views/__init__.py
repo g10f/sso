@@ -1,39 +1,37 @@
-from django.contrib.auth.password_validation import password_validators_help_texts
-from django.core.exceptions import ObjectDoesNotExist
+import logging
 
-from django.db.models import Q
-from django.contrib.auth.tokens import default_token_generator
-from django.utils.http import urlsafe_base64_decode
 from django.conf import settings
-from django.shortcuts import render, redirect, resolve_url
-from django.views.decorators.debug import sensitive_post_parameters
-from django.views.decorators.csrf import csrf_protect, csrf_exempt
-from django.views.decorators.cache import never_cache
-from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth import REDIRECT_FIELD_NAME, logout as auth_logout
 from django.contrib import messages
-from django.http import HttpResponseRedirect
-from django.template.response import TemplateResponse
-from django.template.loader import render_to_string
+from django.contrib.auth import REDIRECT_FIELD_NAME, logout as auth_logout
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.password_validation import password_validators_help_texts
+from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
-from django.core.mail import mail_managers
-from django.utils.html import strip_tags
-from django.utils.translation import ugettext as _
+from django.db.models import Q
 from django.forms.models import inlineformset_factory
-from sso.oauth2.models import allowed_hosts
-from sso.forms.helpers import ErrorList, ChangedDataList, log_change
-from sso.organisations.models import is_validation_period_active
-from sso.utils.url import get_safe_redirect_uri, update_url
-from sso.accounts.tokens import email_confirm_token_generator
-from sso.accounts.models import User, UserAddress, UserPhoneNumber, UserEmail, get_applicationrole_ids, Application
+from django.http import HttpResponseRedirect
+from django.shortcuts import render, redirect, resolve_url
+from django.template.loader import render_to_string
+from django.template.response import TemplateResponse
+from django.utils.html import strip_tags
+from django.utils.http import urlsafe_base64_decode
+from django.utils.translation import ugettext as _
+from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_protect, csrf_exempt
+from django.views.decorators.debug import sensitive_post_parameters
 from sso.accounts.email import send_useremail_confirmation, send_mail_managers
 from sso.accounts.forms import PasswordResetForm, SetPasswordForm, ContactForm, AddressForm, PhoneNumberForm, \
-    SelfUserEmailForm, SetPictureAndPasswordForm, PasswordChangeForm
+    SetPictureAndPasswordForm, PasswordChangeForm, SelfUserEmailAddForm
 from sso.accounts.forms import UserSelfProfileForm, UserSelfProfileDeleteForm, CenterSelfProfileForm
+from sso.accounts.models import User, UserAddress, UserPhoneNumber, UserEmail, get_applicationrole_ids, Application
+from sso.accounts.tokens import email_confirm_token_generator
 from sso.auth import update_session_auth_hash
-
-import logging
+from sso.forms.helpers import ErrorList, ChangedDataList, log_change
+from sso.oauth2.models import allowed_hosts
+from sso.organisations.models import is_validation_period_active
+from sso.utils.url import get_safe_redirect_uri, update_url
 
 logger = logging.getLogger(__name__)
 
@@ -195,10 +193,10 @@ def emails(request):
             messages.success(request, _("The email \"%(email)s\" was changed successfully.") % {'email': user_email})
             return redirect(post_change_redirect)
         else:
-            form = SelfUserEmailForm(request.POST)
-            if form.is_valid():
-                user_email = form.save()
-                change_message = ChangedDataList(form, []).change_message()
+            add_form = SelfUserEmailAddForm(request.POST)
+            if add_form.is_valid():
+                user_email = add_form.save()
+                change_message = ChangedDataList(add_form, []).change_message()
                 log_change(request, user, change_message)
                 msg = _('Thank you. Your data were saved.') + '\n'
                 msg += _('Confirmation email was sent to \"%(email)s\".') % {'email': user_email}
@@ -206,10 +204,10 @@ def emails(request):
                 send_useremail_confirmation(user_email, request)
                 return redirect(post_change_redirect)
     else:
-        form = SelfUserEmailForm(initial={'user': user.id})
+        add_form = SelfUserEmailAddForm(initial={'user': user.id})
 
     context = {
-        'form': form,
+        'form': add_form,
         'max_email_adresses': UserEmail.MAX_EMAIL_ADRESSES,
         'redirect_uri': redirect_uri
     }
