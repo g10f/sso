@@ -1,6 +1,21 @@
 [
   {
     "model": "l10n.country",
+    "pk": 245,
+    "fields": {
+      "iso2_code": "CE",
+      "name": "CRIMEA",
+      "printable_name": "Crimea",
+      "iso3_code": "CEA",
+      "numcode": null,
+      "active": true,
+      "continent": "EU",
+      "admin_area": null,
+      "last_modified": "2017-03-05T12:06:00.000Z"
+    }
+  },
+  {
+    "model": "l10n.country",
     "pk": 1,
     "fields": {
       "iso2_code": "AF",
