@@ -373,21 +373,25 @@ class PhoneNumberForm(BaseForm):
         return 'edit_inline/tabular.html'
 
 
-class SelfUserEmailForm(forms.Form):
-    email = EmailFieldLower(max_length=254, label=_('Email address'), required=True)
+class SelfUserEmailAddForm(forms.Form):
+    email = EmailFieldLower(max_length=254, label=_('Email address'), required=False)
     user = forms.IntegerField(widget=forms.HiddenInput())
 
     error_messages = {
         'duplicate_email': _("The email address \"%(email)s\" is already in use."),
     }
 
-    def clean(self):
-        cleaned_data = super(SelfUserEmailForm, self).clean()
-        if 'email' in cleaned_data:
-            email = cleaned_data["email"]
-            qs = UserEmail.objects.filter(email=email)
-            if qs.exists():
-                raise forms.ValidationError(self.error_messages['duplicate_email'] % {'email': email})
+    def clean_email(self):
+        # Check if email is unique,
+        email = self.cleaned_data["email"]
+        if not email:
+            raise forms.ValidationError(_('This field is required.'))
+
+        qs = UserEmail.objects.filter(email=email)
+        if qs.exists():
+            raise forms.ValidationError(self.error_messages['duplicate_email'] % {'email': email})
+
+        return email
 
     def save(self):
         cd = self.cleaned_data

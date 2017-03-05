@@ -28,12 +28,20 @@
         <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
         {% endif %}
         
-        {% if errors %}
+        {% if form.errors and not form.non_field_errors %}
         <div class="alert alert-danger">
-            {% if errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
+        {% if form.errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
         </div>
         {% endif %}
-        
+
+        {% if form.non_field_errors %}
+        {% for error in form.non_field_errors %}
+        <div class="alert alert-danger">
+            {{ error }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
     </div>
 
      <ul class="nav nav-tabs dwbn-nav-tabs" id="myTab">
@@ -45,6 +53,7 @@
     
      <div class="tab-content">
         <div class="tab-pane {% if not active or active == "object" %}active{% endif %}" id="object">         
+           {% include 'include/_field.html' with field=form.association_text %}
            {% include 'include/_field.html' with field=form.association %}
            {% include 'include/_field.html' with field=form.name %}
            {% include 'include/_field.html' with field=form.country_text %} 
