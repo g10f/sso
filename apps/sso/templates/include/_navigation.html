@@ -25,10 +25,14 @@
             <i class="glyphicon glyphicon-list"></i> {% trans 'Organisations' %}</a>
     {% endif %}
 
-    {% if perms.registration.change_registrationprofile %}
-        <a class="list-group-item" href="{% url 'registration:user_registration_list' %}">
-            <i class="glyphicon glyphicon-list"></i> {% trans 'Registrations' %}<span class="badge">{{ user.get_count_of_registrationprofiles }}</span></a>
-    {% endif %}
+    {% with count_of_registrationprofiles=user.get_count_of_registrationprofiles %}
+        {% if perms.registration.change_registrationprofile %}
+            {% if registration_open  or count_of_registrationprofiles > 0 %}
+                <a class="list-group-item" href="{% url 'registration:user_registration_list' %}">
+                    <i class="glyphicon glyphicon-list"></i> {% trans 'Registrations' %}<span class="badge">{{ count_of_registrationprofiles }}</span></a>
+            {% endif %}
+        {% endif %}
+    {% endwith %}
 
     {% if user.is_user_admin %}
         <a class="list-group-item" href="{% url 'accounts:user_list' %}">

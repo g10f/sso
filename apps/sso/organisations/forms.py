@@ -11,7 +11,7 @@ from sso.forms import bootstrap, BaseForm, BaseTabularInlineForm, BLANK_CHOICE_D
 from sso.forms.fields import EmailFieldLower
 from sso.models import clean_picture
 from sso.signals import update_or_create_organisation_account
-from .models import OrganisationPhoneNumber, OrganisationAddress, Organisation, AdminRegion, OrganisationCountry, CountryGroup, OrganisationPicture
+from .models import OrganisationPhoneNumber, OrganisationAddress, Organisation, AdminRegion, OrganisationCountry, CountryGroup, OrganisationPicture, multiple_associations
 
 SSO_ORGANISATION_EMAIL_DOMAIN = getattr(settings, 'SSO_ORGANISATION_EMAIL_DOMAIN', '@g10f.de')
 
@@ -387,6 +387,8 @@ class OrganisationCountryForm(BaseForm):
             # readonly field for the update form
             self.fields['country_text'] = bootstrap.ReadOnlyField(initial=str(self.instance.country), label=_("Country"))
             del self.fields['country']
+        if not multiple_associations():
+            del self.fields['association']
             
     def clean_email_value(self):
         """

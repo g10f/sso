@@ -86,8 +86,8 @@ class CountryGroupAdmin(admin.ModelAdmin):
 
 class OrganisationCountryAdmin(admin.ModelAdmin):
     list_select_related = ('country', 'email')
-    list_display = ('country', 'homepage', 'email', 'last_modified')
-    list_filter = ('association', 'country__continent', 'country__active', 'country_groups')
+    list_display = ('country', 'homepage', 'email', 'is_active', 'last_modified')
+    list_filter = ('association', 'country__continent', 'is_active', 'country_groups')
     filter_horizontal = ('country_groups',)
     date_hierarchy = 'last_modified'
     search_fields = ('country__name', 'uuid')
