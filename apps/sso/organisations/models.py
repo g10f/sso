@@ -120,7 +120,7 @@ class ExtraOrganisationCountryManager(models.Model):
 
 class OrganisationCountry(AbstractBaseModel, ExtraOrganisationCountryManager):
     association = models.ForeignKey(Association, verbose_name=_("association"), default=default_association, limit_choices_to={'is_active': True})
-    country = models.OneToOneField(Country, verbose_name=_("country"), null=True, limit_choices_to={'active': True})
+    country = models.ForeignKey(Country, verbose_name=_("country"), limit_choices_to={'active': True})
     country_groups = models.ManyToManyField(CountryGroup, blank=True, related_name='countries')
     homepage = models.URLField(_("homepage"), blank=True,)
     email = models.ForeignKey(Email, verbose_name=_("email address"), blank=True, null=True, limit_choices_to={'email_type': COUNTRY_EMAIL_TYPE},
@@ -132,6 +132,7 @@ class OrganisationCountry(AbstractBaseModel, ExtraOrganisationCountryManager):
         verbose_name = _('Country')
         verbose_name_plural = _('Countries')
         ordering = ['country']
+        unique_together = (("country", "association"),)
 
     def __unicode__(self):
         if multiple_associations():
