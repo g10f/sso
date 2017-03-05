@@ -95,7 +95,10 @@ class Association(AbstractBaseModel):
 
 
 def default_association():
-    return Association.objects.get_by_natural_key(settings.SSO_DEFAULT_ASSOCIATION_UUID).pk
+    if multiple_associations():
+        return Association.objects.get_by_natural_key(settings.SSO_DEFAULT_ASSOCIATION_UUID).pk
+    else:
+        return Association.objects.first().pk
 
 
 def multiple_associations():
