@@ -635,7 +635,7 @@ def deploy(conf='dev'):
     """
     # fabtools.require.file('/envs/%(virtualenv)s/lib/python2.7/sitecustomize.py' % {'virtualenv': virtualenv}, source='apps/sitecustomize.py')
 
-    deploy_supervisor(conf)
+    # deploy_supervisor(conf)
 
     # configure logrotate 
     config_filename = '/etc/logrotate.d/%(server_name)s' % {'server_name': server_name}
