@@ -21,7 +21,6 @@ class CountryMixin(object):
             'id': u'%s' % obj.uuid.hex,
             'code': obj.country.iso2_code,
             'name': u'%s' % str(obj),
-            'email': u'%s' % obj.email,
             'homepage': obj.homepage,
             'last_modified': obj.get_last_modified_deep(),
             'continent': {
@@ -29,6 +28,8 @@ class CountryMixin(object):
                 'name': obj.country.get_continent_display(),
             }
         }
+        if obj.email:
+            data['email'] = u'%s' % obj.email
         if details:
             if ('users' in request.scopes) and (obj in request.user.get_administrable_user_countries()):
                 data['users'] = "%s%s?country=%s" % (base, reverse('api:v2_users'), obj.country.iso2_code)

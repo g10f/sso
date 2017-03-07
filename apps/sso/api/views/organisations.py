@@ -34,7 +34,6 @@ class OrganisationMixin(object):
             'name': u'%s' % obj.name,
             'name_native': u'%s' % obj.name_native,
             'slug': u'%s' % obj.slug,
-            'email': u'%s' % obj.email,
             'founded': obj.founded,
             'center_type': obj.center_type,
             'homepage': obj.homepage,
@@ -47,6 +46,8 @@ class OrganisationMixin(object):
                 '@id': "%s%s" % (base, reverse('api:v2_country', kwargs={'iso2_code': obj.organisation_country.country.iso2_code})),
             }
         }
+        if obj.email:
+            data['email'] = u'%s' % obj.email
         if obj.neighbour_distance:
             data['neighbour_distance'] = "%.1f km" % obj.neighbour_distance
         if obj.centerid:  # legacy id, should be removed when the resync ist done
