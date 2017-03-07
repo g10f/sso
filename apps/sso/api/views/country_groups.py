@@ -21,11 +21,12 @@ class CountryGroupMixin(object):
             '@id': "%s%s" % (base, reverse('api:v2_country_group', kwargs={'uuid': obj.uuid.hex})),
             'id': u'%s' % obj.uuid.hex,
             'name': u'%s' % str(obj),
-            'email': u'%s' % obj.email if obj.email else "",
             'homepage': obj.homepage,
             'last_modified': obj.last_modified,
         }
-        if details:            
+        if obj.email:
+            data['email'] = u'%s' % obj.email
+        if details:
             if 'users' in request.scopes:
                 users = User.objects.filter(organisations__organisation_country__country_groups=obj)
                 users = request.user.filter_administrable_users(users)
