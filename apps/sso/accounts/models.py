@@ -773,14 +773,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         else:
             return User.objects.filter(Q(uuid=uuid) & (Q(organisations__user=self) | Q(organisations__admin_region__app_admin_user=self) | Q(organisations__organisation_country__app_admin_user=self))).exists()
 
-    """
-    # TODO: remove, cause its not used
     def has_organisation_user_access(self, uuid):
         if self.has_perm("accounts.access_all_users"):
             return True
         else:
             return self.has_organisation(uuid)
-    """
 
     def has_organisation_access_and_perm(self, uuid, perm):
         return self.has_perm(perm) and self.has_organisation_access(uuid)
