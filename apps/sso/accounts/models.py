@@ -774,6 +774,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             return User.objects.filter(Q(uuid=uuid) & (Q(organisations__user=self) | Q(organisations__admin_region__app_admin_user=self) | Q(organisations__organisation_country__app_admin_user=self))).exists()
 
     def has_organisation_user_access(self, uuid):
+        # used in sso_xxx_theme
         if self.has_perm("accounts.access_all_users"):
             return True
         else:
