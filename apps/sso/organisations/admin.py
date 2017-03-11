@@ -102,7 +102,7 @@ class Address_Inline(admin.StackedInline):
          {'fields':
               ['address_type', 'addressee', 'street_address', 'careof', 'postal_code', 'city',
                'country', 'state', 'primary', ],
-          'classes': ['wide'],}),
+          'classes': ['wide'], }),
     ]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
@@ -111,6 +111,7 @@ class Address_Inline(admin.StackedInline):
             kwargs["queryset"] = Country.objects.filter(organisationcountry__isnull=False)
 
         return super(Address_Inline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
 
 class AddressAdmin(admin.ModelAdmin):
     list_display = ('organisation', 'city', 'address_type', 'addressee', 'addressee_add', 'careof')
@@ -124,7 +125,7 @@ class PhoneNumber_Inline(admin.TabularInline):
         (None,
          {'fields':
               ['phone_type', 'phone', 'primary'],
-          'classes': ['wide'],}),
+          'classes': ['wide'], }),
     ]
 
 
@@ -138,7 +139,7 @@ class OrganisationAdmin(gis_admin.OSMGeoAdmin):
     inlines = [PhoneNumber_Inline, Address_Inline]
     readonly_fields = ['uuid', 'last_modified', 'google_maps_link']
     date_hierarchy = 'founded'
-    list_filter = ('is_active', 'is_private', 'uses_user_activation', 'coordinates_type', 'admin_region', 'organisation_country__country__continent', CountryListFilter, 'center_type',
+    list_filter = ('organisation_country__association', 'is_active', 'is_private', 'uses_user_activation', 'coordinates_type', 'admin_region', 'organisation_country__country__continent', CountryListFilter, 'center_type',
                    'organisationaddress__address_type', 'organisationphonenumber__phone_type')
     list_display = ('slug', 'name', 'name_native', 'email', 'last_modified', 'homepage_link', 'google_maps_link',)
     fieldsets = [
@@ -151,7 +152,7 @@ class OrganisationAdmin(gis_admin.OSMGeoAdmin):
         (_('notes'),
          {'fields':
               ['notes'],
-          'classes': ['collapse', 'wide'],}),
+          'classes': ['collapse', 'wide'], }),
     ]
 
     def mark_uses_user_activation(self, request, queryset):
