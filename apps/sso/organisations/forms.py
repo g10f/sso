@@ -203,7 +203,9 @@ class OrganisationCountryAdminForm(OrganisationEmailAdminForm):
     A form for a country admin for update organisations
     """
     class Meta(OrganisationBaseForm.Meta):
-        fields = OrganisationBaseForm.Meta.fields + ('organisation_country', 'admin_region', 'name', 'center_type', 'is_active')  # , 'can_publish')
+        fields = OrganisationBaseForm.Meta.fields + ('organisation_country', 'name', 'center_type', 'is_active')  # , 'can_publish')
+        if settings.SSO_REGION_MANAGEMENT:
+            fields += ('admin_region', )
 
     def __init__(self, *args, **kwargs):
         super(OrganisationCountryAdminForm, self).__init__(*args, **kwargs)

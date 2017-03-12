@@ -27,8 +27,8 @@ class IsActiveFilter(ViewChoicesFilter):
 
 class CountryFilter(ViewQuerysetFilter):
     name = 'country'
-    qs_name = 'organisations__organisation_country'
-    model = OrganisationCountry
+    qs_name = 'organisations__organisation_country__country'
+    model = Country
     select_text = _('Country')
     select_all_text = _('All Countries')
     all_remove = 'admin_region,center'
