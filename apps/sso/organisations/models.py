@@ -106,6 +106,10 @@ def multiple_associations():
     return count > 1
 
 
+def region_count():
+    return cache.get_or_set('region__count', AdminRegion.objects.count)
+
+
 class ActiveOrganisationCountryManager(models.Manager):
     """
     custom manager for using in chained field
@@ -138,6 +142,7 @@ class OrganisationCountry(AbstractBaseModel, ExtraOrganisationCountryManager):
         unique_together = (("country", "association"),)
 
     def __unicode__(self):
+        # return u"%s" % self.country
         if multiple_associations():
             return u"%s, %s" % (self.country, self.association)
         else:
@@ -271,9 +276,9 @@ class Organisation(AbstractBaseModel):
                                      help_text=_('Designates whether this organisation data should be treated as private and '
                                                  'only a telephone number should be displayed on public sites.'), 
                                      default=False)
-    can_publish = models.BooleanField(_("publish"), 
-                                      help_text=_('Designates whether this organisation data can be published.'),
-                                      default=True)
+    # can_publish = models.BooleanField(_("publish"),
+    #                                   help_text=_('Designates whether this organisation data can be published.'),
+    #                                   default=True)
     uses_user_activation = models.BooleanField(_("uses activation"),
                                                help_text=_('Designates whether this organisation uses the new user activation process.'),
                                                default=False)

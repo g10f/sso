@@ -509,7 +509,7 @@ class User(AbstractBaseUser, PermissionsMixin):
                 Q(organisation__admin_region__in=self.admin_regions.all()) |  # for adminregions without a associated country 
                 Q(organisation__in=self.organisations.all()) | Q(adminregion__in=self.admin_regions.all()) | Q(pk__in=self.admin_organisation_countries.all())).select_related('country').distinct()
         else:
-            return Country.objects.none()
+            return OrganisationCountry.objects.none()
 
     @memoize
     def get_administrable_user_associations(self):

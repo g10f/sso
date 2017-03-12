@@ -1,22 +1,21 @@
 # -*- coding: utf-8 -*-
-from django.conf import settings
+import logging
 
-from django.core.urlresolvers import reverse
-from django.core.exceptions import PermissionDenied
+from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
-from django.views.generic import DetailView, CreateView
+from django.core.exceptions import PermissionDenied
+from django.core.urlresolvers import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
+from django.views.generic import DetailView, CreateView
 from l10n.models import Country
-from sso.views import main
-from sso.emails.models import EmailForward, EmailAlias, Email
-from sso.organisations.models import AdminRegion, OrganisationCountry
-from sso.views.generic import FormsetsUpdateView, ListView, SearchFilter, ViewQuerysetFilter, ViewButtonFilter, ViewChoicesFilter
 from sso.emails.forms import EmailForwardOnlyInlineForm, EmailAliasInlineForm
-from sso.organisations.forms import AdminRegionForm
+from sso.emails.models import EmailForward, EmailAlias, Email
 from sso.forms.helpers import get_optional_inline_formset
-
-import logging
+from sso.organisations.forms import AdminRegionForm
+from sso.organisations.models import AdminRegion, Association, multiple_associations
+from sso.views import main
+from sso.views.generic import FormsetsUpdateView, ListView, SearchFilter, ViewQuerysetFilter, ViewButtonFilter, ViewChoicesFilter
 logger = logging.getLogger(__name__)
 
 
@@ -115,11 +114,20 @@ class AdminRegionSearchFilter(SearchFilter):
     search_names = ['name__icontains', 'email__email__icontains']
 
 
+class AssociationFilter(ViewQuerysetFilter):
+    name = 'association'
+    qs_name = 'organisation_country__association'
+    model = Association
+    select_text = _('Association')
+    select_all_text = _('All Associations')
+    remove = 'country'
+
+
 class CountryFilter(ViewQuerysetFilter):
     name = 'country'
-    qs_name = 'organisation_country'
-    model = OrganisationCountry
-    filter_list = OrganisationCountry.objects.all().prefetch_related('country')
+    qs_name = 'organisation_country__country'
+    model = Country
+    filter_list = Country.objects.all()
     select_text = _('Country')
     select_all_text = _('All Countries')
 
@@ -170,6 +178,7 @@ class AdminRegionList(ListView):
         # apply filters
         qs = MyRegionsFilter().apply(self, qs)  
         qs = AdminRegionSearchFilter().apply(self, qs)  
+        qs = AssociationFilter().apply(self, qs)
         qs = CountryFilter().apply(self, qs)
         if self.request.user.is_organisation_admin:  
             qs = IsActiveFilter().apply(self, qs)
@@ -189,8 +198,19 @@ class AdminRegionList(ListView):
                 num_sorted_fields += 1
         
         my_regions_filter = MyRegionsFilter().get(self)
-        country_filter = CountryFilter().get(self)
-        filters = [my_regions_filter, country_filter]
+        if multiple_associations():
+            association_filter = AssociationFilter().get(self)
+            if self.association:
+                countries = Country.objects.filter(organisationcountry__adminregion__isnull=False, association=self.association).distinct()
+            else:
+                countries = Country.objects.none()
+        else:
+            association_filter = None
+            countries = Country.objects.filter(organisationcountry__adminregion__isnull=False).distinct()
+
+        country_filter = CountryFilter().get(self, countries)
+
+        filters = [association_filter, my_regions_filter, country_filter]
         # is_active filter is only for admins
         if self.request.user.is_organisation_admin:  
             filters.append(IsActiveFilter().get(self))

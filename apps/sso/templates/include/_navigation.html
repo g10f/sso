@@ -15,7 +15,7 @@
             <i class="glyphicon glyphicon-list"></i> {% trans 'Countries' %}</a>
     {% endif %}
 
-    {% if perms.organisations.change_adminregion %}
+    {% if region_management and perms.organisations.change_adminregion %}
         <a class="list-group-item" href="{% url 'organisations:adminregion_list' %}">
             <i class="glyphicon glyphicon-list"></i> {% trans 'Regions' %}</a>
     {% endif %}
@@ -27,7 +27,7 @@
 
     {% with count_of_registrationprofiles=user.get_count_of_registrationprofiles %}
         {% if perms.registration.change_registrationprofile %}
-            {% if registration_open  or count_of_registrationprofiles > 0 %}
+            {% if registration_open or count_of_registrationprofiles > 0 %}
                 <a class="list-group-item" href="{% url 'registration:user_registration_list' %}">
                     <i class="glyphicon glyphicon-list"></i> {% trans 'Registrations' %}<span class="badge">{{ count_of_registrationprofiles }}</span></a>
             {% endif %}
@@ -49,7 +49,7 @@
             <i class="glyphicon glyphicon-list"></i> {% trans 'Organisation Changes' %} <span class="badge">{{ user.get_count_of_centerchanges }}</span></a>
     {% endif %}
 
-    {% if perms.emails.add_groupemail %}
+    {% if email_management and perms.emails.add_groupemail %}
         <a class="list-group-item {% if active_navigation == "groupemail_create" %}active{% endif %}" href="{% url 'emails:groupemail_create' %}">
             <i class="glyphicon glyphicon-plus-sign"></i> {% trans 'Add Email' %}</a>
     {% endif %}
@@ -59,7 +59,7 @@
             <i class="glyphicon glyphicon-plus-sign"></i> {% trans 'Add Country' %}</a>
     {% endif %}
 
-    {% if perms.organisations.add_adminregion %}
+    {% if region_management and perms.organisations.add_adminregion %}
         <a class="list-group-item {% if active_navigation == "adminregion_create" %}active{% endif %}" href="{% url 'organisations:adminregion_create' %}">
             <i class="glyphicon glyphicon-plus-sign"></i> {% trans 'Add Region' %}</a>
     {% endif %}

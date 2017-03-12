@@ -7,10 +7,10 @@ from django.views.generic import DetailView, CreateView
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
-from l10n.models import CONTINENTS
+from l10n.models import CONTINENTS, Country
 from sso.views import main
 from sso.emails.models import EmailForward, EmailAlias, Email
-from sso.organisations.models import OrganisationCountry, CountryGroup
+from sso.organisations.models import OrganisationCountry, CountryGroup, Association
 from sso.views.generic import FormsetsUpdateView, ListView, ViewChoicesFilter, SearchFilter, ViewQuerysetFilter, ViewButtonFilter
 from sso.emails.forms import EmailForwardOnlyInlineForm, EmailAliasInlineForm
 from sso.organisations.forms import OrganisationCountryForm
@@ -78,6 +78,15 @@ class OrganisationCountryUpdateView(OrganisationCountryBaseView, FormsetsUpdateV
         return formsets
     
 
+class AssociationFilter(ViewQuerysetFilter):
+    name = 'association'
+    qs_name = 'association'
+    model = Association
+    select_text = _('Association')
+    select_all_text = _('All Associations')
+    remove = 'continent,country_group'
+
+
 class ContinentsFilter(ViewChoicesFilter):
     name = 'continent'
     qs_name = 'country__continent'
@@ -143,6 +152,7 @@ class OrganisationCountryList(ListView):
         # apply filters
         qs = MyCountriesFilter().apply(self, qs)
         qs = CountrySearchFilter().apply(self, qs)  
+        qs = AssociationFilter().apply(self, qs)
         qs = ContinentsFilter().apply(self, qs)
         qs = CountryGroupFilter().apply(self, qs)
         if self.request.user.is_organisation_admin:  
@@ -163,9 +173,15 @@ class OrganisationCountryList(ListView):
                 num_sorted_fields += 1
         
         my_countries_filter = MyCountriesFilter().get(self)
-        continent_filter = ContinentsFilter().get(self)
+        association_filter = AssociationFilter().get(self)
+        if self.association:
+            continents = Country.objects.filter(organisationcountry__association=self.association).values_list('continent', flat=True)
+        else:
+            continents = Country.objects.filter(organisationcountry__association__isnull=False).values_list('continent', flat=True)
+        continent_choices = filter(lambda x: x[0] in continents, ContinentsFilter.choices)
+        continent_filter = ContinentsFilter().get(self, continent_choices)
         
-        filters = [my_countries_filter, continent_filter]
+        filters = [my_countries_filter, association_filter, continent_filter]
         # offer is_active and CountryGroup filter only for admins
         if self.request.user.is_organisation_admin:  
             filters.append(CountryGroupFilter().get(self))

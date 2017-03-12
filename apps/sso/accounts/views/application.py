@@ -18,6 +18,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.shortcuts import get_object_or_404
 from django.utils.encoding import force_text
+from l10n.models import Country
 from sso.oauth2.models import allowed_hosts
 from sso.auth.decorators import admin_login_required
 from sso.views import main
@@ -135,8 +136,9 @@ class UserList(ListView):
         for h in headers:
             if h['sortable'] and h['sorted']:
                 num_sorted_fields += 1
-        
-        countries = user.get_administrable_user_countries()
+
+        user_countries = user.get_administrable_user_countries().filter(organisation__user__isnull=False)
+        countries = Country.objects.filter(organisationcountry__in=user_countries)
         country_filter = CountryFilter().get(self, countries)
 
         centers = Organisation.objects.none()
@@ -145,7 +147,7 @@ class UserList(ListView):
         admin_regions = user.get_administrable_user_regions()
 
         if self.country:
-            centers = user.get_administrable_user_organisations().filter(organisation_country=self.country)
+            centers = user.get_administrable_user_organisations().filter(organisation_country__country=self.country)
             if self.admin_region:
                 centers = centers.filter(admin_region=self.admin_region)
             if self.center:
@@ -227,7 +229,8 @@ class AppAdminUserList(ListView):
             if h['sortable'] and h['sorted']:
                 num_sorted_fields += 1
 
-        countries = user.get_administrable_app_admin_user_countries()
+        user_countries = user.get_administrable_app_admin_user_countries().filter(organisation__user__isnull=False)
+        countries = Country.objects.filter(organisationcountry__in=user_countries)
         country_filter = CountryFilter().get(self, countries)
 
         centers = Organisation.objects.none()
@@ -236,7 +239,7 @@ class AppAdminUserList(ListView):
         admin_regions = user.get_administrable_app_admin_user_regions()
 
         if self.country:
-            centers = user.get_administrable_app_admin_user_organisations().filter(organisation_country=self.country)
+            centers = user.get_administrable_app_admin_user_organisations().filter(organisation_country__country=self.country)
             if self.admin_region:
                 centers = centers.filter(admin_region=self.admin_region)
             if self.center:

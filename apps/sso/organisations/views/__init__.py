@@ -2,9 +2,9 @@
 import csv
 import logging
 
-from django.conf import settings
 from django.utils.six.moves.urllib.parse import urlunsplit
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied
@@ -24,7 +24,7 @@ from sso.forms.helpers import get_optional_inline_formset
 from sso.oauth2.models import allowed_hosts
 from sso.organisations.forms import OrganisationAddressForm, OrganisationPhoneNumberForm, OrganisationCountryAdminForm, \
     OrganisationRegionAdminForm, OrganisationCenterAdminForm, OrganisationRegionAdminCreateForm, OrganisationCountryAdminCreateForm, OrganisationPictureForm
-from sso.organisations.models import AdminRegion, Organisation, OrganisationPicture, OrganisationCountry
+from sso.organisations.models import AdminRegion, Organisation, OrganisationPicture, Association, multiple_associations
 from sso.organisations.models import OrganisationAddress, OrganisationPhoneNumber, get_near_organisations
 from sso.utils.ucsv import UnicodeWriter
 from sso.utils.url import get_safe_redirect_uri
@@ -299,11 +299,20 @@ class IsActiveFilter(ViewChoicesFilter):
         return True if (value.pk == "1") else False
 
 
+class AssociationFilter(ViewQuerysetFilter):
+    name = 'association'
+    qs_name = 'organisation_country__association'
+    model = Association
+    select_text = _('Association')
+    select_all_text = _('All Associations')
+    remove = 'country,center,app_role,role_profile,p'
+
+
 class CountryFilter(ViewQuerysetFilter):
     name = 'country'
-    qs_name = 'organisation_country'
-    model = OrganisationCountry
-    filter_list = OrganisationCountry.objects.all().prefetch_related('country')
+    qs_name = 'organisation_country__country'
+    model = Country
+    filter_list = Country.objects.filter(organisationcountry__isnull=False)
     select_text = _('Country')
     select_all_text = _('All Countries')
     all_remove = 'center'
@@ -385,11 +394,21 @@ class OrganisationList(ListView):
                 num_sorted_fields += 1
         
         my_organisations_filter = MyOrganisationsFilter().get(self)
+        association_filter = AssociationFilter().get(self)
+        if multiple_associations():
+            if self.association:
+                countries = Country.objects.filter(organisationcountry__association=self.association, organisationcountry__organisation__isnull=False).distinct()
+            else:
+                countries = Country.objects.none()
+        else:
+            association_filter = None
+            countries = Country.objects.filter(organisationcountry__organisation__isnull=False).distinct()
+
+        country_filter = CountryFilter().get(self, countries)
         center_type_filter = CenterTypeFilter().get(self)
-        country_filter = CountryFilter().get(self)
         admin_region_filter = AdminRegionFilter().get(self)
         
-        filters = [my_organisations_filter, country_filter, admin_region_filter, center_type_filter]
+        filters = [my_organisations_filter, association_filter, country_filter, admin_region_filter, center_type_filter]
         # is_active filter is only for admins
         if self.request.user.is_organisation_admin:  
             filters.append(IsActiveFilter().get(self))
@@ -419,6 +438,7 @@ class OrganisationList(ListView):
         qs = MyOrganisationsFilter().apply(self, qs)
         qs = OrganisationSearchFilter().apply(self, qs)
         qs = CenterTypeFilter().apply(self, qs)
+        qs = AssociationFilter().apply(self, qs)
         qs = CountryFilter().apply(self, qs)
         qs = AdminRegionFilter().apply(self, qs)
         # offer is_active filter only for admins

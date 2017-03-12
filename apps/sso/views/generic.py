@@ -126,10 +126,13 @@ class ViewChoicesFilter(BaseFilter):
         else:
             return None
     
-    def get(self, view):
+    def get(self, view, choices=None):
         """
         create a dictionary with all required data for the HTML template
         """
+        if choices is not None:
+            self.choices = choices
+
         filter_list = [main.FilterItem(item) for item in self.choices]
         return {
             'selected': getattr(view, self.name), 'list': filter_list, 'select_text': self.select_text, 'select_all_text': self.select_all_text, 
