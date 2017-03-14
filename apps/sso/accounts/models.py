@@ -478,10 +478,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         return a list of organisations from all the users we have admin rights on
         """
         if self.is_global_user_admin:
-            return Organisation.objects.all().select_related('organisation_country__country', 'email')
+            return Organisation.objects.all().select_related('organisation_country__country', 'email', 'organisation_country__association')
         elif self.is_user_admin:
             return Organisation.objects.filter(
-                Q(pk__in=self.organisations.all()) | Q(admin_region__in=self.admin_regions.all()) | Q(organisation_country__in=self.admin_organisation_countries.all())).select_related('organisation_country__country', 'email').distinct()
+                Q(pk__in=self.organisations.all()) | Q(admin_region__in=self.admin_regions.all()) | Q(organisation_country__in=self.admin_organisation_countries.all()))\
+                .select_related('organisation_country__country', 'email', 'organisation_country__association').distinct()
         else:
             return Organisation.objects.none()
     

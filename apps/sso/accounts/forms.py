@@ -38,7 +38,8 @@ logger = logging.getLogger(__name__)
 
 
 class OrganisationChangeForm(BaseForm):
-    organisation = forms.ModelChoiceField(queryset=Organisation.objects.all().only(
+    organisation = forms.ModelChoiceField(queryset=Organisation.objects.filter(
+        is_active=True, organisation_country__association__is_selectable=True).only(
         'id', 'location', 'name', 'organisation_country__country__iso2_code', 'organisation_country__association__name').prefetch_related(
         'organisation_country__country', 'organisation_country__association'), label=_("Organisation"), widget=bootstrap.Select())
 
@@ -305,7 +306,8 @@ class UserAddForm(forms.ModelForm):
         self.fields['role_profiles'].choices = [(role_profile.id, role_profile) for role_profile in user.get_administrable_role_profiles()]
         # add custom data
         self.fields['role_profiles'].dictionary = {str(role_profile.id): role_profile for role_profile in user.get_administrable_role_profiles()}
-        self.fields['organisation'].queryset = user.get_administrable_user_organisations().filter(is_active=True)
+        self.fields['organisation'].queryset = user.get_administrable_user_organisations().\
+            filter(is_active=True, organisation_country__association__is_selectable=True)
         if not user.has_perm("accounts.access_all_users"):
             self.fields['organisation'].required = True
 
@@ -665,7 +667,8 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
             self.fields['organisations'] = forms.ModelMultipleChoiceField(queryset=None, required=False,
                                                                           widget=bootstrap.SelectMultipleWithCurrently(currently=u', '.join([x.__unicode__() for x in self.user.organisations.all()])),
                                                                           label=_("Organisation"))
-        self.fields['organisations'].queryset = self.request.user.get_administrable_user_organisations()
+        self.fields['organisations'].queryset = self.request.user.get_administrable_user_organisations().\
+            filter(is_active=True, organisation_country__association__is_selectable=True)
 
     def clean(self):
         return self.cleaned_data
