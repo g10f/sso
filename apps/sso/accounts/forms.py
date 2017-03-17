@@ -276,7 +276,7 @@ class AdminUserChangeForm(UserChangeForm):
                          "@/./+/-/_ characters.")})
 
 
-class UserAddForm(forms.ModelForm):
+class UserAddForm(mixins.UserRolesMixin, forms.ModelForm):
     """
     form for SSO User Admins for adding users in the frontend
     """
@@ -287,7 +287,7 @@ class UserAddForm(forms.ModelForm):
     dob = forms.DateField(label=_('Date of birth'), required=False,
                           widget=bootstrap.SelectDateWidget(years=range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1), required=False))
     notes = forms.CharField(label=_("Notes"), required=False, max_length=1024, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
-    organisation = forms.ModelChoiceField(queryset=None, required=False, label=_("Organisation"), widget=bootstrap.Select())
+    organisations = forms.ModelChoiceField(queryset=None, required=False, label=_("Organisation"), widget=bootstrap.Select())
     application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
     role_profiles = forms.MultipleChoiceField(required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
                                               help_text=_('Groups of application roles that are assigned together.'))
@@ -300,16 +300,18 @@ class UserAddForm(forms.ModelForm):
         model = User
         fields = ("first_name", "last_name", 'gender', 'dob', 'notes')
 
-    def __init__(self, user, *args, **kwargs):
+    def __init__(self, request, *args, **kwargs):
+        self.request = request
+        user = request.user
         super(UserAddForm, self).__init__(*args, **kwargs)
         self.fields['application_roles'].queryset = user.get_administrable_application_roles()
         self.fields['role_profiles'].choices = [(role_profile.id, role_profile) for role_profile in user.get_administrable_role_profiles()]
         # add custom data
         self.fields['role_profiles'].dictionary = {str(role_profile.id): role_profile for role_profile in user.get_administrable_role_profiles()}
-        self.fields['organisation'].queryset = user.get_administrable_user_organisations().\
+        self.fields['organisations'].queryset = user.get_administrable_user_organisations().\
             filter(is_active=True, organisation_country__association__is_selectable=True)
         if not user.has_perm("accounts.access_all_users"):
-            self.fields['organisation'].required = True
+            self.fields['organisations'].required = True
 
     def clean_email(self):
         # Check if email is unique,
@@ -327,15 +329,17 @@ class UserAddForm(forms.ModelForm):
         user.set_password(get_random_string(40))
         user.username = default_username_generator(capfirst(self.cleaned_data.get('first_name')), capfirst(self.cleaned_data.get('last_name')))
 
-        organisation = self.cleaned_data["organisation"]
+        organisation = self.cleaned_data["organisations"]
         if is_validation_period_active(organisation):
             user.valid_until = now() + datetime.timedelta(days=settings.SSO_VALIDATION_PERIOD_DAYS)
         user.save()
 
-        user.application_roles = self.cleaned_data["application_roles"]
-        user.role_profiles = self.cleaned_data["role_profiles"]
-        if organisation:
-            user.organisations.add(organisation)
+        # use mixin to send notification
+        self.user = user
+        current_user = self.request.user
+        self.update_user_m2m_fields('organisations', current_user)
+        self.update_user_m2m_fields('application_roles', current_user)
+        self.update_user_m2m_fields('role_profiles', current_user)
 
         user.create_primary_email(email=self.cleaned_data["email"])
         return user
@@ -685,9 +689,9 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
         cd = self.cleaned_data
         current_user = self.request.user
 
+        self.update_user_m2m_fields('organisations', current_user)
         self.update_user_m2m_fields('application_roles', current_user)
         self.update_user_m2m_fields('role_profiles', current_user)
-        self.update_user_m2m_fields('organisations', current_user)
 
         self.user.username = cd['username']
         self.user.first_name = cd['first_name']

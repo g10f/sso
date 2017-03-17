@@ -286,7 +286,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         gender = self.selenium.find_element_by_name("gender")
         gender.send_keys(new_gender)
 
-        organisation = Select(self.selenium.find_element_by_name("organisation"))
+        organisation = Select(self.selenium.find_element_by_name("organisations"))
         
         # test error case
         for org in denied_orgs:
