@@ -378,6 +378,7 @@ class OrganisationCountryForm(BaseForm):
         }
 
     def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user')  # remove custom user keyword
         super(OrganisationCountryForm, self).__init__(*args, **kwargs)
         if self.instance.email:
             self.fields['email_value'].initial = str(self.instance.email)
@@ -389,6 +390,8 @@ class OrganisationCountryForm(BaseForm):
             self.fields['association_text'] = bootstrap.ReadOnlyField(initial=str(self.instance.association), label=_("Association"))
             del self.fields['association']
             del self.fields['country']
+        else:
+            self.fields['association'].queryset = self.user.get_administrable_associations()
 
     def clean_email_value(self):
         """
