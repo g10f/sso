@@ -274,7 +274,7 @@ class AppAdminUserList(ListView):
 def add_user(request, template='accounts/application/add_user_form.html'):
     redirect_uri = get_safe_redirect_uri(request, allowed_hosts())
     if request.method == 'POST':
-        form = UserAddForm(request.user, request.POST)
+        form = UserAddForm(request, request.POST)
         if form.is_valid():
             user = form.save()                
             send_account_created_email(user, request)
@@ -291,7 +291,7 @@ def add_user(request, template='accounts/application/add_user_form.html'):
         organisations = request.user.get_administrable_user_organisations()
         if len(organisations) == 1:
             initial['organisation'] = organisations[0]
-        form = UserAddForm(request.user, initial=initial)
+        form = UserAddForm(request, initial=initial)
 
     data = {'form': form, 'redirect_uri': redirect_uri, 'title': _('Add user')}
     return render(request, template, data)

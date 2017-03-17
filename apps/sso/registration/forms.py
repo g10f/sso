@@ -156,10 +156,10 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
         self.user.notes = cd['notes']
         
         # userprofile data
+        self.update_user_m2m_fields('organisations', current_user)
         self.update_user_m2m_fields('application_roles', current_user)
         self.update_user_m2m_fields('role_profiles', current_user)
-        self.update_user_m2m_fields('organisations', current_user)
-        
+
         if activate is not None:
             self.user.is_active = activate
             if activate:
