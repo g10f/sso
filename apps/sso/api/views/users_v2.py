@@ -267,7 +267,7 @@ def create_permission(request, obj=None):
         return False, 'You have no \'accounts.add_user\' permission'
 
 
-class UserDetailView(UserMixin, JsonDetailView):
+class   UserDetailView(UserMixin, JsonDetailView):
     http_method_names = ['get', 'put', 'delete', 'options']  #
     create_object_with_put = True
     permissions_tests = {

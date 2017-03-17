@@ -149,10 +149,18 @@ class OrganisationCreateView(OrganisationBaseView, CreateView):
         Returns the form class to use in this view.
         """
         user = self.request.user
+        email_management = settings.SSO_ORGANISATION_EMAIL_MANAGEMENT
+
         if user.get_assignable_organisation_countries().exists():
-            return OrganisationCountryAdminCreateForm
+            if email_management:
+                return OrganisationCountryAdminCreateForm
+            else:
+                return OrganisationCountryAdminForm
         else:
-            return OrganisationRegionAdminCreateForm
+            if email_management:
+                return OrganisationRegionAdminCreateForm
+            else:
+                return OrganisationRegionAdminForm
 
 
 class OrganisationPictureUpdateView(OrganisationBaseView, FormsetsUpdateView):
