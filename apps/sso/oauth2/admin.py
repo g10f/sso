@@ -16,11 +16,14 @@ class ClientAdminForm(forms.ModelForm):
         cleaned_data = super(ClientAdminForm, self).clean()
         type = cleaned_data.get("type")
         client_secret = cleaned_data.get("client_secret")
+        user = cleaned_data.get("user")
 
         if type and client_secret:
             # Only do something if both fields are valid so far.
             if type not in CONFIDENTIAL_CLIENTS and client_secret:
                 self.add_error('client_secret', "Client secret must be empty for non-confidential client types")
+        if type == 'service' and user is None:
+            self.add_error('user', "User is required for service clients")
 
 
 class ClientAdmin(admin.ModelAdmin):
