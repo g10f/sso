@@ -2,161 +2,33 @@
 import logging
 import re
 import uuid
-from itertools import chain
 
-from django.db.utils import IntegrityError
 from sorl import thumbnail
 
 from current_user.models import CurrentUserField
 from django.conf import settings
-from django.contrib.auth.models import Group, Permission, \
+from django.contrib.auth.models import Permission, \
     PermissionsMixin, AbstractBaseUser, BaseUserManager
 from django.core import validators
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q
+from django.db.utils import IntegrityError
 from django.utils import timezone
-from django.utils.translation import pgettext_lazy, ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _
 from l10n.models import Country
+from sso.accounts.models import OrganisationChange
+from sso.accounts.models.application import ApplicationRole, RoleProfile, Application, Role, get_applicationrole_ids
+from sso.accounts.models.user_data import UserEmail
 from sso.decorators import memoize
 from sso.emails.models import GroupEmailManager
-from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary, get_filename, CaseInsensitiveEmailField
+from sso.models import ensure_single_primary, get_filename
 from sso.organisations.models import AdminRegion, Organisation, OrganisationCountry, Association
 from sso.registration.models import RegistrationProfile
 from sso.signals import default_roles
 from sso.utils.email import send_mail
 
 logger = logging.getLogger(__name__)
-
-
-# SUPERUSER_ROLE = 'Superuser'
-# STAFF_ROLE = 'Staff'
-# USER_ROLE = 'User'
-
-
-class ApplicationManager(models.Manager):
-    def get_by_natural_key(self, uuid):
-        return self.get(uuid=uuid)
-
-
-class Application(models.Model):
-    order = models.IntegerField(default=0, help_text=_('Overwrites the alphabetic order.'))
-    title = models.CharField(max_length=255)
-    url = models.URLField(max_length=2047, blank=True)
-    uuid = models.UUIDField(unique=True, default=uuid.uuid4, editable=True)
-    global_navigation = models.BooleanField(_('global navigation'),
-                                            help_text=_('Designates whether this application should be shown in the global navigation bar.'), default=True)
-    is_active = models.BooleanField(_('active'), default=True, help_text=_('Designates whether this application should be provided.'))
-    redirect_to_after_first_login = models.BooleanField(_('redirect to after first login'), default=False,
-                                                        help_text=_('Designates whether the user should redirected to this app after the first login.'))
-    notes = models.TextField(_("Notes"), blank=True, max_length=2048)
-    objects = ApplicationManager()
-    
-    class Meta:
-        ordering = ['order', 'title']
-        verbose_name = _("application")
-        verbose_name_plural = _("applications")
-        
-    def link(self):
-        if self.url:
-            return u'<a href="%s">%s</a>' % (self.url, self.title)
-        else:
-            return ''
-    link.allow_tags = True
-
-    def natural_key(self):
-        return self.uuid,
-
-    def __unicode__(self):
-        return u"%s" % self.title
-
-
-class RoleManager(models.Manager):
-    def get_by_natural_key(self, name):
-        return self.get(name=name)
-
-
-class Role(models.Model):
-    name = models.CharField(_("name"), unique=True, max_length=255)
-    order = models.IntegerField(default=0, help_text=_('Overwrites the alphabetic order.'))
-    group = models.ForeignKey(Group, blank=True, null=True, help_text=_('Associated group for SSO internal permission management.'))
-    objects = RoleManager()
-    
-    class Meta:
-        ordering = ['order', 'name']    
-        verbose_name = _('role')
-        verbose_name_plural = _('roles')
-
-    def natural_key(self):
-        return self.name,
-
-    def __unicode__(self):
-        return u"%s" % self.name
-    
-
-class ApplicationRoleManager(models.Manager):
-    def get_by_natural_key(self, uuid, name):
-        return self.get(application__uuid=uuid, role__name=name)
-
-
-class ApplicationRole(models.Model):
-    application = models.ForeignKey(Application)
-    role = models.ForeignKey(Role)
-    is_inheritable_by_org_admin = models.BooleanField(_('inheritable by organisation admin'), default=True,
-                                                      help_text=_('Designates that the role can inherited by a organisation admin.'))
-    is_inheritable_by_global_admin = models.BooleanField(_('inheritable by global admin'), default=True,
-                                                         help_text=_('Designates that the role can inherited by a global admin.'))
-    is_organisation_related = models.BooleanField(_('organisation related'), default=False,
-                                                  help_text=_('Designates that the role will be deleted in case of a change of the organisation.'))
-
-    objects = ApplicationRoleManager()
-     
-    class Meta:
-        ordering = ['application', 'role']
-        unique_together = (("application", "role"),)
-        verbose_name = _('application role')
-        verbose_name_plural = _('application roles')
-    
-    def natural_key(self):
-        return self.application.natural_key() + self.role.natural_key()
-    
-    def __unicode__(self):
-        return u"%s - %s" % (self.application, self.role)
-
-
-class RoleProfile(AbstractBaseModel):
-    name = models.CharField(_("name"), max_length=255)
-    application_roles = models.ManyToManyField(ApplicationRole, help_text=_('Associates a group of application roles that are usually assigned together.'))
-    order = models.IntegerField(default=0, help_text=_('Overwrites the alphabetic order.'))
-    is_inheritable_by_org_admin = models.BooleanField(_('inheritable by organisation admin'), default=True,
-                                                      help_text=_('Designates that the role profile can inherited by a organisation admin.'))
-    is_inheritable_by_global_admin = models.BooleanField(_('inheritable by global admin'), default=True,
-                                                         help_text=_('Designates that the role profile can inherited by a global admin.'))
-
-    class Meta(AbstractBaseModel.Meta):
-        ordering = ['order', 'name']
-        verbose_name = _('role profile')
-        verbose_name_plural = _('role profiles')
-    
-    def __unicode__(self):
-        return u"%s" % self.name
-
-
-class UserEmail(AbstractBaseModel):
-    MAX_EMAIL_ADRESSES = 2
-    email = CaseInsensitiveEmailField(_('email address'), max_length=254, unique=True)
-    confirmed = models.BooleanField(_('confirmed'), default=False)
-    primary = models.BooleanField(_('primary'), default=False)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
-
-    class Meta(AbstractBaseModel.Meta):
-        verbose_name = _('email address')
-        verbose_name_plural = _('email addresses')
-        ordering = ['email']
-
-    def __unicode__(self):
-        return u"%s" % self.email
 
 
 class UserManager(BaseUserManager):
@@ -190,16 +62,6 @@ class UserManager(BaseUserManager):
 
     def get_by_email(self, email):
         return self.filter(useremail__email=email).prefetch_related('useremail_set').get()
-
-
-def get_applicationrole_ids(user_id, filter=None):
-    approles1 = ApplicationRole.objects.filter(user__id=user_id).only("id").values_list('id', flat=True)
-    approles2 = ApplicationRole.objects.filter(roleprofile__user__id=user_id).only("id").values_list('id', flat=True)
-    if filter is not None:
-        approles1 = approles1.filter(filter)
-        approles2 = approles2.filter(filter)
-    # to get a list of distinct values, we create first a set and then a list
-    return list(set(chain(approles1, approles2)))
 
 
 def generate_filename(instance, filename):
@@ -323,7 +185,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             # no confirmed email addresses for this user, then the password reset
             # must be send to the primary email and we can mark this email as confirmed
             user_email = UserEmail.objects.get(primary=True, user=self)
-            assert(not user_email.confirmed)
+            assert (not user_email.confirmed)
             user_email.confirmed = True
             user_email.save(update_fields=['confirmed'])
 
@@ -341,7 +203,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             last_modified_list += [obj.last_modified for obj in self.useraddress_set.all()]
         else:
             last_modified_list += self.useraddress_set.values_list("last_modified", flat=True)
-            
+
         if hasattr(self, '_prefetched_objects_cache') and ('userphonenumber' in self._prefetched_objects_cache):
             last_modified_list += [obj.last_modified for obj in self.userphonenumber_set.all()]
         else:
@@ -365,7 +227,7 @@ class User(AbstractBaseUser, PermissionsMixin):
                 role_profile = RoleProfile.objects.get(uuid=settings.SSO_DEFAULT_ROLE_PROFILE_UUID)
             except ObjectDoesNotExist:
                 pass
-            return role_profile                
+            return role_profile
 
     @classmethod
     def get_default_admin_profile(cls):
@@ -375,12 +237,12 @@ class User(AbstractBaseUser, PermissionsMixin):
                 role_profile = RoleProfile.objects.get(uuid=settings.SSO_DEFAULT_ADMIN_PROFILE_UUID)
             except ObjectDoesNotExist:
                 pass
-            return role_profile                
+            return role_profile
 
     @property
     def primary_address(self):
         return self.get_primary_or_none(self.useraddress_set.all())
-        
+
     @property
     def primary_phone(self):
         return self.get_primary_or_none(self.userphonenumber_set.all())
@@ -388,19 +250,19 @@ class User(AbstractBaseUser, PermissionsMixin):
     @memoize
     def get_apps(self):
         applicationrole_ids = self.get_applicationrole_ids()
-        return Application.objects.distinct().filter(applicationrole__in=applicationrole_ids, is_active=True).\
+        return Application.objects.distinct().filter(applicationrole__in=applicationrole_ids, is_active=True). \
             order_by('order').prefetch_related('applicationrole_set', 'applicationrole_set__role')
 
     def get_global_navigation_urls(self):
         applicationrole_ids = self.get_applicationrole_ids()
         return Application.objects.distinct().filter(applicationrole__in=applicationrole_ids,
-                                                     is_active=True, 
+                                                     is_active=True,
                                                      global_navigation=True).order_by('order')
-    
+
     def get_roles_by_app(self, app_uuid):
         applicationrole_ids = self.get_applicationrole_ids()
         return Role.objects.distinct().filter(applicationrole__in=applicationrole_ids, applicationrole__application__uuid=app_uuid)
-    
+
     def get_group_and_role_permissions(self):
         """
         get all permissions the user has through his groups and roles
@@ -430,15 +292,15 @@ class User(AbstractBaseUser, PermissionsMixin):
             applicationrole_ids = self.get_applicationrole_ids()
             # all roles the user has, with adequate inheritable flag
             if self.is_global_user_admin:
-                application_roles = ApplicationRole.objects.filter(id__in=applicationrole_ids, 
+                application_roles = ApplicationRole.objects.filter(id__in=applicationrole_ids,
                                                                    is_inheritable_by_global_admin=True).select_related()
             elif self.is_user_admin:
-                application_roles = ApplicationRole.objects.filter(id__in=applicationrole_ids, 
+                application_roles = ApplicationRole.objects.filter(id__in=applicationrole_ids,
                                                                    is_inheritable_by_org_admin=True).select_related()
             else:
                 application_roles = ApplicationRole.objects.none()
             return application_roles
-    
+
     @memoize
     def get_administrable_role_profiles(self):
         if self.is_superuser:
@@ -452,7 +314,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             else:
                 role_profiles = self.role_profiles.none()
             return role_profiles.prefetch_related('application_roles', 'application_roles__role', 'application_roles__application').distinct()
-    
+
     @memoize
     def get_administrable_app_admin_application_roles(self):
         """
@@ -481,11 +343,11 @@ class User(AbstractBaseUser, PermissionsMixin):
             return Organisation.objects.all().select_related('organisation_country__country', 'email', 'organisation_country__association')
         elif self.is_user_admin:
             return Organisation.objects.filter(
-                Q(pk__in=self.organisations.all()) | Q(admin_region__in=self.admin_regions.all()) | Q(organisation_country__in=self.admin_organisation_countries.all()))\
+                Q(pk__in=self.organisations.all()) | Q(admin_region__in=self.admin_regions.all()) | Q(organisation_country__in=self.admin_organisation_countries.all())) \
                 .select_related('organisation_country__country', 'email', 'organisation_country__association').distinct()
         else:
             return Organisation.objects.none()
-    
+
     @memoize
     def get_administrable_user_regions(self):
         """
@@ -494,7 +356,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         if self.is_global_user_admin:
             return AdminRegion.objects.all()
         elif self.is_user_admin:
-            return AdminRegion.objects.filter(Q(organisation__in=self.organisations.all()) | Q(pk__in=self.admin_regions.all()) | Q(organisation_country__in=self.admin_organisation_countries.all())).distinct()
+            return AdminRegion.objects.filter(
+                Q(organisation__in=self.organisations.all()) | Q(pk__in=self.admin_regions.all()) | Q(organisation_country__in=self.admin_organisation_countries.all())).distinct()
         else:
             return AdminRegion.objects.none()
 
@@ -502,12 +365,12 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_administrable_user_countries(self):
         """
         return a list of countries from all the users we have admin rights on
-        """        
+        """
         if self.is_global_user_admin:
             return OrganisationCountry.objects.filter(is_active=True).distinct().select_related('country')
         elif self.is_user_admin:
             return OrganisationCountry.objects.filter(
-                Q(organisation__admin_region__in=self.admin_regions.all()) |  # for adminregions without a associated country 
+                Q(organisation__admin_region__in=self.admin_regions.all()) |  # for adminregions without a associated country
                 Q(organisation__in=self.organisations.all()) | Q(adminregion__in=self.admin_regions.all()) | Q(pk__in=self.admin_organisation_countries.all())).select_related('country').distinct()
         else:
             return OrganisationCountry.objects.none()
@@ -532,7 +395,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         elif self.is_app_admin():
             return OrganisationCountry.objects.filter(
                 Q(organisation__admin_region__in=self.app_admin_regions.all()) |  # for admin regions without a associated country
-                Q(organisation__in=self.organisations.all()) | Q(adminregion__in=self.app_admin_regions.all()) | Q(pk__in=self.app_admin_organisation_countries.all())).select_related('country').distinct()
+                Q(organisation__in=self.organisations.all()) | Q(adminregion__in=self.app_admin_regions.all()) | Q(pk__in=self.app_admin_organisation_countries.all())).select_related(
+                'country').distinct()
         else:
             return OrganisationCountry.objects.none()
 
@@ -545,7 +409,8 @@ class User(AbstractBaseUser, PermissionsMixin):
             return Organisation.objects.all().select_related('organisation_country__country', 'email')
         elif self.is_app_admin():
             return Organisation.objects.filter(
-                Q(pk__in=self.organisations.all()) | Q(admin_region__in=self.app_admin_regions.all()) | Q(organisation_country__in=self.app_admin_organisation_countries.all())).select_related('organisation_country__country', 'email').distinct()
+                Q(pk__in=self.organisations.all()) | Q(admin_region__in=self.app_admin_regions.all()) | Q(organisation_country__in=self.app_admin_organisation_countries.all())).select_related(
+                'organisation_country__country', 'email').distinct()
         else:
             return Organisation.objects.none()
 
@@ -557,7 +422,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         if self.is_global_app_admin:
             return AdminRegion.objects.all()
         elif self.is_app_admin():
-            return AdminRegion.objects.filter(Q(organisation__in=self.organisations.all()) | Q(pk__in=self.app_admin_regions.all()) | Q(organisation_country__in=self.app_admin_organisation_countries.all())).distinct()
+            return AdminRegion.objects.filter(
+                Q(organisation__in=self.organisations.all()) | Q(pk__in=self.app_admin_regions.all()) | Q(organisation_country__in=self.app_admin_organisation_countries.all())).distinct()
         else:
             return AdminRegion.objects.none()
 
@@ -591,7 +457,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_assignable_organisation_countries(self):
         """
         return a list of OrganisationCountry the user can assign to organisations
-        """        
+        """
         if self.has_perms(["organisations.change_organisation", "organisations.access_all_organisations"]):
             return OrganisationCountry.objects.filter(is_active=True, association__is_external=False).distinct().prefetch_related('country')
         elif self.has_perm("organisations.change_organisation"):
@@ -603,7 +469,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_assignable_organisation_regions(self):
         """
         return a list of regions the user can assign to organisations
-        """        
+        """
         if self.has_perms(["organisations.change_organisation", "organisations.access_all_organisations"]):
             return AdminRegion.active_objects.filter(organisation_country__association__is_external=False)
         elif self.has_perm("organisations.change_organisation"):
@@ -626,8 +492,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     @memoize
     def get_administrable_region_countries(self):
         """
-        return a list of countries from the administrable regions the user has 
-        """        
+        return a list of countries from the administrable regions the user has
+        """
         if self.has_perms(["organisations.change_adminregion", "organisations.access_all_organisations"]):
             return OrganisationCountry.objects.filter(is_active=True, association__is_external=False).distinct().prefetch_related('country')
         elif self.has_perm("organisations.change_adminregion"):
@@ -638,8 +504,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     @memoize
     def get_administrable_countries(self):
         """
-        return a list of countries the user has admin rights on 
-        """        
+        return a list of countries the user has admin rights on
+        """
         if self.has_perms(["organisations.change_organisationcountry", "organisations.access_all_organisations"]):
             return OrganisationCountry.objects.filter(association__is_external=False).distinct().prefetch_related('country')
         elif self.has_perm("organisations.change_organisationcountry"):
@@ -713,7 +579,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     def is_global_user_admin(self):
         # can access user data: name, email, center and roles for all users
         return self.is_user_admin and self.has_perm("accounts.access_all_users")
-    
+
     @property
     def is_user_admin(self):
         # can access user data: name, email, center and roles
@@ -730,15 +596,16 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def is_global_organisation_admin(self):
         return self.is_organisation_admin and self.has_perms(["organisations.access_all_organisations"])
-    
+
     @property
     def is_organisation_admin(self):
         return self.has_perm("organisations.change_organisation")
 
     @memoize
     def has_organisation(self, uuid):
-        return Organisation.objects.filter(Q(uuid=uuid, organisation_country__association__is_external=False) & (Q(user=self) | Q(admin_region__user=self) | Q(organisation_country__user=self))).exists()
-    
+        return Organisation.objects.filter(
+            Q(uuid=uuid, organisation_country__association__is_external=False) & (Q(user=self) | Q(admin_region__user=self) | Q(organisation_country__user=self))).exists()
+
     @memoize
     def has_region(self, uuid):
         return AdminRegion.objects.filter(Q(uuid=uuid, organisation_country__association__is_external=False) & (Q(user=self) | Q(organisation_country__user=self))).exists()
@@ -746,7 +613,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     @memoize
     def has_country(self, uuid):
         return self.admin_organisation_countries.filter(uuid=uuid, association__is_external=False).exists()
-    
+
     def has_user_access_and_perm(self, uuid, perm):
         """
         Check if the user is an admin of the user with uuid and has the permission
@@ -772,7 +639,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         if self.is_global_app_admin:
             return not User.objects.get(uuid=uuid).is_superuser
         else:
-            return User.objects.filter(Q(uuid=uuid) & (Q(organisations__user=self) | Q(organisations__admin_region__app_admin_user=self) | Q(organisations__organisation_country__app_admin_user=self))).exists()
+            return User.objects.filter(
+                Q(uuid=uuid) & (Q(organisations__user=self) | Q(organisations__admin_region__app_admin_user=self) | Q(organisations__organisation_country__app_admin_user=self))).exists()
 
     def has_organisation_user_access(self, uuid):
         # used in sso_xxx_theme
@@ -807,13 +675,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         if self.has_perm('emails.change_groupemail') or GroupEmailManager.objects.filter(manager=self).exists():
             return True
         else:
-            return False 
+            return False
 
     def has_groupemail_access(self, uuid):
         if self.has_perm('emails.change_groupemail') or GroupEmailManager.objects.filter(group_email__uuid=uuid, manager=self).exists():
             return True
         else:
-            return False 
+            return False
 
     @property
     def is_complete(self):
@@ -847,7 +715,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             for roles_name in app_roles_dict_item['roles']:
                 roles += [Role.objects.get_or_create(name=roles_name)[0]]
             app_roles_dict_item['roles'] = roles
-        
+
         for app_roles_dict_item in app_roles_dict_array:
             try:
                 application = Application.objects.get(uuid=app_roles_dict_item['uuid'])
@@ -860,105 +728,3 @@ class User(AbstractBaseUser, PermissionsMixin):
             except IntegrityError as e:
                 # programming error?
                 logger.exception(e)
-
-
-class OrganisationChange(AbstractBaseModel):
-    """
-    a request from an user to change the organisation
-    """
-    user = models.OneToOneField(User)
-    organisation = models.ForeignKey(Organisation)
-    reason = models.TextField(_("reason"), max_length=2048)
-
-    class Meta(AbstractBaseModel.Meta):
-        verbose_name = _('organisation change')
-        verbose_name_plural = _('organisation change')
-
-    def get_absolute_url(self):
-        return reverse('accounts:organisationchange_detail', kwargs={'pk': self.pk})
-
-
-class OneTimeMessage(AbstractBaseModel):
-    user = models.ForeignKey(User)
-    title = models.CharField(_("title"), max_length=255, default='')
-    message = models.TextField(_("message"), blank=True, max_length=2048, default='')
-
-    class Meta(AbstractBaseModel.Meta):
-        verbose_name = _('one time message')
-        verbose_name_plural = _('one time messages')
-
-
-class UserAddress(AbstractBaseModel, AddressMixin):
-    ADDRESSTYPE_CHOICES = (
-        ('home', pgettext_lazy('address', 'Home')),
-        ('work', _('Business')),
-        ('other', _('Other')),
-    )
-
-    address_type = models.CharField(_("address type"), choices=ADDRESSTYPE_CHOICES, max_length=20)
-    user = models.ForeignKey(User)
-
-    class Meta(AbstractBaseModel.Meta, AddressMixin.Meta):
-        unique_together = (("user", "address_type"),)
-
-    @classmethod
-    def ensure_single_primary(cls, user):
-        ensure_single_primary(user.useraddress_set.all())
-
-
-class UserPhoneNumber(AbstractBaseModel, PhoneNumberMixin):
-    PHONE_CHOICES = [
-        ('home', pgettext_lazy('phone number', 'Home')),  # with translation context
-        ('mobile', _('Mobile')),
-        ('work', _('Business')),
-        ('fax', _('Fax')),
-        ('pager', _('Pager')),
-        ('other', _('Other')),
-    ]
-    phone_type = models.CharField(_("phone type"), help_text=_('Mobile, home, office, etc.'), choices=PHONE_CHOICES, max_length=20)
-    user = models.ForeignKey(User)
-
-    class Meta(AbstractBaseModel.Meta, PhoneNumberMixin.Meta):
-        # unique_together = (("user", "phone_type"),)
-        pass
-
-    @classmethod
-    def ensure_single_primary(cls, user):
-        ensure_single_primary(user.userphonenumber_set.all())
-
-
-class UserAssociatedSystem(models.Model):
-    """
-    Holds mappings to user IDs on other systems
-    """
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
-    application = models.ForeignKey(Application)
-    userid = models.CharField(max_length=255)
-
-    class Meta:
-        verbose_name = _('associated system')
-        verbose_name_plural = _('associated systems')
-        unique_together = (("application", "userid"),)
-
-    def __unicode__(self):
-        return u"%s - %s" % (self.application, self.userid)
-
-
-class RoleProfileAdmin(AbstractBaseModel):
-    role_profile = models.ForeignKey(RoleProfile, verbose_name=_("role profile"))
-    admin = models.ForeignKey(User)
-
-    class Meta(AbstractBaseModel.Meta):
-        unique_together = (("role_profile", "admin"),)
-        verbose_name = _('role profile admin')
-        verbose_name_plural = _('role profile admins')
-
-
-class ApplicationAdmin(AbstractBaseModel):
-    application = models.ForeignKey(Application, verbose_name=_("application"))
-    admin = models.ForeignKey(User)
-
-    class Meta(AbstractBaseModel.Meta):
-        unique_together = (("application", "admin"),)
-        verbose_name = _('application admin')
-        verbose_name_plural = _('application admins')

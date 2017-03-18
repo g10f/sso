@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 import time
+
+from django.utils.deprecation import MiddlewareMixin
+
 from django.core.exceptions import ImproperlyConfigured
 import pytz
 from django.conf import settings
@@ -7,7 +10,7 @@ from django.contrib import auth
 from django.utils import timezone
 
 
-class CookieProlongationMiddleware(object):
+class CookieProlongationMiddleware(MiddlewareMixin):
     """
     We don't want to save the session with every request, because this creates a changed cookie
     which is bad for caching.
@@ -46,7 +49,7 @@ class CookieProlongationMiddleware(object):
         return response
 
 
-class TimezoneMiddleware(object):
+class TimezoneMiddleware(MiddlewareMixin):
     def process_request(self, request):
         if not hasattr(request, 'user'):
             raise ImproperlyConfigured(

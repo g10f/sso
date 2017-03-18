@@ -168,7 +168,7 @@ TEMPLATES = [
     },
 ]
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -180,11 +180,11 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.locale.LocaleMiddleware',
     'current_user.middleware.CurrentUserMiddleware',
     'sso.middleware.TimezoneMiddleware',
-)
+]
 
 ROOT_URLCONF = 'sso.urls'
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'sso',
     'password',
     'django.contrib.auth',
@@ -205,7 +205,7 @@ INSTALLED_APPS = (
     'sso.registration',
     'sso.auth',
     'sso.oauth2',
-)
+]
 
 THUMBNAIL_QUALITY = 100
 
