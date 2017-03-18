@@ -27,7 +27,7 @@ class OrganisationCountryBaseView(object):
 
     def get_context_data(self, **kwargs):
         context = {}
-        if self.object and self.request.user.is_authenticated():
+        if self.object and self.request.user.is_authenticated:
             context['has_country_access'] = self.request.user.has_country_access(self.object.uuid)
 
         context.update(kwargs)

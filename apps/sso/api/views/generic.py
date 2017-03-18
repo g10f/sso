@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 def is_authenticated(request, obj=None):
-    if not request.user.is_authenticated():
+    if not request.user.is_authenticated:
         return False, 'User not authenticated'
     else:
         return True, None

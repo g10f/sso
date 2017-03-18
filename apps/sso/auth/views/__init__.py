@@ -49,7 +49,7 @@ class LoginView(FormView):
     def get(self, request, *args, **kwargs):
         self.is_two_factor_required = get_request_param(request, 'two_factor', False) is not False
         user = request.user
-        if self.is_two_factor_required and user.is_authenticated() and user.device_set.filter(confirmed=True).exists():
+        if self.is_two_factor_required and user.is_authenticated and user.device_set.filter(confirmed=True).exists():
             session = request.session
             redirect_url = get_safe_login_redirect_url(request)
             expiry = 0 if session.get_expire_at_browser_close() else settings.SESSION_COOKIE_AGE

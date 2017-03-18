@@ -22,7 +22,7 @@ def default_username_generator(first_name, last_name, user=None):
     first_name = capfirst(remove(first_name, *remove_chars))
     last_name = capfirst(remove(last_name, *remove_chars))
     username = u"%s%s" % (first_name, last_name)
-    username = username[:29]  # max 30 chars
+    username = username[:39]  # max 40 chars
 
     if user is not None:
         exists = get_user_model().objects.filter(username=username).exclude(pk=user.pk).exists()

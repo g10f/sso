@@ -239,7 +239,7 @@ class UserDetailView(View):
         response['Access-Control-Allow-Origin'] = '*'        
         return response        
         
-    @method_decorator(api_user_passes_test(lambda u: u.is_authenticated()))   
+    @method_decorator(api_user_passes_test(lambda u: u.is_authenticated))
     @method_decorator(vary_on_headers('Access-Control-Allow-Origin', 'Authorization'))
     @method_decorator(cache_control(must_revalidate=True, max_age=60 * 5)) 
     def get(self, request, uuid='me', *args, **kwargs):        
@@ -256,7 +256,7 @@ class UserDetailView(View):
         return JsonHttpResponse(data=userinfo, request=request)
 
     @method_decorator(client_required(['68bfae12a58541548def243e223053fb']))
-    @method_decorator(api_user_passes_test(lambda u: u.is_authenticated()))
+    @method_decorator(api_user_passes_test(lambda u: u.is_authenticated))
     @transaction.atomic
     def put(self, request, uuid, *args, **kwargs):
         userinfo = json.loads(request.body)
@@ -302,7 +302,7 @@ class UserDetailView(View):
         return JsonHttpResponse(data=userinfo, request=request)
 
     @method_decorator(client_required(['68bfae12a58541548def243e223053fb']))
-    @method_decorator(api_user_passes_test(lambda u: u.is_authenticated()))   
+    @method_decorator(api_user_passes_test(lambda u: u.is_authenticated))
     @transaction.atomic   
     def delete(self, request, uuid, *args, **kwargs):
         try:

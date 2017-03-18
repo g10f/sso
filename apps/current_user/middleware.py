@@ -14,7 +14,7 @@ class CurrentUserMiddleware(MiddlewareMixin):
             # so no singal handler should be attached.
             return
 
-        if hasattr(request, 'user') and request.user.is_authenticated():
+        if hasattr(request, 'user') and request.user.is_authenticated:
             user = request.user
         else:
             user = None

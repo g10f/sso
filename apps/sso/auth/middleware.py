@@ -47,7 +47,7 @@ class OTPMiddleware(MiddlewareMixin):
 
         user.otp_device = None
 
-        if user.is_anonymous():
+        if user.is_anonymous:
             return None
 
         device_id = request.session.get(DEVICE_KEY)

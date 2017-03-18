@@ -59,7 +59,7 @@ class OrganisationBaseView(object):
         if redirect_uri:
             context['redirect_uri'] = redirect_uri
 
-        if self.object and self.request.user.is_authenticated():
+        if self.object and self.request.user.is_authenticated:
             context['has_organisation_access'] = self.request.user.has_organisation_access(self.object.uuid)
         
         context.update(kwargs)

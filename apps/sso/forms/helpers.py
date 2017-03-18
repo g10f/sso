@@ -79,7 +79,7 @@ def log_change(request, object, message):  # @ReservedAssignment
     """
     from django.contrib.admin.models import LogEntry, CHANGE
     user_id = None
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         user_id = request.user.pk 
     else:
         try:

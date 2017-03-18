@@ -28,7 +28,7 @@ def get_last_modified_and_etag(request, uuid):
 
 
 def get_last_modified_and_etag_for_me(request, *args, **kwargs):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         return get_last_modified_and_etag(request, request.user.uuid)
     else:
         return None, None
@@ -41,7 +41,7 @@ def modify_permission(request, obj):
     """
     if 'picture' in request.scopes:
         user = request.user
-        if not user.is_authenticated():
+        if not user.is_authenticated:
             return False, 'User not authenticated'
         else:
             if user.uuid == obj.uuid:

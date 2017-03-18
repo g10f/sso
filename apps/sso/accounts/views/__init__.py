@@ -49,7 +49,7 @@ def contact(request):
             return redirect('accounts:contact_thanks')
     else:
         initial = {}
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             initial['email'] = request.user.primary_email()
             initial['name'] = request.user.get_full_name()
         form = ContactForm(initial=initial)
