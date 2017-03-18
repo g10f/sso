@@ -35,5 +35,3 @@ def update_last_ip(sender, user, **kwargs):
     if 'request' in kwargs:
         user.last_ip = get_real_ip(kwargs['request'])
         user.save(update_fields=['last_ip'])
-
-

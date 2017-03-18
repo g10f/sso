@@ -1,7 +1,5 @@
-# -*- coding: utf-8 -*-
 from django.core.urlresolvers import reverse
 from django.test import TestCase
-from sso.accounts.models import User
 from sso.organisations.models import OrganisationCountry
 from sso.test.client import SSOClient
 

@@ -1,5 +1,6 @@
 from functools import update_wrapper
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.contrib import admin
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -70,7 +71,7 @@ class SSOAdminSite(admin.AdminSite):
 
 sso_admin_site = SSOAdminSite()
 
-sso_admin_site.register(models.Group, GroupAdmin)
+sso_admin_site.register(Group, GroupAdmin)
 sso_admin_site.register(models.OneTimeMessage, OneTimeMessageAdmin)
 
 # sso_admin_site.register(Permission, PermissionAdmin)

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.utils.deprecation import MiddlewareMixin
 from jwt import InvalidTokenError
 from django.utils.functional import SimpleLazyObject, empty
 from django.contrib.auth import get_user_model
@@ -99,7 +100,7 @@ def get_auth_data(request):
     return request._cached_auth_data
 
 
-class OAuthAuthenticationMiddleware(object):
+class OAuthAuthenticationMiddleware(MiddlewareMixin):
     def process_request(self, request):            
         assert hasattr(request, 'session'), "The Django authentication middleware requires session middleware to be installed. \
         Edit your MIDDLEWARE_CLASSES setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'."

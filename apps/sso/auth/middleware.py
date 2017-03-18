@@ -1,4 +1,7 @@
 import logging
+
+from django.utils.deprecation import MiddlewareMixin
+
 from .models import Device
 from sso.auth import DEVICE_KEY
 
@@ -24,7 +27,7 @@ http://schemas.openid.net/pape/policies/2007/06/multi-factor-physical
 """
 
 
-class OTPMiddleware(object):
+class OTPMiddleware(MiddlewareMixin):
     """
     This must be installed after
     :class:`~django.contrib.auth.middleware.AuthenticationMiddleware` and
