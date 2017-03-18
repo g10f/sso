@@ -35,9 +35,9 @@ class RegistrationTest(TestCase):
         username = default_username_generator("Gunnar", "Scherf")
         self.assertEqual(username, "GunnarScherf1")
 
-        username = default_username_generator("GunnarXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "Scherf")
-        self.assertEqual(username, "GunnarXXXXXXXXXXXXXXXXXXXXXXX")
-                
+        username = default_username_generator("GunnarXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "Scherf")
+        self.assertEqual(username, "GunnarXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+
     def test_registration_register_by_bot(self):
         """
         User self registration with email validation

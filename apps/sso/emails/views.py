@@ -69,7 +69,7 @@ class GroupEmailBaseView(object):
 
     def get_context_data(self, **kwargs):
         context = {}
-        if self.object and self.request.user.is_authenticated():
+        if self.object and self.request.user.is_authenticated:
             context['has_groupmail_access'] = self.request.user.has_groupemail_access(self.kwargs.get('uuid'))
         
         context.update(kwargs)

@@ -21,7 +21,7 @@ class SSOBackend(ModelBackend):
         groups.
         Additionally to the standard Django groups, the groups which are associated through the roles are considered. 
         """
-        if user_obj.is_anonymous() or obj is not None:
+        if user_obj.is_anonymous or obj is not None:
             return set()
         if not hasattr(user_obj, '_sso_group_perm_cache'):
             if user_obj.is_superuser:

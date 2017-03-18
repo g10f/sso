@@ -60,7 +60,7 @@ class TimezoneMiddleware(MiddlewareMixin):
                 " before the TimezoneMiddleware class.")
 
         user = request.user
-        if user.is_authenticated() and user.timezone:
+        if user.is_authenticated and user.timezone:
             timezone.activate(pytz.timezone(user.timezone))
         else:
             timezone.deactivate()

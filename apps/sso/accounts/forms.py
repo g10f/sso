@@ -6,6 +6,7 @@ from collections import OrderedDict
 from mimetypes import guess_extension
 
 import pytz
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from nocaptcha_recaptcha.fields import NoReCaptchaField
 
 from django import forms
@@ -267,13 +268,8 @@ class AdminUserChangeForm(UserChangeForm):
     extensions to the default form:
     - allow also unicode characters in the username
     """
-    username = forms.RegexField(
-        label=_("Username"), max_length=30, regex=re.compile(r"^[\w.@+-]+$", flags=re.UNICODE),
-        help_text=_("Required. 30 characters or fewer. Letters, digits and "
-                    "@/./+/-/_ only."),
-        error_messages={
-            'invalid': _("This value may contain only letters, numbers and "
-                         "@/./+/-/_ characters.")})
+    username = forms.CharField(label=_("Username"), max_length=40, validators=[UnicodeUsernameValidator()],
+                               help_text=_("Required. 40 characters or fewer. Letters, digits and @/./+/-/_ only."))
 
 
 class UserAddForm(mixins.UserRolesMixin, forms.ModelForm):
@@ -625,7 +621,7 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
         'duplicate_username': _("A user with that username already exists."),
         'duplicate_email': _("A user with that email address already exists."),
     }
-    username = forms.CharField(label=_("Username"), max_length=30, widget=bootstrap.TextInput())
+    username = forms.CharField(label=_("Username"), max_length=40, validators=[UnicodeUsernameValidator()], widget=bootstrap.TextInput())
     valid_until = bootstrap.ReadOnlyField(label=_("Valid until"))
     first_name = forms.CharField(label=_('First name'), max_length=30, widget=bootstrap.TextInput())
     last_name = forms.CharField(label=_('Last name'), max_length=30, widget=bootstrap.TextInput())
@@ -673,9 +669,6 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
                                                                           label=_("Organisation"))
         self.fields['organisations'].queryset = self.request.user.get_administrable_user_organisations().\
             filter(is_active=True, organisation_country__association__is_selectable=True)
-
-    def clean(self):
-        return self.cleaned_data
 
     def clean_username(self):
         username = self.cleaned_data["username"]

@@ -195,7 +195,7 @@ class UserMixin(object):
 
 
 def get_last_modified_and_etag(request, uuid):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         try:
             obj = User.objects.only('last_modified').get(uuid=uuid)
             lang = get_language_from_request(request)
@@ -209,7 +209,7 @@ def get_last_modified_and_etag(request, uuid):
 
 
 def get_last_modified_and_etag_for_me(request, *args, **kwargs):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         lang = get_language_from_request(request)
         last_modified = request.user.get_last_modified_deep()
         etag = "%s/%s/%s" % (request.user.uuid.hex, lang, last_modified)
@@ -224,7 +224,7 @@ def read_permission(request, obj, required_scope=None):
     permission to read the obj data
     """
     user = request.user
-    if not user.is_authenticated():
+    if not user.is_authenticated:
         return False, 'User not authenticated'
     if required_scope and required_scope not in request.scopes:
         return False, "%s not in scope '%s'" % (required_scope, request.scopes)
@@ -246,7 +246,7 @@ def replace_permission(request, obj):
     permission to change user the obj
     """
     user = request.user
-    if user.is_authenticated():
+    if user.is_authenticated:
         if user.uuid == obj.uuid:
             return True, None
         else:
@@ -481,7 +481,7 @@ class UserList(UserMixin, JsonListView):
     @classmethod
     def read_permission(cls, request, obj):
         user = request.user
-        if not user.is_authenticated():
+        if not user.is_authenticated:
             return False, "Not authenticated"
         if not user.has_perm('accounts.read_user'):
             return False, "User has no permission '%s" % 'accounts.read_user'
@@ -496,7 +496,7 @@ class UserList(UserMixin, JsonListView):
     def create_permission(cls, request, obj=None):
         user = request.user
         user = request.user
-        if not user.is_authenticated():
+        if not user.is_authenticated:
             return False, "Not authenticated"
         if not user.has_perm('accounts.add_user'):
             return False, "User has no permission '%s" % 'accounts.add_user'

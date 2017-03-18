@@ -102,7 +102,7 @@ def match_token(user, token):
 
 def devices_for_user(user, confirmed=True):
     from sso.auth.models import Device
-    if user.is_anonymous():
+    if user.is_anonymous:
         return Device.objects.none()
 
     return Device.objects.filter(user=user, confirmed=confirmed)

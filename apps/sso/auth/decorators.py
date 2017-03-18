@@ -46,7 +46,7 @@ def admin_login_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME,
     than max_age, redirecting to the log-in page if necessary.
     """
     actual_decorator = request_passes_test(
-        lambda request: request.user.is_authenticated() and is_recent_auth_time(request, max_age),
+        lambda request: request.user.is_authenticated and is_recent_auth_time(request, max_age),
         login_url=login_url,
         redirect_field_name=redirect_field_name
     )
@@ -62,7 +62,7 @@ def otp_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME, login_u
     """
     if login_url is None:
         login_url = update_url(reverse_lazy('login'), {TWO_FACTOR_PARAM: '1'})
-    test = lambda u: u.is_authenticated() and u.is_verified()
+    test = lambda u: u.is_authenticated and u.is_verified
     actual_decorator = user_passes_test(
         test,
         login_url=login_url,

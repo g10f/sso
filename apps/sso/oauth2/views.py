@@ -198,7 +198,7 @@ def is_login_required(request, client_state):
     two_factor = True if get_acr_claim(request) else False
 
     user = request.user
-    if not user.is_authenticated():
+    if not user.is_authenticated:
         return True, two_factor
 
     prompt = get_request_param(request, 'prompt', '').split()

@@ -25,7 +25,7 @@ def _get_user_session_key(request):
 
 
 def _get_user_key(user):
-    if user is not None and user.is_authenticated():
+    if user is not None and user.is_authenticated:
         return user.uuid.hex
 
     return None

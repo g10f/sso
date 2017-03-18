@@ -25,7 +25,7 @@ class AdminRegionBaseView(object):
     
     def get_context_data(self, **kwargs):
         context = {}
-        if self.object and self.request.user.is_authenticated():
+        if self.object and self.request.user.is_authenticated:
             context['has_region_access'] = self.request.user.has_region_access(self.object.uuid)
         
         context.update(kwargs)

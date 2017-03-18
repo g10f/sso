@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-import re
 import uuid
 
 from sorl import thumbnail
@@ -9,7 +8,7 @@ from current_user.models import CurrentUserField
 from django.conf import settings
 from django.contrib.auth.models import Permission, \
     PermissionsMixin, AbstractBaseUser, BaseUserManager
-from django.core import validators
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models import Q
@@ -74,8 +73,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         ('m', _('male')),
         ('f', _('female'))
     ]
-    username = models.CharField(_('username'), max_length=30, unique=True, help_text=_('Required. 30 characters or fewer. Letters, digits and @/./+/-/_ only.'),
-                                validators=[validators.RegexValidator(re.compile(r"^[\w.@+-]+$", flags=re.UNICODE), _('Enter a valid username.'), 'invalid')])
+    username = models.CharField(_('username'), max_length=40, unique=True, help_text=_('Required. 40 characters or fewer. Letters, digits and @/./+/-/_ only.'),
+                                validators=[UnicodeUsernameValidator()], error_messages={
+            'unique': _("A user with that username already exists."), }, )
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
     last_name = models.CharField(_('last name'), max_length=30, blank=True)
     is_staff = models.BooleanField(_('staff status'), default=False, help_text=_('Designates whether the user can log into this admin site.'))
