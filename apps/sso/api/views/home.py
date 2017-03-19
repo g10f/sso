@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from django.views.decorators.cache import cache_page
-from django.core.urlresolvers import reverse
-
-from sso.utils.url import base_url
-from sso.api.response import JsonHttpResponse
-
 import logging
+
+from django.urls import reverse
+from django.views.decorators.cache import cache_page
+from sso.api.response import JsonHttpResponse
+from sso.utils.url import base_url
 
 logger = logging.getLogger(__name__)
 

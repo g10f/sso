@@ -1,11 +1,11 @@
 from django.contrib import admin
 from django.contrib.admin import SimpleListFilter
-from django.utils.encoding import force_unicode
-from django.utils.translation import ungettext
-from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_user_model
-from django.core import urlresolvers
+from django.urls import reverse
+from django.utils.encoding import force_unicode
 from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ungettext
 from .models import RegistrationProfile, RegistrationManager, send_set_password_email, send_validation_email
 
 
@@ -72,7 +72,7 @@ class RegistrationAdmin(admin.ModelAdmin):
 
     def user_link(self, obj):
         user = obj.user
-        url = urlresolvers.reverse('admin:%s_%s_change' % (user._meta.app_label, user._meta.module_name), args=[user.pk], current_app=self.admin_site.name)
+        url = reverse('admin:%s_%s_change' % (user._meta.app_label, user._meta.module_name), args=[user.pk], current_app=self.admin_site.name)
         return mark_safe(u'<a href="%s">%s</a>' % (url, user))
 
     user_link.allow_tags = True

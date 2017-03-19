@@ -1,38 +1,38 @@
 # -*- coding: utf-8 -*-
-import json
 import hashlib
+import json
 import logging
+
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
+from django.utils.six.moves.urllib.parse import urlparse, urlunparse, urlsplit, urlunsplit
 from jwt import InvalidTokenError
 
-from django.http.response import HttpResponseRedirectBase
-from django.views.decorators.cache import never_cache, cache_page, cache_control
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.clickjacking import xframe_options_exempt
-from django.views.generic import TemplateView
-from django.utils.crypto import get_random_string
-from django.utils.decorators import method_decorator
-from django.utils.encoding import force_str, force_text, iri_to_uri
-from django.utils.six.moves.urllib.parse import urlparse, urlunparse, urlsplit, urlunsplit
-from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, HttpResponse, QueryDict
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth.decorators import permission_required, login_required
+from django.http import HttpResponseRedirect, HttpResponse, QueryDict
+from django.http.response import HttpResponseRedirectBase
 from django.shortcuts import render, get_object_or_404, resolve_url
+from django.urls import reverse
+from django.utils.crypto import get_random_string
+from django.utils.decorators import method_decorator
+from django.utils.encoding import force_str, iri_to_uri
+from django.views.decorators.cache import never_cache, cache_page, cache_control
+from django.views.decorators.clickjacking import xframe_options_exempt
+from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import TemplateView
 from oauthlib import oauth2
 from oauthlib.common import urlencode, urlencoded, quote
+from sso.api.response import JsonHttpResponse
 from sso.auth.utils import is_recent_auth_time
 from sso.auth.views import TWO_FACTOR_PARAM
 from sso.utils.convert import long_to_base64
-from sso.utils.url import base_url
-from sso.api.response import JsonHttpResponse
 from sso.utils.http import get_request_param
+from sso.utils.url import base_url
 from .crypt import loads_jwt
-from .server import server
 from .models import Client
-
+from .server import server
 
 logger = logging.getLogger(__name__)
 

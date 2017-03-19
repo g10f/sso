@@ -1,23 +1,23 @@
-import urllib
 import logging
+import urllib
 
-from django.views.decorators.cache import never_cache
-from django.views.decorators.debug import sensitive_post_parameters
-from django.utils.decorators import method_decorator
 from django.conf import settings
-from django.shortcuts import redirect
 from django.contrib import messages
-from django.views.generic.edit import FormView
 from django.contrib.auth import REDIRECT_FIELD_NAME, get_user_model, BACKEND_SESSION_KEY
 from django.core import signing
-from django.core.urlresolvers import reverse_lazy, reverse
+from django.shortcuts import redirect
+from django.urls import reverse_lazy, reverse
+from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
-from throttle.decorators import throttle
+from django.views.decorators.cache import never_cache
+from django.views.decorators.debug import sensitive_post_parameters
+from django.views.generic.edit import FormView
+from sso.auth import is_otp_login, auth_login
 from sso.auth.forms import EmailAuthenticationForm, AuthenticationTokenForm
 from sso.auth.models import Device
 from sso.auth.utils import get_safe_login_redirect_url, get_request_param, get_device_classes
 from sso.oauth2.models import get_oauth2_cancel_url
-from sso.auth import is_otp_login, auth_login
+from throttle.decorators import throttle
 
 SALT = 'sso.auth.views.LoginView'
 TWO_FACTOR_PARAM = 'two_factor'

@@ -1,7 +1,7 @@
 from django import test
-from django.conf.urls import patterns, url
-from django.core.urlresolvers import reverse
+from django.conf.urls import url
 from django.http import HttpResponse
+from django.urls import reverse
 from .decorators import throttle
 
 

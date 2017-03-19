@@ -1,14 +1,13 @@
-from django.core.urlresolvers import reverse_lazy
-from django.contrib.auth import REDIRECT_FIELD_NAME
-from django.contrib.auth.decorators import user_passes_test
 from functools import wraps
+
+from django.utils.six.moves.urllib.parse import urlparse
 
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
-from django.core.exceptions import PermissionDenied
+from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import resolve_url
+from django.urls import reverse_lazy
 from django.utils.decorators import available_attrs
-from django.utils.six.moves.urllib.parse import urlparse
 from sso.auth.utils import is_recent_auth_time
 from sso.auth.views import TWO_FACTOR_PARAM
 from sso.utils.url import update_url

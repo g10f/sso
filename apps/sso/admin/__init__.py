@@ -1,29 +1,30 @@
 from functools import update_wrapper
+
+from django.conf import settings
+from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
-from django.contrib import admin
-from django.conf import settings
-from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from django.views.decorators.csrf import csrf_protect
-from django.views.decorators.cache import never_cache
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
-from sso.accounts.admin import ApplicationAdmin, ApplicationAdminAdmin, ApplicationRoleAdmin, GroupAdmin, RoleAdmin, \
-    OneTimeMessageAdmin, OrganisationChangeAdmin, RoleProfileAdmin, RoleProfileAdminAdmin, UserAdmin, UserEmailAdmin
-from sso.auth.utils import is_recent_auth_time
-from sso.oauth2.admin import ClientAdmin, AuthorizationCodeAdmin, BearerTokenAdmin, RefreshTokenAdmin
-from sso.oauth2.models import Client, AuthorizationCode, BearerToken, RefreshToken
-from sso.registration.admin import RegistrationAdmin
-from sso.registration.models import RegistrationProfile
-from sso.emails.models import Email, EmailForward, EmailAlias, GroupEmail, GroupEmailManager
-from sso.emails.admin import EmailAdmin, EmailAliasAdmin, EmailForwardAdmin, GroupEmailAdmin, GroupEmailManagerAdmin
+from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_protect
 from l10n.admin import CountryOptions
 from l10n.models import Country
 from sso.accounts import models
-from sso.organisations import models as org_models
-from sso.organisations import admin as org_admin
-from sso.auth import models as sso_auth_models
+from sso.accounts.admin import ApplicationAdmin, ApplicationAdminAdmin, ApplicationRoleAdmin, GroupAdmin, RoleAdmin, \
+    OneTimeMessageAdmin, OrganisationChangeAdmin, RoleProfileAdmin, RoleProfileAdminAdmin, UserAdmin, UserEmailAdmin
 from sso.auth import admin as sso_auth_admin
+from sso.auth import models as sso_auth_models
+from sso.auth.utils import is_recent_auth_time
+from sso.emails.admin import EmailAdmin, EmailAliasAdmin, EmailForwardAdmin, GroupEmailAdmin, GroupEmailManagerAdmin
+from sso.emails.models import Email, EmailForward, EmailAlias, GroupEmail, GroupEmailManager
+from sso.oauth2.admin import ClientAdmin, AuthorizationCodeAdmin, BearerTokenAdmin, RefreshTokenAdmin
+from sso.oauth2.models import Client, AuthorizationCode, BearerToken, RefreshToken
+from sso.organisations import admin as org_admin
+from sso.organisations import models as org_models
+from sso.registration.admin import RegistrationAdmin
+from sso.registration.models import RegistrationProfile
 from sso.utils.translation import string_format
 
 

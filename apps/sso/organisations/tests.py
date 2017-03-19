@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
-from django.core.urlresolvers import reverse
 from django.test import TransactionTestCase
+from django.urls import reverse
 from sso.organisations.models import OrganisationCountry, Organisation, AdminRegion
 from sso.test.client import SSOClient
 

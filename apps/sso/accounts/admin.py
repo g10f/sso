@@ -1,25 +1,26 @@
 # -*- coding: utf-8 -*-
-from django.contrib import admin
-from django.template.response import TemplateResponse
-from django.core.mail.message import EmailMessage
-from django.conf import settings
-from django.utils.encoding import force_unicode
-from django.contrib.admin.utils import model_ngettext, flatten_fieldsets
-from django.db.models import Q
-from django.contrib.admin import SimpleListFilter
-from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin, GroupAdmin as DjangoGroupAdmin
-from django.contrib.auth import get_user_model
-from django.core import urlresolvers
-from django.utils.safestring import mark_safe
-from django.core.exceptions import ObjectDoesNotExist
-from django.utils import six
-from django.utils.translation import ugettext_lazy as _
+import logging
+
 from sorl.thumbnail.admin import AdminImageMixin
 
+from django.conf import settings
+from django.contrib import admin
+from django.contrib.admin import SimpleListFilter
+from django.contrib.admin.utils import model_ngettext, flatten_fieldsets
+from django.contrib.auth import get_user_model
+from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin, GroupAdmin as DjangoGroupAdmin
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.mail.message import EmailMessage
+from django.db.models import Q
+from django.template.response import TemplateResponse
+from django.urls import reverse
+from django.utils import six
+from django.utils.encoding import force_unicode
+from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext_lazy as _
 from models import Application, UserAssociatedSystem, UserAddress, UserPhoneNumber, UserEmail, RoleProfile
 from sso.organisations.models import Organisation, AdminRegion
 from .forms import AdminUserChangeForm, AdminUserCreationForm
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +34,7 @@ class OrganisationChangeAdmin(admin.ModelAdmin):
     readonly_fields = ['uuid']
 
     def user_link(self, obj):
-        url = urlresolvers.reverse('admin:accounts_user_change', args=(obj.user.pk,), current_app=self.admin_site.name)
+        url = reverse('admin:accounts_user_change', args=(obj.user.pk,), current_app=self.admin_site.name)
         return mark_safe(u'<a href="%s">%s</a>' % (url, obj.user))
     user_link.allow_tags = True
     user_link.short_description = _('user')
@@ -49,7 +50,7 @@ class UserEmailAdmin(admin.ModelAdmin):
     list_select_related = ('user', )
 
     def user_link(self, obj):
-        url = urlresolvers.reverse('admin:accounts_user_change', args=(obj.user.pk,), current_app=self.admin_site.name)
+        url = reverse('admin:accounts_user_change', args=(obj.user.pk,), current_app=self.admin_site.name)
         return mark_safe(u'<a href="%s">%s</a>' % (url, obj.user))
     user_link.allow_tags = True
     user_link.short_description = _('user')
@@ -70,7 +71,7 @@ class OneTimeMessageAdmin(admin.ModelAdmin):
     
     def message_link(self, obj):
         if obj.uuid:
-            url = urlresolvers.reverse('accounts:view_message', args=[obj.uuid.hex])
+            url = reverse('accounts:view_message', args=[obj.uuid.hex])
             link = u'<div class="field-box"><a class="deletelink" href="%s">%s</a></div>' % (url, obj.title)
             
             return mark_safe(u'%s' % link)
@@ -453,7 +454,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
 
     def get_last_modified_by_user(self, obj):
         if obj.last_modified_by_user:
-            url = urlresolvers.reverse('admin:accounts_user_change', args=(obj.last_modified_by_user.pk,), current_app=self.admin_site.name)
+            url = reverse('admin:accounts_user_change', args=(obj.last_modified_by_user.pk,), current_app=self.admin_site.name)
             return mark_safe(u'<a href="%s">%s</a>' % (url, obj.last_modified_by_user))
         else:
             raise ObjectDoesNotExist()
@@ -462,7 +463,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
     
     def get_created_by_user(self, obj):
         if obj.created_by_user:
-            url = urlresolvers.reverse('admin:accounts_user_change', args=(obj.created_by_user.pk,), current_app=self.admin_site.name)
+            url = reverse('admin:accounts_user_change', args=(obj.created_by_user.pk,), current_app=self.admin_site.name)
             return mark_safe(u'<a href="%s">%s</a>' % (url, obj.created_by_user))
         else:
             raise ObjectDoesNotExist()

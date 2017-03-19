@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-from django.utils.six.moves.urllib.parse import urlsplit
-import re
 import os
+import re
+
+from django.utils.six.moves.urllib.parse import urlsplit
 
 from django.core import mail
 from django.test import TestCase
-from django.core.urlresolvers import reverse
-
-from sso.registration import default_username_generator
+from django.urls import reverse
 from sso.organisations.models import Organisation
+from sso.registration import default_username_generator
 from sso.test.client import SSOClient
 
 

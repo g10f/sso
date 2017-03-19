@@ -1,16 +1,16 @@
 import json
+
 from u2flib_server import u2f_v2
 
-from django.shortcuts import redirect
 from django.contrib import messages
-from django.core.urlresolvers import reverse_lazy
-from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth.decorators import login_required
+from django.contrib.sites.shortcuts import get_current_site
+from django.shortcuts import redirect
+from django.urls import reverse_lazy
 from django.views.generic import FormView
 from sso.auth.forms.profile import TOTPDeviceForm, ProfileForm, PhoneSetupForm, AddPhoneForm, AddU2FForm
 from sso.auth.models import TwilioSMSDevice, U2FDevice
 from sso.auth.utils import class_view_decorator, default_device, random_hex, get_device_classes
-
 
 
 @class_view_decorator(login_required)

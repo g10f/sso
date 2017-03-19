@@ -1,25 +1,24 @@
 # -*- coding: utf-8 -*-
-from django.core.exceptions import PermissionDenied
-from django.shortcuts import render, get_object_or_404, resolve_url
-from django.utils.translation import ugettext_lazy as _
-from django.http import HttpResponseRedirect
 from django.contrib import messages
 from django.contrib.auth import get_user_model
-from django.template.response import TemplateResponse
-from django.views.generic import DeleteView
 from django.contrib.auth.decorators import permission_required
+from django.core.exceptions import PermissionDenied
+from django.http import HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404, resolve_url
+from django.template.response import TemplateResponse
+from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
-from l10n.models import Country
 from django.utils.encoding import force_text
-from django.core.urlresolvers import reverse, reverse_lazy
+from django.utils.translation import ugettext_lazy as _
+from django.views.generic import DeleteView
 from sso.accounts.models import ApplicationRole
 from sso.auth.decorators import admin_login_required
 from sso.organisations.models import is_validation_period_active_for_user, OrganisationCountry
 from sso.signals import user_registration_completed
 from sso.views import main
 from sso.views.generic import SearchFilter, ViewChoicesFilter, ViewQuerysetFilter, ListView
-from .models import RegistrationProfile, RegistrationManager, send_set_password_email, send_check_back_email, send_access_denied_email
 from .forms import RegistrationProfileForm
+from .models import RegistrationProfile, RegistrationManager, send_set_password_email, send_check_back_email, send_access_denied_email
 from .tokens import default_token_generator
 
 

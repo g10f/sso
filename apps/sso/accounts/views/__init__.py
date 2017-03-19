@@ -8,13 +8,13 @@ from django.contrib.auth.password_validation import password_validators_help_tex
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.forms.models import inlineformset_factory
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect, resolve_url
 from django.template.loader import render_to_string
 from django.template.response import TemplateResponse
+from django.urls import reverse
 from django.utils.html import strip_tags
 from django.utils.http import urlsafe_base64_decode
 from django.utils.translation import ugettext as _

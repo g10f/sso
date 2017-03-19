@@ -2,31 +2,31 @@
 import logging
 from uuid import UUID
 
-from django.utils.crypto import get_random_string
 from sorl.thumbnail import get_thumbnail
 
-from django.http.response import HttpResponse
 from django.contrib.auth.decorators import login_required, permission_required
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.cache import cache_control
-from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
-from django.utils.dateparse import parse_date
-from django.utils.translation import get_language_from_request, ugettext as _
-from django.utils.text import capfirst
 from django.db.models import Q
-from sso.auth.utils import is_recent_auth_time
-from sso.utils.url import base_url, absolute_url
-from sso.utils.parse import parse_datetime_with_timezone_support
+from django.http.response import HttpResponse
+from django.urls import reverse
+from django.utils.crypto import get_random_string
+from django.utils.dateparse import parse_date
+from django.utils.decorators import method_decorator
+from django.utils.text import capfirst
+from django.utils.translation import get_language_from_request, ugettext as _
+from django.views.decorators.cache import cache_control
+from django.views.decorators.csrf import csrf_exempt
 from l10n.models import Country
-from sso.accounts.models import UserAddress, UserPhoneNumber, User, UserEmail, ApplicationRole
 from sso.accounts.email import send_account_created_email
+from sso.accounts.models import UserAddress, UserPhoneNumber, User, UserEmail, ApplicationRole
+from sso.api.decorators import condition
+from sso.api.views.generic import JsonListView, JsonDetailView
+from sso.auth.utils import is_recent_auth_time
+from sso.models import update_object_from_dict, map_dict2dict
 from sso.organisations.models import Organisation
 from sso.registration import default_username_generator
-from sso.models import update_object_from_dict, map_dict2dict
-from sso.api.views.generic import JsonListView, JsonDetailView
-from sso.api.decorators import condition
+from sso.utils.parse import parse_datetime_with_timezone_support
+from sso.utils.url import base_url, absolute_url
 
 logger = logging.getLogger(__name__)
 

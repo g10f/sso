@@ -1,21 +1,21 @@
 # -*- coding: utf-8 -*-
+import logging
 from mimetypes import guess_extension
+
 from sorl.thumbnail import get_thumbnail
 
-from django.views.decorators.csrf import csrf_exempt
-from django.core.urlresolvers import reverse
-from django.utils.crypto import get_random_string
 from django.core.files.base import ContentFile
-from django.utils.decorators import method_decorator
 from django.db import transaction
-from sso.api.decorators import catch_errors
-from sso.api.views.generic import JsonDetailView
+from django.urls import reverse
+from django.utils.crypto import get_random_string
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
 from sso.accounts.models import User
+from sso.api.decorators import catch_errors
 from sso.api.decorators import condition
+from sso.api.views.generic import JsonDetailView
 from sso.api.views.users_v2 import read_permission
 from sso.utils.url import base_url, absolute_url
-
-import logging
 
 logger = logging.getLogger(__name__)
 
