@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
-from django.utils.crypto import get_random_string
-from django.utils.six.moves.urllib.parse import urlsplit
-
-import json
 import base64
+import json
 from time import sleep
+
+from django.utils.six.moves.urllib.parse import urlsplit
 
 from django.http import QueryDict, SimpleCookie
 from django.test import TestCase
-from django.core.urlresolvers import reverse
+from django.urls import reverse
+from django.utils.crypto import get_random_string
 from sso.test.client import SSOClient
 
 

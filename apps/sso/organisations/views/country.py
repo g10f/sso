@@ -1,22 +1,21 @@
 # -*- coding: utf-8 -*-
-from django.conf import settings
+import logging
 
-from django.core.exceptions import PermissionDenied
+from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
-from django.views.generic import DetailView, CreateView
+from django.core.exceptions import PermissionDenied
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
-from django.core.urlresolvers import reverse
+from django.views.generic import DetailView, CreateView
 from l10n.models import CONTINENTS, Country
-from sso.views import main
-from sso.emails.models import EmailForward, EmailAlias, Email
-from sso.organisations.models import OrganisationCountry, CountryGroup, Association
-from sso.views.generic import FormsetsUpdateView, ListView, ViewChoicesFilter, SearchFilter, ViewQuerysetFilter, ViewButtonFilter
 from sso.emails.forms import EmailForwardOnlyInlineForm, EmailAliasInlineForm
-from sso.organisations.forms import OrganisationCountryForm
+from sso.emails.models import EmailForward, EmailAlias, Email
 from sso.forms.helpers import get_optional_inline_formset
-
-import logging
+from sso.organisations.forms import OrganisationCountryForm
+from sso.organisations.models import OrganisationCountry, CountryGroup, Association
+from sso.views import main
+from sso.views.generic import FormsetsUpdateView, ListView, ViewChoicesFilter, SearchFilter, ViewQuerysetFilter, ViewButtonFilter
 
 logger = logging.getLogger(__name__)
 

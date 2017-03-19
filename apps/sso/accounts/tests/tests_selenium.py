@@ -4,7 +4,7 @@ import re
 from django.test import override_settings
 from django.conf import settings
 from django.core import mail
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth import get_user_model
 from selenium.webdriver.support.ui import Select
 from selenium.common.exceptions import NoSuchElementException

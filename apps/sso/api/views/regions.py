@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-from django.core.urlresolvers import reverse
-from django.db.models import Q
-from sso.utils.url import base_url
-from sso.utils.parse import parse_datetime_with_timezone_support
-from sso.organisations.models import AdminRegion
-from sso.api.views.generic import JsonListView, JsonDetailView
-
 import logging
+
+from django.db.models import Q
+from django.urls import reverse
+from sso.api.views.generic import JsonListView, JsonDetailView
+from sso.organisations.models import AdminRegion
+from sso.utils.parse import parse_datetime_with_timezone_support
+from sso.utils.url import base_url
 
 logger = logging.getLogger(__name__)
 

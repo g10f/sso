@@ -2,7 +2,7 @@
 import json
 from uuid import uuid4
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from uritemplate import expand
 
 from sso.oauth2.tests import OAuth2BaseTestCase

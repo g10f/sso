@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 import logging
+
 from sorl.thumbnail import get_thumbnail
 
-from django.core.urlresolvers import reverse
-from django.db.models import Q
 from django.conf import settings
-from sso.utils.url import base_url, absolute_url
-from sso.utils.parse import parse_datetime_with_timezone_support
-from sso.organisations.models import Organisation, get_near_organisations
+from django.db.models import Q
+from django.urls import reverse
 from sso.api.views.generic import JsonListView, JsonDetailView
-
+from sso.organisations.models import Organisation, get_near_organisations
+from sso.utils.parse import parse_datetime_with_timezone_support
+from sso.utils.url import base_url, absolute_url
 
 logger = logging.getLogger(__name__)
 

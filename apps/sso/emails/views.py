@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
-from django.core.urlresolvers import reverse
-from django.db.models import Q
-from django.core.exceptions import PermissionDenied
+import logging
+
 from django.contrib.auth.decorators import login_required, permission_required
+from django.core.exceptions import PermissionDenied
+from django.db.models import Q
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import DeleteView, DetailView, CreateView
+from sso.emails.forms import EmailAliasInlineForm, GroupEmailForm, EmailManagerInlineForm, EmailForwardForm
+from sso.emails.models import Email, EmailForward, EmailAlias, GroupEmail, GroupEmailManager, PERM_EVERYBODY  # , PERM_DWB, PERM_VIP_DWB
+from sso.forms.helpers import get_optional_inline_formset
 from sso.views import main
 from sso.views.generic import FormsetsUpdateView, ListView, ViewChoicesFilter, SearchFilter, ViewButtonFilter
-from sso.forms.helpers import get_optional_inline_formset
-from sso.emails.models import Email, EmailForward, EmailAlias, GroupEmail, GroupEmailManager, PERM_EVERYBODY  # , PERM_DWB, PERM_VIP_DWB
-from sso.emails.forms import EmailAliasInlineForm, GroupEmailForm, EmailManagerInlineForm, EmailForwardForm
 
-import logging
 logger = logging.getLogger(__name__)
 
 

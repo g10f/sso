@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 import os
-from django.core.urlresolvers import reverse
+
+from selenium.webdriver.chrome.webdriver import WebDriver
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-# from selenium.webdriver.firefox.webdriver import WebDriver
-# from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-from selenium.webdriver.chrome.webdriver import WebDriver
+from django.urls import reverse
+
 
 class SSOSeleniumTests(StaticLiveServerTestCase):
     # fixtures = ['user_data.json']

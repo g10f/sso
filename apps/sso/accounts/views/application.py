@@ -1,37 +1,37 @@
 # -*- coding: utf-8 -*-
-from datetime import timedelta
 import logging
+from datetime import timedelta
+
 from django.utils.six.moves.urllib.parse import urlunsplit
 
-from django.db.models.expressions import F
 from django.conf import settings
-from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
-from django.forms import inlineformset_factory
-from django.shortcuts import render
-from django.http import HttpResponseRedirect
-from django.core.urlresolvers import reverse, reverse_lazy
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import permission_required, user_passes_test
-from django.views.generic import DeleteView
-from django.utils.decorators import method_decorator
-from django.utils.translation import ugettext_lazy as _
+from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
+from django.db.models.expressions import F
+from django.forms import inlineformset_factory
+from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
+from django.shortcuts import render
+from django.urls import reverse, reverse_lazy
+from django.utils.decorators import method_decorator
 from django.utils.encoding import force_text
+from django.utils.translation import ugettext_lazy as _
+from django.views.generic import DeleteView
+from filter import AdminRegionFilter, ApplicationRoleFilter, CenterFilter, CountryFilter, IsActiveFilter, RoleProfileFilter, UserSearchFilter
 from l10n.models import Country
-from sso.oauth2.models import allowed_hosts
+from sso.accounts.email import send_account_created_email
+from sso.accounts.forms import UserAddForm, UserProfileForm, UserEmailForm, AppAdminUserProfileForm, CenterProfileForm
+from sso.accounts.models import User, UserEmail, ApplicationRole
 from sso.auth.decorators import admin_login_required
+from sso.forms.helpers import ChangedDataList, log_change, ErrorList
+from sso.oauth2.models import allowed_hosts
+from sso.organisations.models import Organisation, is_validation_period_active
+from sso.utils.url import get_safe_redirect_uri
 from sso.views import main
 from sso.views.generic import ListView
-from sso.accounts.models import User, UserEmail, ApplicationRole
-from sso.accounts.email import send_account_created_email
-from sso.organisations.models import Organisation, is_validation_period_active
-from sso.accounts.forms import UserAddForm, UserProfileForm, UserEmailForm, AppAdminUserProfileForm, CenterProfileForm
-from sso.forms.helpers import ChangedDataList, log_change, ErrorList
-from filter import AdminRegionFilter, ApplicationRoleFilter, CenterFilter, CountryFilter, IsActiveFilter, RoleProfileFilter, UserSearchFilter
 from sso.views.main import OrderByWithNulls
-from sso.utils.url import get_safe_redirect_uri
-
 
 logger = logging.getLogger(__name__)
     

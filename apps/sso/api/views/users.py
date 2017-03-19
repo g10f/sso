@@ -1,35 +1,33 @@
 # -*- coding: utf-8 -*-
 import json
+import logging
 
-from django.utils.crypto import get_random_string
-
-from django.views.generic import View
-from django.views.decorators.vary import vary_on_headers
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.cache import cache_control
-from django.core.urlresolvers import reverse
-from django.core.exceptions import ObjectDoesNotExist
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
-from django.db import transaction
-from django.utils.translation import ugettext as _
-from django.template.defaultfilters import date
 from sorl.thumbnail import get_thumbnail
 
-from sso.accounts.models import ApplicationRole, User
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db import transaction
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from django.template.defaultfilters import date
+from django.urls import reverse
+from django.utils.crypto import get_random_string
+from django.utils.decorators import method_decorator
+from django.utils.translation import ugettext as _
+from django.views.decorators.cache import cache_control
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.vary import vary_on_headers
+from django.views.generic import View
 from sso.accounts.email import send_account_created_email
-from sso.organisations.models import Organisation
-from sso.registration import default_username_generator
-from sso.oauth2.decorators import client_required
-from sso.utils.url import base_url, update_url, absolute_url
+from sso.accounts.models import ApplicationRole, User
 from sso.api.decorators import api_user_passes_test, catch_errors
 from sso.api.response import JsonHttpResponse
-from sso.utils.parse import parse_datetime_with_timezone_support
+from sso.oauth2.decorators import client_required
+from sso.organisations.models import Organisation
+from sso.registration import default_username_generator
 from sso.utils.http import *  # @UnusedWildImport
-
-import logging
+from sso.utils.parse import parse_datetime_with_timezone_support
+from sso.utils.url import base_url, update_url, absolute_url
 
 logger = logging.getLogger(__name__)
 
