@@ -7,7 +7,8 @@ from sorl import thumbnail
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.gis import measure
-from django.contrib.gis.db import models as gis_models
+from django.contrib.gis.db.models import PointField, PolygonField
+from django.contrib.gis.db.models.functions import Distance
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db import models
@@ -50,17 +51,17 @@ class TzWorld(models.Model):
     """
     gid = models.AutoField(primary_key=True)
     tzid = models.CharField(max_length=30, blank=True)
-    geom = gis_models.PolygonField(blank=True, null=True)
-    objects = gis_models.GeoManager()
+    geom = PolygonField(blank=True, null=True)
 
     class Meta:
         # managed = False
         db_table = 'tz_world'
+        required_db_features = ['gis_enabled']
 
 
 class CountryGroup(AbstractBaseModel):
     name = models.CharField(_("name"), max_length=255)
-    email = models.OneToOneField(Email, verbose_name=_("email address"), blank=True, null=True, limit_choices_to={'email_type': COUNTRY_GROUP_EMAIL_TYPE})
+    email = models.OneToOneField(Email, on_delete=models.SET_NULL, verbose_name=_("email address"), blank=True, null=True, limit_choices_to={'email_type': COUNTRY_GROUP_EMAIL_TYPE})
     homepage = models.URLField(_("homepage"), blank=True,)
 
     class Meta(AbstractBaseModel.Meta):
@@ -126,8 +127,8 @@ class ExtraOrganisationCountryManager(models.Model):
 
 
 class OrganisationCountry(AbstractBaseModel, ExtraOrganisationCountryManager):
-    association = models.ForeignKey(Association, verbose_name=_("association"), default=default_association, limit_choices_to={'is_active': True})
-    country = models.ForeignKey(Country, verbose_name=_("country"), limit_choices_to={'active': True})
+    association = models.ForeignKey(Association, on_delete=models.CASCADE, verbose_name=_("association"), default=default_association, limit_choices_to={'is_active': True})
+    country = models.ForeignKey(Country, on_delete=models.CASCADE, verbose_name=_("country"), limit_choices_to={'active': True})
     country_groups = models.ManyToManyField(CountryGroup, blank=True, related_name='countries')
     homepage = models.URLField(_("homepage"), blank=True,)
     email = models.ForeignKey(Email, verbose_name=_("email address"), blank=True, null=True, limit_choices_to={'email_type': COUNTRY_EMAIL_TYPE},
@@ -212,16 +213,11 @@ def get_near_organisations(current_point, distance_from_point=None, qs=None, ord
         organisations = Organisation.objects.all()
     if distance_from_point:
         organisations = organisations.filter(location__distance_lt=(current_point, measure.D(**distance_from_point)))
-    organisations = organisations.distance(current_point)
+    organisations = organisations.annotate(distance=Distance('location', current_point))
     if order:
-        return organisations.distance(current_point).order_by('distance')
+        return organisations.order_by('distance')
     else:
-        return organisations.distance(current_point)
-
-
-class GeoManager(gis_models.GeoManager):
-    def get_by_natural_key(self, uuid):
-        return self.get(uuid=uuid)
+        return organisations
 
 
 class Organisation(AbstractBaseModel):
@@ -252,7 +248,7 @@ class Organisation(AbstractBaseModel):
     name = models.CharField(_("name"), max_length=255)
     name_native = models.CharField(_("name in native language"), max_length=255, blank=True)
     organisation_country = models.ForeignKey(OrganisationCountry, verbose_name=_("country"), null=True, limit_choices_to={'is_active': True})
-    admin_region = ChainedForeignKey(AdminRegion, chained_field='organisation_country', chained_model_field="organisation_country", verbose_name=_("admin region"), blank=True, null=True,
+    admin_region = ChainedForeignKey(AdminRegion, chained_field='organisation_country', chained_model_field="organisation_country", on_delete=models.SET_NULL, verbose_name=_("admin region"), blank=True, null=True,
                                      limit_choices_to={'is_active': True})
     email = models.ForeignKey(Email, verbose_name=_("email address"), blank=True, null=True, limit_choices_to={'email_type': CENTER_EMAIL_TYPE},
                               on_delete=models.SET_NULL)
@@ -266,7 +262,7 @@ class Organisation(AbstractBaseModel):
     centerid = models.IntegerField(blank=True, help_text=_("id from the previous center DB (obsolete)"), null=True)
     founded = models.DateField(_("founded"), blank=True, null=True)
     coordinates_type = models.CharField(_('coordinates type'), max_length=1, choices=COORDINATES_TYPE_CHOICES, default='3', db_index=True, blank=True)
-    location = gis_models.PointField(_("location"), geography=True, blank=True, null=True)
+    location = PointField(_("location"), geography=True, blank=True, null=True)
     timezone = models.CharField(_('timezone'), blank=True, max_length=254)
     is_active = models.BooleanField(_('active'),
                                     default=True,
@@ -283,13 +279,13 @@ class Organisation(AbstractBaseModel):
                                                help_text=_('Designates whether this organisation uses the new user activation process.'),
                                                default=False)
     neighbour_distance = models.DecimalField(_("neighbour distance"), help_text=_('Distance used for neighbour calculations [km].'), max_digits=8, decimal_places=3, blank=True, null=True)
-    objects = GeoManager()
 
     class Meta(AbstractBaseModel.Meta):
         permissions = (
             ("access_all_organisations", "Can access all organisations"),
             # ("read_organisation", "Can read organisation data"),
         )
+        required_db_features = ['gis_enabled']
         ordering = ['name']
         verbose_name = _('Organisation')
         verbose_name_plural = _('Organisations')
@@ -426,7 +422,7 @@ def generate_filename(instance, filename):
 
 class OrganisationPicture(AbstractBaseModel):
     MAX_PICTURE_SIZE = 5242880  # 5 MB
-    organisation = models.ForeignKey(Organisation)
+    organisation = models.ForeignKey(Organisation, on_delete=models.CASCADE)
     title = models.CharField(_("title"), max_length=255, blank=True)
     description = models.TextField(_("description"), blank=True, max_length=2048)
     picture = thumbnail.ImageField(_('picture'), upload_to=generate_filename)  # , storage=MediaStorage())
@@ -444,7 +440,7 @@ class OrganisationAddress(AbstractBaseModel, AddressMixin):
         ('postal', pgettext_lazy('organisation address', 'Postal Address'))
     ]
     address_type = models.CharField(_("address type"), choices=ADDRESSTYPE_CHOICES, max_length=20)
-    organisation = models.ForeignKey(Organisation)
+    organisation = models.ForeignKey(Organisation, on_delete=models.CASCADE)
     careof = models.CharField(_('care of (c/o)'), default='', blank=True, max_length=80)
 
     class Meta(AbstractBaseModel.Meta, AddressMixin.Meta):
@@ -465,7 +461,7 @@ class OrganisationPhoneNumber(AbstractBaseModel, PhoneNumberMixin):
         ('other2', _('Other#2')),
     ]   
     phone_type = models.CharField(_("phone type"), help_text=_('Mobile, home, office, etc.'), choices=PHONE_CHOICES, max_length=20)
-    organisation = models.ForeignKey(Organisation)
+    organisation = models.ForeignKey(Organisation, on_delete=models.CASCADE)
 
     class Meta(AbstractBaseModel.Meta, PhoneNumberMixin.Meta):
         # unique_together = (("organisation", "phone_type"),)

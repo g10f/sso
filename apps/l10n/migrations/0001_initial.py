@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='adminarea',
             name='country',
-            field=models.ForeignKey(to='l10n.Country'),
+            field=models.ForeignKey(to='l10n.Country', on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]

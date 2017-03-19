@@ -19,37 +19,37 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='organisationchange',
             name='organisation',
-            field=models.ForeignKey(to='organisations.Organisation'),
+            field=models.ForeignKey(to='organisations.Organisation', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='organisationchange',
             name='user',
-            field=models.OneToOneField(to=settings.AUTH_USER_MODEL),
+            field=models.OneToOneField(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='onetimemessage',
             name='user',
-            field=models.ForeignKey(to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='applicationrole',
             name='application',
-            field=models.ForeignKey(to='accounts.Application'),
+            field=models.ForeignKey(to='accounts.Application', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='applicationrole',
             name='role',
-            field=models.ForeignKey(to='accounts.Role'),
+            field=models.ForeignKey(to='accounts.Role', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='applicationadmin',
             name='admin',
-            field=models.ForeignKey(to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='applicationadmin',
             name='application',
-            field=models.ForeignKey(verbose_name='application', to='accounts.Application'),
+            field=models.ForeignKey(verbose_name='application', to='accounts.Application', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='user',
@@ -69,7 +69,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='user',
             name='created_by_user',
-            field=models.ForeignKey(related_name='+', verbose_name='created by', to=settings.AUTH_USER_MODEL, null=True),
+            field=models.ForeignKey(related_name='+', verbose_name='created by', to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='user',
@@ -79,7 +79,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='user',
             name='last_modified_by_user',
-            field=current_user.models.CurrentUserField(related_name='+', verbose_name='last modified by', to=settings.AUTH_USER_MODEL, null=True),
+            field=current_user.models.CurrentUserField(related_name='+', verbose_name='last modified by', to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='user',

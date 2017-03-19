@@ -1,29 +1,29 @@
 from __future__ import absolute_import  # we have utils at root and relativ path
 
-from binascii import unhexlify
 import json
 import logging
 import time
+from binascii import unhexlify
 
 import requests
 from u2flib_server import u2f_v2
 
+from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
-from django.conf import settings
-from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
-from sso.models import AbstractBaseModel
-from sso.utils.translation import string_format
+from django.utils.translation import ugettext_lazy as _
+from sso.auth.forms import AuthenticationTokenForm, U2FForm
 from sso.auth.oath import TOTP
 from sso.auth.utils import random_hex, hex_validator
-from sso.auth.forms import AuthenticationTokenForm, U2FForm
+from sso.models import AbstractBaseModel
+from sso.utils.translation import string_format
 
 logger = logging.getLogger(__name__)
 
 
 class Device(AbstractBaseModel):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, help_text="The user that this device belongs to.")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, help_text="The user that this device belongs to.")
     name = models.CharField(max_length=255, blank=True, help_text="The human-readable name of this device.")
     confirmed = models.BooleanField(default=False, help_text="Is this device ready for use?")
     created_at = models.DateTimeField(_('created at'), default=timezone.now)
@@ -78,8 +78,8 @@ def key_validator(value):
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='sso_auth_profile')
-    default_device = models.ForeignKey(Device)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='sso_auth_profile')
+    default_device = models.ForeignKey(Device, on_delete=models.CASCADE)
     is_otp_enabled = models.BooleanField(_('is otp enabled'), default=False)
 
 

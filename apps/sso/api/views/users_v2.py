@@ -71,7 +71,7 @@ API_USER_MAPPING = {
     'uuid': 'uuid',  # this value is created in JsonDetailView.create from the url
 }
 API_ADDRESS_MAP = {
-    'address_type': {'name': 'address_type', 'validate': lambda x: len(x) > 0, 'default': UserAddress.ADDRESSTYPE_CHOICES[0][0]}, 
+    'address_type': {'name': 'address_type', 'validate': lambda x: len(x) > 0, 'default': UserAddress.ADDRESSTYPE_CHOICES[0][0]},
     'addressee': {'name': 'addressee', 'validate': lambda x: len(x) > 0},
     'street_address': 'street_address',
     'city': {'name': 'city', 'validate': lambda x: len(x) > 0},
@@ -90,7 +90,7 @@ API_PHONE_MAP = {
 
 class UserMixin(object):
     model = User
-    
+
     def get_object_data(self, request, obj, details=False):
         scopes = request.scopes
         base = base_url(request)
@@ -137,26 +137,26 @@ class UserMixin(object):
                     'name': organisation.name,
                     '@id': "%s%s" % (base, reverse('api:v2_organisation', kwargs={'uuid': organisation.uuid.hex}))
                 } for organisation in obj.organisations.all().prefetch_related('organisation_country__country')
-            }
+                }
             data['admin_regions'] = {
                 region.uuid.hex: {
                     'country': region.organisation_country.country.iso2_code,
                     'name': region.name,
                     '@id': "%s%s" % (base, reverse('api:v2_region', kwargs={'uuid': region.uuid.hex}))
                 } for region in obj.admin_regions.all().prefetch_related('organisation_country__country')
-            }
+                }
             data['admin_countries'] = {
                 organisation_country.country.iso2_code: {
                     'code': organisation_country.country.iso2_code,
                     'name': organisation_country.country.printable_name,
                     '@id': "%s%s" % (base, reverse('api:v2_country', kwargs={'iso2_code': organisation_country.country.iso2_code}))
                 } for organisation_country in obj.admin_organisation_countries.all()
-            }
+                }
 
             if 'role' in scopes:
                 applications = {}
                 applicationroles = obj.get_applicationroles()
-                     
+
                 for application in obj.get_apps():
                     application_data = {'order': application.order,
                                         'link': {'href': application.url, 'title': application.title,
@@ -164,10 +164,10 @@ class UserMixin(object):
                     for applicationrole in applicationroles:
                         if applicationrole.application == application:
                             application_data['roles'].append(applicationrole.role.name)
-                    
+
                     applications[application.uuid.hex] = application_data
                 data['apps'] = applications
-            
+
             if 'address' in scopes:
                 data['addresses'] = {
                     address.uuid.hex: {
@@ -181,8 +181,8 @@ class UserMixin(object):
                         'region': address.region,
                         'primary': address.primary
                     } for address in obj.useraddress_set.all()
-                }
-            
+                    }
+
             if 'phone' in scopes:
                 data['phone_numbers'] = {
                     phone_number.uuid.hex: {
@@ -190,7 +190,7 @@ class UserMixin(object):
                         'phone': phone_number.phone,
                         'primary': phone_number.primary
                     } for phone_number in obj.userphonenumber_set.all()
-                }
+                    }
         return data
 
 
@@ -267,7 +267,7 @@ def create_permission(request, obj=None):
         return False, 'You have no \'accounts.add_user\' permission'
 
 
-class   UserDetailView(UserMixin, JsonDetailView):
+class UserDetailView(UserMixin, JsonDetailView):
     http_method_names = ['get', 'put', 'delete', 'options']  #
     create_object_with_put = True
     permissions_tests = {
@@ -280,18 +280,18 @@ class   UserDetailView(UserMixin, JsonDetailView):
         'replace': {'@type': 'ReplaceResourceOperation', 'method': 'PUT'},
         'delete': {'@type': 'DeleteResourceOperation', 'method': 'DELETE'},
     }
-    
+
     @method_decorator(csrf_exempt)  # required here because the middleware will be executed before the view function
     @method_decorator(condition(last_modified_and_etag_func=get_last_modified_and_etag))
     def dispatch(self, request, *args, **kwargs):
-        return super(UserDetailView, self).dispatch(request, *args, **kwargs)       
+        return super(UserDetailView, self).dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
         return super(UserDetailView, self).get_queryset().prefetch_related('useraddress_set', 'userphonenumber_set')
 
     def get_object_data(self, request, obj):
         return super(UserDetailView, self).get_object_data(request, obj, details=True)
-    
+
     def _update_user_organisation(self, data):
         request = self.request
         if 'organisations' in data:
@@ -301,7 +301,7 @@ class   UserDetailView(UserMixin, JsonDetailView):
                 denied_organisations = organisations.exclude(id__in=allowed_organisations.values_list('id', flat=True))
                 raise ValueError(_("You are not allowed to add users to %s.") % denied_organisations)
 
-            self.object.organisations = organisations
+            self.object.organisations.set(organisations)
 
     def _save_user_details(self, data, name, mapping, cls, update_existing=True):
         """
@@ -316,7 +316,7 @@ class   UserDetailView(UserMixin, JsonDetailView):
         scopes = self.request.scopes
         if SCOPE_MAPPING[name] not in scopes:
             raise ValueError("required scope \"%s\" is missing in %s." % (SCOPE_MAPPING[name], scopes))
-            
+
         new_object_keys = []
         changed_object_keys = []
         # update existing
@@ -333,37 +333,37 @@ class   UserDetailView(UserMixin, JsonDetailView):
             cls.objects.filter(user=self.object).exclude(uuid__in=changed_object_keys).delete()
         else:
             new_object_keys = data[name].keys()
-            
+
         # add new 
         for key in new_object_keys:
             value = data[name][key]
             obj_data = map_dict2dict(mapping, value, with_defaults=True)
             obj_data['uuid'] = UUID(key)
             obj_data['user'] = self.object
-            cls.objects.create(**obj_data)        
+            cls.objects.create(**obj_data)
 
     def save_object_data(self, request, data):
         obj = self.object
 
         object_data = map_dict2dict(API_USER_MAPPING, data)
         object_data['is_active'] = True
-        
+
         # if 'email' not in object_data:
         #    raise ValueError(_("E-mail value is missing"))
         # TODO: redesign email handling
         # if User.objects.by_email(object_data['email']).exclude(pk=obj.pk).exists():
         #     raise ValueError(_("A user with that email already exists."))
-        
+
         update_object_from_dict(obj, object_data)
-        
+
         self._update_user_organisation(data)
         self._save_user_details(data, 'addresses', API_ADDRESS_MAP, UserAddress)
         self._save_user_details(data, 'phone_numbers', API_PHONE_MAP, UserPhoneNumber)
-        
+
     def create_object(self, request, data):
         """
         set create_object_with_put=True
-        """        
+        """
         if 'email' not in data:
             raise ValueError(_("E-mail value is missing"))
         try:
@@ -376,7 +376,7 @@ class   UserDetailView(UserMixin, JsonDetailView):
 
         if 'username' not in object_data:
             object_data['username'] = default_username_generator(capfirst(object_data['first_name']), capfirst(object_data['last_name']))
-        
+
         self.object = self.model(**object_data)
         self.object.set_password(get_random_string(40))
         self.object.save()
@@ -393,7 +393,7 @@ class   UserDetailView(UserMixin, JsonDetailView):
                         initial_application_roles += [application_role]
             self.object.application_roles = initial_application_roles
 
-        self.object.role_profiles = [User.get_default_role_profile()]
+        self.object.role_profiles.set([User.get_default_role_profile()])
 
         self.object.create_primary_email(email=data['email'])
 
@@ -404,7 +404,7 @@ class   UserDetailView(UserMixin, JsonDetailView):
 
         self._save_user_details(data, 'addresses', API_ADDRESS_MAP, UserAddress, update_existing=False)
         self._save_user_details(data, 'phone_numbers', API_PHONE_MAP, UserPhoneNumber, update_existing=False)
-        
+
         send_account_created_email(self.object, request)
         return self.object
 
@@ -414,18 +414,17 @@ class   UserDetailView(UserMixin, JsonDetailView):
 
 
 class MyDetailView(UserDetailView):
-    
     operation = {
         'replace': {'@type': 'ReplaceResourceOperation', 'method': 'PUT'},
     }
 
     @method_decorator(condition(last_modified_and_etag_func=get_last_modified_and_etag_for_me))
     def dispatch(self, request, *args, **kwargs):
-        return super(UserDetailView, self).dispatch(request, *args, **kwargs)       
+        return super(UserDetailView, self).dispatch(request, *args, **kwargs)
 
     def get_object(self, queryset=None):
         return self.request.user
-    
+
 
 class GlobalNavigationView(UserDetailView):
     # TODO: result is cached for different languages
@@ -447,11 +446,11 @@ class GlobalNavigationView(UserDetailView):
         for application in obj.get_apps():
             application_data = {
                 'id': application.uuid.hex,
-                'order': application.order, 
+                'order': application.order,
                 'link': {'href': application.url, 'title': application.title, 'global_navigation': application.global_navigation}
             }
             applications.append(application_data)
-        
+
         data = {
             'id': obj.uuid.hex,
             'apps': applications,
@@ -469,7 +468,7 @@ class MyGlobalNavigationView(GlobalNavigationView):
     operations = {}
 
     @method_decorator(condition(last_modified_and_etag_func=get_last_modified_and_etag_for_me))
-    @method_decorator(cache_control(must_revalidate=True, max_age=60 * 5)) 
+    @method_decorator(cache_control(must_revalidate=True, max_age=60 * 5))
     def dispatch(self, request, *args, **kwargs):
         return super(UserDetailView, self).dispatch(request, *args, **kwargs)
 
@@ -506,18 +505,18 @@ class UserList(UserMixin, JsonListView):
             return False, "session too old'"
 
         return True, None
-    
+
     def get_operations(self):
         base_uri = base_url(self.request)
         return {
             'create': {'@type': 'CreateResourceOperation', 'method': 'PUT', 'template': "%s%s%s" % (base_uri, reverse('api:v2_users'), '{uuid}/')}
         }
-    
+
     def get_queryset(self):
         qs = super(UserList, self).get_queryset().prefetch_related('useraddress_set', 'userphonenumber_set', 'useremail_set').distinct()
         qs = qs.order_by('username')
         qs = self.request.user.filter_administrable_users(qs)
-    
+
         is_active = self.request.GET.get('is_active', None)
         if is_active:
             is_active = is_active in ['True', 'true', '1', 'yes', 'Yes', 'Y', 'y']
@@ -525,35 +524,35 @@ class UserList(UserMixin, JsonListView):
 
         username = self.request.GET.get('q', None)
         if username:
-            qs = qs.filter(Q(first_name__icontains=username) | Q(last_name__icontains=username)) 
+            qs = qs.filter(Q(first_name__icontains=username) | Q(last_name__icontains=username))
 
         country_group_id = self.request.GET.get('country_group_id', None)
         if country_group_id:
             qs = qs.filter(organisations__organisation_country__country_groups__uuid=country_group_id)
-        
+
         country = self.request.GET.get('country', None)
         if country:
             qs = qs.filter(organisations__organisation_country__country__iso2_code__iexact=country)
-        
+
         region_id = self.request.GET.get('region_id', None)
         if region_id:
             qs = qs.filter(organisations__admin_region__uuid=region_id)
-        
+
         org_id = self.request.GET.get('org_id', None)
         if org_id:
             qs = qs.filter(organisations__uuid=org_id)
-        
+
         app_uuid = self.request.GET.get('app_id', None)
         if app_uuid:
             qs = qs.filter(application_roles__application__uuid=app_uuid)
-        
+
         modified_since = self.request.GET.get('modified_since', None)
         if modified_since:  # parse modified_since
             parsed = parse_datetime_with_timezone_support(modified_since)
             if parsed is None:
                 raise ValueError("can not parse %s" % modified_since)
             qs = qs.filter(Q(last_modified__gte=parsed) | Q(useraddress__last_modified__gte=parsed) | Q(userphonenumber__last_modified__gte=parsed))
-            
+
         return qs
 
 

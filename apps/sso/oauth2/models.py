@@ -1,18 +1,20 @@
 # -*- coding: utf-8 -*-
+import logging
+
 from django.utils.six.moves.urllib.parse import urlparse, urlsplit, urlunsplit
-from django.core.cache import cache
-from django.db import models
-from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
+
 from django.conf import settings
+from django.core.cache import cache
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import models
 from django.http import QueryDict
+from django.urls import reverse
+from django.utils.crypto import get_random_string
 from django.utils.translation import ugettext_lazy as _
 from sso.accounts.models import Application
 from sso.auth.models import Device
 from sso.models import AbstractBaseModel, AbstractBaseModelManager
-from django.utils.crypto import get_random_string
 
-import logging
 logger = logging.getLogger(__name__)
 
 
@@ -103,11 +105,11 @@ def allowed_hosts():
 
 class Client(AbstractBaseModel):
     name = models.CharField(_("name"), max_length=255)
-    application = models.ForeignKey(Application, verbose_name=_('application'), blank=True, null=True)
+    application = models.ForeignKey(Application, on_delete=models.SET_NULL, verbose_name=_('application'), blank=True, null=True)
     redirect_uris = models.TextField(_('redirect uris'), blank=True)
     default_redirect_uri = models.CharField(_('default redirect uri'), max_length=2047, blank=True)
     client_secret = models.CharField(_('client secret'), max_length=2047, blank=True, default=get_default_secret)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'), null=True, blank=True, limit_choices_to={'is_service': True},
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, verbose_name=_('user'), null=True, blank=True, limit_choices_to={'is_service': True},
                              help_text=_("Associated user, required for Client Credentials Grant"))
     type = models.CharField(_('type'), max_length=255, choices=CLIENT_TYPES, default='web')
     # http://tools.ietf.org/html/rfc6749#section-3.3
@@ -136,8 +138,8 @@ class AuthorizationCode(models.Model):
     """
     OAuth2 Authorization Code
     """
-    client = models.ForeignKey(Client, verbose_name=_('client'))
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'))
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name=_('client'))
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name=_('user'))
     otp_device = models.ForeignKey(Device, null=True, on_delete=models.SET_NULL)
     code = models.CharField(_('code'), max_length=100, unique=True)
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)
@@ -158,8 +160,8 @@ class BearerToken(models.Model):
     """
     OAuth2 Bearer Token
     """
-    client = models.ForeignKey(Client, verbose_name=_('client'))
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'))
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name=_('client'))
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name=_('user'))
     access_token = models.CharField(_('access token'), max_length=2048, unique=True)
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)
     
@@ -175,7 +177,7 @@ class RefreshToken(models.Model):
     """
     A RefreshToken instance represents a token that can be swapped for a new access token when it expires.
     """
-    bearer_token = models.OneToOneField(BearerToken, verbose_name=_('bearer token'), related_name='refresh_token')
+    bearer_token = models.OneToOneField(BearerToken, on_delete=models.CASCADE, verbose_name=_('bearer token'), related_name='refresh_token')
     token = models.CharField(_('token'), max_length=2048, unique=True)
     # otp_device = models.ForeignKey(Device, null=True, on_delete=models.SET_NULL)
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)

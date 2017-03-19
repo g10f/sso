@@ -273,7 +273,7 @@ class UserDetailView(View):
         organisations = Organisation.objects.filter(uuid__in=userinfo['organisations'].keys())
         
         if user:
-            user.organisations = organisations
+            user.organisations.set(organisations)
             user.is_active = True
             user.save()                          
         else:

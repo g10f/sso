@@ -28,9 +28,9 @@ class Migration(migrations.Migration):
                 ('known_person2_last_name', models.CharField(max_length=100, verbose_name='last name of a another known person', blank=True)),
                 ('check_back', models.BooleanField(default=False, help_text='Designates if there are open questions to check.', verbose_name='check back')),
                 ('is_access_denied', models.BooleanField(default=False, help_text='Designates if access is denied to the user.', db_index=True, verbose_name='access denied')),
-                ('last_modified_by_user', current_user.models.CurrentUserField(related_name='registrationprofile_last_modified_by', verbose_name='last modified by', to=settings.AUTH_USER_MODEL, null=True)),
-                ('user', models.OneToOneField(verbose_name='user', to=settings.AUTH_USER_MODEL)),
-                ('verified_by_user', models.ForeignKey(related_name='registrationprofile_verified_by', verbose_name='verified by', blank=True, to=settings.AUTH_USER_MODEL, null=True)),
+                ('last_modified_by_user', current_user.models.CurrentUserField(related_name='registrationprofile_last_modified_by', verbose_name='last modified by', to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)),
+                ('user', models.OneToOneField(verbose_name='user', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
+                ('verified_by_user', models.ForeignKey(related_name='registrationprofile_verified_by', verbose_name='verified by', blank=True, to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'registration profile',

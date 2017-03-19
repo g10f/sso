@@ -22,8 +22,8 @@ class ChainedForeignKey(ForeignKey):
     def formfield(self, **kwargs):
         defaults = {
             'form_class': form_fields.ChainedModelChoiceField,
-            'queryset': self.rel.to._default_manager.complex_filter(self.rel.limit_choices_to),
-            'to_field_name': self.rel.field_name,
+            'queryset': self.remote_field.model._default_manager.complex_filter(self.remote_field.limit_choices_to),
+            'to_field_name': self.remote_field.field_name,
             'app_name': self.app_name,
             'model_name': self.model_name,
             'chain_field': self.chain_field,

@@ -57,8 +57,8 @@ class Migration(migrations.Migration):
                 ('scopes', models.CharField(default=b'openid profile email', help_text="Allowed space-delimited access token scopes ('openid', 'profile', 'email', 'role', 'offline_access', 'address', 'phone', 'users', 'picture')", max_length=512, verbose_name='scopes')),
                 ('is_active', models.BooleanField(default=True, help_text='Designates whether this client should be treated as active. Unselect this instead of deleting clients.', verbose_name='active')),
                 ('notes', models.TextField(max_length=2048, verbose_name='Notes', blank=True)),
-                ('application', models.ForeignKey(verbose_name='application', blank=True, to='accounts.Application', null=True)),
-                ('user', models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, help_text='Associated user, required for Client Credentials Grant', null=True, verbose_name='user')),
+                ('application', models.ForeignKey(verbose_name='application', blank=True, to='accounts.Application', null=True, on_delete=models.CASCADE)),
+                ('user', models.ForeignKey(blank=True, to=settings.AUTH_USER_MODEL, help_text='Associated user, required for Client Credentials Grant', null=True, verbose_name='user', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ['name'],
@@ -72,27 +72,27 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('token', models.CharField(unique=True, max_length=2048, verbose_name='token')),
                 ('created_at', models.DateTimeField(auto_now_add=True, verbose_name='created at')),
-                ('bearer_token', models.OneToOneField(related_name='refresh_token', verbose_name='bearer token', to='oauth2.BearerToken')),
+                ('bearer_token', models.OneToOneField(related_name='refresh_token', verbose_name='bearer token', to='oauth2.BearerToken', on_delete=models.CASCADE)),
             ],
         ),
         migrations.AddField(
             model_name='bearertoken',
             name='client',
-            field=models.ForeignKey(verbose_name='client', to='oauth2.Client'),
+            field=models.ForeignKey(verbose_name='client', to='oauth2.Client', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='bearertoken',
             name='user',
-            field=models.ForeignKey(verbose_name='user', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(verbose_name='user', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='authorizationcode',
             name='client',
-            field=models.ForeignKey(verbose_name='client', to='oauth2.Client'),
+            field=models.ForeignKey(verbose_name='client', to='oauth2.Client', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='authorizationcode',
             name='user',
-            field=models.ForeignKey(verbose_name='user', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(verbose_name='user', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
         ),
     ]
