@@ -3,7 +3,7 @@
 import os
 import sys
 from uuid import UUID
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 
 try:
     RUNNING_DEVSERVER = (sys.argv[1] == 'runserver')
@@ -133,14 +133,12 @@ if DEBUG:
     LOADERS = [
         'django.template.loaders.filesystem.Loader',
         'django.template.loaders.app_directories.Loader',
-        'django.template.loaders.eggs.Loader',
     ]
 else:
     LOADERS = [
         ('django.template.loaders.cached.Loader', (
             'django.template.loaders.filesystem.Loader',
             'django.template.loaders.app_directories.Loader',
-            'django.template.loaders.eggs.Loader',
         )),
     ]
 
@@ -205,6 +203,7 @@ INSTALLED_APPS = [
     'sso.registration',
     'sso.auth',
     'sso.oauth2',
+    'sso.api',
 ]
 
 THUMBNAIL_QUALITY = 100

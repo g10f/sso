@@ -2,17 +2,17 @@
 import datetime
 import re
 
-from django import forms 
-from django.utils import datetime_safe
-from django.utils.dates import MONTHS
-from django.utils.formats import get_format
-from django.utils.safestring import mark_safe
-from django.conf import settings
-
 from sorl.thumbnail.shortcuts import get_thumbnail
-from django.utils.encoding import force_text
-from django.utils.html import format_html
+
+from django import forms
+from django.conf import settings
+from django.utils import datetime_safe
 from django.utils import six
+from django.utils.dates import MONTHS
+from django.utils.encoding import force_text
+from django.utils.formats import get_format
+from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
 
@@ -20,7 +20,7 @@ class Widget(forms.Widget):
     def __init__(self, attrs=None, **kwargs):
         # add form-control class
         if attrs is None:
-            attrs = {}    
+            attrs = {}
         css_classes = attrs.get('class', '').split()
         css_classes.append('form-control')
         attrs['class'] = ' '.join(css_classes)
@@ -36,7 +36,7 @@ class Widget(forms.Widget):
             self.attrs['required'] = ''
         """
 
-    
+
 def add_to_css_class(classes, new_class):
     new_class = new_class.strip()
     if new_class:
@@ -53,6 +53,7 @@ def add_to_css_class(classes, new_class):
         classes = u" ".join(classes)
     return classes
 
+
 """
 class StaticInput(forms.TextInput):
     def render(self, name, value, attrs=None):
@@ -68,11 +69,12 @@ class StaticInput(forms.TextInput):
         return mark_safe(base + u'<p class="%s">%s</p>' % (klass, value))
 """
 
+
 class ReadOnlyWidget(forms.Widget):
     def render(self, name, value, attrs=None):
         if attrs is None:
             attrs = {}
-                
+
         klass = add_to_css_class(self.attrs.pop('class', ''), 'form-control-static')
         klass = add_to_css_class(klass, attrs.pop('class', ''))
         return mark_safe(u'<p class="%s">%s</p>' % (klass, value if value is not None else ''))
@@ -85,13 +87,13 @@ class YesNoWidget(ReadOnlyWidget):
         else:
             value = '<span class="glyphicon glyphicon-unchecked""></span>'
         return super(YesNoWidget, self).render(name, value, attrs)
-            
-    
+
+
 class ReadOnlyField(forms.Field):
     widget = ReadOnlyWidget
 
     def __init__(self, *args, **kwargs):
-        kwargs.setdefault("required", False)        
+        kwargs.setdefault("required", False)
         super(ReadOnlyField, self).__init__(*args, **kwargs)
 
     def bound_data(self, data, initial):
@@ -124,16 +126,16 @@ class ImageWidget(forms.ClearableFileInput):
                 pass
             else:
                 output = (
-                    u'<div><a href="%s">'
-                    u'<img class="img-thumbnail" src="%s" alt="%s"></a></div>%s'
-                ) % (value.url, mini.url, name, output)
+                             u'<div><a href="%s">'
+                             u'<img class="img-thumbnail" src="%s" alt="%s"></a></div>%s'
+                         ) % (value.url, mini.url, name, output)
 
         return mark_safe(output)
 
 
 class CheckboxFieldRenderer(forms.widgets.ChoiceFieldRenderer):
     choice_input_class = forms.widgets.CheckboxChoiceInput
-    
+
     def render(self):
         """
         Outputs a list of <div> for this set of choice fields.
@@ -147,8 +149,8 @@ class CheckboxFieldRenderer(forms.widgets.ChoiceFieldRenderer):
             output.append(format_html(u'<div class="checkbox">{0}</div>', force_text(widget)))
         output.append('</div>')
         return mark_safe('\n'.join(output))
-    
-    
+
+
 class CheckboxSelectMultiple(forms.widgets.CheckboxSelectMultiple):
     renderer = CheckboxFieldRenderer
 
@@ -162,14 +164,12 @@ class HiddenInput(Widget, forms.HiddenInput):
 
 
 class TextInput(Widget, forms.TextInput):
-    
     def render(self, name, value, attrs=None):
         self.add_required()
         return super(TextInput, self).render(name, value, attrs)
 
 
 class URLInput(Widget, forms.URLInput):
-
     def render(self, name, value, attrs=None):
         self.add_required()
         return super(URLInput, self).render(name, value, attrs)
@@ -206,7 +206,7 @@ class SelectMultiple(Widget, forms.SelectMultiple):
 
 
 class SelectMultipleWithCurrently(SelectMultiple):
-    def __init__(self, attrs=None,  currently=None):
+    def __init__(self, attrs=None, currently=None):
         super(SelectMultipleWithCurrently, self).__init__(attrs)
         self.currently = currently
 
@@ -216,16 +216,15 @@ class SelectMultipleWithCurrently(SelectMultiple):
             html = format_html(
                 u'<p class="form-control-static">{} {}</p>{}',
                 _('Currently:'), self.currently,
-                 html
+                html
             )
         return html
 
 
 class CheckboxInput(forms.CheckboxInput):
-
     def render(self, name, value, attrs=None):
         return format_html('<div class="checkbox">{0}</div>', super(CheckboxInput, self).render(name, value, attrs))
-    
+
 
 def _parse_date_fmt():
     fmt = get_format('DATE_FORMAT')
@@ -321,6 +320,7 @@ class SelectDateWidget(Widget):
             return '%s_%s' % (id_, first_select)
         else:
             return '%s_month' % id_
+
     id_for_label = classmethod(id_for_label)
 
     def value_from_datadict(self, data, files, name):
@@ -363,8 +363,11 @@ class SelectDateWidget(Widget):
         return super(SelectDateWidget, self)._has_changed(initial, data)
     """
 
+
 from django.contrib.gis.forms.widgets import BaseGeometryWidget
 from django.contrib.gis import gdal
+
+
 class OSMWidget(BaseGeometryWidget):
     """
     An OpenLayers/OpenStreetMap-based widget.
@@ -375,7 +378,7 @@ class OSMWidget(BaseGeometryWidget):
 
     class Media:
         js = (
-            #'//cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js',
+            # '//cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js',
             'js/openlayer/2.13.1/OpenLayers.js',
             'js/gis/OpenStreetMap.js',
             'js/gis/OLMapWidget-1.0.4.js',

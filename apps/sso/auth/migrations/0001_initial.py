@@ -41,7 +41,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TOTPDevice',
             fields=[
-                ('device_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='sso_auth.Device')),
+                ('device_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='sso_auth.Device', on_delete=models.CASCADE)),
                 ('key', models.CharField(default=sso.auth.models.default_key, help_text=b'A hex-encoded secret key of up to 40 bytes.', max_length=80, validators=[sso.auth.models.key_validator])),
                 ('step', models.PositiveSmallIntegerField(default=30, help_text=b'The time step in seconds.')),
                 ('t0', models.BigIntegerField(default=0, help_text=b'The Unix time at which to begin counting steps.')),
@@ -58,7 +58,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TwilioSMSDevice',
             fields=[
-                ('device_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='sso_auth.Device')),
+                ('device_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='sso_auth.Device', on_delete=models.CASCADE)),
                 ('number', models.CharField(help_text=b'The mobile number to deliver tokens to.', max_length=16)),
                 ('key', models.CharField(default=sso.auth.models.default_key, help_text=b'A random key used to generate tokens (hex-encoded).', max_length=40, validators=[sso.auth.models.key_validator])),
                 ('last_t', models.BigIntegerField(default=-1, help_text=b'The t value of the latest verified token. The next token must be at a higher time step.')),
@@ -71,7 +71,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='U2FDevice',
             fields=[
-                ('device_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='sso_auth.Device')),
+                ('device_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='sso_auth.Device', on_delete=models.CASCADE)),
                 ('public_key', models.TextField()),
                 ('key_handle', models.TextField()),
                 ('app_id', models.TextField()),
@@ -84,16 +84,16 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='profile',
             name='default_device',
-            field=models.ForeignKey(to='sso_auth.Device'),
+            field=models.ForeignKey(to='sso_auth.Device', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='profile',
             name='user',
-            field=models.OneToOneField(related_name='sso_auth_profile', to=settings.AUTH_USER_MODEL),
+            field=models.OneToOneField(related_name='sso_auth_profile', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='device',
             name='user',
-            field=models.ForeignKey(help_text=b'The user that this device belongs to.', to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(help_text=b'The user that this device belongs to.', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
         ),
     ]

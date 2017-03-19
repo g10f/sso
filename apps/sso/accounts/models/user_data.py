@@ -2,8 +2,8 @@
 import logging
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _, pgettext_lazy
 from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary, CaseInsensitiveEmailField
 from sso.organisations.models import Organisation
@@ -16,7 +16,7 @@ class UserEmail(AbstractBaseModel):
     email = CaseInsensitiveEmailField(_('email address'), max_length=254, unique=True)
     confirmed = models.BooleanField(_('confirmed'), default=False)
     primary = models.BooleanField(_('primary'), default=False)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     class Meta(AbstractBaseModel.Meta):
         verbose_name = _('email address')
@@ -35,7 +35,7 @@ class UserAddress(AbstractBaseModel, AddressMixin):
     )
 
     address_type = models.CharField(_("address type"), choices=ADDRESSTYPE_CHOICES, max_length=20)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     class Meta(AbstractBaseModel.Meta, AddressMixin.Meta):
         unique_together = (("user", "address_type"),)
@@ -55,7 +55,7 @@ class UserPhoneNumber(AbstractBaseModel, PhoneNumberMixin):
         ('other', _('Other')),
     ]
     phone_type = models.CharField(_("phone type"), help_text=_('Mobile, home, office, etc.'), choices=PHONE_CHOICES, max_length=20)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     class Meta(AbstractBaseModel.Meta, PhoneNumberMixin.Meta):
         # unique_together = (("user", "phone_type"),)
@@ -67,7 +67,7 @@ class UserPhoneNumber(AbstractBaseModel, PhoneNumberMixin):
 
 
 class OneTimeMessage(AbstractBaseModel):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     title = models.CharField(_("title"), max_length=255, default='')
     message = models.TextField(_("message"), blank=True, max_length=2048, default='')
 
@@ -80,8 +80,8 @@ class OrganisationChange(AbstractBaseModel):
     """
     a request from an user to change the organisation
     """
-    user = models.OneToOneField(settings.AUTH_USER_MODEL)
-    organisation = models.ForeignKey(Organisation)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    organisation = models.ForeignKey(Organisation, on_delete=models.CASCADE)
     reason = models.TextField(_("reason"), max_length=2048)
 
     class Meta(AbstractBaseModel.Meta):

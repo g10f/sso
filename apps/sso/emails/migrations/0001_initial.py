@@ -40,7 +40,7 @@ class Migration(migrations.Migration):
                 ('uuid', models.UUIDField(default=uuid.uuid4, unique=True)),
                 ('last_modified', models.DateTimeField(auto_now=True, verbose_name='last modified')),
                 ('alias', models.EmailField(unique=True, max_length=254, verbose_name='email alias address')),
-                ('email', models.ForeignKey(verbose_name='email address', to='emails.Email')),
+                ('email', models.ForeignKey(verbose_name='email address', to='emails.Email', on_delete=models.CASCADE)),
             ],
             options={
                 'get_latest_by': 'last_modified',
@@ -58,7 +58,7 @@ class Migration(migrations.Migration):
                 ('last_modified', models.DateTimeField(auto_now=True, verbose_name='last modified')),
                 ('forward', models.EmailField(max_length=254, verbose_name='email forwarding address')),
                 ('primary', models.BooleanField(default=False, help_text='Designates the email address, which can only changed by users with special administration rights.', verbose_name='primary')),
-                ('email', models.ForeignKey(verbose_name='email address', to='emails.Email')),
+                ('email', models.ForeignKey(verbose_name='email address', to='emails.Email', on_delete=models.CASCADE)),
             ],
             options={
                 'get_latest_by': 'last_modified',
@@ -78,7 +78,7 @@ class Migration(migrations.Migration):
                 ('homepage', models.URLField(default=b'', verbose_name='homepage', blank=True)),
                 ('is_guide_email', models.BooleanField(default=False, verbose_name='guide email')),
                 ('is_active', models.BooleanField(default=True, help_text='Designates whether this email should be treated as active. Unselect this instead of deleting the email.', verbose_name='active')),
-                ('email', models.OneToOneField(verbose_name='email address', to='emails.Email')),
+                ('email', models.OneToOneField(verbose_name='email address', to='emails.Email', on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,
@@ -91,8 +91,8 @@ class Migration(migrations.Migration):
             name='GroupEmailManager',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('group_email', models.ForeignKey(verbose_name='group email', to='emails.GroupEmail')),
-                ('manager', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('group_email', models.ForeignKey(verbose_name='group email', to='emails.GroupEmail', on_delete=models.CASCADE)),
+                ('manager', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'group email manager',

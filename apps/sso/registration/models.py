@@ -12,7 +12,6 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from sso.utils.translation import i18n_email_msg_and_subj
-
 from .tokens import default_token_generator
 
 
@@ -170,7 +169,7 @@ class RegistrationManager(models.Manager):
 
 
 class RegistrationProfile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, verbose_name=_('user'))
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name=_('user'))
     last_modified = models.DateTimeField(_('last modified'), auto_now=True)
     last_modified_by_user = CurrentUserField(verbose_name=_('last modified by'), related_name='registrationprofile_last_modified_by', on_delete=models.SET_NULL)
     verified_by_user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, verbose_name=_('verified by'), related_name='registrationprofile_verified_by', on_delete=models.SET_NULL)

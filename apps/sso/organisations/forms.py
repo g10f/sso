@@ -11,7 +11,7 @@ from sso.forms import bootstrap, BaseForm, BaseTabularInlineForm, BLANK_CHOICE_D
 from sso.forms.fields import EmailFieldLower
 from sso.models import clean_picture
 from sso.signals import update_or_create_organisation_account
-from .models import OrganisationPhoneNumber, OrganisationAddress, Organisation, AdminRegion, OrganisationCountry, CountryGroup, OrganisationPicture, multiple_associations
+from .models import OrganisationPhoneNumber, OrganisationAddress, Organisation, AdminRegion, OrganisationCountry, CountryGroup, OrganisationPicture
 
 SSO_ORGANISATION_EMAIL_DOMAIN = getattr(settings, 'SSO_ORGANISATION_EMAIL_DOMAIN', '@g10f.de')
 
@@ -268,7 +268,7 @@ class EmailForwardMixin(object):
 
 class OrganisationCountryAdminCreateForm(EmailForwardMixin, OrganisationCountryAdminForm):
     """
-    A form for a country admin for create and update organisations with 
+    A form for a country admin for create organisations with
     additionally email_forward field  
     """
     email_forward = EmailFieldLower(required=True, label=_("Email forwarding address"), help_text=_('The primary email forwarding address for the organisation'),

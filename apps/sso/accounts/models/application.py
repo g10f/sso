@@ -68,7 +68,7 @@ class RoleManager(models.Manager):
 class Role(models.Model):
     name = models.CharField(_("name"), unique=True, max_length=255)
     order = models.IntegerField(default=0, help_text=_('Overwrites the alphabetic order.'))
-    group = models.ForeignKey(Group, blank=True, null=True, help_text=_('Associated group for SSO internal permission management.'))
+    group = models.ForeignKey(Group, on_delete=models.SET_NULL, blank=True, null=True, help_text=_('Associated group for SSO internal permission management.'))
     objects = RoleManager()
 
     class Meta:
@@ -89,8 +89,8 @@ class ApplicationRoleManager(models.Manager):
 
 
 class ApplicationRole(models.Model):
-    application = models.ForeignKey(Application)
-    role = models.ForeignKey(Role)
+    application = models.ForeignKey(Application, on_delete=models.CASCADE)
+    role = models.ForeignKey(Role, on_delete=models.CASCADE)
     is_inheritable_by_org_admin = models.BooleanField(_('inheritable by organisation admin'), default=True,
                                                       help_text=_('Designates that the role can inherited by a organisation admin.'))
     is_inheritable_by_global_admin = models.BooleanField(_('inheritable by global admin'), default=True,
@@ -135,8 +135,8 @@ class UserAssociatedSystem(models.Model):
     """
     Holds mappings to user IDs on other systems
     """
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
-    application = models.ForeignKey(Application)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    application = models.ForeignKey(Application, on_delete=models.CASCADE)
     userid = models.CharField(max_length=255)
 
     class Meta:
@@ -149,8 +149,8 @@ class UserAssociatedSystem(models.Model):
 
 
 class RoleProfileAdmin(AbstractBaseModel):
-    role_profile = models.ForeignKey(RoleProfile, verbose_name=_("role profile"))
-    admin = models.ForeignKey(settings.AUTH_USER_MODEL)
+    role_profile = models.ForeignKey(RoleProfile, on_delete=models.CASCADE, verbose_name=_("role profile"))
+    admin = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     class Meta(AbstractBaseModel.Meta):
         unique_together = (("role_profile", "admin"),)
@@ -159,8 +159,8 @@ class RoleProfileAdmin(AbstractBaseModel):
 
 
 class ApplicationAdmin(AbstractBaseModel):
-    application = models.ForeignKey(Application, verbose_name=_("application"))
-    admin = models.ForeignKey(settings.AUTH_USER_MODEL)
+    application = models.ForeignKey(Application, on_delete=models.CASCADE, verbose_name=_("application"))
+    admin = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     class Meta(AbstractBaseModel.Meta):
         unique_together = (("application", "admin"),)

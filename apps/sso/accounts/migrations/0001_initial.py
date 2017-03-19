@@ -136,7 +136,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(unique=True, max_length=255, verbose_name='name')),
                 ('order', models.IntegerField(default=0, help_text='Overwrites the alphabetic order.')),
-                ('group', models.ForeignKey(blank=True, to='auth.Group', help_text='Associated group for SSO internal permission management.', null=True)),
+                ('group', models.ForeignKey(blank=True, to='auth.Group', help_text='Associated group for SSO internal permission management.', null=True, on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ['order', 'name'],
@@ -170,8 +170,8 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('uuid', models.UUIDField(default=uuid.uuid4, unique=True)),
                 ('last_modified', models.DateTimeField(auto_now=True, verbose_name='last modified')),
-                ('admin', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
-                ('role_profile', models.ForeignKey(verbose_name='role profile', to='accounts.RoleProfile')),
+                ('admin', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
+                ('role_profile', models.ForeignKey(verbose_name='role profile', to='accounts.RoleProfile', on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,
@@ -194,9 +194,9 @@ class Migration(migrations.Migration):
                 ('region', models.CharField(help_text='State or region', max_length=100, verbose_name='region', blank=True)),
                 ('primary', models.BooleanField(default=False, verbose_name='primary')),
                 ('address_type', models.CharField(max_length=20, verbose_name='address type', choices=[(b'home', 'Home'), (b'work', 'Business'), (b'other', 'Other')])),
-                ('country', models.ForeignKey(verbose_name='country', to='l10n.Country')),
-                ('state', smart_selects.db_fields.ChainedForeignKey(blank=True, to='l10n.AdminArea', help_text='State or region', null=True, verbose_name='State')),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('country', models.ForeignKey(verbose_name='country', to='l10n.Country', on_delete=models.CASCADE)),
+                ('state', smart_selects.db_fields.ChainedForeignKey(blank=True, to='l10n.AdminArea', help_text='State or region', null=True, verbose_name='State', on_delete=models.CASCADE)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
             options={
                 'get_latest_by': 'last_modified',
@@ -211,8 +211,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('userid', models.CharField(max_length=255)),
-                ('application', models.ForeignKey(to='accounts.Application')),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('application', models.ForeignKey(to='accounts.Application', on_delete=models.CASCADE)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'associated system',
@@ -228,7 +228,7 @@ class Migration(migrations.Migration):
                 ('email', models.EmailField(unique=True, max_length=254, verbose_name='email address')),
                 ('confirmed', models.BooleanField(default=False, verbose_name='confirmed')),
                 ('primary', models.BooleanField(default=False, verbose_name='primary')),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ['email'],
@@ -247,7 +247,7 @@ class Migration(migrations.Migration):
                 ('phone', models.CharField(max_length=30, verbose_name='phone number', validators=[django.core.validators.RegexValidator(re.compile(b'^\\+\\d{1,3}((-?\\d+)|(\\s?\\(\\d+\\)\\s?)|\\s?\\d+){1,9}$'), 'Enter a valid phone number i.e. +49 (531) 123456', b'invalid')])),
                 ('primary', models.BooleanField(default=False, verbose_name='primary')),
                 ('phone_type', models.CharField(help_text='Mobile, home, office, etc.', max_length=20, verbose_name='phone type', choices=[(b'home', 'Home'), (b'mobile', 'Mobile'), (b'work', 'Business'), (b'fax', 'Fax'), (b'pager', 'Pager'), (b'other', 'Other')])),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ['-primary'],

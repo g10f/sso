@@ -459,7 +459,7 @@ class OrganisationList(ListView):
         if latlng:
             from django.contrib.gis import geos
             (lat, lng) = tuple(latlng.split(','))
-            point = geos.fromstr("POINT(%s %s)" % (lng, lat))
+            point = geos.fromstr("POINT(%s %s)" % (lng, lat), srid=4326)
             qs = get_near_organisations(point, None, qs, False)
 
         # Set ordering.

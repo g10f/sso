@@ -1,21 +1,20 @@
 # -*- coding: utf-8 -*-
 import logging
-from mimetypes import guess_extension
 import os
 import re
 import uuid
-from django.db.models import fields
+from mimetypes import guess_extension
 
-from django.utils.crypto import get_random_string
-from django.forms import forms
-from django.utils.text import get_valid_filename
 from django.core.validators import RegexValidator
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.db.models import fields
+from django.forms import forms
 from django.forms.models import model_to_dict
+from django.utils.crypto import get_random_string
+from django.utils.text import get_valid_filename
+from django.utils.translation import ugettext_lazy as _
 from l10n.models import Country, AdminArea
 from smart_selects.db_fields import ChainedForeignKey
-
 
 logger = logging.getLogger(__name__)
 
@@ -94,8 +93,8 @@ class AddressMixin(models.Model):
     city = models.CharField(_("city"), max_length=100)  # , help_text=_('City or locality')
     city_native = models.CharField(_("city in native language"), max_length=100, blank=True)
     postal_code = models.CharField(_("postal code"), max_length=30, blank=True)  # , help_text=_('Zipcode or postal code')
-    country = models.ForeignKey(Country, verbose_name=_("country"), limit_choices_to={'active': True})
-    state = ChainedForeignKey(AdminArea, chained_field='country', chained_model_field="country", verbose_name=_("State"), 
+    country = models.ForeignKey(Country, on_delete=models.CASCADE, verbose_name=_("country"), limit_choices_to={'active': True})
+    state = ChainedForeignKey(AdminArea, chained_field='country', chained_model_field="country", on_delete=models.SET_NULL, verbose_name=_("State"),
                               help_text=_('State or region'), blank=True, null=True)
     region = models.CharField(_("region"), help_text=_('State or region'), blank=True, max_length=100)
     primary = models.BooleanField(_("primary"), default=False)

@@ -1,17 +1,14 @@
 # -*- coding: utf-8 -*-
-from django.contrib.admin.widgets import FilteredSelectMultiple
-
 from django import forms
-
 from django.contrib import admin
-from django.contrib.gis import admin as gis_admin
 from django.contrib.admin import SimpleListFilter
-from django.utils.translation import ugettext_lazy as _
 from django.contrib.admin.utils import model_ngettext
-
+from django.contrib.admin.widgets import FilteredSelectMultiple
+from django.contrib.gis.admin import OSMGeoAdmin
+from django.utils.translation import ugettext_lazy as _
 from l10n.models import Country
-from .models import OrganisationAddress, OrganisationPhoneNumber, OrganisationCountry, CountryGroup
 from sso.emails.models import Email, CENTER_EMAIL_TYPE
+from .models import OrganisationAddress, OrganisationPhoneNumber, OrganisationCountry, CountryGroup
 
 
 class CountryListFilter(SimpleListFilter):
@@ -129,7 +126,7 @@ class PhoneNumber_Inline(admin.TabularInline):
     ]
 
 
-class OrganisationAdmin(gis_admin.OSMGeoAdmin):
+class OrganisationAdmin(OSMGeoAdmin):
     openlayers_url = '//cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js'
     list_select_related = ('email',)
     ordering = ['name']
