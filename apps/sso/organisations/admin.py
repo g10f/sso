@@ -142,7 +142,7 @@ class OrganisationAdmin(OSMGeoAdmin):
     fieldsets = [
         (None,
          {'fields':
-              ['uuid', 'centerid', 'name', 'name_native', 'slug', 'center_type', 'organisation_country', 'admin_region', 'founded', ('coordinates_type', 'google_maps_link'),
+              ['uuid', 'centerid', 'name', 'name_native', 'slug', 'center_type', 'association', 'organisation_country', 'admin_region', 'founded', ('coordinates_type', 'google_maps_link'),
                'location',
                'email', 'homepage', 'is_active', 'is_private', 'uses_user_activation', 'last_modified'],
           'classes': ['wide']}),
