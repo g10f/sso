@@ -105,7 +105,7 @@ class Address_Inline(admin.StackedInline):
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         # display only countries where there is a corresponding entry in organisationcountry table
         if db_field.name == "country":
-            kwargs["queryset"] = Country.objects.filter(organisationcountry__isnull=False)
+            kwargs["queryset"] = Country.objects.filter(active=True)
 
         return super(Address_Inline, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
