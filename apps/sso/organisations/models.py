@@ -1,7 +1,7 @@
 import logging
 import re
 
-from pytz import timezone
+from pytz import timezone, UnknownTimeZoneError
 from sorl import thumbnail
 
 from django.conf import settings
@@ -314,10 +314,15 @@ class Organisation(AbstractBaseModel):
     def timezone_from_location(self):
         if self.location:
             try:
-                return TzWorld.objects.only('tzid').get(geom__contains=self.location).tzid
+                tzid = TzWorld.objects.only('tzid').get(geom__contains=self.location).tzid
+                # check if python timezone works for ..
+                timezone(tzid)
+                return tzid
             except ObjectDoesNotExist as e:
                 logger.warning(e)
             except MultipleObjectsReturned as e:
+                logger.exception(e)
+            except UnknownTimeZoneError as e:
                 logger.exception(e)
         return ""
 
