@@ -408,7 +408,7 @@ class OrganisationList(ListView):
         Get the list of items for this view. This must be an iterable, and may
         be a queryset (in which qs-specific behavior will be enabled).
         """
-        qs = super(OrganisationList, self).get_queryset().only('location', 'uuid', 'name', 'email', 'organisation_country', 'founded').prefetch_related('organisation_country__country', 'email',
+        qs = super(OrganisationList, self).get_queryset().only('location', 'uuid', 'name', 'email', 'organisation_country', 'founded').prefetch_related('organisationaddress_set__country', 'email',
                                                                                                                                                         'organisationpicture_set')
         return self.apply_filters(qs)
 
