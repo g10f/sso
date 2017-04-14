@@ -40,7 +40,7 @@ class OrganisationPictureForm(BaseStackedInlineForm):
 
 
 class OrganisationAddressForm(BaseForm):
-    country = ModelChoiceField(queryset=Country.objects.filter(organisationcountry__isnull=False, organisationcountry__is_active=True), required=True,
+    country = ModelChoiceField(queryset=Country.objects.filter(active=True), required=True,
                                label=_("Country"), widget=bootstrap.Select(), to_field_name="iso2_code")
 
     class Meta:
