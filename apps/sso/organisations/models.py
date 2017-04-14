@@ -247,8 +247,8 @@ class Organisation(AbstractBaseModel):
 
     name = models.CharField(_("name"), max_length=255)
     name_native = models.CharField(_("name in native language"), max_length=255, blank=True)
-    association = models.ForeignKey(Association, verbose_name=_("association"), null=True, limit_choices_to={'is_active': True})
-    organisation_country = ChainedForeignKey(OrganisationCountry, chained_field='association', chained_model_field="association", verbose_name=_("country"), null=True, limit_choices_to={'is_active': True})
+    association = models.ForeignKey(Association, verbose_name=_("association"), default=default_association, null=True, limit_choices_to={'is_active': True})
+    organisation_country = ChainedForeignKey(OrganisationCountry, chained_field='association', chained_model_field="association", verbose_name=_("country"), blank=True, null=True, limit_choices_to={'is_active': True})
     admin_region = ChainedForeignKey(AdminRegion, chained_field='organisation_country', chained_model_field="organisation_country", on_delete=models.SET_NULL, verbose_name=_("admin region"), blank=True, null=True,
                                      limit_choices_to={'is_active': True})
     email = models.ForeignKey(Email, verbose_name=_("email address"), blank=True, null=True, limit_choices_to={'email_type': CENTER_EMAIL_TYPE},
@@ -273,9 +273,6 @@ class Organisation(AbstractBaseModel):
                                      help_text=_('Designates whether this organisation data should be treated as private and '
                                                  'only a telephone number should be displayed on public sites.'), 
                                      default=False)
-    # can_publish = models.BooleanField(_("publish"),
-    #                                   help_text=_('Designates whether this organisation data can be published.'),
-    #                                   default=True)
     uses_user_activation = models.BooleanField(_("uses activation"),
                                                help_text=_('Designates whether this organisation uses the new user activation process.'),
                                                default=False)
@@ -355,7 +352,7 @@ class Organisation(AbstractBaseModel):
     def __unicode__(self):
         if self.organisation_country:
             if multiple_associations():
-                return u'%s, %s (%s)' % (self.name, self.organisation_country.association, self.organisation_country.country.iso2_code)
+                return u'%s, %s (%s)' % (self.name, self.association, self.organisation_country.country.iso2_code)
             else:
                 return u'%s (%s)' % (self.name, self.organisation_country.country.iso2_code)
         else:

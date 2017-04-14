@@ -136,7 +136,7 @@ class OrganisationAdmin(OSMGeoAdmin):
     inlines = [PhoneNumber_Inline, Address_Inline]
     readonly_fields = ['uuid', 'last_modified', 'google_maps_link']
     date_hierarchy = 'founded'
-    list_filter = ('organisation_country__association', 'is_active', 'is_private', 'uses_user_activation', 'coordinates_type', 'admin_region', 'organisation_country__country__continent', CountryListFilter, 'center_type',
+    list_filter = ('association', 'is_active', 'is_private', 'uses_user_activation', 'coordinates_type', 'admin_region', 'organisation_country__country__continent', CountryListFilter, 'center_type',
                    'organisationaddress__address_type', 'organisationphonenumber__phone_type')
     list_display = ('slug', 'name', 'name_native', 'email', 'last_modified', 'homepage_link', 'google_maps_link',)
     fieldsets = [
