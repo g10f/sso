@@ -40,9 +40,9 @@ logger = logging.getLogger(__name__)
 
 class OrganisationChangeForm(BaseForm):
     organisation = forms.ModelChoiceField(queryset=Organisation.objects.filter(
-        is_active=True, organisation_country__association__is_selectable=True).only(
-        'id', 'location', 'name', 'organisation_country__country__iso2_code', 'organisation_country__association__name').prefetch_related(
-        'organisation_country__country', 'organisation_country__association'), label=_("Organisation"), widget=bootstrap.Select())
+        is_active=True, association__is_selectable=True).only(
+        'id', 'location', 'name', 'organisation_country__country__iso2_code', 'association__name').prefetch_related(
+        'organisation_country__country', 'association'), label=_("Organisation"), widget=bootstrap.Select())
 
     class Meta:
         model = OrganisationChange
@@ -305,7 +305,7 @@ class UserAddForm(mixins.UserRolesMixin, forms.ModelForm):
         # add custom data
         self.fields['role_profiles'].dictionary = {str(role_profile.id): role_profile for role_profile in user.get_administrable_role_profiles()}
         self.fields['organisations'].queryset = user.get_administrable_user_organisations().\
-            filter(is_active=True, organisation_country__association__is_selectable=True)
+            filter(is_active=True, association__is_selectable=True)
         if not user.has_perm("accounts.access_all_users"):
             self.fields['organisations'].required = True
 
@@ -434,7 +434,7 @@ class UserSelfProfileForm(forms.Form):
                           widget=bootstrap.SelectDateWidget(years=range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1), required=False))
     homepage = forms.URLField(label=_('Homepage'), required=False, max_length=512, widget=bootstrap.TextInput())
     language = forms.ChoiceField(label=_("Language"), required=False, choices=(BLANK_CHOICE_DASH + sorted(list(settings.LANGUAGES), key=lambda x: x[1])), widget=bootstrap.Select())
-    timezone = forms.ChoiceField(label=_("Timezone"), required=False, choices=BLANK_CHOICE_DASH + zip(pytz.common_timezones, pytz.common_timezones), widget=bootstrap.Select())
+    timezone = forms.ChoiceField(label=_("Timezone"), required=False, choices=BLANK_CHOICE_DASH + list(zip(pytz.common_timezones, pytz.common_timezones)), widget=bootstrap.Select())
 
     error_messages = {
         'duplicate_username': _("A user with that username already exists."),
@@ -515,7 +515,7 @@ class CenterSelfProfileForm(forms.Form):
     username = bootstrap.ReadOnlyField(label=_("Username"))
     email = bootstrap.ReadOnlyField(label=_('Email address'))
     language = forms.ChoiceField(label=_("Language"), required=False, choices=(BLANK_CHOICE_DASH + sorted(list(settings.LANGUAGES), key=lambda x: x[1])), widget=bootstrap.Select())
-    timezone = forms.ChoiceField(label=_("Timezone"), required=False, choices=BLANK_CHOICE_DASH + zip(pytz.common_timezones, pytz.common_timezones), widget=bootstrap.Select())
+    timezone = forms.ChoiceField(label=_("Timezone"), required=False, choices=BLANK_CHOICE_DASH + list(zip(pytz.common_timezones, pytz.common_timezones)), widget=bootstrap.Select())
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('instance')
@@ -554,7 +554,7 @@ class UserSelfRegistrationForm2(UserSelfRegistrationForm):
     """
     Overwritten UserSelfRegistrationForm Form with additional  organisation field
     """
-    organisation = forms.ModelChoiceField(queryset=Organisation.objects.filter(is_active=True, organisation_country__association__is_selectable=True).select_related('organisation_country__country'), required=False, label=_("Organisation"), widget=bootstrap.Select())
+    organisation = forms.ModelChoiceField(queryset=Organisation.objects.filter(is_active=True, association__is_selectable=True).select_related('organisation_country__country'), required=False, label=_("Organisation"), widget=bootstrap.Select())
     # for Bots. If you enter anything in this field you will be treated as a robot
     state = forms.CharField(label=_('State'), required=False, widget=bootstrap.HiddenInput())
     
@@ -668,7 +668,7 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
                                                                           widget=bootstrap.SelectMultipleWithCurrently(currently=u', '.join([x.__unicode__() for x in self.user.organisations.all()])),
                                                                           label=_("Organisation"))
         self.fields['organisations'].queryset = self.request.user.get_administrable_user_organisations().\
-            filter(is_active=True, organisation_country__association__is_selectable=True)
+            filter(is_active=True, association__is_selectable=True)
 
     def clean_username(self):
         username = self.cleaned_data["username"]

@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 from django.db import migrations, models
 import django.db.models.deletion
 import smart_selects.db_fields
+import sso.organisations.models
 
 
 class Migration(migrations.Migration):
@@ -17,11 +18,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='organisation',
             name='association',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='organisations.Association', verbose_name='association'),
+            field=models.ForeignKey(default=sso.organisations.models.default_association, null=True, on_delete=django.db.models.deletion.CASCADE, to='organisations.Association', verbose_name='association'),
         ),
         migrations.AlterField(
             model_name='organisation',
             name='organisation_country',
-            field=smart_selects.db_fields.ChainedForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='organisations.OrganisationCountry', verbose_name='country'),
+            field=smart_selects.db_fields.ChainedForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='organisations.OrganisationCountry', verbose_name='country'),
         ),
     ]

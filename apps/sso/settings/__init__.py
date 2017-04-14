@@ -44,6 +44,7 @@ SSO_ADMIN_MAX_AGE = 60 * 30  # 30 min max age for admin pages
 SSO_ORGANISATION_EMAIL_DOMAIN = '@g10f.de'
 SSO_ORGANISATION_EMAIL_MANAGEMENT = False
 SSO_REGION_MANAGEMENT = False
+SSO_COUNTRY_MANAGEMENT = False
 SSO_GOOGLE_GEO_API_KEY = 'insert your key'
 SSO_EMAIL_LOGO = ""
 SSO_DOMAIN = "sso.g10f.de"
@@ -313,6 +314,6 @@ vvmsEC0q1M/PA1HgfK8YoVttgp1j2i5rCpwnMRxewK609gP+79P+j8hBBhK/c+Ho
 
 # Load the local settings
 try:
-    from local_settings import *
+    from .local_settings import *
 except:
     print("WARNING: Can not load local_settings files")
