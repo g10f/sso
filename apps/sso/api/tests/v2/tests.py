@@ -40,6 +40,7 @@ class ApiTests(OAuth2BaseTestCase):
         'user_id': 'a8992f0348634f76b0dac2de4e4c83ee',
         'iso2_code': 'DE',
         'country': 'DE',
+        'country_code': 'DE',
         'region_id': '0ebf2537fc664b7db285ea773c981404',
         'country_group_id': 'f6b34d1cee944138800980fe48a2b26f'
     }

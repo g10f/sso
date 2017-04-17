@@ -8,6 +8,14 @@
     }
   },
   {
+    "model": "organisations.association",
+    "fields": {
+      "last_modified": "2017-04-15T09:09:13.807Z",
+      "uuid": "fa1a03cdd4fd4914b6a229c93a350aaa",
+      "name": "Association 2"
+    }
+  },
+  {
     "model": "organisations.countrygroup",
     "fields": {
       "name": "Test Country Group",
@@ -21,7 +29,11 @@
     "fields": {
       "uuid": "6bc429702f9f442ea9717824a8d76d84",
       "country": 81,
-      "country_groups": [["f6b34d1cee944138800980fe48a2b26f"]],
+      "country_groups": [
+        [
+          "f6b34d1cee944138800980fe48a2b26f"
+        ]
+      ],
       "is_active": true,
       "last_modified": "2014-08-29T19:33:38.430Z",
       "homepage": ""
@@ -37,40 +49,69 @@
       "last_modified": "2014-08-29T19:33:36.412Z",
       "homepage": ""
     }
-  }, {
-	"model" : "organisations.adminregion",
-	"fields" : {
-		"last_modified" : "2013-04-28T16:56:13.807Z",
-		"uuid" : "0ebf2537fc664b7db285ea773c981404",
-		"name" : "Region 1",
-		"organisation_country" : [ "6bc429702f9f442ea9717824a8d76d84" ]
-	}
-}, {
-	"model" : "organisations.adminregion",
-	"fields" : {
-		"last_modified" : "2013-04-28T16:56:23.067Z",
-		"uuid" : "1a5985f6a9fc4ead975de1291f8a65a9",
-		"name" : "Region 2",
-		"organisation_country" : [ "6bc429702f9f442ea9717824a8d76d84" ]
-	}
-}, {
-	"model" : "organisations.organisation",
-	"fields" : {
-		"uuid" : "31664dd38ca4454e916e55fe8b1f0745",
-        "last_modified": "2012-03-23T07:00:46.076Z",
-		"admin_region" : [ "0ebf2537fc664b7db285ea773c981404" ],
-		"name" : "Test Center 1",
-		"center_type" : "1",
-		"organisation_country" : [ "6bc429702f9f442ea9717824a8d76d84" ]
-	}
-}, {
-	"model" : "organisations.organisation",
-	"fields" : {
-		"uuid" : "31664dd38ca4454e916e55fe8b1f0746",
-        "last_modified": "2012-03-23T07:00:46.076Z",
-		"admin_region" : [ "0ebf2537fc664b7db285ea773c981404" ],
-		"name" : "Test Center 2",
-		"center_type" : "1",
-		"organisation_country" : [ "6bc429702f9f442ea9717824a8d76d84" ]
-	}
-} ]
+  },
+  {
+    "model": "organisations.adminregion",
+    "fields": {
+      "last_modified": "2013-04-28T16:56:13.807Z",
+      "uuid": "0ebf2537fc664b7db285ea773c981404",
+      "name": "Region 1",
+      "organisation_country": [
+        "6bc429702f9f442ea9717824a8d76d84"
+      ]
+    }
+  },
+  {
+    "model": "organisations.adminregion",
+    "fields": {
+      "last_modified": "2013-04-28T16:56:23.067Z",
+      "uuid": "1a5985f6a9fc4ead975de1291f8a65a9",
+      "name": "Region 2",
+      "organisation_country": [
+        "6bc429702f9f442ea9717824a8d76d84"
+      ]
+    }
+  },
+  {
+    "model": "organisations.organisation",
+    "fields": {
+      "uuid": "31664dd38ca4454e916e55fe8b1f0745",
+      "last_modified": "2012-03-23T07:00:46.076Z",
+      "admin_region": [
+        "0ebf2537fc664b7db285ea773c981404"
+      ],
+      "name": "Test Center 1",
+      "center_type": "1",
+      "organisation_country": [
+        "6bc429702f9f442ea9717824a8d76d84"
+      ]
+    }
+  },
+  {
+    "model": "organisations.organisation",
+    "fields": {
+      "uuid": "31664dd38ca4454e916e55fe8b1f0746",
+      "last_modified": "2012-03-23T07:00:46.076Z",
+      "admin_region": [
+        "0ebf2537fc664b7db285ea773c981404"
+      ],
+      "name": "Test Center 2",
+      "center_type": "1",
+      "organisation_country": [
+        "6bc429702f9f442ea9717824a8d76d84"
+      ]
+    }
+  },
+  {
+    "model": "organisations.organisation",
+    "fields": {
+      "uuid": "82a80944558e428ba33815ceba280b0e",
+      "last_modified": "2017-04-15T09:06:00.000Z",
+      "association": [
+        "fa1a03cdd4fd4914b6a229c93a350aaa"
+      ],
+      "name": "Test Center 3",
+      "center_type": "1"
+    }
+  }
+]

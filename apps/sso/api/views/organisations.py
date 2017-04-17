@@ -41,10 +41,6 @@ class OrganisationMixin(object):
             'facebook_page': obj.facebook_page,
             'twitter_page': obj.twitter_page,
             'last_modified': obj.get_last_modified_deep(),
-            'country': {
-                'code': obj.organisation_country.country.iso2_code,
-                '@id': "%s%s" % (base, reverse('api:v2_country', kwargs={'iso2_code': obj.organisation_country.country.iso2_code})),
-            }
         }
         if obj.email:
             data['email'] = u'%s' % obj.email
@@ -55,7 +51,15 @@ class OrganisationMixin(object):
         if obj.timezone:
             data['timezone'] = obj.timezone
             # data['utc_offset'] = localtime(now(), timezone(obj.timezone)).strftime('%z')
+        for address in obj.organisationaddress_set.all():
+            data['country_code'] = address.country.iso2_code
+            break
 
+        if obj.organisation_country is not None:
+            data['country'] = {
+                'code': obj.organisation_country.country.iso2_code,
+                '@id': "%s%s" % (base, reverse('api:v2_country', kwargs={'iso2_code': obj.organisation_country.country.iso2_code})),
+            }
         if obj.admin_region is not None:
             data['region'] = {
                 'id': obj.admin_region.uuid.hex,
@@ -162,7 +166,11 @@ class OrganisationList(OrganisationMixin, JsonListView):
         country = self.request.GET.get('country', None)
         if country:
             qs = qs.filter(organisation_country__country__iso2_code__iexact=country)
-            
+
+        country_code = self.request.GET.get('country_code', None)
+        if country_code:
+            qs = qs.filter(organisationaddress__country__iso2_code__iexact=country_code)
+
         region_id = self.request.GET.get('region_id', None)
         if region_id:
             qs = qs.filter(admin_region__uuid=region_id)
