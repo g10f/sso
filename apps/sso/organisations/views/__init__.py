@@ -330,7 +330,8 @@ class AssociationFilter(ViewQuerysetFilter):
     model = Association
     select_text = _('Association')
     select_all_text = _('All Associations')
-    remove = 'country,center,app_role,role_profile,p'
+    remove = 'country,p'
+    all_remove = 'country'
 
 
 class CountryFilter(ViewQuerysetFilter):
@@ -340,8 +341,8 @@ class CountryFilter(ViewQuerysetFilter):
     filter_list = Country.objects.filter(organisationaddress__isnull=False)
     select_text = _('Country')
     select_all_text = _('All Countries')
-    all_remove = 'center'
-    remove = 'center,app_role,role_profile,p'
+    all_remove = 'admin_region'
+    remove = 'admin_region,p'
 
 
 class AdminRegionFilter(ViewQuerysetFilter):
@@ -350,8 +351,8 @@ class AdminRegionFilter(ViewQuerysetFilter):
     filter_list = AdminRegion.objects.filter(organisation__isnull=False).distinct()
     select_text = _('Region')
     select_all_text = _('All Regions')
-    all_remove = 'region,center'
-    remove = 'region,center,app_role,role_profile,p'
+    all_remove = ''
+    remove = 'p'
 
 
 class MyOrganisationsFilter(ViewButtonFilter):
