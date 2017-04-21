@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from sso.api.views import users, users_v2, organisations, home, countries, regions, country_groups, media
+from sso.api.views import users, users_v2, organisations, home, countries, regions, country_groups, media, associations
  
 urlpatterns = [
     url(r'^$', home.home, name='home'),
@@ -22,6 +22,8 @@ urlpatterns = [
     url(r'^v2/regions/(?P<uuid>[a-z0-9]{32})/$', regions.RegionDetailView.as_view(), name='v2_region'),
     url(r'^v2/country_groups/$', country_groups.CountryGroupList.as_view(), name='v2_country_groups'),
     url(r'^v2/country_groups/(?P<uuid>[a-z0-9]{32})/$', country_groups.CountryGroupDetailView.as_view(), name='v2_country_group'), 
+    url(r'^v2/associations/$', associations.AssociationList.as_view(), name='v2_associations'),
+    url(r'^v2/associations/(?P<uuid>[a-z0-9]{32})/$', associations.AssociationDetailView.as_view(), name='v2_association'),
     url(r'^v2/users/me/picture/$', media.MyUserPictureDetailView.as_view(), name='v2_picture_me'),
     url(r'^v2/users/(?P<uuid>[a-z0-9]{32})/picture/$', media.UserPictureDetailView.as_view(), name='v2_picture'),
 ]

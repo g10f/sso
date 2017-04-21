@@ -137,8 +137,8 @@ class RegistrationManager(models.Manager):
         Users who don't complete the email validation in TOKEN_EXPIRATION_DAYS or did not activated by an admin in ACTIVATION_EXPIRATION_DAYS
         will be deleted
         """ 
-        q = Q(user__is_active=False) & Q(is_validated=False) & Q(date_registered__lte=cls.token_expiration_date()) & Q(is_access_denied=False)
-        q = q | (Q(user__is_active=False) & Q(date_registered__lte=cls.activation_expiration_date())) & Q(is_access_denied=False)
+        q = Q(user__is_active=False) & Q(is_validated=False) & Q(date_registered__lte=cls.token_expiration_date()) & Q(is_access_denied=False) & Q(user__last_login__isnull=True)
+        q = q | (Q(user__is_active=False) & Q(date_registered__lte=cls.activation_expiration_date())) & Q(is_access_denied=False) & Q(user__last_login__isnull=True)
         return q
         
     def get_expired(self):

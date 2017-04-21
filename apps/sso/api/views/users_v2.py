@@ -23,7 +23,7 @@ from sso.api.decorators import condition
 from sso.api.views.generic import JsonListView, JsonDetailView
 from sso.auth.utils import is_recent_auth_time
 from sso.models import update_object_from_dict, map_dict2dict
-from sso.organisations.models import Organisation
+from sso.organisations.models import Organisation, multiple_associations
 from sso.registration import default_username_generator
 from sso.utils.parse import parse_datetime_with_timezone_support
 from sso.utils.url import base_url, absolute_url
@@ -137,21 +137,21 @@ class UserMixin(object):
                     'name': organisation.name,
                     '@id': "%s%s" % (base, reverse('api:v2_organisation', kwargs={'uuid': organisation.uuid.hex}))
                 } for organisation in obj.organisations.all().prefetch_related('organisation_country__country')
-                }
+            }
             data['admin_regions'] = {
                 region.uuid.hex: {
                     'country': region.organisation_country.country.iso2_code,
                     'name': region.name,
                     '@id': "%s%s" % (base, reverse('api:v2_region', kwargs={'uuid': region.uuid.hex}))
                 } for region in obj.admin_regions.all().prefetch_related('organisation_country__country')
-                }
+            }
             data['admin_countries'] = {
                 organisation_country.country.iso2_code: {
                     'code': organisation_country.country.iso2_code,
                     'name': organisation_country.country.printable_name,
                     '@id': "%s%s" % (base, reverse('api:v2_country', kwargs={'iso2_code': organisation_country.country.iso2_code}))
                 } for organisation_country in obj.admin_organisation_countries.all()
-                }
+            }
 
             if 'role' in scopes:
                 applications = {}
@@ -181,7 +181,7 @@ class UserMixin(object):
                         'region': address.region,
                         'primary': address.primary
                     } for address in obj.useraddress_set.all()
-                    }
+                }
 
             if 'phone' in scopes:
                 data['phone_numbers'] = {
@@ -190,7 +190,7 @@ class UserMixin(object):
                         'phone': phone_number.phone,
                         'primary': phone_number.primary
                     } for phone_number in obj.userphonenumber_set.all()
-                    }
+                }
         return data
 
 
@@ -525,6 +525,10 @@ class UserList(UserMixin, JsonListView):
         username = self.request.GET.get('q', None)
         if username:
             qs = qs.filter(Q(first_name__icontains=username) | Q(last_name__icontains=username))
+
+        association_id = self.request.GET.get('association_id', None)
+        if association_id:
+            qs = qs.filter(organisations__association__uuid=association_id)
 
         country_group_id = self.request.GET.get('country_group_id', None)
         if country_group_id:
