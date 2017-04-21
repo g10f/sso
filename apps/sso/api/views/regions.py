@@ -58,6 +58,10 @@ class RegionList(RegionMixin, JsonListView):
         if name:
             qs = qs.filter(name__icontains=name)
 
+        association_id = self.request.GET.get('association_id', None)
+        if association_id:
+            qs = qs.filter(organisation_country__association__uuid=association_id)
+
         country_group_id = self.request.GET.get('country_group_id', None)
         if country_group_id:
             qs = qs.filter(organisation_country__country_groups__uuid=country_group_id)

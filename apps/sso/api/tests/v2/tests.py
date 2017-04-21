@@ -9,7 +9,7 @@ from sso.oauth2.tests import OAuth2BaseTestCase
 
 
 def address(addressee, country='DE', street_address='', region='', address_type='home'):
-    return  {
+    return {
         'address_type': address_type,
         'addressee': addressee,
         'region': region,
@@ -42,7 +42,8 @@ class ApiTests(OAuth2BaseTestCase):
         'country': 'DE',
         'country_code': 'DE',
         'region_id': '0ebf2537fc664b7db285ea773c981404',
-        'country_group_id': 'f6b34d1cee944138800980fe48a2b26f'
+        'country_group_id': 'f6b34d1cee944138800980fe48a2b26f',
+        'association_id': 'bad2e6edff274f2f900ff3dbb26e38ce'
     }
 
     def get_url_from_api_home(self, name, kwargs=None):
@@ -80,7 +81,7 @@ class ApiTests(OAuth2BaseTestCase):
 
     def test_user_list(self):
         users_url = self.get_url_from_api_home('users')
-        
+
         authorization = self.get_authorization(client_id="1811f02ed81b43b5bee1afe031e6198e", username="CountryAdmin", scope="users")
         # get user list
         response = self.client.get(users_url, HTTP_AUTHORIZATION=authorization)
@@ -92,7 +93,7 @@ class ApiTests(OAuth2BaseTestCase):
             'method': "PUT"
         }]
         self.assertEqual(users['operation'], operation)
-        
+
         # create new user
         user_url = users['member'][0]['@id']
         response = self.client.get(user_url, HTTP_AUTHORIZATION=authorization)
@@ -103,7 +104,7 @@ class ApiTests(OAuth2BaseTestCase):
         response = self.client.put(user_url, json.dumps(user), HTTP_AUTHORIZATION=authorization)
         user = json.loads(response.content)
         self.assertNotIn('error', user)
-        
+
         # add address to  existing user (failing)
         user['addresses'] = {uuid4().hex: address('Test Address', address_type='work')}
         response = self.client.put(user_url, json.dumps(user), HTTP_AUTHORIZATION=authorization)

@@ -29,7 +29,7 @@ def update_last_modified(sender, instance, created, **kwargs):
 @receiver(user_logged_in)
 def update_last_ip(sender, user, **kwargs):
     """
-    A signal receiver which updates the last_ip IP Adress for
+    A signal receiver which updates the last_ip IP Address for
     the user logging in.
     """
     if 'request' in kwargs:

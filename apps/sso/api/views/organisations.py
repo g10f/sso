@@ -7,7 +7,7 @@ from django.conf import settings
 from django.db.models import Q
 from django.urls import reverse
 from sso.api.views.generic import JsonListView, JsonDetailView
-from sso.organisations.models import Organisation, get_near_organisations
+from sso.organisations.models import Organisation, get_near_organisations, multiple_associations
 from sso.utils.parse import parse_datetime_with_timezone_support
 from sso.utils.url import base_url, absolute_url
 
@@ -42,6 +42,12 @@ class OrganisationMixin(object):
             'twitter_page': obj.twitter_page,
             'last_modified': obj.get_last_modified_deep(),
         }
+        if multiple_associations():
+            data['association'] = {
+                '@id': "%s%s" % (base, reverse('api:v2_association', kwargs={'uuid': obj.association.uuid.hex})),
+                'name': obj.association.name
+            }
+
         if obj.email:
             data['email'] = u'%s' % obj.email
         if obj.neighbour_distance:
@@ -124,8 +130,9 @@ class OrganisationDetailView(OrganisationMixin, JsonDetailView):
     operations = {}
     
     def get_queryset(self):
-        return super(OrganisationDetailView, self).get_queryset().prefetch_related('organisation_country__country', 'email', 'organisationaddress_set', 'organisationphonenumber_set',
-                                                                                   'organisationpicture_set')
+        return super(OrganisationDetailView, self).get_queryset().prefetch_related(
+            'organisation_country__country', 'email', 'organisationaddress_set', 'organisationphonenumber_set',
+            'organisationpicture_set')
 
     def get_object_data(self, request, obj):
         return super(OrganisationDetailView, self).get_object_data(request, obj, details=True)
@@ -138,8 +145,9 @@ class OrganisationDetailView(OrganisationMixin, JsonDetailView):
 class OrganisationList(OrganisationMixin, JsonListView):
     # TODO: caching
     def get_queryset(self):
-        qs = super(OrganisationList, self).get_queryset().prefetch_related('organisation_country__country', 'admin_region', 'email', 'organisationaddress_set',
-                                                                           'organisationphonenumber_set', 'organisationpicture_set').distinct()
+        qs = super(OrganisationList, self).get_queryset().prefetch_related(
+            'organisation_country__country', 'admin_region', 'email', 'organisationaddress_set', 'organisationaddress_set__country',
+            'association', 'organisationphonenumber_set', 'organisationpicture_set').distinct()
         
         is_active = self.request.GET.get('is_active', None)
         if is_active in ['True', 'true', '1', 'yes', 'Yes', 'Y', 'y']:
@@ -158,6 +166,10 @@ class OrganisationList(OrganisationMixin, JsonListView):
         name = self.request.GET.get('q', None)
         if name:
             qs = qs.filter(Q(name__icontains=name) | Q(name_native__icontains=name))
+
+        association_id = self.request.GET.get('association_id', None)
+        if association_id:
+            qs = qs.filter(association__uuid=association_id)
 
         country_group_id = self.request.GET.get('country_group_id', None)
         if country_group_id:
