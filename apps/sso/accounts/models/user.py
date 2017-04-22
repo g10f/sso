@@ -138,8 +138,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         Sends an email to this User.
         """
-        recipient_list = [self.primary_email().email]
-        send_mail(subject, message, recipient_list, from_email=from_email, **kwargs)
+        if self.primary_email() is not None:
+            recipient_list = [self.primary_email().email]
+            return send_mail(subject, message, recipient_list, from_email=from_email, **kwargs)
+        else:
+            logger.error('User %s has no primary_email', self.username)
+        return 0
 
     def primary_email(self):
         # iterate through useremail_set.all because useremail_set is cached
