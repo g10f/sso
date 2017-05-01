@@ -15,10 +15,10 @@ from django.db.models import Q
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils import six
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-from models import Application, UserAssociatedSystem, UserAddress, UserPhoneNumber, UserEmail, RoleProfile
+from .models import Application, UserAssociatedSystem, UserAddress, UserPhoneNumber, UserEmail, RoleProfile
 from sso.organisations.models import Organisation, AdminRegion
 from .forms import AdminUserChangeForm, AdminUserCreationForm
 
@@ -36,6 +36,7 @@ class OrganisationChangeAdmin(admin.ModelAdmin):
     def user_link(self, obj):
         url = reverse('admin:accounts_user_change', args=(obj.user.pk,), current_app=self.admin_site.name)
         return mark_safe(u'<a href="%s">%s</a>' % (url, obj.user))
+
     user_link.allow_tags = True
     user_link.short_description = _('user')
     user_link.admin_order_field = 'user'
@@ -47,11 +48,12 @@ class UserEmailAdmin(admin.ModelAdmin):
     search_fields = ('user__username', 'email')
     ordering = ['-last_modified']
     list_filter = ('confirmed', 'primary')
-    list_select_related = ('user', )
+    list_select_related = ('user',)
 
     def user_link(self, obj):
         url = reverse('admin:accounts_user_change', args=(obj.user.pk,), current_app=self.admin_site.name)
         return mark_safe(u'<a href="%s">%s</a>' % (url, obj.user))
+
     user_link.allow_tags = True
     user_link.short_description = _('user')
     user_link.admin_order_field = 'user'
@@ -63,21 +65,21 @@ class OneTimeMessageAdmin(admin.ModelAdmin):
     raw_id_fields = ("user",)
     readonly_fields = ['message_link']
     fieldsets = [
-        (None, 
-         {'fields': 
-          ['user', 'title', 'message', 'message_link'], 
+        (None,
+         {'fields':
+              ['user', 'title', 'message', 'message_link'],
           'classes': ['wide']}),
     ]
-    
+
     def message_link(self, obj):
         if obj.uuid:
             url = reverse('accounts:view_message', args=[obj.uuid.hex])
             link = u'<div class="field-box"><a class="deletelink" href="%s">%s</a></div>' % (url, obj.title)
-            
+
             return mark_safe(u'%s' % link)
         else:
             return ''
-    
+
     message_link.allow_tags = True
     message_link.short_description = _('Link')
 
@@ -89,7 +91,7 @@ class ApplicationAdmin(admin.ModelAdmin):
 
 class RoleAdmin(admin.ModelAdmin):
     list_display = ('name', 'order')
-    list_filter = ('group', )
+    list_filter = ('group',)
 
 
 class ApplicationRoleAdmin(admin.ModelAdmin):
@@ -101,9 +103,9 @@ class RoleProfileAdmin(admin.ModelAdmin):
     list_display = ('name', 'uuid', 'is_inheritable_by_org_admin', 'is_inheritable_by_global_admin', 'last_modified')
     date_hierarchy = 'last_modified'
     search_fields = ('name', 'uuid')
-    list_filter = ('application_roles', )
-    filter_horizontal = ('application_roles', )
-    
+    list_filter = ('application_roles',)
+    filter_horizontal = ('application_roles',)
+
 
 class BaseFilter(SimpleListFilter):
     field_path = ''
@@ -111,14 +113,14 @@ class BaseFilter(SimpleListFilter):
     def get_lookup_qs(self, request, model_admin):
         """ Return the queryset for the filter"""
         raise NotImplementedError
-        
+
     def lookups(self, request, model_admin):
         qs = self.get_lookup_qs(request, model_admin)
         rg = [('-', _('(None)'))]
         for entry in qs:
             rg.append((str(entry.id), six.text_type(entry)))
         return rg
-    
+
     def queryset(self, request, queryset):
         if self.value() == '-':
             kwargs = {'%s__isnull' % self.field_path: True}
@@ -134,7 +136,7 @@ class OrganisationsListFilter(BaseFilter):
     title = _('Organisation')
     parameter_name = 'organisation'
     field_path = 'organisations'
-    
+
     def get_lookup_qs(self, request, model_admin):
         return Organisation.objects.filter(user__isnull=False).distinct()
 
@@ -143,9 +145,9 @@ class LastModifiedUserFilter(BaseFilter):
     title = _('last modified by')
     parameter_name = 'last_modified_by_user'
     field_path = 'last_modified_by_user'
-    
+
     def get_lookup_qs(self, request, model_admin):
-        last_modified_by_user_ids = get_user_model().objects.filter(last_modified_by_user__isnull=False).only('last_modified_by_user__id')\
+        last_modified_by_user_ids = get_user_model().objects.filter(last_modified_by_user__isnull=False).only('last_modified_by_user__id') \
             .distinct().values_list('last_modified_by_user__id', flat=True)
         return get_user_model().objects.filter(id__in=last_modified_by_user_ids)
 
@@ -154,12 +156,12 @@ class CreatedByUserFilter(BaseFilter):
     title = _('created by')
     parameter_name = 'created_by_user'
     field_path = 'created_by_user'
-    
+
     def get_lookup_qs(self, request, model_admin):
-        created_by_user_ids = get_user_model().objects.filter(last_modified_by_user__isnull=False).only('created_by_user__id')\
+        created_by_user_ids = get_user_model().objects.filter(last_modified_by_user__isnull=False).only('created_by_user__id') \
             .distinct().values_list('created_by_user__id', flat=True)
         return get_user_model().objects.filter(id__in=created_by_user_ids)
-       
+
 
 class UserAssociatedSystemFilter(BaseFilter):
     title = _('associated system')
@@ -168,20 +170,20 @@ class UserAssociatedSystemFilter(BaseFilter):
 
     def get_lookup_qs(self, request, model_admin):
         return Application.objects.filter(userassociatedsystem__application__isnull=False).distinct()
-        
+
 
 class UserOrganisationsListFilter(OrganisationsListFilter):
     field_path = 'organisations'
 
     def get_lookup_qs(self, request, model_admin):
         return request.user.get_administrable_user_organisations()
-        
+
 
 class UserRegionListFilter(BaseFilter):
     title = _('Admin Region')
     parameter_name = 'admin_region'
     field_path = 'organisations__admin_region'
-    
+
     def get_lookup_qs(self, request, model_admin):
         return AdminRegion.objects.all()
 
@@ -265,7 +267,7 @@ class SuperuserFilter(SimpleListFilter):
             return [('True', _('Yes')), ('False', _('No'))]
         else:
             return []
-    
+
     def queryset(self, request, queryset):
         if self.value() == 'True':
             return queryset.filter(is_superuser=True)
@@ -273,7 +275,7 @@ class SuperuserFilter(SimpleListFilter):
             return queryset.filter(is_superuser=False)
         else:
             return queryset.all()
-    
+
 
 class LoggedInFilter(SimpleListFilter):
     title = _('logged in')
@@ -303,12 +305,12 @@ class GroupAdmin(DjangoGroupAdmin):
     fieldsets = (
         (None, {'fields': ('name', 'permissions'), 'classes': ['wide']}),
     )
-    list_filter = ('role', )
+    list_filter = ('role',)
 
 
 class PermissionAdmin(admin.ModelAdmin):
-    list_filter = ('content_type', )
-    
+    list_filter = ('content_type',)
+
 
 class UserEmailInline(admin.TabularInline):
     model = UserEmail
@@ -317,7 +319,7 @@ class UserEmailInline(admin.TabularInline):
     fieldsets = [
         (None,
          {'fields':
-          ['email', 'confirmed', 'primary', ],
+              ['email', 'confirmed', 'primary', ],
           'classes': ['wide'], }),
     ]
 
@@ -329,7 +331,7 @@ class AddressInline(admin.StackedInline):
     fieldsets = [
         (None,
          {'fields':
-          ['address_type', 'addressee', 'street_address', 'postal_code', 'city', 'country', 'state', 'primary', ],
+              ['address_type', 'addressee', 'street_address', 'postal_code', 'city', 'country', 'state', 'primary', ],
           'classes': ['wide'], }),
     ]
 
@@ -342,7 +344,7 @@ class PhoneNumberInline(admin.TabularInline):
     fieldsets = [
         (None,
          {'fields':
-          ['phone_type', 'phone', 'primary', ],
+              ['phone_type', 'phone', 'primary', ],
           'classes': ['wide'], }),
     ]
 
@@ -353,15 +355,15 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
     save_on_top = True
     list_display = ('id', 'username', 'primary_email', 'first_name', 'last_name', 'is_staff', 'last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user')
     search_fields = ('username', 'first_name', 'last_name', 'useremail__email', 'uuid')
-    list_filter = (SuperuserFilter, ) + ('is_staff', 'is_center', 'is_service', 'is_active', LoggedInFilter, 'groups', ApplicationAdminApplicationFilter, RoleProfileAdminRoleProfileFilter,
-                                         UserAssociatedSystemFilter, UserRegionListFilter,
-                                         RoleProfilesFilter, ExcludeRoleProfilesFilter, ApplicationRolesFilter)  # ,UserOrganisationsListFilter, CreatedByUserFilter, LastModifiedUserFilter
+    list_filter = (SuperuserFilter,) + ('is_staff', 'is_center', 'is_service', 'is_active', LoggedInFilter, 'groups', ApplicationAdminApplicationFilter, RoleProfileAdminRoleProfileFilter,
+                                        UserAssociatedSystemFilter, UserRegionListFilter,
+                                        RoleProfilesFilter, ExcludeRoleProfilesFilter, ApplicationRolesFilter)  # ,UserOrganisationsListFilter, CreatedByUserFilter, LastModifiedUserFilter
     filter_horizontal = DjangoUserAdmin.filter_horizontal + ('admin_associations', 'admin_organisation_countries', 'admin_regions', 'groups', 'application_roles', 'role_profiles', 'organisations',
                                                              'app_admin_organisation_countries', 'app_admin_regions')
     ordering = ['-last_login', '-first_name', '-last_name']
     actions = ['mark_info_mail']
     inlines = [UserEmailInline, PhoneNumberInline, AddressInline, UserAssociatedSystemInline]
-    
+
     fieldsets = (
         (None, {'fields': ('username', 'password'), 'classes': ['wide']}),
         (_('Personal info'), {
@@ -369,18 +371,18 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
             'classes': ['wide']}),
         (_('Important dates'), {'fields': ('valid_until', 'last_login', 'last_ip', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user',
                                            'assigned_organisations'), 'classes': ['wide']}),
-        (_('Organisations'), {'fields': ('organisations', ), 'classes': ['collapse', 'wide']}),
+        (_('Organisations'), {'fields': ('organisations',), 'classes': ['collapse', 'wide']}),
         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'role_profiles', 'application_roles', 'groups', 'user_permissions'), 'classes': ['collapse', 'wide']}),
         (_('User admin'), {'fields': ('admin_associations', 'admin_organisation_countries', 'admin_regions'), 'classes': ['collapse', 'wide']}),
         (_('App admin'), {'fields': ('app_admin_organisation_countries', 'app_admin_regions'), 'classes': ['collapse', 'wide']}),
         (_('Notes'), {'fields': ('notes',), 'classes': ['collapse', 'wide']}),
     )
     non_su_fieldsets = (
-        (None, {'fields': ('username', ), 'classes': ['wide']}),
+        (None, {'fields': ('username',), 'classes': ['wide']}),
         (_('Personal info'), {'fields': ('first_name', 'last_name', 'uuid', 'is_center', 'is_subscriber'), 'classes': ['wide']}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user',
                                            'assigned_organisations'), 'classes': ['wide']}),
-        (_('Organisations'), {'fields': ('organisations', ), 'classes': ['collapse', 'wide']}),
+        (_('Organisations'), {'fields': ('organisations',), 'classes': ['collapse', 'wide']}),
         (_('Permissions'), {'fields': ('is_active', 'role_profiles', 'application_roles'), 'classes': ['collapse', 'wide']}),
     )
     readonly_fields = ['assigned_organisations', 'is_subscriber', 'get_last_modified_by_user', 'last_modified', 'get_created_by_user']
@@ -398,14 +400,14 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         # if this is a new userprofile, there are no values to merge
         if form.instance.pk is None:
             return
-        
+
         # get the form data and make a set from it
         data = form.cleaned_data[field_name]
         new_data = set(data)
-        
+
         manager = getattr(form.instance, field_name)
         ext_data = set(manager.exclude(id__in=allowed_values.values_list('id', flat=True)))
-        
+
         # merge the 2 data sets
         form.cleaned_data[field_name] = (ext_data | new_data)
 
@@ -424,7 +426,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
 
         if db_field.name == "organisations":
             kwargs["queryset"] = user.get_administrable_user_organisations()
-            
+
         if db_field.name == "admin_regions":
             kwargs["queryset"] = user.get_administrable_user_regions()
 
@@ -449,7 +451,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
             self.merge_allowed_values(form, 'application_roles', user.get_administrable_application_roles())
             self.merge_allowed_values(form, 'role_profiles', user.get_administrable_role_profiles())
             self.merge_allowed_values(form, 'organisations', user.get_administrable_user_organisations())
-            
+
         return super(UserAdmin, self).save_form(request, form, change)
 
     def get_last_modified_by_user(self, obj):
@@ -458,15 +460,17 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
             return mark_safe(u'<a href="%s">%s</a>' % (url, obj.last_modified_by_user))
         else:
             raise ObjectDoesNotExist()
+
     get_last_modified_by_user.short_description = _('last modified by')
     get_last_modified_by_user.allow_tags = True
-    
+
     def get_created_by_user(self, obj):
         if obj.created_by_user:
             url = reverse('admin:accounts_user_change', args=(obj.created_by_user.pk,), current_app=self.admin_site.name)
             return mark_safe(u'<a href="%s">%s</a>' % (url, obj.created_by_user))
         else:
             raise ObjectDoesNotExist()
+
     get_created_by_user.short_description = _('created by')
     get_created_by_user.allow_tags = True
 
@@ -515,7 +519,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
             return super(UserAdmin, self).get_readonly_fields(request, obj)
         else:
             return self.non_su_readonly_fields
-                   
+
     def get_queryset(self, request):
         """
         display no superusers in the changelist for non superusers
@@ -532,7 +536,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
                 q = Q(is_superuser=False) & (
                     Q(organisations__in=organisations))
                 return qs.filter(q).distinct()
-                        
+
     def mark_info_mail(self, request, queryset):
         if request.POST.get('post') and request.POST.get('body'):
             n = queryset.count()
@@ -551,14 +555,14 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
                 })
             # Return None to display the change list page again.
             return None
-        
+
         opts = self.model._meta
         app_label = opts.app_label
         if len(queryset) == 1:
-            objects_name = force_unicode(opts.verbose_name)
+            objects_name = force_text(opts.verbose_name)
         else:
-            objects_name = force_unicode(opts.verbose_name_plural)
-        
+            objects_name = force_text(opts.verbose_name_plural)
+
         context = {
             "title": _('Send information mail to selected users'),
             "objects_name": objects_name,
@@ -569,18 +573,19 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         }
         # Display the confirmation page
         return TemplateResponse(request, "admin/accounts/send_mail_selected_confirmation.html", context, current_app=self.admin_site.name)
+
     mark_info_mail.short_description = _('Send info email')
 
 
 class RoleProfileAdminAdmin(admin.ModelAdmin):
     raw_id_fields = ("admin",)
     list_display = ('role_profile', 'admin')
-    list_filter = ('role_profile', )
+    list_filter = ('role_profile',)
     readonly_fields = ("last_modified",)
     fieldsets = [
         (None,
          {'fields':
-          ['role_profile', 'admin', "last_modified"],
+              ['role_profile', 'admin', "last_modified"],
           'classes': ['wide']}),
     ]
 
@@ -588,11 +593,11 @@ class RoleProfileAdminAdmin(admin.ModelAdmin):
 class ApplicationAdminAdmin(admin.ModelAdmin):
     raw_id_fields = ("admin",)
     list_display = ('application', 'admin')
-    list_filter = ('application', )
+    list_filter = ('application',)
     readonly_fields = ("last_modified",)
     fieldsets = [
         (None,
          {'fields':
-          ['application', 'admin', "last_modified"],
+              ['application', 'admin', "last_modified"],
           'classes': ['wide']}),
     ]

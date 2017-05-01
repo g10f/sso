@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 import datetime
 import logging
-import re
 from collections import OrderedDict
 from mimetypes import guess_extension
 
 import pytz
-from django.contrib.auth.validators import UnicodeUsernameValidator
 from nocaptcha_recaptcha.fields import NoReCaptchaField
 
 from django import forms
@@ -16,6 +14,7 @@ from django.contrib.auth.forms import PasswordResetForm as DjangoPasswordResetFo
 from django.contrib.auth.forms import SetPasswordForm as DjangoSetPasswordForm
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.contrib.sites.shortcuts import get_current_site
 from django.core import signing
 from django.core.exceptions import ObjectDoesNotExist
@@ -40,9 +39,9 @@ logger = logging.getLogger(__name__)
 
 class OrganisationChangeForm(BaseForm):
     organisation = forms.ModelChoiceField(queryset=Organisation.objects.filter(
-        is_active=True, organisation_country__association__is_selectable=True).only(
-        'id', 'location', 'name', 'organisation_country__country__iso2_code', 'organisation_country__association__name').prefetch_related(
-        'organisation_country__country', 'organisation_country__association'), label=_("Organisation"), widget=bootstrap.Select())
+        is_active=True, association__is_selectable=True).only(
+        'id', 'location', 'name', 'organisation_country__country__iso2_code', 'association__name').prefetch_related(
+        'organisation_country__country', 'association'), label=_("Organisation"), widget=bootstrap.Select())
 
     class Meta:
         model = OrganisationChange
@@ -113,6 +112,7 @@ class PasswordChangeForm(DjangoSetPasswordForm):
                 self.error_messages['password_incorrect'])
         return old_password
 
+
 PasswordChangeForm.base_fields = OrderedDict(
     (k, PasswordChangeForm.base_fields[k])
     for k in ['old_password', 'new_password1', 'new_password2']
@@ -130,7 +130,7 @@ class PasswordResetForm(DjangoPasswordResetForm):
         'unusable': _("The user account associated with this email address cannot reset the password."),
     }
     email = forms.EmailField(label=_("Email"), max_length=254, widget=bootstrap.EmailInput())
-    
+
     def clean_email(self):
         """
         Validates that an active user exists with the given email address.
@@ -188,6 +188,7 @@ class SetPictureAndPasswordForm(SetPasswordForm):
     """
     for new created users with an optional picture field
     """
+
     def __init__(self, user, *args, **kwargs):
         super(SetPictureAndPasswordForm, self).__init__(user, *args, **kwargs)
         if not user.picture:
@@ -201,14 +202,17 @@ class SetPictureAndPasswordForm(SetPasswordForm):
             base_content_type = picture.content_type.split('/')[0]
             if base_content_type in ['image']:
                 if picture._size > max_upload_size:
-                    raise forms.ValidationError(_('Please keep filesize under %(filesize)s. Current filesize %(current_filesize)s') %
-                                                {'filesize': filesizeformat(max_upload_size), 'current_filesize': filesizeformat(picture._size)})
+                    raise forms.ValidationError(
+                        _('Please keep filesize under %(filesize)s. Current filesize %(current_filesize)s') %
+                        {'filesize': filesizeformat(max_upload_size),
+                         'current_filesize': filesizeformat(picture._size)})
                 # mimetypes.guess_extension return jpe which is quite uncommon for jpeg
                 if picture.content_type == 'image/jpeg':
                     file_ext = '.jpg'
                 else:
                     file_ext = guess_extension(picture.content_type)
-                picture.name = "%s%s" % (get_random_string(7, allowed_chars='abcdefghijklmnopqrstuvwxyz0123456789'), file_ext)
+                picture.name = "%s%s" % (
+                    get_random_string(7, allowed_chars='abcdefghijklmnopqrstuvwxyz0123456789'), file_ext)
             else:
                 raise forms.ValidationError(_('File type is not supported'))
         return picture
@@ -225,11 +229,12 @@ class SetPictureAndPasswordForm(SetPasswordForm):
 
 class AdminUserCreationForm(forms.ModelForm):
     """
-    Django Admin Site UserCreationForm where no password is required and the username is created from first_name and last_name
-    If the password is empty, an random password is created
+    Django Admin Site UserCreationForm where no password is required and the username is created from first_name and 
+    last_name. If the password is empty, an random password is created
     """
     password1 = forms.CharField(label=_("Password"), required=False, widget=forms.PasswordInput)
-    password2 = forms.CharField(label=_("Password confirmation"), required=False, widget=forms.PasswordInput, help_text=_("Enter the same password as above, for verification."))
+    password2 = forms.CharField(label=_("Password confirmation"), required=False, widget=forms.PasswordInput,
+                                help_text=_("Enter the same password as above, for verification."))
     first_name = forms.CharField(label=_('First name'), required=True)
     last_name = forms.CharField(label=_('Last name'), required=True)
 
@@ -256,7 +261,8 @@ class AdminUserCreationForm(forms.ModelForm):
             password = get_random_string(40)
         user.set_password(password)
 
-        user.username = default_username_generator(capfirst(self.cleaned_data.get('first_name')), capfirst(self.cleaned_data.get('last_name')))
+        user.username = default_username_generator(capfirst(self.cleaned_data.get('first_name')),
+                                                   capfirst(self.cleaned_data.get('last_name')))
 
         if commit:
             user.save()
@@ -277,15 +283,24 @@ class UserAddForm(mixins.UserRolesMixin, forms.ModelForm):
     form for SSO User Admins for adding users in the frontend
     """
     email = forms.EmailField(label=_('Email'), required=True, widget=bootstrap.EmailInput())
-    first_name = forms.CharField(label=_('First name'), required=True, widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('first name'))}))
-    last_name = forms.CharField(label=_('Last name'), required=True, widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('last name'))}))
-    gender = forms.ChoiceField(label=_('Gender'), required=True, choices=(BLANK_CHOICE_DASH + User.GENDER_CHOICES), widget=bootstrap.Select())
+    first_name = forms.CharField(label=_('First name'), required=True,
+                                 widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('first name'))}))
+    last_name = forms.CharField(label=_('Last name'), required=True,
+                                widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('last name'))}))
+    gender = forms.ChoiceField(label=_('Gender'), required=True, choices=(BLANK_CHOICE_DASH + User.GENDER_CHOICES),
+                               widget=bootstrap.Select())
     dob = forms.DateField(label=_('Date of birth'), required=False,
-                          widget=bootstrap.SelectDateWidget(years=range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1), required=False))
-    notes = forms.CharField(label=_("Notes"), required=False, max_length=1024, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
-    organisations = forms.ModelChoiceField(queryset=None, required=False, label=_("Organisation"), widget=bootstrap.Select())
-    application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
-    role_profiles = forms.MultipleChoiceField(required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
+                          widget=bootstrap.SelectDateWidget(
+                              years=range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1)))
+    notes = forms.CharField(label=_("Notes"), required=False, max_length=1024,
+                            widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
+    organisations = forms.ModelChoiceField(queryset=None, required=False, label=_("Organisation"),
+                                           widget=bootstrap.Select())
+    application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False,
+                                                       widget=bootstrap.CheckboxSelectMultiple(),
+                                                       label=_("Application roles"))
+    role_profiles = forms.MultipleChoiceField(required=False, widget=bootstrap.CheckboxSelectMultiple(),
+                                              label=_("Role profiles"),
                                               help_text=_('Groups of application roles that are assigned together.'))
 
     error_messages = {
@@ -301,11 +316,13 @@ class UserAddForm(mixins.UserRolesMixin, forms.ModelForm):
         user = request.user
         super(UserAddForm, self).__init__(*args, **kwargs)
         self.fields['application_roles'].queryset = user.get_administrable_application_roles()
-        self.fields['role_profiles'].choices = [(role_profile.id, role_profile) for role_profile in user.get_administrable_role_profiles()]
+        self.fields['role_profiles'].choices = [(role_profile.id, role_profile) for role_profile in
+                                                user.get_administrable_role_profiles()]
         # add custom data
-        self.fields['role_profiles'].dictionary = {str(role_profile.id): role_profile for role_profile in user.get_administrable_role_profiles()}
-        self.fields['organisations'].queryset = user.get_administrable_user_organisations().\
-            filter(is_active=True, organisation_country__association__is_selectable=True)
+        self.fields['role_profiles'].dictionary = {role_profile.id: role_profile for role_profile in
+                                                   user.get_administrable_role_profiles()}
+        self.fields['organisations'].queryset = user.get_administrable_user_organisations(). \
+            filter(is_active=True, association__is_selectable=True)
         if not user.has_perm("accounts.access_all_users"):
             self.fields['organisations'].required = True
 
@@ -323,7 +340,8 @@ class UserAddForm(mixins.UserRolesMixin, forms.ModelForm):
     def save(self, commit=True):
         user = super(UserAddForm, self).save(commit=False)
         user.set_password(get_random_string(40))
-        user.username = default_username_generator(capfirst(self.cleaned_data.get('first_name')), capfirst(self.cleaned_data.get('last_name')))
+        user.username = default_username_generator(capfirst(self.cleaned_data.get('first_name')),
+                                                   capfirst(self.cleaned_data.get('last_name')))
 
         organisation = self.cleaned_data["organisations"]
         if is_validation_period_active(organisation):
@@ -344,7 +362,9 @@ class UserAddForm(mixins.UserRolesMixin, forms.ModelForm):
 class AddressForm(BaseForm):
     class Meta:
         model = UserAddress
-        fields = ('primary', 'address_type', 'addressee', 'street_address', 'city', 'city_native', 'postal_code', 'country', 'region')
+        fields = (
+            'primary', 'address_type', 'addressee', 'street_address', 'city', 'city_native', 'postal_code', 'country',
+            'region')
         widgets = {
             'primary': bootstrap.CheckboxInput(),
             'address_type': bootstrap.Select(),
@@ -356,7 +376,7 @@ class AddressForm(BaseForm):
             'country': bootstrap.Select(),
             'region': bootstrap.TextInput(attrs={'size': 50}),
         }
-    
+
     @staticmethod
     def template():
         return 'edit_inline/stacked.html'
@@ -365,13 +385,13 @@ class AddressForm(BaseForm):
 class PhoneNumberForm(BaseForm):
     class Meta:
         model = UserPhoneNumber
-        fields = ('phone_type', 'phone', 'primary') 
+        fields = ('phone_type', 'phone', 'primary')
         widgets = {
             'phone_type': bootstrap.Select(),
             'phone': bootstrap.TextInput(attrs={'size': 50}),
             'primary': bootstrap.CheckboxInput()
         }
-    
+
     @staticmethod
     def template():
         return 'edit_inline/tabular.html'
@@ -405,7 +425,6 @@ class SelfUserEmailAddForm(forms.Form):
 
 
 class UserEmailForm(BaseForm):
-
     class Meta:
         model = UserEmail
         fields = ('email', 'primary', 'confirmed')
@@ -429,12 +448,18 @@ class UserSelfProfileForm(forms.Form):
     first_name = forms.CharField(label=_('First name'), max_length=30, widget=bootstrap.TextInput())
     last_name = forms.CharField(label=_('Last name'), max_length=30, widget=bootstrap.TextInput())
     picture = forms.ImageField(label=_('Picture'), required=False, widget=bootstrap.ImageWidget())
-    gender = forms.ChoiceField(label=_('Gender'), required=False, choices=(BLANK_CHOICE_DASH + User.GENDER_CHOICES), widget=bootstrap.Select())
-    dob = forms.DateField(label=_('Date of birth'), required=False, 
-                          widget=bootstrap.SelectDateWidget(years=range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1), required=False))
+    gender = forms.ChoiceField(label=_('Gender'), required=False, choices=(BLANK_CHOICE_DASH + User.GENDER_CHOICES),
+                               widget=bootstrap.Select())
+    dob = forms.DateField(label=_('Date of birth'), required=False,
+                          widget=bootstrap.SelectDateWidget(
+                              years=range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1)))
     homepage = forms.URLField(label=_('Homepage'), required=False, max_length=512, widget=bootstrap.TextInput())
-    language = forms.ChoiceField(label=_("Language"), required=False, choices=(BLANK_CHOICE_DASH + sorted(list(settings.LANGUAGES), key=lambda x: x[1])), widget=bootstrap.Select())
-    timezone = forms.ChoiceField(label=_("Timezone"), required=False, choices=BLANK_CHOICE_DASH + zip(pytz.common_timezones, pytz.common_timezones), widget=bootstrap.Select())
+    language = forms.ChoiceField(label=_("Language"), required=False,
+                                 choices=(BLANK_CHOICE_DASH + sorted(list(settings.LANGUAGES), key=lambda x: x[1])),
+                                 widget=bootstrap.Select())
+    timezone = forms.ChoiceField(label=_("Timezone"), required=False,
+                                 choices=BLANK_CHOICE_DASH + list(zip(pytz.common_timezones, pytz.common_timezones)),
+                                 widget=bootstrap.Select())
 
     error_messages = {
         'duplicate_username': _("A user with that username already exists."),
@@ -444,12 +469,13 @@ class UserSelfProfileForm(forms.Form):
         self.user = kwargs.pop('instance')
         object_data = model_to_dict(self.user)
         initial = kwargs.get('initial', {})
-        object_data.update(initial)   
+        object_data.update(initial)
         kwargs['initial'] = object_data
         super(UserSelfProfileForm, self).__init__(*args, **kwargs)
 
-        organisation_field = bootstrap.ReadOnlyField(initial=u', '.join([x.__unicode__() for x in self.user.organisations.all()]),
-                                                     label=_("Organisation"), help_text=_('Please use the contact form for a request to change this value.'))
+        organisation_field = bootstrap.ReadOnlyField(
+            initial=u', '.join([x.__unicode__() for x in self.user.organisations.all()]),
+            label=_("Organisation"), help_text=_('Please use the contact form for a request to change this value.'))
         self.fields['organisation'] = organisation_field
 
     def clean_organisation(self):
@@ -457,7 +483,7 @@ class UserSelfProfileForm(forms.Form):
             # if already assigned to an organisation return None, (readonly use case)
             return None
         else:
-            return self.cleaned_data['organisation'] 
+            return self.cleaned_data['organisation']
 
     def clean_picture(self):
         from django.template.defaultfilters import filesizeformat
@@ -467,32 +493,37 @@ class UserSelfProfileForm(forms.Form):
             base_content_type = picture.content_type.split('/')[0]
             if base_content_type in ['image']:
                 if picture._size > max_upload_size:
-                    raise forms.ValidationError(_('Please keep filesize under %(filesize)s. Current filesize %(current_filesize)s') %
-                                                {'filesize': filesizeformat(max_upload_size), 'current_filesize': filesizeformat(picture._size)})
+                    raise forms.ValidationError(
+                        _('Please keep filesize under %(filesize)s. Current filesize %(current_filesize)s') %
+                        {'filesize': filesizeformat(max_upload_size),
+                         'current_filesize': filesizeformat(picture._size)})
                 # mimetypes.guess_extension return jpe which is quite uncommon for jpeg
                 if picture.content_type == 'image/jpeg':
                     file_ext = '.jpg'
                 else:
                     file_ext = guess_extension(picture.content_type)
-                picture.name = "%s%s" % (get_random_string(7, allowed_chars='abcdefghijklmnopqrstuvwxyz0123456789'), file_ext)
+                picture.name = "%s%s" % (
+                    get_random_string(7, allowed_chars='abcdefghijklmnopqrstuvwxyz0123456789'), file_ext)
             else:
                 raise forms.ValidationError(_('File type is not supported'))
         return picture
-    
+
     def save(self):
         cd = self.cleaned_data
-        if (not self.initial['first_name'] and not self.initial['last_name']) and cd.get('first_name') and cd.get('last_name'):            
+        if (not self.initial['first_name'] and not self.initial['last_name']) and cd.get('first_name') and cd.get(
+                'last_name'):
             # should be a streaming user, which has no initial first_name and last_name
             # we create the new username because the streaming user has his email as username
-            self.user.username = default_username_generator(capfirst(cd.get('first_name')), capfirst(cd.get('last_name')))
-            
+            self.user.username = default_username_generator(capfirst(cd.get('first_name')),
+                                                            capfirst(cd.get('last_name')))
+
         self.user.first_name = cd['first_name']
         self.user.last_name = cd['last_name']
 
         if 'picture' in self.changed_data:
             self.user.picture.delete(save=False)
         self.user.picture = cd['picture'] if cd['picture'] else None
-            
+
         self.user.dob = cd.get('dob', None)
         self.user.gender = cd['gender']
         self.user.homepage = cd['homepage']
@@ -500,12 +531,12 @@ class UserSelfProfileForm(forms.Form):
         self.user.timezone = cd['timezone']
 
         self.user.save()
-        
+
         if 'organisation' in cd and cd['organisation']:
             # user selected an organisation, this can only happen if the user before had
             # no organisation (see clean_organisation).
-            self.user.organisations.add(cd['organisation']) 
-        
+            self.user.organisations.add(cd['organisation'])
+
 
 class CenterSelfProfileForm(forms.Form):
     """
@@ -514,8 +545,12 @@ class CenterSelfProfileForm(forms.Form):
     account_type = bootstrap.ReadOnlyField(label=_("Account type"))
     username = bootstrap.ReadOnlyField(label=_("Username"))
     email = bootstrap.ReadOnlyField(label=_('Email address'))
-    language = forms.ChoiceField(label=_("Language"), required=False, choices=(BLANK_CHOICE_DASH + sorted(list(settings.LANGUAGES), key=lambda x: x[1])), widget=bootstrap.Select())
-    timezone = forms.ChoiceField(label=_("Timezone"), required=False, choices=BLANK_CHOICE_DASH + zip(pytz.common_timezones, pytz.common_timezones), widget=bootstrap.Select())
+    language = forms.ChoiceField(label=_("Language"), required=False,
+                                 choices=(BLANK_CHOICE_DASH + sorted(list(settings.LANGUAGES), key=lambda x: x[1])),
+                                 widget=bootstrap.Select())
+    timezone = forms.ChoiceField(label=_("Timezone"), required=False,
+                                 choices=BLANK_CHOICE_DASH + list(zip(pytz.common_timezones, pytz.common_timezones)),
+                                 widget=bootstrap.Select())
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('instance')
@@ -537,32 +572,33 @@ class CenterSelfProfileForm(forms.Form):
         self.user.language = cd['language']
         self.user.timezone = cd['timezone']
         self.user.save()
-        
+
 
 class UserSelfProfileDeleteForm(forms.Form):
-
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('instance')
         super(UserSelfProfileDeleteForm, self).__init__(*args, **kwargs)
-        
+
     def save(self):
         self.user.is_active = False
         self.user.save()
-            
-    
+
+
 class UserSelfRegistrationForm2(UserSelfRegistrationForm):
     """
     Overwritten UserSelfRegistrationForm Form with additional  organisation field
     """
-    organisation = forms.ModelChoiceField(queryset=Organisation.objects.filter(is_active=True, organisation_country__association__is_selectable=True).select_related('organisation_country__country'), required=False, label=_("Organisation"), widget=bootstrap.Select())
+    organisation = forms.ModelChoiceField(
+        queryset=Organisation.objects.filter(is_active=True, association__is_selectable=True).select_related(
+            'organisation_country__country'), required=False, label=_("Organisation"), widget=bootstrap.Select())
     # for Bots. If you enter anything in this field you will be treated as a robot
     state = forms.CharField(label=_('State'), required=False, widget=bootstrap.HiddenInput())
-    
+
     signer = signing.TimestampSigner()
 
     def __init__(self, data=None, *args, **kwargs):
         super(UserSelfRegistrationForm2, self).__init__(data, *args, **kwargs)
-        
+
         if self.is_captcha_needed():
             self.fields['captcha'] = NoReCaptchaField()
 
@@ -587,7 +623,7 @@ class UserSelfRegistrationForm2(UserSelfRegistrationForm):
             self.data = data
             del self.fields['captcha']
         return super(UserSelfRegistrationForm2, self).clean()
-    
+
     """
     def clean_state(self):
         # Honey pot field for bots, can be used instead of a captcha
@@ -597,12 +633,12 @@ class UserSelfRegistrationForm2(UserSelfRegistrationForm):
             raise forms.ValidationError('wrong value')
         return state
     """
-    
+
     @staticmethod
     def save_data(data, username_generator=default_username_generator):
         registration_profile = UserSelfRegistrationForm.save_data(data, username_generator)
         new_user = registration_profile.user
-        
+
         default_role_profile = User.get_default_role_profile()
         if default_role_profile:
             new_user.role_profiles.add(default_role_profile)
@@ -621,30 +657,40 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
         'duplicate_username': _("A user with that username already exists."),
         'duplicate_email': _("A user with that email address already exists."),
     }
-    username = forms.CharField(label=_("Username"), max_length=40, validators=[UnicodeUsernameValidator()], widget=bootstrap.TextInput())
+    username = forms.CharField(label=_("Username"), max_length=40, validators=[UnicodeUsernameValidator()],
+                               widget=bootstrap.TextInput())
     valid_until = bootstrap.ReadOnlyField(label=_("Valid until"))
     first_name = forms.CharField(label=_('First name'), max_length=30, widget=bootstrap.TextInput())
     last_name = forms.CharField(label=_('Last name'), max_length=30, widget=bootstrap.TextInput())
-    gender = forms.ChoiceField(label=_('Gender'), required=False, choices=(BLANK_CHOICE_DASH + User.GENDER_CHOICES), widget=bootstrap.Select())
+    gender = forms.ChoiceField(label=_('Gender'), required=False, choices=(BLANK_CHOICE_DASH + User.GENDER_CHOICES),
+                               widget=bootstrap.Select())
     dob = forms.DateField(label=_('Date of birth'), required=False,
-                          widget=bootstrap.SelectDateWidget(years=range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1), required=False))
+                          widget=bootstrap.SelectDateWidget(
+                              years=range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1)))
     status = bootstrap.ReadOnlyField(label=_('Status'))
-    organisations = forms.ModelChoiceField(queryset=None, required=False, label=_("Organisation"), widget=bootstrap.Select())
-    application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"),
-                                                       help_text=_('* Application roles which are included by role profiles'))
-    notes = forms.CharField(label=_("Notes"), required=False, max_length=1024, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
-    role_profiles = forms.MultipleChoiceField(required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
+    organisations = forms.ModelChoiceField(queryset=None, required=False, label=_("Organisation"),
+                                           widget=bootstrap.Select())
+    application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False,
+                                                       widget=bootstrap.CheckboxSelectMultiple(),
+                                                       label=_("Application roles"),
+                                                       help_text=_(
+                                                           '* Application roles which are included by role profiles'))
+    notes = forms.CharField(label=_("Notes"), required=False, max_length=1024,
+                            widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
+    role_profiles = forms.MultipleChoiceField(required=False, widget=bootstrap.CheckboxSelectMultiple(),
+                                              label=_("Role profiles"),
                                               help_text=_('Groups of application roles that are assigned together.'))
 
     # extend_validity = forms.BooleanField(label=_('Extend validity'), widget=bootstrap.CheckboxInput(), required=False)
-    created_by_user = forms.CharField(label=_("Created by"), required=False, widget=bootstrap.TextInput(attrs={'disabled': ''}))
+    created_by_user = forms.CharField(label=_("Created by"), required=False,
+                                      widget=bootstrap.TextInput(attrs={'disabled': ''}))
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request')
         self.user = kwargs.pop('instance')
         user_data = model_to_dict(self.user)
         user_data['status'] = _('active') if self.user.is_active else _('blocked')
-        user_data['role_profiles'] = [str(role_profile.id) for role_profile in self.user.role_profiles.all()]
+        user_data['role_profiles'] = [role_profile.id for role_profile in self.user.role_profiles.all()]
 
         if self.user.organisations.count() == 1:
             user_data['organisations'] = self.user.organisations.first()
@@ -659,16 +705,21 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
         super(UserProfileForm, self).__init__(*args, **kwargs)
 
         self.fields['application_roles'].queryset = self.request.user.get_administrable_application_roles()
-        # role_profiles field with custom data to show application_roles for each role profile, without a query for every role profile
-        self.fields['role_profiles'].choices = [(role_profile.id, role_profile) for role_profile in self.request.user.get_administrable_role_profiles()]
-        self.fields['role_profiles'].dictionary = {str(role_profile.id): role_profile for role_profile in self.request.user.get_administrable_role_profiles()}
+        # role_profiles field with custom data to show application_roles for each role profile,
+        # without a query for every role profile
+        self.fields['role_profiles'].choices = [(role_profile.id, role_profile) for role_profile in
+                                                self.request.user.get_administrable_role_profiles()]
+        self.fields['role_profiles'].dictionary = {role_profile.id: role_profile for role_profile in
+                                                   self.request.user.get_administrable_role_profiles()}
 
         if self.user.organisations.count() > 1:
-            self.fields['organisations'] = forms.ModelMultipleChoiceField(queryset=None, required=False,
-                                                                          widget=bootstrap.SelectMultipleWithCurrently(currently=u', '.join([x.__unicode__() for x in self.user.organisations.all()])),
-                                                                          label=_("Organisation"))
-        self.fields['organisations'].queryset = self.request.user.get_administrable_user_organisations().\
-            filter(is_active=True, organisation_country__association__is_selectable=True)
+            self.fields['organisations'] = forms.ModelMultipleChoiceField(
+                queryset=None, required=False,
+                widget=bootstrap.SelectMultipleWithCurrently(
+                    currently=u', '.join([x.__unicode__() for x in self.user.organisations.all()])),
+                label=_("Organisation"))
+        self.fields['organisations'].queryset = self.request.user.get_administrable_user_organisations(). \
+            filter(is_active=True, association__is_selectable=True)
 
     def clean_username(self):
         username = self.cleaned_data["username"]
@@ -713,12 +764,17 @@ class CenterProfileForm(mixins.UserRolesMixin, forms.Form):
     status = bootstrap.ReadOnlyField(label=_('Status'))
     username = bootstrap.ReadOnlyField(label=_("Username"))
     email = bootstrap.ReadOnlyField(label=_('Email address'))
-    notes = forms.CharField(label=_("Notes"), required=False, max_length=1024, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
-    application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
-    role_profiles = forms.MultipleChoiceField(required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
+    notes = forms.CharField(label=_("Notes"), required=False, max_length=1024,
+                            widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
+    application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False,
+                                                       widget=bootstrap.CheckboxSelectMultiple(),
+                                                       label=_("Application roles"))
+    role_profiles = forms.MultipleChoiceField(required=False, widget=bootstrap.CheckboxSelectMultiple(),
+                                              label=_("Role profiles"),
                                               help_text=_('Groups of application roles that are assigned together.'))
 
-    created_by_user = forms.CharField(label=_("Created by"), required=False, widget=bootstrap.TextInput(attrs={'disabled': ''}))
+    created_by_user = forms.CharField(label=_("Created by"), required=False,
+                                      widget=bootstrap.TextInput(attrs={'disabled': ''}))
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request')
@@ -734,9 +790,11 @@ class CenterProfileForm(mixins.UserRolesMixin, forms.Form):
         super(CenterProfileForm, self).__init__(*args, **kwargs)
 
         self.fields['application_roles'].queryset = self.request.user.get_administrable_application_roles()
-        self.fields['role_profiles'].choices = [(role_profile.id, role_profile) for role_profile in self.request.user.get_administrable_role_profiles()]
+        self.fields['role_profiles'].choices = [(role_profile.id, role_profile) for role_profile in
+                                                self.request.user.get_administrable_role_profiles()]
         # add custom data
-        self.fields['role_profiles'].dictionary = {str(role_profile.id): role_profile for role_profile in self.request.user.get_administrable_role_profiles()}
+        self.fields['role_profiles'].dictionary = {role_profile.id: role_profile for role_profile in
+                                                   self.request.user.get_administrable_role_profiles()}
 
         if self.user.organisations.exists():
             organisation = u', '.join([x.__unicode__() for x in self.user.organisations.all()])
@@ -769,8 +827,11 @@ class AppAdminUserProfileForm(mixins.UserRolesMixin, forms.Form):
     last_name = bootstrap.ReadOnlyField(label=_("Last name"))
     email = bootstrap.ReadOnlyField(label=_("Email"))
     organisations = bootstrap.ReadOnlyField(label=_("Organisation"))
-    application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Application roles"))
-    role_profiles = forms.MultipleChoiceField(required=False, widget=bootstrap.CheckboxSelectMultiple(), label=_("Role profiles"),
+    application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False,
+                                                       widget=bootstrap.CheckboxSelectMultiple(),
+                                                       label=_("Application roles"))
+    role_profiles = forms.MultipleChoiceField(required=False, widget=bootstrap.CheckboxSelectMultiple(),
+                                              label=_("Role profiles"),
                                               help_text=_('Groups of application roles that are assigned together.'))
 
     def __init__(self, *args, **kwargs):
@@ -787,15 +848,19 @@ class AppAdminUserProfileForm(mixins.UserRolesMixin, forms.Form):
         super(AppAdminUserProfileForm, self).__init__(*args, **kwargs)
 
         self.fields['application_roles'].queryset = self.request.user.get_administrable_app_admin_application_roles()
-        self.fields['role_profiles'].choices = [(role_profile.id, role_profile) for role_profile in self.request.user.get_administrable_app_admin_role_profiles()]
+        self.fields['role_profiles'].choices = [(role_profile.id, role_profile) for role_profile in
+                                                self.request.user.get_administrable_app_admin_role_profiles()]
         # add custom data
-        self.fields['role_profiles'].dictionary = {str(role_profile.id): role_profile for role_profile in self.request.user.get_administrable_app_admin_role_profiles()}
+        self.fields['role_profiles'].dictionary = {role_profile.id: role_profile for role_profile in
+                                                   self.request.user.get_administrable_app_admin_role_profiles()}
 
     def save(self):
         cd = self.cleaned_data
         current_user = self.request.user
 
-        self.update_user_m2m_fields('application_roles', current_user, admin_attribute_format='get_administrable_app_admin_%s')
-        self.update_user_m2m_fields('role_profiles', current_user, admin_attribute_format='get_administrable_app_admin_%s')
+        self.update_user_m2m_fields('application_roles', current_user,
+                                    admin_attribute_format='get_administrable_app_admin_%s')
+        self.update_user_m2m_fields('role_profiles', current_user,
+                                    admin_attribute_format='get_administrable_app_admin_%s')
 
         return self.user

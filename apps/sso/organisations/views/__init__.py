@@ -2,7 +2,7 @@
 import csv
 import logging
 
-from django.utils.six.moves.urllib.parse import urlunsplit
+from six.moves.urllib_parse import urlunsplit
 
 from django.conf import settings
 from django.contrib import messages
@@ -23,7 +23,8 @@ from sso.emails.models import EmailForward, Email, EmailAlias
 from sso.forms.helpers import get_optional_inline_formset
 from sso.oauth2.models import allowed_hosts
 from sso.organisations.forms import OrganisationAddressForm, OrganisationPhoneNumberForm, OrganisationCountryAdminForm, \
-    OrganisationRegionAdminForm, OrganisationCenterAdminForm, OrganisationRegionAdminCreateForm, OrganisationCountryAdminCreateForm, OrganisationPictureForm
+    OrganisationRegionAdminForm, OrganisationCenterAdminForm, OrganisationRegionAdminCreateForm, OrganisationCountryAdminCreateForm, OrganisationPictureForm, \
+    OrganisationAssociationAdminCreateForm, OrganisationAssociationAdminForm
 from sso.organisations.models import AdminRegion, Organisation, OrganisationPicture, Association, multiple_associations
 from sso.organisations.models import OrganisationAddress, OrganisationPhoneNumber, get_near_organisations
 from sso.utils.ucsv import UnicodeWriter
@@ -61,7 +62,7 @@ class OrganisationBaseView(object):
 
         if self.object and self.request.user.is_authenticated:
             context['has_organisation_access'] = self.request.user.has_organisation_access(self.object.uuid)
-        
+
         context.update(kwargs)
         return super(OrganisationBaseView, self).get_context_data(**context)
 
@@ -95,14 +96,14 @@ class MyOrganisationDetailView(OrganisationBaseView, DetailView):
 
     def get_object(self, queryset=None):
         return self.request.user.organisations.first()
-    
+
 
 class OrganisationDeleteView(OrganisationBaseView, DeleteView):
     def get_success_url(self):
         return reverse('organisations:organisation_list')
 
     @method_decorator(permission_required('organisations.delete_organisation', raise_exception=True))
-    def dispatch(self, request, *args, **kwargs):       
+    def dispatch(self, request, *args, **kwargs):
         # additionally check if the user is admin of the organisation       
         if not request.user.has_organisation_access(kwargs.get('uuid')):
             raise PermissionDenied
@@ -115,25 +116,37 @@ class OrganisationDeleteView(OrganisationBaseView, DeleteView):
         """
         self.object = self.get_object()
         success_url = self.get_success_url()
-        
+
         email = self.object.email
         self.object.delete()
-        
+
         if email:
-            email.delete() 
-        
+            email.delete()
+
         return HttpResponseRedirect(success_url)
 
 
 class OrganisationCreateView(OrganisationBaseView, CreateView):
+    form_classes = {
+        'email_management': {
+                'region': OrganisationRegionAdminCreateForm,
+                'country': OrganisationCountryAdminCreateForm,
+                'association': OrganisationAssociationAdminCreateForm
+            },
+        'default': {
+                'region': OrganisationRegionAdminForm,
+                'country': OrganisationCountryAdminForm,
+                'association': OrganisationAssociationAdminForm
+            }
+    }
     template_name_suffix = '_create_form'
-    
+
     def get_success_url(self):
         return urlunsplit(('', '', reverse('organisations:organisation_update', args=[self.object.uuid.hex]), self.request.GET.urlencode(safe='/'), ''))
 
     @method_decorator(login_required)
     @method_decorator(permission_required('organisations.add_organisation', raise_exception=True))
-    def dispatch(self, request, *args, **kwargs): 
+    def dispatch(self, request, *args, **kwargs):
         return super(OrganisationCreateView, self).dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
@@ -149,18 +162,19 @@ class OrganisationCreateView(OrganisationBaseView, CreateView):
         Returns the form class to use in this view.
         """
         user = self.request.user
-        email_management = settings.SSO_ORGANISATION_EMAIL_MANAGEMENT
 
-        if user.get_assignable_organisation_countries().exists():
-            if email_management:
-                return OrganisationCountryAdminCreateForm
-            else:
-                return OrganisationCountryAdminForm
+        email_management = 'email_management' if settings.SSO_ORGANISATION_EMAIL_MANAGEMENT else 'default'
+
+        if user.get_assignable_associations().exists():
+            admin_type = 'association'
+        elif user.get_assignable_organisation_countries().exists():
+            admin_type = 'country'
+        elif user.get_assignable_organisation_regions().exists():
+            admin_type = 'region'
         else:
-            if email_management:
-                return OrganisationRegionAdminCreateForm
-            else:
-                return OrganisationRegionAdminForm
+            raise PermissionDenied
+
+        return self.form_classes[email_management][admin_type]
 
 
 class OrganisationPictureUpdateView(OrganisationBaseView, FormsetsUpdateView):
@@ -195,20 +209,21 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
     form_classes = {
         'center': OrganisationCenterAdminForm,
         'region': OrganisationRegionAdminForm,
-        'country': OrganisationCountryAdminForm
+        'country': OrganisationCountryAdminForm,
+        'association': OrganisationAssociationAdminForm
     }
     form_class = OrganisationCenterAdminForm
-    
+
     @method_decorator(login_required)
     @method_decorator(permission_required('organisations.change_organisation', raise_exception=True))
-    def dispatch(self, request, *args, **kwargs): 
+    def dispatch(self, request, *args, **kwargs):
         # additionally check if the user is admin of the organisation       
         user = request.user
         if not user.has_organisation_access(kwargs.get('uuid')):
             raise PermissionDenied
 
         return super(OrganisationUpdateView, self).dispatch(request, *args, **kwargs)
-    
+
     def get_form_kwargs(self):
         """
         add user to form kwargs for filtering the adminregions
@@ -216,7 +231,7 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
         kwargs = super(OrganisationUpdateView, self).get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
-    
+
     def get_object(self, queryset=None):
         """
         check if the user is a center, region or country admin for the center and save 
@@ -224,7 +239,9 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
         """
         user = self.request.user
         obj = super(OrganisationUpdateView, self).get_object(queryset)
-        if obj.organisation_country in user.get_assignable_organisation_countries():
+        if obj.association in user.get_assignable_associations():
+            self.admin_type = 'association'
+        elif obj.organisation_country in user.get_assignable_organisation_countries():
             self.admin_type = 'country'
         elif obj.admin_region in user.get_assignable_organisation_regions():
             self.admin_type = 'region'
@@ -237,16 +254,16 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
         Returns the form class to use in this view.
         """
         return self.form_classes[self.admin_type]
-        
+
     def get_formsets(self):
 
         address_extra = 0
         phone_number_extra = 1
 
         address_count = self.object.organisationaddress_set.count()
-        if address_count == 0: 
+        if address_count == 0:
             address_extra = 1
-        
+
         AddressInlineFormSet = inlineformset_factory(self.model, OrganisationAddress, OrganisationAddressForm, extra=address_extra, max_num=2)
         PhoneNumberInlineFormSet = inlineformset_factory(self.model, OrganisationPhoneNumber, OrganisationPhoneNumberForm, max_num=6, extra=phone_number_extra)
 
@@ -302,29 +319,30 @@ class IsActiveFilter(ViewChoicesFilter):
     choices = (('1', _('Active Organisations')), ('2', _('Inactive Organisations')))
     select_text = _('active/inactive')
     select_all_text = _("All")
-    
+
     def map_to_database(self, value):
         return True if (value.pk == "1") else False
 
 
 class AssociationFilter(ViewQuerysetFilter):
     name = 'association'
-    qs_name = 'organisation_country__association'
+    qs_name = 'association'
     model = Association
     select_text = _('Association')
     select_all_text = _('All Associations')
-    remove = 'country,center,app_role,role_profile,p'
+    remove = 'country,p'
+    all_remove = 'country'
 
 
 class CountryFilter(ViewQuerysetFilter):
     name = 'country'
-    qs_name = 'organisation_country__country'
+    qs_name = 'organisationaddress__country'
     model = Country
-    filter_list = Country.objects.filter(organisationcountry__isnull=False)
+    filter_list = Country.objects.filter(organisationaddress__isnull=False)
     select_text = _('Country')
     select_all_text = _('All Countries')
-    all_remove = 'center'
-    remove = 'center,app_role,role_profile,p'
+    all_remove = 'admin_region'
+    remove = 'admin_region,p'
 
 
 class AdminRegionFilter(ViewQuerysetFilter):
@@ -333,14 +351,14 @@ class AdminRegionFilter(ViewQuerysetFilter):
     filter_list = AdminRegion.objects.filter(organisation__isnull=False).distinct()
     select_text = _('Region')
     select_all_text = _('All Regions')
-    all_remove = 'region,center'
-    remove = 'region,center,app_role,role_profile,p'
-    
+    all_remove = ''
+    remove = 'p'
+
 
 class MyOrganisationsFilter(ViewButtonFilter):
     name = 'my_organisations'
     select_text = _('My Organisations')
-    
+
     def apply(self, view, qs, default=''):
         if not view.request.user.is_superuser and view.request.user.administrable_organisations_exists():
             value = self.get_value_from_query_param(view, default)
@@ -355,7 +373,7 @@ class MyOrganisationsFilter(ViewButtonFilter):
 class Distance(object):
     verbose_name = _('distance')
     sortable = True
-    
+
     def __str__(self):
         return 'distance'
 
@@ -366,7 +384,7 @@ class OrganisationList(ListView):
     list_display = ['name', _('picture'), 'email', 'google maps', 'organisation_country', 'founded']
     filename = None
     export = False
-    
+
     def get_list_display(self):
         latlng = self.request.GET.get('latlng', '')
         if latlng:
@@ -374,7 +392,7 @@ class OrganisationList(ListView):
         else:
             list_display = self.list_display
         return list_display
-    
+
     def get_default_ordering(self):
         latlng = self.request.GET.get('latlng', '')
         if latlng:
@@ -385,13 +403,14 @@ class OrganisationList(ListView):
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super(OrganisationList, self).dispatch(request, *args, **kwargs)
-        
+
     def get_queryset(self):
         """
         Get the list of items for this view. This must be an iterable, and may
         be a queryset (in which qs-specific behavior will be enabled).
         """
-        qs = super(OrganisationList, self).get_queryset().only('location', 'uuid', 'name', 'email', 'organisation_country', 'founded').prefetch_related('organisation_country__country', 'email', 'organisationpicture_set')
+        qs = super(OrganisationList, self).get_queryset().only('location', 'uuid', 'name', 'email', 'organisation_country', 'founded').prefetch_related('organisationaddress_set__country', 'email',
+                                                                                                                                                        'organisationpicture_set')
         return self.apply_filters(qs)
 
     def get_context_data(self, **kwargs):
@@ -400,27 +419,31 @@ class OrganisationList(ListView):
         for h in headers:
             if h['sortable'] and h['sorted']:
                 num_sorted_fields += 1
-        
+
         my_organisations_filter = MyOrganisationsFilter().get(self)
         association_filter = AssociationFilter().get(self)
         if multiple_associations():
             if self.association:
-                countries = Country.objects.filter(organisationcountry__association=self.association, organisationcountry__organisation__isnull=False).distinct()
+                countries = Country.objects.filter(organisationaddress__organisation__association=self.association).distinct()
             else:
                 countries = Country.objects.none()
         else:
             association_filter = None
-            countries = Country.objects.filter(organisationcountry__organisation__isnull=False).distinct()
+            countries = Country.objects.filter(organisationaddress__isnull=False).distinct()
 
         country_filter = CountryFilter().get(self, countries)
         center_type_filter = CenterTypeFilter().get(self)
-        admin_region_filter = AdminRegionFilter().get(self)
-        
+        if self.country:
+            admin_regions = AdminRegion.objects.filter(organisation_country__country=self.country)
+        else:
+            admin_regions = AdminRegion.objects.none()
+        admin_region_filter = AdminRegionFilter().get(self, admin_regions)
+
         filters = [my_organisations_filter, association_filter, country_filter, admin_region_filter, center_type_filter]
         # is_active filter is only for admins
-        if self.request.user.is_organisation_admin:  
+        if self.request.user.is_organisation_admin:
             filters.append(IsActiveFilter().get(self))
-        
+
         context = {
             'result_headers': headers,
             'num_sorted_fields': num_sorted_fields,

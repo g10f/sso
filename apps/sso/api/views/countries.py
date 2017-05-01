@@ -40,14 +40,14 @@ class CountryMixin(object):
             if obj.country_groups.all().exists():
                 data['country_groups'] = "%s%s?country=%s" % (base, reverse('api:v2_country_groups'), obj.country.iso2_code)
         return data
-  
+
 
 class CountryDetailView(CountryMixin, JsonDetailView):
     slug_field = 'country__iso2_code'
     slug_url_kwarg = 'iso2_code'
     http_method_names = ['get', 'options']
     operations = {}
-    
+
     def get_queryset(self):
         return super(CountryDetailView, self).get_queryset().prefetch_related('country', 'email')
 
@@ -56,13 +56,16 @@ class CountryDetailView(CountryMixin, JsonDetailView):
 
 
 class CountryList(CountryMixin, JsonListView):
-
     def get_queryset(self):
         qs = super(CountryList, self).get_queryset().filter(is_active=True).prefetch_related('country', 'email')
         name = self.request.GET.get('q', None)
         if name:
             qs = qs.filter(country__name__icontains=name)
-            
+
+        association_id = self.request.GET.get('association_id', None)
+        if association_id:
+            qs = qs.filter(association__uuid=association_id)
+
         country_group_id = self.request.GET.get('country_group_id', None)
         if country_group_id:
             qs = qs.filter(country_groups__uuid=country_group_id)
@@ -72,6 +75,6 @@ class CountryList(CountryMixin, JsonListView):
             parsed = parse_datetime_with_timezone_support(modified_since)
             if parsed is None:
                 raise ValueError("can not parse %s" % modified_since)
-            qs = qs.filter(Q(last_modified__gte=parsed) | Q(country__last_modified__gte=parsed) )
+            qs = qs.filter(Q(last_modified__gte=parsed) | Q(country__last_modified__gte=parsed))
 
         return qs

@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.admin import SimpleListFilter
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from django.utils.translation import ungettext
@@ -82,9 +82,9 @@ class RegistrationAdmin(admin.ModelAdmin):
         if changecount:
             opts = self.model._meta
             if changecount == 1:
-                name = force_unicode(opts.verbose_name)
+                name = force_text(opts.verbose_name)
             else:
-                name = force_unicode(opts.verbose_name_plural)
+                name = force_text(opts.verbose_name_plural)
 
             msg = ungettext("%(count)s %(name)s was %(action_result_text)s.",
                             "%(count)s %(name)s were %(action_result_text)s.",

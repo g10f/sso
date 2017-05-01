@@ -16,7 +16,7 @@ class URLValidatorEx(URLValidator):
     def __init__(self, domain, **kwargs):
         regex = re.compile(
             r'^(?:[a-z0-9\.\-]*)://'  # scheme is validated separately
-            + domain +
+            + str(domain) +
             r'(?:/?|[/?]\S+)$', re.IGNORECASE)
         if kwargs is None:
             kwargs = {}

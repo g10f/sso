@@ -6,11 +6,13 @@ register = Library()
 
 DOT = '.'
 
+
 @register.simple_tag
 def query_string(cl, new_param_name, new_param_value, remove=None):
     if remove:
         remove = remove.split(',')
     return cl.get_query_string(new_params={new_param_name: new_param_value}, remove=remove)
+
 
 @register.simple_tag
 def paginator_info(page):

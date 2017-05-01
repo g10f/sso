@@ -15,7 +15,6 @@ from django.db.models import Q
 from django.db.utils import IntegrityError
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
-from l10n.models import Country
 from sso.accounts.models import OrganisationChange
 from sso.accounts.models.application import ApplicationRole, RoleProfile, Application, Role, get_applicationrole_ids
 from sso.accounts.models.user_data import UserEmail
@@ -91,6 +90,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     admin_associations = models.ManyToManyField(Association, verbose_name=_('admin associations'), blank=True)
     app_admin_regions = models.ManyToManyField(AdminRegion, related_name='app_admin_user', verbose_name=_('app admin regions'), blank=True)
     app_admin_organisation_countries = models.ManyToManyField(OrganisationCountry, related_name='app_admin_user', verbose_name=_('app admin countries'), blank=True)
+    app_admin_associations = models.ManyToManyField(Association, related_name='app_admin_user', verbose_name=_('app admin associations'), blank=True)
     application_roles = models.ManyToManyField(ApplicationRole, verbose_name=_('application roles'), blank=True)
     role_profiles = models.ManyToManyField(RoleProfile, verbose_name=_('role profiles'), blank=True, help_text=_('Organises a group of application roles that are usually assigned together.'))
     last_modified_by_user = CurrentUserField(verbose_name=_('last modified by'), related_name='+', on_delete=models.SET_NULL)
@@ -344,11 +344,14 @@ class User(AbstractBaseUser, PermissionsMixin):
         return a list of organisations from all the users we have admin rights on
         """
         if self.is_global_user_admin:
-            return Organisation.objects.all().select_related('organisation_country__country', 'email', 'organisation_country__association')
+            return Organisation.objects.all().select_related('organisation_country__country', 'email', 'association')
         elif self.is_user_admin:
             return Organisation.objects.filter(
-                Q(pk__in=self.organisations.all()) | Q(admin_region__in=self.admin_regions.all()) | Q(organisation_country__in=self.admin_organisation_countries.all())) \
-                .select_related('organisation_country__country', 'email', 'organisation_country__association').distinct()
+                Q(pk__in=self.organisations.all()) |
+                Q(admin_region__in=self.admin_regions.all()) |
+                Q(organisation_country__in=self.admin_organisation_countries.all()) |
+                Q(association__in=self.admin_associations.all())) \
+                .select_related('organisation_country__country', 'email', 'association').distinct()
         else:
             return Organisation.objects.none()
 
@@ -361,7 +364,11 @@ class User(AbstractBaseUser, PermissionsMixin):
             return AdminRegion.objects.all()
         elif self.is_user_admin:
             return AdminRegion.objects.filter(
-                Q(organisation__in=self.organisations.all()) | Q(pk__in=self.admin_regions.all()) | Q(organisation_country__in=self.admin_organisation_countries.all())).distinct()
+                Q(organisation__in=self.organisations.all()) |
+                Q(pk__in=self.admin_regions.all()) |
+                Q(organisation_country__in=self.admin_organisation_countries.all()) |
+                Q(organisation_country__association__in=self.admin_associations.all())) \
+                .distinct()
         else:
             return AdminRegion.objects.none()
 
@@ -371,11 +378,15 @@ class User(AbstractBaseUser, PermissionsMixin):
         return a list of countries from all the users we have admin rights on
         """
         if self.is_global_user_admin:
-            return OrganisationCountry.objects.filter(is_active=True).distinct().select_related('country')
+            return OrganisationCountry.objects.filter(is_active=True).distinct().select_related('country', 'association')
         elif self.is_user_admin:
             return OrganisationCountry.objects.filter(
                 Q(organisation__admin_region__in=self.admin_regions.all()) |  # for adminregions without a associated country
-                Q(organisation__in=self.organisations.all()) | Q(adminregion__in=self.admin_regions.all()) | Q(pk__in=self.admin_organisation_countries.all())).select_related('country').distinct()
+                Q(organisation__in=self.organisations.all()) |
+                Q(adminregion__in=self.admin_regions.all()) |
+                Q(pk__in=self.admin_organisation_countries.all()) |
+                Q(association__in=self.admin_associations.all())) \
+                .select_related('country', 'association').distinct()
         else:
             return OrganisationCountry.objects.none()
 
@@ -392,15 +403,18 @@ class User(AbstractBaseUser, PermissionsMixin):
     @memoize
     def get_administrable_app_admin_user_countries(self):
         """
-        return a list of countries from all the users we have admin rights on
+        return a list of countries from all the users we have app admin rights on
         """
         if self.is_global_app_admin:
-            return OrganisationCountry.objects.all().select_related('country')
+            return OrganisationCountry.objects.all().select_related('country', 'association')
         elif self.is_app_admin():
             return OrganisationCountry.objects.filter(
                 Q(organisation__admin_region__in=self.app_admin_regions.all()) |  # for admin regions without a associated country
-                Q(organisation__in=self.organisations.all()) | Q(adminregion__in=self.app_admin_regions.all()) | Q(pk__in=self.app_admin_organisation_countries.all())).select_related(
-                'country').distinct()
+                Q(organisation__in=self.organisations.all()) |
+                Q(adminregion__in=self.app_admin_regions.all()) |
+                Q(pk__in=self.app_admin_organisation_countries.all()) |
+                Q(association__in=self.app_admin_associations.all())). \
+                select_related('country', 'association').distinct()
         else:
             return OrganisationCountry.objects.none()
 
@@ -413,8 +427,11 @@ class User(AbstractBaseUser, PermissionsMixin):
             return Organisation.objects.all().select_related('organisation_country__country', 'email')
         elif self.is_app_admin():
             return Organisation.objects.filter(
-                Q(pk__in=self.organisations.all()) | Q(admin_region__in=self.app_admin_regions.all()) | Q(organisation_country__in=self.app_admin_organisation_countries.all())).select_related(
-                'organisation_country__country', 'email').distinct()
+                Q(pk__in=self.organisations.all()) |
+                Q(admin_region__in=self.app_admin_regions.all()) |
+                Q(organisation_country__in=self.app_admin_organisation_countries.all()) |
+                Q(association__in=self.app_admin_associations.all())) \
+                .select_related('organisation_country__country', 'email').distinct()
         else:
             return Organisation.objects.none()
 
@@ -427,7 +444,11 @@ class User(AbstractBaseUser, PermissionsMixin):
             return AdminRegion.objects.all()
         elif self.is_app_admin():
             return AdminRegion.objects.filter(
-                Q(organisation__in=self.organisations.all()) | Q(pk__in=self.app_admin_regions.all()) | Q(organisation_country__in=self.app_admin_organisation_countries.all())).distinct()
+                Q(organisation__in=self.organisations.all()) |
+                Q(pk__in=self.app_admin_regions.all()) |
+                Q(organisation_country__in=self.app_admin_organisation_countries.all()) |
+                Q(organisation_country__association__in=self.app_admin_associations.all())) \
+                .distinct()
         else:
             return AdminRegion.objects.none()
 
@@ -437,10 +458,15 @@ class User(AbstractBaseUser, PermissionsMixin):
         return a list of all organisations the user has admin rights on
         """
         if self.has_perms(["organisations.change_organisation", "organisations.access_all_organisations"]):
-            return Organisation.objects.filter(organisation_country__association__is_external=False).prefetch_related('organisation_country__country', 'email', 'organisationpicture_set')
+            return Organisation.objects.filter(association__is_external=False).prefetch_related('organisation_country__country', 'email', 'organisationpicture_set')
         elif self.has_perm("organisations.change_organisation"):
-            return Organisation.objects.filter(Q(organisation_country__association__is_external=False) & (
-                Q(user=self) | Q(admin_region__user=self) | Q(organisation_country__user=self))).prefetch_related('organisation_country__country', 'email', 'organisationpicture_set').distinct()
+            return Organisation.objects.filter(
+                Q(association__is_external=False)
+                & (Q(user=self) |
+                   Q(admin_region__user=self) |
+                   Q(organisation_country__user=self) |
+                   Q(association__user=self))) \
+                .prefetch_related('organisation_country__country', 'email', 'organisationpicture_set').distinct()
         else:
             return Organisation.objects.none()
 
@@ -453,9 +479,25 @@ class User(AbstractBaseUser, PermissionsMixin):
             return Organisation.objects.all().exists()
         elif self.has_perm("organisations.change_organisation"):
             return Organisation.objects.filter(
-                Q(user=self) | Q(admin_region__user=self) | Q(organisation_country__user=self)).exists()
+                Q(association__is_external=False)
+                & (Q(user=self) |
+                   Q(admin_region__user=self) |
+                   Q(organisation_country__user=self) |
+                   Q(association__user=self))).exists()
         else:
             return False
+
+    @memoize
+    def get_assignable_associations(self):
+        """
+        return a list of Associations the user can assign to organisations
+        """
+        if self.has_perms(["organisations.change_organisation", "organisations.access_all_organisations"]):
+            return Association.objects.filter(is_active=True, is_external=False).distinct()
+        elif self.has_perm("organisations.change_organisation"):
+            return Association.objects.filter(user=self, is_active=True, is_external=False)
+        else:
+            return Association.objects.none()
 
     @memoize
     def get_assignable_organisation_countries(self):
@@ -463,11 +505,16 @@ class User(AbstractBaseUser, PermissionsMixin):
         return a list of OrganisationCountry the user can assign to organisations
         """
         if self.has_perms(["organisations.change_organisation", "organisations.access_all_organisations"]):
-            return OrganisationCountry.objects.filter(is_active=True, association__is_external=False).distinct().prefetch_related('country')
+            return OrganisationCountry.objects.filter(
+                is_active=True, association__is_active=True, association__is_external=False) \
+                .distinct().prefetch_related('country', 'association')
         elif self.has_perm("organisations.change_organisation"):
-            return OrganisationCountry.objects.filter(user=self, is_active=True, association__is_external=False).prefetch_related('country')
+            return OrganisationCountry.objects.filter(
+                Q(is_active=True, association__is_active=True, association__is_external=False)
+                & (Q(user=self) |
+                   Q(association__user=self))).prefetch_related('country', 'association')
         else:
-            return Country.objects.none()
+            return OrganisationCountry.objects.none()
 
     @memoize
     def get_assignable_organisation_regions(self):
@@ -475,9 +522,21 @@ class User(AbstractBaseUser, PermissionsMixin):
         return a list of regions the user can assign to organisations
         """
         if self.has_perms(["organisations.change_organisation", "organisations.access_all_organisations"]):
-            return AdminRegion.active_objects.filter(organisation_country__association__is_external=False)
+            return AdminRegion.active_objects.filter(
+                is_active=True,
+                organisation_country__is_active=True,
+                organisation_country__association__is_active=True,
+                organisation_country__association__is_external=False,
+            )
         elif self.has_perm("organisations.change_organisation"):
-            return AdminRegion.active_objects.filter(Q(user=self) | Q(organisation_country__user=self)).distinct()
+            return AdminRegion.active_objects.filter(
+                Q(is_active=True,
+                  organisation_country__is_active=True,
+                  organisation_country__association__is_active=True,
+                  organisation_country__association__is_external=False)
+                & (Q(user=self) |
+                   Q(organisation_country__user=self) |
+                   Q(organisation_country__association__user=self))).distinct()
         else:
             return AdminRegion.objects.none()
 
@@ -489,7 +548,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         if self.has_perms(["organisations.change_adminregion", "organisations.access_all_organisations"]):
             return AdminRegion.objects.filter(organisation_country__association__is_external=False)
         elif self.has_perm("organisations.change_adminregion"):
-            return AdminRegion.objects.filter(Q(user=self) | Q(organisation_country__user=self)).distinct()
+            return AdminRegion.objects.filter(
+                Q(organisation_country__association__is_external=False)
+                & (
+                    Q(user=self) |
+                    Q(organisation_country__user=self) |
+                    Q(organisation_country__association__user=self))).distinct()
         else:
             return AdminRegion.objects.none()
 
@@ -499,9 +563,15 @@ class User(AbstractBaseUser, PermissionsMixin):
         return a list of countries from the administrable regions the user has
         """
         if self.has_perms(["organisations.change_adminregion", "organisations.access_all_organisations"]):
-            return OrganisationCountry.objects.filter(is_active=True, association__is_external=False).distinct().prefetch_related('country')
+            return OrganisationCountry.objects.filter(association__is_external=False) \
+                .distinct().prefetch_related('country', 'association')
         elif self.has_perm("organisations.change_adminregion"):
-            return OrganisationCountry.objects.filter(Q(adminregion__user=self) | Q(user=self)).distinct().prefetch_related('country')
+            return OrganisationCountry.objects.filter(
+                Q(association__is_external=False)
+                & (
+                    Q(adminregion__user=self) |
+                    Q(user=self) |
+                    Q(association__user=self))).distinct().prefetch_related('country', 'association')
         else:
             return OrganisationCountry.objects.none()
 
@@ -511,9 +581,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         return a list of countries the user has admin rights on
         """
         if self.has_perms(["organisations.change_organisationcountry", "organisations.access_all_organisations"]):
-            return OrganisationCountry.objects.filter(association__is_external=False).distinct().prefetch_related('country')
+            return OrganisationCountry.objects.filter(association__is_external=False)\
+                .distinct().prefetch_related('country', 'association')
         elif self.has_perm("organisations.change_organisationcountry"):
-            return OrganisationCountry.objects.filter(user=self).prefetch_related('country')
+            return OrganisationCountry.objects.filter(
+                Q(association__is_external=False)
+                & (Q(user=self) |
+                   Q(association__user=self))).prefetch_related('country', 'association')
         else:
             return OrganisationCountry.objects.none()
 
@@ -608,15 +682,26 @@ class User(AbstractBaseUser, PermissionsMixin):
     @memoize
     def has_organisation(self, uuid):
         return Organisation.objects.filter(
-            Q(uuid=uuid, organisation_country__association__is_external=False) & (Q(user=self) | Q(admin_region__user=self) | Q(organisation_country__user=self))).exists()
+            Q(uuid=uuid, association__is_external=False) &
+            (Q(user=self) |
+             Q(admin_region__user=self) |
+             Q(organisation_country__user=self) |
+             Q(association__user=self))).exists()
 
     @memoize
     def has_region(self, uuid):
-        return AdminRegion.objects.filter(Q(uuid=uuid, organisation_country__association__is_external=False) & (Q(user=self) | Q(organisation_country__user=self))).exists()
+        return AdminRegion.objects.filter(
+            Q(uuid=uuid, organisation_country__association__is_external=False)
+            & (Q(user=self) |
+               Q(organisation_country__user=self) |
+               Q(organisation_country__association__user=self))).exists()
 
     @memoize
     def has_country(self, uuid):
-        return self.admin_organisation_countries.filter(uuid=uuid, association__is_external=False).exists()
+        return OrganisationCountry.objects.filter(
+            Q(uuid=uuid, association__is_external=False)
+            & (Q(user=self) |
+               Q(association__user=self))).exists()
 
     def has_user_access_and_perm(self, uuid, perm):
         """
@@ -634,17 +719,29 @@ class User(AbstractBaseUser, PermissionsMixin):
             user = User.objects.get(uuid=uuid)
             return not user.is_superuser and not user.is_service
         else:
-            return User.objects.filter(Q(uuid=uuid) & (Q(organisations__user=self) | Q(organisations__admin_region__user=self) | Q(organisations__organisation_country__user=self))).exists()
+            return User.objects.filter(
+                Q(uuid=uuid, is_superuser=False, is_service=False)
+                & (Q(organisations__user=self) |
+                   Q(organisations__admin_region__user=self) |
+                   Q(organisations__organisation_country__user=self) |
+                   Q(organisations__association__user=self))).exists()
 
     def has_app_admin_user_access(self, uuid):
         """
         Check if the user is an admin of the user with uuid
         """
+        if self.is_superuser:
+            return True
         if self.is_global_app_admin:
-            return not User.objects.get(uuid=uuid).is_superuser
+            user = User.objects.get(uuid=uuid)
+            return not user.is_superuser and not user.is_service
         else:
             return User.objects.filter(
-                Q(uuid=uuid) & (Q(organisations__user=self) | Q(organisations__admin_region__app_admin_user=self) | Q(organisations__organisation_country__app_admin_user=self))).exists()
+                Q(uuid=uuid, is_superuser=False, is_service=False)
+                & (Q(organisations__user=self) |
+                   Q(organisations__admin_region__app_admin_user=self) |
+                   Q(organisations__organisation_country__app_admin_user=self) |
+                   Q(organisations__association__app_admin_user=self))).exists()
 
     def has_organisation_user_access(self, uuid):
         # used in sso_xxx_theme
@@ -658,7 +755,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def has_organisation_access(self, uuid):
         if self.has_perm("organisations.access_all_organisations"):
-            return Organisation.objects.filter(uuid=uuid, organisation_country__association__is_external=False).exists()
+            return Organisation.objects.filter(uuid=uuid, association__is_external=False).exists()
         else:
             return self.has_organisation(uuid)
 
