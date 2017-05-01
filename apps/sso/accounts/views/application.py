@@ -19,7 +19,7 @@ from django.utils.decorators import method_decorator
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import DeleteView
-from filter import AdminRegionFilter, ApplicationRoleFilter, CenterFilter, CountryFilter, IsActiveFilter, RoleProfileFilter, UserSearchFilter
+from .filter import AdminRegionFilter, ApplicationRoleFilter, CenterFilter, CountryFilter, IsActiveFilter, RoleProfileFilter, UserSearchFilter
 from l10n.models import Country
 from sso.accounts.email import send_account_created_email
 from sso.accounts.forms import UserAddForm, UserProfileForm, UserEmailForm, AppAdminUserProfileForm, CenterProfileForm
