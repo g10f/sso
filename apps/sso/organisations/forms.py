@@ -6,12 +6,14 @@ from django.conf import settings
 from django.forms import ModelChoiceField, ModelMultipleChoiceField, ValidationError
 from django.utils.translation import ugettext_lazy as _
 from l10n.models import Country
-from sso.emails.models import Email, EmailForward, CENTER_EMAIL_TYPE, REGION_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, PERM_EVERYBODY, PERM_DWB
+from sso.emails.models import Email, EmailForward, CENTER_EMAIL_TYPE, REGION_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, \
+    PERM_EVERYBODY, PERM_DWB
 from sso.forms import bootstrap, BaseForm, BaseTabularInlineForm, BLANK_CHOICE_DASH, BaseStackedInlineForm
 from sso.forms.fields import EmailFieldLower
 from sso.models import clean_picture
 from sso.signals import update_or_create_organisation_account
-from .models import OrganisationPhoneNumber, OrganisationAddress, Organisation, AdminRegion, OrganisationCountry, CountryGroup, OrganisationPicture, multiple_associations
+from .models import OrganisationPhoneNumber, OrganisationAddress, Organisation, AdminRegion, OrganisationCountry, \
+    CountryGroup, OrganisationPicture
 
 SSO_ORGANISATION_EMAIL_DOMAIN = getattr(settings, 'SSO_ORGANISATION_EMAIL_DOMAIN', '@g10f.de')
 
@@ -99,14 +101,14 @@ class OrganisationBaseForm(BaseForm):
             'association': bootstrap.Select(),
             'name': bootstrap.TextInput(attrs={'size': 50}),
             'name_native': bootstrap.TextInput(attrs={'size': 50}),
-            'founded': bootstrap.SelectDateWidget(years=years_to_display, required=False),
+            'founded': bootstrap.SelectDateWidget(years=years_to_display),
             'coordinates_type': bootstrap.Select(),
             'center_type': bootstrap.Select(),
             'is_private': bootstrap.CheckboxInput(),
             'is_active': bootstrap.CheckboxInput(),
             # 'timezone': bootstrap.ReadOnlyWidget(),
             # 'can_publish': bootstrap.CheckboxInput(),
-            'location': bootstrap.OSMWidget(),
+            'location': bootstrap.OSMWidget(attrs={'display_raw': False}),
             'neighbour_distance': bootstrap.TextInput(attrs={'type': 'number', 'step': '0.001'}),
         }
 

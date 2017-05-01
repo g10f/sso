@@ -81,6 +81,8 @@ CELERY_RESULT_SERIALIZER = 'json'
 
 EMAIL_SUBJECT_PREFIX = '[SSO] '
 
+FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
+
 ADMINS = (
     ('Gunnar Scherf', 'webmaster@g10f.de'),
 )
@@ -185,6 +187,7 @@ ROOT_URLCONF = 'sso.urls'
 
 INSTALLED_APPS = [
     'sso',
+    'sso.forms',
     'password',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -193,6 +196,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.admin.apps.SimpleAdminConfig',
     'django.contrib.gis',
+    'django.forms',
     'formtools',
     'sorl.thumbnail',
     'nocaptcha_recaptcha',

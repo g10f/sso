@@ -1,8 +1,8 @@
 from django.conf.urls import url
 from django.views.generic import TemplateView 
 from .views import validation_confirm, UserRegistrationList, UserRegistrationDeleteView, update_user_registration  # , register
-from forms import UserSelfRegistrationForm, UserSelfRegistrationFormPreview
-from tokens import default_token_generator
+from .forms import UserSelfRegistrationForm, UserSelfRegistrationFormPreview
+from .tokens import default_token_generator
 from . import default_username_generator
 
 

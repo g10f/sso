@@ -1,24 +1,17 @@
-{% load l10n i18n %}
-<style type="text/css">{% block map_css %}
+{% load i18n l10n %}
+<style type="text/css">{% block map_css %}{% get_current_language_bidi as LANGUAGE_BIDI %}
     #{{ id }}_map { width: {{ map_width }}px; height: {{ map_height }}px; }
     #{{ id }}_map .aligned label { float: inherit; }
     #{{ id }}_div_map { position: relative; vertical-align: top; float: {{ LANGUAGE_BIDI|yesno:"right,left" }}; }
     {% if not display_raw %}#{{ id }} { display: none; }{% endif %}
-    .olControlEditingToolbar .olControlModifyFeatureItemActive {
-        background-image: url("{{ STATIC_URL }}admin/img/gis/move_vertex_on.png");
-        background-repeat: no-repeat;
-    }
-    .olControlEditingToolbar .olControlModifyFeatureItemInactive {
-        background-image: url("{{ STATIC_URL }}admin/img/gis/move_vertex_off.png");
-        background-repeat: no-repeat;
-    }{% endblock %}
+    {% endblock %}
 </style>
 
 <div id="{{ id }}_div_map">
     <div id="{{ id }}_map"></div>
-    <button type="button" class="btn btn-link clear_features">{% trans 'Delete all Features' %}</button>
-    {% if display_raw %}<p>Debugging window (serialized value):</p>{% endif %}
-    <textarea id="{{ id }}" class="vSerializedField required geodjango-field" cols="150" rows="10" name="{{ name }}" 
-    	data-geom_type="{{ geom_type }}"  data-map_srid="{{ map_srid }}" data-default_lon="{{ default_lon }}" 
+    {% if not disabled %}<button type="button" class="btn btn-link clear_features">{% trans 'Delete all Features' %}</button>{% endif %}
+    {% if display_raw %}<p>{% trans "Debugging window (serialized value)" %}</p>{% endif %}
+    <textarea id="{{ id }}" class="vSerializedField required geodjango-field" cols="150" rows="10" name="{{ name }}"
+    	data-geom_type="{{ geom_type }}"  data-map_srid="{{ map_srid }}" data-default_lon="{{ default_lon }}"
     	data-default_lat="{{ default_lat }}">{{ serialized }}</textarea>
 </div>

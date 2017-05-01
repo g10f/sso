@@ -1,6 +1,6 @@
 from django.conf.urls import url
-import views
-from views import region, country
+from . import views
+from .views import region, country
  
 urlpatterns = [
     url(r'^$', views.OrganisationList.as_view(), name='organisation_list'),
