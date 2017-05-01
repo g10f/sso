@@ -1,7 +1,7 @@
 import logging
 import re
 
-from pytz import timezone
+from pytz import timezone, common_timezones
 from sorl import thumbnail
 
 from django.conf import settings
@@ -263,7 +263,7 @@ class Organisation(AbstractBaseModel):
     founded = models.DateField(_("founded"), blank=True, null=True)
     coordinates_type = models.CharField(_('coordinates type'), max_length=1, choices=COORDINATES_TYPE_CHOICES, default='3', db_index=True, blank=True)
     location = PointField(_("location"), geography=True, blank=True, null=True)
-    timezone = models.CharField(_('timezone'), blank=True, max_length=254)
+    timezone = models.CharField(_('timezone'), choices=list(zip(common_timezones, common_timezones)), blank=True, max_length=254)
     is_active = models.BooleanField(_('active'),
                                     default=True,
                                     help_text=_('Designates whether this organisation should be treated as '
@@ -299,7 +299,7 @@ class Organisation(AbstractBaseModel):
         self._original_location = self.location
 
     def save(self, force_insert=False, force_update=False, *args, **kwargs):
-        if self.location != self._original_location:
+        if self.timezone == '' and self.location != self._original_location:
             self.timezone = self.timezone_from_location
 
         super(Organisation, self).save(force_insert, force_update, *args, **kwargs)
