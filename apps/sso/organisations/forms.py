@@ -89,7 +89,7 @@ class OrganisationBaseForm(BaseForm):
         model = Organisation
 
         fields = ('name_native', 'homepage', 'google_plus_page', 'facebook_page', 'twitter_page', 'founded', 'coordinates_type',
-                  'is_private', 'location', 'neighbour_distance')  # , 'timezone')
+                  'is_private', 'location', 'neighbour_distance', 'timezone')
         years_to_display = range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1)
         widgets = {
             'homepage': bootstrap.URLInput(attrs={'size': 50}),
@@ -104,7 +104,7 @@ class OrganisationBaseForm(BaseForm):
             'center_type': bootstrap.Select(),
             'is_private': bootstrap.CheckboxInput(),
             'is_active': bootstrap.CheckboxInput(),
-            # 'timezone': bootstrap.ReadOnlyWidget(),
+            'timezone': bootstrap.Select(),
             # 'can_publish': bootstrap.CheckboxInput(),
             'location': bootstrap.OSMWidget(),
             'neighbour_distance': bootstrap.TextInput(attrs={'type': 'number', 'step': '0.001'}),
