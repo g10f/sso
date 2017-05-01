@@ -1,16 +1,18 @@
-from django.utils.six.moves.urllib.parse import urlsplit
+import os
 import re
 
-from django.test import override_settings
-from django.conf import settings
-from django.core import mail
-from django.urls import reverse
-from django.contrib.auth import get_user_model
-from selenium.webdriver.support.ui import Select
+from django.utils.six.moves.urllib.parse import urlsplit
 from selenium.common.exceptions import NoSuchElementException
-from sso.tests import SSOSeleniumTests 
+from selenium.webdriver.support.ui import Select
+
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.core import mail
+from django.test import override_settings
+from django.urls import reverse
 from sso.accounts.models import ApplicationRole, UserEmail
 from sso.organisations.models import AdminRegion, Organisation
+from sso.tests import SSOSeleniumTests
 
 
 class AccountsSeleniumTests(SSOSeleniumTests):
@@ -42,7 +44,8 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.selenium.get('%s%s' % (self.live_server_url, path))
         self.selenium.find_element_by_name("new_password1").send_keys(new_password)
         self.selenium.find_element_by_name("new_password2").send_keys(new_password)
-        self.selenium.find_element_by_id("id_picture").send_keys("/usr/share/icons/gnome/32x32/emotes/face-angel.png")
+        picture = os.path.join(settings.BASE_DIR, 'sso/static/img/face-cool.png')
+        self.selenium.find_element_by_id("id_picture").send_keys(picture)
         self.selenium.find_element_by_xpath('//button[@type="submit"]').click()
         self.wait_page_loaded()
 

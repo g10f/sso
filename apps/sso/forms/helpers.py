@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.utils.text import get_text_list
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_text
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import ugettext as _
@@ -92,7 +92,7 @@ def log_change(request, object, message):  # @ReservedAssignment
         user_id=user_id,  # request.user.pk,
         content_type_id=ContentType.objects.get_for_model(object).pk, 
         object_id=object.pk,
-        object_repr=force_unicode(object),
+        object_repr=force_text(object),
         action_flag=CHANGE,
         change_message=message
     )

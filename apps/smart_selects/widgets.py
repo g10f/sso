@@ -90,11 +90,12 @@ class ChainedSelect(Select):
                 if ch not in final_choices:
                     final_choices.append(ch)
         self.choices = final_choices
-        final_attrs = self.build_attrs(attrs, name=name)
+        final_attrs = self.build_attrs(self.attrs, attrs)
         if 'class' in final_attrs:
             final_attrs['class'] += ' chained'
         else:
             final_attrs['class'] = 'chained'
+        final_attrs['name'] = name
         final_attrs['data-chainfield'] = chain_field
         final_attrs['data-url'] = url
         final_attrs['data-empty_label'] = empty_label

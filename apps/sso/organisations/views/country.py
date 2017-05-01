@@ -13,7 +13,7 @@ from sso.emails.forms import EmailForwardOnlyInlineForm, EmailAliasInlineForm
 from sso.emails.models import EmailForward, EmailAlias, Email
 from sso.forms.helpers import get_optional_inline_formset
 from sso.organisations.forms import OrganisationCountryForm
-from sso.organisations.models import OrganisationCountry, CountryGroup, Association
+from sso.organisations.models import OrganisationCountry, CountryGroup, Association, multiple_associations
 from sso.views import main
 from sso.views.generic import FormsetsUpdateView, ListView, ViewChoicesFilter, SearchFilter, ViewQuerysetFilter, ViewButtonFilter
 
@@ -190,10 +190,15 @@ class OrganisationCountryList(ListView):
 
         my_countries_filter = MyCountriesFilter().get(self)
         association_filter = AssociationFilter().get(self)
-        if self.association:
-            continents = Country.objects.filter(organisationcountry__association=self.association).values_list('continent', flat=True)
+        if multiple_associations():
+            if self.association:
+                continents = Country.objects.filter(organisationcountry__association=self.association).values_list('continent', flat=True)
+            else:
+                continents = Country.objects.values_list('continent', flat=True)
         else:
-            continents = Country.objects.filter(organisationcountry__association__isnull=False).values_list('continent', flat=True)
+            association_filter = None
+            continents = Country.objects.values_list('continent', flat=True)
+
         continent_choices = filter(lambda x: x[0] in continents, ContinentsFilter.choices)
         continent_filter = ContinentsFilter().get(self, continent_choices)
 

@@ -19,7 +19,7 @@ from django.utils.decorators import method_decorator
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import DeleteView
-from filter import AdminRegionFilter, ApplicationRoleFilter, CenterFilter, CountryFilter, IsActiveFilter, RoleProfileFilter, UserSearchFilter
+from .filter import AdminRegionFilter, ApplicationRoleFilter, CenterFilter, CountryFilter, IsActiveFilter, RoleProfileFilter, UserSearchFilter
 from l10n.models import Country
 from sso.accounts.email import send_account_created_email
 from sso.accounts.forms import UserAddForm, UserProfileForm, UserEmailForm, AppAdminUserProfileForm, CenterProfileForm
@@ -112,6 +112,8 @@ class UserList(ListView):
 
         qs = super(UserList, self).get_queryset().only('uuid', 'last_login', 'username', 'first_name', 'last_name', 'date_joined', 'picture', 'valid_until')\
             .prefetch_related('useremail_set', 'organisations')
+        # exclude user who were not activated, this users must first be activated on the registration page
+        qs = qs.exclude(last_login__isnull=True, is_active=False)
         qs = user.filter_administrable_users(qs)
             
         self.cl = main.ChangeList(self.request, self.model, self.list_display, default_ordering=[OrderByWithNulls(F('last_login'), descending=True)])

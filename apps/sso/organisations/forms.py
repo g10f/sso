@@ -6,12 +6,14 @@ from django.conf import settings
 from django.forms import ModelChoiceField, ModelMultipleChoiceField, ValidationError
 from django.utils.translation import ugettext_lazy as _
 from l10n.models import Country
-from sso.emails.models import Email, EmailForward, CENTER_EMAIL_TYPE, REGION_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, PERM_EVERYBODY, PERM_DWB
+from sso.emails.models import Email, EmailForward, CENTER_EMAIL_TYPE, REGION_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, \
+    PERM_EVERYBODY, PERM_DWB
 from sso.forms import bootstrap, BaseForm, BaseTabularInlineForm, BLANK_CHOICE_DASH, BaseStackedInlineForm
 from sso.forms.fields import EmailFieldLower
 from sso.models import clean_picture
 from sso.signals import update_or_create_organisation_account
-from .models import OrganisationPhoneNumber, OrganisationAddress, Organisation, AdminRegion, OrganisationCountry, CountryGroup, OrganisationPicture
+from .models import OrganisationPhoneNumber, OrganisationAddress, Organisation, AdminRegion, OrganisationCountry, \
+    CountryGroup, OrganisationPicture
 
 SSO_ORGANISATION_EMAIL_DOMAIN = getattr(settings, 'SSO_ORGANISATION_EMAIL_DOMAIN', '@g10f.de')
 
@@ -40,7 +42,7 @@ class OrganisationPictureForm(BaseStackedInlineForm):
 
 
 class OrganisationAddressForm(BaseForm):
-    country = ModelChoiceField(queryset=Country.objects.filter(organisationcountry__isnull=False, organisationcountry__is_active=True), required=True,
+    country = ModelChoiceField(queryset=Country.objects.filter(active=True), required=True,
                                label=_("Country"), widget=bootstrap.Select(), to_field_name="iso2_code")
 
     class Meta:
@@ -96,17 +98,17 @@ class OrganisationBaseForm(BaseForm):
             'google_plus_page': bootstrap.URLInput(attrs={'size': 50}),
             'facebook_page': bootstrap.URLInput(attrs={'size': 50}),
             'twitter_page': bootstrap.URLInput(attrs={'size': 50}),
-            'organisation_country': bootstrap.Select(),
+            'association': bootstrap.Select(),
             'name': bootstrap.TextInput(attrs={'size': 50}),
             'name_native': bootstrap.TextInput(attrs={'size': 50}),
-            'founded': bootstrap.SelectDateWidget(years=years_to_display, required=False),
+            'founded': bootstrap.SelectDateWidget(years=years_to_display),
             'coordinates_type': bootstrap.Select(),
             'center_type': bootstrap.Select(),
             'is_private': bootstrap.CheckboxInput(),
             'is_active': bootstrap.CheckboxInput(),
             'timezone': bootstrap.Select(),
             # 'can_publish': bootstrap.CheckboxInput(),
-            'location': bootstrap.OSMWidget(),
+            'location': bootstrap.OSMWidget(attrs={'display_raw': False}),
             'neighbour_distance': bootstrap.TextInput(attrs={'type': 'number', 'step': '0.001'}),
         }
 
@@ -119,24 +121,22 @@ class OrganisationBaseForm(BaseForm):
 
 class OrganisationCenterAdminForm(OrganisationBaseForm):
     email_value = bootstrap.ReadOnlyField(label=_("Email address"))
-    organisation_country = bootstrap.ReadOnlyField(label=_("Country"))
     center_type = bootstrap.ReadOnlyField(label=_("Organisation type"))
     name = bootstrap.ReadOnlyField(label=_("Name"))
     is_active = bootstrap.ReadOnlyYesNoField(label=_("Active"))
-    # can_publish = bootstrap.ReadOnlyYesNoField(label=_("Publish"))
 
     def __init__(self, *args, **kwargs):
         super(OrganisationCenterAdminForm, self).__init__(*args, **kwargs)
 
+        if self.instance.organisation_country:
+            self.fields['organisation_country'] = bootstrap.ReadOnlyField(initial=self.instance.organisation_country, label=_("Country"))
         if self.instance.admin_region:
             self.fields['admin_region'] = bootstrap.ReadOnlyField(initial=self.instance.admin_region, label=_("Admin region"))
 
         self.fields['email_value'].initial = str(self.instance.email)
-        self.fields['organisation_country'].initial = self.instance.organisation_country
         self.fields['center_type'].initial = self.instance.get_center_type_display()
         self.fields['name'].initial = self.instance.name
         self.fields['is_active'].initial = self.instance.is_active
-        # self.fields['can_publish'].initial = self.instance.can_publish
 
 
 class OrganisationEmailAdminForm(OrganisationBaseForm):
@@ -198,18 +198,41 @@ class OrganisationEmailAdminForm(OrganisationBaseForm):
         return instance
 
 
+class OrganisationAssociationAdminForm(OrganisationEmailAdminForm):
+    class Meta(OrganisationBaseForm.Meta):
+        fields = OrganisationBaseForm.Meta.fields + ('association', 'admin_region', 'organisation_country', 'name', 'center_type', 'is_active')  # , 'can_publish')
+
+    def __init__(self, *args, **kwargs):
+        super(OrganisationAssociationAdminForm, self).__init__(*args, **kwargs)
+        assignable_associations = self.user.get_assignable_associations()
+        if not OrganisationCountry.objects.filter(association__in=assignable_associations).exists():
+            del self.fields['organisation_country']
+            del self.fields['admin_region']
+
+        self.fields['association'].queryset = assignable_associations
+
+
 class OrganisationCountryAdminForm(OrganisationEmailAdminForm):
     """
     A form for a country admin for update organisations
     """
+    # use the ModelChoiceField, because organisation_country is a ChainedForeignKey and we don't display the association
+    organisation_country = ModelChoiceField(queryset=OrganisationCountry.objects.none(), required=True, label=_("Country"), widget=bootstrap.Select())
+
     class Meta(OrganisationBaseForm.Meta):
-        fields = OrganisationBaseForm.Meta.fields + ('organisation_country', 'name', 'center_type', 'is_active')  # , 'can_publish')
-        if settings.SSO_REGION_MANAGEMENT:
-            fields += ('admin_region',)
+        fields = OrganisationBaseForm.Meta.fields + ('organisation_country', 'admin_region', 'name', 'center_type', 'is_active')  # , 'can_publish')
 
     def __init__(self, *args, **kwargs):
         super(OrganisationCountryAdminForm, self).__init__(*args, **kwargs)
-        self.fields['organisation_country'].queryset = self.user.get_assignable_organisation_countries()
+        assignable_countries = self.user.get_assignable_organisation_countries()
+        self.fields['organisation_country'].queryset = assignable_countries
+        if not AdminRegion.objects.filter(organisation_country__in=assignable_countries).exists():
+            del self.fields['admin_region']
+
+    def clean(self):
+        cleaned_data = super(OrganisationCountryAdminForm, self).clean()
+        self.instance.association = cleaned_data['organisation_country'].association
+        return cleaned_data
 
 
 class OrganisationRegionAdminForm(OrganisationEmailAdminForm):
@@ -218,6 +241,7 @@ class OrganisationRegionAdminForm(OrganisationEmailAdminForm):
     """
     # don't use the default ModelChoiceField, because the regions are restricted to the administrable_organisation_regions
     # of the region admin
+    organisation_country = ModelChoiceField(queryset=OrganisationCountry.objects.none(), required=True, label=_("Country"), widget=bootstrap.Select())
     admin_region = ModelChoiceField(queryset=AdminRegion.objects.none(), required=True, label=_("Admin Region"), widget=bootstrap.Select())
 
     class Meta(OrganisationBaseForm.Meta):
@@ -239,6 +263,8 @@ class OrganisationRegionAdminForm(OrganisationEmailAdminForm):
         if admin_region.organisation_country != organisation_country:
             msg = _("The admin region is not valid for the selected country.")
             raise ValidationError(msg)
+
+        self.instance.association = cleaned_data['organisation_country'].association
         return cleaned_data
 
 
@@ -264,6 +290,27 @@ class EmailForwardMixin(object):
         forward = EmailForward(email=instance.email, forward=self.cleaned_data['email_forward'], primary=True)
         forward.save()
         return instance
+
+
+class OrganisationAssociationAdminCreateForm(EmailForwardMixin, OrganisationAssociationAdminForm):
+    """
+    A form for a country admin for create organisations with
+    additionally email_forward field  
+    """
+    email_forward = EmailFieldLower(required=True, label=_("Email forwarding address"), help_text=_('The primary email forwarding address for the organisation'),
+                                    widget=bootstrap.EmailInput())
+
+    def clean(self):
+        super(OrganisationAssociationAdminCreateForm, self).clean()
+        # check email forward
+        return self.check_email_forward()
+
+    def save(self, commit=True):
+        """
+        creating a new center with a forward address
+        """
+        instance = super(OrganisationAssociationAdminCreateForm, self).save(commit)
+        return self.save_email_forward(instance)
 
 
 class OrganisationCountryAdminCreateForm(EmailForwardMixin, OrganisationCountryAdminForm):
