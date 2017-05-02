@@ -603,6 +603,7 @@ class UserSelfRegistrationForm2(UserSelfRegistrationForm):
             self.fields['captcha'] = NoReCaptchaField()
 
     def is_captcha_needed(self):
+        return False
         max_age = 300
         if self.data and ('state' in self.data):
             try:
