@@ -11,7 +11,7 @@ oauthlib
 git+git://github.com/mariocesar/sorl-thumbnail@v12.3
 sorl-thumbnail
 pillow
-django-nocaptcha-recaptcha
+django-recaptcha
 pytz
 geopy
 qrcode

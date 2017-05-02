@@ -199,7 +199,7 @@ INSTALLED_APPS = [
     'django.forms',
     'formtools',
     'sorl.thumbnail',
-    'nocaptcha_recaptcha',
+    'captcha',
     'l10n',
     'smart_selects',
     'sso.emails',
