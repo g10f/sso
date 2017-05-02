@@ -5,7 +5,7 @@ from collections import OrderedDict
 from mimetypes import guess_extension
 
 import pytz
-from nocaptcha_recaptcha.fields import NoReCaptchaField
+from captcha.fields import ReCaptchaField
 
 from django import forms
 from django.conf import settings
@@ -600,10 +600,9 @@ class UserSelfRegistrationForm2(UserSelfRegistrationForm):
         super(UserSelfRegistrationForm2, self).__init__(data, *args, **kwargs)
 
         if self.is_captcha_needed():
-            self.fields['captcha'] = NoReCaptchaField()
+            self.fields['captcha'] = ReCaptchaField()
 
     def is_captcha_needed(self):
-        return False
         max_age = 300
         if self.data and ('state' in self.data):
             try:
