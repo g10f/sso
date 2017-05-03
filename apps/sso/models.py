@@ -107,8 +107,8 @@ class AddressMixin(models.Model):
         verbose_name_plural = _("addresses")
         ordering = ['addressee']
 
-    def __unicode__(self):
-        return u"%s" % self.addressee
+    def __str__(self):
+        return self.addressee
 
 
 phone_re = re.compile(
@@ -127,8 +127,8 @@ class PhoneNumberMixin(models.Model):
         verbose_name = _("phone number")
         verbose_name_plural = _("phone numbers")
 
-    def __unicode__(self):
-        return u'%s' % self.phone
+    def __str__(self):
+        return self.phone
 
 
 def update_object_from_dict(destination, source_dict, key_mapping=None):

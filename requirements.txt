@@ -11,13 +11,13 @@ oauthlib
 git+git://github.com/mariocesar/sorl-thumbnail@v12.3
 sorl-thumbnail
 pillow
-django-nocaptcha-recaptcha
+django-recaptcha
 pytz
 geopy
 qrcode
 requests
 celery
-python-u2flib-server
+python-u2flib-server==4.0.1
 
 # for local testing only
 #selenium

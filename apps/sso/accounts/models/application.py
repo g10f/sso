@@ -6,6 +6,7 @@ from itertools import chain
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.db import models
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from sso.models import AbstractBaseModel
 
@@ -27,6 +28,7 @@ class ApplicationManager(models.Manager):
         return self.get(uuid=uuid)
 
 
+@python_2_unicode_compatible
 class Application(models.Model):
     order = models.IntegerField(default=0, help_text=_('Overwrites the alphabetic order.'))
     title = models.CharField(max_length=255)
@@ -56,8 +58,8 @@ class Application(models.Model):
     def natural_key(self):
         return self.uuid,
 
-    def __unicode__(self):
-        return u"%s" % self.title
+    def __str__(self):
+        return self.title
 
 
 class RoleManager(models.Manager):
@@ -65,6 +67,7 @@ class RoleManager(models.Manager):
         return self.get(name=name)
 
 
+@python_2_unicode_compatible
 class Role(models.Model):
     name = models.CharField(_("name"), unique=True, max_length=255)
     order = models.IntegerField(default=0, help_text=_('Overwrites the alphabetic order.'))
@@ -79,8 +82,8 @@ class Role(models.Model):
     def natural_key(self):
         return self.name,
 
-    def __unicode__(self):
-        return u"%s" % self.name
+    def __str__(self):
+        return self.name
 
 
 class ApplicationRoleManager(models.Manager):
@@ -88,6 +91,7 @@ class ApplicationRoleManager(models.Manager):
         return self.get(application__uuid=uuid, role__name=name)
 
 
+@python_2_unicode_compatible
 class ApplicationRole(models.Model):
     application = models.ForeignKey(Application, on_delete=models.CASCADE)
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
@@ -109,10 +113,11 @@ class ApplicationRole(models.Model):
     def natural_key(self):
         return self.application.natural_key() + self.role.natural_key()
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s - %s" % (self.application, self.role)
 
 
+@python_2_unicode_compatible
 class RoleProfile(AbstractBaseModel):
     name = models.CharField(_("name"), max_length=255)
     application_roles = models.ManyToManyField(ApplicationRole, help_text=_('Associates a group of application roles that are usually assigned together.'))
@@ -127,10 +132,11 @@ class RoleProfile(AbstractBaseModel):
         verbose_name = _('role profile')
         verbose_name_plural = _('role profiles')
 
-    def __unicode__(self):
-        return u"%s" % self.name
+    def __str__(self):
+        return self.name
 
 
+@python_2_unicode_compatible
 class UserAssociatedSystem(models.Model):
     """
     Holds mappings to user IDs on other systems
@@ -144,7 +150,7 @@ class UserAssociatedSystem(models.Model):
         verbose_name_plural = _('associated systems')
         unique_together = (("application", "userid"),)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s - %s" % (self.application, self.userid)
 
 

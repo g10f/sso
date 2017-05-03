@@ -13,6 +13,7 @@ from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db import models
 from django.utils import six
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils.timezone import localtime, now
 from django.utils.translation import pgettext_lazy, ugettext_lazy as _
 from l10n.models import Country
@@ -59,6 +60,7 @@ class TzWorld(models.Model):
         required_db_features = ['gis_enabled']
 
 
+@python_2_unicode_compatible
 class CountryGroup(AbstractBaseModel):
     name = models.CharField(_("name"), max_length=255)
     email = models.OneToOneField(Email, on_delete=models.SET_NULL, verbose_name=_("email address"), blank=True, null=True, limit_choices_to={'email_type': COUNTRY_GROUP_EMAIL_TYPE})
@@ -69,10 +71,11 @@ class CountryGroup(AbstractBaseModel):
         verbose_name_plural = _('Country groups')
         ordering = ['name']
 
-    def __unicode__(self):
-        return u"%s" % self.name
+    def __str__(self):
+        return self.name
 
 
+@python_2_unicode_compatible
 class Association(AbstractBaseModel):
     name = models.CharField(_("name"), max_length=255)
     homepage = models.URLField(_("homepage"), blank=True)
@@ -87,8 +90,8 @@ class Association(AbstractBaseModel):
         verbose_name_plural = _('Associations')
         ordering = ['name']
 
-    def __unicode__(self):
-        return u"%s" % self.name
+    def __str__(self):
+        return self.name
 
     @models.permalink
     def get_absolute_url(self):
@@ -126,6 +129,7 @@ class ExtraOrganisationCountryManager(models.Model):
         abstract = True
 
 
+@python_2_unicode_compatible
 class OrganisationCountry(AbstractBaseModel, ExtraOrganisationCountryManager):
     association = models.ForeignKey(Association, on_delete=models.CASCADE, verbose_name=_("association"), default=default_association, limit_choices_to={'is_active': True})
     country = models.ForeignKey(Country, on_delete=models.CASCADE, verbose_name=_("country"), limit_choices_to={'active': True})
@@ -142,12 +146,12 @@ class OrganisationCountry(AbstractBaseModel, ExtraOrganisationCountryManager):
         ordering = ['country']
         unique_together = (("country", "association"),)
 
-    def __unicode__(self):
+    def __str__(self):
         # return u"%s" % self.country
         if multiple_associations():
             return u"%s, %s" % (self.country, self.association)
         else:
-            return u"%s" % self.country
+            return u'%s' % self.country
 
     @models.permalink
     def get_absolute_url(self):
@@ -176,6 +180,7 @@ class ExtraManager(models.Model):
         abstract = True
 
 
+@python_2_unicode_compatible
 class AdminRegion(AbstractBaseModel, ExtraManager):
     name = models.CharField(_("name"), max_length=255)
     homepage = models.URLField(_("homepage"), blank=True)
@@ -192,8 +197,8 @@ class AdminRegion(AbstractBaseModel, ExtraManager):
         verbose_name_plural = _('Regions')
         ordering = ['name']
 
-    def __unicode__(self):
-        return u"%s" % self.name
+    def __str__(self):
+        return self.name
 
     @models.permalink
     def get_absolute_url(self):
@@ -220,6 +225,7 @@ def get_near_organisations(current_point, distance_from_point=None, qs=None, ord
         return organisations
 
 
+@python_2_unicode_compatible
 class Organisation(AbstractBaseModel):
     # TODO: make configurable
     CENTER_TYPE_CHOICES = (
@@ -354,14 +360,14 @@ class Organisation(AbstractBaseModel):
         last_modified = max(last_modified_list)
         return last_modified
 
-    def __unicode__(self):
+    def __str__(self):
         if self.organisation_country:
             if multiple_associations():
                 return u'%s, %s (%s)' % (self.name, self.association, self.organisation_country.country.iso2_code)
             else:
                 return u'%s (%s)' % (self.name, self.organisation_country.country.iso2_code)
         else:
-            return u'%s' % self.name
+            return self.name
 
     def get_near_organisations(self):
         if self.neighbour_distance is not None:

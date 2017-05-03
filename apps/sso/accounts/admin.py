@@ -17,10 +17,11 @@ from django.urls import reverse
 from django.utils import six
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
+from django.utils.six import text_type
 from django.utils.translation import ugettext_lazy as _
-from .models import Application, UserAssociatedSystem, UserAddress, UserPhoneNumber, UserEmail, RoleProfile
 from sso.organisations.models import Organisation, AdminRegion
 from .forms import AdminUserChangeForm, AdminUserCreationForm
+from .models import Application, UserAssociatedSystem, UserAddress, UserPhoneNumber, UserEmail, RoleProfile
 
 logger = logging.getLogger(__name__)
 
@@ -96,7 +97,7 @@ class RoleAdmin(admin.ModelAdmin):
 
 class ApplicationRoleAdmin(admin.ModelAdmin):
     list_filter = ('roleprofile', 'application', 'role')
-    list_display = ('__unicode__', 'is_inheritable_by_org_admin', 'is_inheritable_by_global_admin', 'is_organisation_related')
+    list_display = ('__str__', 'is_inheritable_by_org_admin', 'is_inheritable_by_global_admin', 'is_organisation_related')
 
 
 class RoleProfileAdmin(admin.ModelAdmin):
@@ -413,7 +414,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
 
     def assigned_organisations(self, obj):
         if obj:
-            return u', '.join([x.__unicode__() for x in obj.organisations.all()])
+            return u', '.join([text_type(x) for x in obj.organisations.all()])
 
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):
         user = request.user

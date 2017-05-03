@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-from django.utils.timezone import now
-
 from django.db import models
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 
 CONTINENTS = (
@@ -47,6 +46,7 @@ AREAS = (
 )
 
 
+@python_2_unicode_compatible
 class Country(models.Model):
     """
     International Organization for Standardization (ISO) 3166-1 Country list
@@ -66,10 +66,11 @@ class Country(models.Model):
         verbose_name_plural = _('Countries')
         ordering = ('name',)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.printable_name
 
 
+@python_2_unicode_compatible
 class AdminArea(models.Model):
     """
     Administrative Area level 1 for a country.  For the US, this would be the states
@@ -84,5 +85,5 @@ class AdminArea(models.Model):
         verbose_name_plural = _('Administrative Areas')
         ordering = ('name',)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name

@@ -19,7 +19,7 @@ SSO_ORGANISATION_EMAIL_DOMAIN = getattr(settings, 'SSO_ORGANISATION_EMAIL_DOMAIN
 
 
 class OrganisationPictureForm(BaseStackedInlineForm):
-    order = forms.IntegerField(label=_("Order"), required=False, widget=bootstrap.Select(choices=BLANK_CHOICE_DASH + zip(range(3), range(3))))
+    order = forms.IntegerField(label=_("Order"), required=False, widget=bootstrap.Select(choices=BLANK_CHOICE_DASH + list(zip(range(3), range(3)))))
 
     class Meta:
         model = OrganisationPicture

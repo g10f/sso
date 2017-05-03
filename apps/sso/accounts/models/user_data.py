@@ -4,13 +4,16 @@ import logging
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
+from django.utils.six import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _, pgettext_lazy
-from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary, CaseInsensitiveEmailField
+from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary, \
+    CaseInsensitiveEmailField
 from sso.organisations.models import Organisation
 
 logger = logging.getLogger(__name__)
 
 
+@python_2_unicode_compatible
 class UserEmail(AbstractBaseModel):
     MAX_EMAIL_ADRESSES = 2
     email = CaseInsensitiveEmailField(_('email address'), max_length=254, unique=True)
@@ -23,8 +26,8 @@ class UserEmail(AbstractBaseModel):
         verbose_name_plural = _('email addresses')
         ordering = ['email']
 
-    def __unicode__(self):
-        return u"%s" % self.email
+    def __str__(self):
+        return self.email
 
 
 class UserAddress(AbstractBaseModel, AddressMixin):

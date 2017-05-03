@@ -1,5 +1,5 @@
 from django.conf.urls import url
-import views
+from . import views
  
 urlpatterns = [
     url(r'^client/(?P<object_id>.+)/$', views.client_details, name='client.details.json'),

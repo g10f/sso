@@ -12,6 +12,7 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.utils import timezone
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from sso.auth.forms import AuthenticationTokenForm, U2FForm
 from sso.auth.oath import TOTP
@@ -22,6 +23,7 @@ from sso.utils.translation import string_format
 logger = logging.getLogger(__name__)
 
 
+@python_2_unicode_compatible
 class Device(AbstractBaseModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, help_text="The user that this device belongs to.")
     name = models.CharField(max_length=255, blank=True, help_text="The human-readable name of this device.")
@@ -32,7 +34,7 @@ class Device(AbstractBaseModel):
 
     DEVICES = [cls.split('.')[-1].lower() for cls in settings.OTP_DEVICES]
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s" % (str(self.get_child()))
 
     class Meta:
@@ -83,6 +85,7 @@ class Profile(models.Model):
     is_otp_enabled = models.BooleanField(_('is otp enabled'), default=False)
 
 
+@python_2_unicode_compatible
 class U2FDevice(Device):
     public_key = models.TextField()
     key_handle = models.TextField()
@@ -98,7 +101,7 @@ class U2FDevice(Device):
     class Meta:
         ordering = ['order', 'name']
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s:%s" % (self.__class__.__name__, self.user_id)
 
     @classmethod
@@ -140,6 +143,7 @@ class U2FDevice(Device):
         pass
 
 
+@python_2_unicode_compatible
 class TOTPDevice(Device):
     """
     A generic TOTP :class:`~sso.auth.models.Device`. The model fields mostly
@@ -199,7 +203,7 @@ class TOTPDevice(Device):
     class Meta:
         ordering = ['order', 'name']
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s:%s" % (self.__class__.__name__, self.user_id)
 
     @classmethod
@@ -270,6 +274,7 @@ class TOTPDevice(Device):
         return verified
 
 
+@python_2_unicode_compatible
 class TwilioSMSDevice(Device):
     """
     A :class:`~sso.auth.models.Device` that delivers codes via the Twilio SMS
@@ -298,7 +303,7 @@ class TwilioSMSDevice(Device):
     class Meta:
         ordering = ['order', 'name']
 
-    def __unicode__(self):
+    def __str__(self):
         return u"%s:%s:%s" % (self.__class__.__name__, self.user_id, self.number)
 
     @classmethod

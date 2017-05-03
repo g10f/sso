@@ -4,8 +4,10 @@ import logging
 from django.conf import settings
 from django.db import models
 from django.db.models import Q
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from sso.models import AbstractBaseModel, CaseInsensitiveEmailField
+
 logger = logging.getLogger(__name__)
 
 PERSON_EMAIL_TYPE = 'person'
@@ -22,6 +24,7 @@ PERM_VIP = '3'
 PERM_VIP_DWB = '4'
 
 
+@python_2_unicode_compatible
 class Email(AbstractBaseModel):
     EMAIL_TYPE_CHOICES = (
         (CENTER_EMAIL_TYPE, _('Center')),
@@ -61,10 +64,11 @@ class Email(AbstractBaseModel):
         verbose_name = _('Email')
         verbose_name_plural = _('Emails')
 
-    def __unicode__(self):
-        return u"%s" % self.email
+    def __str__(self):
+        return self.email
 
 
+@python_2_unicode_compatible
 class EmailForward(AbstractBaseModel):
     email = models.ForeignKey(Email, on_delete=models.CASCADE, verbose_name=_('email address'))
     forward = CaseInsensitiveEmailField(_('email forwarding address'), max_length=254)
@@ -76,10 +80,11 @@ class EmailForward(AbstractBaseModel):
         verbose_name = _('email forwarding')
         verbose_name_plural = _('email forwardings')
 
-    def __unicode__(self):
-        return u"%s" % self.forward
+    def __str__(self):
+        return self.forward
 
 
+@python_2_unicode_compatible
 class EmailAlias(AbstractBaseModel):
     email = models.ForeignKey(Email, on_delete=models.CASCADE, verbose_name=_('email address'))
     alias = CaseInsensitiveEmailField(_('email alias address'), unique=True, max_length=254)
@@ -90,10 +95,11 @@ class EmailAlias(AbstractBaseModel):
         verbose_name = _('email alias')
         verbose_name_plural = _('email aliases')
 
-    def __unicode__(self):
-        return u"%s" % self.alias
+    def __str__(self):
+        return self.alias
 
 
+@python_2_unicode_compatible
 class GroupEmail(AbstractBaseModel):
     name = models.CharField(_("name"), blank=True, default='', max_length=255)
     email = models.OneToOneField(Email, on_delete=models.CASCADE, verbose_name=_("email address"), limit_choices_to=Q(email_type=GROUP_EMAIL_TYPE) | Q(email_type=COUNTRY_GROUP_EMAIL_TYPE))
@@ -110,8 +116,8 @@ class GroupEmail(AbstractBaseModel):
     def get_absolute_url(self):
         return 'emails:groupemail_detail', (), {'uuid': self.uuid.hex}
 
-    def __unicode__(self):
-        return u"%s" % self.email
+    def __str__(self):
+        return u'%s' % self.email
 
 
 class GroupEmailManager(models.Model):
