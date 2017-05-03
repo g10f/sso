@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
-from functools import wraps
 import hashlib
-import os
-from django.core.cache import cache
-from django.utils.decorators import available_attrs
-from django.http import HttpResponse
-
 import logging
+import os
+from functools import wraps
+
+from django.core.cache import cache
+from django.http import HttpResponse
+from django.utils.decorators import available_attrs
+
 logger = logging.getLogger(__name__)
 
 
@@ -47,7 +48,7 @@ def throttle(method='POST', duration=15, max_calls=1, response=None):
                 remote_addr = request.META.get('HTTP_X_FORWARDED_FOR') or \
                     request.META.get('REMOTE_ADDR')
                 path = request.get_full_path()
-                key = hashlib.md5('{addr}.{path}'.format(addr=remote_addr, path=path)).hexdigest()
+                key = hashlib.md5('{addr}.{path}'.format(addr=remote_addr, path=path).encode('utf-8')).hexdigest()
                 
                 called = cache.get(key, 0) + 1
                 

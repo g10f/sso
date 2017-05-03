@@ -1,10 +1,8 @@
-from django.utils.deprecation import MiddlewareMixin
-
 from django.db.models import signals
-from django.utils.functional import curry
 from django.utils.decorators import decorator_from_middleware
-
-import registration
+from django.utils.deprecation import MiddlewareMixin
+from django.utils.functional import curry
+from . import registration
 
 
 class CurrentUserMiddleware(MiddlewareMixin):

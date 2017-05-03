@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from collections import OrderedDict
-from django.db.models.expressions import OrderBy
-from django.utils.http import urlencode
-from django.utils.html import format_html
-from django.db import models
 
+from django.db import models
+from django.db.models.expressions import OrderBy
+from django.utils.html import format_html
+from django.utils.http import urlencode
 
 # Changelist settings
 # ALL_VAR = 'all'
@@ -253,7 +253,7 @@ class FilterItem(object):
     def pk(self):
         return self.item_tuple[0]
     
-    def __unicode__(self):
+    def __str__(self):
         return u"%s" % self.item_tuple[1]
 
 

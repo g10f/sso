@@ -7,7 +7,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
-from django.utils.encoding import force_bytes
+from django.utils.encoding import force_bytes, python_2_unicode_compatible
 from django.utils.http import urlsafe_base64_encode
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
@@ -168,6 +168,7 @@ class RegistrationManager(models.Manager):
         return num_deleted
 
 
+@python_2_unicode_compatible
 class RegistrationProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name=_('user'))
     last_modified = models.DateTimeField(_('last modified'), auto_now=True)
@@ -193,8 +194,8 @@ class RegistrationProfile(models.Model):
         verbose_name = _('registration profile')
         verbose_name_plural = _('registration profiles')
     
-    def __unicode__(self):
-        return u"%s" % self.user
+    def __str__(self):
+        return u'%s' % self.user
     
     def token_valid(self):
         token_expiration_date = RegistrationManager.token_expiration_date()
