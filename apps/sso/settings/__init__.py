@@ -199,7 +199,7 @@ INSTALLED_APPS = [
     'django.forms',
     'formtools',
     'sorl.thumbnail',
-    'nocaptcha_recaptcha',
+    'captcha',
     'l10n',
     'smart_selects',
     'sso.emails',
@@ -245,8 +245,9 @@ REGISTRATION = {
     'CONTACT_EMAIL': DEFAULT_FROM_EMAIL,
 }
 
-NORECAPTCHA_SITE_KEY = '6LccjewSAAAAAPcFZmUtuzRVkU6hhOona0orqgKh'
-NORECAPTCHA_SECRET_KEY = '6LccjewSAAAAAAhJzHuEyVV40AYApL6CpmjqlmX8'
+RECAPTCHA_PUBLIC_KEY = '6LccjewSAAAAAPcFZmUtuzRVkU6hhOona0orqgKh'
+RECAPTCHA_PRIVATE_KEY = '6LccjewSAAAAAAhJzHuEyVV40AYApL6CpmjqlmX8'
+NOCAPTCHA = True
 
 SESSION_COOKIE_HTTPONLY = False
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 7 * 2  # 2 weeks

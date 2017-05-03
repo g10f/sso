@@ -17,11 +17,11 @@ class RegistrationTest(TestCase):
                 'test_user_data.json']
 
     def setUp(self):
-        os.environ['NORECAPTCHA_TESTING'] = 'True'
+        os.environ['RECAPTCHA_TESTING'] = 'True'
         self.client = SSOClient()
     
     def tearDown(self):
-        del os.environ['NORECAPTCHA_TESTING']
+        del os.environ['RECAPTCHA_TESTING']
     
     def get_url_path_from_mail(self):
         outbox = getattr(mail, 'outbox')
