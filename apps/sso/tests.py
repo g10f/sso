@@ -66,7 +66,7 @@ class SSOSeleniumTests(StaticLiveServerTestCase):
         driver.get('%s%s' % (self.live_server_url, reverse('auth:login')))
         driver.find_element_by_name("username").send_keys(username)
         driver.find_element_by_name("password").send_keys(password)
-        driver.find_element_by_xpath('//button[@type="submit"]').click()
+        driver.find_element_by_tag_name("form").submit()
         
         # Wait until the response is received
         self.wait_page_loaded()

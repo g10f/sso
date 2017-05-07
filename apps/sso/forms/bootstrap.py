@@ -173,10 +173,3 @@ class OSMWidget(gis_forms.OSMWidget):
         js = (
             'js/gis/OLMapWidgetExt-1.0.5.js',
         )
-
-    def get_context(self, name, value, attrs):
-        # TODO: Bug Django 1.11, BaseGeometryWidget.get_context don't call super(), so context don't have "widget" key
-        context = super(OSMWidget, self).get_context(name, value, attrs)
-        super_context = super(gis_forms.BaseGeometryWidget, self).get_context(name, value, attrs)
-        super_context.update(context)
-        return super_context

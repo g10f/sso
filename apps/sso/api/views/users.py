@@ -257,7 +257,7 @@ class UserDetailView(View):
     @method_decorator(api_user_passes_test(lambda u: u.is_authenticated))
     @transaction.atomic
     def put(self, request, uuid, *args, **kwargs):
-        userinfo = json.loads(request.body)
+        userinfo = parse_json(request)
         user = None
         try:
             user = User.objects.get(uuid=uuid)

@@ -47,7 +47,7 @@ class UserBehavior(TaskSet):
     def on_start(self):
         """ on_start is called when a Locust start before any task is scheduled """
         response = self.client.get('/.well-known/openid-configuration')
-        self.openid_configuration = json.loads(response.content)
+        self.openid_configuration = response.json()
 
     @task
     def login(self):
@@ -82,7 +82,7 @@ class UserBehavior(TaskSet):
         headers = {'content-type': 'application/x-www-form-urlencoded', 'Accept': 'application/json'}
         response = self.client.post(self.openid_configuration['token_endpoint'], data=data, headers=headers)
         # print(response.content)
-        content = json.loads(response.content)
+        content = response.json()
         # print(content)
         # get userinfo
         return

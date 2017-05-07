@@ -3,6 +3,9 @@ from jwt import decode, encode
 from django.conf import settings
 
 import logging
+
+from django.utils.encoding import force_str, force_text
+
 logger = logging.getLogger(__name__)
 
 MAX_AGE = 3600  # one hour
@@ -29,7 +32,8 @@ def make_jwt(payload, max_age=MAX_AGE, algorithm="RS256"):
         key = settings.SECRET_KEY
     else:
         raise NotImplementedError('Algorithm %s not supported', algorithm)
-    return encode(payload, key=key, algorithm=algorithm)
+    bytes_string = encode(payload, key=key, algorithm=algorithm)
+    return force_text(bytes_string)
 
 
 def loads_jwt(jwt, algorithm="RS256", verify=True):

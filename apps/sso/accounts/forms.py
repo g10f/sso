@@ -768,8 +768,8 @@ class CenterProfileForm(mixins.UserRolesMixin, forms.Form):
     notes = forms.CharField(label=_("Notes"), required=False, max_length=1024,
                             widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
     application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False,
-                                                       widget=bootstrap.CheckboxSelectMultiple(),
-                                                       label=_("Application roles"))
+                                                      widget=bootstrap.CheckboxSelectMultiple(),
+                                                      label=_("Application roles"))
     role_profiles = forms.MultipleChoiceField(required=False, widget=bootstrap.CheckboxSelectMultiple(),
                                               label=_("Role profiles"),
                                               help_text=_('Groups of application roles that are assigned together.'))

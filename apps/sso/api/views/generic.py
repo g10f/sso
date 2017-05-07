@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import json
 import logging
 from uuid import UUID
 
@@ -16,6 +15,7 @@ from sso.api.decorators import catch_errors
 from sso.api.response import JsonHttpResponse
 from sso.auth.utils import is_browser_client
 from sso.oauth2.models import allowed_hosts
+from sso.utils.http import parse_json
 from sso.utils.url import base_url, update_url, is_safe_ext_url
 
 logger = logging.getLogger(__name__)
@@ -172,8 +172,8 @@ class JsonDetailView(JSONResponseMixin, PermissionMixin, BaseDetailView):
         try:
             self.object = self.get_object()
             # get_object is needed before check_permission
-            self.check_permission('replace', self.object)            
-            data = json.loads(request.body)
+            self.check_permission('replace', self.object)
+            data = parse_json(request)
             self.save_object_data(request, data)
             status_code = 200
             self.object = self.get_object()  # update object
@@ -187,7 +187,7 @@ class JsonDetailView(JSONResponseMixin, PermissionMixin, BaseDetailView):
     @transaction.atomic
     def create(self, request, *args, **kwargs):
         self.check_permission('create')
-        data = json.loads(request.body)
+        data = parse_json(request)
         
         # get the new id for the object
         slug = self.kwargs.get(self.slug_url_kwarg, None)

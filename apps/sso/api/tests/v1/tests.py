@@ -23,7 +23,7 @@ class ApiTests(OAuth2BaseTestCase):
         authorization = self.get_authorization(client_id='68bfae12a58541548def243e223053fb')
         response = self.client.put(uri, data=self.data, HTTP_AUTHORIZATION=authorization)
         self.assertEqual(response.status_code, HTTP_200_OK)
-        userinfo = json.loads(response.content)
+        userinfo = response.json()
         
         # given_name, family_name and email can not be changed
         self.assertEqual(userinfo['given_name'], 'Gunnar')
@@ -61,5 +61,5 @@ class ApiTests(OAuth2BaseTestCase):
         # filter for usernames 
         response = self.client.get(uri, data={'q': 'unna'}, HTTP_AUTHORIZATION=authorization)
         self.assertEqual(response.status_code, HTTP_200_OK)
-        userlist = json.loads(response.content)
+        userlist = response.json()
         self.assertEqual(len(userlist['collection']), 1)
