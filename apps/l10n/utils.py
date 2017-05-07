@@ -101,7 +101,7 @@ def moneyfmt(val, currency_code=None, wrapcents='', places=None):
     if currency_code:
         currency = currencies.get(currency_code, None)
         if not currency:
-            log.warn('Could not find currency code definitions for "%s", please look at l10n.l10n_settings for examples.' % currency_code)
+            log.warning('Could not find currency code definitions for "%s", please look at l10n.l10n_settings for examples.' % currency_code)
 
     if not currency:
         default_currency_code = get_l10n_setting('default_currency', None)

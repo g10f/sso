@@ -50,12 +50,12 @@ class ApiTests(OAuth2BaseTestCase):
         if kwargs is None:
             kwargs = {}
         response = self.client.get(reverse('api:home'))
-        home = json.loads(response.content)
+        home = response.json()
         return expand(home[name], kwargs)
 
     def test_entry_point(self):
         response = self.client.get(reverse('api:home'))
-        home = json.loads(response.content)
+        home = response.json()
         authorization = self.get_authorization(client_id="1811f02ed81b43b5bee1afe031e6198e", username="GlobalAdmin", password="secret007", scope="users")
         self.longMessage = True
         for entry in home:
@@ -70,13 +70,13 @@ class ApiTests(OAuth2BaseTestCase):
         organisations_url = self.get_url_from_api_home('organisations')
         authorization = self.get_authorization(client_id="1811f02ed81b43b5bee1afe031e6198e", username="CountryAdmin", scope="users")
         response = self.client.get(organisations_url, HTTP_AUTHORIZATION=authorization)
-        organisations = json.loads(response.content)
+        organisations = response.json()
         self.assertNotIn('error', organisations)
 
         # get the details url of the first member of the collection
         details_url = organisations['member'][0]['@id']
         response = self.client.get(details_url, HTTP_AUTHORIZATION=authorization)
-        organisation = json.loads(response.content)
+        organisation = response.json()
         self.assertNotIn('error', organisations)
 
     def test_user_list(self):
@@ -85,7 +85,7 @@ class ApiTests(OAuth2BaseTestCase):
         authorization = self.get_authorization(client_id="1811f02ed81b43b5bee1afe031e6198e", username="CountryAdmin", scope="users")
         # get user list
         response = self.client.get(users_url, HTTP_AUTHORIZATION=authorization)
-        users = json.loads(response.content)
+        users = response.json()
         self.assertNotIn('error', users)
         operation = [{
             '@type': "CreateResourceOperation",
@@ -97,25 +97,25 @@ class ApiTests(OAuth2BaseTestCase):
         # create new user
         user_url = users['member'][0]['@id']
         response = self.client.get(user_url, HTTP_AUTHORIZATION=authorization)
-        user = json.loads(response.content)
+        user = response.json()
         user['email'] = 'abc@g10f.de'
         user['birth_date'] = '1964-09-01'
         user_url = expand('http://testserver/api/v2/users/{uuid}/', {'uuid': uuid4().hex})
         response = self.client.put(user_url, json.dumps(user), HTTP_AUTHORIZATION=authorization)
-        user = json.loads(response.content)
+        user = response.json()
         self.assertNotIn('error', user)
 
         # add address to  existing user (failing)
         user['addresses'] = {uuid4().hex: address('Test Address', address_type='work')}
         response = self.client.put(user_url, json.dumps(user), HTTP_AUTHORIZATION=authorization)
-        response_obj = json.loads(response.content)
+        response_obj = response.json()
         self.assertIn('scope \"address\" is missing', response_obj['error_description'])
 
         # add phone to existing user (failing)
         user['phone_numbers'] = {uuid4().hex: phone('+49 123456')}
         del user['addresses']
         response = self.client.put(user_url, json.dumps(user), HTTP_AUTHORIZATION=authorization)
-        response_obj = json.loads(response.content)
+        response_obj = response.json()
         self.assertIn('scope \"phone\" is missing', response_obj['error_description'])
 
         # get access_token with address and phone scopes
@@ -131,7 +131,7 @@ class ApiTests(OAuth2BaseTestCase):
         }
         user['addresses'] = addresses
         response = self.client.put(user_url, json.dumps(user), HTTP_AUTHORIZATION=authorization)
-        response_obj = json.loads(response.content)
+        response_obj = response.json()
         self.assertNotIn('error', response_obj)
 
         # remove work address
@@ -140,12 +140,12 @@ class ApiTests(OAuth2BaseTestCase):
         }
         user['addresses'] = addresses
         response = self.client.put(user_url, json.dumps(user), HTTP_AUTHORIZATION=authorization)
-        response_obj = json.loads(response.content)
+        response_obj = response.json()
         self.assertNotIn('error', response_obj)
 
         # add phone to existing user (success)
         user['phone_numbers'] = {uuid4().hex: phone('+49 123456')}
         del user['addresses']
         response = self.client.put(user_url, json.dumps(user), HTTP_AUTHORIZATION=authorization)
-        response_obj = json.loads(response.content)
+        response_obj = response.json()
         self.assertNotIn('error', response_obj)

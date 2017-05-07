@@ -1,9 +1,10 @@
 import logging
-from jwt import InvalidTokenError
-from django.conf import settings
 
-from django.core import signing
+from jwt import InvalidTokenError
+
+from django.conf import settings
 from django.contrib.sessions.backends.signed_cookies import SessionStore as SignedCookiesSessionStore
+from django.core import signing
 from sso.oauth2.crypt import loads_jwt, make_jwt
 from sso.sessions.backends import map_keys, inv_key_map, key_map
 

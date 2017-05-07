@@ -349,7 +349,8 @@ def deploy_database(conf='dev'):
     fabtools.require.postgres.server()
     fabtools.require.deb.package('postgis')
     fabtools.require.deb.package('postgresql-contrib')  # for citext
-    fabtools.require.deb.package('language-pack-en')  # for creating database  required (https://github.com/saz/puppet-locales/issues/28)
+    # for creating database  required (https://github.com/saz/puppet-locales/issues/28)
+    fabtools.require.deb.package('language-pack-en')
     fabtools.require.postgres.user(db_name, db_name)
     fabtools.require.postgres.database(db_name, db_name)
     fabtools.postgres._run_as_pg('''psql -c "CREATE EXTENSION IF NOT EXISTS citext;" %(db_name)s''' % {'db_name': db_name})

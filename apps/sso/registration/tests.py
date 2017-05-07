@@ -7,6 +7,7 @@ from django.utils.six.moves.urllib.parse import urlsplit
 from django.core import mail
 from django.test import TestCase
 from django.urls import reverse
+from django.utils.encoding import force_text
 from sso.organisations.models import Organisation
 from sso.registration import default_username_generator
 from sso.test.client import SSOClient
@@ -95,7 +96,6 @@ class RegistrationTest(TestCase):
         data[response.context['hash_field']] = response.context['hash_value']
 
         response = self.client.post(reverse('registration:registration_register'), data=data)
-        print(response.content)
         self.assertEqual(response.status_code, 302)
 
         path = self.get_url_path_from_mail()
@@ -123,7 +123,7 @@ class RegistrationTest(TestCase):
         response = self.client.get(path)
 
         # get the delete form url
-        pk = re.findall(r'registrations/delete/(?P<pk>\d+)/', response.content)[0]
+        pk = re.findall(r'registrations/delete/(?P<pk>\d+)/', force_text(response.content))[0]
         # post the delete form
         path = reverse('registration:delete_user_registration', args=[pk])
         response = self.client.post(path)

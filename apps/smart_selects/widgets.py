@@ -54,7 +54,8 @@ class ChainedSelect(Select):
         if self.manager is not None:
             kwargs.update({'manager': self.manager})
         url = "/".join(reverse(view_name, kwargs=kwargs).split("/")[:-2])
-        empty_label = iter(self.choices).next()[1]  # Hacky way to getting the correct empty_label from the field instead of a hardcoded '--------'
+        # Hacky way to getting the correct empty_label from the field instead of a hardcoded '--------'
+        empty_label = list(self.choices)[0][1]
         
         final_choices = []
 

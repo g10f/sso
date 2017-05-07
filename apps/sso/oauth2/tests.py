@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import base64
-import json
 from time import sleep
 
 from django.utils.six.moves.urllib.parse import urlsplit
@@ -10,6 +8,7 @@ from django.test import TestCase
 from django.urls import reverse
 from django.utils.crypto import get_random_string
 from sso.test.client import SSOClient
+from . import crypt
 
 
 def get_query_dict(url):
@@ -22,43 +21,6 @@ def get_fragment_dict(url):
     scheme, netloc, path, query_string, fragment = urlsplit(url)  # @UnusedVariable
     fragment_dict = QueryDict(fragment).copy()
     return fragment_dict
-
-
-def urlsafe_b64decode(b64string):
-    # Guard against unicode strings, which base64 can't handle.
-    b64string = b64string.encode('ascii')
-    padded = b64string + '=' * (4 - len(b64string) % 4)
-    return base64.urlsafe_b64decode(padded)
-
-
-def load_jwt(jwt, audience=None):
-    """
-    load jwt without signature check
-    """
-    segments = jwt.split('.')
-
-    if len(segments) != 3:
-        raise Exception('id_token_error: Wrong number of segments in token: %s' % jwt)
-
-    # signed = '%s.%s' % (segments[0], segments[1])
-    # signature = urlsafe_b64decode(segments[2])
-
-    # Parse token.
-    json_body = urlsafe_b64decode(segments[1])
-    try:
-        parsed = json.loads(json_body)
-    except:
-        raise Exception('id_token_error: Can\'t parse token: %s' % json_body)
-
-    # Check audience.
-    if audience is not None:
-        aud = parsed.get('aud')
-        if aud is None:
-            raise Exception('id_token_error: No aud field in token: %s' % json_body)
-        if aud != audience:
-            raise Exception('id_token_error: Wrong recipient, %s != %s: %s' % (aud, audience, json_body))
-
-    return parsed
 
 
 class OAuth2BaseTestCase(TestCase):
@@ -132,8 +94,7 @@ class OAuth2BaseTestCase(TestCase):
         token_response = self.client.post(reverse('oauth2:token'), token_data)
         self.assertEqual(token_response.status_code, 200)
         self.assertIn('application/json', token_response['Content-Type'])
-
-        token = json.loads(token_response.content)
+        token = token_response.json()
         self.logout()
         return 'Bearer %s' % token['access_token']
 
@@ -214,7 +175,7 @@ class OAuth2Tests(OAuth2BaseTestCase):
         self.assertEqual(token_response['Cache-Control'], 'no-store')
         self.assertEqual(token_response['Pragma'], 'no-cache')
 
-        token = json.loads(token_response.content)
+        token = token_response.json()
         self.assertIn('access_token', token)
         self.assertIn('id_token', token)
         self.assertIn('expires_in', token)
@@ -223,7 +184,7 @@ class OAuth2Tests(OAuth2BaseTestCase):
 
         self.assertDictContainsSubset({'scope': 'openid profile email', 'token_type': 'Bearer'}, token)
 
-        id_token = load_jwt(token['id_token'])
+        id_token = crypt.loads_jwt(token['id_token'])
         self.assertIn('iss', id_token)
         self.assertIn('sub', id_token)
         self.assertIn('aud', id_token)
@@ -250,7 +211,7 @@ class OAuth2Tests(OAuth2BaseTestCase):
         self.logout()
 
         response = self.client.get(reverse('openid-configuration'))
-        configuration = json.loads(response.content)
+        configuration = response.json()
 
         # no authentication
         response = self.client.get(configuration['userinfo_endpoint'])
@@ -259,7 +220,7 @@ class OAuth2Tests(OAuth2BaseTestCase):
         # valid authentication
         response = self.client.get(configuration['userinfo_endpoint'], HTTP_AUTHORIZATION=authorization)
         self.assertEqual(response.status_code, 200)
-        user_info = json.loads(response.content)
+        user_info = response.json()
         self.assertEqual(user_info['family_name'], 'Scherf')
         self.assertIn('31664dd38ca4454e916e55fe8b1f0745', user_info['organisations'])
 
@@ -281,7 +242,7 @@ class OAuth2Tests(OAuth2BaseTestCase):
         self.assertEqual(token_response.status_code, 401)
         self.assertIn('application/json', token_response['Content-Type'])
 
-        token = json.loads(token_response.content)
+        token = token_response.json()
         self.assertIn('error', token)
         self.assertDictContainsSubset({'error': 'access_denied'}, token)
 
@@ -292,6 +253,6 @@ class OAuth2Tests(OAuth2BaseTestCase):
         self.assertEqual(token_response.status_code, 401)
         self.assertIn('application/json', token_response['Content-Type'])
 
-        token = json.loads(token_response.content)
+        token = token_response.json()
         self.assertIn('error', token)
         self.assertDictContainsSubset({'error': 'invalid_grant'}, token)

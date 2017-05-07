@@ -52,5 +52,5 @@ def get_l10n_default_currency_symbol():
     try:
         return get_l10n_setting('currency_formats')[key]['symbol']
     except KeyError:
-        log.warn('could not find default currency symbol, please make sure you have a L10N_SETTINGS in your settings file, and that it has a default currency.')
+        log.warning('could not find default currency symbol, please make sure you have a L10N_SETTINGS in your settings file, and that it has a default currency.')
         return "$"
