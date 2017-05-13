@@ -3,6 +3,7 @@ from collections import OrderedDict
 
 from django.db import models
 from django.db.models.expressions import OrderBy
+from django.utils.encoding import python_2_unicode_compatible
 from django.utils.html import format_html
 from django.utils.http import urlencode
 
@@ -245,6 +246,7 @@ class ChangeList(object):
             }
 
 
+@python_2_unicode_compatible
 class FilterItem(object):
     def __init__(self, item_tuple):
         self.item_tuple = item_tuple
