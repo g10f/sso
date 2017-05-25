@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
+from django.template import loader
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext_lazy as _
@@ -165,6 +166,20 @@ class OrganisationChangeAcceptView(FormView):
             organisation_related_application_roles = ApplicationRole.objects.filter(is_organisation_related=True)
             user.application_roles.remove(*list(organisation_related_application_roles))
 
+            # email user
+            c = {
+                'first_name': user.get_full_name(),
+                'organisation_name': self.organisationchange.organisation,
+                'organisation_admin': self.request.user.get_full_name(),
+            }
+            subject = loader.render_to_string('accounts/email/organisationchange_accepted_email_subject.txt', c)
+            # Email subject *must not* contain newlines
+            subject = ''.join(subject.splitlines())
+            message = loader.render_to_string('accounts/email/organisationchange_accepted_email.txt', c)
+            html_message = None  # loader.render_to_string(html_email_template_name, c)
+            user.email_user(subject, message, self.request.user.primary_email(), html_message=html_message)
+
+            # display success message
             msg = _('Successfully changed the organisation.')
             messages.add_message(self.request, level=messages.SUCCESS, message=msg, fail_silently=True)
             return HttpResponseRedirect(reverse('accounts:update_user', args=(user.uuid.hex,)))
