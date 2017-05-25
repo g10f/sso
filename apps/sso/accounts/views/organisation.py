@@ -194,7 +194,8 @@ class OrganisationChangeList(ListView):
 
     @property
     def list_display(self):
-        return ['user', FromOrganisationHeader(), ToOrganisationHeader(), 'reason', _('primary email'), 'last_modified']
+        return ['user', FromOrganisationHeader(), ToOrganisationHeader(), 'reason', _('primary email'),
+                'last_modified', 'comment']
 
     @method_decorator(admin_login_required)
     @method_decorator(permission_required('accounts.change_user'))
@@ -204,7 +205,8 @@ class OrganisationChangeList(ListView):
     def get_queryset(self):
         user = self.request.user
 
-        qs = super(OrganisationChangeList, self).get_queryset().prefetch_related('user__useremail_set', 'organisation__organisation_country__country')
+        qs = super(OrganisationChangeList, self).get_queryset().prefetch_related(
+            'user__useremail_set', 'organisation__organisation_country__country')
         qs = user.filter_administrable_organisationchanges(qs)
 
         self.cl = main.ChangeList(self.request, self.model, self.list_display, default_ordering=['-last_modified'])
@@ -225,7 +227,7 @@ class OrganisationChangeList(ListView):
         for h in headers:
             if h['sortable'] and h['sorted']:
                 num_sorted_fields += 1
-        filters = []
+
         countries = user.get_administrable_user_countries()
         country_filter = OrganisationChangeCountryFilter().get(self, countries)
 

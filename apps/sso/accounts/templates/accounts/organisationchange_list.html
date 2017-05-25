@@ -46,6 +46,9 @@
 	               <td>{{ object.reason }}</td>
 	               <td>{{ object.user.primary_email|default_if_none:"" }}</td>
 	               <td>{{ object.last_modified|utc|date:"Y-m-d H:i" }}</td>
+	               <td>{% if object.comment %}
+                            <button type="button" class="btn btn-sm btn-default" data-container="body" data-toggle="popover" data-html="true" data-trigger="hover click"
+                                    data-placement="top" data-content="{{ object.comment }}"><span class="glyphicon glyphicon-paperclip"></span></button>{% endif %}</td>
 	           </tr>
 	           {% endfor %}
 	       </tbody>

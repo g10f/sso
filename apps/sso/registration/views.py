@@ -93,7 +93,8 @@ class IsAccessDeniedFilter(ViewChoicesFilter):
 class UserRegistrationList(ListView):
     template_name = 'registration/user_registration_list.html'
     model = RegistrationProfile
-    list_display = ['user', _('picture'), 'email', 'center', 'date_registered', 'verified_by_user', 'check_back', 'is_access_denied', 'comment']
+    list_display = ['user', _('picture'), 'email', 'center', 'date_registered', 'verified_by_user', 'check_back',
+                    'is_access_denied', 'comment']
 
     @method_decorator(admin_login_required)
     @method_decorator(permission_required('registration.change_registrationprofile', raise_exception=True))
