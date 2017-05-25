@@ -86,6 +86,7 @@ class OrganisationChange(AbstractBaseModel):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     organisation = models.ForeignKey(Organisation, on_delete=models.CASCADE)
     reason = models.TextField(_("reason"), max_length=2048)
+    comment = models.TextField(_("Comment"), max_length=2048, blank=True)
 
     class Meta(AbstractBaseModel.Meta):
         verbose_name = _('organisation change')
