@@ -1,0 +1,6 @@
+{% load i18n %}{% autoescape off %}
+{% blocktrans %}Hi {{ first_name }}.{% endblocktrans %}
+{% blocktrans %}Your change to {{ organisation_name }} has been accepted.{% endblocktrans %}
+
+{% blocktrans %}Best wishes {{ organisation_admin }}{% endblocktrans %}
+{% endautoescape %}
