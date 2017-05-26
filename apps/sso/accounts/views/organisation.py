@@ -5,6 +5,7 @@ from django.utils.six.moves.urllib.parse import urlunsplit
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -167,7 +168,13 @@ class OrganisationChangeAcceptView(FormView):
             user.application_roles.remove(*list(organisation_related_application_roles))
 
             # email user
+            current_site = get_current_site(self.request)
+            use_https = self.request.is_secure()
+            domain = current_site.domain
             c = {
+                'site_name': current_site,
+                'protocol': use_https and 'https' or 'http',
+                'domain': domain,
                 'first_name': user.get_full_name(),
                 'organisation_name': self.organisationchange.organisation,
                 'organisation_admin': self.request.user.get_full_name(),
