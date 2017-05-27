@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-26 01:55+0200\n"
+"POT-Creation-Date: 2017-05-26 23:46+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -37,8 +37,8 @@ msgstr ""
 
 #: accounts/admin.py:137 accounts/forms.py:45 accounts/forms.py:298
 #: accounts/forms.py:479 accounts/forms.py:568 accounts/forms.py:594
-#: accounts/forms.py:672 accounts/forms.py:721 accounts/forms.py:802
-#: accounts/forms.py:830
+#: accounts/forms.py:672 accounts/forms.py:721 accounts/forms.py:803
+#: accounts/forms.py:831
 #: accounts/templates/accounts/user_confirm_delete.html:39
 #: accounts/views/filter.py:52 emails/admin.py:44 organisations/models.py:294
 #: registration/forms.py:65
@@ -75,7 +75,7 @@ msgid "Role Profile Admin"
 msgstr ""
 
 #: accounts/admin.py:238 accounts/forms.py:304 accounts/forms.py:682
-#: accounts/forms.py:774 accounts/forms.py:835
+#: accounts/forms.py:775 accounts/forms.py:836
 #: accounts/templates/accounts/application/add_user_done.html:48
 #: registration/forms.py:70
 msgid "Role profiles"
@@ -141,7 +141,7 @@ msgid "App admin"
 msgstr ""
 
 #: accounts/admin.py:379 accounts/forms.py:296 accounts/forms.py:679
-#: accounts/forms.py:768 accounts/models/application.py:42
+#: accounts/forms.py:769 accounts/models/application.py:42
 #: accounts/models/user.py:103
 #: accounts/templates/accounts/application/add_user_done.html:59
 #: accounts/templates/accounts/user_confirm_delete.html:33 oauth2/models.py:122
@@ -185,7 +185,7 @@ msgid "Name"
 msgstr ""
 
 #: accounts/forms.py:71 accounts/forms.py:402 accounts/forms.py:548
-#: accounts/forms.py:767
+#: accounts/forms.py:768
 #: accounts/templates/accounts/organisationchange_accept.html:51
 #: accounts/templates/accounts/user_confirm_delete.html:28
 #: accounts/templates/accounts/user_email_detail.html:62
@@ -236,7 +236,7 @@ msgid ""
 "password."
 msgstr ""
 
-#: accounts/forms.py:133 accounts/forms.py:286 accounts/forms.py:829
+#: accounts/forms.py:133 accounts/forms.py:286 accounts/forms.py:830
 #: accounts/templates/accounts/application/add_user_done.html:39
 #: emails/forms.py:74 emails/models.py:64
 #: emails/templates/emails/groupemail_detail.html:19
@@ -274,7 +274,7 @@ msgid "Enter the same password as above, for verification."
 msgstr ""
 
 #: accounts/forms.py:239 accounts/forms.py:287 accounts/forms.py:449
-#: accounts/forms.py:664 accounts/forms.py:827
+#: accounts/forms.py:664 accounts/forms.py:828
 #: accounts/templates/accounts/application/add_user_done.html:31
 #: accounts/templates/accounts/organisationchange_accept.html:39
 #: accounts/templates/accounts/user_confirm_delete.html:18
@@ -285,7 +285,7 @@ msgid "First name"
 msgstr ""
 
 #: accounts/forms.py:240 accounts/forms.py:289 accounts/forms.py:450
-#: accounts/forms.py:665 accounts/forms.py:828
+#: accounts/forms.py:665 accounts/forms.py:829
 #: accounts/templates/accounts/application/add_user_done.html:35
 #: accounts/templates/accounts/organisationchange_accept.html:45
 #: accounts/templates/accounts/user_confirm_delete.html:23
@@ -300,7 +300,7 @@ msgid "The two password fields didn't match."
 msgstr ""
 
 #: accounts/forms.py:278 accounts/forms.py:447 accounts/forms.py:547
-#: accounts/forms.py:661 accounts/forms.py:766 accounts/forms.py:826
+#: accounts/forms.py:661 accounts/forms.py:767 accounts/forms.py:827
 #: registration/forms.py:45
 msgid "Username"
 msgstr ""
@@ -327,19 +327,19 @@ msgstr ""
 msgid "Date of birth"
 msgstr ""
 
-#: accounts/forms.py:302 accounts/forms.py:676 accounts/forms.py:772
-#: accounts/forms.py:833
+#: accounts/forms.py:302 accounts/forms.py:676 accounts/forms.py:773
+#: accounts/forms.py:834
 #: accounts/templates/accounts/application/add_user_done.html:54
 #: registration/forms.py:66
 msgid "Application roles"
 msgstr ""
 
-#: accounts/forms.py:305 accounts/forms.py:683 accounts/forms.py:775
-#: accounts/forms.py:836 registration/forms.py:71
+#: accounts/forms.py:305 accounts/forms.py:683 accounts/forms.py:776
+#: accounts/forms.py:837 registration/forms.py:71
 msgid "Groups of application roles that are assigned together."
 msgstr ""
 
-#: accounts/forms.py:308 accounts/forms.py:659 accounts/forms.py:824
+#: accounts/forms.py:308 accounts/forms.py:659 accounts/forms.py:825
 #: api/views/users_v2.py:371 registration/forms.py:42 registration/forms.py:184
 msgid "A user with that email address already exists."
 msgstr ""
@@ -378,7 +378,7 @@ msgstr ""
 msgid "Timezone"
 msgstr ""
 
-#: accounts/forms.py:466 accounts/forms.py:658 accounts/forms.py:823
+#: accounts/forms.py:466 accounts/forms.py:658 accounts/forms.py:824
 #: accounts/models/user.py:77 registration/forms.py:41
 #: registration/forms.py:183
 msgid "A user with that username already exists."
@@ -388,15 +388,15 @@ msgstr ""
 msgid "Please use the contact form for a request to change this value."
 msgstr ""
 
-#: accounts/forms.py:546 accounts/forms.py:764
+#: accounts/forms.py:546 accounts/forms.py:765
 msgid "Account type"
 msgstr ""
 
-#: accounts/forms.py:559 accounts/forms.py:784
+#: accounts/forms.py:559 accounts/forms.py:785
 msgid "Organisation Account"
 msgstr ""
 
-#: accounts/forms.py:559 accounts/forms.py:784
+#: accounts/forms.py:559 accounts/forms.py:785
 msgid "Member Account"
 msgstr ""
 
@@ -404,7 +404,7 @@ msgstr ""
 msgid "State"
 msgstr ""
 
-#: accounts/forms.py:671 accounts/forms.py:765
+#: accounts/forms.py:671 accounts/forms.py:766
 msgid "Status"
 msgstr ""
 
@@ -412,11 +412,11 @@ msgstr ""
 msgid "* Application roles which are included by role profiles"
 msgstr ""
 
-#: accounts/forms.py:686 accounts/forms.py:777
+#: accounts/forms.py:686 accounts/forms.py:778
 msgid "Created by"
 msgstr ""
 
-#: accounts/forms.py:693 accounts/forms.py:785
+#: accounts/forms.py:693 accounts/forms.py:786
 #: accounts/models/application.py:39 accounts/models/user.py:81
 #: emails/models.py:48 emails/models.py:108 oauth2/models.py:120
 #: organisations/models.py:83 organisations/models.py:140
@@ -425,7 +425,7 @@ msgstr ""
 msgid "active"
 msgstr ""
 
-#: accounts/forms.py:693 accounts/forms.py:785
+#: accounts/forms.py:693 accounts/forms.py:786
 msgid "blocked"
 msgstr ""
 
@@ -629,7 +629,7 @@ msgstr ""
 msgid "last modified"
 msgstr ""
 
-#: accounts/models/user.py:99 accounts/views/application.py:71
+#: accounts/models/user.py:99 accounts/views/application.py:72
 msgid "organisation"
 msgstr ""
 
@@ -686,7 +686,7 @@ msgstr ""
 msgid "timezone"
 msgstr ""
 
-#: accounts/models/user.py:109 accounts/views/application.py:80
+#: accounts/models/user.py:109 accounts/views/application.py:81
 msgid "valid until"
 msgstr ""
 
@@ -1151,7 +1151,6 @@ msgid "Cancel"
 msgstr ""
 
 #: accounts/templates/accounts/email/account_created_email.txt:2
-#: accounts/templates/accounts/email/organisationchange_accepted_email.txt:2
 #: accounts/templates/accounts/email/password_reset_email.txt:2
 #: accounts/templates/accounts/email/useremail_confirm_email.txt:2
 #, python-format
@@ -1226,12 +1225,18 @@ msgstr ""
 msgid "Action"
 msgstr ""
 
-#: accounts/templates/accounts/email/organisationchange_accepted_email.txt:3
+#: accounts/templates/accounts/email/organisationchange_accepted_email.txt:2
 #, python-format
-msgid "Your change to %(organisation_name)s has been accepted."
+msgid "Dear %(first_name)s."
 msgstr ""
 
-#: accounts/templates/accounts/email/organisationchange_accepted_email.txt:5
+#: accounts/templates/accounts/email/organisationchange_accepted_email.txt:3
+#, python-format
+msgid ""
+"Your change on %(site_name)s to %(organisation_name)s has been accepted."
+msgstr ""
+
+#: accounts/templates/accounts/email/organisationchange_accepted_email.txt:6
 #, python-format
 msgid "Best wishes %(organisation_admin)s"
 msgstr ""
@@ -1723,43 +1728,43 @@ msgstr ""
 msgid "Password create unsuccessful"
 msgstr ""
 
-#: accounts/views/application.py:62
+#: accounts/views/application.py:63
 msgid "last login"
 msgstr ""
 
 #: accounts/views/application.py:92 accounts/views/filter.py:20
-#: accounts/views/organisation.py:208
+#: accounts/views/organisation.py:215
 msgid "Active Users"
 msgstr ""
 
 #: accounts/views/application.py:92 accounts/views/filter.py:20
-#: accounts/views/organisation.py:208
+#: accounts/views/organisation.py:215
 msgid "Inactive Users"
 msgstr ""
 
-#: accounts/views/application.py:102 accounts/views/application.py:104
-#: accounts/views/application.py:197 accounts/views/organisation.py:212
+#: accounts/views/application.py:102 accounts/views/application.py:105
+#: accounts/views/application.py:201 accounts/views/organisation.py:219
 msgid "primary email"
 msgstr ""
 
-#: accounts/views/application.py:298 accounts/views/application.py:307
+#: accounts/views/application.py:306 accounts/views/application.py:315
 msgid "Add user"
 msgstr ""
 
-#: accounts/views/application.py:336
+#: accounts/views/application.py:345
 #, python-format
 msgid "The account %(username)s has no email address!"
 msgstr ""
 
-#: accounts/views/application.py:348 accounts/views/application.py:425
+#: accounts/views/application.py:358 accounts/views/application.py:440
 #, python-format
 msgid ""
 "The %(name)s \"%(obj)s\" was changed successfully. You may add another "
 "%(name)s below."
 msgstr ""
 
-#: accounts/views/application.py:351 accounts/views/application.py:428
-#: accounts/views/application.py:487 organisations/views/__init__.py:72
+#: accounts/views/application.py:361 accounts/views/application.py:443
+#: accounts/views/application.py:501 organisations/views/__init__.py:72
 #: registration/views.py:180 views/generic.py:245
 #, python-format
 msgid ""
@@ -1767,31 +1772,31 @@ msgid ""
 "below."
 msgstr ""
 
-#: accounts/views/application.py:355
+#: accounts/views/application.py:366
 #, python-format
 msgid ""
 "The %(name)s \"%(obj)s\" was changed successfully and the invitation email "
 "was resend."
 msgstr ""
 
-#: accounts/views/application.py:360 accounts/views/application.py:433
+#: accounts/views/application.py:371 accounts/views/application.py:448
 #: registration/views.py:195
 #, python-format
 msgid "The %(name)s \"%(obj)s\" was activated successfully."
 msgstr ""
 
-#: accounts/views/application.py:363 accounts/views/application.py:436
-#: accounts/views/application.py:490 organisations/views/__init__.py:80
+#: accounts/views/application.py:374 accounts/views/application.py:451
+#: accounts/views/application.py:504 organisations/views/__init__.py:80
 #: registration/views.py:184 views/generic.py:248
 #, python-format
 msgid "The %(name)s \"%(obj)s\" was changed successfully."
 msgstr ""
 
-#: accounts/views/application.py:403 accounts/views/application.py:450
+#: accounts/views/application.py:417 accounts/views/application.py:465
 msgid "Change user"
 msgstr ""
 
-#: accounts/views/application.py:511
+#: accounts/views/application.py:525
 msgid "Change user roles"
 msgstr ""
 
@@ -1842,19 +1847,19 @@ msgstr ""
 msgid "All Profiles"
 msgstr ""
 
-#: accounts/views/organisation.py:156
+#: accounts/views/organisation.py:157
 msgid "Denied organisation change."
 msgstr ""
 
-#: accounts/views/organisation.py:183
+#: accounts/views/organisation.py:190
 msgid "Successfully changed the organisation."
 msgstr ""
 
-#: accounts/views/organisation.py:193
+#: accounts/views/organisation.py:200
 msgid "to organisation"
 msgstr ""
 
-#: accounts/views/organisation.py:199
+#: accounts/views/organisation.py:206
 msgid "from organisation"
 msgstr ""
 

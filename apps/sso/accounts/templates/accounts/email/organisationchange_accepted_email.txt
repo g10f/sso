@@ -1,5 +1,5 @@
 {% load i18n %}{% autoescape off %}
-{% blocktrans %}Hi {{ first_name }}.{% endblocktrans %}
+{% blocktrans %}Dear {{ first_name }}.{% endblocktrans %}
 {% blocktrans %}Your change on {{ site_name }} to {{ organisation_name }} has been accepted.{% endblocktrans %}
 {{ protocol }}://{{ domain }}{% url 'accounts:profile' %}
 

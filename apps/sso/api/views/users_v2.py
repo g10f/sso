@@ -494,7 +494,6 @@ class UserList(UserMixin, JsonListView):
     @classmethod
     def create_permission(cls, request, obj=None):
         user = request.user
-        user = request.user
         if not user.is_authenticated:
             return False, "Not authenticated"
         if not user.has_perm('accounts.add_user'):
