@@ -3,6 +3,7 @@ import logging
 
 from django.utils.six.moves.urllib.parse import urlunsplit
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.sites.shortcuts import get_current_site
@@ -168,11 +169,11 @@ class OrganisationChangeAcceptView(FormView):
             user.application_roles.remove(*list(organisation_related_application_roles))
 
             # email user
-            current_site = get_current_site(self.request)
-            use_https = self.request.is_secure()
-            domain = current_site.domain
+            site_name = settings.SSO_SITE_NAME
+            domain = settings.SSO_DOMAIN
+            use_https = settings.SSO_USE_HTTPS
             c = {
-                'site_name': current_site,
+                'site_name': site_name,
                 'protocol': use_https and 'https' or 'http',
                 'domain': domain,
                 'first_name': user.get_full_name(),

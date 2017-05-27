@@ -19,7 +19,6 @@ from django.utils.decorators import method_decorator
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import DeleteView
-from .filter import AdminRegionFilter, ApplicationRoleFilter, CenterFilter, CountryFilter, IsActiveFilter, RoleProfileFilter, UserSearchFilter
 from l10n.models import Country
 from sso.accounts.email import send_account_created_email
 from sso.accounts.forms import UserAddForm, UserProfileForm, UserEmailForm, AppAdminUserProfileForm, CenterProfileForm
@@ -32,15 +31,17 @@ from sso.utils.url import get_safe_redirect_uri
 from sso.views import main
 from sso.views.generic import ListView
 from sso.views.main import OrderByWithNulls
+from .filter import AdminRegionFilter, ApplicationRoleFilter, CenterFilter, CountryFilter, IsActiveFilter, \
+    RoleProfileFilter, UserSearchFilter
 
 logger = logging.getLogger(__name__)
-    
+
 
 class UserDeleteView(DeleteView):
     slug_field = slug_url_kwarg = 'uuid'
     model = get_user_model()
     success_url = reverse_lazy('accounts:user_list')
-    
+
     @method_decorator(admin_login_required)
     @method_decorator(permission_required('accounts.delete_user', raise_exception=True))
     def dispatch(self, request, *args, **kwargs):
@@ -86,7 +87,6 @@ class ValidUntil(object):
 
 
 class UserList(ListView):
-
     template_name = 'accounts/application/user_list.html'
     model = get_user_model()
     IS_ACTIVE_CHOICES = (('1', _('Active Users')), ('2', _('Inactive Users')))
@@ -99,9 +99,11 @@ class UserList(ListView):
     @property
     def list_display(self):
         if settings.SSO_VALIDATION_PERIOD_IS_ACTIVE:
-            return ['username', 'picture', 'last_name', _('primary email'), OrganisationField(),LastLogin(), 'date_joined', ValidUntil()]
+            return ['username', 'picture', 'last_name', _('primary email'), OrganisationField(), LastLogin(),
+                    'date_joined', ValidUntil()]
         else:
-            return ['username', 'picture', 'last_name', _('primary email'), OrganisationField(),LastLogin(), 'date_joined']
+            return ['username', 'picture', 'last_name', _('primary email'), OrganisationField(), LastLogin(),
+                    'date_joined']
 
     def get_queryset(self):
         """
@@ -110,22 +112,24 @@ class UserList(ListView):
         """
         user = self.request.user
 
-        qs = super(UserList, self).get_queryset().only('uuid', 'last_login', 'username', 'first_name', 'last_name', 'date_joined', 'picture', 'valid_until')\
+        qs = super(UserList, self).get_queryset().only('uuid', 'last_login', 'username', 'first_name', 'last_name',
+                                                       'date_joined', 'picture', 'valid_until') \
             .prefetch_related('useremail_set', 'organisations')
         # exclude user who were not activated, this users must first be activated on the registration page
         qs = qs.exclude(last_login__isnull=True, is_active=False)
         qs = user.filter_administrable_users(qs)
-            
-        self.cl = main.ChangeList(self.request, self.model, self.list_display, default_ordering=[OrderByWithNulls(F('last_login'), descending=True)])
+
+        self.cl = main.ChangeList(self.request, self.model, self.list_display,
+                                  default_ordering=[OrderByWithNulls(F('last_login'), descending=True)])
         # apply filters
-        qs = UserSearchFilter().apply(self, qs) 
+        qs = UserSearchFilter().apply(self, qs)
         qs = CountryFilter().apply(self, qs)
         qs = AdminRegionFilter().apply(self, qs)
         qs = CenterFilter().apply(self, qs)
         qs = ApplicationRoleFilter().apply(self, qs)
         qs = RoleProfileFilter().apply(self, qs)
         qs = IsActiveFilter().apply(self, qs, default='1')
-        
+
         # Set ordering.
         ordering = self.cl.get_ordering(self.request, qs)
         qs = qs.order_by(*ordering).distinct()
@@ -153,10 +157,10 @@ class UserList(ListView):
             if self.admin_region:
                 centers = centers.filter(admin_region=self.admin_region)
             if self.center:
-                application_roles = application_roles.filter(user__organisations__in=[self.center]).distinct() 
+                application_roles = application_roles.filter(user__organisations__in=[self.center]).distinct()
                 role_profiles = role_profiles.filter(user__organisations__in=[self.center]).distinct()
             else:
-                application_roles = application_roles.filter(user__organisations__in=centers).distinct() 
+                application_roles = application_roles.filter(user__organisations__in=centers).distinct()
                 role_profiles = role_profiles.filter(user__organisations__in=centers).distinct()
 
         admin_region_filter = AdminRegionFilter().get(self, admin_regions)
@@ -181,7 +185,7 @@ class UserList(ListView):
         }
         context.update(kwargs)
         return super(UserList, self).get_context_data(**context)
-    
+
 
 class AppAdminUserList(ListView):
     template_name = 'accounts/application/app_admin_user_list.html'
@@ -194,7 +198,7 @@ class AppAdminUserList(ListView):
 
     @property
     def list_display(self):
-        return ['username', 'picture', 'last_name', _('primary email'), OrganisationField(),LastLogin(), 'date_joined']
+        return ['username', 'picture', 'last_name', _('primary email'), OrganisationField(), LastLogin(), 'date_joined']
 
     def get_queryset(self):
         """
@@ -203,12 +207,14 @@ class AppAdminUserList(ListView):
         """
         user = self.request.user
 
-        qs = super(AppAdminUserList, self).get_queryset().only('uuid', 'last_login', 'username', 'first_name', 'last_name', 'date_joined',
-                                                               'picture', 'valid_until')\
+        qs = super(AppAdminUserList, self).get_queryset().only('uuid', 'last_login', 'username', 'first_name',
+                                                               'last_name', 'date_joined',
+                                                               'picture', 'valid_until') \
             .prefetch_related('useremail_set', 'organisations')
         qs = user.filter_administrable_app_admin_users(qs)
 
-        self.cl = main.ChangeList(self.request, self.model, self.list_display, default_ordering=[OrderByWithNulls(F('last_login'), descending=True)])
+        self.cl = main.ChangeList(self.request, self.model, self.list_display,
+                                  default_ordering=[OrderByWithNulls(F('last_login'), descending=True)])
         # apply filters
         qs = UserSearchFilter().apply(self, qs)
         qs = CountryFilter().apply(self, qs)
@@ -241,7 +247,8 @@ class AppAdminUserList(ListView):
         admin_regions = user.get_administrable_app_admin_user_regions()
 
         if self.country:
-            centers = user.get_administrable_app_admin_user_organisations().filter(organisation_country__country=self.country)
+            centers = user.get_administrable_app_admin_user_organisations().filter(
+                organisation_country__country=self.country)
             if self.admin_region:
                 centers = centers.filter(admin_region=self.admin_region)
             if self.center:
@@ -278,12 +285,13 @@ def add_user(request, template='accounts/application/add_user_form.html'):
     if request.method == 'POST':
         form = UserAddForm(request, request.POST)
         if form.is_valid():
-            user = form.save()                
+            user = form.save()
             send_account_created_email(user, request)
             if redirect_uri:
                 success_url = redirect_uri
             else:
-                success_url = urlunsplit(('', '', reverse('accounts:add_user_done', args=[user.uuid.hex]), request.GET.urlencode(safe='/'), ''))
+                success_url = urlunsplit(('', '', reverse('accounts:add_user_done', args=[user.uuid.hex]),
+                                          request.GET.urlencode(safe='/'), ''))
             return HttpResponseRedirect(success_url)
     else:
         initial = {}
@@ -314,7 +322,8 @@ def _update_standard_user(request, user, template='accounts/application/update_u
     else:
         useremail_extra = 0
 
-    UserEmailInlineFormSet = inlineformset_factory(User, UserEmail, UserEmailForm, extra=useremail_extra, max_num=UserEmail.MAX_EMAIL_ADRESSES)
+    UserEmailInlineFormSet = inlineformset_factory(User, UserEmail, UserEmailForm, extra=useremail_extra,
+                                                   max_num=UserEmail.MAX_EMAIL_ADRESSES)
 
     if request.method == 'POST':
         form = UserProfileForm(request.POST, instance=user, request=request)
@@ -345,14 +354,16 @@ def _update_standard_user(request, user, template='accounts/application/update_u
             msg_dict = {'name': force_text(get_user_model()._meta.verbose_name), 'obj': force_text(user)}
             msg = ''
             if "_addanother" in request.POST:
-                msg = _('The %(name)s "%(obj)s" was changed successfully. You may add another %(name)s below.') % msg_dict
+                msg = _(
+                    'The %(name)s "%(obj)s" was changed successfully. You may add another %(name)s below.') % msg_dict
                 success_url = reverse('accounts:add_user')
             elif "_continue" in request.POST:
                 msg = _('The %(name)s "%(obj)s" was changed successfully. You may edit it again below.') % msg_dict
                 success_url = reverse('accounts:update_user', args=[user.uuid.hex])
             elif "_resend_invitation" in request.POST:
                 send_account_created_email(user, request)
-                msg = _('The %(name)s "%(obj)s" was changed successfully and the invitation email was resend.') % msg_dict
+                msg = _(
+                    'The %(name)s "%(obj)s" was changed successfully and the invitation email was resend.') % msg_dict
                 success_url = reverse('accounts:update_user', args=[user.uuid.hex])
             elif "_deactivate" in request.POST:
                 success_url = reverse('accounts:update_user', args=[user.uuid.hex])
@@ -397,10 +408,13 @@ def _update_standard_user(request, user, template='accounts/application/update_u
     except ObjectDoesNotExist:
         user_organisation = None
 
-    app_roles_by_profile = {str(id) for id in ApplicationRole.objects.filter(roleprofile__user__id=user.pk).only("id").values_list('id', flat=True)}
+    app_roles_by_profile = {str(id) for id in ApplicationRole.objects.filter(
+        roleprofile__user__id=user.pk).only("id").values_list('id', flat=True)}
 
-    context = {'form': form, 'errors': errors, 'formsets': formsets, 'media': media, 'active': active, 'app_roles_by_profile': app_roles_by_profile,
-                  'logged_in': logged_in, 'is_validation_period_active': is_validation_period_active(user_organisation), 'title': _('Change user')}
+    context = {'form': form, 'errors': errors, 'formsets': formsets, 'media': media, 'active': active,
+               'app_roles_by_profile': app_roles_by_profile,
+               'logged_in': logged_in, 'is_validation_period_active': is_validation_period_active(user_organisation),
+               'title': _('Change user')}
     return render(request, template, context)
 
 
@@ -422,7 +436,8 @@ def _update_center_account(request, user, template='accounts/application/update_
             msg_dict = {'name': force_text(get_user_model()._meta.verbose_name), 'obj': force_text(user)}
             msg = ''
             if "_addanother" in request.POST:
-                msg = _('The %(name)s "%(obj)s" was changed successfully. You may add another %(name)s below.') % msg_dict
+                msg = _(
+                    'The %(name)s "%(obj)s" was changed successfully. You may add another %(name)s below.') % msg_dict
                 success_url = reverse('accounts:add_user')
             elif "_continue" in request.POST:
                 msg = _('The %(name)s "%(obj)s" was changed successfully. You may edit it again below.') % msg_dict
@@ -458,7 +473,6 @@ def update_user(request, uuid):
     if not request.user.has_user_access(uuid):
         raise PermissionDenied
     user = get_object_or_404(get_user_model(), uuid=uuid)
-
     # we use different forms for different kind of users
     if getattr(user, 'is_center', True):
         return _update_center_account(request, user)
@@ -506,7 +520,7 @@ def app_admin_update_user(request, uuid, template='accounts/application/app_admi
     pks = request.user.get_administrable_app_admin_role_profiles().values_list('pk', flat=True)
     role_profiles = user.role_profiles.filter(application_roles__in=application_roles).exclude(pk__in=pks).distinct()
     context = {'form': form, 'errors': errors, 'media': media, 'active': active,
-                  'role_profiles': role_profiles,
-                  'application_roles': application_roles,
-                  'title': _('Change user roles')}
+               'role_profiles': role_profiles,
+               'application_roles': application_roles,
+               'title': _('Change user roles')}
     return render(request, template, context)

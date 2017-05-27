@@ -749,8 +749,9 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
 
         if extend_validity:
             # enable brand specific modification
-            self.user.valid_until = now() + datetime.timedelta(days=settings.SSO_VALIDATION_PERIOD_DAYS)
-            extend_user_validity.send_robust(sender=self.__class__, user=self.user)
+            valid_until = now() + datetime.timedelta(days=settings.SSO_VALIDATION_PERIOD_DAYS)
+            extend_user_validity.send_robust(sender=self.__class__, user=self.user, valid_until=valid_until, admin=self.request.user)
+            self.user.valid_until = valid_until
 
         self.user.save()
 
