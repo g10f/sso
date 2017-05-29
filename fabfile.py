@@ -9,7 +9,8 @@ try:
     from local_fabconfig import configurations
 except:
     configurations = {
-        'g10f': {'host_string': 'g10f', 'server_name': 'sso.g10f.de', 'app': 'sso', 'virtualenv': 'sso', 'db_name': 'sso', 'branch': 'master', 'bind': "127.0.0.1:8080", 'server': '127.0.0.1:6081'},
+        'g10f': {'host_string': 'g10f', 'server_name': 'sso.g10f.de', 'app': 'sso', 'virtualenv': 'sso',
+                 'db_name': 'sso', 'branch': 'master', 'bind': "127.0.0.1:8080", 'server': '127.0.0.1:6081'},
     }
 
 env.use_ssh_config = True
@@ -57,27 +58,14 @@ location ~* \.(?:css|js)$ {
 }
 """
 
-PROXIED_SITE_TEMPLATE = """\
+HTTP_PROXIED_SITE_TEMPLATE = """\
 # limit_req_zone $binary_remote_addr zone=sso:10m rate=1r/s;
 upstream %(server_name)s.backend {
-    server unix:/tmp/%(server_name)s.gunicorn.sock;
+    server %(server)s;
 }
 server {
     listen 80;
     server_name %(server_name)s;
-    # path for static files
-    root %(docroot)s;
-    return 301 https://$server_name$request_uri;
-}
-server {
-    listen 443 ssl;
-    server_name %(server_name)s;
-
-    add_header Strict-Transport-Security max-age=31536000;
-    ssl_certificate /etc/letsencrypt/live/%(cert)s/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/%(cert)s/privkey.pem;
-    ssl_dhparam /etc/nginx/dhparam.pem;
-
     # path for static files
     root %(docroot)s;
 
@@ -137,7 +125,12 @@ server {
     root %(docroot)s;
 
     try_files $uri @proxied;
-
+    
+    # required for certbot 
+    location /.well-known/acme-challenge/ {
+        alias /proj/static/htdocs/.well-known/acme-challenge/;
+    }
+    
     # Media: images, video, audio, HTC, WebFonts
     location /static {
         include %(code_dir)s/config/nginx.expired.conf;
@@ -177,20 +170,6 @@ server {
 """
 
 NGINX_SSL_TEMPLATE = """\
-ssl_certificate           /proj/g10f/certs/certificate.crt;
-ssl_certificate_key       /proj/g10f/certs/certificate.key;
-ssl_dhparam               /proj/g10f/certs/dh2048.pem;
-ssl_session_timeout 1d;
-ssl_session_cache shared:SSL:50m;
-#ssl_session_cache         builtin:1000  shared:SSL:10m;
-ssl_prefer_server_ciphers on;
-add_header                Strict-Transport-Security "max-age=63072000;";
-ssl_protocols             TLSv1 TLSv1.1 TLSv1.2;
-#ssl_ciphers 'AES128+EECDH:AES128+EDH';
-ssl_ciphers 'ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA:ECDHE-RSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-RSA-AES256-SHA256:DHE-RSA-AES256-SHA:ECDHE-ECDSA-DES-CBC3-SHA:ECDHE-RSA-DES-CBC3-SHA:EDH-RSA-DES-CBC3-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:DES-CBC3-SHA:!DSS';
-"""
-
-NGINX_SSL_TEMPLATE2 = """\
 ssl_session_timeout 1d;
 ssl_session_cache shared:SSL:50m;
 ssl_session_tickets off;
@@ -225,25 +204,17 @@ os.environ['DEBUG'] = ""
 os.environ['THROTTELING_DISABLED'] = "False"
 """
 
-RENEW_CERT_SCRIPT2 = """\
-#!/bin/sh
-PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-service nginx stop >/dev/null 2>&1
-letsencrypt renew
-service nginx start >/dev/null 2>&1
-"""
-
 RENEW_CERT_SCRIPT = """\
 #!/bin/sh
-service nginx stop >/dev/null 2>&1
-/opt/certbot/certbot-auto renew
-service nginx start >/dev/null 2>&1
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+letsencrypt renew --webroot -w /proj/static/htdocs
 """
 
 
 @task
 def compileless(version='1.0.19'):
-    local('lessc ./apps/sso/static/less/default.less ./apps/sso/static/css/%(style)s-%(version)s.css' % {'style': 'default', 'version': version})
+    local('lessc ./apps/sso/static/less/default.less ./apps/sso/static/css/%(style)s-%(version)s.css' % {
+        'style': 'default', 'version': version})
 
 
 @task
@@ -284,59 +255,42 @@ def createsuperuser(conf='dev'):
 
 
 @task
-def update_debian(conf='dev'):
-    # skip for ubuntu 16
-    configuration = configurations.get(conf)
-    env.host_string = configuration['host_string']
-    sudo('apt-add-repository ppa:ubuntugis/ppa')  # add gis repository
-    fabtools.deb.update_index()
-    fabtools.deb.upgrade(safe=False)
-    sudo('reboot')
-
-
-@task
 def deploy_debian(conf='dev'):
     configuration = configurations.get(conf)
     env.host_string = configuration['host_string']
 
-    # pillow
-    fabtools.require.deb.package('libtiff4-dev')
-    fabtools.require.deb.package('libjpeg8-dev')
+    fabtools.require.deb.package('libjpeg-dev')
     fabtools.require.deb.package('zlib1g-dev')
+    fabtools.require.deb.package('libtiff-dev')
     fabtools.require.deb.package('libfreetype6-dev')
     fabtools.require.deb.package('liblcms2-dev')
     fabtools.require.deb.package('libwebp-dev')
+    fabtools.require.deb.package('libffi-dev')
     fabtools.require.deb.package('python-tk')
-    # fabtools.require.deb.package('tcl8.5-dev')
-    # fabtools.require.deb.package('tk8.5-dev')
-    # fabtools.require.deb.package('libffi-dev')
-    # pillow ubuntu 14.04
-    fabtools.require.deb.package('libtiff5-dev')
-    fabtools.require.deb.package('tcl8.6-dev')
-    fabtools.require.deb.package('tk8.6-dev')
+    fabtools.require.deb.package('tcl-dev')
+    fabtools.require.deb.package('tk-dev')
     # postgres
+    fabtools.require.deb.package('python3-dev')
+    fabtools.require.deb.package('python-dev')
     fabtools.require.deb.package('libpq-dev')
-    # Geospatial libraries
-    fabtools.require.deb.package('binutils')
-    fabtools.require.deb.package('libproj-dev')
-    fabtools.require.deb.package('gdal-bin')
-    fabtools.require.deb.package('postgresql-9.3-postgis-2.1')
-    # fabtools.require.deb.package('postgresql-9.1-postgis-2.0')
 
-    fabtools.require.deb.package('swig')  # required for python-u2flib-server
-
-
-@task
-def update_ubuntu16(conf='dev'):
-    configuration = configurations.get(conf)
-    env.host_string = configuration['host_string']
-
+    fabtools.require.deb.package('memcached')
     fabtools.require.deb.package('gcc')
+    fabtools.require.deb.package('git')
+    fabtools.require.deb.package('zip')
     fabtools.require.deb.package('unzip')
-    # postgres
-    fabtools.require.deb.package('libpq-dev')
 
-    fabtools.require.deb.package('libffi-dev')  # for cryptography
+    # for letsencrypt
+    fabtools.require.deb.package('letsencrypt')
+
+    # postfix
+    fabtools.require.deb.package("mailutils")
+    # http://docs.aws.amazon.com/ses/latest/DeveloperGuide/postfix.html
+
+    # python3-software-properties
+
+    # required for python-u2flib-server
+    fabtools.require.deb.package('swig')
 
 
 @task
@@ -353,10 +307,15 @@ def deploy_database(conf='dev'):
     fabtools.require.deb.package('language-pack-en')
     fabtools.require.postgres.user(db_name, db_name)
     fabtools.require.postgres.database(db_name, db_name)
-    fabtools.postgres._run_as_pg('''psql -c "CREATE EXTENSION IF NOT EXISTS citext;" %(db_name)s''' % {'db_name': db_name})
-    fabtools.postgres._run_as_pg('''psql -c "CREATE EXTENSION IF NOT EXISTS postgis;" %(db_name)s''' % {'db_name': db_name})
-    fabtools.postgres._run_as_pg('''psql -c "ALTER TABLE spatial_ref_sys OWNER TO %(db_name)s;" %(db_name)s''' % {'db_name': db_name})
-
+    fabtools.postgres._run_as_pg(
+        '''psql -c "CREATE EXTENSION IF NOT EXISTS citext;" %(db_name)s''' % {'db_name': db_name})
+    fabtools.postgres._run_as_pg(
+        '''psql -c "CREATE EXTENSION IF NOT EXISTS postgis;" %(db_name)s''' % {'db_name': db_name})
+    fabtools.postgres._run_as_pg(
+        '''psql -c "ALTER TABLE spatial_ref_sys OWNER TO %(db_name)s;" %(db_name)s''' % {'db_name': db_name})
+    # on development maschine create the extensions in the template1 for new test databases
+    # sudo -u postgres psql -d template1 -c 'create extension citext;'
+    # sudo -u postgres psql -d template1 -c 'create extension postgis;'
 
 def table_is_empty(db_name, name):
     """
@@ -378,11 +337,13 @@ def update_timezones(db_name):
             # create sql file
             sudo('shp2pgsql -S -a -s 4326 -I tz_world > tz_world.sql', user='postgres')
             # empty timezone table
-            sudo('''psql -d %(db_name)s -c "TRUNCATE table tz_world; DROP INDEX IF EXISTS tz_world_geom_gist;"''' % {'db_name': db_name}, user='postgres')
+            sudo('''psql -d %(db_name)s -c "TRUNCATE table tz_world; DROP INDEX IF EXISTS tz_world_geom_gist;"''' % {
+                'db_name': db_name}, user='postgres')
             # load sql script
             with hide('stdout'):
                 sudo('''psql -d %(db_name)s -f tz_world.sql''' % {'db_name': db_name}, user='postgres')
-            sudo('''psql -c "ALTER TABLE tz_world OWNER TO %(db_name)s;" %(db_name)s''' % {'db_name': db_name}, user='postgres')
+            sudo('''psql -c "ALTER TABLE tz_world OWNER TO %(db_name)s;" %(db_name)s''' % {'db_name': db_name},
+                 user='postgres')
 
             # sudo('rm -R tz_world.zip')
             # sudo('rm -R world')
@@ -394,87 +355,11 @@ def deploy_webserver(conf='dev'):
     env.host_string = configuration['host_string']
     server_name = configuration['server_name']
     code_dir = '/proj/%s' % server_name
-
-    # Require an nginx server proxying to our app
-    docroot = '/proj/static/htdocs/%(server_name)s' % {'server_name': server_name}
-    context = {  # 'certroot': '/proj/g10f/certs',
-        'server_name': server_name, 'host_string': env.host_string, 'code_dir': code_dir}
-
-    fabtools.require.directory('%(code_dir)s/logs' % context, use_sudo=True, owner="www-data", mode='770')
-    fabtools.require.directory('%(code_dir)s/config' % context, use_sudo=True, owner="www-data", mode='770')
-    fabtools.require.directory(docroot, use_sudo=True, owner="www-data", mode='770')
+    ssl = configuration.get('ssl', configuration.get('ssl', True))
+    server = configuration.get('server', configuration.get('bind', "unix:/tmp/%s.gunicorn.sock" % server_name))
 
     fabtools.require.nginx.server()
-    if not files.exists('/etc/nginx/dhparam.pem', use_sudo=True):
-        sudo('openssl dhparam -out /etc/nginx/dhparam.pem 2048')
-
-    """
-    fabtools.require.files.directory(context['certroot'], use_sudo=True, owner='www-data', group='www-data')
-    fabtools.require.files.template_file('/etc/nginx/conf.d/ssl.nginx.conf', template_contents=NGINX_SSL_TEMPLATE, context=context, use_sudo=True)
-    fabtools.require.file('%(certroot)s/certificate.crt' % context, source='certs/%(host_string)s.certificate.crt' % context, use_sudo=True, owner='www-data', group='www-data')
-    fabtools.require.file('%(certroot)s/certificate.key' % context, source='certs/%(host_string)s.certificate.key' % context, use_sudo=True, owner='www-data', group='www-data')
-    fabtools.require.file('%(certroot)s/dh2048.pem' % context, source='certs/%(host_string)s.dh2048.pem' % context, use_sudo=True, owner='www-data', group='www-data')
-    """
-
-    fabtools.require.files.template_file('%(code_dir)s/config/nginx.expired.conf' % context, template_contents=NGINX_EXPIRED_TEMPLATE, use_sudo=True, owner='www-data', group='www-data')
-    fabtools.require.files.template_file('%(code_dir)s/config/nginx.webfonts.conf' % context, template_contents=NGINX_WEBFONTS_TEMPLATE, use_sudo=True, owner='www-data', group='www-data')
-
-    fabtools.require.nginx.site(server_name, template_contents=PROXIED_SITE_TEMPLATE, docroot=docroot, cert=server_name)
-
-    if env.host_string in ['dwbn']:
-        fabtools.require.nginx.site('register.diamondway-buddhism.org', template_contents=REGISTRATION_TEMPLATE, docroot=docroot, target_name=server_name)
-
-
-@task
-def deploy_letsencrypt2(conf='dev'):
-    configuration = configurations.get(conf)
-    env.host_string = configuration['host_string']
-    server_name = configuration['server_name']
-
-    fabtools.require.deb.package('letsencrypt')
-
-    # sudo("service nginx stop")
-    # sudo("letsencrypt certonly --standalone -d '%(server_name)s' -d 'www.%(server_name)s' -m mail@g10f.de -n" % {'server_name': server_name})
-    # sudo("service nginx start")
-
-    # cron job for renew-certs
-    fabtools.require.files.directory('/proj/scripts')
-    renew_script = '/proj/scripts/renew-certs'
-    fabtools.require.file(renew_script, RENEW_CERT_SCRIPT2, mode='775')
-    fabtools.cron.add_daily('renew-certs', 'root', "%s" % renew_script)
-
-
-@task
-def deploy_letsencrypt(conf='dev'):
-    configuration = configurations.get(conf)
-    env.host_string = configuration['host_string']
-
-    fabtools.require.files.directory('/opt/certbot/', owner='gunnar', use_sudo=True)
-
-    with cd('/opt/certbot/'):
-        fabtools.require.file(url='https://dl.eff.org/certbot-auto', mode="a+x")
-
-    """
-    sudo("service nginx stop")
-    sudo("/opt/certbot/certbot-auto certonly --standalone  -d '%(server_name)s' -d 'www.%(server_name)s' -m mail@g10f.de -n" % {'server_name': server_name})
-    sudo("service nginx start")
-    """
-
-    # cron job for renew-certs
-    renew_script = '/proj/scripts/renew-certs'
-    fabtools.require.file(renew_script, RENEW_CERT_SCRIPT, mode='775')
-    fabtools.cron.add_daily('renew-certs', 'root', "%s" % renew_script)
-
-
-@task
-def deploy_http2_webserver(conf='dev'):
-    configuration = configurations.get(conf)
-    env.host_string = configuration['host_string']
-    server_name = configuration['server_name']
-    code_dir = '/proj/%s' % server_name
-
-    fabtools.require.nginx.server()
-    if not files.exists('/etc/nginx/dhparam.pem', use_sudo=True):
+    if ssl and not files.exists('/etc/nginx/dhparam.pem', use_sudo=True):
         sudo('openssl dhparam -out /etc/nginx/dhparam.pem 2048')
 
     # Require an nginx server proxying to our app
@@ -485,12 +370,46 @@ def deploy_http2_webserver(conf='dev'):
     fabtools.require.directory('%(code_dir)s/config' % context, use_sudo=True, owner="www-data", mode='770')
     fabtools.require.directory(docroot, use_sudo=True, owner="www-data", mode='770')
 
-    fabtools.require.files.template_file('/etc/nginx/conf.d/ssl.nginx.conf', template_contents=NGINX_SSL_TEMPLATE2, context=context, use_sudo=True)
-    fabtools.require.files.template_file('%(code_dir)s/config/nginx.expired.conf' % context, template_contents=NGINX_EXPIRED_TEMPLATE, use_sudo=True, owner='www-data', group='www-data')
-    fabtools.require.files.template_file('%(code_dir)s/config/nginx.webfonts.conf' % context, template_contents=NGINX_WEBFONTS_TEMPLATE, use_sudo=True, owner='www-data', group='www-data')
+    fabtools.require.files.template_file('%(code_dir)s/config/nginx.expired.conf' % context,
+                                         template_contents=NGINX_EXPIRED_TEMPLATE, use_sudo=True, owner='www-data',
+                                         group='www-data')
+    fabtools.require.files.template_file('%(code_dir)s/config/nginx.webfonts.conf' % context,
+                                         template_contents=NGINX_WEBFONTS_TEMPLATE, use_sudo=True, owner='www-data',
+                                         group='www-data')
 
-    server = configuration.get('server', configuration.get('bind', "unix:/tmp/%s.gunicorn.sock" % server_name))
-    fabtools.require.nginx.site(server_name, template_contents=HTTP2_PROXIED_SITE_TEMPLATE, docroot=docroot, code_dir=code_dir, cert=server_name, server=server)
+    if ssl:
+        fabtools.require.files.template_file('/etc/nginx/conf.d/ssl.nginx.conf', template_contents=NGINX_SSL_TEMPLATE,
+                                             context=context, use_sudo=True)
+
+        fabtools.require.nginx.site(server_name, template_contents=HTTP2_PROXIED_SITE_TEMPLATE, docroot=docroot,
+                                    code_dir=code_dir, cert=server_name, server=server)
+    else:
+        fabtools.require.nginx.site(server_name, template_contents=HTTP_PROXIED_SITE_TEMPLATE, docroot=docroot,
+                                    code_dir=code_dir, cert=server_name, server=server)
+
+    # if env.host_string in ['dwbn']:
+    #    fabtools.require.nginx.site('register.diamondway-buddhism.org', template_contents=REGISTRATION_TEMPLATE,
+    #                                docroot=docroot, target_name=server_name)
+
+
+@task
+def deploy_letsencrypt(conf='dev'):
+    configuration = configurations.get(conf)
+    env.host_string = configuration['host_string']
+    server_name = configuration['server_name']
+
+    fabtools.require.deb.package('letsencrypt')
+
+    # sudo("service nginx stop")
+    # sudo("letsencrypt certonly --standalone -d '%(server_name)s' -d 'www.%(server_name)s' -m mail@g10f.de -n" % {'server_name': server_name})
+    # sudo("service nginx start")
+    # sudo letsencrypt certonly --manual -d sso.dwbn.org
+
+    # cron job for renew-certs
+    fabtools.require.files.directory('/proj/scripts')
+    renew_script = '/proj/scripts/renew-certs'
+    fabtools.require.file(renew_script, RENEW_CERT_SCRIPT, mode='775')
+    fabtools.cron.add_daily('renew-certs', 'root', "%s" % renew_script)
 
 
 def setup_user(user):
@@ -522,7 +441,8 @@ def activate_expiration(center_id, conf='dev'):
     python = '/envs/%(virtualenv)s/bin/python' % {'virtualenv': virtualenv}
 
     with cd(code_dir):
-        run("%(python)s ./src/apps/manage.py dwbn_activate_expiration %(center_id)s" % {'python': python, 'center_id': center_id})
+        run("%(python)s ./src/apps/manage.py dwbn_activate_expiration %(center_id)s" % {'python': python,
+                                                                                        'center_id': center_id})
 
 
 @task
@@ -544,15 +464,19 @@ def deploy_supervisor(conf='dev'):
 
     # configure gunicorn
     bind = configuration.get('bind', "unix:/tmp/%s.gunicorn.sock" % server_name)
-    fabtools.require.directory('%(code_dir)s/config' % {'code_dir': code_dir}, use_sudo=True, owner="www-data", mode='770')
-    config_filename = '%(code_dir)s/config/gunicorn_%(server_name)s.py' % {'code_dir': code_dir, 'server_name': server_name}
+    fabtools.require.directory('%(code_dir)s/config' % {'code_dir': code_dir}, use_sudo=True, owner="www-data",
+                               group='www-data')
+    config_filename = '%(code_dir)s/config/gunicorn_%(server_name)s.py' % {'code_dir': code_dir,
+                                                                           'server_name': server_name}
     context = {'bind': bind, 'code_dir': code_dir}
-    fabtools.require.files.template_file(config_filename, template_contents=GUNICORN_TEMPLATE, context=context, use_sudo=True)
+    fabtools.require.files.template_file(config_filename, template_contents=GUNICORN_TEMPLATE, context=context,
+                                         use_sudo=True)
 
     # Require a supervisor process for our app
     fabtools.require.supervisor.process(
         server_name,
-        command='/envs/%(virtualenv)s/bin/gunicorn -c %(config_filename)s %(app)s.wsgi:application' % {'virtualenv': virtualenv, 'config_filename': config_filename, 'app': app},
+        command='/envs/%(virtualenv)s/bin/gunicorn -c %(config_filename)s %(app)s.wsgi:application' % {
+            'virtualenv': virtualenv, 'config_filename': config_filename, 'app': app},
         directory=code_dir + '/src/apps',
         user='www-data'
     )
@@ -562,7 +486,8 @@ def deploy_supervisor(conf='dev'):
     logfile = code_dir + '/logs/celery-worker.log'
     fabtools.require.supervisor.process(
         'celery-%s' % server_name,
-        command='/envs/%(virtualenv)s/bin/celery worker -A %(app)s -c 1 -l INFO -f %(logfile)s  --without-gossip --without-mingle --without-heartbeat' %
+        command='/envs/%(virtualenv)s/bin/celery worker -A %(app)s -c 1 -l INFO -f %(logfile)s '
+                '--without-gossip --without-mingle --without-heartbeat' %
                 {'virtualenv': virtualenv, 'app': app, 'logfile': logfile},
         directory=code_dir + '/src/apps',
         user='www-data',
@@ -573,24 +498,17 @@ def deploy_supervisor(conf='dev'):
 
 
 @task
-def deploy(conf='dev'):
+def deploy_app(conf='dev'):
     configuration = configurations.get(conf)
     env.host_string = configuration['host_string']
     server_name = configuration['server_name']
     app = configuration['app']
     virtualenv = configuration['virtualenv']
-    db_name = configuration['db_name']
+    user = configuration.get('user', 'ubuntu')
 
     code_dir = '/proj/%s' % server_name
-
-    # user = 'ubuntu'
-    # setup_user(user)
-    fabtools.require.files.directory(code_dir)
-    # deploy_debian(conf)
-    # deploy_database(conf)
-    # deploy_letsencrypt(conf)
-    # deploy_http2_webserver(conf)
-    # fabtools.user.modify(name=user, extra_groups=['www-data'])
+    fabtools.require.files.directory(code_dir, use_sudo=True, owner='www-data', group='www-data')
+    fabtools.require.files.directory('/envs', use_sudo=True, owner=user, group=user)
 
     with cd(code_dir):
         branch = configuration.get('branch', 'master')
@@ -598,26 +516,48 @@ def deploy(conf='dev'):
         sudo("chgrp www-data -R  ./src")
         sudo("chmod g+w -R  ./src")
 
-    # local settings 
-    fabtools.require.file('%(code_dir)s/src/apps/%(app)s/settings/local_settings.py' % {'code_dir': code_dir, 'app': app},
-                          source='apps/%(app)s/settings/local_%(server_name)s.py' % {'server_name': server_name, 'app': app},
-                          use_sudo=True, owner='www-data', group='www-data')
+    # local settings
+    fabtools.require.file(
+        '%(code_dir)s/src/apps/%(app)s/settings/local_settings.py' % {'code_dir': code_dir, 'app': app},
+        source='apps/%(app)s/settings/local_%(server_name)s.py' % {'server_name': server_name, 'app': app},
+        use_sudo=True, owner='www-data', group='www-data')
 
     # python enviroment
-    """
-    fabtools.require.python.virtualenv('/envs/%s' % virtualenv)
-    with fabtools.python.virtualenv('/envs/%s' % virtualenv):
-        with cd(code_dir):
-            fabtools.require.python.requirements('src/requirements.txt')
-    """
-    # fabtools.require.file('/envs/%(virtualenv)s/lib/python2.7/sitecustomize.py' % {'virtualenv': virtualenv}, source='apps/sitecustomize.py')
+    # fabtools.require.python.virtualenv('/envs/%s' % virtualenv)
+    # with fabtools.python.virtualenv('/envs/%s' % virtualenv):
+    #     with cd(code_dir):
+    #         fabtools.require.python.requirements('src/requirements.txt')
 
+
+@task
+def deploy(conf='dev'):
+    configuration = configurations.get(conf)
+    env.host_string = configuration['host_string']
+    server_name = configuration['server_name']
+    app = configuration['app']
+    virtualenv = configuration['virtualenv']
+    db_name = configuration['db_name']
+    user = configuration.get('user', 'ubuntu')
+
+    code_dir = '/proj/%s' % server_name
+
+    fabtools.require.files.directory(code_dir)
+
+    # setup_user(user)
+    # fabtools.user.modify(name=user, extra_groups=['www-data'])
+
+    # deploy_debian(conf)
+    # deploy_database(conf)
+    # deploy_letsencrypt(conf)
+    # deploy_webserver(conf)
+    deploy_app(conf)
     # deploy_supervisor(conf)
 
     # configure logrotate 
     config_filename = '/etc/logrotate.d/%(server_name)s' % {'server_name': server_name}
     context = {'code_dir': code_dir}
-    fabtools.require.files.template_file(config_filename, template_contents=LOGROTATE_TEMPLATE, context=context, use_sudo=True)
+    fabtools.require.files.template_file(config_filename, template_contents=LOGROTATE_TEMPLATE, context=context,
+                                         use_sudo=True)
 
     python = '/envs/%(virtualenv)s/bin/python' % {'virtualenv': virtualenv}
     with cd(code_dir):
