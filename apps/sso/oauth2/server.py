@@ -4,15 +4,15 @@ import logging
 import time
 
 from django.utils.six.moves.urllib.parse import urlsplit
+from oauthlib import oauth2
+from oauthlib.oauth2.rfc6749 import grant_types
+from oauthlib.oauth2.rfc6749.tokens import random_token_generator
 
 from django.contrib.auth import authenticate, get_user_model
 from django.core import signing
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.utils.crypto import get_random_string
-from oauthlib import oauth2
-from oauthlib.oauth2.rfc6749 import grant_types
-from oauthlib.oauth2.rfc6749.tokens import random_token_generator
 from sso.auth import get_session_auth_hash
 from .crypt import loads_jwt, make_jwt, MAX_AGE
 from .models import BearerToken, RefreshToken, AuthorizationCode, Client, check_redirect_uri, CONFIDENTIAL_CLIENTS
@@ -29,59 +29,55 @@ def get_iss_from_absolute_uri(abs_uri):
     return "%s://%s" % (scheme, netloc)
 
 
-def default_token_generator(request, max_age=MAX_AGE, refresh_token=False):
-    if refresh_token:
-        return random_token_generator(request, refresh_token=True)
-    else:
-        user = request.user
-        claim_set = {
-            'jti': get_random_string(),
-            'iss': get_iss_from_absolute_uri(request.uri),
-            'sub': user.uuid.hex,  # required
-            'aud': request.client.client_id,  # required
-            'exp': int(time.time()) + max_age,  # required
-            'iat': int(time.time()),  # required
-            'acr': '1' if user.is_verified else '0',
-            'scope': ' '.join(request.scopes),  # custom, required
-            'email': str(user.primary_email()),  # custom
-            'name': user.username,  # custom
-            # session authentication hash,
-            # see django.contrib.auth.middleware.SessionAuthenticationMiddleware
-            'at_hash': get_session_auth_hash(user, request.client),  # custom, required
-        }
-        if request.client.application:
-            claim_set['roles'] = ' '.join(user.get_roles_by_app(request.client.application.uuid).values_list('name', flat=True))  # custom
-        return make_jwt(claim_set)
+def default_token_generator(request, max_age=MAX_AGE):
+    user = request.user
+    claim_set = {
+        'jti': get_random_string(),
+        'iss': get_iss_from_absolute_uri(request.uri),
+        'sub': user.uuid.hex,  # required
+        'aud': request.client.client_id,  # required
+        'exp': int(time.time()) + max_age,  # required
+        'iat': int(time.time()),  # required
+        'acr': '1' if user.is_verified else '0',
+        'scope': ' '.join(request.scopes),  # custom, required
+        'email': str(user.primary_email()),  # custom
+        'name': user.username,  # custom
+        # session authentication hash,
+        # see django.contrib.auth.middleware.SessionAuthenticationMiddleware
+        'at_hash': get_session_auth_hash(user, request.client),  # custom, required
+    }
+    if request.client.application:
+        claim_set['roles'] = ' '.join(
+            user.get_roles_by_app(request.client.application.uuid).values_list('name', flat=True))  # custom
+    return make_jwt(claim_set)
 
 
 # http://openid.net/specs/openid-connect-basic-1_0.html#IDToken
-def default_idtoken_generator(request, max_age=MAX_AGE, refresh_token=False):
+def default_idtoken_generator(request, max_age=MAX_AGE):
     """
     The generated id_token contains additionally email, name and roles 
     """
-    if refresh_token:
-        return random_token_generator(request, refresh_token=True)
-    else:
-        user = request.user
-        auth_time = int(calendar.timegm(user.last_login.utctimetuple()))
-        claim_set = {
-            'iss': get_iss_from_absolute_uri(request.uri),
-            'sub': user.uuid.hex,
-            'aud': request.client.client_id,
-            'exp': int(time.time()) + max_age,
-            'iat': int(time.time()),
-            'auth_time': auth_time,  # required when max_age is in the request
-            'acr': '1' if user.is_verified else '0',
-            'email': str(user.primary_email()),  # custom
-            'name': user.username,  # custom
-            'given_name': user.first_name,  # custom
-            'family_name': user.last_name,  # custom
-        }
-        if request.nonce:
-            claim_set['nonce'] = request.nonce  # required if provided by the client
-        if request.client.application:
-            claim_set['roles'] = ' '.join(user.get_roles_by_app(request.client.application.uuid).values_list('name', flat=True))  # custom
-        return make_jwt(claim_set)
+    user = request.user
+    auth_time = int(calendar.timegm(user.last_login.utctimetuple()))
+    claim_set = {
+        'iss': get_iss_from_absolute_uri(request.uri),
+        'sub': user.uuid.hex,
+        'aud': request.client.client_id,
+        'exp': int(time.time()) + max_age,
+        'iat': int(time.time()),
+        'auth_time': auth_time,  # required when max_age is in the request
+        'acr': '1' if user.is_verified else '0',
+        'email': str(user.primary_email()),  # custom
+        'name': user.username,  # custom
+        'given_name': user.first_name,  # custom
+        'family_name': user.last_name,  # custom
+    }
+    if request.nonce:
+        claim_set['nonce'] = request.nonce  # required if provided by the client
+    if request.client.application:
+        claim_set['roles'] = ' '.join(
+            user.get_roles_by_app(request.client.application.uuid).values_list('name', flat=True))  # custom
+    return make_jwt(claim_set)
 
 
 class OAuth2RequestValidator(oauth2.RequestValidator):
@@ -180,7 +176,9 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
                     request.user = user
                     return True
                 else:
-                    logger.error("missing user for client %s in authenticate_client with grant_type 'client_credentials'", request.client)
+                    logger.error(
+                        "missing user for client %s in authenticate_client with grant_type 'client_credentials'",
+                        request.client)
             else:
                 return True
         except (ObjectDoesNotExist, ValueError):
@@ -239,10 +237,12 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
 
     def save_bearer_token(self, token, request, *args, **kwargs):
         if 'access_token' in token:
-            bearer_token = BearerToken.objects.create(client=request.client, access_token=token['access_token'], user=request.user)
+            bearer_token = BearerToken.objects.create(client=request.client, access_token=token['access_token'],
+                                                      user=request.user)
             if 'refresh_token' in token:
                 otp_device = getattr(request.user, 'otp_device', None)
-                RefreshToken.objects.create(token=token['refresh_token'], bearer_token=bearer_token)  # , otp_device=otp_device)
+                RefreshToken.objects.create(token=token['refresh_token'],
+                                            bearer_token=bearer_token)  # , otp_device=otp_device)
 
     def invalidate_authorization_code(self, client_id, code, request, *args, **kwargs):
         # Authorization codes are used once, invalidate it when a Bearer token
@@ -318,7 +318,8 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
         RefreshToken.objects.filter(token=token).delete()
 
     def get_id_token(self, token, token_handler, request):
-        # the request.scope should be used by the get_id_token() method to determine which claims to include in the resulting id_token
+        # the request.scope should be used by the get_id_token() method to determine which claims to include in
+        # the resulting id_token
         return default_idtoken_generator(request)
 
     def validate_silent_authorization(self, request):
@@ -367,7 +368,8 @@ class Server(oauth2.AuthorizationEndpoint, oauth2.TokenEndpoint, oauth2.Resource
 
         bearer = oauth2.BearerToken(request_validator, token_generator, token_expires_in, refresh_token_generator)
 
-        auth_grant_choice = grant_types.AuthCodeGrantDispatcher(default_auth_grant=auth_grant, oidc_auth_grant=openid_connect_auth)
+        auth_grant_choice = grant_types.AuthCodeGrantDispatcher(default_auth_grant=auth_grant,
+                                                                oidc_auth_grant=openid_connect_auth)
 
         # See http://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#Combinations for valid combinations
         # internally our AuthorizationEndpoint will ensure they can appear in any order for any valid combination
@@ -396,4 +398,5 @@ class Server(oauth2.AuthorizationEndpoint, oauth2.TokenEndpoint, oauth2.Resource
         oauth2.RevocationEndpoint.__init__(self, request_validator, supported_token_types=('refresh_token',))
 
 
-server = Server(OAuth2RequestValidator(), token_generator=default_token_generator)
+server = Server(OAuth2RequestValidator(), token_generator=default_token_generator,
+                refresh_token_generator=random_token_generator)

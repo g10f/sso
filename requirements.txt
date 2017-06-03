@@ -8,7 +8,7 @@ docutils
 pyjwt
 cryptography
 oauthlib
-git+git://github.com/mariocesar/sorl-thumbnail@v12.3
+# git+git://github.com/mariocesar/sorl-thumbnail@v12.3
 sorl-thumbnail
 pillow
 django-recaptcha

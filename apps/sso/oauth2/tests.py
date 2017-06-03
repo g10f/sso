@@ -24,7 +24,8 @@ def get_fragment_dict(url):
 
 
 class OAuth2BaseTestCase(TestCase):
-    fixtures = ['roles.json', 'test_l10n_data.json', 'test_organisation_data.json', 'app_roles.json', 'test_app_roles.json', 'test_user_data.json', 'test_oauth2_data.json']
+    fixtures = ['roles.json', 'test_l10n_data.json', 'test_organisation_data.json', 'app_roles.json',
+                'test_app_roles.json', 'test_user_data.json', 'test_oauth2_data.json']
     _client_id = "ec1e39cbe3e746c787b770ace4165d13"
     _state = 'eyJub25jZSI6Ik1sSllaUlc3VWdGdyIsInByb3ZpZGVyIjoyLCJuZXh0IjoiLyJ9'
 
@@ -35,7 +36,8 @@ class OAuth2BaseTestCase(TestCase):
         self.client.logout()
         self.client.cookies = SimpleCookie()
 
-    def login_and_get_code(self, client_id=None, max_age=None, wait=0, username='GunnarScherf', password='gsf', scope="openid profile email"):
+    def login_and_get_code(self, client_id=None, max_age=None, wait=0, username='GunnarScherf', password='gsf',
+                           scope="openid profile email"):
         self.client.login(username=username, password=password)
         if wait > 0:
             sleep(wait)
@@ -55,10 +57,11 @@ class OAuth2BaseTestCase(TestCase):
         query_dict = get_query_dict(response['Location'])
 
         self.assertIn('code', query_dict)
-        self.assertDictContainsSubset({'state': self._state}, query_dict)
+        self.assertTrue(set({'state': self._state}.items()).issubset(set(query_dict.items())))
         return query_dict['code']
 
-    def login_and_get_implicit_id_token(self, client_id='92d7d9d71d5d41caa652080c19aaa6d8', max_age=None, wait=0, username='GunnarScherf', password='gsf', response_type="id_token token"):
+    def login_and_get_implicit_id_token(self, client_id='92d7d9d71d5d41caa652080c19aaa6d8', max_age=None, wait=0,
+                                        username='GunnarScherf', password='gsf', response_type="id_token token"):
         self.client.login(username=username, password=password)
         if wait > 0:
             sleep(wait)
@@ -79,7 +82,8 @@ class OAuth2BaseTestCase(TestCase):
         fragment_dict = get_fragment_dict(response['Location'])
 
         self.assertIn('id_token', fragment_dict)
-        self.assertDictContainsSubset({'state': self._state}, fragment_dict)
+        expected = {'state': self._state}
+        self.assertTrue(set(expected.items()).issubset(set(fragment_dict.items())))
         return fragment_dict
 
     def get_authorization(self, client_id=None, username='GunnarScherf', password='gsf', scope="openid profile email"):
@@ -115,7 +119,8 @@ class OAuth2Tests(OAuth2BaseTestCase):
         query_dict = get_query_dict(response['Location'])
 
         self.assertIn('error', query_dict)
-        self.assertDictContainsSubset({'error': 'invalid_request'}, query_dict)
+        expected = {'error': 'invalid_request'}
+        self.assertTrue(set(expected.items()).issubset(set(query_dict.items())))
 
         self.assertEqual(urlsplit(response['Location'])[2], reverse('oauth2:oauth2_error'))
 
@@ -182,7 +187,8 @@ class OAuth2Tests(OAuth2BaseTestCase):
         self.assertIn('scope', token)
         self.assertIn('token_type', token)
 
-        self.assertDictContainsSubset({'scope': 'openid profile email', 'token_type': 'Bearer'}, token)
+        expected = {'scope': 'openid profile email', 'token_type': 'Bearer'}
+        self.assertTrue(set(expected.items()).issubset(set(token.items())))
 
         id_token = crypt.loads_jwt(token['id_token'])
         self.assertIn('iss', id_token)
@@ -201,7 +207,7 @@ class OAuth2Tests(OAuth2BaseTestCase):
             'email': 'gunnar@g10f.de',
             'name': 'GunnarScherf'
         }
-        self.assertDictContainsSubset(expected, id_token)
+        self.assertTrue(set(expected.items()).issubset(set(id_token.items())))
 
         roles = id_token['roles'].split()
         self.assertIn('Admin', roles)
@@ -228,6 +234,120 @@ class OAuth2Tests(OAuth2BaseTestCase):
         response = self.client.get(reverse('api:v1_users'), HTTP_AUTHORIZATION=authorization)
         self.assertEqual(response.status_code, 401)
 
+    def test_refresh_token(self):
+        client_id = '5614cdb0aa3c48d59828681bd62e1741'
+        code = self.login_and_get_code(client_id=client_id)
+        token_data = {
+            'grant_type': "authorization_code",
+            'redirect_uri': "http://localhost",
+            'client_secret': "geheim",
+            'client_id': client_id,
+            'code': code,
+        }
+        token_response = self.client.post(reverse('oauth2:token'), token_data)
+        self.assertEqual(token_response.status_code, 200)
+        self.assertIn('application/json', token_response['Content-Type'])
+        self.assertEqual(token_response['Cache-Control'], 'no-store')
+        self.assertEqual(token_response['Pragma'], 'no-cache')
+
+        token = token_response.json()
+        self.assertIn('access_token', token)
+        self.assertIn('id_token', token)
+        self.assertIn('refresh_token', token)
+        self.assertIn('expires_in', token)
+        self.assertIn('scope', token)
+        self.assertIn('token_type', token)
+
+        self.assertTrue({'scope': 'openid profile email', 'token_type': 'Bearer'}, token)
+
+        id_token = crypt.loads_jwt(token['id_token'])
+        self.assertIn('iss', id_token)
+        self.assertIn('sub', id_token)
+        self.assertIn('aud', id_token)
+        self.assertIn('exp', id_token)
+        self.assertIn('iat', id_token)
+        self.assertIn('email', id_token)
+        self.assertIn('name', id_token)
+        self.assertIn('roles', id_token)
+
+        expected = {
+            'iss': 'http://testserver',
+            'sub': 'a8992f0348634f76b0dac2de4e4c83ee',  # user_id
+            'aud': client_id,
+            'email': 'gunnar@g10f.de',
+            'name': 'GunnarScherf'
+        }
+        self.assertTrue(set(expected.items()).issubset(set(id_token.items())))
+
+        roles = id_token['roles'].split()
+        self.assertIn('Admin', roles)
+        self.assertIn('Staff', roles)
+
+        authorization = 'Bearer %s' % token['access_token']
+        self.logout()
+
+        response = self.client.get(reverse('openid-configuration'))
+        configuration = response.json()
+
+        # no authentication
+        response = self.client.get(configuration['userinfo_endpoint'])
+        self.assertEqual(response.status_code, 401)
+
+        # valid authentication
+        response = self.client.get(configuration['userinfo_endpoint'], HTTP_AUTHORIZATION=authorization)
+        self.assertEqual(response.status_code, 200)
+        user_info = response.json()
+        self.assertEqual(user_info['family_name'], 'Scherf')
+        self.assertIn('31664dd38ca4454e916e55fe8b1f0745', user_info['organisations'])
+
+        # this is only for global admin accounts
+        response = self.client.get(reverse('api:v1_users'), HTTP_AUTHORIZATION=authorization)
+        self.assertEqual(response.status_code, 401)
+
+        # get a new access_token from the refresh_token
+        token_data = {
+            'grant_type': "refresh_token",
+            'refresh_token': token['refresh_token'],
+            'client_id': client_id,
+            'client_secret': "geheim",
+        }
+        token_response = self.client.post(reverse('oauth2:token'), token_data)
+        self.assertEqual(token_response.status_code, 200)
+        self.assertIn('application/json', token_response['Content-Type'])
+        self.assertEqual(token_response['Cache-Control'], 'no-store')
+        self.assertEqual(token_response['Pragma'], 'no-cache')
+
+        token = token_response.json()
+        self.assertIn('access_token', token)
+        self.assertNotIn('id_token', token)
+        self.assertIn('refresh_token', token)
+        self.assertIn('expires_in', token)
+        self.assertIn('scope', token)
+        self.assertIn('token_type', token)
+
+        self.assertTrue({'scope': 'openid profile email', 'token_type': 'Bearer'}, token)
+
+        # revoke the last refresh token
+        data = {
+            'token': token['refresh_token'],
+            'client_id': client_id,
+            'client_secret': "geheim",
+        }
+        revoke_response = self.client.post(reverse('oauth2:revoke'), data)
+        self.assertEqual(revoke_response.status_code, 200)
+
+        # using the last refresh token should fail (revoked)
+        token_data = {
+            'grant_type': "refresh_token",
+            'refresh_token': token['refresh_token'],
+            'client_id': client_id,
+            'client_secret': "geheim",
+        }
+        token_response = self.client.post(reverse('oauth2:token'), token_data)
+        self.assertEqual(token_response.status_code, 401)
+        token = token_response.json()
+        self.assertIn('error', token)
+
     def test_get_token_failure(self):
         code = self.login_and_get_code()
         token_data = {
@@ -244,7 +364,8 @@ class OAuth2Tests(OAuth2BaseTestCase):
 
         token = token_response.json()
         self.assertIn('error', token)
-        self.assertDictContainsSubset({'error': 'access_denied'}, token)
+        expected = {'error': 'access_denied'}
+        self.assertTrue(set(expected.items()).issubset(set(token.items())))
 
         token_data['redirect_uri'] = "http://localhost"
         token_data['code'] = "wrong_code"
@@ -255,4 +376,5 @@ class OAuth2Tests(OAuth2BaseTestCase):
 
         token = token_response.json()
         self.assertIn('error', token)
-        self.assertDictContainsSubset({'error': 'invalid_grant'}, token)
+        expected = {'error': 'invalid_grant'}
+        self.assertTrue(set(expected.items()).issubset(set(token.items())))

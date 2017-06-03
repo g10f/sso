@@ -2,6 +2,7 @@
 import logging
 from uuid import UUID
 
+import six
 from sorl.thumbnail import get_thumbnail
 
 from django.contrib.auth.decorators import login_required, permission_required
@@ -23,7 +24,7 @@ from sso.api.decorators import condition
 from sso.api.views.generic import JsonListView, JsonDetailView
 from sso.auth.utils import is_recent_auth_time
 from sso.models import update_object_from_dict, map_dict2dict
-from sso.organisations.models import Organisation, multiple_associations
+from sso.organisations.models import Organisation
 from sso.registration import default_username_generator
 from sso.utils.parse import parse_datetime_with_timezone_support
 from sso.utils.url import base_url, absolute_url
@@ -60,9 +61,15 @@ SCOPE_MAPPING = {
     'phone_numbers': 'phone'
 }
 
+
+def _non_empty_string(s):
+    if issubclass(type(s), six.text_type):
+        return len(s) > 0
+    return False
+
 API_USER_MAPPING = {
-    'given_name': {'name': 'first_name', 'validate': lambda x: len(x) > 0},
-    'family_name': {'name': 'last_name', 'validate': lambda x: len(x) > 0},
+    'given_name': {'name': 'first_name', 'validate': _non_empty_string},
+    'family_name': {'name': 'last_name', 'validate': _non_empty_string},
     # 'email': {'name': 'email', 'validate': lambda x: len(x) > 0},
     'gender': 'gender',
     'birth_date': {'name': 'dob', 'parser': _parse_date},
@@ -71,10 +78,11 @@ API_USER_MAPPING = {
     'uuid': 'uuid',  # this value is created in JsonDetailView.create from the url
 }
 API_ADDRESS_MAP = {
-    'address_type': {'name': 'address_type', 'validate': lambda x: len(x) > 0, 'default': UserAddress.ADDRESSTYPE_CHOICES[0][0]},
-    'addressee': {'name': 'addressee', 'validate': lambda x: len(x) > 0},
+    'address_type': {'name': 'address_type', 'validate': lambda x: x in [i[0] for i in UserAddress.ADDRESSTYPE_CHOICES],
+                     'default': UserAddress.ADDRESSTYPE_CHOICES[0][0]},
+    'addressee': {'name': 'addressee', 'validate': _non_empty_string},
     'street_address': 'street_address',
-    'city': {'name': 'city', 'validate': lambda x: len(x) > 0},
+    'city': {'name': 'city', 'validate': _non_empty_string},
     'city_native': 'city_native',
     'postal_code': 'postal_code',
     'country': {'name': 'country', 'parser': lambda iso2_code: Country.objects.get(iso2_code=iso2_code)},
@@ -82,7 +90,8 @@ API_ADDRESS_MAP = {
     'primary': 'primary'
 }
 API_PHONE_MAP = {
-    'phone_type': {'name': 'phone_type', 'default': UserPhoneNumber.PHONE_CHOICES[0][0]},
+    'phone_type': {'name': 'phone_type', 'validate': lambda x: x in [i[0] for i in UserPhoneNumber.PHONE_CHOICES],
+                   'default': UserPhoneNumber.PHONE_CHOICES[0][0]},
     'phone': {'name': 'phone', 'validate': validate_phone},
     'primary': 'primary'
 }
@@ -200,7 +209,7 @@ def get_last_modified_and_etag(request, uuid):
             obj = User.objects.only('last_modified').get(uuid=uuid)
             lang = get_language_from_request(request)
             last_modified = obj.get_last_modified_deep()
-            etag = "%s/%s/%s" % (uuid, lang, last_modified)
+            etag = '"%s/%s/%s"' % (uuid, lang, last_modified)
             return last_modified, etag
         except ObjectDoesNotExist:
             return None, None
@@ -212,7 +221,7 @@ def get_last_modified_and_etag_for_me(request, *args, **kwargs):
     if request.user.is_authenticated:
         lang = get_language_from_request(request)
         last_modified = request.user.get_last_modified_deep()
-        etag = "%s/%s/%s" % (request.user.uuid.hex, lang, last_modified)
+        etag = '"%s/%s/%s"' % (request.user.uuid.hex, lang, last_modified)
         return last_modified, etag
     else:
         return None, None
@@ -374,15 +383,14 @@ class UserDetailView(UserMixin, JsonDetailView):
 
         object_data = map_dict2dict(API_USER_MAPPING, data)
 
-        if 'username' not in object_data:
-            object_data['username'] = default_username_generator(capfirst(object_data['first_name']), capfirst(object_data['last_name']))
+        object_data['username'] = default_username_generator(capfirst(object_data['first_name']), capfirst(object_data['last_name']))
 
         self.object = self.model(**object_data)
         self.object.set_password(get_random_string(40))
         self.object.save()
 
         # create initial app roles
-        applications = data.get('applications', {}).items()
+        applications = data.get('apps', {}).items()
         if len(applications) > 0:
             initial_application_roles = []
             administrable_application_role_ids = set(request.user.get_administrable_application_roles().all().values_list('id', flat=True))

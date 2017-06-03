@@ -1,63 +1,95 @@
-[ {
-	"model" : "oauth2.client",
-	"fields" : {
-		"uuid" : "ec1e39cbe3e746c787b770ace4165d13",
-        "last_modified": "2012-03-23T07:00:46.076Z",
-		"name" : "Test Client",
-		"application" : ["bc0ee635a536491eb8e7fbe5749e8111"],
-		"redirect_uris" : "http://localhost",
-		"client_secret" : "geheim",
-		"user" : null,
-		"type" : "web"
-	}
-}, {
-	"model" : "oauth2.client",
-	"fields" : {
-		"uuid" : "68bfae12a58541548def243e223053fb",
-        "last_modified": "2012-03-23T07:00:46.076Z",
-		"name" : "Client with special access rights (put userinfo)",
-		"application" : ["bc0ee635a536491eb8e7fbe5749e8111"],
-		"redirect_uris" : "http://localhost",
-		"client_secret" : "geheim",
-		"user" : null,
-		"type" : "web"
-	}
-}, {
-	"model" : "oauth2.client",
-	"fields" : {
-		"uuid" : "92d7d9d71d5d41caa652080c19aaa6d8",
-        "last_modified": "2012-03-23T07:00:46.076Z",
-		"name" : "Test Client - javascript",
-		"application" : ["bc0ee635a536491eb8e7fbe5749e8111"],
-		"redirect_uris" : "http://localhost",
-		"client_secret" : "",
-		"user" : null,
-		"type" : "javascript"
-	}
-}, {
-	"model" : "oauth2.client",
-	"fields" : {
-		"uuid" : "1811f02ed81b43b5bee1afe031e6198e",
-        "last_modified": "2012-03-23T07:00:46.076Z",
-		"name" : "Test Client2 - web",
-		"application" : ["bc0ee635a536491eb8e7fbe5749e8111"],
-		"redirect_uris" : "http://localhost",
-		"client_secret" : "geheim",
-		"scopes" : "openid profile email users",
-		"user" : null,
-		"type" : "web"
-	}
-}, {
-	"model" : "oauth2.client",
-	"fields" : {
-		"uuid" : "81062e2af4db4669a721d37d1ed7c058",
-        "last_modified": "2012-03-23T07:00:46.076Z",
-		"name" : "Test Client2 - web",
-		"application" : ["bc0ee635a536491eb8e7fbe5749e8111"],
-		"redirect_uris" : "http://localhost",
-		"client_secret" : "geheim",
-		"scopes" : "openid profile email users address phone",
-		"user" : null,
-		"type" : "web"
-	}
-}   ]
+[
+  {
+    "model": "oauth2.client",
+    "fields": {
+      "uuid": "ec1e39cbe3e746c787b770ace4165d13",
+      "last_modified": "2012-03-23T07:00:46.076Z",
+      "name": "Test Client",
+      "application": [
+        "bc0ee635a536491eb8e7fbe5749e8111"
+      ],
+      "redirect_uris": "http://localhost",
+      "client_secret": "geheim",
+      "user": null,
+      "type": "web"
+    }
+  },
+  {
+    "model": "oauth2.client",
+    "fields": {
+      "uuid": "68bfae12a58541548def243e223053fb",
+      "last_modified": "2012-03-23T07:00:46.076Z",
+      "name": "Client with special access rights (put userinfo)",
+      "application": [
+        "bc0ee635a536491eb8e7fbe5749e8111"
+      ],
+      "redirect_uris": "http://localhost",
+      "client_secret": "geheim",
+      "user": null,
+      "type": "web"
+    }
+  },
+  {
+    "model": "oauth2.client",
+    "fields": {
+      "uuid": "92d7d9d71d5d41caa652080c19aaa6d8",
+      "last_modified": "2012-03-23T07:00:46.076Z",
+      "name": "Test Client - javascript",
+      "application": [
+        "bc0ee635a536491eb8e7fbe5749e8111"
+      ],
+      "redirect_uris": "http://localhost",
+      "client_secret": "",
+      "user": null,
+      "type": "javascript"
+    }
+  },
+  {
+    "model": "oauth2.client",
+    "fields": {
+      "uuid": "1811f02ed81b43b5bee1afe031e6198e",
+      "last_modified": "2012-03-23T07:00:46.076Z",
+      "name": "Test Client2 - web",
+      "application": [
+        "bc0ee635a536491eb8e7fbe5749e8111"
+      ],
+      "redirect_uris": "http://localhost",
+      "client_secret": "geheim",
+      "scopes": "openid profile email users",
+      "user": null,
+      "type": "web"
+    }
+  },
+  {
+    "model": "oauth2.client",
+    "fields": {
+      "uuid": "81062e2af4db4669a721d37d1ed7c058",
+      "last_modified": "2012-03-23T07:00:46.076Z",
+      "name": "Test Client2 - web",
+      "application": [
+        "bc0ee635a536491eb8e7fbe5749e8111"
+      ],
+      "redirect_uris": "http://localhost",
+      "client_secret": "geheim",
+      "scopes": "openid profile email users address phone",
+      "user": null,
+      "type": "web"
+    }
+  },
+  {
+    "model": "oauth2.client",
+    "fields": {
+      "uuid": "5614cdb0aa3c48d59828681bd62e1741",
+      "last_modified": "2012-03-23T07:00:46.076Z",
+      "name": "Test Client2 - web",
+      "application": [
+        "bc0ee635a536491eb8e7fbe5749e8111"
+      ],
+      "redirect_uris": "http://localhost",
+      "client_secret": "geheim",
+      "scopes": "openid profile email offline_access",
+      "user": null,
+      "type": "web"
+    }
+  }
+]
