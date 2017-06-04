@@ -49,7 +49,9 @@ class CountryGroupAdminForm(forms.ModelForm):
     """
     see https://snipt.net/chrisdpratt/symmetrical-manytomany-filter-horizontal-in-django-admin/
     """
-    countries = forms.ModelMultipleChoiceField(queryset=OrganisationCountry.objects.all(), required=False, widget=FilteredSelectMultiple(verbose_name=_('Countries'), is_stacked=False))
+    countries = forms.ModelMultipleChoiceField(queryset=OrganisationCountry.objects.all(), required=False,
+                                               widget=FilteredSelectMultiple(verbose_name=_('Countries'),
+                                                                             is_stacked=False))
 
     class Meta:
         model = CountryGroup
@@ -136,15 +138,17 @@ class OrganisationAdmin(OSMGeoAdmin):
     inlines = [PhoneNumber_Inline, Address_Inline]
     readonly_fields = ['uuid', 'last_modified', 'google_maps_link']
     date_hierarchy = 'founded'
-    list_filter = ('association', 'is_active', 'is_private', 'uses_user_activation', 'coordinates_type', 'admin_region', 'organisation_country__country__continent', CountryListFilter, 'center_type',
+    list_filter = ('association', 'is_active', 'is_private', 'is_live', 'uses_user_activation', 'coordinates_type', 'admin_region',
+                   'organisation_country__country__continent', CountryListFilter, 'center_type',
                    'organisationaddress__address_type', 'organisationphonenumber__phone_type')
     list_display = ('slug', 'name', 'name_native', 'email', 'last_modified', 'homepage_link', 'google_maps_link',)
     fieldsets = [
         (None,
          {'fields':
-              ['uuid', 'centerid', 'name', 'name_native', 'slug', 'center_type', 'association', 'organisation_country', 'admin_region', 'founded', ('coordinates_type', 'google_maps_link'),
-               'location',
-               'email', 'homepage', 'is_active', 'is_private', 'uses_user_activation', 'last_modified'],
+              ['uuid', 'centerid', 'name', 'name_native', 'slug', 'center_type', 'association', 'organisation_country',
+               'admin_region', 'founded', ('coordinates_type', 'google_maps_link'),
+               'location', 'email', 'homepage', 'is_active', 'is_private', 'is_live', 'uses_user_activation',
+               'last_modified'],
           'classes': ['wide']}),
         (_('notes'),
          {'fields':
@@ -154,7 +158,8 @@ class OrganisationAdmin(OSMGeoAdmin):
 
     def mark_uses_user_activation(self, request, queryset):
         n = queryset.update(uses_user_activation=True)
-        self.message_user(request, _("Successfully updated %(count)d %(items)s.") % {"count": n, "items": model_ngettext(self.opts, n)})
+        self.message_user(request, _("Successfully updated %(count)d %(items)s.") % {
+            "count": n, "items": model_ngettext(self.opts, n)})
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == "email":

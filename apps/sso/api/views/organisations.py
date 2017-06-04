@@ -30,6 +30,7 @@ class OrganisationMixin(object):
             '@id': "%s%s" % (base, reverse('api:v2_organisation', kwargs={'uuid': obj.uuid.hex})),
             'id': u'%s' % obj.uuid.hex,
             'is_active': obj.is_active,
+            'is_live': obj.is_live,
             'is_private': obj.is_private,
             'name': u'%s' % obj.name,
             'name_native': u'%s' % obj.name_native,
@@ -148,7 +149,13 @@ class OrganisationList(OrganisationMixin, JsonListView):
         qs = super(OrganisationList, self).get_queryset().prefetch_related(
             'organisation_country__country', 'admin_region', 'email', 'organisationaddress_set', 'organisationaddress_set__country',
             'association', 'organisationphonenumber_set', 'organisationpicture_set').distinct()
-        
+
+        is_live = self.request.GET.get('is_live', 'True')
+        if is_live in ['True', 'true', '1', 'yes', 'Yes', 'Y', 'y']:
+            qs = qs.filter(is_live=True)
+        elif is_live in ['False', 'false', '0', 'no', 'No', 'N', 'n']:
+            qs = qs.filter(is_live=False)
+
         is_active = self.request.GET.get('is_active', None)
         if is_active in ['True', 'true', '1', 'yes', 'Yes', 'Y', 'y']:
             qs = qs.filter(is_active=True)

@@ -96,6 +96,11 @@
             <span data-toggle="tooltip" title="{% trans 'Designates whether this organisation data should be treated as private and only a telephone number should be displayed on public sites.' %}"
                     class="glyphicon glyphicon-{% if object.is_private %}check{% else %}unchecked{% endif %}"></span></div>
     </div>
+    <div class="row"><div class="dwbn-label">{% trans 'Live' %}:</div>
+    	<div class="dwbn-content">
+            <span data-toggle="tooltip" title="{% trans 'Designates whether this organisation is live or prelive.' %}"
+                    class="glyphicon glyphicon-{% if object.is_live %}check{% else %}unchecked{% endif %}"></span></div>
+    </div>
 	{% endif %}
 	
 	{% for address in object.organisationaddress_set.all %}

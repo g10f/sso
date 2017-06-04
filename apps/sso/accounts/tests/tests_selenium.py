@@ -44,7 +44,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.selenium.get('%s%s' % (self.live_server_url, path))
         self.selenium.find_element_by_name("new_password1").send_keys(new_password)
         self.selenium.find_element_by_name("new_password2").send_keys(new_password)
-        picture = os.path.join(settings.BASE_DIR, 'sso/static/img/face-cool.png')
+        picture = os.path.abspath(os.path.join(settings.BASE_DIR, 'sso/static/img/face-cool.png'))
         self.selenium.find_element_by_id("id_picture").send_keys(picture)
         self.selenium.find_element_by_tag_name("form").submit()
         self.wait_page_loaded()
