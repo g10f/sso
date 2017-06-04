@@ -1,10 +1,10 @@
 from django import test
-from django.conf.urls import url
 from django.http import HttpResponse
+from django.test import override_settings
 from django.urls import reverse
-from .decorators import throttle
 
 
+@override_settings(ROOT_URLCONF='throttle.tests.urls')
 class ThrottleTest(test.TestCase):
     """
     Throttle decorator test suite
@@ -13,7 +13,7 @@ class ThrottleTest(test.TestCase):
 
     def request(self, url, method='post', **kwargs):
         """
-        The helper function that emulates HTTP request to 
+        The helper function that emulates HTTP request to
         Django views with given method
         """
         url = reverse(url)
@@ -59,16 +59,9 @@ class ThrottleTest(test.TestCase):
         self.assertEquals(200, self.request('test_duration').status_code)
         self.assertEquals(200, self.request('test_duration').status_code)
 
+
 def index(request):
     """
     Test view function
     """
     return HttpResponse("Test view")
-
-urlpatterns = [
-    url(r'^$', throttle()(index), name='test_default'),
-    url(r'^method/$', throttle(method='GET')(index), name='test_method'),
-    url(r'^duration/$', throttle(duration=0)(index), name='test_duration'),
-    url(r'^response/$', throttle(response=HttpResponse('Response', status=401))(index), name='test_response'),
-    url(r'^response/callable/$', throttle(response=lambda request: HttpResponse('Request Response', status=401))(index), name='test_response_callable'),
-]

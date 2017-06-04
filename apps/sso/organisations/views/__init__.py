@@ -22,15 +22,17 @@ from sso.emails.forms import AdminEmailForwardInlineForm, EmailForwardInlineForm
 from sso.emails.models import EmailForward, Email, EmailAlias
 from sso.forms.helpers import get_optional_inline_formset
 from sso.oauth2.models import allowed_hosts
-from sso.organisations.forms import OrganisationAddressForm, OrganisationPhoneNumberForm, OrganisationCountryAdminForm, \
-    OrganisationRegionAdminForm, OrganisationCenterAdminForm, OrganisationRegionAdminCreateForm, OrganisationCountryAdminCreateForm, OrganisationPictureForm, \
+from sso.organisations.forms import OrganisationAddressForm, OrganisationPhoneNumberForm, \
+    OrganisationCountryAdminForm, OrganisationRegionAdminForm, OrganisationCenterAdminForm, \
+    OrganisationRegionAdminCreateForm, OrganisationCountryAdminCreateForm, OrganisationPictureForm, \
     OrganisationAssociationAdminCreateForm, OrganisationAssociationAdminForm
 from sso.organisations.models import AdminRegion, Organisation, OrganisationPicture, Association, multiple_associations
 from sso.organisations.models import OrganisationAddress, OrganisationPhoneNumber, get_near_organisations
 from sso.utils.ucsv import UnicodeWriter
 from sso.utils.url import get_safe_redirect_uri
 from sso.views import main
-from sso.views.generic import FormsetsUpdateView, ListView, SearchFilter, ViewChoicesFilter, ViewQuerysetFilter, ViewButtonFilter
+from sso.views.generic import FormsetsUpdateView, ListView, SearchFilter, ViewChoicesFilter, ViewQuerysetFilter, \
+    ViewButtonFilter
 
 logger = logging.getLogger(__name__)
 
@@ -129,20 +131,21 @@ class OrganisationDeleteView(OrganisationBaseView, DeleteView):
 class OrganisationCreateView(OrganisationBaseView, CreateView):
     form_classes = {
         'email_management': {
-                'region': OrganisationRegionAdminCreateForm,
-                'country': OrganisationCountryAdminCreateForm,
-                'association': OrganisationAssociationAdminCreateForm
-            },
+            'region': OrganisationRegionAdminCreateForm,
+            'country': OrganisationCountryAdminCreateForm,
+            'association': OrganisationAssociationAdminCreateForm
+        },
         'default': {
-                'region': OrganisationRegionAdminForm,
-                'country': OrganisationCountryAdminForm,
-                'association': OrganisationAssociationAdminForm
-            }
+            'region': OrganisationRegionAdminForm,
+            'country': OrganisationCountryAdminForm,
+            'association': OrganisationAssociationAdminForm
+        }
     }
     template_name_suffix = '_create_form'
 
     def get_success_url(self):
-        return urlunsplit(('', '', reverse('organisations:organisation_update', args=[self.object.uuid.hex]), self.request.GET.urlencode(safe='/'), ''))
+        return urlunsplit(('', '', reverse('organisations:organisation_update', args=[self.object.uuid.hex]),
+                           self.request.GET.urlencode(safe='/'), ''))
 
     @method_decorator(login_required)
     @method_decorator(permission_required('organisations.add_organisation', raise_exception=True))
@@ -194,10 +197,12 @@ class OrganisationPictureUpdateView(OrganisationBaseView, FormsetsUpdateView):
     def get_formsets(self):
 
         picture_number_extra = 1
-        PictureInlineFormSet = inlineformset_factory(self.model, OrganisationPicture, OrganisationPictureForm, extra=picture_number_extra, max_num=3)
+        PictureInlineFormSet = inlineformset_factory(self.model, OrganisationPicture, OrganisationPictureForm,
+                                                     extra=picture_number_extra, max_num=3)
 
         if self.request.method == 'POST':
-            picture_inline_formset = PictureInlineFormSet(self.request.POST, files=self.request.FILES, instance=self.object)
+            picture_inline_formset = PictureInlineFormSet(self.request.POST, files=self.request.FILES,
+                                                          instance=self.object)
         else:
             picture_inline_formset = PictureInlineFormSet(instance=self.object)
 
@@ -264,8 +269,11 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
         if address_count == 0:
             address_extra = 1
 
-        AddressInlineFormSet = inlineformset_factory(self.model, OrganisationAddress, OrganisationAddressForm, extra=address_extra, max_num=2)
-        PhoneNumberInlineFormSet = inlineformset_factory(self.model, OrganisationPhoneNumber, OrganisationPhoneNumberForm, max_num=6, extra=phone_number_extra)
+        AddressInlineFormSet = inlineformset_factory(self.model, OrganisationAddress, OrganisationAddressForm,
+                                                     extra=address_extra, max_num=2)
+        PhoneNumberInlineFormSet = inlineformset_factory(self.model, OrganisationPhoneNumber,
+                                                         OrganisationPhoneNumberForm, max_num=6,
+                                                         extra=phone_number_extra)
 
         if self.request.method == 'POST':
             address_inline_formset = AddressInlineFormSet(self.request.POST, instance=self.object)
@@ -281,15 +289,19 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
         if settings.SSO_ORGANISATION_EMAIL_MANAGEMENT:
             if self.request.user.has_perm('organisations.add_organisation'):
                 email_forward_inline_formset = get_optional_inline_formset(self.request, self.object.email, Email,
-                                                                           model=EmailForward, form=AdminEmailForwardInlineForm, max_num=10)
+                                                                           model=EmailForward,
+                                                                           form=AdminEmailForwardInlineForm, max_num=10)
             else:
                 email_forward_inline_formset = get_optional_inline_formset(self.request, self.object.email, Email,
-                                                                           model=EmailForward, form=EmailForwardInlineForm, max_num=10,
-                                                                           queryset=EmailForward.objects.filter(primary=False))
+                                                                           model=EmailForward,
+                                                                           form=EmailForwardInlineForm, max_num=10,
+                                                                           queryset=EmailForward.objects.filter(
+                                                                               primary=False))
 
             if self.admin_type in ['region', 'country']:
                 email_alias_inline_formset = get_optional_inline_formset(self.request, self.object.email, Email,
-                                                                         model=EmailAlias, form=EmailAliasInlineForm, max_num=6)
+                                                                         model=EmailAlias, form=EmailAliasInlineForm,
+                                                                         max_num=6)
             else:
                 email_alias_inline_formset = None
 
@@ -304,7 +316,8 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
 
 
 class OrganisationSearchFilter(SearchFilter):
-    search_names = ['name__icontains', 'email__email__icontains', 'name_native__icontains', 'organisationaddress__city__icontains', 'organisationaddress__city_native__icontains']
+    search_names = ['name__icontains', 'email__email__icontains', 'name_native__icontains',
+                    'organisationaddress__city__icontains', 'organisationaddress__city_native__icontains']
 
 
 class CenterTypeFilter(ViewChoicesFilter):
@@ -318,6 +331,16 @@ class IsActiveFilter(ViewChoicesFilter):
     name = 'is_active'
     choices = (('1', _('Active Organisations')), ('2', _('Inactive Organisations')))
     select_text = _('active/inactive')
+    select_all_text = _("All")
+
+    def map_to_database(self, value):
+        return True if (value.pk == "1") else False
+
+
+class IsLiveFilter(ViewChoicesFilter):
+    name = 'is_live'
+    choices = (('1', _('Live Organisations')), ('2', _('Prelive Organisations')))
+    select_text = _('live/prelive')
     select_all_text = _("All")
 
     def map_to_database(self, value):
@@ -409,8 +432,9 @@ class OrganisationList(ListView):
         Get the list of items for this view. This must be an iterable, and may
         be a queryset (in which qs-specific behavior will be enabled).
         """
-        qs = super(OrganisationList, self).get_queryset().only('location', 'uuid', 'name', 'email', 'organisation_country', 'founded').prefetch_related('organisationaddress_set__country', 'email',
-                                                                                                                                                        'organisationpicture_set')
+        qs = super(OrganisationList, self).get_queryset().only(
+            'location', 'uuid', 'name', 'email', 'organisation_country', 'founded').prefetch_related(
+            'organisationaddress_set__country', 'email', 'organisationpicture_set')
         return self.apply_filters(qs)
 
     def get_context_data(self, **kwargs):
@@ -424,7 +448,8 @@ class OrganisationList(ListView):
         association_filter = AssociationFilter().get(self)
         if multiple_associations():
             if self.association:
-                countries = Country.objects.filter(organisationaddress__organisation__association=self.association).distinct()
+                countries = Country.objects.filter(organisationaddress__organisation__association=self.association). \
+                    distinct()
             else:
                 countries = Country.objects.none()
         else:
@@ -443,6 +468,7 @@ class OrganisationList(ListView):
         # is_active filter is only for admins
         if self.request.user.is_organisation_admin:
             filters.append(IsActiveFilter().get(self))
+            filters.append(IsLiveFilter().get(self))
 
         context = {
             'result_headers': headers,
@@ -464,7 +490,8 @@ class OrganisationList(ListView):
 
     def apply_filters(self, qs):
         # create the change list, which is required for apply filter
-        self.cl = main.ChangeList(self.request, self.model, self.get_list_display(), default_ordering=self.get_default_ordering())
+        self.cl = main.ChangeList(self.request, self.model, self.get_list_display(),
+                                  default_ordering=self.get_default_ordering())
 
         qs = MyOrganisationsFilter().apply(self, qs)
         qs = OrganisationSearchFilter().apply(self, qs)
@@ -472,11 +499,13 @@ class OrganisationList(ListView):
         qs = AssociationFilter().apply(self, qs)
         qs = CountryFilter().apply(self, qs)
         qs = AdminRegionFilter().apply(self, qs)
-        # offer is_active filter only for admins
+        # offer is_active and is_live filter only for admins
         if self.request.user.is_organisation_admin:
             qs = IsActiveFilter().apply(self, qs)
+            qs = IsLiveFilter().apply(self, qs)
         else:
             qs = qs.filter(is_active=True)
+            qs = qs.filter(is_live=True)
 
         latlng = self.request.GET.get('latlng', '')
         if latlng:
@@ -491,7 +520,8 @@ class OrganisationList(ListView):
         return qs.distinct()
 
     def get_export(self):
-        qs = Organisation.objects.prefetch_related('organisation_country__country', 'admin_region', 'email', 'organisationphonenumber_set',
+        qs = Organisation.objects.prefetch_related('organisation_country__country', 'admin_region', 'email',
+                                                   'organisationphonenumber_set',
                                                    'organisationaddress_set', 'organisationaddress_set__country')
         qs = self.apply_filters(qs)
 
@@ -503,7 +533,8 @@ class OrganisationList(ListView):
             writer = UnicodeWriter(response, quoting=csv.QUOTE_ALL)
         else:
             writer = csv.writer(response, quoting=csv.QUOTE_ALL)
-        row = ["name", "is_active", "homepage", "email", "primary_phone", "country", "admin_region", "addressee", "street_address", "city", "postal_code"]
+        row = ["name", "is_active", "homepage", "email", "primary_phone", "country", "admin_region", "addressee",
+               "street_address", "city", "postal_code"]
         writer.writerow(row)
         for organisation in qs:
             admin_region = six.text_type(organisation.admin_region) if organisation.admin_region else six.text_type('')
@@ -513,7 +544,8 @@ class OrganisationList(ListView):
 
             primary_address = organisation.primary_address
             if not organisation.is_private and primary_address:
-                row += [primary_address.addressee, primary_address.street_address, primary_address.city, primary_address.postal_code]
+                row += [primary_address.addressee, primary_address.street_address, primary_address.city,
+                        primary_address.postal_code]
             else:
                 row += ['', '', '', '']
 
