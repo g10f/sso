@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# Django settings for sso project.
 import os
 import sys
 from uuid import UUID
@@ -18,7 +17,9 @@ if RUNNING_DEVSERVER:
 else:
     DEBUG = False
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))  # django 1.7 settings
+THUMBNAIL_DEBUG = DEBUG
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
 SSO_BRAND = 'G10F'
 SSO_SITE_NAME = 'G10F'
@@ -174,7 +175,8 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'sso.oauth2.middleware.OAuthAuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',  # Allows a user’s sessions to be invalidated when their password changes.
+    # Allows a user’s sessions to be invalidated when their password changes.
+    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'sso.auth.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
