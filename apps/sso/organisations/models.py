@@ -401,11 +401,13 @@ class Organisation(AbstractBaseModel):
 
     def get_near_organisations(self):
         if self.neighbour_distance is not None:
-            return get_near_organisations(self.location, distance_from_point={'km': self.neighbour_distance},
-                                          qs=Organisation.objects.filter(is_active=True).exclude(pk=self.pk))
+            return get_near_organisations(
+                self.location, distance_from_point={'km': self.neighbour_distance},
+                qs=Organisation.objects.filter(is_active=True, is_live=True).exclude(pk=self.pk))
         else:
-            return get_near_organisations(self.location,
-                                          qs=Organisation.objects.filter(is_active=True).exclude(pk=self.pk))[:10]
+            return get_near_organisations(
+                self.location,
+                qs=Organisation.objects.filter(is_active=True, is_live=True).exclude(pk=self.pk))[:10]
 
     @models.permalink
     def get_absolute_url(self):

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-import datetime
 import logging
 from collections import OrderedDict
 from mimetypes import guess_extension
 
+import datetime
 import pytz
 from captcha.fields import ReCaptchaField
 
@@ -590,8 +590,9 @@ class UserSelfRegistrationForm2(UserSelfRegistrationForm):
     Overwritten UserSelfRegistrationForm Form with additional  organisation field
     """
     organisation = forms.ModelChoiceField(
-        queryset=Organisation.objects.filter(is_active=True, association__is_selectable=True).select_related(
-            'organisation_country__country'), required=False, label=_("Organisation"), widget=bootstrap.Select())
+        queryset=Organisation.objects.filter(is_active=True, is_live=True, association__is_selectable=True).
+            select_related('organisation_country__country'), required=False, label=_("Organisation"),
+        widget=bootstrap.Select())
     # for Bots. If you enter anything in this field you will be treated as a robot
     state = forms.CharField(label=_('State'), required=False, widget=bootstrap.HiddenInput())
 
@@ -750,7 +751,8 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
         if extend_validity:
             # enable brand specific modification
             valid_until = now() + datetime.timedelta(days=settings.SSO_VALIDATION_PERIOD_DAYS)
-            extend_user_validity.send_robust(sender=self.__class__, user=self.user, valid_until=valid_until, admin=self.request.user)
+            extend_user_validity.send_robust(sender=self.__class__, user=self.user, valid_until=valid_until,
+                                             admin=self.request.user)
             self.user.valid_until = valid_until
 
         self.user.save()
@@ -769,8 +771,8 @@ class CenterProfileForm(mixins.UserRolesMixin, forms.Form):
     notes = forms.CharField(label=_("Notes"), required=False, max_length=1024,
                             widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
     application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False,
-                                                      widget=bootstrap.CheckboxSelectMultiple(),
-                                                      label=_("Application roles"))
+                                                       widget=bootstrap.CheckboxSelectMultiple(),
+                                                       label=_("Application roles"))
     role_profiles = forms.MultipleChoiceField(required=False, widget=bootstrap.CheckboxSelectMultiple(),
                                               label=_("Role profiles"),
                                               help_text=_('Groups of application roles that are assigned together.'))
