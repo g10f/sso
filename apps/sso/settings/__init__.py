@@ -66,11 +66,11 @@ OTP_TWILIO_NO_DELIVERY = True
 OTP_TWILIO_TOKEN_VALIDITY = 300  # seconds
 
 # Celery settings see https://www.cloudamqp.com/docs/celery.html
-BROKER_USE_SSL = False
-BROKER_URL = 'amqp://guest:guest@localhost//'
-BROKER_POOL_LIMIT = 1  # Will decrease connection usage
-BROKER_HEARTBEAT = None
-BROKER_CONNECTION_TIMEOUT = 30  # May require a long timeout due to Linux DNS timeouts etc
+CELERY_BROKER_USE_SSL = False
+CELERY_BROKER_URL = 'amqp://guest:guest@localhost//'
+CELERY_BROKER_POOL_LIMIT = 1  # Will decrease connection usage
+CELERY_BROKER_HEARTBEAT = None
+CELERY_BROKER_CONNECTION_TIMEOUT = 30  # May require a long timeout due to Linux DNS timeouts etc
 CELERY_RESULT_BACKEND = None
 CELERY_SEND_EVENTS = False  # Will not create celeryev.* queues
 # CELERY_EVENT_QUEUE_EXPIRES = 60  # Will delete all celeryev. queues without consumers after 1 minute.
@@ -79,6 +79,10 @@ CELERY_SEND_EVENTS = False  # Will not create celeryev.* queues
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
+
+# Publishing Broker
+BROKER_USE_SSL = CELERY_BROKER_USE_SSL
+BROKER_URL = CELERY_BROKER_URL
 
 EMAIL_SUBJECT_PREFIX = '[SSO] '
 
