@@ -141,7 +141,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         if self.primary_email() is not None:
             recipient_list = [self.primary_email().email]
-            return send_mail(subject, message, recipient_list, from_email=force_text(from_email), **kwargs)
+            if from_email is not None:
+                from_email = force_text(from_email)
+            return send_mail(subject, message, recipient_list, from_email=from_email, **kwargs)
         else:
             logger.error('User %s has no primary_email', self.username)
         return 0
