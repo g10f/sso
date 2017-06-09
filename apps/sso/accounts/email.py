@@ -8,8 +8,8 @@ from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.utils.timezone import now
 from sso.accounts.tokens import email_confirm_token_generator
-from sso.utils.translation import i18n_email_msg_and_subj
 from sso.utils.email import send_mail
+from sso.utils.translation import i18n_email_msg_and_subj
 
 logger = logging.getLogger(__name__)
 
