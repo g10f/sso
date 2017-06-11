@@ -20,7 +20,7 @@ def filterchain(request, app, model, field, value, manager=None):
     else:
         queryset = Model.objects
     results = list(queryset.filter(**keywords))
-    results.sort(cmp=locale.strcoll, key=lambda x: unicode_sorter(six.text_type(x)))
+    results.sort(key=lambda x: unicode_sorter(six.text_type(x)))
     result = []
     for item in results:
         result.append({'value': item.pk, 'display': six.text_type(item)})
