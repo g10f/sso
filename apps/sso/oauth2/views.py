@@ -308,10 +308,10 @@ def tokeninfo(request):
     except oauth2.OAuth2Error as e:
         return HttpResponse(content=e.json, status=e.status_code, content_type='application/json')
     except InvalidTokenError as e:
-        error = oauth2.InvalidRequestError(description=str(e))
+        error = oauth2.InvalidRequestError(description=force_text(e))
         return HttpResponse(content=error.json, status=error.status_code, content_type='application/json')
     except Exception as e:
-        error = oauth2.ServerError(description=str(e))
+        error = oauth2.ServerError(description=force_text(e))
         logger.warning('Exception caught while processing request, %s.' % e)
         return HttpResponse(content=error.json, status=error.status_code)
         

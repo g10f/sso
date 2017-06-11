@@ -13,6 +13,7 @@ from django.core import signing
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.utils.crypto import get_random_string
+from django.utils.encoding import force_text
 from sso.auth import get_session_auth_hash
 from .crypt import loads_jwt, make_jwt, MAX_AGE
 from .models import BearerToken, RefreshToken, AuthorizationCode, Client, check_redirect_uri, CONFIDENTIAL_CLIENTS
@@ -40,7 +41,7 @@ def default_token_generator(request, max_age=MAX_AGE):
         'iat': int(time.time()),  # required
         'acr': '1' if user.is_verified else '0',
         'scope': ' '.join(request.scopes),  # custom, required
-        'email': str(user.primary_email()),  # custom
+        'email': force_text(user.primary_email()),  # custom
         'name': user.username,  # custom
         # session authentication hash,
         # see django.contrib.auth.middleware.SessionAuthenticationMiddleware
@@ -67,7 +68,7 @@ def default_idtoken_generator(request, max_age=MAX_AGE):
         'iat': int(time.time()),
         'auth_time': auth_time,  # required when max_age is in the request
         'acr': '1' if user.is_verified else '0',
-        'email': str(user.primary_email()),  # custom
+        'email': force_text(user.primary_email()),  # custom
         'name': user.username,  # custom
         'given_name': user.first_name,  # custom
         'family_name': user.last_name,  # custom

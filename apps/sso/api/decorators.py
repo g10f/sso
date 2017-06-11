@@ -5,6 +5,7 @@ import logging
 
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist, ValidationError
 from django.utils.decorators import available_attrs
+from django.utils.encoding import force_text
 from django.utils.http import http_date, parse_http_date_safe, parse_etags, quote_etag
 from django.http import HttpResponseNotModified, HttpResponse
 
@@ -43,22 +44,22 @@ def catch_errors(view_func):
             return view_func(request, *args, **kwargs)
         except PermissionDenied as e:
             logger.warning('PermissionDenied caught while processing request, %s.' % e)
-            return HttpApiResponseNotAuthorized(error_description=str(e), request=request)
+            return HttpApiResponseNotAuthorized(error_description=force_text(e), request=request)
         except ObjectDoesNotExist as e:
             logger.warning('ObjectDoesNotExist caught while processing request, %s.' % e)
-            return HttpApiErrorResponse(error='not_found', error_description=str(e), request=request, status_code=404)
+            return HttpApiErrorResponse(error='not_found', error_description=force_text(e), request=request, status_code=404)
         except ValueError as e:
             logger.warning('ValueError caught while processing request, %s.' % e)
-            return HttpApiErrorResponse(error='bad_request', error_description=str(e), request=request, status_code=400)
+            return HttpApiErrorResponse(error='bad_request', error_description=force_text(e), request=request, status_code=400)
         except ValidationError as e:
             logger.warning('ValidationError caught while processing request, %s.' % e)
-            return HttpApiErrorResponse(error='bad_request', error_description=str(e), request=request, status_code=400)
+            return HttpApiErrorResponse(error='bad_request', error_description=force_text(e), request=request, status_code=400)
         except AttributeError as e:
             logger.warning('AttributeError caught while processing request, %s.' % e)
-            return HttpApiErrorResponse(error='bad_request', error_description=str(e), request=request, status_code=400)
+            return HttpApiErrorResponse(error='bad_request', error_description=force_text(e), request=request, status_code=400)
         except Exception as e:
             logger.warning('Exception caught while processing request, %s.' % e)
-            return HttpApiErrorResponse(error_description=str(e), request=request)
+            return HttpApiErrorResponse(error_description=force_text(e), request=request)
     return _wrapped_view
 
 
