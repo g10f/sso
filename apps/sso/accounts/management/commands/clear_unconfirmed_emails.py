@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+from django.utils.encoding import force_text
 from sso.accounts.models import UserEmail
 from optparse import make_option
 from django.utils.timezone import now
@@ -20,11 +21,11 @@ class Command(BaseCommand):
         for user_email in UserEmail.objects.filter(confirmed=False, primary=False, last_modified__lt=last_modified_lt):
             if user_email.user.useremail_set.all().count() > 1:
                 if options['delete']:
-                    self.stdout.write("deleting %s" % str(user_email))
+                    self.stdout.write("deleting %s" % force_text(user_email))
                     user_email.delete()
                 else:
-                    self.stdout.write("unconfirmed non primary email %s" % str(user_email))
+                    self.stdout.write("unconfirmed non primary email %s" % force_text(user_email))
             else:
-                self.stdout.write("making %s as primary" % str(user_email))
+                self.stdout.write("making %s as primary" % force_text(user_email))
                 user_email.primary = True
                 user_email.save()

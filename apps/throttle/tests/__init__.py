@@ -42,7 +42,7 @@ class ThrottleTest(test.TestCase):
         """
         self.assertEquals(200, self.request('test_response').status_code)
         self.assertEquals(401, self.request('test_response').status_code)
-        self.assertEquals(True, 'Response' in self.request('test_response').content)
+        self.assertEquals(True, b'Response' in self.request('test_response').content)
 
     def test_response_callable(self):
         """
@@ -50,7 +50,7 @@ class ThrottleTest(test.TestCase):
         """
         self.assertEquals(200, self.request('test_response_callable').status_code)
         self.assertEquals(401, self.request('test_response_callable').status_code)
-        self.assertEquals(True, 'Request Response' in self.request('test_response_callable').content)
+        self.assertEquals(True, b'Request Response' in self.request('test_response_callable').content)
 
     def test_duration(self):
         """

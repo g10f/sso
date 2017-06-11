@@ -124,7 +124,7 @@ class GroupEmailForm(BaseForm):
         try:
             email = self.instance.email
             self.fields['is_active'].initial = email.is_active
-            self.fields['email_value'].initial = str(email)
+            self.fields['email_value'].initial = force_text(email)
             self.fields['permission'].initial = email.permission
         except ObjectDoesNotExist:
             self.fields['is_active'].initial = True

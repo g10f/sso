@@ -7,6 +7,7 @@ from django.db import transaction
 from django.forms.models import model_to_dict
 from django.http import HttpResponse, Http404
 from django.utils.decorators import method_decorator
+from django.utils.encoding import force_text
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.vary import vary_on_headers
 from django.views.generic.detail import BaseDetailView
@@ -182,7 +183,7 @@ class JsonDetailView(JSONResponseMixin, PermissionMixin, BaseDetailView):
         except Http404 as e:
             if self.create_object_with_put:
                 return self.create(request, *args, **kwargs)
-            raise ObjectDoesNotExist(str(e))
+            raise ObjectDoesNotExist(force_text(e))
 
     @transaction.atomic
     def create(self, request, *args, **kwargs):

@@ -35,7 +35,7 @@ class Device(AbstractBaseModel):
     DEVICES = [cls.split('.')[-1].lower() for cls in settings.OTP_DEVICES]
 
     def __str__(self):
-        return u"%s" % (str(self.get_child()))
+        return u"%s" % self.get_child()
 
     class Meta:
         ordering = ['order', 'name']

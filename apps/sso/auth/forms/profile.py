@@ -4,6 +4,7 @@ from binascii import unhexlify
 
 from django.core.validators import RegexValidator
 from django import forms
+from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 
 from sso.auth.utils import get_qrcode_data_url, totp_digits
@@ -124,7 +125,7 @@ class TOTPDeviceForm(forms.Form):
         key = self.data.get('key', self.initial['key'])
         rawkey = unhexlify(key.encode('ascii'))
         b32key = b32encode(rawkey).decode('utf-8')
-        return get_qrcode_data_url(b32key, str(self.user), self.issuer)
+        return get_qrcode_data_url(b32key, force_text(self.user), self.issuer)
 
     def clean(self):
         cd = super(TOTPDeviceForm, self).clean()

@@ -94,7 +94,7 @@ class U2FForm(forms.Form):
             device.last_used = timezone.now()
             device.save(update_fields=["last_used"])
         except Exception as e:
-            raise forms.ValidationError(str(e))
+            raise forms.ValidationError(force_text(e))
 
         return self.cleaned_data
 

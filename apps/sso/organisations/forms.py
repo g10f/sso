@@ -4,6 +4,7 @@ import datetime
 from django import forms
 from django.conf import settings
 from django.forms import ModelChoiceField, ModelMultipleChoiceField, ValidationError
+from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 from l10n.models import Country
 from sso.emails.models import Email, EmailForward, CENTER_EMAIL_TYPE, REGION_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, \
@@ -134,7 +135,7 @@ class OrganisationCenterAdminForm(OrganisationBaseForm):
         if self.instance.admin_region:
             self.fields['admin_region'] = bootstrap.ReadOnlyField(initial=self.instance.admin_region, label=_("Admin region"))
 
-        self.fields['email_value'].initial = str(self.instance.email)
+        self.fields['email_value'].initial = force_text(self.instance.email)
         self.fields['center_type'].initial = self.instance.get_center_type_display()
         self.fields['name'].initial = self.instance.name
         self.fields['is_active'].initial = self.instance.is_active
@@ -151,7 +152,7 @@ class OrganisationEmailAdminForm(OrganisationBaseForm):
     def __init__(self, *args, **kwargs):
         super(OrganisationEmailAdminForm, self).__init__(*args, **kwargs)
         if self.instance.email:
-            self.fields['email_value'].initial = str(self.instance.email)
+            self.fields['email_value'].initial = force_text(self.instance.email)
         else:
             self.fields['email_value'].initial = SSO_ORGANISATION_EMAIL_DOMAIN
 
@@ -375,7 +376,7 @@ class AdminRegionForm(BaseForm):
         super(AdminRegionForm, self).__init__(*args, **kwargs)
         self.fields['organisation_country'].queryset = self.user.get_administrable_region_countries()
         if self.instance.email:
-            self.fields['email_value'].initial = str(self.instance.email)
+            self.fields['email_value'].initial = force_text(self.instance.email)
         else:
             self.fields['email_value'].initial = SSO_ORGANISATION_EMAIL_DOMAIN
 
@@ -429,13 +430,13 @@ class OrganisationCountryForm(BaseForm):
         self.user = kwargs.pop('user')  # remove custom user keyword
         super(OrganisationCountryForm, self).__init__(*args, **kwargs)
         if self.instance.email:
-            self.fields['email_value'].initial = str(self.instance.email)
+            self.fields['email_value'].initial = force_text(self.instance.email)
         else:
             self.fields['email_value'].initial = SSO_ORGANISATION_EMAIL_DOMAIN
         if self.instance.pk is not None and self.instance.country:
             # readonly field for the update form
-            self.fields['country_text'] = bootstrap.ReadOnlyField(initial=str(self.instance.country), label=_("Country"))
-            self.fields['association_text'] = bootstrap.ReadOnlyField(initial=str(self.instance.association), label=_("Association"))
+            self.fields['country_text'] = bootstrap.ReadOnlyField(initial=force_text(self.instance.country), label=_("Country"))
+            self.fields['association_text'] = bootstrap.ReadOnlyField(initial=force_text(self.instance.association), label=_("Association"))
             del self.fields['association']
             del self.fields['country']
         else:
