@@ -44,5 +44,19 @@
       "application": ["bc0ee635a536491eb8e7fbe5749e8111"],
       "role": ["Staff"]
     }
+  },
+  {
+    "model": "accounts.roleprofile",
+    "fields": {
+      "name": "Organisation Account",
+      "uuid": "1593284b238c4a1cabf291e573205508",
+      "last_modified": "2017-06-11T07:00:46.076Z",
+      "application_roles": [
+        [
+          "fa467234b81e4838a009e38d9e655d18",
+          "Center"
+        ]
+      ]
+    }
   }
 ]

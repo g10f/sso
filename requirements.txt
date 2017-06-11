@@ -25,3 +25,4 @@ python-u2flib-server==4.0.1
 # themes
 #git+https://bitbucket.org/g10f/sso-dwbn-theme
 #git+https://bitbucket.org/g10f/sso-vw-theme
+#git+https://bitbucket.org/g10f/sso-kagyu-theme
