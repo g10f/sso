@@ -81,7 +81,7 @@ class LoginView(FormView):
                 device.generate_challenge()
                 display = self.request.GET.get('display')
                 self.success_url = self.get_token_url(user.id, expiry, redirect_url, user.backend, display, device.id)
-            except StandardError as e:
+            except Exception as e:
                 messages.error(self.request, _('Device error, select another device. (%(error)s)') % {'error': e.message})
                 return self.render_to_response(self.get_context_data(form=form))
 
@@ -128,7 +128,7 @@ class TokenView(FormView):
     def get_template_names(self):
         try:
             return self.device.login_form_templates
-        except StandardError:
+        except Exception:
             return super(TokenView, self).get_template_names()
 
     def get_form_kwargs(self):

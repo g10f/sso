@@ -235,7 +235,7 @@ class UserSelfRegistrationForm(forms.Form):
                 else:
                     raise forms.ValidationError(_('File type is not supported'))
             return picture
-        except StandardError as e:
+        except Exception as e:
             raise forms.ValidationError(e.message)
 
     def clean(self):
