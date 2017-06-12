@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
+import datetime
 import logging
 from collections import OrderedDict
 from mimetypes import guess_extension
 
-import datetime
 import pytz
 from captcha.fields import ReCaptchaField
+from six import text_type
 
 from django import forms
 from django.conf import settings
@@ -23,7 +24,6 @@ from django.template import loader
 from django.utils.crypto import get_random_string
 from django.utils.encoding import force_bytes, force_text
 from django.utils.http import urlsafe_base64_encode
-from django.utils.six import text_type
 from django.utils.text import capfirst
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _

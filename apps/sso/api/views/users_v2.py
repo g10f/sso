@@ -304,7 +304,8 @@ class UserDetailView(UserMixin, JsonDetailView):
     def _update_user_organisation(self, data):
         request = self.request
         if 'organisations' in data:
-            allowed_organisations = request.user.get_administrable_user_organisations().filter(uuid__in=data['organisations'].keys())
+            allowed_organisations = request.user.get_administrable_user_organisations().filter(
+                uuid__in=data['organisations'].keys())
             organisations = Organisation.objects.filter(uuid__in=data['organisations'].keys())
             if len(allowed_organisations) < len(organisations):
                 denied_organisations = organisations.exclude(id__in=allowed_organisations.values_list('id', flat=True))
@@ -383,7 +384,8 @@ class UserDetailView(UserMixin, JsonDetailView):
 
         object_data = map_dict2dict(API_USER_MAPPING, data)
 
-        object_data['username'] = default_username_generator(capfirst(object_data['first_name']), capfirst(object_data['last_name']))
+        object_data['username'] = default_username_generator(
+            capfirst(object_data['first_name']), capfirst(object_data['last_name']))
 
         self.object = self.model(**object_data)
         self.object.set_password(get_random_string(40))
@@ -393,9 +395,11 @@ class UserDetailView(UserMixin, JsonDetailView):
         applications = data.get('apps', {}).items()
         if len(applications) > 0:
             initial_application_roles = []
-            administrable_application_role_ids = set(request.user.get_administrable_application_roles().all().values_list('id', flat=True))
+            administrable_application_role_ids = set(
+                request.user.get_administrable_application_roles().all().values_list('id', flat=True))
             for application_uuid, application_data in applications:
-                application_roles = ApplicationRole.objects.filter(application__uuid=application_uuid, role__name__in=application_data['roles'])
+                application_roles = ApplicationRole.objects.filter(
+                    application__uuid=application_uuid, role__name__in=application_data['roles'])
                 for application_role in application_roles:
                     if application_role.id in administrable_application_role_ids:
                         initial_application_roles += [application_role]

@@ -2,7 +2,7 @@
 import os
 import re
 
-from django.utils.six.moves.urllib.parse import urlsplit
+from six.moves.urllib.parse import urlsplit
 
 from django.core import mail
 from django.test import TestCase
@@ -14,20 +14,22 @@ from sso.test.client import SSOClient
 
 
 class RegistrationTest(TestCase):
-    fixtures = ['roles.json', 'app_roles.json', 'test_l10n_data.json', 'test_organisation_data.json', 'test_app_roles.json',
+    fixtures = ['roles.json', 'app_roles.json', 'test_l10n_data.json', 'test_organisation_data.json',
+                'test_app_roles.json',
                 'test_user_data.json']
 
     def setUp(self):
         os.environ['RECAPTCHA_TESTING'] = 'True'
         self.client = SSOClient()
-    
+
     def tearDown(self):
         del os.environ['RECAPTCHA_TESTING']
-    
+
     def get_url_path_from_mail(self):
         outbox = getattr(mail, 'outbox')
         self.assertGreater(len(outbox), 0)
-        urls = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', outbox[-1].body)
+        urls = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+',
+                          outbox[-1].body)
         self.assertEqual(len(urls), 1)
         scheme, netloc, path, query_string, fragment = urlsplit(urls[0])  # @UnusedVariable
         return path

@@ -8,12 +8,13 @@ from django.conf import settings
 from sso.celery import send_mail_task
 
 
-def send_mail(subject, message, recipient_list, from_email=None, html_message=None, fail_silently=False, async=None, countdown=0, **kwargs):
-    if async is None:
-        async = settings.SSO_ASYNC_EMAILS
+def send_mail(subject, message, recipient_list, from_email=None, html_message=None, fail_silently=False,
+              apply_async=None, countdown=0, **kwargs):
+    if apply_async is None:
+        apply_async = settings.SSO_ASYNC_EMAILS
     kwargs.update({'subject': subject, 'message': message, 'from_email': from_email, 'recipient_list': recipient_list,
                    'html_message': html_message, 'fail_silently': fail_silently})
-    if async:
+    if apply_async:
         return send_mail_task.apply_async(countdown=countdown, kwargs=kwargs)
     else:
         return send_mail_task(**kwargs)

@@ -1,6 +1,6 @@
 from functools import wraps
 
-from django.utils.six.moves.urllib.parse import urlparse
+from six.moves.urllib.parse import urlparse
 
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
@@ -18,6 +18,7 @@ def request_passes_test(test_func, login_url=None, redirect_field_name=REDIRECT_
     Same as django.contrib.auth.decorators.user_passes_test with passing the request
     to the test_func instead of the user object
     """
+
     def decorator(view_func):
         @wraps(view_func, assigned=available_attrs(view_func))
         def _wrapped_view(request, *args, **kwargs):
@@ -35,7 +36,9 @@ def request_passes_test(test_func, login_url=None, redirect_field_name=REDIRECT_
             from django.contrib.auth.views import redirect_to_login
             return redirect_to_login(
                 path, resolved_login_url, redirect_field_name)
+
         return _wrapped_view
+
     return decorator
 
 

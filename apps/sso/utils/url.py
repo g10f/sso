@@ -1,12 +1,12 @@
 import logging
-from django.utils.six.moves.urllib.parse import urlparse, urlsplit, urlunsplit
+
+from six.moves.urllib.parse import urlparse, urlsplit, urlunsplit
+
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import QueryDict
 from sso.utils.http import get_request_param
 
-
 logger = logging.getLogger(__name__)
-
 
 REDIRECT_URI_FIELD_NAME = 'redirect_uri'
 
@@ -48,7 +48,7 @@ def absolute_url(request, url):
         scheme = 'https' if request.is_secure() else 'http'
     if not netloc:
         netloc = get_current_site(request).domain
-    
+
     return urlunsplit((scheme, netloc, path, query, fragment))
 
 
@@ -79,4 +79,3 @@ def is_safe_ext_url(url, hosts):
         return False
     return ((not url_info.netloc or url_info.netloc in hosts) and
             (not url_info.scheme or url_info.scheme in ['http', 'https']))
-

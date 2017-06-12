@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
+from six import text_type
 from sorl.thumbnail.admin import AdminImageMixin
 
 from django.conf import settings
@@ -14,10 +15,8 @@ from django.core.mail.message import EmailMessage
 from django.db.models import Q
 from django.template.response import TemplateResponse
 from django.urls import reverse
-from django.utils import six
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
-from django.utils.six import text_type
 from django.utils.translation import ugettext_lazy as _
 from sso.organisations.models import Organisation, AdminRegion
 from .forms import AdminUserChangeForm, AdminUserCreationForm
@@ -97,7 +96,8 @@ class RoleAdmin(admin.ModelAdmin):
 
 class ApplicationRoleAdmin(admin.ModelAdmin):
     list_filter = ('roleprofile', 'application', 'role')
-    list_display = ('__str__', 'is_inheritable_by_org_admin', 'is_inheritable_by_global_admin', 'is_organisation_related')
+    list_display = (
+        '__str__', 'is_inheritable_by_org_admin', 'is_inheritable_by_global_admin', 'is_organisation_related')
 
 
 class RoleProfileAdmin(admin.ModelAdmin):
@@ -119,7 +119,7 @@ class BaseFilter(SimpleListFilter):
         qs = self.get_lookup_qs(request, model_admin)
         rg = [('-', _('(None)'))]
         for entry in qs:
-            rg.append((str(entry.id), six.text_type(entry)))
+            rg.append((str(entry.id), text_type(entry)))
         return rg
 
     def queryset(self, request, queryset):
@@ -148,7 +148,8 @@ class LastModifiedUserFilter(BaseFilter):
     field_path = 'last_modified_by_user'
 
     def get_lookup_qs(self, request, model_admin):
-        last_modified_by_user_ids = get_user_model().objects.filter(last_modified_by_user__isnull=False).only('last_modified_by_user__id') \
+        last_modified_by_user_ids = get_user_model().objects.filter(last_modified_by_user__isnull=False).only(
+            'last_modified_by_user__id') \
             .distinct().values_list('last_modified_by_user__id', flat=True)
         return get_user_model().objects.filter(id__in=last_modified_by_user_ids)
 
@@ -159,7 +160,8 @@ class CreatedByUserFilter(BaseFilter):
     field_path = 'created_by_user'
 
     def get_lookup_qs(self, request, model_admin):
-        created_by_user_ids = get_user_model().objects.filter(last_modified_by_user__isnull=False).only('created_by_user__id') \
+        created_by_user_ids = get_user_model().objects.filter(last_modified_by_user__isnull=False).only(
+            'created_by_user__id') \
             .distinct().values_list('created_by_user__id', flat=True)
         return get_user_model().objects.filter(id__in=created_by_user_ids)
 
@@ -354,13 +356,20 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
     form = AdminUserChangeForm
     add_form = AdminUserCreationForm
     save_on_top = True
-    list_display = ('id', 'username', 'primary_email', 'first_name', 'last_name', 'is_staff', 'last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user')
+    list_display = (
+        'id', 'username', 'primary_email', 'first_name', 'last_name', 'is_staff', 'last_login', 'date_joined',
+        'last_modified', 'get_last_modified_by_user', 'get_created_by_user')
     search_fields = ('username', 'first_name', 'last_name', 'useremail__email', 'uuid')
-    list_filter = (SuperuserFilter,) + ('is_staff', 'is_center', 'is_service', 'is_active', LoggedInFilter, 'groups', ApplicationAdminApplicationFilter, RoleProfileAdminRoleProfileFilter,
-                                        UserAssociatedSystemFilter, UserRegionListFilter,
-                                        RoleProfilesFilter, ExcludeRoleProfilesFilter, ApplicationRolesFilter)  # ,UserOrganisationsListFilter, CreatedByUserFilter, LastModifiedUserFilter
-    filter_horizontal = DjangoUserAdmin.filter_horizontal + ('admin_associations', 'admin_organisation_countries', 'admin_regions', 'groups', 'application_roles', 'role_profiles', 'organisations',
-                                                             'app_admin_organisation_countries', 'app_admin_regions')
+    list_filter = (SuperuserFilter,) + (
+        'is_staff', 'is_center', 'is_service', 'is_active', LoggedInFilter, 'groups', ApplicationAdminApplicationFilter,
+        RoleProfileAdminRoleProfileFilter,
+        UserAssociatedSystemFilter, UserRegionListFilter,
+        RoleProfilesFilter, ExcludeRoleProfilesFilter,
+        ApplicationRolesFilter)  # ,UserOrganisationsListFilter, CreatedByUserFilter, LastModifiedUserFilter
+    filter_horizontal = DjangoUserAdmin.filter_horizontal + (
+        'admin_associations', 'admin_organisation_countries', 'admin_regions', 'groups', 'application_roles',
+        'role_profiles', 'organisations',
+        'app_admin_organisation_countries', 'app_admin_regions')
     ordering = ['-last_login', '-first_name', '-last_name']
     actions = ['mark_info_mail']
     inlines = [UserEmailInline, PhoneNumberInline, AddressInline, UserAssociatedSystemInline]
@@ -368,26 +377,40 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
     fieldsets = (
         (None, {'fields': ('username', 'password'), 'classes': ['wide']}),
         (_('Personal info'), {
-            'fields': ('first_name', 'last_name', 'gender', 'dob', 'homepage', 'language', 'uuid', 'is_center', 'is_service', 'is_subscriber', 'picture'),
+            'fields': (
+                'first_name', 'last_name', 'gender', 'dob', 'homepage', 'language', 'uuid', 'is_center', 'is_service',
+                'is_subscriber', 'picture'),
             'classes': ['wide']}),
-        (_('Important dates'), {'fields': ('valid_until', 'last_login', 'last_ip', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user',
-                                           'assigned_organisations'), 'classes': ['wide']}),
+        (_('Important dates'), {'fields': (
+            'valid_until', 'last_login', 'last_ip', 'date_joined', 'last_modified', 'get_last_modified_by_user',
+            'get_created_by_user',
+            'assigned_organisations'), 'classes': ['wide']}),
         (_('Organisations'), {'fields': ('organisations',), 'classes': ['collapse', 'wide']}),
-        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser', 'role_profiles', 'application_roles', 'groups', 'user_permissions'), 'classes': ['collapse', 'wide']}),
-        (_('User admin'), {'fields': ('admin_associations', 'admin_organisation_countries', 'admin_regions'), 'classes': ['collapse', 'wide']}),
-        (_('App admin'), {'fields': ('app_admin_organisation_countries', 'app_admin_regions'), 'classes': ['collapse', 'wide']}),
+        (_('Permissions'), {'fields': (
+            'is_active', 'is_staff', 'is_superuser', 'role_profiles', 'application_roles', 'groups',
+            'user_permissions'),
+            'classes': ['collapse', 'wide']}),
+        (_('User admin'), {'fields': ('admin_associations', 'admin_organisation_countries', 'admin_regions'),
+                           'classes': ['collapse', 'wide']}),
+        (_('App admin'),
+         {'fields': ('app_admin_organisation_countries', 'app_admin_regions'), 'classes': ['collapse', 'wide']}),
         (_('Notes'), {'fields': ('notes',), 'classes': ['collapse', 'wide']}),
     )
     non_su_fieldsets = (
         (None, {'fields': ('username',), 'classes': ['wide']}),
-        (_('Personal info'), {'fields': ('first_name', 'last_name', 'uuid', 'is_center', 'is_subscriber'), 'classes': ['wide']}),
-        (_('Important dates'), {'fields': ('last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user',
-                                           'assigned_organisations'), 'classes': ['wide']}),
+        (_('Personal info'),
+         {'fields': ('first_name', 'last_name', 'uuid', 'is_center', 'is_subscriber'), 'classes': ['wide']}),
+        (_('Important dates'),
+         {'fields': ('last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user',
+                     'assigned_organisations'), 'classes': ['wide']}),
         (_('Organisations'), {'fields': ('organisations',), 'classes': ['collapse', 'wide']}),
-        (_('Permissions'), {'fields': ('is_active', 'role_profiles', 'application_roles'), 'classes': ['collapse', 'wide']}),
+        (_('Permissions'),
+         {'fields': ('is_active', 'role_profiles', 'application_roles'), 'classes': ['collapse', 'wide']}),
     )
-    readonly_fields = ['assigned_organisations', 'is_subscriber', 'get_last_modified_by_user', 'last_modified', 'get_created_by_user']
-    non_su_readonly_fields = ['uuid', 'assigned_organisations', 'is_subscriber', 'username', 'last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user']
+    readonly_fields = ['assigned_organisations', 'is_subscriber', 'get_last_modified_by_user', 'last_modified',
+                       'get_created_by_user']
+    non_su_readonly_fields = ['uuid', 'assigned_organisations', 'is_subscriber', 'username', 'last_login',
+                              'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user']
 
     add_fieldsets = (
         (None, {
@@ -457,7 +480,8 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
 
     def get_last_modified_by_user(self, obj):
         if obj.last_modified_by_user:
-            url = reverse('admin:accounts_user_change', args=(obj.last_modified_by_user.pk,), current_app=self.admin_site.name)
+            url = reverse('admin:accounts_user_change', args=(obj.last_modified_by_user.pk,),
+                          current_app=self.admin_site.name)
             return mark_safe(u'<a href="%s">%s</a>' % (url, obj.last_modified_by_user))
         else:
             raise ObjectDoesNotExist()
@@ -467,7 +491,8 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
 
     def get_created_by_user(self, obj):
         if obj.created_by_user:
-            url = reverse('admin:accounts_user_change', args=(obj.created_by_user.pk,), current_app=self.admin_site.name)
+            url = reverse('admin:accounts_user_change', args=(obj.created_by_user.pk,),
+                          current_app=self.admin_site.name)
             return mark_safe(u'<a href="%s">%s</a>' % (url, obj.created_by_user))
         else:
             raise ObjectDoesNotExist()
@@ -525,7 +550,8 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         """
         display no superusers in the changelist for non superusers
         """
-        qs = super(UserAdmin, self).get_queryset(request).prefetch_related('last_modified_by_user', 'created_by_user', 'useremail_set')
+        qs = super(UserAdmin, self).get_queryset(request).prefetch_related('last_modified_by_user', 'created_by_user',
+                                                                           'useremail_set')
         user = request.user
         if user.is_superuser:
             return qs
@@ -548,7 +574,8 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
                 from django.core.mail import get_connection
                 connection = get_connection()
                 for user in queryset:
-                    msg = EmailMessage(subject, body, to=[user.primary_email()], from_email=from_email, connection=connection)
+                    msg = EmailMessage(subject, body, to=[user.primary_email()], from_email=from_email,
+                                       connection=connection)
                     # msg.content_subtype = "html"
                     msg.send(fail_silently=True)
                 self.message_user(request, _("Successfully send information email to %(count)d %(items)s.") % {
@@ -573,7 +600,8 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
             'action_checkbox_name': admin.ACTION_CHECKBOX_NAME,
         }
         # Display the confirmation page
-        return TemplateResponse(request, "admin/accounts/send_mail_selected_confirmation.html", context, current_app=self.admin_site.name)
+        return TemplateResponse(request, "admin/accounts/send_mail_selected_confirmation.html", context,
+                                current_app=self.admin_site.name)
 
     mark_info_mail.short_description = _('Send info email')
 

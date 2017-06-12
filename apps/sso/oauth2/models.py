@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from django.utils.six.moves.urllib.parse import urlparse, urlsplit, urlunsplit
+from six.moves.urllib.parse import urlparse, urlsplit, urlunsplit
 
 from django.conf import settings
 from django.core.cache import cache
@@ -19,7 +19,7 @@ from sso.models import AbstractBaseModel, AbstractBaseModelManager
 logger = logging.getLogger(__name__)
 
 
-def replace_query_param(url, attr, val):    
+def replace_query_param(url, attr, val):
     (scheme, netloc, path, query, fragment) = urlsplit(url)
     query_dict = QueryDict(query).copy()
     query_dict[attr] = val
@@ -40,7 +40,7 @@ def get_oauth2_cancel_url(redirect_to):
     which we want to redirect if the user cancels login
     """
     query_dict = QueryDict(urlsplit(redirect_to).query)
-    if ('redirect_uri'in query_dict) and ('client_id' in query_dict):
+    if ('redirect_uri' in query_dict) and ('client_id' in query_dict):
         redirect_uri = query_dict['redirect_uri']
         try:
             client = Client.objects.get(uuid=query_dict['client_id'])
@@ -51,6 +51,7 @@ def get_oauth2_cancel_url(redirect_to):
             logger.exception('Invalid client_id %s', query_dict['client_id'])
 
     return reverse('home')
+
 
 """
 OAUTH2_RESPONSE_TYPES = [
@@ -68,7 +69,8 @@ OAUTH2_GRANT_TYPES = [
 CLIENT_TYPES = [
     ('web', _('Web Application')),  # response_type=code  grant_type=authorization_code or refresh_token
     ('javascript', _('Javascript Application')),  # response_type=token
-    ('native', _('Native Application')),  # response_type=code  grant_type=authorization_code or refresh_token redirect_uris=http://localhost or  urn:ietf:wg:oauth:2.0:oob
+    ('native', _('Native Application')),
+    # response_type=code  grant_type=authorization_code or refresh_token redirect_uris=http://localhost or  urn:ietf:wg:oauth:2.0:oob
     ('service', _('Service Account')),  # grant_type=client_credentials
     ('trusted', _('Trusted Client'))  # grant_type=password
 ]
@@ -107,27 +109,31 @@ def allowed_hosts():
 @python_2_unicode_compatible
 class Client(AbstractBaseModel):
     name = models.CharField(_("name"), max_length=255)
-    application = models.ForeignKey(Application, on_delete=models.SET_NULL, verbose_name=_('application'), blank=True, null=True)
+    application = models.ForeignKey(Application, on_delete=models.SET_NULL, verbose_name=_('application'), blank=True,
+                                    null=True)
     redirect_uris = models.TextField(_('redirect uris'), blank=True)
     default_redirect_uri = models.CharField(_('default redirect uri'), max_length=2047, blank=True)
     client_secret = models.CharField(_('client secret'), max_length=2047, blank=True, default=get_default_secret)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, verbose_name=_('user'), null=True, blank=True, limit_choices_to={'is_service': True},
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, verbose_name=_('user'), null=True,
+                             blank=True, limit_choices_to={'is_service': True},
                              help_text=_("Associated user, required for Client Credentials Grant"))
     type = models.CharField(_('type'), max_length=255, choices=CLIENT_TYPES, default='web')
     # http://tools.ietf.org/html/rfc6749#section-3.3
     scopes = models.CharField(_('scopes'), max_length=512, blank=True, default='openid profile email',
-                              help_text=_("Allowed space-delimited access token scopes ('openid', 'profile', 'email', 'role', 'offline_access', 'address', 'phone', 'users', 'picture')"))
-    is_active = models.BooleanField(_('active'), default=True, 
-                                    help_text=_('Designates whether this client should be treated as active. Unselect this instead of deleting clients.'))
+                              help_text=_(
+                                  "Allowed space-delimited access token scopes ('openid', 'profile', 'email', 'role', 'offline_access', 'address', 'phone', 'users', 'picture')"))
+    is_active = models.BooleanField(_('active'), default=True,
+                                    help_text=_(
+                                        'Designates whether this client should be treated as active. Unselect this instead of deleting clients.'))
     notes = models.TextField(_("Notes"), blank=True, max_length=2048)
     objects = ClientManager()
 
     class Meta(AbstractBaseModel.Meta):
         ordering = ['name']
-        
+
     def __str__(self):
         return self.name
-            
+
     @property
     def client_id(self):
         return self.uuid.hex
@@ -150,7 +156,7 @@ class AuthorizationCode(models.Model):
     is_valid = models.BooleanField(_('is valid'), default=True)
     state = models.CharField(_('client state'), max_length=2047, blank=True)
     scopes = models.CharField(_('scopes'), max_length=2047, blank=True)
-    
+
     class Meta:
         ordering = ['-created_at']
         get_latest_by = 'created_at'
@@ -168,7 +174,7 @@ class BearerToken(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name=_('user'))
     access_token = models.CharField(_('access token'), max_length=2048, unique=True)
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)
-    
+
     class Meta:
         ordering = ['-created_at']
         get_latest_by = 'created_at'
@@ -182,14 +188,15 @@ class RefreshToken(models.Model):
     """
     A RefreshToken instance represents a token that can be swapped for a new access token when it expires.
     """
-    bearer_token = models.OneToOneField(BearerToken, on_delete=models.CASCADE, verbose_name=_('bearer token'), related_name='refresh_token')
+    bearer_token = models.OneToOneField(BearerToken, on_delete=models.CASCADE, verbose_name=_('bearer token'),
+                                        related_name='refresh_token')
     token = models.CharField(_('token'), max_length=2048, unique=True)
     # otp_device = models.ForeignKey(Device, null=True, on_delete=models.SET_NULL)
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)
-    
+
     @property
     def user(self):
         return self.bearer_token.user
-        
+
     def __str__(self):
         return self.token

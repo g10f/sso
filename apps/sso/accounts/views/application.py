@@ -2,7 +2,7 @@
 import logging
 from datetime import timedelta
 
-from django.utils.six.moves.urllib.parse import urlunsplit
+from six.moves.urllib.parse import urlunsplit
 
 from django.conf import settings
 from django.contrib import messages
