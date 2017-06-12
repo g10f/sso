@@ -1,5 +1,6 @@
 import logging
-import urllib
+
+from six.moves.urllib.parse import urlencode
 
 from django.conf import settings
 from django.contrib import messages
@@ -44,7 +45,8 @@ class LoginView(FormView):
         if display:
             query_string['display'] = display
 
-        return "%s?%s" % (reverse('auth:token', kwargs={'user_data': user_data, 'device_id': device_id}), urllib.urlencode(query_string))
+        return "%s?%s" % (reverse('auth:token', kwargs={'user_data': user_data, 'device_id': device_id}),
+                          urlencode(query_string))
 
     def get(self, request, *args, **kwargs):
         self.is_two_factor_required = get_request_param(request, 'two_factor', False) is not False
@@ -82,7 +84,8 @@ class LoginView(FormView):
                 display = self.request.GET.get('display')
                 self.success_url = self.get_token_url(user.id, expiry, redirect_url, user.backend, display, device.id)
             except Exception as e:
-                messages.error(self.request, _('Device error, select another device. (%(error)s)') % {'error': e.message})
+                messages.error(self.request,
+                               _('Device error, select another device. (%(error)s)') % {'error': e.message})
                 return self.render_to_response(self.get_context_data(form=form))
 
         else:
@@ -156,10 +159,13 @@ class TokenView(FormView):
         device_classes = get_device_classes()
         other_devices = []
         for device_class in device_classes:
-            for device in device_class.objects.filter(user=self.user).exclude(device_ptr_id=self.device.id).prefetch_related('device_ptr'):
+            for device in device_class.objects.filter(user=self.user).exclude(
+                    device_ptr_id=self.device.id).prefetch_related('device_ptr'):
                 device_info = {
                     'device': device,
-                    'url': "%s?%s" % (reverse('auth:token', kwargs={'user_data': self.kwargs['user_data'], 'device_id': device.id}), self.request.GET.urlencode())
+                    'url': "%s?%s" % (
+                    reverse('auth:token', kwargs={'user_data': self.kwargs['user_data'], 'device_id': device.id}),
+                    self.request.GET.urlencode())
                 }
                 other_devices.append(device_info)
 
