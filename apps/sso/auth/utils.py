@@ -1,24 +1,24 @@
 import base64
+import logging
 import time
-import qrcode
 from binascii import unhexlify, hexlify
 from os import urandom
 
+import qrcode
+from six import StringIO
+from six.moves.urllib.parse import quote, urlencode
+
+from django.apps import apps as django_apps
+from django.conf import settings
+from django.contrib.auth import REDIRECT_FIELD_NAME
+from django.core.exceptions import ValidationError
+from django.shortcuts import resolve_url
 from django.utils import lru_cache
 from django.utils import six
-from django.utils.six import StringIO
-from django.core.exceptions import ValidationError
-from django.conf import settings
-from django.shortcuts import resolve_url
-from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.utils.decorators import method_decorator
-from django.apps import apps as django_apps
-from sso.utils.http import get_request_param
 from sso.auth import SESSION_AUTH_DATE
+from sso.utils.http import get_request_param
 from sso.utils.url import is_safe_ext_url
-from django.utils.six.moves.urllib.parse import quote, urlencode
-
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -71,9 +71,11 @@ def class_view_decorator(function_decorator):
 
     From: http://stackoverflow.com/a/8429311/58107
     """
+
     def simple_decorator(View):
         View.dispatch = method_decorator(function_decorator)(View.dispatch)
         return View
+
     return simple_decorator
 
 
@@ -168,6 +170,7 @@ def hex_validator(length=0):
         ...
     ValidationError: ['0123456789abcdef does not represent exactly 9 bytes.']
     """
+
     def _validator(value):
         try:
             if isinstance(value, six.text_type):

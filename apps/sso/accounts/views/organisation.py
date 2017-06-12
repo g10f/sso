@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from django.utils.six.moves.urllib.parse import urlunsplit
+from six.moves.urllib.parse import urlunsplit
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -50,7 +49,8 @@ class OrganisationChangeDetailView(DetailView):
         if redirect_uri:
             context['redirect_uri'] = redirect_uri
 
-        update_url = urlunsplit(('', '', reverse('accounts:organisationchange_me'), self.request.GET.urlencode(safe='/'), ''))
+        update_url = urlunsplit(
+            ('', '', reverse('accounts:organisationchange_me'), self.request.GET.urlencode(safe='/'), ''))
         context['update_url'] = update_url
 
         context.update(kwargs)
@@ -194,7 +194,8 @@ class OrganisationChangeAcceptView(FormView):
 
 
 class UserSearchFilter(SearchFilter):
-    search_names = ['user__username__icontains', 'user__first_name__icontains', 'user__last_name__icontains', 'user__useremail__email__icontains']
+    search_names = ['user__username__icontains', 'user__first_name__icontains', 'user__last_name__icontains',
+                    'user__useremail__email__icontains']
 
 
 class ToOrganisationHeader(object):
@@ -210,7 +211,6 @@ class FromOrganisationHeader(object):
 
 
 class OrganisationChangeList(ListView):
-
     template_name = 'accounts/organisationchange_list.html'
     model = OrganisationChange
     IS_ACTIVE_CHOICES = (('1', _('Active Users')), ('2', _('Inactive Users')))

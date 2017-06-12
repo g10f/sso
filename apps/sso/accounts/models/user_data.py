@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 import logging
 
+from six import python_2_unicode_compatible
+
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
-from django.utils.six import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _, pgettext_lazy
 from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary, \
     CaseInsensitiveEmailField
@@ -57,7 +58,8 @@ class UserPhoneNumber(AbstractBaseModel, PhoneNumberMixin):
         ('pager', _('Pager')),
         ('other', _('Other')),
     ]
-    phone_type = models.CharField(_("phone type"), help_text=_('Mobile, home, office, etc.'), choices=PHONE_CHOICES, max_length=20)
+    phone_type = models.CharField(_("phone type"), help_text=_('Mobile, home, office, etc.'), choices=PHONE_CHOICES,
+                                  max_length=20)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
     class Meta(AbstractBaseModel.Meta, PhoneNumberMixin.Meta):

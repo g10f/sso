@@ -1,19 +1,19 @@
 # -*- coding: utf-8 -*-
-import csv
 import codecs
+import csv
 import logging
-from django.utils.six import StringIO
-from django.utils import six
 
-logger = logging.getLogger(__name__)    
+from six import StringIO, text_type
+
+logger = logging.getLogger(__name__)
 
 
 def _get_text(value):
-    if len(value) > 1 and value[0] == '"':            
+    if len(value) > 1 and value[0] == '"':
         value = value[1:-1]
         return value
     elif value in ["NULL", "None"]:
-        return None            
+        return None
     else:
         return value
 
@@ -21,7 +21,7 @@ def _get_text(value):
 def csv_map(reader, key_column=0):
     first_row = []
     n = 0
-    
+
     try:
         for row in reader:
             if not row:
@@ -32,11 +32,11 @@ def csv_map(reader, key_column=0):
                 if n == 1:
                     first_row = row
                     continue
-                
+
                 newrow = {}
-                for j, k in enumerate(row): 
+                for j, k in enumerate(row):
                     newrow[_get_text(first_row[j])] = _get_text(k)
-                
+
                 yield _get_text(row[key_column]), newrow
             except Exception as e:
                 msg = "Error while reading row: %s " % row
@@ -46,18 +46,18 @@ def csv_map(reader, key_column=0):
         msg = 'line %d: %s' % (reader.line_num, e)
         print(msg)
         logger.exception(msg)
-        
-    
+
+
 def dic_from_csv(reader, key_column=0):
     dic = {}
     for key, row in csv_map(reader, key_column):
         dic[key] = row
-        
+
     return dic
 
 
 def list_from_csv(reader):
-    row_list = [] 
+    row_list = []
     for key, row in csv_map(reader):  # @UnusedVariable
         row_list.append(row)
     return row_list
@@ -66,13 +66,14 @@ def list_from_csv(reader):
 def unicode_csv_reader(utf8_data, dialect=csv.excel, **kwargs):
     csv_reader = csv.reader(utf8_data, dialect=dialect, **kwargs)
     for row in csv_reader:
-        yield [six.text_type(cell, 'utf-8-sig') for cell in row]
+        yield [text_type(cell, 'utf-8-sig') for cell in row]
 
 
 class UTF8Recoder:
     """
     Iterator that reads an encoded stream and reencodes the input to UTF-8
     """
+
     def __init__(self, f, encoding):
         self.reader = codecs.getreader(encoding)(f)
 
@@ -95,7 +96,7 @@ class UnicodeReader:
 
     def next(self):  # @ReservedAssignment
         row = self.reader.next()
-        return [six.text_type(s, "utf-8") for s in row]
+        return [text_type(s, "utf-8") for s in row]
 
     def __iter__(self):
         return self

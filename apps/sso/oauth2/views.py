@@ -5,8 +5,10 @@ import logging
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
-from django.utils.six.moves.urllib.parse import urlparse, urlunparse, urlsplit, urlunsplit
 from jwt import InvalidTokenError
+from oauthlib import oauth2
+from oauthlib.common import urlencode, urlencoded, quote
+from six.moves.urllib.parse import urlparse, urlunparse, urlsplit, urlunsplit
 
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
@@ -22,8 +24,6 @@ from django.views.decorators.cache import never_cache, cache_page, cache_control
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
-from oauthlib import oauth2
-from oauthlib.common import urlencode, urlencoded, quote
 from sso.api.response import JsonHttpResponse
 from sso.auth.utils import is_recent_auth_time
 from sso.auth.views import TWO_FACTOR_PARAM
@@ -65,16 +65,16 @@ def extract_params(request):
     return uri, http_method, body, headers
 
 
-def pop_query_param(url, param_name):  
+def pop_query_param(url, param_name):
     """
     get the query param with the param_name from the url and
     return a new url without that param_name and
     return the value of the param_name 
-    """  
+    """
     (scheme, netloc, path, query, fragment) = urlsplit(url)
     query_dict = QueryDict(query).copy()
     # get the last value 
-    value = query_dict.get(param_name, None) 
+    value = query_dict.get(param_name, None)
     if value:
         del query_dict[param_name]
     query = query_dict.urlencode()
@@ -108,7 +108,7 @@ def openid_configuration(request):
         "userinfo_endpoint": '%s%s' % (base_uri, reverse('api:v2_users_me')),
         "revocation_endpoint": '%s%s' % (base_uri, reverse('oauth2:revoke')),
         "jwks_uri": '%s%s' % (base_uri, reverse('oauth2:jwks')),
-        "scopes_supported": 
+        "scopes_supported":
             ['openid', 'profile', 'email', 'role', 'offline_access', 'address', 'phone', 'users', 'picture'],
         "response_types_supported":
             ["code", "token", "id_token token", "id_token"],
@@ -118,7 +118,7 @@ def openid_configuration(request):
             ["client_secret_basic"],
         "token_endpoint_auth_signing_alg_values_supported":
             ["RS256"],
-        "display_values_supported":         
+        "display_values_supported":
             ["page", "popup"],
         "subject_types_supported":
             ["public"],
@@ -133,10 +133,10 @@ def openid_configuration(request):
 
 
 class SessionView(TemplateView):
-    @method_decorator(cache_control(max_age=60 * 5)) 
+    @method_decorator(cache_control(max_age=60 * 5))
     @method_decorator(xframe_options_exempt)
     def dispatch(self, request, *args, **kwargs):
-        return super(SessionView, self).dispatch(request, *args, **kwargs)       
+        return super(SessionView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(SessionView, self).get_context_data(**kwargs)
@@ -227,7 +227,8 @@ def authorize(request):
     try:
         scopes, credentials = server.validate_authorization_request(uri, http_method, body, headers)
         credentials['user'] = request.user
-        credentials['session_state'] = get_session_state(credentials['client_id'], browser_state=request.session.session_key)
+        credentials['session_state'] = get_session_state(credentials['client_id'],
+                                                         browser_state=request.session.session_key)
         credentials['client'] = credentials['request'].client
         redirect_uri = credentials.get('redirect_uri')
         prompt = get_request_param(request, 'prompt', '').split()
@@ -250,16 +251,17 @@ def authorize(request):
 
         if login_req:
             return redirect_to_login(request, two_factor=two_factor)
-            
+
         # if we are here, the user is already logged in does not need to login again          
-        headers, body, status = server.create_authorization_response(uri, http_method, body, headers, scopes, credentials)  # @UnusedVariable
+        headers, body, status = server.create_authorization_response(uri, http_method, body, headers, scopes,
+                                                                     credentials)  # @UnusedVariable
         return HttpOAuth2ResponseRedirect(headers['Location'])
     except oauth2.FatalClientError as e:
         logger.warning('Fatal client error, redirecting to error page.')
         return HttpOAuth2ResponseRedirect(e.in_uri(error_uri))
     except oauth2.OAuth2Error as e:
         logger.warning('Client error, redirecting back to client.')
-        if not redirect_uri:          
+        if not redirect_uri:
             if getattr(e, 'redirect_uri'):
                 redirect_uri = e.redirect_uri
             else:
@@ -268,7 +270,7 @@ def authorize(request):
 
 
 @csrf_exempt
-def token(request):    
+def token(request):
     uri, http_method, body, headers = extract_params(request)
     credentials = {}
     headers, body, status = server.create_token_response(uri, http_method, body, headers, credentials)
@@ -300,9 +302,9 @@ def tokeninfo(request):
             raise oauth2.InvalidRequestError("either access_token or id_token required")
         if len(oauth2_token) > max_length:
             raise oauth2.InvalidRequestError("oauth2_token length excceded %d" % max_length)
-            
+
         parsed = loads_jwt(oauth2_token)
-        content = json.dumps(parsed) 
+        content = json.dumps(parsed)
         return HttpResponse(content=content, content_type='application/json')
 
     except oauth2.OAuth2Error as e:
@@ -314,7 +316,7 @@ def tokeninfo(request):
         error = oauth2.ServerError(description=force_text(e))
         logger.warning('Exception caught while processing request, %s.' % e)
         return HttpResponse(content=error.json, status=error.status_code)
-        
+
 
 @never_cache
 @login_required
@@ -323,7 +325,7 @@ def approval(request):
     View to redirect for installed applications, to get an authorisation code  
     """
     state = request.GET.get('state', '')
-    code = request.GET.get('code', '')    
+    code = request.GET.get('code', '')
     return render(request, 'oauth2/approval.html', context={'state': state, 'code': code})
 
 
@@ -371,7 +373,7 @@ def client_details(request, object_id):
 
 class ErrorView(TemplateView):
     template_name = "oauth2/error.html"
-    
+
     def get_context_data(self, **kwargs):
         context = super(ErrorView, self).get_context_data(**kwargs)
         context['error'] = get_request_param(self.request, 'error')
