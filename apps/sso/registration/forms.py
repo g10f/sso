@@ -16,6 +16,7 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import get_user_model
 from django.utils.crypto import get_random_string
+from django.utils.encoding import force_text
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from django.utils.text import capfirst
@@ -236,7 +237,7 @@ class UserSelfRegistrationForm(forms.Form):
                     raise forms.ValidationError(_('File type is not supported'))
             return picture
         except Exception as e:
-            raise forms.ValidationError(e.message)
+            raise forms.ValidationError(force_text(e))
 
     def clean(self):
         """
