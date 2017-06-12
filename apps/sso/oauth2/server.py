@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import base64
 import calendar
 import logging
 import time
@@ -13,7 +14,7 @@ from django.core import signing
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.utils.crypto import get_random_string
-from django.utils.encoding import force_text
+from django.utils.encoding import force_text, force_bytes
 from sso.auth import get_session_auth_hash
 from .crypt import loads_jwt, make_jwt, MAX_AGE
 from .models import BearerToken, RefreshToken, AuthorizationCode, Client, check_redirect_uri, CONFIDENTIAL_CLIENTS
@@ -158,8 +159,10 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
                 # client credentials grant type
                 http_authorization = request.headers['HTTP_AUTHORIZATION'].split(' ')
                 if (len(http_authorization) == 2) and http_authorization[0] == 'Basic':
-                    request.client_id, request.client_secret = http_authorization[1].decode("base64").split(":")
-
+                    # AttributeError: 'str' object has no attribute 'decode'
+                    # request.client_id, request.client_secret = http_authorization[1].decode("base64").split(":")
+                    data = base64.b64decode(force_bytes(http_authorization[1]))
+                    request.client_id, request.client_secret = data.split(":")
         try:
             # 1. check the client_id
             client = self._get_client(request.client_id, request)
