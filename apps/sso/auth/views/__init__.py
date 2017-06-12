@@ -9,6 +9,7 @@ from django.core import signing
 from django.shortcuts import redirect
 from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
+from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.cache import never_cache
 from django.views.decorators.debug import sensitive_post_parameters
@@ -84,8 +85,9 @@ class LoginView(FormView):
                 display = self.request.GET.get('display')
                 self.success_url = self.get_token_url(user.id, expiry, redirect_url, user.backend, display, device.id)
             except Exception as e:
-                messages.error(self.request,
-                               _('Device error, select another device. (%(error)s)') % {'error': e.message})
+                messages.error(
+                    self.request,
+                    _('Device error, select another device. (%(error)s)') % {'error': force_text(e)})
                 return self.render_to_response(self.get_context_data(form=form))
 
         else:
@@ -164,8 +166,8 @@ class TokenView(FormView):
                 device_info = {
                     'device': device,
                     'url': "%s?%s" % (
-                    reverse('auth:token', kwargs={'user_data': self.kwargs['user_data'], 'device_id': device.id}),
-                    self.request.GET.urlencode())
+                        reverse('auth:token', kwargs={'user_data': self.kwargs['user_data'], 'device_id': device.id}),
+                        self.request.GET.urlencode())
                 }
                 other_devices.append(device_info)
 

@@ -1,11 +1,8 @@
-import random
-from datetime import timedelta
 from django.core.exceptions import ObjectDoesNotExist
 
-from django.conf import settings
 from django.core.management.base import BaseCommand
+from django.utils.encoding import force_text
 from sso.accounts.models import User, Application, ApplicationRole, Role  # , Interaction
-from django.utils.timezone import now
 from sso.organisations.models import Organisation
 
 
@@ -15,8 +12,10 @@ class Command(BaseCommand):
     help = 'Add app roles to users from organisation'
 
     def add_arguments(self, parser):
-        parser.add_argument('-t', '--test', dest='test', action='store_true', help='Test mode, show affected accounts without modifying accounts.')
-        parser.add_argument('-d', '--delete', dest='delete', action='store_true', help='Delete the role instead of adding')
+        parser.add_argument('-t', '--test', dest='test', action='store_true',
+                            help='Test mode, show affected accounts without modifying accounts.')
+        parser.add_argument('-d', '--delete', dest='delete', action='store_true',
+                            help='Delete the role instead of adding')
         parser.add_argument('-a', '--app', action='store', dest='app', default=self.DW_CONNECT_UUID, help='app uuid')
         parser.add_argument('-r', '--role', action='store', dest='role', default='User', help='role name')
         parser.add_argument('orgid', help='activate users from orgid.')
@@ -28,7 +27,7 @@ class Command(BaseCommand):
             app_role = ApplicationRole.objects.get(application=app, role=user_role)
             organisation = Organisation.objects.get(uuid=options['orgid'])
         except ObjectDoesNotExist as e:
-            self.stdout.write(e.message)
+            self.stdout.write(force_text(e))
             return
 
         self.stdout.write("#################################################################")

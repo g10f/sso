@@ -161,8 +161,8 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
                 if (len(http_authorization) == 2) and http_authorization[0] == 'Basic':
                     # AttributeError: 'str' object has no attribute 'decode'
                     # request.client_id, request.client_secret = http_authorization[1].decode("base64").split(":")
-                    data = base64.b64decode(force_bytes(http_authorization[1]))
-                    request.client_id, request.client_secret = data.split(":")
+                    data = base64.b64decode(force_bytes(http_authorization[1])).decode()
+                    request.client_id, request.client_secret = data.split(':')
         try:
             # 1. check the client_id
             client = self._get_client(request.client_id, request)
