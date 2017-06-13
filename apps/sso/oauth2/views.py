@@ -19,7 +19,7 @@ from django.shortcuts import render, get_object_or_404, resolve_url
 from django.urls import reverse
 from django.utils.crypto import get_random_string
 from django.utils.decorators import method_decorator
-from django.utils.encoding import force_str, iri_to_uri
+from django.utils.encoding import force_str, iri_to_uri, force_text
 from django.views.decorators.cache import never_cache, cache_page, cache_control
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt

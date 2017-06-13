@@ -26,3 +26,7 @@ python-u2flib-server==4.0.1
 #git+https://bitbucket.org/g10f/sso-dwbn-theme
 #git+https://bitbucket.org/g10f/sso-vw-theme
 #git+https://bitbucket.org/g10f/sso-kagyu-theme
+# per ssh
+#git+ssh://git@bitbucket.org/g10f/sso-dwbn-theme.git
+#git+ssh://git@bitbucket.org/g10f/sso-vw-theme.git
+#git+ssh://git@bitbucket.org/g10f/sso-kagyu-theme.git
