@@ -19,7 +19,7 @@ from django.shortcuts import render, get_object_or_404, resolve_url
 from django.urls import reverse
 from django.utils.crypto import get_random_string
 from django.utils.decorators import method_decorator
-from django.utils.encoding import force_str, iri_to_uri, force_text
+from django.utils.encoding import force_str, iri_to_uri, force_text, smart_bytes
 from django.views.decorators.cache import never_cache, cache_page, cache_control
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
@@ -339,7 +339,7 @@ def jwks(request):
     """
     jwks_uri view (http://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata)
     """
-    key = load_pem_public_key(settings.CERTS['default']['public_key'], backend=default_backend())
+    key = load_pem_public_key(smart_bytes(settings.CERTS['default']['public_key'], backend=default_backend()))
     public_numbers = key.public_numbers()
     data = {
         "keys": [{
