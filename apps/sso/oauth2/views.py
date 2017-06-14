@@ -339,7 +339,7 @@ def jwks(request):
     """
     jwks_uri view (http://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata)
     """
-    key = load_pem_public_key(smart_bytes(settings.CERTS['default']['public_key'], backend=default_backend()))
+    key = load_pem_public_key(smart_bytes(settings.CERTS['default']['public_key']), backend=default_backend())
     public_numbers = key.public_numbers()
     data = {
         "keys": [{
