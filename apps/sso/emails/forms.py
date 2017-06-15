@@ -1,23 +1,24 @@
 # -*- coding: utf-8 -*-
-from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django import forms
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
-from sso.forms.fields import EmailFieldLower
-from sso.forms import bootstrap, BaseForm, BaseTabularInlineForm
 from sso.emails.models import EmailForward, EmailAlias, GroupEmail, GroupEmailManager, Email, GROUP_EMAIL_TYPE
+from sso.forms import bootstrap, BaseForm, BaseTabularInlineForm
+from sso.forms.fields import EmailFieldLower
 
 
 class EmailForwardForm(BaseForm):
     forward = EmailFieldLower(max_length=254, label=_('Email forwarding address'))
-    
+
     class Meta:
         model = EmailForward
-        fields = ('forward', 'email') 
+        fields = ('forward', 'email')
         widgets = {
             'email': forms.HiddenInput(),
         }
-        
+
     def __init__(self, *args, **kwargs):
         super(EmailForwardForm, self).__init__(*args, **kwargs)
 
@@ -28,29 +29,29 @@ class EmailForwardInlineForm(BaseTabularInlineForm):
     a list of readonly primary emails
     """
     forward = EmailFieldLower(max_length=254, label=_('Email forwarding address'))
-    
+
     class Meta:
         model = EmailForward
-        fields = ('forward', ) 
+        fields = ('forward',)
 
     def template(self):
         return 'emails/email_forward_tabular.html'
-    
+
 
 class EmailForwardOnlyInlineForm(BaseTabularInlineForm):
     """
     form without a primary field
     """
     forward = EmailFieldLower(max_length=254, label=_('Email forwarding address'))
-    
+
     class Meta:
         model = EmailForward
-        fields = ('forward', ) 
+        fields = ('forward',)
 
 
 class AdminEmailForwardInlineForm(BaseTabularInlineForm):
     forward = EmailFieldLower(max_length=254, label=_('Email forwarding address'))
-    
+
     class Meta:
         model = EmailForward
         fields = ('forward', 'primary')
@@ -58,13 +59,13 @@ class AdminEmailForwardInlineForm(BaseTabularInlineForm):
             'primary': bootstrap.CheckboxInput()
         }
 
-    
+
 class EmailAliasInlineForm(BaseTabularInlineForm):
     alias = EmailFieldLower(max_length=254, label=_('Alias address'))
-    
+
     class Meta:
         model = EmailAlias
-        fields = ('alias', ) 
+        fields = ('alias',)
 
 
 class EmailManagerInlineForm(BaseTabularInlineForm):
@@ -92,7 +93,7 @@ class EmailManagerInlineForm(BaseTabularInlineForm):
         if not get_user_model().objects.filter(useremail__email=manager_email).exists():
             msg = _('The user does not exists')
             raise ValidationError(msg)
-            
+
         return manager_email
 
     def save(self, commit=True):
@@ -102,7 +103,7 @@ class EmailManagerInlineForm(BaseTabularInlineForm):
             self.instance.manager = manager
 
         instance = super(EmailManagerInlineForm, self).save(commit)
-                
+
         return instance
 
 
@@ -110,7 +111,7 @@ class GroupEmailForm(BaseForm):
     email_value = EmailFieldLower(required=True, label=_("Email address"), widget=bootstrap.EmailInput())
     permission = forms.ChoiceField(label=_('Permission'), choices=Email.PERMISSION_CHOICES, widget=bootstrap.Select())
     is_active = forms.BooleanField(required=False, label=_("Active"), widget=bootstrap.CheckboxInput())
-    
+
     class Meta:
         model = GroupEmail
         fields = ['homepage', 'name', 'is_guide_email']
@@ -118,7 +119,7 @@ class GroupEmailForm(BaseForm):
             'homepage': bootstrap.TextInput(attrs={'size': 50}),
             'name': bootstrap.TextInput(attrs={'size': 50}),
         }
-        
+
     def __init__(self, *args, **kwargs):
         super(GroupEmailForm, self).__init__(*args, **kwargs)
         try:
@@ -128,7 +129,7 @@ class GroupEmailForm(BaseForm):
             self.fields['permission'].initial = email.permission
         except ObjectDoesNotExist:
             self.fields['is_active'].initial = True
-        
+
     def clean_email_value(self):
         """
         the new email address must ..
@@ -137,19 +138,19 @@ class GroupEmailForm(BaseForm):
         if Email.objects.filter(email=email_value).exclude(groupemail=self.instance).exists():
             msg = _('The email address already exists')
             raise ValidationError(msg)
-            
+
         return email_value
 
     def save(self, commit=True):
         cd = self.changed_data
         if 'email_value' in cd or 'permission' in cd or 'is_active' in cd:
-            created = False 
+            created = False
             try:
                 email = self.instance.email
             except ObjectDoesNotExist:
                 email = Email(email_type=GROUP_EMAIL_TYPE)
                 created = True
-            
+
             email.is_active = self.cleaned_data['is_active']
             email.email = self.cleaned_data['email_value']
             email.permission = self.cleaned_data['permission']
@@ -158,5 +159,5 @@ class GroupEmailForm(BaseForm):
                 self.instance.email = email
 
         instance = super(GroupEmailForm, self).save(commit)
-                
+
         return instance
