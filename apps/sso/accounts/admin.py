@@ -463,6 +463,9 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         if db_field.name == "app_admin_organisation_countries":
             kwargs["queryset"] = user.get_administrable_app_admin_user_countries()
 
+        if db_field.name == "app_admin_regions":
+            kwargs["queryset"] = user.get_administrable_app_admin_user_regions()
+
         return super(UserAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
 
     def save_form(self, request, form, change):
