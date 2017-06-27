@@ -5,7 +5,6 @@ from binascii import unhexlify, hexlify
 from os import urandom
 
 import qrcode
-from six import StringIO
 from six.moves.urllib.parse import quote, urlencode
 
 from django.apps import apps as django_apps
@@ -16,6 +15,7 @@ from django.shortcuts import resolve_url
 from django.utils import lru_cache
 from django.utils import six
 from django.utils.decorators import method_decorator
+from django.utils.six import BytesIO
 from sso.auth import SESSION_AUTH_DATE
 from sso.utils.http import get_request_param
 from sso.utils.url import is_safe_ext_url
@@ -210,6 +210,7 @@ def get_qrcode_data_url(key, username, issuer):
 
     # Make and return QR code
     img = qrcode.make(otpauth_url, image_factory=PilImage, box_size=3)
-    output = StringIO()
+    output = BytesIO()
     img.save(output)
-    return "data:image/png;base64,%s" % base64.b64encode(output.getvalue())
+    data = base64.b64encode(output.getvalue()).decode('ascii')
+    return "data:image/png;base64,%s" % data
