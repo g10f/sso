@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-03-18 23:02+0100\n"
+"POT-Creation-Date: 2017-06-30 22:05+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,23 +18,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: validation.py:14
 #, python-format
 msgid "Your password must contain at least %(min_length)d character."
 msgid_plural "Your password must contain at least %(min_length)d characters."
 msgstr[0] ""
 msgstr[1] ""
 
-#: validation.py:23
 msgid "Your password can't be a commonly used password."
 msgstr ""
 
-#: validation.py:44
 #, python-format
 msgid "Your password must contain %(min_digits)s or more digits"
 msgstr ""
 
-#: validation.py:49
 #, python-format
 msgid "Your password must contain at least %(min_digits)d digit."
 msgid_plural "Your password must contain at least %(min_digits)d digits."

@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
-from django.utils.translation import ugettext_lazy as _
-
+from django.contrib.auth.base_user import BaseUserManager
 from django.forms import fields
-from sso.accounts.models import UserManager
+from django.utils.translation import ugettext_lazy as _
 from sso.forms import bootstrap
 
 
 class EmailFieldLower(fields.EmailField):
     widget = bootstrap.EmailInput(attrs={'size': 50})
-    
+
     def to_python(self, value):
         email = super(EmailFieldLower, self).to_python(value).rstrip().lstrip()
-        return UserManager.normalize_email(email)
-    
+        return BaseUserManager.normalize_email(email)
+
     def __init__(self, max_length=None, min_length=None, *args, **kwargs):
         if 'label' not in kwargs:
             kwargs['label'] = _('email address')

@@ -20,7 +20,7 @@ from l10n.models import Country
 from smart_selects.db_fields import ChainedForeignKey
 from sso.decorators import memoize
 from sso.emails.models import Email, CENTER_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, REGION_EMAIL_TYPE, COUNTRY_GROUP_EMAIL_TYPE
-from sso.fields import URLFieldEx
+from sso.fields import URLFieldEx, URLArrayField
 from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary, get_filename
 
 logger = logging.getLogger(__name__)
@@ -280,7 +280,10 @@ class Organisation(AbstractBaseModel):
                               on_delete=models.SET_NULL)
     slug = models.SlugField(_("Slug Name"), blank=True, unique=True,
                             help_text=_("Used for URLs, auto-generated from name if blank"), max_length=255)
-    homepage = models.URLField(_("homepage"), blank=True, )
+    homepage = models.URLField(_("homepage"), blank=True)
+    source_urls = URLArrayField(blank=True, null=True, verbose_name=_('source urls'),
+                                help_text=_("Newline separated list of URLs, which are redirected to the "
+                                            "homepage"))
     google_plus_page = URLFieldEx(domain='plus.google.com', verbose_name=_("Google+ page"), blank=True)
     facebook_page = URLFieldEx(domain='www.facebook.com', verbose_name=_("Facebook page"), blank=True)
     twitter_page = URLFieldEx(domain='twitter.com', verbose_name=_("Twitter page"), blank=True)
