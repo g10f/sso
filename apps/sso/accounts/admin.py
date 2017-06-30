@@ -185,7 +185,7 @@ class UserOrganisationsListFilter(OrganisationsListFilter):
 class UserRegionListFilter(BaseFilter):
     title = _('Admin Region')
     parameter_name = 'admin_region'
-    field_path = 'organisations__admin_region'
+    field_path = 'admin_region'
 
     def get_lookup_qs(self, request, model_admin):
         return AdminRegion.objects.all()

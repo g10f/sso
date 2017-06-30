@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-05-03 15:47+0200\n"
+"POT-Creation-Date: 2017-06-30 22:05+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,249 +16,191 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: l10n/admin.py:16 l10n/admin.py:25
 msgid "1 country was"
 msgstr ""
 
-#: l10n/admin.py:18 l10n/admin.py:27
 #, python-format
 msgid "%s countries were"
 msgstr ""
 
-#: l10n/admin.py:19
 #, python-format
 msgid "%s successfully marked as active"
 msgstr ""
 
-#: l10n/admin.py:20
 msgid "Mark selected countries as active"
 msgstr ""
 
-#: l10n/admin.py:28
 #, python-format
 msgid "%s successfully marked as inactive"
 msgstr ""
 
-#: l10n/admin.py:29
 msgid "Mark selected countries as inactive"
 msgstr ""
 
-#: l10n/models.py:6
 msgid "Africa"
 msgstr ""
 
-#: l10n/models.py:7
 msgid "North America"
 msgstr ""
 
-#: l10n/models.py:8
 msgid "Europe"
 msgstr ""
 
-#: l10n/models.py:9
 msgid "Asia"
 msgstr ""
 
-#: l10n/models.py:10
 msgid "Oceania"
 msgstr ""
 
-#: l10n/models.py:11
 msgid "South America"
 msgstr ""
 
-#: l10n/models.py:12
 msgid "Antarctica"
 msgstr ""
 
-#: l10n/models.py:16
 msgid "Another"
 msgstr ""
 
-#: l10n/models.py:17
 msgid "Island"
 msgstr ""
 
-#: l10n/models.py:18
 msgid "Arrondissement"
 msgstr ""
 
-#: l10n/models.py:19
 msgid "Atoll"
 msgstr ""
 
-#: l10n/models.py:20
 msgid "Autonomous island"
 msgstr ""
 
-#: l10n/models.py:21
 msgid "Canton"
 msgstr ""
 
-#: l10n/models.py:22
 msgid "Commune"
 msgstr ""
 
-#: l10n/models.py:23
 msgid "County"
 msgstr ""
 
-#: l10n/models.py:24
 msgid "Department"
 msgstr ""
 
-#: l10n/models.py:25
 msgid "Dependency"
 msgstr ""
 
-#: l10n/models.py:26
 msgid "District"
 msgstr ""
 
-#: l10n/models.py:27
 msgid "Division"
 msgstr ""
 
-#: l10n/models.py:28
 msgid "Emirate"
 msgstr ""
 
-#: l10n/models.py:29
 msgid "Governorate"
 msgstr ""
 
-#: l10n/models.py:30
 msgid "Island council"
 msgstr ""
 
-#: l10n/models.py:31
 msgid "Island group"
 msgstr ""
 
-#: l10n/models.py:32
 msgid "Island region"
 msgstr ""
 
-#: l10n/models.py:33
 msgid "Kingdom"
 msgstr ""
 
-#: l10n/models.py:34
 msgid "Municipality"
 msgstr ""
 
-#: l10n/models.py:35
 msgid "Parish"
 msgstr ""
 
-#: l10n/models.py:36
 msgid "Prefecture"
 msgstr ""
 
-#: l10n/models.py:37
 msgid "Province"
 msgstr ""
 
-#: l10n/models.py:38
 msgid "Region"
 msgstr ""
 
-#: l10n/models.py:39
 msgid "Republic"
 msgstr ""
 
-#: l10n/models.py:40
 msgid "Sheading"
 msgstr ""
 
-#: l10n/models.py:41
 msgid "State"
 msgstr ""
 
-#: l10n/models.py:42
 msgid "Subdivision"
 msgstr ""
 
-#: l10n/models.py:43
 msgid "Subject"
 msgstr ""
 
-#: l10n/models.py:44
 msgid "Territory"
 msgstr ""
 
-#: l10n/models.py:52
 msgid "ISO alpha-2"
 msgstr ""
 
-#: l10n/models.py:53
 msgid "Official name (CAPS)"
 msgstr ""
 
-#: l10n/models.py:54
 msgid "Country name"
 msgstr ""
 
-#: l10n/models.py:55
 msgid "ISO alpha-3"
 msgstr ""
 
-#: l10n/models.py:56
 msgid "ISO numeric"
 msgstr ""
 
-#: l10n/models.py:57
 msgid "Country is active"
 msgstr ""
 
-#: l10n/models.py:58
 msgid "Continent"
 msgstr ""
 
-#: l10n/models.py:59 l10n/models.py:80
 msgid "Administrative Area"
 msgstr ""
 
-#: l10n/models.py:62
+msgid "last modified"
+msgstr ""
+
 msgid "Country"
 msgstr ""
 
-#: l10n/models.py:63
 msgid "Countries"
 msgstr ""
 
-#: l10n/models.py:75
 msgid "Admin Area name"
 msgstr ""
 
-#: l10n/models.py:76
 msgid "Postal Abbreviation"
 msgstr ""
 
-#: l10n/models.py:77
 msgid "Area is active"
 msgstr ""
 
-#: l10n/models.py:81
 msgid "Administrative Areas"
 msgstr ""
 
-#: l10n/templates/l10n/_language_selection_form.html:5
 msgid "Change language"
 msgstr ""
 
-#: l10n/templates/l10n/_language_selection_form.html:11
 msgid "Change"
 msgstr ""
 
-#: l10n/validators/aupostcode.py:11
 msgid "Invalid Australian postal code"
 msgstr ""
 
-#: l10n/validators/capostcode.py:18
 msgid "Invalid postal code for Canada"
 msgstr ""
 
-#: l10n/validators/uspostcode.py:10
 msgid "Invalid ZIP code"
 msgstr ""

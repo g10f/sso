@@ -45,6 +45,16 @@
         <div class="dwbn-label">{% trans 'Homepage' %}:</div>
         <div class="dwbn-content"><a href="{{ object.homepage }}">{{ object.homepage }}</a></div>
     </div>
+    {% if object.source_urls %}
+        <div class="row">
+            <div class="dwbn-label">{% trans 'Source URLs' %}:</div>
+            <div class="dwbn-content">
+                {% for url in object.source_urls %}{% if not forloop.first %}<br>{% endif %}
+                    <a href="{{ url }}">{{ url }}</a>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
     {% if object.google_plus_page %}
         <div class="row">
             <div class="dwbn-label">{% trans 'Google+ page' %}:</div>

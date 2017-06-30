@@ -91,11 +91,12 @@ class OrganisationBaseForm(BaseForm):
     class Meta:
         model = Organisation
 
-        fields = ('name_native', 'homepage', 'google_plus_page', 'facebook_page', 'twitter_page', 'founded', 'coordinates_type',
+        fields = ('name_native', 'homepage', 'source_urls', 'google_plus_page', 'facebook_page', 'twitter_page', 'founded', 'coordinates_type',
                   'is_private', 'is_live', 'location', 'neighbour_distance', 'timezone')
         years_to_display = range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1)
         widgets = {
             'homepage': bootstrap.URLInput(attrs={'size': 50}),
+            'source_urls': bootstrap.Textarea(attrs={'rows': '3'}),
             'google_plus_page': bootstrap.URLInput(attrs={'size': 50}),
             'facebook_page': bootstrap.URLInput(attrs={'size': 50}),
             'twitter_page': bootstrap.URLInput(attrs={'size': 50}),

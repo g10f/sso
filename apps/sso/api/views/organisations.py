@@ -49,6 +49,8 @@ class OrganisationMixin(object):
                 'name': obj.association.name
             }
 
+        if obj.source_urls:
+            data['source_urls'] = obj.source_urls
         if obj.email:
             data['email'] = u'%s' % obj.email
         if obj.neighbour_distance:
@@ -65,7 +67,8 @@ class OrganisationMixin(object):
         if obj.organisation_country is not None:
             data['country'] = {
                 'code': obj.organisation_country.country.iso2_code,
-                '@id': "%s%s" % (base, reverse('api:v2_country', kwargs={'iso2_code': obj.organisation_country.country.iso2_code})),
+                '@id': "%s%s" % (
+                base, reverse('api:v2_country', kwargs={'iso2_code': obj.organisation_country.country.iso2_code})),
             }
         if obj.admin_region is not None:
             data['region'] = {
@@ -82,11 +85,11 @@ class OrganisationMixin(object):
             if obj.location:
                 data['location'] = {'geo': {'latitude': obj.location.y, 'longitude': obj.location.x},
                                     'type': obj.coordinates_type}
-            
+
         if details:
             if ('users' in request.scopes) and (obj in request.user.get_administrable_user_organisations()):
                 data['users'] = "%s%s?org_id=%s" % (base, reverse('api:v2_users'), obj.uuid.hex)
-            
+
             if not obj.is_private:
                 data['addresses'] = {
                     address.uuid.hex: {
@@ -124,12 +127,12 @@ class OrganisationMixin(object):
             }
 
         return data
-    
+
 
 class OrganisationDetailView(OrganisationMixin, JsonDetailView):
     http_method_names = ['get', 'options']
     operations = {}
-    
+
     def get_queryset(self):
         return super(OrganisationDetailView, self).get_queryset().prefetch_related(
             'organisation_country__country', 'email', 'organisationaddress_set', 'organisationphonenumber_set',
@@ -147,7 +150,8 @@ class OrganisationList(OrganisationMixin, JsonListView):
     # TODO: caching
     def get_queryset(self):
         qs = super(OrganisationList, self).get_queryset().prefetch_related(
-            'organisation_country__country', 'admin_region', 'email', 'organisationaddress_set', 'organisationaddress_set__country',
+            'organisation_country__country', 'admin_region', 'email', 'organisationaddress_set',
+            'organisationaddress_set__country',
             'association', 'organisationphonenumber_set', 'organisationpicture_set').distinct()
 
         is_live = self.request.GET.get('is_live', 'True')
@@ -199,11 +203,12 @@ class OrganisationList(OrganisationMixin, JsonListView):
             parsed = parse_datetime_with_timezone_support(modified_since)
             if parsed is None:
                 raise ValueError("can not parse %s" % modified_since)
-            qs = qs.filter(Q(last_modified__gte=parsed) | Q(organisationaddress__last_modified__gte=parsed) | Q(organisationphonenumber__last_modified__gte=parsed)
+            qs = qs.filter(Q(last_modified__gte=parsed) | Q(organisationaddress__last_modified__gte=parsed) | Q(
+                organisationphonenumber__last_modified__gte=parsed)
                            | Q(organisationpicture__last_modified__gte=parsed))
-         
-        latlng = self.request.GET.get('latlng', None) 
-        
+
+        latlng = self.request.GET.get('latlng', None)
+
         if latlng:
             (lat, lng) = tuple(latlng.split(','))
             from django.contrib.gis import geos
@@ -215,7 +220,7 @@ class OrganisationList(OrganisationMixin, JsonListView):
                 distance = {dlt[1]: dlt[0]}
             else:
                 distance = None
-            
+
             point = geos.fromstr("POINT(%s %s)" % (lng, lat))
             qs = get_near_organisations(point, distance, qs)
 
