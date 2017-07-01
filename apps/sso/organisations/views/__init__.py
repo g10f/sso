@@ -28,7 +28,6 @@ from sso.organisations.forms import OrganisationAddressForm, OrganisationPhoneNu
     OrganisationAssociationAdminCreateForm, OrganisationAssociationAdminForm
 from sso.organisations.models import AdminRegion, Organisation, OrganisationPicture, Association, multiple_associations
 from sso.organisations.models import OrganisationAddress, OrganisationPhoneNumber, get_near_organisations
-from sso.utils.ucsv import UnicodeWriter
 from sso.utils.url import get_safe_redirect_uri
 from sso.views import main
 from sso.views.generic import FormsetsUpdateView, ListView, SearchFilter, ViewChoicesFilter, ViewQuerysetFilter, \
@@ -322,7 +321,7 @@ class OrganisationSearchFilter(SearchFilter):
 
 class CenterTypeFilter(ViewChoicesFilter):
     name = 'center_type'
-    choices = Organisation.CENTER_TYPE_CHOICES
+    choices = settings.CENTER_TYPE_CHOICES
     select_text = _('Organisation Type')
     select_all_text = _("All Organisation Types")
 
@@ -353,8 +352,8 @@ class AssociationFilter(ViewQuerysetFilter):
     model = Association
     select_text = _('Association')
     select_all_text = _('All Associations')
-    remove = 'country,p'
-    all_remove = 'country'
+    #remove = 'country,p'
+    #all_remove = 'country'
 
 
 class CountryFilter(ViewQuerysetFilter):
@@ -445,13 +444,20 @@ class OrganisationList(ListView):
                 num_sorted_fields += 1
 
         my_organisations_filter = MyOrganisationsFilter().get(self)
-        association_filter = AssociationFilter().get(self)
+
         if multiple_associations():
-            if self.association:
-                countries = Country.objects.filter(organisationaddress__organisation__association=self.association). \
-                    distinct()
+            if self.country:
+                associations = Association.objects.filter(
+                    organisation__organisationaddress__country=self.country).distinct()
             else:
-                countries = Country.objects.none()
+                associations = Association.objects.all()
+            association_filter = AssociationFilter().get(self, associations)
+
+            if self.association:
+                countries = Country.objects.filter(
+                    organisationaddress__organisation__association=self.association).distinct()
+            else:
+                countries = Country.objects.filter(organisationaddress__isnull=False).distinct()
         else:
             association_filter = None
             countries = Country.objects.filter(organisationaddress__isnull=False).distinct()
@@ -529,10 +535,7 @@ class OrganisationList(ListView):
         if self.filename:
             response['Content-Disposition'] = 'attachment; filename="%s"' % self.filename
 
-        if six.PY2:
-            writer = UnicodeWriter(response, quoting=csv.QUOTE_ALL)
-        else:
-            writer = csv.writer(response, quoting=csv.QUOTE_ALL)
+        writer = csv.writer(response, quoting=csv.QUOTE_ALL)
         row = ["name", "is_active", "homepage", "email", "primary_phone", "country", "admin_region", "addressee",
                "street_address", "city", "postal_code"]
         writer.writerow(row)

@@ -89,12 +89,16 @@ class AddressMixin(models.Model):
     see i.e. http://tools.ietf.org/html/draft-ietf-scim-core-schema-03 or http://schema.org/PostalAddress
     """
     addressee = models.CharField(_("addressee"), max_length=80)
-    street_address = models.TextField(_('street address'), blank=True, help_text=_('Full street address, with house number, street name, P.O. box, and extended street address information.'), max_length=512)
+    street_address = models.TextField(_('street address'), blank=True,
+                                      help_text=_('Full street address, with house number, street name, P.O. box, and '
+                                                  'extended street address information.'), max_length=512)
     city = models.CharField(_("city"), max_length=100)  # , help_text=_('City or locality')
     city_native = models.CharField(_("city in native language"), max_length=100, blank=True)
-    postal_code = models.CharField(_("postal code"), max_length=30, blank=True)  # , help_text=_('Zipcode or postal code')
-    country = models.ForeignKey(Country, on_delete=models.CASCADE, verbose_name=_("country"), limit_choices_to={'active': True})
-    state = ChainedForeignKey(AdminArea, chained_field='country', chained_model_field="country", on_delete=models.SET_NULL, verbose_name=_("State"),
+    postal_code = models.CharField(_("postal code"), max_length=30, blank=True)
+    country = models.ForeignKey(Country, on_delete=models.CASCADE, verbose_name=_("country"),
+                                limit_choices_to={'active': True})
+    state = ChainedForeignKey(AdminArea, chained_field='country', chained_model_field="country",
+                              on_delete=models.SET_NULL, verbose_name=_("State"),
                               help_text=_('State or region'), blank=True, null=True)
     region = models.CharField(_("region"), help_text=_('State or region'), blank=True, max_length=100)
     primary = models.BooleanField(_("primary"), default=False)
