@@ -111,8 +111,13 @@ class SimpleArrayFieldEx(SimpleArrayField):
 class URLArrayField(ArrayField):
     def __init__(self, size=None, **kwargs):
         super(URLArrayField, self).__init__(
-            models.URLField(_('url'), validators=[validators.URLValidator(schemes=['http', 'https'])]),
+            base_field=models.URLField(_('url'), validators=[validators.URLValidator(schemes=['http', 'https'])]),
             size=size, **kwargs)
+
+    def deconstruct(self):
+        name, path, args, kwargs = super(URLArrayField, self).deconstruct()
+        kwargs.pop('base_field')
+        return name, path, args, kwargs
 
     def formfield(self, **kwargs):
         defaults = {
