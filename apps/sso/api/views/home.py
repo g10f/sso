@@ -9,6 +9,7 @@ from sso.utils.url import base_url
 
 logger = logging.getLogger(__name__)
 
+FIND_ASSOCIATION_EXPRESSION = "{?q,per_page,modified_since}"
 FIND_USER_EXPRESSION = "{?q,per_page,app_id,modified_since,is_active,country_group_id,country,region_id,org_id}"
 FIND_ORGANISATION_EXPRESSION = "{?q,per_page,modified_since,is_active,country_group_id,country,country_code,region_id,latlng,dlt,with_unofficial,org_type}"
 FIND_COUNTRY_EXPRESSION = "{?q,per_page,modified_since,country_group_id}"
@@ -23,6 +24,8 @@ def home(request):
     resources = {
         "@id": "%s%s" % (base_uri, reverse('api:home')),
         "@type": "EntryPoint",
+        "associations": "%s%s%s" % (base_uri, reverse('api:v2_associations'), FIND_ASSOCIATION_EXPRESSION),
+        "association": "%s%s%s" % (base_uri, reverse('api:v2_associations'), "{association_id}/"),
         "country_groups": "%s%s%s" % (base_uri, reverse('api:v2_country_groups'), FIND_COUNTRY_GROUP_EXPRESSION),
         "country_group": "%s%s%s" % (base_uri, reverse('api:v2_country_groups'), "{country_group_id}/"),
         "countries": "%s%s%s" % (base_uri, reverse('api:v2_countries'), FIND_COUNTRY_EXPRESSION),
