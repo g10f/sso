@@ -2,6 +2,7 @@
 import os
 import sys
 from uuid import UUID
+
 from django.urls import reverse_lazy
 
 try:
@@ -91,6 +92,9 @@ FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 ADMINS = (
     ('Gunnar Scherf', 'webmaster@g10f.de'),
 )
+
+CENTER_TYPE_CHOICES = ()
+
 MANAGERS = ADMINS
 USER_CHANGE_EMAIL_RECIPIENT_LIST = ['webmaster@g10f.de']
 DEFAULT_FROM_EMAIL = 'webmaster@g10f.de'

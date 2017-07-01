@@ -240,15 +240,6 @@ def get_near_organisations(current_point, distance_from_point=None, qs=None, ord
 
 @python_2_unicode_compatible
 class Organisation(AbstractBaseModel):
-    # TODO: make configurable
-    CENTER_TYPE_CHOICES = (
-        ('1', pgettext_lazy('Organisation Type', 'Center')),
-        ('2', pgettext_lazy('Organisation Type', 'Group')),
-        ('3', pgettext_lazy('Organisation Type', 'Retreat')),
-        ('4', pgettext_lazy('Organisation Type', 'Contact')),
-        ('7', pgettext_lazy('Organisation Type', 'Center & Retreat')),
-        ('16', pgettext_lazy('Organisation Type', 'Group & Retreat')),
-    )
     COORDINATES_TYPE_CHOICES = (
         ('1', _('Unknown')),
         ('2', _('City/Village')),
@@ -256,7 +247,7 @@ class Organisation(AbstractBaseModel):
         ('4', _('Nearby')),
     )
     _center_type_choices = {}
-    for choice in CENTER_TYPE_CHOICES:
+    for choice in settings.CENTER_TYPE_CHOICES:
         _center_type_choices[choice[0]] = choice[1]
 
     def center_type_desc(self):
@@ -288,7 +279,8 @@ class Organisation(AbstractBaseModel):
     facebook_page = URLFieldEx(domain='www.facebook.com', verbose_name=_("Facebook page"), blank=True)
     twitter_page = URLFieldEx(domain='twitter.com', verbose_name=_("Twitter page"), blank=True)
     notes = models.TextField(_('notes'), blank=True, max_length=255)
-    center_type = models.CharField(_('organisation type'), max_length=2, choices=CENTER_TYPE_CHOICES, db_index=True)
+    center_type = models.CharField(_('organisation type'), max_length=2, choices=settings.CENTER_TYPE_CHOICES,
+                                   db_index=True)
     centerid = models.IntegerField(blank=True, help_text=_("id from the previous center DB (obsolete)"), null=True)
     founded = models.DateField(_("founded"), blank=True, null=True)
     coordinates_type = models.CharField(_('coordinates type'), max_length=1, choices=COORDINATES_TYPE_CHOICES,
@@ -368,9 +360,11 @@ class Organisation(AbstractBaseModel):
     @property
     def local_datetime(self):
         if self.timezone:
-            return localtime(now(), timezone(self.timezone)).strftime('%Y-%m-%d %H:%M:%S %z')
-        else:
-            return ""
+            try:
+                return localtime(now(), timezone(self.timezone)).strftime('%Y-%m-%d %H:%M:%S %z')
+            except UnknownTimeZoneError as e:
+                logger.error(e)
+        return ""
 
     @memoize
     def get_last_modified_deep(self):
