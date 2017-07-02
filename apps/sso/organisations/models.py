@@ -12,6 +12,7 @@ from django.contrib.gis.db.models.functions import Distance
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db import models
+from django.urls import reverse
 from django.utils import six
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.timezone import localtime, now
@@ -97,9 +98,8 @@ class Association(AbstractBaseModel):
     def __str__(self):
         return self.name
 
-    @models.permalink
     def get_absolute_url(self):
-        return 'organisations:association_detail', (), {'uuid': self.uuid.hex, }
+        return reverse('api:v2_association', kwargs={'uuid': self.uuid.hex})
 
 
 def default_association():
@@ -162,9 +162,8 @@ class OrganisationCountry(AbstractBaseModel, ExtraOrganisationCountryManager):
         else:
             return u'%s' % self.country
 
-    @models.permalink
     def get_absolute_url(self):
-        return 'organisations:organisationcountry_detail', (), {'uuid': self.uuid.hex, }
+        return reverse('organisations:organisationcountry_detail', kwargs={'uuid': self.uuid.hex, })
 
     @memoize
     def get_last_modified_deep(self):
@@ -195,7 +194,8 @@ class AdminRegion(AbstractBaseModel, ExtraManager):
     name = models.CharField(_("name"), max_length=255)
     homepage = models.URLField(_("homepage"), blank=True)
     organisation_country = models.ForeignKey(OrganisationCountry, verbose_name=_("country"), null=True,
-                                             limit_choices_to={'is_active': True})
+                                             limit_choices_to={'is_active': True},
+                                             on_delete=models.SET_NULL)
     email = models.OneToOneField(Email, verbose_name=_("email address"), blank=True, null=True,
                                  limit_choices_to={'email_type': REGION_EMAIL_TYPE},
                                  on_delete=models.SET_NULL)
@@ -213,9 +213,8 @@ class AdminRegion(AbstractBaseModel, ExtraManager):
     def __str__(self):
         return self.name
 
-    @models.permalink
     def get_absolute_url(self):
-        return 'organisations:adminregion_detail', (), {'uuid': self.uuid.hex, }
+        return reverse('organisations:adminregion_detail', kwargs={'uuid': self.uuid.hex})
 
 
 def get_near_organisations(current_point, distance_from_point=None, qs=None, order=True):
@@ -258,10 +257,12 @@ class Organisation(AbstractBaseModel):
     name = models.CharField(_("name"), max_length=255)
     name_native = models.CharField(_("name in native language"), max_length=255, blank=True)
     association = models.ForeignKey(Association, verbose_name=_("association"), default=default_association, null=True,
-                                    limit_choices_to={'is_active': True})
+                                    limit_choices_to={'is_active': True},
+                                    on_delete=models.CASCADE)
     organisation_country = ChainedForeignKey(OrganisationCountry, chained_field='association',
                                              chained_model_field="association", verbose_name=_("country"), blank=True,
-                                             null=True, limit_choices_to={'is_active': True})
+                                             null=True, limit_choices_to={'is_active': True},
+                                             on_delete=models.SET_NULL)
     admin_region = ChainedForeignKey(AdminRegion, chained_field='organisation_country',
                                      chained_model_field="organisation_country", on_delete=models.SET_NULL,
                                      verbose_name=_("admin region"), blank=True, null=True,
@@ -406,9 +407,8 @@ class Organisation(AbstractBaseModel):
                 self.location,
                 qs=Organisation.objects.filter(is_active=True, is_live=True).exclude(pk=self.pk))[:10]
 
-    @models.permalink
     def get_absolute_url(self):
-        return 'organisations:organisation_detail', (), {'uuid': self.uuid.hex, }
+        return reverse('organisations:organisation_detail', kwargs={'uuid': self.uuid.hex})
 
     @property
     def google_maps_url(self):

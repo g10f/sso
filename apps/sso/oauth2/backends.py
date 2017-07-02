@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
+import logging
+
 from sso.auth.backends import SSOBackend
 
-import logging
 logger = logging.getLogger(__name__)
 
 
 class OAuth2Backend(SSOBackend):
-    def authenticate(self, token=None, **kwargs):
+    def authenticate(self, request, token=None, **kwargs):
         if token:
             user = token.user
             try:
@@ -15,5 +16,5 @@ class OAuth2Backend(SSOBackend):
             except Exception as e:
                 logger.warning(e)
             return user
-        
+
         return None

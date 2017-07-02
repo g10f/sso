@@ -40,7 +40,7 @@ class ChainedSelect(Select):
         js = ['smart_select.js']
         return forms.Media(js=[static("js/%s" % path) for path in js])
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         self.add_required()  # bootstrap
 
         if len(name.split('-')) > 1:  # formset
@@ -103,5 +103,5 @@ class ChainedSelect(Select):
         final_attrs['data-chainfield'] = chain_field
         final_attrs['data-url'] = url
         final_attrs['data-empty_label'] = empty_label
-        output = super(ChainedSelect, self).render(name, value, final_attrs)
+        output = super(ChainedSelect, self).render(name, value, final_attrs, renderer)
         return mark_safe(output)
