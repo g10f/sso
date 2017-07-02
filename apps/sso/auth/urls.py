@@ -2,6 +2,8 @@ from django.conf.urls import url
 from sso.auth.views import LoginView, TokenView
 from sso.auth.views.profile import ProfileView, TOTPSetup, PhoneSetupView, AddPhoneView, AddU2FView
 
+app_name = 'auth'
+
 urlpatterns = [
     url(r'^login/$', LoginView.as_view(), name='login'),
     url(r'^token/(?P<device_id>[\d]+)/(?P<user_data>[^/]+)/$', TokenView.as_view(), name='token'),

@@ -80,8 +80,8 @@ class ImageWidget(forms.ClearableFileInput):
     template_with_initial = u'<div>%(clear_template)s<br />%(input_text)s: %(input)s</div>'
     template_with_clear = u'<div class="checkbox"><label>%(clear)s %(clear_checkbox_label)s </label></div>'
 
-    def render(self, name, value, attrs=None):
-        output = super(ImageWidget, self).render(name, value, attrs)
+    def render(self, name, value, attrs=None, renderer=None):
+        output = super(ImageWidget, self).render(name, value, attrs, renderer)
         if value and hasattr(value, 'url'):
             try:
                 mini = get_thumbnail(value, '240x240', crop='center')
