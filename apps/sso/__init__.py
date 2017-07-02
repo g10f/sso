@@ -6,12 +6,12 @@ from __future__ import absolute_import
     An OpenIDConnect Provider with User, Client and Organisation Management and
     a JSON-LD/Hydra based API
 
-    :copyright: (c) 2013 by Gunnar Scherf.
+    :copyright: (c) 2017 by Gunnar Scherf.
     :license: BSD, see LICENSE for details.
 """
 
 __author__ = 'Gunnar Scherf <gunnar@g10f.de>'
-__version__ = '1.2.1'
+__version__ = '1.2.2'
 
 
 # This will make sure the app is always imported when
