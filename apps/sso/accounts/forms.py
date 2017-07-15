@@ -711,7 +711,7 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
         # without a query for every role profile
         self.fields['role_profiles'].choices = [(role_profile.id, role_profile) for role_profile in
                                                 self.request.user.get_administrable_role_profiles()]
-        self.fields['role_profiles'].dictionary = {str(role_profile.id): role_profile for role_profile in
+        self.fields['role_profiles'].dictionary = {role_profile.id: role_profile for role_profile in
                                                    self.request.user.get_administrable_role_profiles()}
 
         if self.user.organisations.count() > 1:
@@ -797,7 +797,7 @@ class CenterProfileForm(mixins.UserRolesMixin, forms.Form):
         self.fields['role_profiles'].choices = [(role_profile.id, role_profile) for role_profile in
                                                 self.request.user.get_administrable_role_profiles()]
         # add custom data
-        self.fields['role_profiles'].dictionary = {str(role_profile.id): role_profile for role_profile in
+        self.fields['role_profiles'].dictionary = {role_profile.id: role_profile for role_profile in
                                                    self.request.user.get_administrable_role_profiles()}
 
         if self.user.organisations.exists():

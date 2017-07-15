@@ -200,7 +200,7 @@ def update_user_registration(request, pk, template='registration/change_user_reg
     else:
         registrationprofile_form = RegistrationProfileForm(instance=registrationprofile, request=request)
 
-    app_roles_by_profile = {str(id) for id in ApplicationRole.objects.filter(roleprofile__user__id=registrationprofile.user.pk).only("id").values_list('id', flat=True)}
+    app_roles_by_profile = {id for id in ApplicationRole.objects.filter(roleprofile__user__id=registrationprofile.user.pk).only("id").values_list('id', flat=True)}
 
     data = {'form': registrationprofile_form, 'app_roles_by_profile': app_roles_by_profile, 'title': _('Edit registration')}
     return render(request, template, data)

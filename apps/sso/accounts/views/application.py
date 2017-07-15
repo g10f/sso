@@ -408,7 +408,7 @@ def _update_standard_user(request, user, template='accounts/application/update_u
     except ObjectDoesNotExist:
         user_organisation = None
 
-    app_roles_by_profile = {str(id) for id in ApplicationRole.objects.filter(
+    app_roles_by_profile = {id for id in ApplicationRole.objects.filter(
         roleprofile__user__id=user.pk).only("id").values_list('id', flat=True)}
 
     context = {'form': form, 'errors': errors, 'formsets': formsets, 'media': media, 'active': active,
