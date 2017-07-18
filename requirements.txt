@@ -16,7 +16,7 @@ geopy
 qrcode
 requests
 celery
-python-u2flib-server==4.0.1
+python-u2flib-server
 
 # for local testing only
 #selenium
