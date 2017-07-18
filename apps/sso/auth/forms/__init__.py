@@ -1,19 +1,17 @@
 # -*- coding: utf-8 -*-
-from datetime import timedelta
 import json
-from u2flib_server import u2f_v2
-from django.utils import timezone
-from django.utils.timezone import now
+from datetime import timedelta
 
+from django import forms
 from django.conf import settings
 from django.contrib.auth.forms import AuthenticationForm
-from django import forms
-from django.utils.translation import ugettext_lazy as _
+from django.utils import timezone
 from django.utils.text import capfirst
-
+from django.utils.translation import ugettext_lazy as _
 from sso.auth.utils import totp_digits, match_token
 from sso.forms import bootstrap
 from sso.utils.translation import string_format
+from u2flib_server import u2f
 
 
 class EmailAuthenticationForm(AuthenticationForm):
@@ -27,7 +25,8 @@ class EmailAuthenticationForm(AuthenticationForm):
         error_messages={'required': _('Please enter your Password.')},
         widget=bootstrap.PasswordInput(attrs={'placeholder': capfirst(_('Password'))}))
     remember_me = forms.BooleanField(label=_('Remember me'),
-                                     help_text=string_format(_('Stay logged in for %(days)d days'), {'days': timedelta(seconds=settings.SESSION_COOKIE_AGE).days}),
+                                     help_text=string_format(_('Stay logged in for %(days)d days'), {
+                                         'days': timedelta(seconds=settings.SESSION_COOKIE_AGE).days}),
                                      required=False)
     error_messages = {
         'invalid_login': _("Please enter a correct %(username)s and password. "
@@ -82,19 +81,13 @@ class U2FForm(forms.Form):
             from sso.auth.models import U2FDevice
             response = json.loads(self.cleaned_data.get('response'))
             challenges = json.loads(self.cleaned_data.get('challenges'))
-            # find the right challenge, the based on the key the user inserted
-            challenge = [c for c in challenges if c['keyHandle'] == response['keyHandle']][0]
-            device = U2FDevice.objects.get(user=self.user, key_handle=response['keyHandle'])
-            login_counter, touch_asserted = u2f_v2.verify_authenticate(
-                device.to_json(),
-                challenge,
-                response,
-            )
+            device_registerd, counter, user_presence = u2f.complete_authentication(challenges, response)
             # TODO: store login_counter and verify it's increasing
+            device = U2FDevice.objects.get(user=self.user, key_handle=device_registerd['keyHandle'])
             device.last_used = timezone.now()
             device.save(update_fields=["last_used"])
         except Exception as e:
-            raise forms.ValidationError(force_text(e))
+            raise forms.ValidationError(e)
 
         return self.cleaned_data
 

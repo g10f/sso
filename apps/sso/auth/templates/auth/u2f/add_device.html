@@ -24,7 +24,7 @@
 
 {% block right_content %}
 
-    <form method="post" id="u2f-form">
+    <form method="post" id="u2f_register_form">
         {% csrf_token %}
 
         <h3>{% trans 'Register U2F device' %}</h3>
@@ -67,19 +67,6 @@
                 <button type="submit" class="btn btn-primary">{% trans 'Submit' %}</button>
             </div>
         </div>
-
     </form>
-
-    <script>
-        var challenge = {{ challenge|safe }};
-        var signRequests = {{ sign_requests|safe }};
-        u2f.register([challenge], signRequests, function (resp) {
-            var form = document.getElementById('u2f-form');
-            form.response.value = JSON.stringify(resp);
-            if (!handleU2FError(resp)) {
-                form.submit();
-            }
-        })
-    </script>
 
 {% endblock right_content %}

@@ -2,19 +2,18 @@
 from base64 import b32encode
 from binascii import unhexlify
 
-from django.core.validators import RegexValidator
 from django import forms
+from django.core.validators import RegexValidator
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
-
-from sso.auth.utils import get_qrcode_data_url, totp_digits
 from sso.auth.models import TwilioSMSDevice, TOTPDevice, Profile, Device
+from sso.auth.utils import get_qrcode_data_url, totp_digits
 from sso.forms import bootstrap
 
 
 class AddU2FForm(forms.Form):
-    response = forms.CharField(label=_('Response'), widget=forms.HiddenInput())
-    challenge = forms.CharField(label=_('Challenge'), widget=forms.HiddenInput())
+    u2f_response = forms.CharField(label=_('Response'), widget=forms.HiddenInput())
+    u2f_request = forms.CharField(label=_('Request'), widget=forms.HiddenInput())
 
 
 class ProfileForm(forms.Form):
@@ -71,7 +70,8 @@ class AddPhoneForm(forms.Form):
 
     def save(self):
         cd = self.cleaned_data
-        sms_device, created = TwilioSMSDevice.objects.get_or_create(user=self.user, number=cd['number'], defaults={'key': cd['key']})
+        sms_device, created = TwilioSMSDevice.objects.get_or_create(user=self.user, number=cd['number'],
+                                                                    defaults={'key': cd['key']})
         if not created:
             sms_device.key = cd['key']
 

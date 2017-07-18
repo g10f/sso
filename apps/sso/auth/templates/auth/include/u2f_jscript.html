@@ -1,25 +1,4 @@
 {% load static %}
 <script src="{% static 'js/vendor/bowser.min.js' %}"></script>
-<script src="{% static "js/vendor/u2f-api.js" %}"></script>
-<script>
-    // TODO: put into its own file
-    $(function() {
-        if((bowser.chrome && bowser.version >= 41)) {
-          $(".browser-not-supported").hide();
-        }
-    });
-    function displayError(text){
-        var status = document.getElementById('u2f-status');
-        status.textContent = text;
-        status.classList.add('alert');
-        status.classList.add('alert-danger');
-    }
-    function handleU2FError(resp) {
-        if (resp.errorCode) {
-            displayError('Error with U2F (Error code: ' + resp.errorCode + ')');
-            return true;
-        } else {
-            return false;
-        }
-    }
-</script>
+<script src="{% static "js/vendor/u2f-api-1.1.js" %}"></script>
+<script src="{% static "js/u2f-1.0.0.js" %}"></script>
