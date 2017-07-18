@@ -6,7 +6,6 @@ import time
 from binascii import unhexlify
 
 import requests
-from u2flib_server import u2f_v2
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
@@ -19,13 +18,15 @@ from sso.auth.oath import TOTP
 from sso.auth.utils import random_hex, hex_validator
 from sso.models import AbstractBaseModel
 from sso.utils.translation import string_format
+from u2flib_server import u2f
 
 logger = logging.getLogger(__name__)
 
 
 @python_2_unicode_compatible
 class Device(AbstractBaseModel):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, help_text="The user that this device belongs to.")
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
+                             help_text="The user that this device belongs to.")
     name = models.CharField(max_length=255, blank=True, help_text="The human-readable name of this device.")
     confirmed = models.BooleanField(default=False, help_text="Is this device ready for use?")
     created_at = models.DateTimeField(_('created at'), default=timezone.now)
@@ -87,6 +88,7 @@ class Profile(models.Model):
 
 @python_2_unicode_compatible
 class U2FDevice(Device):
+    version = models.TextField(default="U2F_V2")
     public_key = models.TextField()
     key_handle = models.TextField()
     app_id = models.TextField()
@@ -96,6 +98,7 @@ class U2FDevice(Device):
             'publicKey': self.public_key,
             'keyHandle': self.key_handle,
             'appId': self.app_id,
+            "version": self.version
         }
 
     class Meta:
@@ -110,10 +113,9 @@ class U2FDevice(Device):
 
     def challenges(self):
         u2f_devices = U2FDevice.objects.filter(user=self.user, confirmed=True)
-        challenges = [
-            u2f_v2.start_authenticate(d.to_json()) for d in u2f_devices
-        ]
-        return json.dumps(challenges)
+        devices = [d.to_json() for d in u2f_devices]
+        sign_request = u2f.begin_authentication(self.app_id, devices)
+        return json.dumps(sign_request)
 
     @property
     def image(self):
@@ -192,13 +194,18 @@ class TOTPDevice(Device):
         subsequently. (Default: -1)
 
     """
-    key = models.CharField(max_length=80, validators=[key_validator], default=default_key, help_text="A hex-encoded secret key of up to 40 bytes.")
+    key = models.CharField(max_length=80, validators=[key_validator], default=default_key,
+                           help_text="A hex-encoded secret key of up to 40 bytes.")
     step = models.PositiveSmallIntegerField(default=30, help_text="The time step in seconds.")
     t0 = models.BigIntegerField(default=0, help_text="The Unix time at which to begin counting steps.")
-    digits = models.PositiveSmallIntegerField(choices=[(6, 6), (8, 8)], default=6, help_text="The number of digits to expect in a token.")
-    tolerance = models.PositiveSmallIntegerField(default=1, help_text="The number of time steps in the past or future to allow.")
-    drift = models.SmallIntegerField(default=0, help_text="The number of time steps the prover is known to deviate from our clock.")
-    last_t = models.BigIntegerField(default=-1, help_text="The t value of the latest verified token. The next token must be at a higher time step.")
+    digits = models.PositiveSmallIntegerField(choices=[(6, 6), (8, 8)], default=6,
+                                              help_text="The number of digits to expect in a token.")
+    tolerance = models.PositiveSmallIntegerField(default=1,
+                                                 help_text="The number of time steps in the past or future to allow.")
+    drift = models.SmallIntegerField(default=0,
+                                     help_text="The number of time steps the prover is known to deviate from our clock.")
+    last_t = models.BigIntegerField(default=-1,
+                                    help_text="The t value of the latest verified token. The next token must be at a higher time step.")
 
     class Meta:
         ordering = ['order', 'name']
@@ -297,8 +304,10 @@ class TwilioSMSDevice(Device):
 
     """
     number = models.CharField(max_length=16, help_text="The mobile number to deliver tokens to.")
-    key = models.CharField(max_length=40, validators=[key_validator], default=default_key, help_text="A random key used to generate tokens (hex-encoded).")
-    last_t = models.BigIntegerField(default=-1, help_text="The t value of the latest verified token. The next token must be at a higher time step.")
+    key = models.CharField(max_length=40, validators=[key_validator], default=default_key,
+                           help_text="A random key used to generate tokens (hex-encoded).")
+    last_t = models.BigIntegerField(default=-1,
+                                    help_text="The t value of the latest verified token. The next token must be at a higher time step.")
 
     class Meta:
         ordering = ['order', 'name']
@@ -345,7 +354,8 @@ class TwilioSMSDevice(Device):
         """
         totp = self.totp_obj()
         token = format(totp.token(), '06d')
-        message = string_format(_('Your %(brand)s verification code is {token}'), {'brand': settings.SSO_BRAND}).format(token=token)
+        message = string_format(_('Your %(brand)s verification code is {token}'), {'brand': settings.SSO_BRAND}).format(
+            token=token)
 
         if settings.OTP_TWILIO_NO_DELIVERY:
             logger.info(message)

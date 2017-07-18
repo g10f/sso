@@ -15,7 +15,7 @@
 
 {% block content %}
 
-    <form class="dwbn-form-signin" method="post" id="u2f-form">{% csrf_token %}
+    <form class="dwbn-form-signin" method="post" id="u2f_sign_form">{% csrf_token %}
         <h3 class="dwbn-form-signin-heading">{% trans 'Connect your U2F device' %}</h3>
 
         {% if messages %}{% for message in messages %}
@@ -86,17 +86,6 @@
         {% endif %}
 
     </div>
-
-    <script>
-        var challenges = {{ form.initial.challenges|safe }};
-        u2f.sign(challenges, function (resp) {
-            var form = document.getElementById('u2f-form');
-            form.response.value = JSON.stringify(resp);
-            if (!handleU2FError(resp)) {
-                form.submit();
-            }
-        })
-    </script>
 
 {% endblock content %}
 
