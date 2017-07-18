@@ -297,7 +297,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
             organisation.select_by_value(str(org.pk))
 
         self.selenium.find_element_by_xpath('//a[@href="#app_roles"]').click()
-        self.selenium.find_element_by_id("id_application_roles_1").click()
+        self.selenium.find_element_by_id("id_application_roles_0").click()
 
         self.selenium.find_element_by_tag_name("form").submit()
 
