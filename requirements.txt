@@ -9,7 +9,8 @@ pyjwt
 cryptography
 oauthlib
 sorl-thumbnail
-pillow
+# sorl-thumbnail requires pillow < 4.2 https://github.com/jazzband/sorl-thumbnail/pull/504
+pillow<4.2
 django-recaptcha
 pytz
 geopy
