@@ -32,35 +32,38 @@ if (typeof bowser === 'undefined') {
             })
         }
     });
-    function displayError(text) {
-        var status = document.getElementById('u2f-status');
-        status.textContent = text;
-        status.classList.add('alert');
-        status.classList.add('alert-danger');
+    function displayError(text, element) {
+        var status = $("#u2f-status");
+        status.text(text + " See: ");
+        var element = $("<strong><a href='https://developers.yubico.com/U2F/Libraries/" +
+            "Client_error_codes.html'>Client error codes</a></strong>");
+        status.append(element);
+        status.addClass('alert');
+        status.addClass('alert-danger');
     }
 
     function handleU2FError(resp) {
         if (resp.errorCode) {
-            var message = "Unexpected U2F error";
+            var message = "1 - Unexpected U2F error";
             switch (resp.errorCode) {
                 case 2:
-                    message = "Bad request";
+                    message = "2 - Bad request.";
                     break;
                 case 3:
-                    message = "Client configuration is not supported.";
+                    message = "3 - Client configuration is not supported.";
                     break;
                 case 4:
                     if ($('#u2f_registration_form').length) {
-                        message = "The presented device is not eligible for this request. This may mean that the " +
+                        message = "4 - The presented device is not eligible for this request. This may mean that the " +
                             "token is already registered.";
 
                     } else {
                         message = "The presented device is not eligible for this request. This may mean that the " +
-                            "token does not know the presented key handle.";
+                            "token does 4 - not know the presented key handle.";
                     }
                     break;
                 case 5:
-                    message = "Timeout reached before request could be satisfied.";
+                    message = "5 - Timeout reached before request could be satisfied.";
                     break;
             }
             displayError(message);
