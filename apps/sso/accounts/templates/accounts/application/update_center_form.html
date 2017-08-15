@@ -56,15 +56,7 @@
                 {% include 'accounts/includes/_profiles_field.html' with field=form.role_profiles %}
             </div>
             <div class="tab-pane" id="app_roles">
-                {% with field=form.application_roles %}
-                    <div class="form-group {% if field.errors %}has-error{% endif %}">
-                        <div class="dwbn-form-control_lg">
-                            {{ field }}{% if field.help_text or field.errors %}
-                                <span class="help-inline">{{ field.help_text }} {% for error in field.errors %}
-                                    {{ error }} {% endfor %}</span>{% endif %}
-                        </div>
-                    </div>
-                {% endwith %}
+                {% include 'accounts/includes/_app_roles_field.html' with field=form.application_roles %}
             </div>
             <div class="tab-pane" id="notes">
                 {% with field=form.notes %}

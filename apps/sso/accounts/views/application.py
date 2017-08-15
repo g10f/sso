@@ -316,7 +316,7 @@ def add_user_done(request, uuid, template='accounts/application/add_user_done.ht
     return render(request, template, data)
 
 
-def _update_standard_user(request, user, template='accounts/application/update_user_form.html'):
+def _update_standard_user(request, user, app_roles_by_profile, template='accounts/application/update_user_form.html'):
     if user.useremail_set.count() == 0:
         useremail_extra = 1
     else:
@@ -408,9 +408,6 @@ def _update_standard_user(request, user, template='accounts/application/update_u
     except ObjectDoesNotExist:
         user_organisation = None
 
-    app_roles_by_profile = {id for id in ApplicationRole.objects.filter(
-        roleprofile__user__id=user.pk).only("id").values_list('id', flat=True)}
-
     context = {'form': form, 'errors': errors, 'formsets': formsets, 'media': media, 'active': active,
                'app_roles_by_profile': app_roles_by_profile,
                'logged_in': logged_in, 'is_validation_period_active': is_validation_period_active(user_organisation),
@@ -418,7 +415,7 @@ def _update_standard_user(request, user, template='accounts/application/update_u
     return render(request, template, context)
 
 
-def _update_center_account(request, user, template='accounts/application/update_center_form.html'):
+def _update_center_account(request, user, app_roles_by_profile, template='accounts/application/update_center_form.html'):
     if request.method == 'POST':
         form = CenterProfileForm(request.POST, instance=user, request=request)
 
@@ -462,7 +459,9 @@ def _update_center_account(request, user, template='accounts/application/update_
     else:
         logged_in = True
 
-    context = {'form': form, 'logged_in': logged_in, 'title': _('Change user')}
+    context = {'form': form,
+               'app_roles_by_profile': app_roles_by_profile,
+               'logged_in': logged_in, 'title': _('Change user')}
     return render(request, template, context)
 
 
@@ -473,11 +472,14 @@ def update_user(request, uuid):
     if not request.user.has_user_access(uuid):
         raise PermissionDenied
     user = get_object_or_404(get_user_model(), uuid=uuid)
+    app_roles_by_profile = {id for id in ApplicationRole.objects.filter(
+        roleprofile__user__id=user.pk).only("id").values_list('id', flat=True)}
+
     # we use different forms for different kind of users
     if getattr(user, 'is_center', True):
-        return _update_center_account(request, user)
+        return _update_center_account(request, user, app_roles_by_profile)
     else:
-        return _update_standard_user(request, user)
+        return _update_standard_user(request, user, app_roles_by_profile)
 
 
 @admin_login_required
