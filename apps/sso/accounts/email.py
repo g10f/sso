@@ -20,7 +20,6 @@ def send_account_created_email(user, request, token_generator=default_pwd_reset_
                                async=None,
                                countdown=0
                                ):
-
     use_https = request.is_secure()
     current_site = get_current_site(request)
     site_name = settings.SSO_SITE_NAME
@@ -44,14 +43,14 @@ def send_account_created_email(user, request, token_generator=default_pwd_reset_
     language = user.language if user.language else settings.LANGUAGE_CODE
     message, subject = i18n_email_msg_and_subj(c, email_template_name, subject_template_name, language)
 
-    user.email_user(subject, message, from_email=from_email, fail_silently=settings.DEBUG, async=async, countdown=countdown)
+    user.email_user(subject, message, from_email=from_email, fail_silently=settings.DEBUG, async=async,
+                    countdown=countdown)
 
 
 def send_useremail_confirmation(user_email, request, token_generator=email_confirm_token_generator,
                                 email_template_name='accounts/email/useremail_confirm_email.txt',
                                 subject_template_name='accounts/email/useremail_confirm_email_subject.txt'
                                 ):
-
     use_https = request.is_secure()
     current_site = get_current_site(request)
     site_name = settings.SSO_SITE_NAME

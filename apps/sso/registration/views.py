@@ -33,7 +33,7 @@ class UserRegistrationDeleteView(DeleteView):
         return user.filter_administrable_users(qs)
 
     @method_decorator(admin_login_required)
-    @method_decorator(permission_required('registration.change_registrationprofile', raise_exception=True))
+    @method_decorator(permission_required('registration.delete_registrationprofile', raise_exception=True))
     def dispatch(self, request, *args, **kwargs):
         return super(UserRegistrationDeleteView, self).dispatch(request, *args, **kwargs)
 

@@ -12,7 +12,8 @@ logger = logging.getLogger(__name__)
 
 
 class UserSearchFilter(SearchFilter):
-    search_names = ['username__icontains', 'first_name__icontains', 'last_name__icontains', 'useremail__email__icontains']
+    search_names = ['username__icontains', 'first_name__icontains', 'last_name__icontains',
+                    'useremail__email__icontains']
 
 
 class IsActiveFilter(ViewChoicesFilter):
