@@ -520,11 +520,13 @@ class UserList(UserMixin, JsonListView):
     def get_operations(self):
         base_uri = base_url(self.request)
         return {
-            'create': {'@type': 'CreateResourceOperation', 'method': 'PUT', 'template': "%s%s%s" % (base_uri, reverse('api:v2_users'), '{uuid}/')}
+            'create': {'@type': 'CreateResourceOperation', 'method': 'PUT',
+                       'template': "%s%s%s" % (base_uri, reverse('api:v2_users'), '{uuid}/')}
         }
 
     def get_queryset(self):
-        qs = super(UserList, self).get_queryset().prefetch_related('useraddress_set', 'userphonenumber_set', 'useremail_set').distinct()
+        qs = super(UserList, self).get_queryset().prefetch_related('useraddress_set', 'userphonenumber_set',
+                                                                   'useremail_set').distinct()
         qs = qs.order_by('username')
         qs = self.request.user.filter_administrable_users(qs)
 
@@ -536,6 +538,10 @@ class UserList(UserMixin, JsonListView):
         username = self.request.GET.get('q', None)
         if username:
             qs = qs.filter(Q(first_name__icontains=username) | Q(last_name__icontains=username))
+
+        email = self.request.GET.get('email', None)
+        if email:
+            qs = qs.filter(useremail__email__icontains=email)
 
         association_id = self.request.GET.get('association_id', None)
         if association_id:
@@ -566,7 +572,8 @@ class UserList(UserMixin, JsonListView):
             parsed = parse_datetime_with_timezone_support(modified_since)
             if parsed is None:
                 raise ValueError("can not parse %s" % modified_since)
-            qs = qs.filter(Q(last_modified__gte=parsed) | Q(useraddress__last_modified__gte=parsed) | Q(userphonenumber__last_modified__gte=parsed))
+            qs = qs.filter(Q(last_modified__gte=parsed) | Q(useraddress__last_modified__gte=parsed) |
+                           Q(userphonenumber__last_modified__gte=parsed))
 
         return qs
 
@@ -617,7 +624,8 @@ def user_emails(request):
         parsed = parse_datetime_with_timezone_support(modified_since)
         if parsed is None:
             raise ValueError("can not parse %s" % modified_since)
-        qs = qs.filter(Q(user__last_modified__gte=parsed) | Q(user__useraddress__last_modified__gte=parsed) | Q(user__userphonenumber__last_modified__gte=parsed))
+        qs = qs.filter(Q(user__last_modified__gte=parsed) | Q(user__useraddress__last_modified__gte=parsed) |
+                       Q(user__userphonenumber__last_modified__gte=parsed))
 
     email_list = []
     for user_email in qs:

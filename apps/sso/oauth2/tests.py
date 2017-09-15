@@ -359,12 +359,12 @@ class OAuth2Tests(OAuth2BaseTestCase):
         }
 
         token_response = self.client.post(reverse('oauth2:token'), token_data)
-        self.assertEqual(token_response.status_code, 401)
+        self.assertEqual(token_response.status_code, 400)
         self.assertIn('application/json', token_response['Content-Type'])
 
         token = token_response.json()
         self.assertIn('error', token)
-        expected = {'error': 'access_denied'}
+        expected = {'error': 'invalid_request'}
         self.assertTrue(set(expected.items()).issubset(set(token.items())))
 
         token_data['redirect_uri'] = "http://localhost"

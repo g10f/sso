@@ -34,11 +34,15 @@ class Application(models.Model):
     title = models.CharField(max_length=255)
     url = models.URLField(max_length=2047, blank=True)
     uuid = models.UUIDField(unique=True, default=uuid.uuid4, editable=True)
-    global_navigation = models.BooleanField(_('global navigation'),
-                                            help_text=_('Designates whether this application should be shown in the global navigation bar.'), default=True)
-    is_active = models.BooleanField(_('active'), default=True, help_text=_('Designates whether this application should be provided.'))
-    redirect_to_after_first_login = models.BooleanField(_('redirect to after first login'), default=False,
-                                                        help_text=_('Designates whether the user should redirected to this app after the first login.'))
+    global_navigation = models.BooleanField(
+        _('global navigation'),
+        help_text=_('Designates whether this application should be shown in the global navigation bar.'),
+        default=True)
+    is_active = models.BooleanField(_('active'), default=True,
+                                    help_text=_('Designates whether this application should be provided.'))
+    redirect_to_after_first_login = models.BooleanField(
+        _('redirect to after first login'), default=False,
+        help_text=_('Designates whether the user should redirected to this app after the first login.'))
     notes = models.TextField(_("Notes"), blank=True, max_length=2048)
     objects = ApplicationManager()
 
@@ -71,7 +75,8 @@ class RoleManager(models.Manager):
 class Role(models.Model):
     name = models.CharField(_("name"), unique=True, max_length=255)
     order = models.IntegerField(default=0, help_text=_('Overwrites the alphabetic order.'))
-    group = models.ForeignKey(Group, on_delete=models.SET_NULL, blank=True, null=True, help_text=_('Associated group for SSO internal permission management.'))
+    group = models.ForeignKey(Group, on_delete=models.SET_NULL, blank=True, null=True,
+                              help_text=_('Associated group for SSO internal permission management.'))
     objects = RoleManager()
 
     class Meta:
@@ -95,12 +100,15 @@ class ApplicationRoleManager(models.Manager):
 class ApplicationRole(models.Model):
     application = models.ForeignKey(Application, on_delete=models.CASCADE)
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
-    is_inheritable_by_org_admin = models.BooleanField(_('inheritable by organisation admin'), default=True,
-                                                      help_text=_('Designates that the role can inherited by a organisation admin.'))
-    is_inheritable_by_global_admin = models.BooleanField(_('inheritable by global admin'), default=True,
-                                                         help_text=_('Designates that the role can inherited by a global admin.'))
-    is_organisation_related = models.BooleanField(_('organisation related'), default=False,
-                                                  help_text=_('Designates that the role will be deleted in case of a change of the organisation.'))
+    is_inheritable_by_org_admin = models.BooleanField(
+        _('inheritable by organisation admin'), default=True,
+        help_text=_('Designates that the role can inherited by a organisation admin.'))
+    is_inheritable_by_global_admin = models.BooleanField(
+        _('inheritable by global admin'), default=True,
+        help_text=_('Designates that the role can inherited by a global admin.'))
+    is_organisation_related = models.BooleanField(
+        _('organisation related'), default=False,
+        help_text=_('Designates that the role will be deleted in case of a change of the organisation.'))
 
     objects = ApplicationRoleManager()
 
@@ -120,12 +128,15 @@ class ApplicationRole(models.Model):
 @python_2_unicode_compatible
 class RoleProfile(AbstractBaseModel):
     name = models.CharField(_("name"), max_length=255)
-    application_roles = models.ManyToManyField(ApplicationRole, help_text=_('Associates a group of application roles that are usually assigned together.'))
+    application_roles = models.ManyToManyField(ApplicationRole, help_text=_(
+        'Associates a group of application roles that are usually assigned together.'))
     order = models.IntegerField(default=0, help_text=_('Overwrites the alphabetic order.'))
-    is_inheritable_by_org_admin = models.BooleanField(_('inheritable by organisation admin'), default=True,
-                                                      help_text=_('Designates that the role profile can inherited by a organisation admin.'))
-    is_inheritable_by_global_admin = models.BooleanField(_('inheritable by global admin'), default=True,
-                                                         help_text=_('Designates that the role profile can inherited by a global admin.'))
+    is_inheritable_by_org_admin = models.BooleanField(
+        _('inheritable by organisation admin'), default=True,
+        help_text=_('Designates that the role profile can inherited by a organisation admin.'))
+    is_inheritable_by_global_admin = models.BooleanField(
+        _('inheritable by global admin'), default=True,
+        help_text=_('Designates that the role profile can inherited by a global admin.'))
 
     class Meta(AbstractBaseModel.Meta):
         ordering = ['order', 'name']
