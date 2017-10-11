@@ -537,7 +537,7 @@ class OrganisationList(ListView):
 
         writer = csv.writer(response, quoting=csv.QUOTE_ALL)
         row = ["name", "is_active", "homepage", "email", "primary_phone", "country", "admin_region", "addressee",
-               "street_address", "city", "postal_code"]
+               "street_address", "city", "postal_code", "founded"]
         writer.writerow(row)
         for organisation in qs:
             admin_region = six.text_type(organisation.admin_region) if organisation.admin_region else six.text_type('')
@@ -551,6 +551,8 @@ class OrganisationList(ListView):
                         primary_address.postal_code]
             else:
                 row += ['', '', '', '']
+
+            row += [organisation.founded]
 
             writer.writerow(row)
 

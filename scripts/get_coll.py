@@ -87,7 +87,7 @@ class ApiClient(object):
         token_endpoint = openid_configuration['token_endpoint']
 
         body = {'grant_type': 'client_credentials'}
-        auth = b"%s:%s" % (self.client_id, self.client_secret)
+        auth = b"%s:%s" % (self.client_id.encode(), self.client_secret.encode())
         headers = {'Content-Type': 'application/x-www-form-urlencoded',
                    'authorization': '%s %s' % ('Basic', b64encode(auth).decode("ascii"))}
         json_response = self.session.post(token_endpoint, headers=headers, data=body).json()
