@@ -5,6 +5,7 @@ from uuid import UUID
 import six
 from sorl.thumbnail import get_thumbnail
 
+from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
@@ -66,6 +67,7 @@ def _non_empty_string(s):
     if issubclass(type(s), six.text_type):
         return len(s) > 0
     return False
+
 
 API_USER_MAPPING = {
     'given_name': {'name': 'first_name', 'validate': _non_empty_string},
@@ -136,9 +138,12 @@ class UserMixin(object):
             if obj.picture:
                 data['picture']['30x30'] = absolute_url(request, get_thumbnail(obj.picture, "30x30", crop="center").url)
                 data['picture']['60x60'] = absolute_url(request, get_thumbnail(obj.picture, "60x60", crop="center").url)
-                data['picture']['120x120'] = absolute_url(request, get_thumbnail(obj.picture, "120x120", crop="center").url)
-                data['picture']['240x240'] = absolute_url(request, get_thumbnail(obj.picture, "240x240", crop="center").url)
-                data['picture']['480x480'] = absolute_url(request, get_thumbnail(obj.picture, "480x480", crop="center").url)
+                data['picture']['120x120'] = absolute_url(request,
+                                                          get_thumbnail(obj.picture, "120x120", crop="center").url)
+                data['picture']['240x240'] = absolute_url(request,
+                                                          get_thumbnail(obj.picture, "240x240", crop="center").url)
+                data['picture']['480x480'] = absolute_url(request,
+                                                          get_thumbnail(obj.picture, "480x480", crop="center").url)
 
             data['organisations'] = {
                 organisation.uuid.hex: {
@@ -158,7 +163,8 @@ class UserMixin(object):
                 organisation_country.country.iso2_code: {
                     'code': organisation_country.country.iso2_code,
                     'name': organisation_country.country.printable_name,
-                    '@id': "%s%s" % (base, reverse('api:v2_country', kwargs={'iso2_code': organisation_country.country.iso2_code}))
+                    '@id': "%s%s" % (
+                    base, reverse('api:v2_country', kwargs={'iso2_code': organisation_country.country.iso2_code}))
                 } for organisation_country in obj.admin_organisation_countries.all()
             }
 
@@ -200,6 +206,15 @@ class UserMixin(object):
                         'primary': phone_number.primary
                     } for phone_number in obj.userphonenumber_set.all()
                 }
+
+            if obj.has_perm("registration.change_registrationprofile"):
+                count_of_registrationprofiles = obj.get_count_of_registrationprofiles()
+                if settings.REGISTRATION.get('OPEN', True) or count_of_registrationprofiles > 0:
+                    data['open_registrations'] = count_of_registrationprofiles
+
+            if obj.has_perm("accounts.change_user"):
+                data['open_centerchanges'] = obj.get_count_of_centerchanges()
+
         return data
 
 
@@ -447,7 +462,8 @@ class GlobalNavigationView(UserDetailView):
 
     def render_to_json_response(self, context, allow_jsonp=True, **response_kwargs):
         # allow jsonp requests for the global navigation bar
-        return super(GlobalNavigationView, self).render_to_json_response(context, allow_jsonp=allow_jsonp, **response_kwargs)
+        return super(GlobalNavigationView, self).render_to_json_response(context, allow_jsonp=allow_jsonp,
+                                                                         **response_kwargs)
 
     @method_decorator(cache_control(must_revalidate=True, max_age=60 * 5))
     def get(self, request, *args, **kwargs):
@@ -459,7 +475,8 @@ class GlobalNavigationView(UserDetailView):
             application_data = {
                 'id': application.uuid.hex,
                 'order': application.order,
-                'link': {'href': application.url, 'title': application.title, 'global_navigation': application.global_navigation}
+                'link': {'href': application.url, 'title': application.title,
+                         'global_navigation': application.global_navigation}
             }
             applications.append(application_data)
 
@@ -471,7 +488,8 @@ class GlobalNavigationView(UserDetailView):
             'logout': {'href': absolute_url(request, reverse('accounts:logout')), 'title': _('Log out')}
         }
         if obj.picture:
-            data['picture_30x30'] = {'href': absolute_url(request, get_thumbnail(obj.picture, "30x30", crop="center").url)}
+            data['picture_30x30'] = {
+                'href': absolute_url(request, get_thumbnail(obj.picture, "30x30", crop="center").url)}
         return data
 
 
