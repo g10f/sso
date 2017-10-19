@@ -43,8 +43,9 @@ class IsActiveFilter(SimpleListFilter):
 
 class RegistrationAdmin(admin.ModelAdmin):
     actions = ['activate', 'validate_users', 'resend_validation_email', 'delete_expired']
-    list_display = ('user', 'primary_email', 'date_registered', 'about_me', 'is_validated', 'token_valid', 'activation_valid', 'is_access_denied', 'is_active')
-    raw_id_fields = ['user', 'verified_by_user']
+    list_display = ('user', 'primary_email', 'date_registered', 'about_me', 'is_validated', 'token_valid',
+                    'activation_valid', 'is_access_denied', 'is_active')
+    raw_id_fields = ['user', 'verified_by_user', 'last_modified_by_user']
     search_fields = ('user__username', 'user__first_name', 'user__last_name', 'user__useremail__email')
     date_hierarchy = 'date_registered'
     list_filter = ['is_validated', ExpiredFilter, IsActiveFilter, 'check_back']
@@ -53,9 +54,10 @@ class RegistrationAdmin(admin.ModelAdmin):
     fieldsets = [
         (None,
          {'fields':
-              ['user', 'user_link', 'last_modified', 'date_registered', 'is_validated', 'is_active', 'about_me',
-               'known_person1_first_name', 'known_person2_first_name', 'known_person1_last_name', 'known_person2_last_name',
-               'check_back', 'is_access_denied', 'verified_by_user', 'comment'],
+              ['user', 'user_link', 'last_modified', 'last_modified_by_user', 'date_registered', 'is_validated',
+               'is_active', 'about_me','known_person1_first_name', 'known_person2_first_name',
+               'known_person1_last_name', 'known_person2_last_name', 'check_back', 'is_access_denied',
+               'verified_by_user', 'comment'],
           'classes': ['wide']}), ]
 
     def get_queryset(self, request):
@@ -72,7 +74,8 @@ class RegistrationAdmin(admin.ModelAdmin):
 
     def user_link(self, obj):
         user = obj.user
-        url = reverse('admin:%s_%s_change' % (user._meta.app_label, user._meta.module_name), args=[user.pk], current_app=self.admin_site.name)
+        url = reverse('admin:%s_%s_change' % (user._meta.app_label, user._meta.module_name), args=[user.pk],
+                      current_app=self.admin_site.name)
         return mark_safe(u'<a href="%s">%s</a>' % (url, user))
 
     user_link.allow_tags = True
@@ -107,7 +110,8 @@ class RegistrationAdmin(admin.ModelAdmin):
     activate.short_description = _('Activate users')
 
     def delete_expired(self, request, queryset):
-        expired_profiles = queryset.filter(id__in=RegistrationProfile.objects.get_expired().values_list('id', flat=True))
+        expired_profiles = queryset.filter(
+            id__in=RegistrationProfile.objects.get_expired().values_list('id', flat=True))
         changecount = expired_profiles.count()
         for profile in expired_profiles:
             profile.user.delete()
