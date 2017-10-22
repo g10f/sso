@@ -1,5 +1,6 @@
 import os
 import re
+from urllib.parse import urlencode
 
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.ui import Select
@@ -311,6 +312,10 @@ class AccountsSeleniumTests(SSOSeleniumTests):
 
         new_password = 'gsf1zghxyz'
         self.set_create_password(path, new_password)
+
+        # check if the login link has a the new app url as next parameter (redirect_to_after_first_login=True)
+        login_url = '%s?%s' % (reverse('auth:login'), urlencode({'next': 'http://test.example.com'}, safe='/'))
+        self.selenium.find_element_by_xpath('//a[@href="%s"]' % login_url)
 
         # login as new user with the new password
         self.login_test(new_email, new_password)

@@ -3,6 +3,7 @@ import logging
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import REDIRECT_FIELD_NAME, logout as auth_logout
+from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.password_validation import password_validators_help_texts
 from django.contrib.auth.tokens import default_token_generator
@@ -14,7 +15,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect, resolve_url
 from django.template.loader import render_to_string
 from django.template.response import TemplateResponse
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.html import strip_tags
 from django.utils.http import urlsafe_base64_decode
 from django.utils.translation import ugettext as _
@@ -35,7 +36,6 @@ from sso.utils.url import get_safe_redirect_uri, update_url
 
 logger = logging.getLogger(__name__)
 
-
 LOGIN_FORM_KEY = 'login_form_key'
 
 
@@ -45,7 +45,8 @@ def contact(request):
         if form.is_valid():
             cd = form.cleaned_data
             html_message = render_to_string('accounts/email/contact_email.html', cd)
-            send_mail_managers(cd['subject'], message=strip_tags(html_message), html_message=html_message, fail_silently=settings.DEBUG)
+            send_mail_managers(cd['subject'], message=strip_tags(html_message), html_message=html_message,
+                               fail_silently=settings.DEBUG)
             return redirect('accounts:contact_thanks')
     else:
         initial = {}
@@ -53,7 +54,7 @@ def contact(request):
             initial['email'] = request.user.primary_email()
             initial['name'] = request.user.get_full_name()
         form = ContactForm(initial=initial)
-        
+
     context = {'form': form}
     return render(request, 'accounts/contact_form.html', context)
 
@@ -87,19 +88,16 @@ def password_change(request):
         'redirect_uri': redirect_uri
     }
 
-    return TemplateResponse(request,template_name, context)
+    return TemplateResponse(request, template_name, context)
 
 
-def password_change_done(request):
-    """
-    Displays the "success" page after a password change.
-    """
-    from django.contrib.auth.views import password_change_done
-    defaults = {
-        'extra_context': {'redirect_uri': get_safe_redirect_uri(request, allowed_hosts())},
-        'template_name': 'accounts/password_change_done.html',
-    }
-    return password_change_done(request, **defaults)
+class PasswordChangeDoneView(auth_views.PasswordChangeDoneView):
+    template_name = 'accounts/password_change_done.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(PasswordChangeDoneView, self).get_context_data(**kwargs)
+        context['redirect_uri'] = get_safe_redirect_uri(self.request, allowed_hosts())
+        return context
 
 
 @never_cache
@@ -152,13 +150,16 @@ def confirm_email(request, uidb64, token, post_reset_redirect=None):
         user_email = None
 
     if user_email is not None and user_email.confirmed:
-        messages.info(request, _('Your email address \"%(email)s\" was already confirmed successfully.') % {'email': user_email})
+        messages.info(request,
+                      _('Your email address \"%(email)s\" was already confirmed successfully.') % {'email': user_email})
     elif user_email is not None and email_confirm_token_generator.check_token(user_email, token):
         user_email.confirmed = True
         user_email.save()
-        messages.success(request, _('Your email address \"%(email)s\" was confirmed successfully.') % {'email': user_email})
+        messages.success(request,
+                         _('Your email address \"%(email)s\" was confirmed successfully.') % {'email': user_email})
     elif user_email is not None:
-        messages.error(request, _('The confirmation message has probably already expired, please resend the confirmation.'))
+        messages.error(request,
+                       _('The confirmation message has probably already expired, please resend the confirmation.'))
 
     return HttpResponseRedirect(post_reset_redirect)
 
@@ -180,7 +181,8 @@ def emails(request):
             try:
                 user_email = UserEmail.objects.get(id=request.POST['delete'])
                 user_email.delete()
-                messages.success(request, _('The email \"%(email)s\" was deleted successfully.') % {'email': user_email})
+                messages.success(request,
+                                 _('The email \"%(email)s\" was deleted successfully.') % {'email': user_email})
             except UserEmail.DoesNotExist:
                 # may be a double click on the delete button
                 pass
@@ -249,8 +251,8 @@ def profile_center_account(request, redirect_uri=None):
         form = CenterSelfProfileForm(request.POST, instance=user, files=request.FILES)
         if form.is_valid():
             form.save()
-            change_message = ChangedDataList(form, []).change_message() 
-            log_change(request, user, change_message)            
+            change_message = ChangedDataList(form, []).change_message()
+            log_change(request, user, change_message)
 
             success_url = get_profile_success_url(request, redirect_uri)
             return HttpResponseRedirect(success_url)
@@ -268,8 +270,8 @@ def profile_core(request, redirect_uri=None):
         form = UserSelfProfileForm(request.POST, instance=user, files=request.FILES)
         if form.is_valid():
             form.save()
-            change_message = ChangedDataList(form, []).change_message() 
-            log_change(request, user, change_message)            
+            change_message = ChangedDataList(form, []).change_message()
+            log_change(request, user, change_message)
 
             success_url = get_profile_success_url(request, redirect_uri)
             return HttpResponseRedirect(success_url)
@@ -281,9 +283,10 @@ def profile_core(request, redirect_uri=None):
     except ObjectDoesNotExist:
         user_organisation = None
 
-    context = {'form': form, 'redirect_uri': redirect_uri, 'is_validation_period_active': is_validation_period_active(user_organisation)}
+    context = {'form': form, 'redirect_uri': redirect_uri,
+               'is_validation_period_active': is_validation_period_active(user_organisation)}
     return render(request, 'accounts/profile_core_form.html', context)
-    
+
 
 @login_required
 def profile_with_address_and_phone(request, redirect_uri=None):
@@ -291,28 +294,29 @@ def profile_with_address_and_phone(request, redirect_uri=None):
     phonenumber_extra = 1
     user = request.user
     address_count = user.useraddress_set.count()
-    if address_count == 0: 
+    if address_count == 0:
         address_extra = 1
-    
+
     AddressInlineFormSet = inlineformset_factory(User, UserAddress, AddressForm, extra=address_extra, max_num=3)
-    PhoneNumberInlineFormSet = inlineformset_factory(User, UserPhoneNumber, PhoneNumberForm, extra=phonenumber_extra, max_num=6)
-    
+    PhoneNumberInlineFormSet = inlineformset_factory(User, UserPhoneNumber, PhoneNumberForm, extra=phonenumber_extra,
+                                                     max_num=6)
+
     if request.method == 'POST':
         form = UserSelfProfileForm(request.POST, instance=user, files=request.FILES)
-        
+
         address_inline_formset = AddressInlineFormSet(request.POST, instance=user)
         phonenumber_inline_formset = PhoneNumberInlineFormSet(request.POST, instance=user)
-        
+
         if form.is_valid() and address_inline_formset.is_valid() and phonenumber_inline_formset.is_valid():
             form.save()
             address_inline_formset.save()
             phonenumber_inline_formset.save()
-            
+
             UserAddress.ensure_single_primary(user)
             UserPhoneNumber.ensure_single_primary(user)
-                        
+
             formsets = [address_inline_formset, phonenumber_inline_formset]
-            change_message = ChangedDataList(form, formsets).change_message() 
+            change_message = ChangedDataList(form, formsets).change_message()
             log_change(request, user, change_message)
 
             success_url = get_profile_success_url(request, redirect_uri)
@@ -323,18 +327,18 @@ def profile_with_address_and_phone(request, redirect_uri=None):
         form = UserSelfProfileForm(instance=user)
 
     phonenumber_inline_formset.forms += [phonenumber_inline_formset.empty_form]
-    address_inline_formset.forms += [address_inline_formset.empty_form]    
-        
+    address_inline_formset.forms += [address_inline_formset.empty_form]
+
     formsets = [address_inline_formset, phonenumber_inline_formset]
-    
+
     media = form.media
     for fs in formsets:
         media = media + fs.media
-    
+
     errors = ErrorList(form, formsets)
     active = ''
     if errors:
-        if not form.is_valid():  
+        if not form.is_valid():
             active = 'object'
         else:  # set the first formset with an error as active
             for formset in formsets:
@@ -348,7 +352,8 @@ def profile_with_address_and_phone(request, redirect_uri=None):
         user_organisation = None
 
     context = {'form': form, 'errors': errors, 'formsets': formsets, 'media': media, 'active': active,
-                  'redirect_uri': redirect_uri, 'is_validation_period_active': is_validation_period_active(user_organisation)}
+               'redirect_uri': redirect_uri,
+               'is_validation_period_active': is_validation_period_active(user_organisation)}
     return render(request, 'accounts/profile_form.html', context)
 
 
@@ -407,71 +412,45 @@ def password_create_confirm(request, uidb64=None, token=None, template_name='acc
     return TemplateResponse(request, template_name, context)
 
 
-def password_create_complete(request, uidb64=None):
-    from django.contrib.auth.views import password_reset_complete
-    login_url = resolve_url(settings.LOGIN_URL)
-    if uidb64 is not None:
-        # try to find the first application with redirect_to_after_first_login
-        try:
-            uid = urlsafe_base64_decode(uidb64)
-            applicationrole_ids = get_applicationrole_ids(uid, Q(application__redirect_to_after_first_login=True))
-            if applicationrole_ids:
-                app = Application.objects.distinct().filter(applicationrole__in=applicationrole_ids, is_active=True).first()
-                if app is not None and app.url:
-                    login_url = update_url(login_url, {REDIRECT_FIELD_NAME: app.url})
-        except (TypeError, ValueError, OverflowError, User.DoesNotExist) as e:
-            logger.exception(e)
+class PasswordCreateCompleteView(auth_views.PasswordResetCompleteView):
+    template_name = 'accounts/password_create_complete.html'
 
-    defaults = {
-        'extra_context': {'login_url': login_url},
-        'template_name': 'accounts/password_create_complete.html',
-    }
-    return password_reset_complete(request, **defaults)
+    def get_context_data(self, **kwargs):
+        context = super(PasswordCreateCompleteView, self).get_context_data(**kwargs)
+        uidb64 = kwargs.get('uidb64')
 
+        if uidb64 is not None:
+            # try to find the first application with redirect_to_after_first_login
+            try:
+                uid = urlsafe_base64_decode(uidb64)
+                applicationrole_ids = get_applicationrole_ids(uid, Q(application__redirect_to_after_first_login=True))
+                if applicationrole_ids:
+                    app = Application.objects.distinct().filter(applicationrole__in=applicationrole_ids,
+                                                                is_active=True).first()
+                    if app is not None and app.url:
+                        login_url = resolve_url(settings.LOGIN_URL)
+                        context['login_url'] = update_url(login_url, {REDIRECT_FIELD_NAME: app.url})
+            except (TypeError, ValueError, OverflowError, User.DoesNotExist) as e:
+                logger.exception(e)
 
-# 4 views for password reset:
-# - password_reset sends the mail
-# - password_reset_done shows a success message for the above
-# - password_reset_confirm checks the link the user clicked and
-#   prompts for a new password
-# - password_reset_complete shows a success message for the above
-
-@csrf_protect
-def password_reset(request, is_admin_site=False):
-    from django.contrib.auth.views import password_reset
-    defaults = {
-        'post_reset_redirect': reverse('accounts:password_reset_done'),
-        'template_name': 'accounts/password_reset_form.html',
-        'email_template_name': 'accounts/email/password_reset_email.txt',
-        'html_email_template_name': 'accounts/email/password_reset_email.html',
-        'subject_template_name': 'accounts/email/password_reset_subject.txt',
-        'password_reset_form': PasswordResetForm
-    }
-    return password_reset(request, **defaults)
+        return context
 
 
-def password_reset_confirm(request, uidb64=None, token=None):
-    from django.contrib.auth.views import password_reset_confirm
-    defaults = {
-        'set_password_form': SetPasswordForm,
-        'post_reset_redirect': reverse('accounts:password_reset_complete'),
-        'template_name': 'accounts/password_reset_confirm.html',
-        'extra_context': {'password_validators_help_texts': password_validators_help_texts()},
-    }
-    return password_reset_confirm(request, uidb64, token, **defaults)
+class PasswordResetView(auth_views.PasswordResetView):
+    email_template_name = 'accounts/email/password_reset_email.txt'
+    form_class = PasswordResetForm
+    success_url = reverse_lazy('accounts:password_reset_done')
+    template_name = 'accounts/password_reset_form.html'
+    html_email_template_name = 'accounts/email/password_reset_email.html'
+    subject_template_name = 'accounts/email/password_reset_subject.txt'
 
 
-def password_reset_done(request):
-    from django.contrib.auth.views import password_reset_done
-    defaults = {
-        'template_name': 'accounts/password_reset_done.html',
-    }
-    return password_reset_done(request, **defaults)
+class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
+    form_class = SetPasswordForm
+    success_url = reverse_lazy('accounts:password_reset_complete'),
+    template_name = 'accounts/password_reset_confirm.html'
 
-
-def password_reset_complete(request):
-    from django.contrib.auth.views import password_reset_complete
-    defaults = {
-        'template_name': 'accounts/password_reset_complete.html',
-    }
-    return password_reset_complete(request, **defaults)
+    def get_context_data(self, **kwargs):
+        context = super(PasswordResetConfirmView, self).get_context_data(**kwargs)
+        context['password_validators_help_texts'] = password_validators_help_texts()
+        return context
