@@ -23,7 +23,7 @@ def update_url(url, params):
     """Given a URL, add or update query parameter and return the
     modified URL.
 
-    >>> update_url('http://example.com?foo=bar&biz=baz', {'foo', 'stuff', 'new': 'val'})
+    >>> update_url('http://example.com?foo=bar&biz=baz', {'foo': 'stuff', 'new': 'val'})
     'http://example.com?foo=stuff&biz=baz&new=val'
 
     """
