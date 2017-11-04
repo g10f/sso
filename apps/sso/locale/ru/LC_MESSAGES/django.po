@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-30 22:05+0200\n"
+"POT-Creation-Date: 2017-11-04 17:02+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -144,6 +144,11 @@ msgstr ""
 msgid ""
 "The user account associated with this email address cannot reset the "
 "password."
+msgstr ""
+
+msgid ""
+"You can not reset your password jet, because your account is waiting for "
+"initial activation."
 msgstr ""
 
 msgid "Email"
@@ -852,7 +857,17 @@ msgstr ""
 msgid "Create password complete"
 msgstr ""
 
-msgid "Your password has been created.  You may go ahead and log in now."
+msgid "Welcome,"
+msgstr ""
+
+msgid "Your password has been created."
+msgstr ""
+
+msgid "You may go ahead and log in now."
+msgstr ""
+
+#, python-format
+msgid "You can now start using <a href=\"%(url)s\">%(title)s</a>."
 msgstr ""
 
 msgid "Create Password"
@@ -891,9 +906,6 @@ msgid ""
 msgstr ""
 
 msgid "Password reset complete"
-msgstr ""
-
-msgid "Your password has been set.  You may go ahead and log in now."
 msgstr ""
 
 msgid "Password reset"
@@ -1027,9 +1039,6 @@ msgid "Your profile was changed successfully. You may edit it again below."
 msgstr ""
 
 msgid "Thank you. Your profile was saved."
-msgstr ""
-
-msgid "Password create unsuccessful"
 msgstr ""
 
 msgid "last login"
@@ -1206,7 +1215,7 @@ msgstr ""
 msgid "token don't match"
 msgstr ""
 
-msgid "Challenge"
+msgid "Request"
 msgstr ""
 
 msgid ""
@@ -1803,30 +1812,6 @@ msgid "Used for URLs, auto-generated from name if blank"
 msgstr ""
 
 msgid "Regions"
-msgstr ""
-
-msgctxt "Organisation Type"
-msgid "Center"
-msgstr ""
-
-msgctxt "Organisation Type"
-msgid "Group"
-msgstr ""
-
-msgctxt "Organisation Type"
-msgid "Retreat"
-msgstr ""
-
-msgctxt "Organisation Type"
-msgid "Contact"
-msgstr ""
-
-msgctxt "Organisation Type"
-msgid "Center & Retreat"
-msgstr ""
-
-msgctxt "Organisation Type"
-msgid "Group & Retreat"
 msgstr ""
 
 msgid "Unknown"
@@ -2448,6 +2433,50 @@ msgstr ""
 msgid "Edit registration"
 msgstr ""
 
+msgctxt "Organisation Type"
+msgid "Center"
+msgstr ""
+
+msgctxt "Organisation Type"
+msgid "Group"
+msgstr ""
+
+msgctxt "Organisation Type"
+msgid "Retreat"
+msgstr ""
+
+msgctxt "Organisation Type"
+msgid "Contact"
+msgstr ""
+
+msgctxt "Organisation Type"
+msgid "Center & Retreat"
+msgstr ""
+
+msgctxt "Organisation Type"
+msgid "Group & Retreat"
+msgstr ""
+
+msgctxt "Organisation Type"
+msgid "Foundation"
+msgstr ""
+
+msgctxt "Organisation Type"
+msgid "Association"
+msgstr ""
+
+msgctxt "Organisation Type"
+msgid "Institution"
+msgstr ""
+
+msgctxt "Organisation Type"
+msgid "Monastery"
+msgstr ""
+
+msgctxt "Organisation Type"
+msgid "Organisation"
+msgstr ""
+
 msgid "Forbidden"
 msgstr ""
 
@@ -2520,9 +2549,6 @@ msgid "Delete all Features"
 msgstr ""
 
 msgid "Debugging window (serialized value)"
-msgstr ""
-
-msgid "Welcome,"
 msgstr ""
 
 msgid "Applications"

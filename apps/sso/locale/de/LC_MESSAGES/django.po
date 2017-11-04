@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-30 22:05+0200\n"
+"POT-Creation-Date: 2017-11-04 17:02+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -145,6 +145,13 @@ msgid ""
 "password."
 msgstr ""
 "Der Benutzer mit dieser E-Mail-Adresse kann das Passwort nicht zurücksetzen."
+
+msgid ""
+"You can not reset your password jet, because your account is waiting for "
+"initial activation."
+msgstr ""
+"Du kannst Dein Passwort noch nicht zurücksetzen, da Dein Benutzerkonto noch "
+"nichtaktiviert wurde."
 
 msgid "Email"
 msgstr ""
@@ -896,8 +903,18 @@ msgstr "Mein Passwort ändern"
 msgid "Create password complete"
 msgstr "Anlegen des Passworts abgeschlossen"
 
-msgid "Your password has been created.  You may go ahead and log in now."
-msgstr "Dein Passwort wurde angelegt. Du kannst Dich nun anmelden."
+msgid "Welcome,"
+msgstr ""
+
+msgid "Your password has been created."
+msgstr "Dein Passwort wurde angelegt."
+
+msgid "You may go ahead and log in now."
+msgstr "Du kannst Dich nun anmelden."
+
+#, python-format
+msgid "You can now start using <a href=\"%(url)s\">%(title)s</a>."
+msgstr "Du kannst nun <a href=\"%(url)s\">%(title)s</a> verwenden."
 
 msgid "Create Password"
 msgstr "Passwort Anlegen"
@@ -944,9 +961,6 @@ msgstr ""
 
 msgid "Password reset complete"
 msgstr ""
-
-msgid "Your password has been set.  You may go ahead and log in now."
-msgstr "Dein Passwort wurde zurückgesetzt. Du kannst Dich nun anmelden."
 
 msgid "Password reset"
 msgstr ""
@@ -1102,9 +1116,6 @@ msgstr ""
 
 msgid "Thank you. Your profile was saved."
 msgstr "Vielen Dank, Deine Eingaben wurden gespeichert."
-
-msgid "Password create unsuccessful"
-msgstr "Fehler beim Passwort Anlegen"
 
 msgid "last login"
 msgstr "letzte Anmeldung"
@@ -1286,7 +1297,7 @@ msgstr "User nicht initialisiert"
 msgid "token don't match"
 msgstr ""
 
-msgid "Challenge"
+msgid "Request"
 msgstr ""
 
 msgid ""
@@ -1904,30 +1915,6 @@ msgstr ""
 
 msgid "Regions"
 msgstr "Regionen"
-
-msgctxt "Organisation Type"
-msgid "Center"
-msgstr "Zentrum"
-
-msgctxt "Organisation Type"
-msgid "Group"
-msgstr "Gruppe"
-
-msgctxt "Organisation Type"
-msgid "Retreat"
-msgstr "Retreat"
-
-msgctxt "Organisation Type"
-msgid "Contact"
-msgstr "Kontakt"
-
-msgctxt "Organisation Type"
-msgid "Center & Retreat"
-msgstr "Zentrum & Retreat"
-
-msgctxt "Organisation Type"
-msgid "Group & Retreat"
-msgstr "Gruppe & Retreat"
 
 msgid "Unknown"
 msgstr ""
@@ -2587,6 +2574,50 @@ msgstr "%(name)s \"%(obj)s\" wurde erfolgreich gespeichert."
 msgid "Edit registration"
 msgstr "Registrierung bearbeiten"
 
+msgctxt "Organisation Type"
+msgid "Center"
+msgstr "Zentrum"
+
+msgctxt "Organisation Type"
+msgid "Group"
+msgstr "Gruppe"
+
+msgctxt "Organisation Type"
+msgid "Retreat"
+msgstr "Retreat"
+
+msgctxt "Organisation Type"
+msgid "Contact"
+msgstr "Kontakt"
+
+msgctxt "Organisation Type"
+msgid "Center & Retreat"
+msgstr "Zentrum & Retreat"
+
+msgctxt "Organisation Type"
+msgid "Group & Retreat"
+msgstr "Gruppe & Retreat"
+
+msgctxt "Organisation Type"
+msgid "Foundation"
+msgstr "Stiftung"
+
+msgctxt "Organisation Type"
+msgid "Association"
+msgstr "Verband"
+
+msgctxt "Organisation Type"
+msgid "Institution"
+msgstr ""
+
+msgctxt "Organisation Type"
+msgid "Monastery"
+msgstr ""
+
+msgctxt "Organisation Type"
+msgid "Organisation"
+msgstr "Organisation"
+
 msgid "Forbidden"
 msgstr "Verboten"
 
@@ -2659,9 +2690,6 @@ msgid "Delete all Features"
 msgstr "Auswahl löschen"
 
 msgid "Debugging window (serialized value)"
-msgstr ""
-
-msgid "Welcome,"
 msgstr ""
 
 msgid "Applications"

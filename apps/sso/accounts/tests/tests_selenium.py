@@ -43,6 +43,13 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.selenium.find_element_by_tag_name("form").submit()
         self.wait_page_loaded()
 
+        if settings.SSO_POST_RESET_LOGIN:
+            url = reverse('home')
+        else:
+            url = reverse('auth:login')
+
+        self.selenium.find_element_by_xpath('//a[@href="%s"]' % url)
+
     def set_create_password(self, path, new_password):
         self.selenium.get('%s%s' % (self.live_server_url, path))
         self.selenium.find_element_by_name("new_password1").send_keys(new_password)
@@ -178,7 +185,28 @@ class AccountsSeleniumTests(SSOSeleniumTests):
 
         self.login_test(username, new_password)
 
+    @override_settings(SSO_POST_RESET_LOGIN=False)
     def test_password_reset(self):
+        self.logout()
+
+        username = 'gunnar@g10f.de'
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('accounts:password_reset')))
+        self.selenium.find_element_by_name("email").send_keys('gunnar@g10f.de')
+        self.selenium.find_element_by_tag_name("form").submit()
+        self.wait_page_loaded()
+
+        self.assertEqual(len(self.selenium.find_elements_by_class_name("alert-error")), 0)
+
+        path = self.get_url_path_from_mail()
+
+        new_password = 'gsf1zghxyz'
+        self.set_reset_password(path, new_password)
+        self.login_test(username, new_password)
+
+    @override_settings(SSO_POST_RESET_LOGIN=True)
+    def test_password_post_reset_login(self):
+        self.logout()
+
         username = 'gunnar@g10f.de'
         self.selenium.get('%s%s' % (self.live_server_url, reverse('accounts:password_reset')))
         self.selenium.find_element_by_name("email").send_keys('gunnar@g10f.de')
@@ -234,7 +262,15 @@ class AccountsSeleniumTests(SSOSeleniumTests):
 
         self.assertEqual(len(self.selenium.find_elements_by_class_name("alert-danger")), 1)
 
+    @override_settings(SSO_POST_RESET_LOGIN=False)
     def test_add_user_as_admin(self):
+        applicationrole = ApplicationRole.objects.get(application__uuid=settings.SSO_APP_UUID, role__name="Admin")
+        allowed_orgs = Organisation.objects.filter(
+            uuid__in=['31664dd38ca4454e916e55fe8b1f0745', '31664dd38ca4454e916e55fe8b1f0746'])
+        self.add_user(applicationrole=applicationrole, allowed_orgs=allowed_orgs)
+
+    @override_settings(SSO_POST_RESET_LOGIN=True)
+    def test_add_user_as_admin_post_reset_login(self):
         applicationrole = ApplicationRole.objects.get(application__uuid=settings.SSO_APP_UUID, role__name="Admin")
         allowed_orgs = Organisation.objects.filter(
             uuid__in=['31664dd38ca4454e916e55fe8b1f0745', '31664dd38ca4454e916e55fe8b1f0746'])
@@ -314,8 +350,12 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.set_create_password(path, new_password)
 
         # check if the login link has a the new app url as next parameter (redirect_to_after_first_login=True)
-        login_url = '%s?%s' % (reverse('auth:login'), urlencode({'next': 'http://test.example.com'}, safe='/'))
-        self.selenium.find_element_by_xpath('//a[@href="%s"]' % login_url)
+        if settings.SSO_POST_RESET_LOGIN:
+            url = 'http://test.example.com'
+        else:
+            url = '%s?%s' % (reverse('auth:login'), urlencode({'next': 'http://test.example.com'}, safe='/'))
+
+        self.selenium.find_element_by_xpath('//a[@href="%s"]' % url)
 
         # login as new user with the new password
         self.login_test(new_email, new_password)

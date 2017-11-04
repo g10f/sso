@@ -129,6 +129,8 @@ class PasswordResetForm(DjangoPasswordResetForm):
     error_messages = {
         'unknown': _("That email address doesn't have an associated user account. Are you sure you've registered?"),
         'unusable': _("The user account associated with this email address cannot reset the password."),
+        'not_activated': _("You can not reset your password jet, because your account is waiting for initial "
+                           "activation."),
     }
     email = forms.EmailField(label=_("Email"), max_length=254, widget=bootstrap.EmailInput())
 

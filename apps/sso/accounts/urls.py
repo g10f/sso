@@ -1,9 +1,9 @@
 from django.conf.urls import url
 from django.contrib.auth.views import PasswordResetDoneView, PasswordResetCompleteView
 from django.views.generic import TemplateView
-from .views import PasswordResetView, PasswordResetConfirmView, PasswordChangeDoneView
+from .views import PasswordResetView, PasswordResetConfirmView, PasswordChangeDoneView, PasswordCreateConfirmView
 from .views import application, PasswordCreateCompleteView
-from .views import emails, confirm_email, password_create_confirm
+from .views import emails, confirm_email
 from .views import onetimemessage
 from .views import organisation
 from .views import password_change, logout, profile, contact, delete_profile
@@ -39,7 +39,7 @@ urlpatterns = [
     url(r'^reset/done/$', PasswordResetCompleteView.as_view(template_name='accounts/password_reset_complete.html'),
         name='password_reset_complete'),
     url(r'^create/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
-        password_create_confirm, name='password_create_confirm'),
+        PasswordCreateConfirmView.as_view(), name='password_create_confirm'),
     url(r'^create/done/(?P<uidb64>[0-9A-Za-z_\-]+)/$', PasswordCreateCompleteView.as_view(),
         name='password_create_complete'),
     url(r'^organisation_change/(?P<pk>\d+)/$', organisation.OrganisationChangeDetailView.as_view(),
