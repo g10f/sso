@@ -27,6 +27,16 @@ TWO_FACTOR_PARAM = 'two_factor'
 logger = logging.getLogger(__name__)
 
 
+def get_token_url(user_id, expiry, redirect_url, backend, display, device_id):
+    user_data = signing.dumps({'user_id': user_id, 'backend': backend, 'expiry': expiry}, salt=SALT)
+    query_string = {REDIRECT_FIELD_NAME: redirect_url}
+    if display:
+        query_string['display'] = display
+
+    return "%s?%s" % (reverse('auth:token', kwargs={'user_data': user_data, 'device_id': device_id}),
+                      urlencode(query_string))
+
+
 class LoginView(FormView):
     template_name = 'auth/login.html'
     form_class = EmailAuthenticationForm
@@ -39,16 +49,6 @@ class LoginView(FormView):
     def dispatch(self, request, *args, **kwargs):
         return super(LoginView, self).dispatch(request, *args, **kwargs)
 
-    @staticmethod
-    def get_token_url(user_id, expiry, redirect_url, backend, display, device_id):
-        user_data = signing.dumps({'user_id': user_id, 'backend': backend, 'expiry': expiry}, salt=SALT)
-        query_string = {REDIRECT_FIELD_NAME: redirect_url}
-        if display:
-            query_string['display'] = display
-
-        return "%s?%s" % (reverse('auth:token', kwargs={'user_data': user_data, 'device_id': device_id}),
-                          urlencode(query_string))
-
     def get(self, request, *args, **kwargs):
         self.is_two_factor_required = get_request_param(request, 'two_factor', False) is not False
         user = request.user
@@ -60,7 +60,7 @@ class LoginView(FormView):
             device = is_otp_login(user, self.is_two_factor_required)
             device.generate_challenge()
             display = request.GET.get('display')
-            token_url = self.get_token_url(user.id, expiry, redirect_url, backend, display, device.id)
+            token_url = get_token_url(user.id, expiry, redirect_url, backend, display, device.id)
             return redirect(token_url)
 
         return super(LoginView, self).get(request, *args, **kwargs)
@@ -76,14 +76,14 @@ class LoginView(FormView):
 
         # if 2-nd factor available, send token
         self.is_two_factor_required = get_request_param(self.request, TWO_FACTOR_PARAM, False) is not False
-        device = is_otp_login(user, self.is_two_factor_required)
         expiry = settings.SESSION_COOKIE_AGE if form.cleaned_data.get('remember_me', False) else 0
+        device = is_otp_login(user, self.is_two_factor_required)
 
         if device:
             try:
                 device.generate_challenge()
                 display = self.request.GET.get('display')
-                self.success_url = self.get_token_url(user.id, expiry, redirect_url, user.backend, display, device.id)
+                self.success_url = get_token_url(user.id, expiry, redirect_url, user.backend, display, device.id)
             except Exception as e:
                 messages.error(
                     self.request,

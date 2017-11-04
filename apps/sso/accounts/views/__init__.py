@@ -29,7 +29,8 @@ from sso.accounts.forms import PasswordResetForm, SetPasswordForm, ContactForm, 
 from sso.accounts.forms import UserSelfProfileForm, UserSelfProfileDeleteForm, CenterSelfProfileForm
 from sso.accounts.models import User, UserAddress, UserPhoneNumber, UserEmail, get_applicationrole_ids, Application
 from sso.accounts.tokens import email_confirm_token_generator
-from sso.auth import update_session_auth_hash, auth_login
+from sso.auth import update_session_auth_hash, auth_login, is_otp_login
+from sso.auth.views import get_token_url
 from sso.forms.helpers import ErrorList, ChangedDataList, log_change
 from sso.oauth2.models import allowed_hosts
 from sso.organisations.models import is_validation_period_active
@@ -401,6 +402,7 @@ class PasswordCreateConfirmView(auth_views.PasswordResetConfirmView):
         user = form.save()
         del self.request.session[INTERNAL_RESET_SESSION_TOKEN]
         if settings.SSO_POST_RESET_LOGIN:
+            # user has no two factor authentication, because the password was just created
             auth_login(self.request, user, self.post_reset_login_backend)
         return super(auth_views.PasswordResetConfirmView, self).form_valid(form)
 
@@ -448,5 +450,13 @@ class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
         user = form.save()
         del self.request.session[INTERNAL_RESET_SESSION_TOKEN]
         if settings.SSO_POST_RESET_LOGIN:
-            auth_login(self.request, user, self.post_reset_login_backend)
+            # check if user has 2 factor authentication enabled
+            device = is_otp_login(user, is_two_factor_required=False)
+            if device:
+                redirect_url = reverse('accounts:password_reset_complete')
+                self.success_url = get_token_url(user.id, expiry=0, redirect_url=redirect_url,
+                                                 backend=self.post_reset_login_backend,
+                                                 display=None, device_id=device.id)
+            else:
+                auth_login(self.request, user, self.post_reset_login_backend)
         return super(auth_views.PasswordResetConfirmView, self).form_valid(form)
