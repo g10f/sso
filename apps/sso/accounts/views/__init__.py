@@ -6,7 +6,7 @@ from django.contrib.auth import REDIRECT_FIELD_NAME, logout as auth_logout
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.password_validation import password_validators_help_texts
-from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.views import INTERNAL_RESET_SESSION_TOKEN
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
@@ -16,11 +16,12 @@ from django.shortcuts import render, redirect, resolve_url
 from django.template.loader import render_to_string
 from django.template.response import TemplateResponse
 from django.urls import reverse, reverse_lazy
+from django.utils.encoding import force_bytes
 from django.utils.html import strip_tags
-from django.utils.http import urlsafe_base64_decode
+from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils.translation import ugettext as _
 from django.views.decorators.cache import never_cache
-from django.views.decorators.csrf import csrf_protect, csrf_exempt
+from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from sso.accounts.email import send_useremail_confirmation, send_mail_managers
 from sso.accounts.forms import PasswordResetForm, SetPasswordForm, ContactForm, AddressForm, PhoneNumberForm, \
@@ -28,7 +29,7 @@ from sso.accounts.forms import PasswordResetForm, SetPasswordForm, ContactForm, 
 from sso.accounts.forms import UserSelfProfileForm, UserSelfProfileDeleteForm, CenterSelfProfileForm
 from sso.accounts.models import User, UserAddress, UserPhoneNumber, UserEmail, get_applicationrole_ids, Application
 from sso.accounts.tokens import email_confirm_token_generator
-from sso.auth import update_session_auth_hash
+from sso.auth import update_session_auth_hash, auth_login
 from sso.forms.helpers import ErrorList, ChangedDataList, log_change
 from sso.oauth2.models import allowed_hosts
 from sso.organisations.models import is_validation_period_active
@@ -372,44 +373,40 @@ def delete_profile(request):
     return render(request, 'accounts/delete_profile_form.html', context)
 
 
-# Doesn't need csrf_protect since no-one can guess the URL
-@csrf_exempt
-@sensitive_post_parameters()
-@never_cache
-def password_create_confirm(request, uidb64=None, token=None, template_name='accounts/password_create_confirm.html'):
-    """
-    View that checks the hash in a password create link and presents a
-    form for entering a  password and a picture
-    """
-    assert uidb64 is not None and token is not None  # checked by URLconf
-    post_reset_redirect = reverse('accounts:password_create_complete', args=[uidb64])
+def get_start_app(uidb64):
+    # try to find the first application with redirect_to_after_first_login
     try:
         uid = urlsafe_base64_decode(uidb64)
-        user = User._default_manager.get(pk=uid)
-    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-        user = None
+        applicationrole_ids = get_applicationrole_ids(uid, Q(application__redirect_to_after_first_login=True))
+        if applicationrole_ids:
+            app = Application.objects.distinct().filter(applicationrole__in=applicationrole_ids, is_active=True).first()
+            if app is not None and app.url:
+                return app
+    except (TypeError, ValueError, OverflowError) as e:
+        logger.exception(e)
+    return None
 
-    if user is not None and default_token_generator.check_token(user, token):
-        validlink = True
-        title = _('Enter new password')
-        if request.method == 'POST':
-            form = SetPictureAndPasswordForm(user, request.POST, files=request.FILES)
-            if form.is_valid():
-                user = form.save()
-                return HttpResponseRedirect(post_reset_redirect)
-        else:
-            form = SetPictureAndPasswordForm(user)
-    else:
-        validlink = False
-        form = None
-        title = _('Password create unsuccessful')
-    context = {
-        'form': form,
-        'title': title,
-        'validlink': validlink,
-        'password_validators_help_texts': password_validators_help_texts(),
-    }
-    return TemplateResponse(request, template_name, context)
+
+class PasswordCreateConfirmView(auth_views.PasswordResetConfirmView):
+    form_class = SetPictureAndPasswordForm
+    post_reset_login_backend = settings.DEFAULT_AUTHENTICATION_BACKEND
+    template_name = 'accounts/password_create_confirm.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(PasswordCreateConfirmView, self).get_context_data(**kwargs)
+        context['password_validators_help_texts'] = password_validators_help_texts()
+        return context
+
+    def form_valid(self, form):
+        user = form.save()
+        del self.request.session[INTERNAL_RESET_SESSION_TOKEN]
+        if settings.SSO_POST_RESET_LOGIN:
+            auth_login(self.request, user, self.post_reset_login_backend)
+        return super(auth_views.PasswordResetConfirmView, self).form_valid(form)
+
+    def get_success_url(self):
+        uidb64 = urlsafe_base64_encode(force_bytes(self.user.pk))
+        return reverse('accounts:password_create_complete', args=[uidb64])
 
 
 class PasswordCreateCompleteView(auth_views.PasswordResetCompleteView):
@@ -418,21 +415,12 @@ class PasswordCreateCompleteView(auth_views.PasswordResetCompleteView):
     def get_context_data(self, **kwargs):
         context = super(PasswordCreateCompleteView, self).get_context_data(**kwargs)
         uidb64 = kwargs.get('uidb64')
-
         if uidb64 is not None:
-            # try to find the first application with redirect_to_after_first_login
-            try:
-                uid = urlsafe_base64_decode(uidb64)
-                applicationrole_ids = get_applicationrole_ids(uid, Q(application__redirect_to_after_first_login=True))
-                if applicationrole_ids:
-                    app = Application.objects.distinct().filter(applicationrole__in=applicationrole_ids,
-                                                                is_active=True).first()
-                    if app is not None and app.url:
-                        login_url = resolve_url(settings.LOGIN_URL)
-                        context['login_url'] = update_url(login_url, {REDIRECT_FIELD_NAME: app.url})
-            except (TypeError, ValueError, OverflowError, User.DoesNotExist) as e:
-                logger.exception(e)
-
+            app = get_start_app(uidb64)
+            if app:
+                login_url = resolve_url(settings.LOGIN_URL)
+                context['login_url'] = update_url(login_url, {REDIRECT_FIELD_NAME: app.url})
+                context['app'] = app
         return context
 
 
@@ -447,10 +435,18 @@ class PasswordResetView(auth_views.PasswordResetView):
 
 class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
     form_class = SetPasswordForm
-    success_url = reverse_lazy('accounts:password_reset_complete'),
+    post_reset_login_backend = settings.DEFAULT_AUTHENTICATION_BACKEND
+    success_url = reverse_lazy('accounts:password_reset_complete')
     template_name = 'accounts/password_reset_confirm.html'
 
     def get_context_data(self, **kwargs):
         context = super(PasswordResetConfirmView, self).get_context_data(**kwargs)
         context['password_validators_help_texts'] = password_validators_help_texts()
         return context
+
+    def form_valid(self, form):
+        user = form.save()
+        del self.request.session[INTERNAL_RESET_SESSION_TOKEN]
+        if settings.SSO_POST_RESET_LOGIN:
+            auth_login(self.request, user, self.post_reset_login_backend)
+        return super(auth_views.PasswordResetConfirmView, self).form_valid(form)

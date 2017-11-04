@@ -2,7 +2,7 @@ import logging
 import uuid
 import time
 from django.conf import settings
-from django.contrib.auth import rotate_token, user_logged_in, load_backend, BACKEND_SESSION_KEY
+from django.contrib.auth import rotate_token, user_logged_in, load_backend, BACKEND_SESSION_KEY, get_backends
 from django.utils.crypto import constant_time_compare, salted_hmac
 
 logger = logging.getLogger(__name__)
@@ -31,7 +31,7 @@ def _get_user_key(user):
     return None
 
 
-def auth_login(request, user):
+def auth_login(request, user, backend=None):
     """
     Persist a user id and a backend in the request. This way a user doesn't
     have to reauthenticate on every request. Note that data set during
@@ -55,8 +55,22 @@ def auth_login(request, user):
             request.session.flush()
     else:
         request.session.cycle_key()
+
+    try:
+        backend = backend or user.backend
+    except AttributeError:
+        backends = get_backends(return_tuples=True)
+        if len(backends) == 1:
+            _, backend = backends[0]
+        else:
+            raise ValueError(
+                'You have multiple authentication backends configured and '
+                'therefore must provide the `backend` argument or set the '
+                '`backend` attribute on the user.'
+            )
+
     request.session[SESSION_KEY] = _get_user_key(user)
-    request.session[BACKEND_SESSION_KEY] = user.backend
+    request.session[BACKEND_SESSION_KEY] = backend
     request.session[HASH_SESSION_KEY] = session_auth_hash
     request.session[SESSION_AUTH_DATE] = int(time.time())
     if device_id:
@@ -86,7 +100,7 @@ def is_otp_login(user, is_two_factor_required):
 def get_session_auth_hash(user, client=None):
     # Returns an HMAC of the password and client_secret field.
     if user is None:
-        logger.debug("get_seonssion_auth_hash with user == None")
+        logger.debug("get_session_auth_hash with user == None")
         return ""
     key_salt = "at_hash"
     data = user.password

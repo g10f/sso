@@ -54,6 +54,7 @@ SSO_DOMAIN = "sso.g10f.de"
 SSO_USE_HTTPS = True
 SSO_ASYNC_EMAILS = False  # send emails async via celery task
 SSO_NOREPLY_EMAIL = None
+SSO_POST_RESET_LOGIN = True
 
 OTP_DEVICES = [
     'sso_auth.TOTPDevice',
@@ -233,8 +234,10 @@ L10N_SETTINGS = {
     'default_currency': 'EURO',
 }
 
+DEFAULT_AUTHENTICATION_BACKEND = 'sso.auth.backends.EmailBackend'
+
 AUTHENTICATION_BACKENDS = (
-    'sso.auth.backends.EmailBackend',
+    DEFAULT_AUTHENTICATION_BACKEND,
     'sso.oauth2.backends.OAuth2Backend',
 )
 

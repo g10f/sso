@@ -292,6 +292,7 @@ def revoke(request):
 
 @never_cache
 def tokeninfo(request):
+    # TODO: check revokation
     max_length = 2048
     try:
         if 'access_token' in request.GET:
