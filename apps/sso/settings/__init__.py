@@ -19,6 +19,8 @@ else:
     DEBUG = False
 
 THUMBNAIL_DEBUG = DEBUG
+THUMBNAIL_QUALITY = 100
+THUMBNAIL_FORMAT = 'PNG'
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
@@ -222,8 +224,6 @@ INSTALLED_APPS = [
     'sso.oauth2',
     'sso.api',
 ]
-
-THUMBNAIL_QUALITY = 100
 
 L10N_SETTINGS = {
     'currency_formats': {
