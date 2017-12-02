@@ -153,6 +153,7 @@ class ApiClient(object):
 
             for item in data['member']:
                 write_dot()
+                # self.get_picture(item, resource)
                 self.update_item(item, resource)
 
             url = data['next_page'] if 'next_page' in data else None
@@ -163,6 +164,12 @@ class ApiClient(object):
         modified_since_cache = self.cache.get('modified_since', {})
         modified_since_cache[key] = modified_since
         self.cache.set('modified_since', modified_since_cache)
+
+    def get_picture(self, item, resource):
+        if item.get('picture'):
+            url = item['picture']['@id']
+            self.get(url)
+            return
 
     def update_item(self, item, resource):
         """
