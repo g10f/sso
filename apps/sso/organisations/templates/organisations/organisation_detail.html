@@ -131,9 +131,9 @@
     <div class="row">
         <div class="dwbn-label">{% trans 'Country' %}:</div>
         <div class="dwbn-content">
-            {% if object.country.organisationcountry.homepage %}
-                <a href="{{ object.country.organisationcountry.homepage }}">{{ object.country }}</a> {% else %}
-                {{ object.country }}{% endif %}
+            {% if object.organisation_country.homepage %}
+                <a href="{{ object.organisation_country.homepage }}">{{ object.organisation_country }}</a> {% else %}
+                {{ object.organisation_country }}{% endif %}
         </div>
     </div>
     {% if object.admin_region %}

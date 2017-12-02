@@ -29,14 +29,16 @@ def clean_picture(picture, max_upload_size):
         base_content_type = picture.content_type.split('/')[0]
         if base_content_type in ['image']:
             if picture._size > max_upload_size:
-                raise forms.ValidationError(_('Please keep filesize under %(filesize)s. Current filesize %(current_filesize)s') %
-                                            {'filesize': filesizeformat(max_upload_size), 'current_filesize': filesizeformat(picture._size)})
+                raise forms.ValidationError(
+                    _('Please keep filesize under %(filesize)s. Current filesize %(current_filesize)s') %
+                    {'filesize': filesizeformat(max_upload_size), 'current_filesize': filesizeformat(picture._size)})
             # mimetypes.guess_extension return jpe which is quite uncommon for jpeg
             if picture.content_type == 'image/jpeg':
                 file_ext = '.jpg'
             else:
                 file_ext = guess_extension(picture.content_type)
-            picture.name = "%s%s" % (get_random_string(7, allowed_chars='abcdefghijklmnopqrstuvwxyz0123456789'), file_ext)
+            picture.name = "%s%s" % (
+                get_random_string(7, allowed_chars='abcdefghijklmnopqrstuvwxyz0123456789'), file_ext)
         else:
             raise forms.ValidationError(_('File type is not supported'))
     return picture
@@ -57,7 +59,7 @@ class AbstractBaseModel(models.Model):
     uuid = models.UUIDField(unique=True, default=uuid.uuid4, editable=True)
     last_modified = models.DateTimeField(_('last modified'), auto_now=True)
     objects = AbstractBaseModelManager()
-    
+
     class Meta:
         abstract = True
         # ordering = ['name']
@@ -104,7 +106,7 @@ class AddressMixin(models.Model):
     primary = models.BooleanField(_("primary"), default=False)
 
     # formatted  : formatted Address for mail http://tools.ietf.org/html/draft-ietf-scim-core-schema-03
-    
+
     class Meta:
         abstract = True
         verbose_name = _("address")
@@ -149,7 +151,7 @@ def update_object_from_dict(destination, source_dict, key_mapping=None):
     field_names = [f.name for f in destination._meta.fields]
     new_object = True if destination.pk is None else False
     updated = False
-            
+
     for key in source_dict:
         field_name = key
         transformation = None
@@ -159,17 +161,17 @@ def update_object_from_dict(destination, source_dict, key_mapping=None):
                 (field_name, transformation) = key_mapping[key]
             else:
                 field_name = key_mapping[key]
-             
+
         if field_name in field_names:
             if transformation is None:
                 new_value = source_dict[key]
             else:
                 new_value = transformation(source_dict[key])
-                
+
             if new_object:
                 setattr(destination, field_name, new_value)
             else:
-                old_value = getattr(destination, field_name)                
+                old_value = getattr(destination, field_name)
                 if old_value != new_value:
                     setattr(destination, field_name, new_value)
                     updated = True
@@ -179,16 +181,16 @@ def update_object_from_dict(destination, source_dict, key_mapping=None):
 
 def filter_dict_from_kls(destination, source_dict, prefix=''):
     field_names = [f.name for f in destination._meta.fields]
-    filtered_dict = {}    
+    filtered_dict = {}
     for field_name in field_names:
         key = '%s%s' % (prefix, field_name)
         if key in source_dict:
             filtered_dict[field_name] = source_dict[key]
     return filtered_dict
 
-  
+
 def map_dict2dict(mapping, source_dict, with_defaults=False):
-    new_dict = {}    
+    new_dict = {}
     for key, value in mapping.items():
         if key in source_dict:
             if isinstance(value, dict):
@@ -202,7 +204,7 @@ def map_dict2dict(mapping, source_dict, with_defaults=False):
                         raise e
                 else:
                     new_value = source_dict[key]
-                
+
                 validate = value.get('validate', None)
                 if validate is not None:
                     if not validate(new_value):
@@ -210,7 +212,7 @@ def map_dict2dict(mapping, source_dict, with_defaults=False):
             else:
                 new_key = value
                 new_value = source_dict[key]
-                
+
             new_dict[new_key] = new_value
         elif with_defaults:
             # use default if no value in source_dict
@@ -221,7 +223,7 @@ def map_dict2dict(mapping, source_dict, with_defaults=False):
                     new_dict[new_key] = new_value
             except KeyError:
                 pass
-                
+
     return new_dict
 
 
