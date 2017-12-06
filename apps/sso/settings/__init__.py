@@ -187,8 +187,6 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'sso.oauth2.middleware.OAuthAuthenticationMiddleware',
-    # Allows a user’s sessions to be invalidated when their password changes.
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'sso.auth.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',

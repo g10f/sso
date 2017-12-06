@@ -45,7 +45,6 @@ def default_token_generator(request, max_age=MAX_AGE):
         'email': force_text(user.primary_email()),  # custom
         'name': user.username,  # custom
         # session authentication hash,
-        # see django.contrib.auth.middleware.SessionAuthenticationMiddleware
         'at_hash': get_session_auth_hash(user, request.client),  # custom, required
     }
     if request.client.application:

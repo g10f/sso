@@ -76,9 +76,7 @@ def password_change(request):
         if form.is_valid():
             form.save()
             # Updating the password logs out all other sessions for the user
-            # except the current one if
-            # django.contrib.auth.middleware.SessionAuthenticationMiddleware
-            # is enabled.
+            # except the current one
             update_session_auth_hash(request, form.user)
             return HttpResponseRedirect(post_change_redirect)
     else:
@@ -407,7 +405,7 @@ class PasswordCreateConfirmView(auth_views.PasswordResetConfirmView):
         return super(auth_views.PasswordResetConfirmView, self).form_valid(form)
 
     def get_success_url(self):
-        uidb64 = urlsafe_base64_encode(force_bytes(self.user.pk))
+        uidb64 = urlsafe_base64_encode(force_bytes(self.user.pk)).decode()
         return reverse('accounts:password_create_complete', args=[uidb64])
 
 

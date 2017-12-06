@@ -34,7 +34,7 @@ def send_account_created_email(user, request, token_generator=default_pwd_reset_
         'username': user.username,
         'domain': domain,
         'site_name': site_name,
-        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
         'token': token_generator.make_token(user),
         'protocol': use_https and 'https' or 'http',
         'expiration_date': expiration_date
@@ -63,7 +63,7 @@ def send_useremail_confirmation(user_email, request, token_generator=email_confi
         'username': user.username,
         'domain': domain,
         'site_name': site_name,
-        'uid': urlsafe_base64_encode(force_bytes(user_email.pk)),
+        'uid': urlsafe_base64_encode(force_bytes(user_email.pk)).decode(),
         'token': token_generator.make_token(user_email),
         'protocol': use_https and 'https' or 'http',
         'expiration_date': expiration_date
