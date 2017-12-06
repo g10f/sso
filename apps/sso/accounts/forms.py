@@ -172,7 +172,7 @@ class PasswordResetForm(DjangoPasswordResetForm):
             'email': user.primary_email(),
             'domain': domain,
             'site_name': site_name,
-            'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+            'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
             'user': user,
             'token': token_generator.make_token(user),
             'protocol': 'https' if use_https else 'http',

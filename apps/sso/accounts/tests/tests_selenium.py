@@ -143,6 +143,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
 
         # set email as primary
         self.selenium.get('%s%s' % (self.live_server_url, reverse('accounts:emails')))
+        self.wait_page_loaded()
         self.selenium.find_element_by_xpath('//button[@name="set_primary"]').click()
         response = self.selenium.find_element_by_xpath('//div[@class="alert alert-success"]')
         self.assertIn(new_email, response.text)
@@ -237,6 +238,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         last_name.clear()
         last_name.send_keys(new_last_name)
 
+        self.wait_page_loaded()
         self.selenium.find_element_by_xpath('//button[@type="submit"][@name="_continue"]').click()
         self.wait_page_loaded()
 
