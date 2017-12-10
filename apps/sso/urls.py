@@ -7,7 +7,7 @@ from django.views.i18n import JavaScriptCatalog
 from smart_selects.views import filterchain
 from sso.accounts.forms import UserSelfRegistrationForm2
 from sso.admin import sso_admin_site
-from sso.oauth2.views import openid_configuration
+from sso.oauth2.views import OpenidConfigurationView
 from sso.registration.sites import RegistrationSite
 from sso.views import home
 
@@ -25,7 +25,7 @@ urlpatterns = [
     url(r'^organisations/', include('sso.organisations.urls')),
     url(r'^emails/', include('sso.emails.urls')),
     url(r'^oauth2/', include('sso.oauth2.urls')),
-    url(r'^.well-known/openid-configuration', openid_configuration, name='openid-configuration'),
+    url(r'^.well-known/openid-configuration', OpenidConfigurationView.as_view(), name='openid-configuration'),
     url(r'^api/', include('sso.api.urls')),
     url(r'^chained_filter/(?P<app>l10n)/(?P<model>[\w\-]+)/(?P<field>[\w\-]+)/(?P<value>[\w\-]+)/$', filterchain,
         name='chained_filter'),
