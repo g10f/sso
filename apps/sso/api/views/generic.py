@@ -112,21 +112,7 @@ class JSONResponseMixin(object):
         return data
         
 
-class JsonDetailView(JSONResponseMixin, PermissionMixin, BaseDetailView):
-    slug_field = 'uuid'
-    slug_url_kwarg = 'uuid'
-    create_object_with_put = False
-    # supported method names from View class
-    # http_method_names = ['get', 'post', 'put', 'patch', 'delete', 'head', 'options', 'trace']
-
-    def render_to_response(self, context, **response_kwargs):
-        return self.render_to_json_response(context, **response_kwargs)
-
-    @method_decorator(csrf_exempt)
-    @method_decorator(catch_errors)
-    def dispatch(self, request, *args, **kwargs):
-        return super(JsonDetailView, self).dispatch(request, *args, **kwargs)
-        
+class PreflightMixin(object):
     def options(self, request, *args, **kwargs):
         """
         check for cors Preflight Request
@@ -135,15 +121,15 @@ class JsonDetailView(JSONResponseMixin, PermissionMixin, BaseDetailView):
         # origin is mandatory
         origin = self.request.META.get('HTTP_ORIGIN')
         if not origin:
-            return super(JsonDetailView, self).options(request, *args, **kwargs)
-        
+            return super(PreflightMixin, self).options(request, *args, **kwargs)
+
         # ACCESS_CONTROL_REQUEST_METHOD is optional
-        acrm = self.request.META.get('HTTP_ACCESS_CONTROL_REQUEST_METHOD')  
+        acrm = self.request.META.get('HTTP_ACCESS_CONTROL_REQUEST_METHOD')
         if acrm:
             if acrm not in self._allowed_methods():
                 logger.warning('ACCESS_CONTROL_REQUEST_METHOD %s not allowed' % acrm)
-                return super(JsonDetailView, self).options(request, *args, **kwargs)
-        
+                return super(PreflightMixin, self).options(request, *args, **kwargs)
+
             response = HttpResponse()
             response['Access-Control-Allow-Methods'] = ', '.join(self._allowed_methods())
             response['Access-Control-Allow-Headers'] = 'Authorization, Content-Type'
@@ -158,7 +144,23 @@ class JsonDetailView(JSONResponseMixin, PermissionMixin, BaseDetailView):
         # later in the JsonHttpResponse we check if the origin is from some registered client and
         # set the Access-Control-Allow-Origin more restrictive
         response['Access-Control-Allow-Origin'] = '*'
-        return response        
+        return response
+
+
+class JsonDetailView(JSONResponseMixin, PreflightMixin, PermissionMixin, BaseDetailView):
+    slug_field = 'uuid'
+    slug_url_kwarg = 'uuid'
+    create_object_with_put = False
+    # supported method names from View class
+    # http_method_names = ['get', 'post', 'put', 'patch', 'delete', 'head', 'options', 'trace']
+
+    def render_to_response(self, context, **response_kwargs):
+        return self.render_to_json_response(context, **response_kwargs)
+
+    @method_decorator(csrf_exempt)
+    @method_decorator(catch_errors)
+    def dispatch(self, request, *args, **kwargs):
+        return super(JsonDetailView, self).dispatch(request, *args, **kwargs)
 
     @method_decorator(vary_on_headers('Access-Control-Allow-Origin', 'Authorization', 'Cookie', 'Accept-Language'))
     def get(self, request, *args, **kwargs):

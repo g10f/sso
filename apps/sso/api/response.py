@@ -31,7 +31,7 @@ def same_origin(url1, url2):
 
 
 class JsonHttpResponse(HttpResponse):
-    def __init__(self, data=None, request=None, status=None, allow_jsonp=False, *args, **kwargs):
+    def __init__(self, data=None, request=None, status=None, allow_jsonp=False, public_cors=False, *args, **kwargs):
         # for security reasons, allow jsonp only for certain resources with more or less public data
         callback = None
         if status == HTTP_401_UNAUTHORIZED:
@@ -50,11 +50,14 @@ class JsonHttpResponse(HttpResponse):
 
         if request:
             origin = request.META.get('HTTP_ORIGIN')
-            if origin and request.client:
-                for redirect_uri in request.client.redirect_uris.split():
-                    if same_origin(redirect_uri, origin):
-                        self['Access-Control-Allow-Origin'] = origin
-                        break
+            if origin:
+                if public_cors:
+                    self['Access-Control-Allow-Origin'] = '*'
+                elif request.client:
+                    for redirect_uri in request.client.redirect_uris.split():
+                        if same_origin(redirect_uri, origin):
+                            self['Access-Control-Allow-Origin'] = origin
+                            break
 
 
 class HttpApiErrorResponse(JsonHttpResponse):

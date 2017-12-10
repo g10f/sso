@@ -20,11 +20,13 @@ from django.urls import reverse
 from django.utils.crypto import get_random_string
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_str, iri_to_uri, force_text, smart_bytes
+from django.views import View
 from django.views.decorators.cache import never_cache, cache_page, cache_control
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 from sso.api.response import JsonHttpResponse
+from sso.api.views.generic import PreflightMixin
 from sso.auth.utils import is_recent_auth_time
 from sso.auth.views import TWO_FACTOR_PARAM
 from sso.utils.convert import long_to_base64
@@ -95,41 +97,44 @@ class HttpOAuth2ResponseRedirect(HttpResponseRedirect):
         self['Location'] = iri_to_uri(redirect_to)
 
 
-@cache_page(60 * 60)
-def openid_configuration(request):
-    """
-    http://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig
-    """
-    base_uri = base_url(request)  # 'http://10.0.2.2:8000'  # for android local client test
-    configuration = {
-        "issuer": base_uri,
-        "authorization_endpoint": '%s%s' % (base_uri, reverse('oauth2:authorize')),
-        "token_endpoint": '%s%s' % (base_uri, reverse('oauth2:token')),
-        "userinfo_endpoint": '%s%s' % (base_uri, reverse('api:v2_users_me')),
-        "revocation_endpoint": '%s%s' % (base_uri, reverse('oauth2:revoke')),
-        "jwks_uri": '%s%s' % (base_uri, reverse('oauth2:jwks')),
-        "scopes_supported":
-            ['openid', 'profile', 'email', 'role', 'offline_access', 'address', 'phone', 'users', 'picture'],
-        "response_types_supported":
-            ["code", "token", "id_token token", "id_token"],
-        "id_token_signing_alg_values_supported":
-            ["RS256"],
-        "token_endpoint_auth_methods_supported":
-            ["client_secret_basic"],
-        "token_endpoint_auth_signing_alg_values_supported":
-            ["RS256"],
-        "display_values_supported":
-            ["page", "popup"],
-        "subject_types_supported":
-            ["public"],
-        "end_session_endpoint": '%s%s' % (base_uri, reverse('accounts:logout')),
-        "check_session_iframe": '%s%s' % (base_uri, reverse('oauth2:session')),
-        "certs_uri": '%s%s' % (base_uri, reverse('oauth2:certs')),
-        "profile_uri": '%s%s' % (base_uri, reverse('accounts:profile')),
-    }
-    if settings.SSO_SERVICE_DOCUMENTATION:
-        configuration['service_documentation'] = settings.SSO_SERVICE_DOCUMENTATION
-    return JsonHttpResponse(configuration, request, allow_jsonp=True)
+@method_decorator(cache_page(60 * 60), name='dispatch')
+class OpenidConfigurationView(PreflightMixin, View):
+    http_method_names = ['get', 'options']
+
+    def get(self, request, *args, **kwargs):
+        """
+        http://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig
+        """
+        base_uri = base_url(request)  # 'http://10.0.2.2:8000'  # for android local client test
+        configuration = {
+            "issuer": base_uri,
+            "authorization_endpoint": '%s%s' % (base_uri, reverse('oauth2:authorize')),
+            "token_endpoint": '%s%s' % (base_uri, reverse('oauth2:token')),
+            "userinfo_endpoint": '%s%s' % (base_uri, reverse('api:v2_users_me')),
+            "revocation_endpoint": '%s%s' % (base_uri, reverse('oauth2:revoke')),
+            "jwks_uri": '%s%s' % (base_uri, reverse('oauth2:jwks')),
+            "scopes_supported":
+                ['openid', 'profile', 'email', 'role', 'offline_access', 'address', 'phone', 'users', 'picture'],
+            "response_types_supported":
+                ["code", "token", "id_token token", "id_token"],
+            "id_token_signing_alg_values_supported":
+                ["RS256"],
+            "token_endpoint_auth_methods_supported":
+                ["client_secret_basic"],
+            "token_endpoint_auth_signing_alg_values_supported":
+                ["RS256"],
+            "display_values_supported":
+                ["page", "popup"],
+            "subject_types_supported":
+                ["public"],
+            "end_session_endpoint": '%s%s' % (base_uri, reverse('accounts:logout')),
+            "check_session_iframe": '%s%s' % (base_uri, reverse('oauth2:session')),
+            "certs_uri": '%s%s' % (base_uri, reverse('oauth2:certs')),
+            "profile_uri": '%s%s' % (base_uri, reverse('accounts:profile')),
+        }
+        if settings.SSO_SERVICE_DOCUMENTATION:
+            configuration['service_documentation'] = settings.SSO_SERVICE_DOCUMENTATION
+        return JsonHttpResponse(configuration, request, allow_jsonp=True, public_cors=True)
 
 
 class SessionView(TemplateView):
