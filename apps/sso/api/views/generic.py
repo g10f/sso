@@ -162,7 +162,7 @@ class JsonDetailView(JSONResponseMixin, PreflightMixin, PermissionMixin, BaseDet
     def dispatch(self, request, *args, **kwargs):
         return super(JsonDetailView, self).dispatch(request, *args, **kwargs)
 
-    @method_decorator(vary_on_headers('Access-Control-Allow-Origin', 'Authorization', 'Cookie', 'Accept-Language'))
+    @method_decorator(vary_on_headers('Origin', 'Authorization', 'Cookie', 'Accept-Language'))
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()        
         # get_object is needed before check_permission

@@ -24,6 +24,7 @@ from django.views import View
 from django.views.decorators.cache import never_cache, cache_page, cache_control
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.vary import vary_on_headers
 from django.views.generic import TemplateView
 from sso.api.response import JsonHttpResponse
 from sso.api.views.generic import PreflightMixin
@@ -98,6 +99,7 @@ class HttpOAuth2ResponseRedirect(HttpResponseRedirect):
 
 
 @method_decorator(cache_page(60 * 60), name='dispatch')
+@method_decorator(vary_on_headers('Origin', 'Accept-Language'), name='dispatch')
 class OpenidConfigurationView(PreflightMixin, View):
     http_method_names = ['get', 'options']
 
