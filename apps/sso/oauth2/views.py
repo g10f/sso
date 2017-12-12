@@ -139,6 +139,40 @@ class OpenidConfigurationView(PreflightMixin, View):
         return JsonHttpResponse(configuration, request, allow_jsonp=True, public_cors=True)
 
 
+@method_decorator(cache_page(60 * 60), name='dispatch')
+@method_decorator(vary_on_headers('Origin', 'Accept-Language'), name='dispatch')
+class JwksView(PreflightMixin, View):
+    http_method_names = ['get', 'options']
+
+    def get(self, request, *args, **kwargs):
+        """
+        jwks_uri view (http://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata)
+        """
+        key = load_pem_public_key(smart_bytes(settings.CERTS['default']['public_key']), backend=default_backend())
+        public_numbers = key.public_numbers()
+        data = {
+            "keys": [{
+                "kty": "RSA",
+                "alg": "RS256",
+                "use": "sig",
+                "kid": settings.CERTS['default']['uuid'],
+                "n": long_to_base64(public_numbers.n),
+                "e": long_to_base64(public_numbers.e)
+            }]
+        }
+        return JsonHttpResponse(data, request, allow_jsonp=True, public_cors=True)
+
+
+@method_decorator(cache_page(60 * 60), name='dispatch')
+@method_decorator(vary_on_headers('Origin', 'Accept-Language'), name='dispatch')
+class CertsView(PreflightMixin, View):
+    http_method_names = ['get', 'options']
+
+    def get(self, request, *args, **kwargs):
+        return JsonHttpResponse({settings.CERTS['default']['uuid']: settings.CERTS['default']['certificate']}, request,
+                                allow_jsonp=True, public_cors=True)
+
+
 class SessionView(TemplateView):
     @method_decorator(cache_control(max_age=60 * 5))
     @method_decorator(xframe_options_exempt)
@@ -335,31 +369,6 @@ def approval(request):
     state = request.GET.get('state', '')
     code = request.GET.get('code', '')
     return render(request, 'oauth2/approval.html', context={'state': state, 'code': code})
-
-
-@cache_page(60 * 60)
-def certs(request):
-    return JsonHttpResponse({settings.CERTS['default']['uuid']: settings.CERTS['default']['certificate']}, request)
-
-
-@cache_page(60 * 60)
-def jwks(request):
-    """
-    jwks_uri view (http://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata)
-    """
-    key = load_pem_public_key(smart_bytes(settings.CERTS['default']['public_key']), backend=default_backend())
-    public_numbers = key.public_numbers()
-    data = {
-        "keys": [{
-            "kty": "RSA",
-            "alg": "RS256",
-            "use": "sig",
-            "kid": settings.CERTS['default']['uuid'],
-            "n": long_to_base64(public_numbers.n),
-            "e": long_to_base64(public_numbers.e)
-        }]
-    }
-    return JsonHttpResponse(data, request)
 
 
 @permission_required("oauth2.change_client")
