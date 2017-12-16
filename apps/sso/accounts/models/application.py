@@ -6,7 +6,6 @@ from itertools import chain
 from django.conf import settings
 from django.contrib.auth.models import Group
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from sso.models import AbstractBaseModel
@@ -29,7 +28,6 @@ class ApplicationManager(models.Manager):
         return self.get(uuid=uuid)
 
 
-@python_2_unicode_compatible
 class Application(models.Model):
     order = models.IntegerField(default=0, help_text=_('Overwrites the alphabetic order.'))
     title = models.CharField(max_length=255)
@@ -71,7 +69,6 @@ class RoleManager(models.Manager):
         return self.get(name=name)
 
 
-@python_2_unicode_compatible
 class Role(models.Model):
     name = models.CharField(_("name"), unique=True, max_length=255)
     order = models.IntegerField(default=0, help_text=_('Overwrites the alphabetic order.'))
@@ -96,7 +93,6 @@ class ApplicationRoleManager(models.Manager):
         return self.get(application__uuid=uuid, role__name=name)
 
 
-@python_2_unicode_compatible
 class ApplicationRole(models.Model):
     application = models.ForeignKey(Application, on_delete=models.CASCADE)
     role = models.ForeignKey(Role, on_delete=models.CASCADE)
@@ -125,7 +121,6 @@ class ApplicationRole(models.Model):
         return u"%s - %s" % (self.application, self.role)
 
 
-@python_2_unicode_compatible
 class RoleProfile(AbstractBaseModel):
     name = models.CharField(_("name"), max_length=255)
     application_roles = models.ManyToManyField(ApplicationRole, help_text=_(
@@ -147,7 +142,6 @@ class RoleProfile(AbstractBaseModel):
         return self.name
 
 
-@python_2_unicode_compatible
 class UserAssociatedSystem(models.Model):
     """
     Holds mappings to user IDs on other systems

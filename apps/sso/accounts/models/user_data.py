@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from six import python_2_unicode_compatible
-
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
@@ -14,7 +12,6 @@ from sso.organisations.models import Organisation
 logger = logging.getLogger(__name__)
 
 
-@python_2_unicode_compatible
 class UserEmail(AbstractBaseModel):
     MAX_EMAIL_ADRESSES = 2
     email = CaseInsensitiveEmailField(_('email address'), max_length=254, unique=True)

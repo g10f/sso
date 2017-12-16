@@ -10,7 +10,6 @@ from django.db import models
 from django.http import QueryDict
 from django.urls import reverse
 from django.utils.crypto import get_random_string
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from sso.accounts.models import Application
 from sso.auth.models import Device
@@ -106,7 +105,6 @@ def allowed_hosts():
     return Client.objects.get_allowed_hosts()
 
 
-@python_2_unicode_compatible
 class Client(AbstractBaseModel):
     name = models.CharField(_("name"), max_length=255)
     application = models.ForeignKey(Application, on_delete=models.SET_NULL, verbose_name=_('application'), blank=True,
@@ -142,7 +140,6 @@ class Client(AbstractBaseModel):
         return reverse('oauth2:client.details.json', args=[str(self.id)])
 
 
-@python_2_unicode_compatible
 class AuthorizationCode(models.Model):
     """
     OAuth2 Authorization Code
@@ -165,7 +162,6 @@ class AuthorizationCode(models.Model):
         return self.code
 
 
-@python_2_unicode_compatible
 class BearerToken(models.Model):
     """
     OAuth2 Bearer Token
@@ -183,7 +179,6 @@ class BearerToken(models.Model):
         return u'%s - %s' % (self.client, self.user)
 
 
-@python_2_unicode_compatible
 class RefreshToken(models.Model):
     """
     A RefreshToken instance represents a token that can be swapped for a new access token when it expires.

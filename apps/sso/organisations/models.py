@@ -14,7 +14,6 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db import models
 from django.urls import reverse
 from django.utils import six
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.safestring import mark_safe
 from django.utils.timezone import localtime, now
 from django.utils.translation import pgettext_lazy, ugettext_lazy as _
@@ -62,7 +61,6 @@ class TzWorld(models.Model):
         required_db_features = ['gis_enabled']
 
 
-@python_2_unicode_compatible
 class CountryGroup(AbstractBaseModel):
     name = models.CharField(_("name"), max_length=255)
     email = models.OneToOneField(Email, on_delete=models.SET_NULL, verbose_name=_("email address"), blank=True,
@@ -78,7 +76,6 @@ class CountryGroup(AbstractBaseModel):
         return self.name
 
 
-@python_2_unicode_compatible
 class Association(AbstractBaseModel):
     name = models.CharField(_("name"), max_length=255)
     homepage = models.URLField(_("homepage"), blank=True)
@@ -135,7 +132,6 @@ class ExtraOrganisationCountryManager(models.Model):
         abstract = True
 
 
-@python_2_unicode_compatible
 class OrganisationCountry(AbstractBaseModel, ExtraOrganisationCountryManager):
     association = models.ForeignKey(Association, on_delete=models.CASCADE, verbose_name=_("association"),
                                     default=default_association, limit_choices_to={'is_active': True})
@@ -190,7 +186,6 @@ class ExtraManager(models.Model):
         abstract = True
 
 
-@python_2_unicode_compatible
 class AdminRegion(AbstractBaseModel, ExtraManager):
     name = models.CharField(_("name"), max_length=255)
     homepage = models.URLField(_("homepage"), blank=True)
@@ -238,7 +233,6 @@ def get_near_organisations(current_point, distance_from_point=None, qs=None, ord
         return organisations
 
 
-@python_2_unicode_compatible
 class Organisation(AbstractBaseModel):
     COORDINATES_TYPE_CHOICES = (
         ('1', _('Unknown')),
