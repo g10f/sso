@@ -46,7 +46,6 @@ AREAS = (
 )
 
 
-@python_2_unicode_compatible
 class Country(models.Model):
     """
     International Organization for Standardization (ISO) 3166-1 Country list
@@ -70,7 +69,6 @@ class Country(models.Model):
         return self.printable_name
 
 
-@python_2_unicode_compatible
 class AdminArea(models.Model):
     """
     Administrative Area level 1 for a country.  For the US, this would be the states

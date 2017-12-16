@@ -6,24 +6,22 @@ import time
 from binascii import unhexlify
 
 import requests
+from u2flib_server import u2f
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.utils import timezone
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from sso.auth.forms import AuthenticationTokenForm, U2FForm
 from sso.auth.oath import TOTP
 from sso.auth.utils import random_hex, hex_validator
 from sso.models import AbstractBaseModel
 from sso.utils.translation import string_format
-from u2flib_server import u2f
 
 logger = logging.getLogger(__name__)
 
 
-@python_2_unicode_compatible
 class Device(AbstractBaseModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
                              help_text="The user that this device belongs to.")
@@ -86,7 +84,6 @@ class Profile(models.Model):
     is_otp_enabled = models.BooleanField(_('is otp enabled'), default=False)
 
 
-@python_2_unicode_compatible
 class U2FDevice(Device):
     version = models.TextField(default="U2F_V2")
     public_key = models.TextField()
@@ -145,7 +142,6 @@ class U2FDevice(Device):
         pass
 
 
-@python_2_unicode_compatible
 class TOTPDevice(Device):
     """
     A generic TOTP :class:`~sso.auth.models.Device`. The model fields mostly
@@ -281,7 +277,6 @@ class TOTPDevice(Device):
         return verified
 
 
-@python_2_unicode_compatible
 class TwilioSMSDevice(Device):
     """
     A :class:`~sso.auth.models.Device` that delivers codes via the Twilio SMS

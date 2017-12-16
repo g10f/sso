@@ -5,7 +5,6 @@ from django.conf import settings
 from django.db import models
 from django.db.models import Q
 from django.urls import reverse
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
 from sso.models import AbstractBaseModel, CaseInsensitiveEmailField
 
@@ -25,7 +24,6 @@ PERM_VIP = '3'
 PERM_VIP_DWB = '4'
 
 
-@python_2_unicode_compatible
 class Email(AbstractBaseModel):
     EMAIL_TYPE_CHOICES = (
         (CENTER_EMAIL_TYPE, _('Center')),
@@ -70,7 +68,6 @@ class Email(AbstractBaseModel):
         return self.email
 
 
-@python_2_unicode_compatible
 class EmailForward(AbstractBaseModel):
     email = models.ForeignKey(Email, on_delete=models.CASCADE, verbose_name=_('email address'))
     forward = CaseInsensitiveEmailField(_('email forwarding address'), max_length=254)
@@ -88,7 +85,6 @@ class EmailForward(AbstractBaseModel):
         return self.forward
 
 
-@python_2_unicode_compatible
 class EmailAlias(AbstractBaseModel):
     email = models.ForeignKey(Email, on_delete=models.CASCADE, verbose_name=_('email address'))
     alias = CaseInsensitiveEmailField(_('email alias address'), unique=True, max_length=254)
@@ -103,7 +99,6 @@ class EmailAlias(AbstractBaseModel):
         return self.alias
 
 
-@python_2_unicode_compatible
 class GroupEmail(AbstractBaseModel):
     name = models.CharField(_("name"), blank=True, default='', max_length=255)
     email = models.OneToOneField(Email, on_delete=models.CASCADE, verbose_name=_("email address"),
