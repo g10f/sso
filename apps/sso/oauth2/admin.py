@@ -43,17 +43,17 @@ class BearerTokenAdmin(admin.ModelAdmin):
     readonly_fields = ('created_at', )
     list_select_related = ('user', 'client')
 
+    @mark_safe
     def user_link(self, obj):
         url = reverse('admin:accounts_user_change', args=(obj.user.pk,), current_app=self.admin_site.name)
-        return mark_safe(u'<a href="%s">%s</a>' % (url, obj.user))
-    user_link.allow_tags = True
+        return u'<a href="%s">%s</a>' % (url, obj.user)
     user_link.short_description = _('user')
     user_link.admin_order_field = 'user'
 
+    @mark_safe
     def client_link(self, obj):
         url = reverse('admin:oauth2_client_change', args=(obj.client.pk,), current_app=self.admin_site.name)
-        return mark_safe(u'<a href="%s">%s</a>' % (url, obj.client))
-    client_link.allow_tags = True
+        return u'<a href="%s">%s</a>' % (url, obj.client)
     client_link.short_description = _('client')
     client_link.admin_order_field = 'client'
 
@@ -65,17 +65,17 @@ class AuthorizationCodeAdmin(admin.ModelAdmin):
     raw_id_fields = ("user",)
     list_select_related = ('user', 'client')
 
+    @mark_safe
     def user_link(self, obj):
         url = reverse('admin:accounts_user_change', args=(obj.user.pk,), current_app=self.admin_site.name)
-        return mark_safe(u'<a href="%s">%s</a>' % (url, obj.user))
-    user_link.allow_tags = True
+        return u'<a href="%s">%s</a>' % (url, obj.user)
     user_link.short_description = _('user')
     user_link.admin_order_field = 'user'
 
+    @mark_safe
     def client_link(self, obj):
         url = reverse('admin:oauth2_client_change', args=(obj.client.pk,), current_app=self.admin_site.name)
-        return mark_safe(u'<a href="%s">%s</a>' % (url, obj.client))
-    client_link.allow_tags = True
+        return u'<a href="%s">%s</a>' % (url, obj.client)
     client_link.short_description = _('client')
     client_link.admin_order_field = 'client'
 
@@ -88,9 +88,9 @@ class RefreshTokenAdmin(admin.ModelAdmin):
     readonly_fields = ('created_at', )
     list_select_related = ('bearer_token__user', 'bearer_token__client')
 
+    @mark_safe
     def bearer_token_link(self, obj):
         url = reverse('admin:oauth2_bearertoken_change', args=(obj.bearer_token.pk,), current_app=self.admin_site.name)
-        return mark_safe(u'<a href="%s">%s</a>' % (url, obj.bearer_token))
-    bearer_token_link.allow_tags = True
+        return u'<a href="%s">%s</a>' % (url, obj.bearer_token)
     bearer_token_link.short_description = _('bearer token')
     bearer_token_link.admin_order_field = 'bearer_token'

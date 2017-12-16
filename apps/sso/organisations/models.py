@@ -15,6 +15,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils import six
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils.safestring import mark_safe
 from django.utils.timezone import localtime, now
 from django.utils.translation import pgettext_lazy, ugettext_lazy as _
 from l10n.models import Country
@@ -417,19 +418,19 @@ class Organisation(AbstractBaseModel):
         else:
             ""
 
+    @mark_safe
     def google_maps_link(self):
         return u'<a href="%s">%s</a>' % (self.google_maps_url, 'google maps')
 
-    google_maps_link.allow_tags = True
     google_maps_link.short_description = _('Maps')
 
+    @mark_safe
     def homepage_link(self):
         if self.homepage:
             return u'<a href="%s">%s</a>' % (self.homepage, self.homepage)
         else:
             return ''
 
-    homepage_link.allow_tags = True
     homepage_link.short_description = _('homepage')
 
     @classmethod

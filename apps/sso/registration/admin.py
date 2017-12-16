@@ -72,13 +72,13 @@ class RegistrationAdmin(admin.ModelAdmin):
     def primary_email(self, obj):
         return obj.user.primary_email()
 
+    @mark_safe
     def user_link(self, obj):
         user = obj.user
         url = reverse('admin:%s_%s_change' % (user._meta.app_label, user._meta.module_name), args=[user.pk],
                       current_app=self.admin_site.name)
-        return mark_safe(u'<a href="%s">%s</a>' % (url, user))
+        return u'<a href="%s">%s</a>' % (url, user)
 
-    user_link.allow_tags = True
     user_link.short_description = _('user')
 
     def user_message(self, request, changecount, action_result_text=_('changed successfully')):
