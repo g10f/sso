@@ -7,6 +7,7 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from sso.models import AbstractBaseModel
 
@@ -51,13 +52,12 @@ class Application(models.Model):
         verbose_name = _("application")
         verbose_name_plural = _("applications")
 
+    @mark_safe
     def link(self):
         if self.url:
             return u'<a href="%s">%s</a>' % (self.url, self.title)
         else:
             return ''
-
-    link.allow_tags = True
 
     def natural_key(self):
         return self.uuid,

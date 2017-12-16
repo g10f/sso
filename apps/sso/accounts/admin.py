@@ -33,11 +33,11 @@ class OrganisationChangeAdmin(admin.ModelAdmin):
     date_hierarchy = 'last_modified'
     readonly_fields = ['uuid']
 
+    @mark_safe
     def user_link(self, obj):
         url = reverse('admin:accounts_user_change', args=(obj.user.pk,), current_app=self.admin_site.name)
-        return mark_safe(u'<a href="%s">%s</a>' % (url, obj.user))
+        return u'<a href="%s">%s</a>' % (url, obj.user)
 
-    user_link.allow_tags = True
     user_link.short_description = _('user')
     user_link.admin_order_field = 'user'
 
@@ -50,11 +50,11 @@ class UserEmailAdmin(admin.ModelAdmin):
     list_filter = ('confirmed', 'primary')
     list_select_related = ('user',)
 
+    @mark_safe
     def user_link(self, obj):
         url = reverse('admin:accounts_user_change', args=(obj.user.pk,), current_app=self.admin_site.name)
-        return mark_safe(u'<a href="%s">%s</a>' % (url, obj.user))
+        return u'<a href="%s">%s</a>' % (url, obj.user)
 
-    user_link.allow_tags = True
     user_link.short_description = _('user')
     user_link.admin_order_field = 'user'
 
@@ -71,16 +71,14 @@ class OneTimeMessageAdmin(admin.ModelAdmin):
           'classes': ['wide']}),
     ]
 
+    @mark_safe
     def message_link(self, obj):
         if obj.uuid:
             url = reverse('accounts:view_message', args=[obj.uuid.hex])
-            link = u'<div class="field-box"><a class="deletelink" href="%s">%s</a></div>' % (url, obj.title)
-
-            return mark_safe(u'%s' % link)
+            return u'<div class="field-box"><a class="deletelink" href="%s">%s</a></div>' % (url, obj.title)
         else:
             return ''
 
-    message_link.allow_tags = True
     message_link.short_description = _('Link')
 
 
@@ -481,27 +479,27 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
 
         return super(UserAdmin, self).save_form(request, form, change)
 
+    @mark_safe
     def get_last_modified_by_user(self, obj):
         if obj.last_modified_by_user:
             url = reverse('admin:accounts_user_change', args=(obj.last_modified_by_user.pk,),
                           current_app=self.admin_site.name)
-            return mark_safe(u'<a href="%s">%s</a>' % (url, obj.last_modified_by_user))
+            return u'<a href="%s">%s</a>' % (url, obj.last_modified_by_user)
         else:
             raise ObjectDoesNotExist()
 
     get_last_modified_by_user.short_description = _('last modified by')
-    get_last_modified_by_user.allow_tags = True
 
+    @mark_safe
     def get_created_by_user(self, obj):
         if obj.created_by_user:
             url = reverse('admin:accounts_user_change', args=(obj.created_by_user.pk,),
                           current_app=self.admin_site.name)
-            return mark_safe(u'<a href="%s">%s</a>' % (url, obj.created_by_user))
+            return u'<a href="%s">%s</a>' % (url, obj.created_by_user)
         else:
             raise ObjectDoesNotExist()
 
     get_created_by_user.short_description = _('created by')
-    get_created_by_user.allow_tags = True
 
     def get_actions(self, request):
         """
