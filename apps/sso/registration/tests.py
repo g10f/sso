@@ -7,7 +7,6 @@ from six.moves.urllib.parse import urlsplit
 from django.core import mail
 from django.test import TestCase
 from django.urls import reverse
-from django.utils.encoding import force_text
 from sso.organisations.models import Organisation
 from sso.registration import default_username_generator
 from sso.test.client import SSOClient
@@ -61,7 +60,7 @@ class RegistrationTest(TestCase):
         response = self.client.post(reverse('registration:registration_register'), data=data)
         self.assertFormError(response, 'form', 'captcha', ['Incorrect, please try again.'])
 
-    def registration(self):
+    def test_registration(self):
         """
         User self registration with email validation
         """
@@ -107,45 +106,6 @@ class RegistrationTest(TestCase):
 
         response = self.client.get(response['Location'])
         self.assertEqual(response.status_code, 200)
-
-        # admin reads his mail box
-        outbox = getattr(mail, 'outbox')
-        fullname = 'first_name' + ' ' + 'last_name'
-        self.assertNotEqual(outbox[-1].subject.find('Registration of %s completed' % fullname), -1)
-        path = self.get_url_path_from_mail()
-
-        return path, data
-
-    def test_registration_delete(self):
-        path, data = self.registration()
-
-        # admin logs in
-        self.client.login(username='GlobalAdmin', password='secret007')
-
-        # get the registration form
-        response = self.client.get(path)
-
-        # get the delete form url
-        pk = re.findall(r'registrations/delete/(?P<pk>\d+)/', force_text(response.content))[0]
-        # post the delete form
-        path = reverse('registration:delete_user_registration', args=[pk])
-        response = self.client.post(path)
-        self.assertEqual(response.status_code, 302)
-
-    def test_registration_register(self):
-        path, data = self.registration()
-
-        # admin logs in
-        self.client.login(username='GlobalAdmin', password='secret007')
-
-        # admin activates the account
-        data['username'] = "TestUser"
-        response = self.client.post(path, data=data)
-        self.assertEqual(response.status_code, 302)
-
-        # the user got an email for creating the password
-        outbox = getattr(mail, 'outbox')
-        self.assertNotEqual(outbox[-1].subject.find('Set your password'), -1)
 
     def test_registration_list(self):
         # admin logs in
