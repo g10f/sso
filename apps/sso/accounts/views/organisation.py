@@ -160,8 +160,7 @@ class OrganisationChangeAcceptView(FormView):
             return HttpResponseRedirect(self.get_success_url())
         else:
             user = self.organisationchange.user
-            user.organisations = [self.organisationchange.organisation]
-            user.save()
+            user.organisations.set([self.organisationchange.organisation])
             self.organisationchange.delete()
 
             # remove organisation related permissions

@@ -186,6 +186,35 @@ class AccountsSeleniumTests(SSOSeleniumTests):
 
         self.login_test(username, new_password)
 
+    def test_change_center(self):
+        # change center as user
+        self.login(username='GunnarScherf', password='gsf')
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('accounts:organisationchange_me')))
+
+        Select(self.selenium.find_element_by_name("organisation")).select_by_index(2)
+        self.selenium.find_element_by_name("reason").send_keys('Test')
+
+        self.selenium.find_element_by_tag_name("form").submit()
+        self.wait_page_loaded()
+        self.logout()
+
+        # Accept center change as admin
+        self.login('GlobalAdmin', 'secret007')
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('accounts:organisationchange_list')))
+
+        list_url= reverse('accounts:organisationchange_list')
+        elems = self.selenium.find_elements_by_xpath("//a[starts-with(@href, '%s')]" % list_url)
+        # should be one element in the list
+        elems[0].click()
+        self.wait_page_loaded()
+        self.selenium.find_element_by_tag_name("form").submit()
+
+        # check success message
+        self.wait_page_loaded()
+        self.selenium.find_element_by_class_name("alert-success")
+        self.logout()
+
+
     @override_settings(SSO_POST_RESET_LOGIN=False)
     def test_password_reset(self):
         self.logout()
