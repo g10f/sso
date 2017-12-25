@@ -37,8 +37,8 @@ class ChainedSelect(Select):
 
     @property
     def media(self):
-        js = ['smart_select.js']
-        return forms.Media(js=[static("js/%s" % path) for path in js])
+        js = ['js/vendor/jquery-3.1.1.min.js', 'js/smart_select.js']
+        return super().media + forms.Media(js=[static(path) for path in js])
 
     def render(self, name, value, attrs=None, renderer=None):
         self.add_required()  # bootstrap
