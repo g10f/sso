@@ -16,7 +16,6 @@
                 name: $(this).attr('name'),
 	    		default_lon: $(this).data('default_lon'),
 	    		default_lat: $(this).data('default_lat'),
-
             };
             // initialise only once
             $(this).addClass("initialised");

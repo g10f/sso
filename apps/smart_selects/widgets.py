@@ -2,7 +2,6 @@ from functools import cmp_to_key
 
 from django import forms
 from django.apps import apps
-from django.contrib.admin.templatetags.admin_static import static
 from django.forms.widgets import Select
 from django.urls import reverse
 from django.utils import six
@@ -38,7 +37,7 @@ class ChainedSelect(Select):
     @property
     def media(self):
         js = ['js/vendor/jquery-3.1.1.min.js', 'js/smart_select.js']
-        return super().media + forms.Media(js=[static(path) for path in js])
+        return super().media + forms.Media(js=js)
 
     def render(self, name, value, attrs=None, renderer=None):
         self.add_required()  # bootstrap

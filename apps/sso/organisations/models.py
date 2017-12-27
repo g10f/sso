@@ -7,7 +7,7 @@ from sorl import thumbnail
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.gis import measure
-from django.contrib.gis.db.models import PointField, PolygonField
+from django.contrib.gis.db.models import PolygonField, PointField
 from django.contrib.gis.db.models.functions import Distance
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
