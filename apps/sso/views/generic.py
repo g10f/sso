@@ -4,7 +4,6 @@ from six.moves.urllib.parse import urlunsplit
 
 from django import forms
 from django.contrib import messages
-from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.utils.encoding import force_text
@@ -185,8 +184,8 @@ class FormsetsUpdateView(generic.UpdateView):
 
     @property
     def media(self):
-        js = ['formsets-1.2.js']
-        return forms.Media(js=[static('js/%s' % url) for url in js])
+        js = ['js/formsets-1.2.js']
+        return forms.Media(js=js)
 
     @property
     def formsets(self):
