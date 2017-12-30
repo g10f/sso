@@ -28,21 +28,29 @@
             <h3>{{ object.get_center_type_display }} {{ object.name }}</h3>
 
             {% if messages %}{% for message in messages %}
-                <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
+                <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>
+            {% endfor %}
             {% endif %}
 
             {% if errors %}
                 <div class="alert alert-danger">
-                    {% if errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
+                    {% if errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}
+                        {% trans "Please correct the errors below." %}{% endif %}
                 </div>
             {% endif %}
 
         </div>
 
         <ul class="nav nav-tabs dwbn-nav-tabs" id="myTab">
-            <li class="{% if not active or active == "object" %}active{% endif %}"><a data-toggle="tab" href="#object">{% trans 'Center Data' %}</a></li>
+            <li class="{% if not active or active == "object" %}active{% endif %}">
+                <a data-toggle="tab"
+                   href="#object">{% trans 'Basis Data' %}</a>
+            </li>
             {% for formset in formsets %}
-                <li class="{% if active == formset.prefix %}active{% endif %}"><a data-toggle="tab" href="#{{ formset.prefix }}">{{ formset.form.opts.verbose_name_plural|title }}</a></li>
+                <li class="{% if active == formset.prefix %}active{% endif %}">
+                    <a data-toggle="tab"
+                       href="#{{ formset.prefix }}">{{ formset.form.opts.verbose_name_plural|title }}</a>
+                </li>
             {% endfor %}
         </ul>
 
@@ -87,11 +95,14 @@
         <div class="form-group">
             <div class="dwbn-form-submit">
                 {% block submit_group %}
-                    {% if redirect_uri %}<a class="btn btn-default" href="{{ redirect_uri }}">{% trans 'Back' %}</a>{% endif %}
+                    {% if redirect_uri %}
+                        <a class="btn btn-default" href="{{ redirect_uri }}">{% trans 'Back' %}</a>{% endif %}
                     {% if perms.organisations.delete_organisation %}
-                        <a class="btn btn-default" href="{% url 'organisations:organisation_delete' object.uuid.hex %}">{% trans 'Delete Organisation' %}</a>
+                        <a class="btn btn-default" href="{% url 'organisations:organisation_delete' object.uuid.hex %}">
+                            {% trans 'Delete Organisation' %}</a>
                     {% endif %}
-                    <button type="submit" class="btn btn-default" name="_continue">{% trans 'Save and continue editing' %}</button>
+                    <button type="submit" class="btn btn-default"
+                            name="_continue">{% trans 'Save and continue editing' %}</button>
                     <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
                 {% endblock submit_group %}
             </div>

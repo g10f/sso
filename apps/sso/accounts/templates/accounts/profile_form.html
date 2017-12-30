@@ -9,7 +9,8 @@
 {% endblock extrascript %}
 
 {% block navbar %}{% include 'include/global_navigation.html' with active_navigation="profile" %}{% endblock navbar %}
-{% block left_content %}{% include 'include/_navigation.html' with active_navigation="profile" %}{% endblock left_content %}
+{% block left_content %}
+    {% include 'include/_navigation.html' with active_navigation="profile" %}{% endblock left_content %}
 
 {% block breadcrumb %}
     <ol class="breadcrumb">
@@ -38,16 +39,18 @@
 
         {# hidden field #}
         {% for hidden in form.hidden_fields %}
-        {{ hidden }}
+            {{ hidden }}
         {% endfor %}
 
         <ul class="nav nav-tabs dwbn-nav-tabs" id="myTab">
-            <li class="{% if not active or active == "object" %}active{% endif %}"><a data-toggle="tab"
-                                                                                      href="#object">{% trans "Profile" %}</a>
+            <li class="{% if not active or active == "object" %}active{% endif %}">
+                <a data-toggle="tab"
+                   href="#object">{% trans "Profile" %}</a>
             </li>
             {% for formset in formsets %}
-                <li class="{% if active == formset.prefix %}active{% endif %}"><a data-toggle="tab"
-                                                                                  href="#{{ formset.prefix }}">{{ formset.form.opts.verbose_name_plural|title }}</a>
+                <li class="{% if active == formset.prefix %}active{% endif %}">
+                    <a data-toggle="tab"
+                       href="#{{ formset.prefix }}">{{ formset.form.opts.verbose_name_plural|title }}</a>
                 </li>
             {% endfor %}
         </ul>
@@ -79,9 +82,11 @@
         <!-- /.tab-content -->
         <div class="form-group">
             <div class="dwbn-form-submit">
-                {% if redirect_uri %}<a class="btn btn-default" href="{{ redirect_uri }}">{% trans 'Back' %}</a>{% endif %}
+                {% if redirect_uri %}
+                    <a class="btn btn-default" href="{{ redirect_uri }}">{% trans 'Back' %}</a>{% endif %}
                 <a class="btn btn-default" href="{% url 'accounts:delete_profile' %}">{% trans 'Delete' %}</a>
-			    <button type="submit" class="btn btn-default" name="_continue" >{% trans 'Save and continue editing' %}</button>
+                <button type="submit" class="btn btn-default"
+                        name="_continue">{% trans 'Save and continue editing' %}</button>
                 <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
             </div>
         </div>
