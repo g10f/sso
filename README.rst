@@ -1,5 +1,5 @@
-SSO
-========
+SSO with OpenID Connect
+=======================
 
 *An identity provider with OpenID Connect support.*
 
@@ -10,7 +10,7 @@ Prepare a development environment
 5. install sso requirements in the virtualenv with: ``pip install -r requirements.txt``
 6. install postgresql
 7. update template1 database for using citext extension in tests:  ``sudo -u postgres psql -c "CREATE EXTENSION IF NOT EXISTS citext;" template1`` (where -u postgres is your postgres user)
-8. create the database with ``./manage.py syncdb``
+8. create the database with ``./manage.py migrate``
 
 Documentation
 --------------

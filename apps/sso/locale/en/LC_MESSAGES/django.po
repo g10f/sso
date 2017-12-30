@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-04 17:20+0100\n"
+"POT-Creation-Date: 2017-12-30 14:49+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -603,6 +603,9 @@ msgid "Save and resend Invitation Mail"
 msgstr ""
 
 msgid "Save and extend validity"
+msgstr ""
+
+msgid "Basis data"
 msgstr ""
 
 msgid "Registration"
@@ -2025,7 +2028,7 @@ msgstr ""
 msgid "Update Organisation"
 msgstr ""
 
-msgid "Center Data"
+msgid "Basis Data"
 msgstr ""
 
 msgid "Distance"
@@ -2432,6 +2435,18 @@ msgid "The %(name)s \"%(obj)s\" was saved successfully."
 msgstr ""
 
 msgid "Edit registration"
+msgstr ""
+
+msgctxt "Organisation Type"
+msgid "Kreisverband"
+msgstr ""
+
+msgctxt "Organisation Type"
+msgid "Landesverband"
+msgstr ""
+
+msgctxt "Organisation Type"
+msgid "Bund"
 msgstr ""
 
 msgctxt "Organisation Type"
