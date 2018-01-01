@@ -3,8 +3,9 @@ from __future__ import absolute_import
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from django.core.mail.message import EmailMessage
+
 from django.conf import settings
+from django.core.mail.message import EmailMessage
 from sso.celery import send_mail_task
 
 
