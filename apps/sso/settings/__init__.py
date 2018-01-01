@@ -100,7 +100,6 @@ ADMINS = (
 CENTER_TYPE_CHOICES = ()
 
 MANAGERS = ADMINS
-USER_CHANGE_EMAIL_RECIPIENT_LIST = ['webmaster@g10f.de']
 DEFAULT_FROM_EMAIL = 'webmaster@g10f.de'
 
 DATABASES = {
@@ -256,6 +255,10 @@ REGISTRATION = {
     'ACTIVATION_EXPIRATION_DAYS': 60,
     'CONTACT_EMAIL': DEFAULT_FROM_EMAIL,
 }
+
+# with AWS SES e.g can only send from verified emails
+# https://docs.aws.amazon.com/ses/latest/DeveloperGuide/verify-addresses-and-domains.html
+SSO_SEND_FROM_VERIFIED_EMAIL_ADDRESSES = '%s|%s' % (DEFAULT_FROM_EMAIL, REGISTRATION['CONTACT_EMAIL'])
 
 RECAPTCHA_PUBLIC_KEY = '6LccjewSAAAAAPcFZmUtuzRVkU6hhOona0orqgKh'
 RECAPTCHA_PRIVATE_KEY = '6LccjewSAAAAAAhJzHuEyVV40AYApL6CpmjqlmX8'
