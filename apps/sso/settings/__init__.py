@@ -4,6 +4,7 @@ import sys
 from uuid import UUID
 
 from django.urls import reverse_lazy
+from django.utils.translation import pgettext_lazy
 
 try:
     RUNNING_DEVSERVER = (sys.argv[1] == 'runserver')
@@ -31,23 +32,21 @@ SSO_SERVICE_DOCUMENTATION = ""  # part of http://openid.net/specs/openid-connect
 SSO_ABOUT = 'http://g10f.de/'
 SSO_APP_UUID = UUID('fa467234b81e4838a009e38d9e655d18')
 SSO_BROWSER_CLIENT_ID = UUID('ca96cd88bc2740249d0def68221cba88')
-SSO_STREAMING_UUID = UUID('c362bea58c67457fa32234e3178285c4')
+# SSO_STREAMING_UUID = UUID('c362bea58c67457fa32234e3178285c4') # unused
 SSO_STYLE = 'default'
 SSO_STYLE_VERSION = '1.0.19'
-SSO_LESS = False
-SSO_FAVICON = 'ico/favicon.ico'
-SSO_APPLE_TOUCH_ICON = 'ico/apple-touch-icon.png'
 SSO_EMAIL_CONFIRM_TIMEOUT_MINUTES = 60
 SSO_DEFAULT_ROLE_PROFILE_UUID = UUID('b4caab335bbc4c90a6f552f7f13aa410')
 SSO_DEFAULT_GUEST_PROFILE_UUID = UUID('9859f78da9a44491bf3d807d10993ce7')
 SSO_DEFAULT_ADMIN_PROFILE_UUID = UUID('1593284b238c4a1cabf291e573205508')
 SSO_SHOW_ADDRESS_AND_PHONE_FORM = True  # Address and Phone number in profile form
-SSO_VALIDATION_PERIOD_IS_ACTIVE = True  # accounts must be prolonged
+SSO_VALIDATION_PERIOD_IS_ACTIVE = False  # accounts must not be prolonged
 SSO_VALIDATION_PERIOD_IS_ACTIVE_FOR_ALL = False  # all accounts must be prolonged, not only account from marked centers
 SSO_VALIDATION_PERIOD_DAYS = 365  # accounts must be prolonged after 1 year
 SSO_ADMIN_MAX_AGE = 60 * 30  # 30 min max age for admin pages
-SSO_ORGANISATION_EMAIL_DOMAIN = '@g10f.de'
+SSO_ORGANISATION_EMAIL_DOMAIN = ''
 SSO_ORGANISATION_EMAIL_MANAGEMENT = False
+SSO_ORGANISATION_REQUIRED = False
 SSO_REGION_MANAGEMENT = False
 SSO_COUNTRY_MANAGEMENT = False
 SSO_GOOGLE_GEO_API_KEY = 'insert your key'
@@ -97,7 +96,9 @@ ADMINS = (
     ('Gunnar Scherf', 'webmaster@g10f.de'),
 )
 
-CENTER_TYPE_CHOICES = ()
+CENTER_TYPE_CHOICES = (
+    ('g', pgettext_lazy('Organisation Type', 'Group')),
+)
 
 MANAGERS = ADMINS
 DEFAULT_FROM_EMAIL = 'webmaster@g10f.de'
@@ -195,6 +196,7 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'sso.urls'
+APPEND_SLASH = False
 
 INSTALLED_APPS = [
     'sso',
@@ -242,7 +244,7 @@ PASSWORD_HASHERS = (
     'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
 )
-POSTGIS_VERSION = (2, 0, 3)
+POSTGIS_VERSION = (2, 2, 1)
 
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = reverse_lazy('auth:login')
@@ -260,9 +262,7 @@ REGISTRATION = {
 # https://docs.aws.amazon.com/ses/latest/DeveloperGuide/verify-addresses-and-domains.html
 SSO_SEND_FROM_VERIFIED_EMAIL_ADDRESSES = '%s|%s' % (DEFAULT_FROM_EMAIL, REGISTRATION['CONTACT_EMAIL'])
 
-RECAPTCHA_PUBLIC_KEY = '6LccjewSAAAAAPcFZmUtuzRVkU6hhOona0orqgKh'
-RECAPTCHA_PRIVATE_KEY = '6LccjewSAAAAAAhJzHuEyVV40AYApL6CpmjqlmX8'
-NOCAPTCHA = True
+NOCAPTCHA = True  # use the new No Captcha reCaptcha (django_recaptcha)
 
 SESSION_COOKIE_HTTPONLY = False
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 7 * 2  # 2 weeks
@@ -330,6 +330,75 @@ vvmsEC0q1M/PA1HgfK8YoVttgp1j2i5rCpwnMRxewK609gP+79P+j8hBBhK/c+Ho
 9GB1oNtr9KHp6BpxXPo+Ag==
 -----END CERTIFICATE-----"""
     }
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse',
+        },
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'null': {
+            'class': 'logging.NullHandler',
+        },
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+        'sso': {
+            'handlers': ['console', 'mail_admins'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+        'django.db.backends': {
+            'handlers': ['console'],
+            'propagate': False,
+            'level': 'WARNING',
+        },
+        'py.warnings': {
+            'handlers': ['console'],
+            'level': 'WARNING',
+        },
+        'sorl': {
+            'level': 'WARNING',
+        },
+        'oauthlib': {
+            'level': 'WARNING',
+        }
+    },
+    'root': {
+        'level': 'DEBUG',
+        'handlers': ['console', 'mail_admins'],
+    },
 }
 
 # Load the local settings

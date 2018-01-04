@@ -75,6 +75,21 @@
           "organisation"
         ],
         [
+          "add_association",
+          "organisations",
+          "association"
+        ],
+        [
+          "change_association",
+          "organisations",
+          "association"
+        ],
+        [
+          "delete_association",
+          "organisations",
+          "association"
+        ],
+        [
           "change_registrationprofile",
           "registration",
           "registrationprofile"
@@ -85,7 +100,7 @@
   {
     "model": "auth.group",
     "fields": {
-      "name": "CenterAdmin",
+      "name": "AssociationAdmin",
       "permissions": [
         [
           "read_user",
@@ -133,62 +148,9 @@
           "userphonenumber"
         ],
         [
-          "change_organisation",
+          "add_adminregion",
           "organisations",
-          "organisation"
-        ]
-      ]
-    }
-  },
-  {
-    "model": "auth.group",
-    "fields": {
-      "name": "RegionAdmin",
-      "permissions": [
-        [
-          "read_user",
-          "accounts",
-          "user"
-        ],
-        [
-          "add_user",
-          "accounts",
-          "user"
-        ],
-        [
-          "change_user",
-          "accounts",
-          "user"
-        ],
-        [
-          "add_useraddress",
-          "accounts",
-          "useraddress"
-        ],
-        [
-          "change_useraddress",
-          "accounts",
-          "useraddress"
-        ],
-        [
-          "delete_useraddress",
-          "accounts",
-          "useraddress"
-        ],
-        [
-          "add_userphonenumber",
-          "accounts",
-          "userphonenumber"
-        ],
-        [
-          "change_userphonenumber",
-          "accounts",
-          "userphonenumber"
-        ],
-        [
-          "delete_userphonenumber",
-          "accounts",
-          "userphonenumber"
+          "adminregion"
         ],
         [
           "change_adminregion",
@@ -206,9 +168,19 @@
           "organisation"
         ],
         [
-          "delete_organisation",
+          "add_organisationcountry",
           "organisations",
-          "organisation"
+          "organisationcountry"
+        ],
+        [
+          "change_organisationcountry",
+          "organisations",
+          "organisationcountry"
+        ],
+        [
+          "change_association",
+          "organisations",
+          "association"
         ]
       ]
     }
@@ -294,6 +266,137 @@
   {
     "model": "auth.group",
     "fields": {
+      "name": "RegionAdmin",
+      "permissions": [
+        [
+          "read_user",
+          "accounts",
+          "user"
+        ],
+        [
+          "add_user",
+          "accounts",
+          "user"
+        ],
+        [
+          "change_user",
+          "accounts",
+          "user"
+        ],
+        [
+          "add_useraddress",
+          "accounts",
+          "useraddress"
+        ],
+        [
+          "change_useraddress",
+          "accounts",
+          "useraddress"
+        ],
+        [
+          "delete_useraddress",
+          "accounts",
+          "useraddress"
+        ],
+        [
+          "add_userphonenumber",
+          "accounts",
+          "userphonenumber"
+        ],
+        [
+          "change_userphonenumber",
+          "accounts",
+          "userphonenumber"
+        ],
+        [
+          "delete_userphonenumber",
+          "accounts",
+          "userphonenumber"
+        ],
+        [
+          "change_adminregion",
+          "organisations",
+          "adminregion"
+        ],
+        [
+          "add_organisation",
+          "organisations",
+          "organisation"
+        ],
+        [
+          "change_organisation",
+          "organisations",
+          "organisation"
+        ],
+        [
+          "delete_organisation",
+          "organisations",
+          "organisation"
+        ]
+      ]
+    }
+  },
+  {
+    "model": "auth.group",
+    "fields": {
+      "name": "CenterAdmin",
+      "permissions": [
+        [
+          "read_user",
+          "accounts",
+          "user"
+        ],
+        [
+          "add_user",
+          "accounts",
+          "user"
+        ],
+        [
+          "change_user",
+          "accounts",
+          "user"
+        ],
+        [
+          "add_useraddress",
+          "accounts",
+          "useraddress"
+        ],
+        [
+          "change_useraddress",
+          "accounts",
+          "useraddress"
+        ],
+        [
+          "delete_useraddress",
+          "accounts",
+          "useraddress"
+        ],
+        [
+          "add_userphonenumber",
+          "accounts",
+          "userphonenumber"
+        ],
+        [
+          "change_userphonenumber",
+          "accounts",
+          "userphonenumber"
+        ],
+        [
+          "delete_userphonenumber",
+          "accounts",
+          "userphonenumber"
+        ],
+        [
+          "change_organisation",
+          "organisations",
+          "organisation"
+        ]
+      ]
+    }
+  },
+  {
+    "model": "auth.group",
+    "fields": {
       "name": "RegistrationAdmin",
       "permissions": [
         [
@@ -319,6 +422,14 @@
     "fields": {
       "name": "Admin",
       "group": ["GlobalAdmin"],
+      "order": 9
+    }
+  },
+  {
+    "model": "accounts.role",
+    "fields": {
+      "name": "Association",
+      "group": ["AssociationAdmin"],
       "order": 10
     }
   },
@@ -359,6 +470,13 @@
     "fields": {
       "application": ["fa467234b81e4838a009e38d9e655d18"],
       "role": ["Admin"]
+    }
+  },
+  {
+    "model": "accounts.applicationrole",
+    "fields": {
+      "application": ["fa467234b81e4838a009e38d9e655d18"],
+      "role": ["Association"]
     }
   },
   {
@@ -436,6 +554,20 @@
         [
           "fa467234b81e4838a009e38d9e655d18",
           "Country"
+        ]
+      ]
+    }
+  },
+  {
+    "model": "accounts.roleprofile",
+    "fields": {
+      "name": "Association Admin",
+      "uuid": "c9b474cce9e34d3c81f963f86aa7bc64",
+      "last_modified": "2018-01-03T15:00:46.076Z",
+      "application_roles": [
+        [
+          "fa467234b81e4838a009e38d9e655d18",
+          "Association"
         ]
       ]
     }

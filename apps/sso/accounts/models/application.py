@@ -123,7 +123,7 @@ class ApplicationRole(models.Model):
 
 class RoleProfile(AbstractBaseModel):
     name = models.CharField(_("name"), max_length=255)
-    application_roles = models.ManyToManyField(ApplicationRole, help_text=_(
+    application_roles = models.ManyToManyField(ApplicationRole, blank=True, help_text=_(
         'Associates a group of application roles that are usually assigned together.'))
     order = models.IntegerField(default=0, help_text=_('Overwrites the alphabetic order.'))
     is_inheritable_by_org_admin = models.BooleanField(

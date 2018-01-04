@@ -45,7 +45,7 @@ class UserDeleteView(DeleteView):
     @method_decorator(admin_login_required)
     @method_decorator(permission_required('accounts.delete_user', raise_exception=True))
     def dispatch(self, request, *args, **kwargs):
-        # additionally check if the user is admin of the user       
+        # additionally check if the user is admin of the user
         if not request.user.has_user_access(kwargs.get('uuid')):
             raise PermissionDenied
         return super(UserDeleteView, self).dispatch(request, *args, **kwargs)
@@ -300,7 +300,7 @@ def add_user(request, template='accounts/application/add_user_form.html'):
             initial['role_profiles'] = [default_role_profile.id]
         organisations = request.user.get_administrable_user_organisations()
         if len(organisations) == 1:
-            initial['organisation'] = organisations[0]
+            initial['organisations'] = organisations[0]
         form = UserAddForm(request, initial=initial)
 
     data = {'form': form, 'redirect_uri': redirect_uri, 'title': _('Add user')}

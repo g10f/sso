@@ -12,9 +12,10 @@ class OAuth2Backend(SSOBackend):
             user = token.user
             try:
                 # TODO: add otp_device to refresh token
-                user.otp_device = token.otp_device
+                if hasattr(token, 'otp_device'):
+                    user.otp_device = token.otp_device
             except Exception as e:
-                logger.warning(e)
+                logger.error(e)
             return user
 
         return None

@@ -202,7 +202,7 @@ class OAuth2Tests(OAuth2BaseTestCase):
 
         expected = {
             'iss': 'http://testserver',
-            'sub': 'a8992f0348634f76b0dac2de4e4c83ee',  # user_id 
+            'sub': 'a8992f0348634f76b0dac2de4e4c83ee',  # user_id
             'aud': self._client_id,
             'email': 'gunnar@g10f.de',
             'name': 'GunnarScherf'
@@ -230,7 +230,7 @@ class OAuth2Tests(OAuth2BaseTestCase):
         self.assertEqual(user_info['family_name'], 'Scherf')
         self.assertIn('31664dd38ca4454e916e55fe8b1f0745', user_info['organisations'])
 
-        # this is only for global admin accounts  
+        # this is only for global admin accounts
         response = self.client.get(reverse('api:v1_users'), HTTP_AUTHORIZATION=authorization)
         self.assertEqual(response.status_code, 401)
 
@@ -359,12 +359,14 @@ class OAuth2Tests(OAuth2BaseTestCase):
         }
 
         token_response = self.client.post(reverse('oauth2:token'), token_data)
-        self.assertEqual(token_response.status_code, 401)
+        self.assertEqual(token_response.status_code, 400)
+        # self.assertEqual(token_response.status_code, 401)
         self.assertIn('application/json', token_response['Content-Type'])
 
         token = token_response.json()
         self.assertIn('error', token)
-        expected = {'error': 'access_denied'}
+        # expected = {'error': 'access_denied'}
+        expected = {'error': 'invalid_request'}
         self.assertTrue(set(expected.items()).issubset(set(token.items())))
 
         token_data['redirect_uri'] = "http://localhost"

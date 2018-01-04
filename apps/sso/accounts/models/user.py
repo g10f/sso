@@ -87,7 +87,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     # extension
     # nickname = models.CharField(_('nickname'), max_length=30, blank=True)
     uuid = models.UUIDField(unique=True, default=uuid.uuid4, editable=True)
-    organisations = models.ManyToManyField(Organisation, verbose_name=_('organisations'), blank=True)
+    organisations = models.ManyToManyField(Organisation, verbose_name=_('organisations'),
+                                           blank=(not settings.SSO_ORGANISATION_REQUIRED))
     admin_regions = models.ManyToManyField(AdminRegion, verbose_name=_('admin regions'), blank=True)
     admin_organisation_countries = models.ManyToManyField(OrganisationCountry, verbose_name=_('admin countries'),
                                                           blank=True)
