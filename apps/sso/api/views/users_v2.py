@@ -150,11 +150,17 @@ class UserMixin(object):
                     'country': organisation.organisation_country.country.iso2_code,
                     'name': organisation.name,
                     '@id': "%s%s" % (base, reverse('api:v2_organisation', kwargs={'uuid': organisation.uuid.hex}))
+                } if organisation.organisation_country else {
+                    'name': organisation.name,
+                    '@id': "%s%s" % (base, reverse('api:v2_organisation', kwargs={'uuid': organisation.uuid.hex}))
                 } for organisation in obj.organisations.all().prefetch_related('organisation_country__country')
             }
             data['admin_regions'] = {
                 region.uuid.hex: {
                     'country': region.organisation_country.country.iso2_code,
+                    'name': region.name,
+                    '@id': "%s%s" % (base, reverse('api:v2_region', kwargs={'uuid': region.uuid.hex}))
+                } if region.organisation.organisation_country else {
                     'name': region.name,
                     '@id': "%s%s" % (base, reverse('api:v2_region', kwargs={'uuid': region.uuid.hex}))
                 } for region in obj.admin_regions.all().prefetch_related('organisation_country__country')
@@ -164,7 +170,7 @@ class UserMixin(object):
                     'code': organisation_country.country.iso2_code,
                     'name': organisation_country.country.printable_name,
                     '@id': "%s%s" % (
-                    base, reverse('api:v2_country', kwargs={'iso2_code': organisation_country.country.iso2_code}))
+                        base, reverse('api:v2_country', kwargs={'iso2_code': organisation_country.country.iso2_code}))
                 } for organisation_country in obj.admin_organisation_countries.all()
             }
 
@@ -331,11 +337,11 @@ class UserDetailView(UserMixin, JsonDetailView):
     def _save_user_details(self, data, name, mapping, cls, update_existing=True):
         """
         first update existing objects and then delete the missing objects, before adding new,
-        because of database constrains (i.e. (user, address_type) is unique) 
+        because of database constrains (i.e. (user, address_type) is unique)
         """
 
         # when there is no user detail we change nothing
-        # to delete the address for example, you must send an empty addresses dictionary  
+        # to delete the address for example, you must send an empty addresses dictionary
         if name not in data:
             return
         scopes = self.request.scopes
@@ -354,12 +360,12 @@ class UserDetailView(UserMixin, JsonDetailView):
                     changed_object_keys.append(key)
                 except ObjectDoesNotExist:
                     new_object_keys.append(key)
-            # delete 
+            # delete
             cls.objects.filter(user=self.object).exclude(uuid__in=changed_object_keys).delete()
         else:
             new_object_keys = data[name].keys()
 
-        # add new 
+        # add new
         for key in new_object_keys:
             value = data[name][key]
             obj_data = map_dict2dict(mapping, value, with_defaults=True)
