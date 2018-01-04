@@ -22,6 +22,7 @@ def settings(request):
         'sso_app_uuid': site_settings.SSO_APP_UUID,
         'registration_open': site_settings.REGISTRATION.get('OPEN', True),
         'device_classes': get_device_classes(),
+        'admin_only_2f': site_settings.SSO_ADMIN_ONLY_2F,
         'email_management': site_settings.SSO_ORGANISATION_EMAIL_MANAGEMENT,
         'region_management': site_settings.SSO_REGION_MANAGEMENT,
         'country_management': site_settings.SSO_COUNTRY_MANAGEMENT,
