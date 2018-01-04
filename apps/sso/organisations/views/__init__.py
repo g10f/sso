@@ -56,7 +56,7 @@ class OrganisationBaseView(object):
         """
         Insert the redirect_uri into the context dict.
         """
-        context = {}
+        context = {'multiple_associations': multiple_associations()}
         redirect_uri = get_safe_redirect_uri(self.request, allowed_hosts())
         if redirect_uri:
             context['redirect_uri'] = redirect_uri
@@ -105,7 +105,7 @@ class OrganisationDeleteView(OrganisationBaseView, DeleteView):
 
     @method_decorator(permission_required('organisations.delete_organisation', raise_exception=True))
     def dispatch(self, request, *args, **kwargs):
-        # additionally check if the user is admin of the organisation       
+        # additionally check if the user is admin of the organisation
         if not request.user.has_organisation_access(kwargs.get('uuid')):
             raise PermissionDenied
         return super(OrganisationDeleteView, self).dispatch(request, *args, **kwargs)
@@ -221,7 +221,7 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
     @method_decorator(login_required)
     @method_decorator(permission_required('organisations.change_organisation', raise_exception=True))
     def dispatch(self, request, *args, **kwargs):
-        # additionally check if the user is admin of the organisation       
+        # additionally check if the user is admin of the organisation
         user = request.user
         if not user.has_organisation_access(kwargs.get('uuid')):
             raise PermissionDenied
@@ -238,7 +238,7 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
 
     def get_object(self, queryset=None):
         """
-        check if the user is a center, region or country admin for the center and save 
+        check if the user is a center, region or country admin for the center and save
         the result in admin_type
         """
         user = self.request.user

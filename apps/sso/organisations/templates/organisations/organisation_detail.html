@@ -41,6 +41,40 @@
             <div class="dwbn-content">{{ object.name_native }}</div>
         </div>
     {% endif %}
+
+    {% if multiple_associations and object.association %}
+    <div class="row">
+        <div class="dwbn-label">{% trans 'Association' %}:</div>
+        <div class="dwbn-content">
+            {% if object.association.homepage %}
+                <a href="{{ object.association.homepage }}">{{ object.association }}</a> {% else %}
+                {{ object.association }}{% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if object.organisation_country %}
+    <div class="row">
+        <div class="dwbn-label">{% trans 'Country' %}:</div>
+        <div class="dwbn-content">
+            {% if object.organisation_country.homepage %}
+                <a href="{{ object.organisation_country.homepage }}">{{ object.organisation_country }}</a> {% else %}
+                {{ object.organisation_country }}{% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if object.admin_region %}
+        <div class="row">
+            <div class="dwbn-label">{% trans 'Region' %}:</div>
+            <div class="dwbn-content">
+                {% if object.admin_region.homepage %}
+                    <a href="{{ object.admin_region.homepage }}">{{ object.admin_region }}</a> {% else %}
+                    {{ object.admin_region }}{% endif %}
+            </div>
+        </div>
+    {% endif %}
+
     <div class="row">
         <div class="dwbn-label">{% trans 'Homepage' %}:</div>
         <div class="dwbn-content"><a href="{{ object.homepage }}">{{ object.homepage }}</a></div>
@@ -126,25 +160,6 @@
                 </div>
             </div>
         {% endif %}
-    {% endif %}
-
-    <div class="row">
-        <div class="dwbn-label">{% trans 'Country' %}:</div>
-        <div class="dwbn-content">
-            {% if object.organisation_country.homepage %}
-                <a href="{{ object.organisation_country.homepage }}">{{ object.organisation_country }}</a> {% else %}
-                {{ object.organisation_country }}{% endif %}
-        </div>
-    </div>
-    {% if object.admin_region %}
-        <div class="row">
-            <div class="dwbn-label">{% trans 'Region' %}:</div>
-            <div class="dwbn-content">
-                {% if object.admin_region.homepage %}
-                    <a href="{{ object.admin_region.homepage }}">{{ object.admin_region }}</a> {% else %}
-                    {{ object.admin_region }}{% endif %}
-            </div>
-        </div>
     {% endif %}
 
     {% if perms.organisations.change_organisation %}
