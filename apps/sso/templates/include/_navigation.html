@@ -84,7 +84,7 @@
         {% endif %}
         <a class="list-group-item {% if active_navigation == "password_change" %}active{% endif %}" href="{% url 'accounts:password_change' %}"><i class="glyphicon glyphicon-edit"></i> {% trans 'Change my password' %}</a>
         {% if device_classes %}
-            {% if brand == 'DWBN' %}
+            {% if admin_only_2f %}
                 {% if user.is_user_admin or user.is_organisation_admin or user.is_staff %}
                     <a class="list-group-item {% if active_navigation == "auth_profile" %}active{% endif %}" href="{% url 'auth:profile' %}"><i class="glyphicon glyphicon-lock"></i> {% trans 'Security' %}</a>
                 {% endif %}

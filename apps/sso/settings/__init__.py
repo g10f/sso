@@ -62,6 +62,7 @@ OTP_DEVICES = [
     'sso_auth.U2FDevice',
     # 'sso_auth.TwilioSMSDevice',
 ]
+SSO_ADMIN_ONLY_2F = False
 
 OTP_TWILIO_ACCOUNT = ''
 OTP_TWILIO_AUTH = ''
@@ -161,8 +162,7 @@ else:
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-        ],
+        'DIRS': [],
         # 'APP_DIRS': True,  # must not be set if loaders is set
         'OPTIONS': {
             'context_processors': [
