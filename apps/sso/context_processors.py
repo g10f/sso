@@ -12,15 +12,13 @@ def get_base_url(request):
 
 
 def settings(request):
-    
+
     return {
         'brand': site_settings.SSO_BRAND,
         'base_url': get_base_url(request),
-        'stylesheet': 'css/%(style)s-%(version)s.css' % {'style': site_settings.SSO_STYLE, 'version': site_settings.SSO_STYLE_VERSION},
+        'stylesheet': 'css/%(style)s-%(version)s.css' % {'style': site_settings.SSO_STYLE,
+                                                         'version': site_settings.SSO_STYLE_VERSION},
         'stylesheet_less': 'less/%(style)s.less' % {'style': site_settings.SSO_STYLE},
-        'less': site_settings.SSO_LESS,
-        'favicon': site_settings.SSO_FAVICON,
-        'apple_touch_icon': site_settings.SSO_APPLE_TOUCH_ICON,
         'sso_app_uuid': site_settings.SSO_APP_UUID,
         'registration_open': site_settings.REGISTRATION.get('OPEN', True),
         'device_classes': get_device_classes(),

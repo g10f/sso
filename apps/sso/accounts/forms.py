@@ -123,7 +123,7 @@ PasswordChangeForm.base_fields = OrderedDict(
 class PasswordResetForm(DjangoPasswordResetForm):
     """
     changes from django default PasswordResetForm:
-     * validates that the email exists and shows an error message if not. 
+     * validates that the email exists and shows an error message if not.
      * adds an expiration_date to the rendering context
     """
     error_messages = {
@@ -232,7 +232,7 @@ class SetPictureAndPasswordForm(SetPasswordForm):
 
 class AdminUserCreationForm(forms.ModelForm):
     """
-    Django Admin Site UserCreationForm where no password is required and the username is created from first_name and 
+    Django Admin Site UserCreationForm where no password is required and the username is created from first_name and
     last_name. If the password is empty, an random password is created
     """
     password1 = forms.CharField(label=_("Password"), required=False, widget=forms.PasswordInput)
@@ -297,8 +297,8 @@ class UserAddForm(mixins.UserRolesMixin, forms.ModelForm):
                               years=range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1)))
     notes = forms.CharField(label=_("Notes"), required=False, max_length=1024,
                             widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
-    organisations = forms.ModelChoiceField(queryset=None, required=False, label=_("Organisation"),
-                                           widget=bootstrap.Select())
+    organisations = forms.ModelChoiceField(queryset=None, required=settings.SSO_ORGANISATION_REQUIRED,
+                                           label=_("Organisation"), widget=bootstrap.Select())
     application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False,
                                                        widget=bootstrap.CheckboxSelectMultiple(),
                                                        label=_("Application roles"))
@@ -514,7 +514,7 @@ class UserSelfProfileForm(forms.Form):
     def save(self):
         cd = self.cleaned_data
         if (not self.initial['first_name'] and not self.initial['last_name']) and cd.get('first_name') and cd.get(
-                'last_name'):
+            'last_name'):
             # should be a streaming user, which has no initial first_name and last_name
             # we create the new username because the streaming user has his email as username
             self.user.username = default_username_generator(capfirst(cd.get('first_name')),
@@ -589,12 +589,14 @@ class UserSelfProfileDeleteForm(forms.Form):
 
 class UserSelfRegistrationForm2(UserSelfRegistrationForm):
     """
-    Overwritten UserSelfRegistrationForm Form with additional  organisation field
+    Overwritten UserSelfRegistrationForm Form with additional organisation field
     """
     organisation = forms.ModelChoiceField(
-        queryset=Organisation.objects.filter(is_active=True, is_live=True, association__is_selectable=True).
-            select_related('organisation_country__country'), required=False, label=_("Organisation"),
-        widget=bootstrap.Select())
+        queryset=Organisation.objects.filter(
+            is_active=True, is_live=True, association__is_selectable=True).select_related(
+            'organisation_country__country'),
+        required=settings.SSO_ORGANISATION_REQUIRED,
+        label=_("Organisation"), widget=bootstrap.Select())
     # for Bots. If you enter anything in this field you will be treated as a robot
     state = forms.CharField(label=_('State'), required=False, widget=bootstrap.HiddenInput())
 
@@ -672,7 +674,8 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
                           widget=bootstrap.SelectDateWidget(
                               years=range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1)))
     status = bootstrap.ReadOnlyField(label=_('Status'))
-    organisations = forms.ModelChoiceField(queryset=None, required=False, label=_("Organisation"),
+    organisations = forms.ModelChoiceField(queryset=None, required=settings.SSO_ORGANISATION_REQUIRED,
+                                           label=_("Organisation"),
                                            widget=bootstrap.Select())
     application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False,
                                                        widget=bootstrap.CheckboxSelectMultiple(),
@@ -718,7 +721,7 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
 
         if self.user.organisations.count() > 1:
             self.fields['organisations'] = forms.ModelMultipleChoiceField(
-                queryset=None, required=False,
+                queryset=None, required=settings.SSO_ORGANISATION_REQUIRED,
                 widget=bootstrap.SelectMultipleWithCurrently(
                     currently=u', '.join([text_type(x) for x in self.user.organisations.all()])),
                 label=_("Organisation"))

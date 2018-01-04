@@ -50,8 +50,8 @@ class OrganisationAddressForm(BaseForm):
     class Meta:
         model = OrganisationAddress
         fields = (
-        'address_type', 'addressee', 'careof', 'street_address', 'city', 'city_native', 'postal_code', 'country',
-        'region')
+            'address_type', 'addressee', 'careof', 'street_address', 'city', 'city_native', 'postal_code', 'country',
+            'region')
         widgets = {
             'address_type': bootstrap.Select(attrs={'class': 'address_type'}),
             'addressee': bootstrap.TextInput(attrs={'size': 50}),
@@ -95,9 +95,9 @@ class OrganisationBaseForm(BaseForm):
         model = Organisation
 
         fields = (
-        'name_native', 'homepage', 'source_urls', 'google_plus_page', 'facebook_page', 'twitter_page', 'founded',
-        'coordinates_type',
-        'is_private', 'is_live', 'location', 'neighbour_distance', 'timezone')
+            'name_native', 'homepage', 'source_urls', 'google_plus_page', 'facebook_page', 'twitter_page', 'founded',
+            'coordinates_type',
+            'is_private', 'is_live', 'location', 'neighbour_distance', 'timezone')
         years_to_display = range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1)
         widgets = {
             'homepage': bootstrap.URLInput(attrs={'size': 50}),
@@ -124,7 +124,7 @@ class OrganisationBaseForm(BaseForm):
         }
 
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user')  # remove custom user keyword      
+        self.user = kwargs.pop('user')  # remove custom user keyword
         super(OrganisationBaseForm, self).__init__(*args, **kwargs)
         if self.instance.location:
             self.fields['google_maps_url'].initial = self.instance.google_maps_url
@@ -173,7 +173,7 @@ class OrganisationEmailAdminForm(OrganisationBaseForm):
         """
         email_value = self.cleaned_data['email_value']
         if SSO_ORGANISATION_EMAIL_DOMAIN and (
-                email_value[-len(SSO_ORGANISATION_EMAIL_DOMAIN):] != SSO_ORGANISATION_EMAIL_DOMAIN):
+            email_value[-len(SSO_ORGANISATION_EMAIL_DOMAIN):] != SSO_ORGANISATION_EMAIL_DOMAIN):
             msg = _('The email address of the center must be ending with %(domain)s') % {
                 'domain': SSO_ORGANISATION_EMAIL_DOMAIN}
             raise ValidationError(msg)
@@ -186,7 +186,7 @@ class OrganisationEmailAdminForm(OrganisationBaseForm):
 
     def save(self, commit=True):
         """
-        save the email address or create a new email object if it does not exist 
+        save the email address or create a new email object if it does not exist
         """
         if self.instance.email:
             old_email_value = self.instance.email.email
@@ -217,7 +217,8 @@ class OrganisationEmailAdminForm(OrganisationBaseForm):
 class OrganisationAssociationAdminForm(OrganisationEmailAdminForm):
     class Meta(OrganisationBaseForm.Meta):
         fields = OrganisationBaseForm.Meta.fields + (
-        'association', 'admin_region', 'organisation_country', 'name', 'center_type', 'is_active')  # , 'can_publish')
+            'association', 'admin_region', 'organisation_country', 'name', 'center_type',
+            'is_active')  # , 'can_publish')
 
     def __init__(self, *args, **kwargs):
         super(OrganisationAssociationAdminForm, self).__init__(*args, **kwargs)
@@ -239,7 +240,7 @@ class OrganisationCountryAdminForm(OrganisationEmailAdminForm):
 
     class Meta(OrganisationBaseForm.Meta):
         fields = OrganisationBaseForm.Meta.fields + (
-        'organisation_country', 'admin_region', 'name', 'center_type', 'is_active')  # , 'can_publish')
+            'organisation_country', 'admin_region', 'name', 'center_type', 'is_active')  # , 'can_publish')
 
     def __init__(self, *args, **kwargs):
         super(OrganisationCountryAdminForm, self).__init__(*args, **kwargs)
@@ -267,7 +268,7 @@ class OrganisationRegionAdminForm(OrganisationEmailAdminForm):
 
     class Meta(OrganisationBaseForm.Meta):
         fields = OrganisationBaseForm.Meta.fields + (
-        'organisation_country', 'admin_region', 'name', 'center_type', 'is_active')  # , 'can_publish')
+            'organisation_country', 'admin_region', 'name', 'center_type', 'is_active')  # , 'can_publish')
 
     def __init__(self, *args, **kwargs):
         super(OrganisationRegionAdminForm, self).__init__(*args, **kwargs)
@@ -318,7 +319,7 @@ class EmailForwardMixin(object):
 class OrganisationAssociationAdminCreateForm(EmailForwardMixin, OrganisationAssociationAdminForm):
     """
     A form for a country admin for create organisations with
-    additionally email_forward field  
+    additionally email_forward field
     """
     email_forward = EmailFieldLower(required=True, label=_("Email forwarding address"),
                                     help_text=_('The primary email forwarding address for the organisation'),
@@ -340,7 +341,7 @@ class OrganisationAssociationAdminCreateForm(EmailForwardMixin, OrganisationAsso
 class OrganisationCountryAdminCreateForm(EmailForwardMixin, OrganisationCountryAdminForm):
     """
     A form for a country admin for create organisations with
-    additionally email_forward field  
+    additionally email_forward field
     """
     email_forward = EmailFieldLower(required=True, label=_("Email forwarding address"),
                                     help_text=_('The primary email forwarding address for the organisation'),
@@ -396,7 +397,7 @@ class AdminRegionForm(BaseForm):
         }
 
     def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user')  # remove custom user keyword      
+        self.user = kwargs.pop('user')  # remove custom user keyword
         super(AdminRegionForm, self).__init__(*args, **kwargs)
         self.fields['organisation_country'].queryset = self.user.get_administrable_region_countries()
         if self.instance.email:

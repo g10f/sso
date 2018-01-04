@@ -2,7 +2,7 @@
 {% load i18n %}
 {% load admin_static %}
 
-{% block extrahead %}<link rel="shortcut icon" href="{% static favicon %}" type="image/ico"/>{% endblock %}
+{% block extrahead %}<link rel="shortcut icon" href="{% static 'ico/favicon.ico' %}" type="image/ico"/>{% endblock %}
 
 {% block title %}{{ title }} | {{ site_title|default:_('Site admin') }}{% endblock %}
 

@@ -1,20 +1,21 @@
 import logging
 
 from django.utils.deprecation import MiddlewareMixin
-
-from .models import Device
 from sso.auth import DEVICE_KEY
+from .models import Device
 
 logger = logging.getLogger(__name__)
 
 
 class IsVerified(object):
     """ A pickle-friendly lambda. """
+
     def __init__(self, user):
         self.user = user
 
     def __call__(self):
         return self.user.otp_device is not None
+
 
 """
 Open ID Values:
@@ -38,6 +39,7 @@ class OTPMiddleware(MiddlewareMixin):
     verified.  As a convenience, this also installs ``user.is_verified()``,
     which returns ``True`` if ``user.otp_device`` is not ``None``.
     """
+
     # TODO: include logic in oauth2 middleware and handle api case where there is no cookie only an access_token
     def process_request(self, request):
         user = getattr(request, 'user', None)

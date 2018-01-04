@@ -11,14 +11,14 @@ class OrganisationsTest(TransactionTestCase):
 
     def setUp(self):
         self.client = SSOClient()
-    
+
     def tearDown(self):
         pass
 
     def test_add_organisation_by_country_admin(self):
         self.client.login(username='CountryAdmin', password='gsf')
         response = self.client.get(reverse('organisations:organisation_create'))
-        
+
         self.assertEqual(response.status_code, 200)
         # CountryAdmin is admin of County 81
         organisation_country = OrganisationCountry.objects.get(uuid='6bc429702f9f442ea9717824a8d76d84')
@@ -26,11 +26,11 @@ class OrganisationsTest(TransactionTestCase):
         self.assertEqual(len(countries), 1)
         self.assertEqual(organisation_country, countries[0])
         email_domain = settings.SSO_ORGANISATION_EMAIL_DOMAIN if settings.SSO_ORGANISATION_EMAIL_DOMAIN else '@g10f.de'
-        
+
         # create a new center
         data = {
             'name': 'New Center',
-            'center_type': '2',
+            'center_type': 'g',
             'organisation_country': organisation_country.pk,
             'email_value': 'newcenter' + email_domain,
             'email_forward': 'test@g10f.de',
@@ -38,7 +38,7 @@ class OrganisationsTest(TransactionTestCase):
         }
         response = self.client.post(reverse('organisations:organisation_create'), data=data)
         self.assertEqual(response.status_code, 302)
-        
+
         # check center attributes
         organisation = Organisation.objects.get(name="New Center")
         self.assertEqual(organisation.organisation_country, organisation_country)
@@ -61,7 +61,7 @@ class OrganisationsTest(TransactionTestCase):
         # create a new center
         data = {
             'name': 'New Center',
-            'center_type': '2',
+            'center_type': 'g',
             'organisation_country': organisation_country.pk,
             'admin_region': admin_region.pk,
             'email_value': 'newcenter' + email_domain,
