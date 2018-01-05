@@ -5,7 +5,7 @@ import re
 from six.moves.urllib.parse import urlsplit
 
 from django.core import mail
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 from sso.organisations.models import Organisation
 from sso.registration import default_username_generator
@@ -40,6 +40,8 @@ class RegistrationTest(TestCase):
         username = default_username_generator("GunnarXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "Scherf")
         self.assertEqual(username, "GunnarXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
 
+    @override_settings(RECAPTCHA_PUBLIC_KEY='6LccjewSAAAAAPcFZmUtuzRVkU6hhOona0orqgKh',
+                       RECAPTCHA_PRIVATE_KEY='6LccjewSAAAAAAhJzHuEyVV40AYApL6CpmjqlmX8')
     def test_registration_register_by_bot(self):
         """
         User self registration with email validation
