@@ -160,7 +160,7 @@ class UserMixin(object):
                     'country': region.organisation_country.country.iso2_code,
                     'name': region.name,
                     '@id': "%s%s" % (base, reverse('api:v2_region', kwargs={'uuid': region.uuid.hex}))
-                } if region.organisation.organisation_country else {
+                } if region.organisation_country else {
                     'name': region.name,
                     '@id': "%s%s" % (base, reverse('api:v2_region', kwargs={'uuid': region.uuid.hex}))
                 } for region in obj.admin_regions.all().prefetch_related('organisation_country__country')
