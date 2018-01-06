@@ -88,7 +88,7 @@ class ClientManager(AbstractBaseModelManager):
         """
         allowed_hosts = cache.get('allowed_hosts', set())
         if not allowed_hosts:
-            allowed_hosts.add(urlparse(settings.SSO_BASE_URL)[1])
+            allowed_hosts.add(settings.SSO_DOMAIN)
             for client in self.filter(is_active=True):
                 redirect_uris = client.redirect_uris.split() + [client.default_redirect_uri]
                 for redirect_uri in redirect_uris:

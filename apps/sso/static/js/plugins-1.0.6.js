@@ -31,14 +31,12 @@
  * @requires jQuery
  */
 (function ($) {
-
     function getLocation() {
         if (!$("button.geo-location").hasClass("active")) {
             navigator.geolocation.getCurrentPosition(showDistance);
         } else {
             showDistance(null);
         }
-
     }
 
     function showDistance(position) {
