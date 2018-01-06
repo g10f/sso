@@ -5,7 +5,7 @@ import logging
 from django.urls import reverse
 from django.views.decorators.cache import cache_page
 from sso.api.response import JsonHttpResponse
-from sso.utils.url import base_url
+from sso.utils.url import get_base_url
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +21,7 @@ FIND_USER_EMAILS_EXPRESSION = "{?q,app_id,modified_since,country_group_id,countr
 
 @cache_page(60 * 60)
 def home(request):
-    base_uri = base_url(request)
+    base_uri = get_base_url(request)
     resources = {
         "@id": "%s%s" % (base_uri, reverse('api:home')),
         "@type": "EntryPoint",

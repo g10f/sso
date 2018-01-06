@@ -8,7 +8,7 @@ from sso.accounts.models import User
 from sso.api.views.generic import JsonListView, JsonDetailView
 from sso.organisations.models import CountryGroup, OrganisationCountry, Organisation, AdminRegion
 from sso.utils.parse import parse_datetime_with_timezone_support
-from sso.utils.url import base_url
+from sso.utils.url import get_base_url
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +17,7 @@ class CountryGroupMixin(object):
     model = CountryGroup
 
     def get_object_data(self, request, obj, details=False):
-        base = base_url(request)
+        base = get_base_url(request)
         data = {
             '@id': "%s%s" % (base, reverse('api:v2_country_group', kwargs={'uuid': obj.uuid.hex})),
             'id': u'%s' % obj.uuid.hex,
@@ -33,9 +33,10 @@ class CountryGroupMixin(object):
                 users = request.user.filter_administrable_users(users)
                 if users.exists():
                     data['users'] = "%s%s?country_group_id=%s" % (base, reverse('api:v2_users'), obj.uuid.hex)
-            
+
             if Organisation.objects.filter(organisation_country__country_groups=obj).exists():
-                data['organisations'] = "%s%s?country_group_id=%s" % (base, reverse('api:v2_organisations'), obj.uuid.hex)
+                data['organisations'] = "%s%s?country_group_id=%s" % (
+                base, reverse('api:v2_organisations'), obj.uuid.hex)
             if AdminRegion.objects.filter(organisation_country__country_groups=obj).exists():
                 data['regions'] = "%s%s?country_group_id=%s" % (base, reverse('api:v2_regions'), obj.uuid.hex)
             if OrganisationCountry.objects.filter(country_groups=obj).exists():
@@ -46,7 +47,7 @@ class CountryGroupMixin(object):
 class CountryGroupDetailView(CountryGroupMixin, JsonDetailView):
     http_method_names = ['get', 'options']
     operations = {}
-    
+
     def get_queryset(self):
         return super(CountryGroupDetailView, self).get_queryset().prefetch_related('email')
 

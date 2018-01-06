@@ -13,7 +13,7 @@ except:
 
 RUNNING_TEST = 'test' in sys.argv
 
-if RUNNING_DEVSERVER:
+if RUNNING_DEVSERVER or RUNNING_TEST:
     INTERNAL_IPS = ('127.0.0.1',)
     DEBUG = True
 else:
@@ -29,7 +29,6 @@ SSO_BRAND = 'G10F'
 SSO_SITE_NAME = 'G10F'
 SSO_DOMAIN = "localhost:8000"
 SSO_USE_HTTPS = False
-SSO_BASE_URL = '%s://%s' % ('https' if SSO_USE_HTTPS else 'http', SSO_DOMAIN)
 SSO_SERVICE_DOCUMENTATION = ""  # part of http://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig
 SSO_ABOUT = 'http://g10f.de/'
 SSO_APP_UUID = UUID('fa467234b81e4838a009e38d9e655d18')

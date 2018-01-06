@@ -17,7 +17,7 @@ from sso.api.response import JsonHttpResponse
 from sso.auth.utils import is_browser_client
 from sso.oauth2.models import allowed_hosts
 from sso.utils.http import parse_json
-from sso.utils.url import base_url, update_url, is_safe_ext_url
+from sso.utils.url import update_url, is_safe_ext_url, get_base_url
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +38,7 @@ class PermissionMixin(object):
         'delete': lambda request, obj: (True, None),
         'create': lambda request: (True, None),
     }
-    
+
 
     operations = {
         'replace': {'@type': 'ReplaceResourceOperation', 'method': 'PUT'},
@@ -47,7 +47,7 @@ class PermissionMixin(object):
         'create': {'@type': 'CreateResourceOperation', 'method': 'PUT', 'template': '{id}'},
     }
     """
-    
+
     permissions_tests = {
         'read': is_authenticated,
     }
@@ -55,8 +55,8 @@ class PermissionMixin(object):
 
     def is_referer_allowed(self):
         # check the referer if cookie based browser authentication is used
-        if 'HTTP_REFERER' in self.request.META and is_browser_client(self.request) and\
-                not is_safe_ext_url(self.request.META['HTTP_REFERER'], set(allowed_hosts())):
+        if 'HTTP_REFERER' in self.request.META and is_browser_client(self.request) and \
+            not is_safe_ext_url(self.request.META['HTTP_REFERER'], set(allowed_hosts())):
             return False
         else:
             return True
@@ -66,17 +66,19 @@ class PermissionMixin(object):
         if permission_check:
             if not self.is_referer_allowed():
                 if raise_exception:
-                    raise PermissionDenied("Access to: %s not allowed to referer %s'" % (self.request.path, self.request.META['HTTP_REFERER']))
+                    raise PermissionDenied("Access to: %s not allowed to referer %s'" % (
+                    self.request.path, self.request.META['HTTP_REFERER']))
                 else:
                     return False
             is_allowed, reason = permission_check(self.request, obj)
             if not is_allowed and raise_exception:
-                raise PermissionDenied("operation '%s' not allowed, user: '%s', reason '%s'" % (operation_name, self.request.user, reason))
+                raise PermissionDenied(
+                    "operation '%s' not allowed, user: '%s', reason '%s'" % (operation_name, self.request.user, reason))
             else:
                 return is_allowed
         else:  # default is no permission
             return False
-       
+
     def get_operations(self):
         return self.operations
 
@@ -93,24 +95,25 @@ class JSONResponseMixin(object):
     """
     A mixin that can be used to render a JSON response.
     """
+
     def render_to_json_response(self, context, allow_jsonp=False, **response_kwargs):
         """
         Returns a JSON response
         """
         data = self.get_data(context)
         return JsonHttpResponse(data=data, request=self.request, allow_jsonp=allow_jsonp, **response_kwargs)
-    
+
     def get_data(self, context):
         data = self.get_object_data(self.request, context['object'])
-        
+
         if '@id' not in data:
             # if no @id is there we use the current url as the default
-            page_base_url = "%s%s" % (base_url(self.request), self.request.path)
+            page_base_url = "%s%s" % (get_base_url(self.request), self.request.path)
             data['@id'] = update_url(page_base_url, self.request.GET)
 
         data['operation'] = self.get_allowed_operations(context['object'])
         return data
-        
+
 
 class PreflightMixin(object):
     def options(self, request, *args, **kwargs):
@@ -151,6 +154,7 @@ class JsonDetailView(JSONResponseMixin, PreflightMixin, PermissionMixin, BaseDet
     slug_field = 'uuid'
     slug_url_kwarg = 'uuid'
     create_object_with_put = False
+
     # supported method names from View class
     # http_method_names = ['get', 'post', 'put', 'patch', 'delete', 'head', 'options', 'trace']
 
@@ -164,12 +168,12 @@ class JsonDetailView(JSONResponseMixin, PreflightMixin, PermissionMixin, BaseDet
 
     @method_decorator(vary_on_headers('Origin', 'Authorization', 'Cookie', 'Accept-Language'))
     def get(self, request, *args, **kwargs):
-        self.object = self.get_object()        
+        self.object = self.get_object()
         # get_object is needed before check_permission
-        self.check_permission('read', self.object)        
+        self.check_permission('read', self.object)
         context = self.get_context_data(object=self.object)
         return self.render_to_response(context)
-    
+
     @transaction.atomic
     def put(self, request, *args, **kwargs):
         try:
@@ -191,13 +195,13 @@ class JsonDetailView(JSONResponseMixin, PreflightMixin, PermissionMixin, BaseDet
     def create(self, request, *args, **kwargs):
         self.check_permission('create')
         data = parse_json(request)
-        
+
         # get the new id for the object
         slug = self.kwargs.get(self.slug_url_kwarg, None)
         data[self.slug_field] = UUID(slug)
-        
+
         self.object = self.create_object(request, data)
-        
+
         context = self.get_context_data(object=self.object)
         return self.render_to_response(context, status=201)
 
@@ -205,23 +209,23 @@ class JsonDetailView(JSONResponseMixin, PreflightMixin, PermissionMixin, BaseDet
     def delete(self, request, *args, **kwargs):
         try:
             self.object = self.get_object()
-            
+
             # get_object is needed before check_permission
             self.check_permission('delete', self.object)
-            
+
             self.delete_object(request, self.object)
         except Http404:
             pass
         response = HttpResponse(status=204)
         response['Access-Control-Allow-Origin'] = self.request.META.get('HTTP_ORIGIN')
         return response
-    
+
     def create_object(self, request, data):
         """
         custom function to transform the object into an object which can be json rendered
         """
         raise NotImplementedError
-        
+
     def get_object_data(self, request, obj):
         """
         custom function to transform the object into an object which can be json rendered
@@ -244,12 +248,12 @@ class JsonDetailView(JSONResponseMixin, PreflightMixin, PermissionMixin, BaseDet
 class JsonListView(JSONResponseMixin, PermissionMixin, BaseListView):
     paginate_by = 100
     max_per_page = 1000
-    
+
     @method_decorator(csrf_exempt)
-    @method_decorator(catch_errors)  
+    @method_decorator(catch_errors)
     def dispatch(self, request, *args, **kwargs):
         return super(JsonListView, self).dispatch(request, *args, **kwargs)
-    
+
     def get_paginate_by(self, queryset):
         paginate_by = int(self.request.GET.get('per_page', self.paginate_by))
         if paginate_by > self.max_per_page:
@@ -260,7 +264,7 @@ class JsonListView(JSONResponseMixin, PermissionMixin, BaseListView):
         return self.render_to_json_response(context, **response_kwargs)
 
     def get_data(self, context):
-        page_base_url = "%s%s" % (base_url(self.request), self.request.path)
+        page_base_url = "%s%s" % (get_base_url(self.request), self.request.path)
         self_url = update_url(page_base_url, self.request.GET)
         data = {
             'member': [self.get_object_data(self.request, obj) for obj in context['object_list']],
@@ -297,10 +301,11 @@ class JsonListView(JSONResponseMixin, PermissionMixin, BaseListView):
             else:
                 is_empty = len(self.object_list) == 0
             if is_empty:
-                raise Http404("Empty list and '%(class_name)s.allow_empty' is False." % {'class_name': self.__class__.__name__})
+                raise Http404(
+                    "Empty list and '%(class_name)s.allow_empty' is False." % {'class_name': self.__class__.__name__})
         context = self.get_context_data()
         return self.render_to_response(context)
-    
+
     def get_object_data(self, request, obj):
         """
         custom function to transform the object into an object which can be json rendered

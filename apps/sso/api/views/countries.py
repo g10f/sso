@@ -7,7 +7,7 @@ from django.utils.encoding import force_text
 from sso.api.views.generic import JsonListView, JsonDetailView
 from sso.organisations.models import OrganisationCountry
 from sso.utils.parse import parse_datetime_with_timezone_support
-from sso.utils.url import base_url
+from sso.utils.url import get_base_url
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +16,7 @@ class CountryMixin(object):
     model = OrganisationCountry
 
     def get_object_data(self, request, obj, details=False):
-        base = base_url(request)
+        base = get_base_url(request)
         data = {
             '@id': "%s%s" % (base, reverse('api:v2_country', kwargs={'iso2_code': obj.country.iso2_code})),
             'id': u'%s' % obj.uuid.hex,
@@ -35,11 +35,13 @@ class CountryMixin(object):
             if ('users' in request.scopes) and (obj in request.user.get_administrable_user_countries()):
                 data['users'] = "%s%s?country=%s" % (base, reverse('api:v2_users'), obj.country.iso2_code)
             if obj.organisation_set.exists():
-                data['organisations'] = "%s%s?country=%s" % (base, reverse('api:v2_organisations'), obj.country.iso2_code)
+                data['organisations'] = "%s%s?country=%s" % (
+                base, reverse('api:v2_organisations'), obj.country.iso2_code)
             if obj.adminregion_set.exists():
                 data['regions'] = "%s%s?country=%s" % (base, reverse('api:v2_regions'), obj.country.iso2_code)
             if obj.country_groups.all().exists():
-                data['country_groups'] = "%s%s?country=%s" % (base, reverse('api:v2_country_groups'), obj.country.iso2_code)
+                data['country_groups'] = "%s%s?country=%s" % (
+                base, reverse('api:v2_country_groups'), obj.country.iso2_code)
         return data
 
 

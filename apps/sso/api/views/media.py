@@ -15,7 +15,7 @@ from sso.api.decorators import catch_errors
 from sso.api.decorators import condition
 from sso.api.views.generic import JsonDetailView
 from sso.api.views.users_v2 import read_permission
-from sso.utils.url import base_url, absolute_url
+from sso.utils.url import absolute_url, get_base_url
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ def get_last_modified_and_etag(request, uuid):
     obj = User.objects.get(uuid=uuid)
     last_modified = obj.last_modified
     etag = '"%s/%s"' % (uuid, obj.last_modified)
-    return last_modified, etag       
+    return last_modified, etag
 
 
 def get_last_modified_and_etag_for_me(request, *args, **kwargs):
@@ -53,7 +53,7 @@ def modify_permission(request, obj):
                     return False, "User has no access to object"
                 else:
                     return True, None
-    return False, "picture not in scope '%s'" % request.scopes 
+    return False, "picture not in scope '%s'" % request.scopes
 
 
 class UserPictureDetailView(JsonDetailView):
@@ -68,15 +68,15 @@ class UserPictureDetailView(JsonDetailView):
         'create': {'@type': 'CreateResourceOperation', 'method': 'POST'},
         'delete': {'@type': 'DeleteResourceOperation', 'method': 'DELETE'},
     }
-            
+
     @method_decorator(csrf_exempt)
-    @method_decorator(catch_errors)  
+    @method_decorator(catch_errors)
     @method_decorator(condition(last_modified_and_etag_func=get_last_modified_and_etag))
     def dispatch(self, request, *args, **kwargs):
-        return super(UserPictureDetailView, self).dispatch(request, *args, **kwargs)       
+        return super(UserPictureDetailView, self).dispatch(request, *args, **kwargs)
 
     def get_object_data(self, request, obj):
-        base = base_url(request)
+        base = get_base_url(request)
         data = {
             '@id': "%s%s" % (base, reverse('api:v2_picture', kwargs={'uuid': obj.uuid.hex})),
             'id': u'%s' % obj.uuid.hex,
@@ -95,22 +95,23 @@ class UserPictureDetailView(JsonDetailView):
     def delete_object(self, request, obj):
         obj.picture.delete(save=False)
         obj.save(update_fields=['last_modified', 'picture'])
-        
+
     @transaction.atomic
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
-        self.check_permission('create', self.object) 
-        
+        self.check_permission('create', self.object)
+
         content_length = int(request.META['CONTENT_LENGTH'])
         if content_length <= 0:
             raise ValueError('content_lenght <= 0')
         if content_length > User.MAX_PICTURE_SIZE:
             raise ValueError('content_lenght exceeds maximum of %d.' % User.MAX_PICTURE_SIZE)
-        
+
         content_type = request.META['CONTENT_TYPE']
         if not content_type.startswith("image"):
-            raise ValueError("unsupported content type %s. content type must be of type image/*" % request.META['CONTENT_TYPE'])
-        
+            raise ValueError(
+                "unsupported content type %s. content type must be of type image/*" % request.META['CONTENT_TYPE'])
+
         # mimetypes.guess_extension return jpe which is quite uncommon for jpeg
         if content_type == 'image/jpeg':
             file_ext = '.jpg'
@@ -118,33 +119,33 @@ class UserPictureDetailView(JsonDetailView):
             file_ext = guess_extension(content_type)
         if not file_ext:
             raise ValueError("unsupported content type %s" % request.META['CONTENT_TYPE'])
-        
-        image_file_name = "%s%s" % (get_random_string(7, allowed_chars='abcdefghijklmnopqrstuvwxyz0123456789'), file_ext)
-    
+
+        image_file_name = "%s%s" % (
+        get_random_string(7, allowed_chars='abcdefghijklmnopqrstuvwxyz0123456789'), file_ext)
+
         # update the database at the end
         self.object.picture.delete(save=False)
         self.object.picture.save(image_file_name, ContentFile(request.body), save=False)
         self.object.save(update_fields=['last_modified', 'picture'])
-        
+
         context = self.get_context_data(object=self.object)
         response = self.render_to_response(context, status=201)
         response['Access-Control-Allow-Origin'] = request.META.get('HTTP_ORIGIN')
         response['Location'] = self.object.picture.url
         return response
-    
+
 
 class MyUserPictureDetailView(UserPictureDetailView):
-    
     operations = {
         'create': {'@type': 'CreateResourceOperation', 'method': 'POST'},
         'delete': {'@type': 'DeleteResourceOperation', 'method': 'DELETE'},
     }
 
     @method_decorator(csrf_exempt)
-    @method_decorator(catch_errors)  
+    @method_decorator(catch_errors)
     @method_decorator(condition(last_modified_and_etag_func=get_last_modified_and_etag_for_me))
     def dispatch(self, request, *args, **kwargs):
-        return super(UserPictureDetailView, self).dispatch(request, *args, **kwargs)       
+        return super(UserPictureDetailView, self).dispatch(request, *args, **kwargs)
 
     def get_object(self, queryset=None):
         return self.request.user
