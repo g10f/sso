@@ -28,7 +28,7 @@ from sso.models import update_object_from_dict, map_dict2dict
 from sso.organisations.models import Organisation
 from sso.registration import default_username_generator
 from sso.utils.parse import parse_datetime_with_timezone_support
-from sso.utils.url import base_url, absolute_url
+from sso.utils.url import absolute_url, get_base_url
 
 logger = logging.getLogger(__name__)
 
@@ -104,7 +104,7 @@ class UserMixin(object):
 
     def get_object_data(self, request, obj, details=False):
         scopes = request.scopes
-        base = base_url(request)
+        base = get_base_url(request)
         email = obj.primary_email()
         data = {
             '@id': "%s%s" % (base, reverse('api:v2_user', kwargs={'uuid': obj.uuid.hex})),
@@ -542,7 +542,7 @@ class UserList(UserMixin, JsonListView):
         return True, None
 
     def get_operations(self):
-        base_uri = base_url(self.request)
+        base_uri = get_base_url(self.request)
         return {
             'create': {'@type': 'CreateResourceOperation', 'method': 'PUT',
                        'template': "%s%s%s" % (base_uri, reverse('api:v2_users'), '{uuid}/')}

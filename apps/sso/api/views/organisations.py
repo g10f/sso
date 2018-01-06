@@ -9,7 +9,7 @@ from django.urls import reverse
 from sso.api.views.generic import JsonListView, JsonDetailView
 from sso.organisations.models import Organisation, get_near_organisations, multiple_associations
 from sso.utils.parse import parse_datetime_with_timezone_support
-from sso.utils.url import base_url, absolute_url
+from sso.utils.url import absolute_url, get_base_url
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +25,7 @@ class OrganisationMixin(object):
                 return address_type
             return self.api_mappings['organisation__address__address_type'].get(address_type, address_type)
 
-        base = base_url(request)
+        base = get_base_url(request)
         data = {
             '@id': "%s%s" % (base, reverse('api:v2_organisation', kwargs={'uuid': obj.uuid.hex})),
             'id': u'%s' % obj.uuid.hex,
@@ -68,7 +68,7 @@ class OrganisationMixin(object):
             data['country'] = {
                 'code': obj.organisation_country.country.iso2_code,
                 '@id': "%s%s" % (
-                base, reverse('api:v2_country', kwargs={'iso2_code': obj.organisation_country.country.iso2_code})),
+                    base, reverse('api:v2_country', kwargs={'iso2_code': obj.organisation_country.country.iso2_code})),
             }
         if obj.admin_region is not None:
             data['region'] = {

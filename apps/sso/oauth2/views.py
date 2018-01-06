@@ -32,7 +32,7 @@ from sso.auth.utils import is_recent_auth_time
 from sso.auth.views import TWO_FACTOR_PARAM
 from sso.utils.convert import long_to_base64
 from sso.utils.http import get_request_param
-from sso.utils.url import base_url
+from sso.utils.url import get_base_url
 from .crypt import loads_jwt
 from .models import Client
 from .server import server
@@ -72,11 +72,11 @@ def pop_query_param(url, param_name):
     """
     get the query param with the param_name from the url and
     return a new url without that param_name and
-    return the value of the param_name 
+    return the value of the param_name
     """
     (scheme, netloc, path, query, fragment) = urlsplit(url)
     query_dict = QueryDict(query).copy()
-    # get the last value 
+    # get the last value
     value = query_dict.get(param_name, None)
     if value:
         del query_dict[param_name]
@@ -107,7 +107,7 @@ class OpenidConfigurationView(PreflightMixin, View):
         """
         http://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig
         """
-        base_uri = base_url(request)  # 'http://10.0.2.2:8000'  # for android local client test
+        base_uri = get_base_url(request)  # 'http://10.0.2.2:8000'  # for android local client test
         configuration = {
             "issuer": base_uri,
             "authorization_endpoint": '%s%s' % (base_uri, reverse('oauth2:authorize')),
@@ -293,7 +293,7 @@ def authorize(request):
         if login_req:
             return redirect_to_login(request, two_factor=two_factor)
 
-        # if we are here, the user is already logged in does not need to login again          
+        # if we are here, the user is already logged in does not need to login again
         headers, body, status = server.create_authorization_response(uri, http_method, body, headers, scopes,
                                                                      credentials)  # @UnusedVariable
         return HttpOAuth2ResponseRedirect(headers['Location'])
@@ -364,7 +364,7 @@ def tokeninfo(request):
 @login_required
 def approval(request):
     """
-    View to redirect for installed applications, to get an authorisation code  
+    View to redirect for installed applications, to get an authorisation code
     """
     state = request.GET.get('state', '')
     code = request.GET.get('code', '')

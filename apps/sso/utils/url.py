@@ -2,6 +2,7 @@ import logging
 
 from six.moves.urllib.parse import urlparse, urlsplit, urlunsplit
 
+from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import QueryDict
 from sso.utils.http import get_request_param
@@ -38,8 +39,21 @@ def update_url(url, params):
     return urlunsplit((scheme, netloc, path, new_query_string, fragment))
 
 
-def base_url(request):
-    return '%s://%s' % ('https' if request.is_secure() else 'http', get_current_site(request).domain)
+base_url = '%s://%s' % ('https' if settings.SSO_USE_HTTPS else 'http', settings.SSO_DOMAIN)
+
+
+def get_base_url(request=None):
+    if request:
+        domain = get_current_site(request).domain
+        use_https = request.is_secure()
+        url = '%s://%s' % ('https' if use_https else 'http', domain)
+        if not settings.RUNNING_TEST:
+            if use_https != settings.SSO_USE_HTTPS:
+                logger.error('Please check your SSO_USE_HTTPS setting. %s != %s', use_https, settings.SSO_USE_HTTPS)
+            if domain.lower() != settings.SSO_DOMAIN.lower():
+                logger.error('Please check your SSO_DOMAIN setting. %s != %s', domain, settings.SSO_DOMAIN)
+        return url
+    return base_url
 
 
 def absolute_url(request, url):

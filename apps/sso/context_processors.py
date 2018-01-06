@@ -1,18 +1,13 @@
-from django.conf import settings as site_settings
-from django.contrib.sites.shortcuts import get_current_site
-
 import logging
+
+from django.conf import settings as site_settings
 from sso.auth.utils import get_device_classes
+from sso.utils.url import get_base_url
 
 log = logging.getLogger(__name__)
 
 
-def get_base_url(request):
-    return '%s://%s' % ('https' if request.is_secure() else 'http', get_current_site(request).domain)
-
-
 def settings(request):
-
     return {
         'brand': site_settings.SSO_BRAND,
         'base_url': get_base_url(request),
@@ -26,4 +21,4 @@ def settings(request):
         'email_management': site_settings.SSO_ORGANISATION_EMAIL_MANAGEMENT,
         'region_management': site_settings.SSO_REGION_MANAGEMENT,
         'country_management': site_settings.SSO_COUNTRY_MANAGEMENT,
-        }
+    }

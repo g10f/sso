@@ -7,6 +7,7 @@ from django.contrib.sessions.backends.signed_cookies import SessionStore as Sign
 from django.core import signing
 from sso.oauth2.crypt import loads_jwt, make_jwt
 from sso.sessions.backends import map_keys, inv_key_map, key_map
+from sso.utils.url import get_base_url
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +42,6 @@ class SessionStore(SignedCookiesSessionStore):
         session_cache = map_keys(session_cache, key_map)
         if "_auth_user_backend" in session_cache:
             del session_cache["_auth_user_backend"]
-        session_cache["iss"] = settings.SSO_BASE_URL
+        session_cache["iss"] = get_base_url()
 
         return make_jwt(session_cache, max_age=settings.SESSION_COOKIE_AGE, algorithm="HS256")
