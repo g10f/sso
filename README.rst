@@ -20,5 +20,6 @@ Changelog
 ----------
 
 1.0.0: OAuth2 and OpenID Connect Support
-1.1.0: JSONLD/Hydra Api 
+1.1.0: JSONLD/Hydra Api
 1.2.0: Organisation Data Management
+1.2.1: Django 2.0 compatibility
