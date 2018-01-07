@@ -11,7 +11,7 @@ from __future__ import absolute_import
 """
 
 __author__ = 'Gunnar Scherf <gunnar@g10f.de>'
-__version__ = '1.2.2'
+__version__ = '1.2.1'
 
 
 # This will make sure the app is always imported when
