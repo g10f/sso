@@ -2,13 +2,13 @@
 import hashlib
 import json
 import logging
+from urllib.parse import urlparse, urlunparse, urlsplit, urlunsplit
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
 from jwt import InvalidTokenError
 from oauthlib import oauth2
 from oauthlib.common import urlencode, urlencoded, quote
-from six.moves.urllib.parse import urlparse, urlunparse, urlsplit, urlunsplit
 
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME

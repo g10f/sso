@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
 import re
-
-from six.moves.urllib.parse import urlsplit
+from urllib.parse import urlsplit
 
 from django.core import mail
 from django.test import TestCase, override_settings

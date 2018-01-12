@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from time import sleep
-
-from six.moves.urllib.parse import urlsplit
+from urllib.parse import urlsplit
 
 from django.http import QueryDict, SimpleCookie
 from django.test import TestCase

@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
-import codecs
 import csv
 import logging
-
-from six import StringIO, text_type
 
 logger = logging.getLogger(__name__)
 

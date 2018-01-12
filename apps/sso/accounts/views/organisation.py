@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-
-from six.moves.urllib.parse import urlunsplit
+from urllib.parse import urlunsplit
 
 from django.conf import settings
 from django.contrib import messages

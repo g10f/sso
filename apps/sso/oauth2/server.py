@@ -3,11 +3,11 @@ import base64
 import calendar
 import logging
 import time
+from urllib.parse import urlsplit
 
 from oauthlib import oauth2
 from oauthlib.oauth2.rfc6749 import grant_types
 from oauthlib.oauth2.rfc6749.tokens import random_token_generator
-from six.moves.urllib.parse import urlsplit
 
 from django.contrib.auth import authenticate, get_user_model
 from django.core import signing
@@ -56,7 +56,7 @@ def default_token_generator(request, max_age=MAX_AGE):
 # http://openid.net/specs/openid-connect-basic-1_0.html#IDToken
 def default_idtoken_generator(request, max_age=MAX_AGE):
     """
-    The generated id_token contains additionally email, name and roles 
+    The generated id_token contains additionally email, name and roles
     """
     user = request.user
     auth_time = int(calendar.timegm(user.last_login.utctimetuple()))

@@ -1,6 +1,5 @@
 from functools import wraps
-
-from six.moves.urllib.parse import urlparse
+from urllib.parse import urlparse
 
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
@@ -31,7 +30,7 @@ def request_passes_test(test_func, login_url=None, redirect_field_name=REDIRECT_
             login_scheme, login_netloc = urlparse(resolved_login_url)[:2]
             current_scheme, current_netloc = urlparse(path)[:2]
             if ((not login_scheme or login_scheme == current_scheme) and
-                    (not login_netloc or login_netloc == current_netloc)):
+                (not login_netloc or login_netloc == current_netloc)):
                 path = request.get_full_path()
             from django.contrib.auth.views import redirect_to_login
             return redirect_to_login(

@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
-
-from six.moves.urllib.parse import urlparse
+from urllib.parse import urlparse
 
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse
