@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from six import text_type
 from sorl.thumbnail.admin import AdminImageMixin
 
 from django.conf import settings
@@ -117,7 +116,7 @@ class BaseFilter(SimpleListFilter):
         qs = self.get_lookup_qs(request, model_admin)
         rg = [('-', _('(None)'))]
         for entry in qs:
-            rg.append((str(entry.id), text_type(entry)))
+            rg.append((str(entry.id), str(entry)))
         return rg
 
     def queryset(self, request, queryset):
@@ -435,11 +434,11 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
 
     def assigned_organisations(self, obj):
         if obj:
-            return u', '.join([text_type(x) for x in obj.organisations.all()])
+            return u', '.join([str(x) for x in obj.organisations.all()])
 
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):
         user = request.user
-        # use the application_roles from application_roles of the authenticated user        
+        # use the application_roles from application_roles of the authenticated user
         if db_field.name == "application_roles":
             kwargs["queryset"] = user.get_administrable_application_roles()
 

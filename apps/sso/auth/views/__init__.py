@@ -1,6 +1,5 @@
 import logging
-
-from six.moves.urllib.parse import urlencode
+from urllib.parse import urlencode
 
 from django.conf import settings
 from django.contrib import messages
@@ -162,7 +161,7 @@ class TokenView(FormView):
         other_devices = []
         for device_class in device_classes:
             for device in device_class.objects.filter(user=self.user).exclude(
-                    device_ptr_id=self.device.id).prefetch_related('device_ptr'):
+                device_ptr_id=self.device.id).prefetch_related('device_ptr'):
                 device_info = {
                     'device': device,
                     'url': "%s?%s" % (

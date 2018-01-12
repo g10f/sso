@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import csv
 import logging
-
-from six.moves.urllib_parse import urlunsplit
+from urllib.parse import urlunsplit
 
 from django.conf import settings
 from django.contrib import messages
@@ -352,8 +351,8 @@ class AssociationFilter(ViewQuerysetFilter):
     model = Association
     select_text = _('Association')
     select_all_text = _('All Associations')
-    #remove = 'country,p'
-    #all_remove = 'country'
+    # remove = 'country,p'
+    # all_remove = 'country'
 
 
 class CountryFilter(ViewQuerysetFilter):

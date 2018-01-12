@@ -1,6 +1,5 @@
 import logging
-
-from six.moves.urllib.parse import urlunsplit
+from urllib.parse import urlunsplit
 
 from django import forms
 from django.contrib import messages
@@ -196,7 +195,7 @@ class FormsetsUpdateView(generic.UpdateView):
     @property
     def is_valid(self):
         # form_class = self.get_form_class()
-        # form = self.get_form(form_class)        
+        # form = self.get_form(form_class)
 
         if not self.form.is_valid():
             return False
@@ -231,7 +230,7 @@ class FormsetsUpdateView(generic.UpdateView):
 
     def post(self, request, *args, **kwargs):
         """
-        add additionally the form class to self, because we need to check changed_data for verifying the formsets 
+        add additionally the form class to self, because we need to check changed_data for verifying the formsets
         """
         self.object = self.get_object()
         self.form = self.get_form()

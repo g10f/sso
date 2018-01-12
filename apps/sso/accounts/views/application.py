@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 from datetime import timedelta
-
-from six.moves.urllib.parse import urlunsplit
+from urllib.parse import urlunsplit
 
 from django.conf import settings
 from django.contrib import messages
@@ -415,7 +414,8 @@ def _update_standard_user(request, user, app_roles_by_profile, template='account
     return render(request, template, context)
 
 
-def _update_center_account(request, user, app_roles_by_profile, template='accounts/application/update_center_form.html'):
+def _update_center_account(request, user, app_roles_by_profile,
+                           template='accounts/application/update_center_form.html'):
     if request.method == 'POST':
         form = CenterProfileForm(request.POST, instance=user, request=request)
 

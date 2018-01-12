@@ -3,9 +3,9 @@ import logging
 import time
 from binascii import unhexlify, hexlify
 from os import urandom
+from urllib.parse import quote, urlencode
 
 import qrcode
-from six.moves.urllib.parse import quote, urlencode
 
 from django.apps import apps as django_apps
 from django.conf import settings

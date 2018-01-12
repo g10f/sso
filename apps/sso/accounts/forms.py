@@ -6,7 +6,6 @@ from mimetypes import guess_extension
 
 import pytz
 from captcha.fields import ReCaptchaField
-from six import text_type
 
 from django import forms
 from django.conf import settings
@@ -477,7 +476,7 @@ class UserSelfProfileForm(forms.Form):
         super(UserSelfProfileForm, self).__init__(*args, **kwargs)
 
         organisation_field = bootstrap.ReadOnlyField(
-            initial=u', '.join([text_type(x) for x in self.user.organisations.all()]),
+            initial=u', '.join([str(x) for x in self.user.organisations.all()]),
             label=_("Organisation"), help_text=_('Please use the contact form for a request to change this value.'))
         self.fields['organisation'] = organisation_field
 
@@ -566,7 +565,7 @@ class CenterSelfProfileForm(forms.Form):
         super(CenterSelfProfileForm, self).__init__(*args, **kwargs)
 
         if self.user.organisations.exists():
-            organisation = u', '.join([text_type(x) for x in self.user.organisations.all()])
+            organisation = u', '.join([str(x) for x in self.user.organisations.all()])
             organisation_field = bootstrap.ReadOnlyField(initial=organisation, label=_("Organisation"))
             self.fields['organisation'] = organisation_field
 
@@ -723,7 +722,7 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
             self.fields['organisations'] = forms.ModelMultipleChoiceField(
                 queryset=None, required=settings.SSO_ORGANISATION_REQUIRED,
                 widget=bootstrap.SelectMultipleWithCurrently(
-                    currently=u', '.join([text_type(x) for x in self.user.organisations.all()])),
+                    currently=u', '.join([str(x) for x in self.user.organisations.all()])),
                 label=_("Organisation"))
         self.fields['organisations'].queryset = self.request.user.get_administrable_user_organisations(). \
             filter(is_active=True, association__is_selectable=True)
@@ -806,7 +805,7 @@ class CenterProfileForm(mixins.UserRolesMixin, forms.Form):
                                                    self.request.user.get_administrable_role_profiles()}
 
         if self.user.organisations.exists():
-            organisation = u', '.join([text_type(x) for x in self.user.organisations.all()])
+            organisation = u', '.join([str(x) for x in self.user.organisations.all()])
             organisation_field = bootstrap.ReadOnlyField(initial=organisation, label=_("Organisation"))
             self.fields['organisation'] = organisation_field
 
@@ -848,7 +847,7 @@ class AppAdminUserProfileForm(mixins.UserRolesMixin, forms.Form):
         self.user = kwargs.pop('instance')
         user_data = model_to_dict(self.user)
         user_data['email'] = self.user.primary_email()
-        user_data['organisations'] = u', '.join([text_type(x) for x in self.user.organisations.all()])
+        user_data['organisations'] = u', '.join([str(x) for x in self.user.organisations.all()])
         user_data['role_profiles'] = [str(role_profile.id) for role_profile in self.user.role_profiles.all()]
 
         initial = kwargs.get('initial', {})
