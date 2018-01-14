@@ -88,25 +88,25 @@ class OrganisationChangeUpdateView(SingleObjectTemplateResponseMixin, ModelFormM
         context.update(kwargs)
         return super(OrganisationChangeUpdateView, self).get_context_data(**context)
 
-    def delete(self, request, *args, **kwargs):
+    def cancel(self, request, *args, **kwargs):
         success_url = self.get_success_url()
-        self.object.delete()
+        self.object.cancel()
         return HttpResponseRedirect(success_url)
 
     def get_object(self, queryset=None):
         try:
-            return self.request.user.organisationchange
+            return OrganisationChange.open.get(user=self.request.user)
         except ObjectDoesNotExist:
             return None
 
     def get(self, request, *args, **kwargs):
-        self.object = self.object = self.get_object()
+        self.object = self.get_object()
         return super(OrganisationChangeUpdateView, self).get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
-        self.object = self.object = self.get_object()
-        if '_delete' in self.request.POST:
-            return self.delete(request, *args, **kwargs)
+        self.object = self.get_object()
+        if '_cancel' in self.request.POST:
+            return self.cancel(request, *args, **kwargs)
         else:
             return super(OrganisationChangeUpdateView, self).post(request, *args, **kwargs)
 
@@ -114,7 +114,7 @@ class OrganisationChangeUpdateView(SingleObjectTemplateResponseMixin, ModelFormM
         success_url = ''
         if '_continue' in self.request.POST:
             success_url = self.request.path
-        elif '_delete' in self.request.POST:
+        elif '_cancel' in self.request.POST:
             success_url = reverse('accounts:profile')
         else:
             if is_validation_period_active(self.object.organisation):
@@ -126,7 +126,10 @@ class OrganisationChangeUpdateView(SingleObjectTemplateResponseMixin, ModelFormM
         return urlunsplit(('', '', success_url, self.request.GET.urlencode(safe='/'), ''))
 
     def form_valid(self, form):
-        form.instance.user = self.request.user
+        user = self.request.user
+        form.instance.user = user
+        form.instance.original_organisation = user.organisations.first()
+
         response = super(OrganisationChangeUpdateView, self).form_valid(form)
         if 'organisation' in form.changed_data:
             # enable brand specific modification
@@ -151,16 +154,21 @@ class OrganisationChangeAcceptView(FormView):
         context['organisationchange'] = self.organisationchange
         return context
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['organisationchange'] = self.organisationchange
+        return kwargs
+
     def form_valid(self, form):
         if '_delete' in self.request.POST:
-            self.organisationchange.delete()
+            self.organisationchange.deny(self.request.user)
             msg = _('Denied organisation change.')
             messages.add_message(self.request, level=messages.WARNING, message=msg, fail_silently=True)
             return HttpResponseRedirect(self.get_success_url())
         else:
             user = self.organisationchange.user
             user.organisations.set([self.organisationchange.organisation])
-            self.organisationchange.delete()
+            self.organisationchange.verify(self.request.user)
 
             # remove organisation related permissions
             organisation_related_application_roles = ApplicationRole.objects.filter(is_organisation_related=True)
@@ -226,8 +234,7 @@ class OrganisationChangeList(ListView):
     def get_queryset(self):
         user = self.request.user
 
-        qs = super(OrganisationChangeList, self).get_queryset().prefetch_related(
-            'user__useremail_set', 'organisation__organisation_country__country')
+        qs = OrganisationChange.open.all()
         qs = user.filter_administrable_organisationchanges(qs)
 
         self.cl = main.ChangeList(self.request, self.model, self.list_display, default_ordering=['-last_modified'])

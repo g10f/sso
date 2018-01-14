@@ -219,7 +219,7 @@ class UserMixin(object):
                     data['open_registrations'] = count_of_registrationprofiles
 
             if obj.has_perm("accounts.change_user"):
-                data['open_centerchanges'] = obj.get_count_of_centerchanges()
+                data['open_centerchanges'] = obj.get_count_of_organisationchanges()
 
         return data
 

@@ -64,6 +64,16 @@ class OrganisationChangeAcceptForm(forms.Form):
     the organisation from an user of another organisation
     """
 
+    def __init__(self, organisationchange, *args, **kwargs):
+        self.organisationchange = organisationchange
+        super().__init__(*args, **kwargs)
+
+    def clean(self):
+        if not self.organisationchange.is_open:
+            raise forms.ValidationError(_('Organisation change was already processed'), code='not-open')
+
+        return super().clean()
+
 
 class ContactForm(forms.Form):
     name = forms.CharField(label=_("Name"), max_length=100, widget=bootstrap.TextInput())

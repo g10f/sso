@@ -1,9 +1,9 @@
 from datetime import datetime
 
 from django.conf import settings
-from django.utils.http import int_to_base36, base36_to_int
-from django.utils.crypto import constant_time_compare, salted_hmac
 from django.utils import six
+from django.utils.crypto import constant_time_compare, salted_hmac
+from django.utils.http import int_to_base36, base36_to_int
 
 
 class EmailConfirmationTokenGenerator(object):
@@ -11,6 +11,7 @@ class EmailConfirmationTokenGenerator(object):
     Strategy object used to generate and check tokens for the email confirmation mechanism.
     based on the django PasswordResetTokenGenerator
     """
+
     def make_token(self, user_email):
         """
         Returns a token that can be used once to do a password reset
@@ -68,5 +69,6 @@ class EmailConfirmationTokenGenerator(object):
     def _today():
         # Used for mocking in tests
         return datetime.today()
+
 
 email_confirm_token_generator = EmailConfirmationTokenGenerator()

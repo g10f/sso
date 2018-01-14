@@ -637,8 +637,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         return RegistrationProfile.objects.filter_administrable_registrationprofiles(self, qs).count()
 
     @memoize
-    def get_count_of_centerchanges(self):
-        organisationchanges = OrganisationChange.objects.all()
+    def get_count_of_organisationchanges(self):
+        organisationchanges = OrganisationChange.open.all()
         return self.filter_administrable_organisationchanges(organisationchanges).count()
 
     def filter_administrable_organisationchanges(self, qs):

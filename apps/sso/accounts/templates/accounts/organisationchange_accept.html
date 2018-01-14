@@ -22,53 +22,76 @@
         {% endfor %}
 
         <h3>{% trans 'Process Organisation Change' %}</h3>
-
-        <p>{% trans "Please accept or deny the organisation change request." %}</p>
+        <p>
+            {% if organisationchange.is_open %}
+                {% trans "Please accept or deny the organisation change request." %}
+            {% else %}
+                <div class="alert alert-info">
+                    {% blocktrans with status=organisationchange.get_status_display user=organisationchange.completed_by_user %}
+                        The organisation change was already {{ status }} by {{ user }}.{% endblocktrans %}</div>
+            {% endif %}
+        </p>
 
         {% if messages %}{% for message in messages %}
             <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
         {% endif %}
 
-        {% if form.errors %}
+        {% if form.errors and not form.non_field_errors %}
             <div class="alert alert-danger">
-                {% if form.errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
+                {% if form.errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}
+                    {% trans "Please correct the errors below." %}{% endif %}
             </div>
+        {% endif %}
+
+        {% if form.non_field_errors %}
+            {% for error in form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ error }}
+                </div>
+            {% endfor %}
         {% endif %}
 
         <div class="form-group">
             <label class="control-label">{% trans 'First name' %}</label>
 
-            <div class="dwbn-form-control"><p class="form-control-static">{{ organisationchange.user.first_name }}</p></div>
+            <div class="dwbn-form-control"><p class="form-control-static">{{ organisationchange.user.first_name }}</p>
+            </div>
         </div>
 
         <div class="form-group">
             <label class="control-label">{% trans 'Last name' %}</label>
 
-            <div class="dwbn-form-control"><p class="form-control-static">{{ organisationchange.user.last_name }}</p></div>
+            <div class="dwbn-form-control"><p class="form-control-static">{{ organisationchange.user.last_name }}</p>
+            </div>
         </div>
 
         <div class="form-group">
             <label class="control-label">{% trans 'Email address' %}</label>
 
-            <div class="dwbn-form-control"><p class="form-control-static">{{ organisationchange.user.primary_email }}</p></div>
+            <div class="dwbn-form-control"><p
+                class="form-control-static">{{ organisationchange.user.primary_email }}</p></div>
         </div>
 
         <div class="form-group">
             <label class="control-label">{% trans 'Phone number' %}</label>
 
-            <div class="dwbn-form-control"><p class="form-control-static">{{ organisationchange.user.primary_phone }}</p></div>
+            <div class="dwbn-form-control"><p
+                class="form-control-static">{{ organisationchange.user.primary_phone }}</p></div>
         </div>
 
         <div class="form-group">
             <label class="control-label">{% trans 'Previous organisation' %}</label>
 
-            <div class="dwbn-form-control"><p class="form-control-static">{{ organisationchange.user.organisations.all.first|default_if_none:"" }}</p></div>
+            <div class="dwbn-form-control"><p
+                class="form-control-static">{{ organisationchange.original_organisation|default_if_none:"" }}</p>
+            </div>
         </div>
 
         <div class="form-group">
             <label class="control-label">{% trans 'New organisation' %}</label>
 
-            <div class="dwbn-form-control"><p class="form-control-static">{{ organisationchange.organisation }}</p></div>
+            <div class="dwbn-form-control"><p class="form-control-static">{{ organisationchange.organisation }}</p>
+            </div>
         </div>
         <div class="form-group">
             <label class="control-label">{% trans 'Reason' %}</label>
@@ -76,13 +99,15 @@
             <div class="dwbn-form-control"><p class="form-control-static">{{ organisationchange.reason }}</p></div>
         </div>
 
-        <div class="form-group">
-            <div class="dwbn-form-control_lg">
-                {% block submit_group %}
-                    <button type="submit" class="btn btn-danger" name="_delete">{% trans 'Deny change' %}</button>
-                    <button type="submit" class="btn btn-primary">{% trans 'Accept change' %}</button>
-                {% endblock submit_group %}
+        {% if organisationchange.is_open %}
+            <div class="form-group">
+                <div class="dwbn-form-control_lg">
+                    {% block submit_group %}
+                        <button type="submit" class="btn btn-danger" name="_delete">{% trans 'Deny change' %}</button>
+                        <button type="submit" class="btn btn-primary">{% trans 'Accept change' %}</button>
+                    {% endblock submit_group %}
+                </div>
             </div>
-        </div>
+        {% endif %}
     </form>
 {% endblock %}

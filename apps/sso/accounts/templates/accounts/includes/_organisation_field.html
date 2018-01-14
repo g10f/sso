@@ -4,9 +4,9 @@
 
     <div class="dwbn-form-control">
         <p class="form-control-static">{{ field.value|default:"---" }}</p>
-        {% if user.organisationchange %}
+        {% if user.organisationchange_set.open %}
             <a class="btn btn-warning" href="{% url 'accounts:organisationchange_me' %}" role="button">
-            {% blocktrans with name=user.organisationchange.organisation.name %}Update change of organisation to {{ name }}{% endblocktrans %}</a>
+            {% blocktrans with name=user.organisationchange_set.open.organisation.name %}Update change of organisation to {{ name }}{% endblocktrans %}</a>
         {% else %}
             <a class="btn btn-default" href="{% url 'accounts:organisationchange_me' %}" role="button">{% trans 'Change my organisation' %}</a>
         {% endif %}

@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 import logging
 
+from current_user.models import CurrentUserField
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _, pgettext_lazy
 from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary, \
-    CaseInsensitiveEmailField
+    CaseInsensitiveEmailField, AbstractBaseModelManager
 from sso.organisations.models import Organisation
 
 logger = logging.getLogger(__name__)
@@ -78,14 +79,61 @@ class OneTimeMessage(AbstractBaseModel):
         verbose_name_plural = _('one time messages')
 
 
+class OrganisationChangeManager(AbstractBaseModelManager):
+    def open(self):
+        return self.get(status='o')
+
+
+class OpenOrganisationChangeManager(AbstractBaseModelManager):
+    def get_queryset(self):
+        return super().get_queryset().filter(status='o').prefetch_related(
+            'user__useremail_set', 'organisation__organisation_country__country')
+
+
 class OrganisationChange(AbstractBaseModel):
     """
     a request from an user to change the organisation
     """
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    STATUS_CHOICES = [
+        ('o', _('open')),  # opened by user
+        ('c', _('canceled')),  # by user
+        ('v', _('verified')),
+        ('d', _('denied'))
+    ]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    original_organisation = models.ForeignKey(Organisation, related_name='original_organisation', null=True,
+                                              blank=True, on_delete=models.CASCADE)
     organisation = models.ForeignKey(Organisation, on_delete=models.CASCADE)
     reason = models.TextField(_("reason"), max_length=2048)
     comment = models.TextField(_("Comment"), max_length=2048, blank=True)
+    status = models.CharField(_('status'), max_length=255, choices=STATUS_CHOICES, default='o')
+    last_modified_by_user = CurrentUserField(verbose_name=_('last modified by'),
+                                             related_name='organisationchange_last_modified_by',
+                                             on_delete=models.SET_NULL)
+    completed_by_user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, verbose_name=_('completed by'),
+                                         related_name='organisationchange_completed_by', on_delete=models.SET_NULL)
+
+    objects = OrganisationChangeManager()
+    open = OpenOrganisationChangeManager()
+
+    def cancel(self):
+        self.status = 'c'
+        self.save()
+
+    def verify(self, user):
+        self.status = 'v'
+        self.completed_by_user = user
+        self.save()
+
+    def deny(self, user):
+        self.status = 'd'
+        self.completed_by_user = user
+        self.save()
+
+    @property
+    def is_open(self):
+        return self.status == 'o'
 
     class Meta(AbstractBaseModel.Meta):
         verbose_name = _('organisation change')
