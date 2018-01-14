@@ -46,7 +46,7 @@
 
     {% if perms.accounts.change_user %}
         <a class="list-group-item" href="{% url 'accounts:organisationchange_list' %}">
-            <i class="glyphicon glyphicon-list"></i> {% trans 'Organisation Changes' %} <span class="badge">{{ user.get_count_of_centerchanges }}</span></a>
+            <i class="glyphicon glyphicon-list"></i> {% trans 'Organisation Changes' %} <span class="badge">{{ user.get_count_of_organisationchanges }}</span></a>
     {% endif %}
 
     {% if email_management and perms.emails.add_groupemail %}
