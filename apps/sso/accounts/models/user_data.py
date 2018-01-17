@@ -117,8 +117,9 @@ class OrganisationChange(AbstractBaseModel):
     objects = OrganisationChangeManager()
     open = OpenOrganisationChangeManager()
 
-    def cancel(self):
+    def cancel(self, user):
         self.status = 'c'
+        self.completed_by_user = user
         self.save()
 
     def verify(self, user):

@@ -90,7 +90,7 @@ class OrganisationChangeUpdateView(SingleObjectTemplateResponseMixin, ModelFormM
 
     def cancel(self, request, *args, **kwargs):
         success_url = self.get_success_url()
-        self.object.cancel()
+        self.object.cancel(self.request.user)
         return HttpResponseRedirect(success_url)
 
     def get_object(self, queryset=None):
