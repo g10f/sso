@@ -25,13 +25,13 @@ logger = logging.getLogger(__name__)
 
 
 class OrganisationChangeAdmin(admin.ModelAdmin):
-    list_display = ('organisation', 'status', 'user_link', 'completed_by_user', 'last_modified_by_user')
+    list_display = ('organisation', 'status', 'user_link', 'completed_by_user', 'last_modified_by_user', 'last_modified')
     raw_id_fields = ("user", "last_modified_by_user", "completed_by_user", "organisation", "original_organisation")
     search_fields = ('user__username', 'organisation__name', 'reason')
     ordering = ['-last_modified']
     date_hierarchy = 'last_modified'
     readonly_fields = ['uuid']
-    list_filter = ('status',)
+    list_filter = ('status', 'last_modified')
 
     @mark_safe
     def user_link(self, obj):
