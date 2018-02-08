@@ -403,5 +403,5 @@ LOGGING = {
 # Load the local settings
 try:
     from .local_settings import *
-except:
+except ImportError:
     print("WARNING: Can not load local_settings files")

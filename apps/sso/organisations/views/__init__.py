@@ -296,7 +296,7 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
                                                                            queryset=EmailForward.objects.filter(
                                                                                primary=False))
 
-            if self.admin_type in ['region', 'country']:
+            if self.admin_type in ['region', 'country', 'association']:
                 email_alias_inline_formset = get_optional_inline_formset(self.request, self.object.email, Email,
                                                                          model=EmailAlias, form=EmailAliasInlineForm,
                                                                          max_num=6)
