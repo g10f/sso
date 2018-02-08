@@ -111,8 +111,9 @@ class OrganisationChange(AbstractBaseModel):
     last_modified_by_user = CurrentUserField(verbose_name=_('last modified by'),
                                              related_name='organisationchange_last_modified_by',
                                              on_delete=models.SET_NULL)
-    completed_by_user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, verbose_name=_('completed by'),
-                                         related_name='organisationchange_completed_by', on_delete=models.SET_NULL)
+    completed_by_user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True,
+                                          verbose_name=_('completed by'),
+                                          related_name='organisationchange_completed_by', on_delete=models.SET_NULL)
 
     objects = OrganisationChangeManager()
     open = OpenOrganisationChangeManager()

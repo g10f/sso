@@ -25,7 +25,8 @@ logger = logging.getLogger(__name__)
 
 
 class OrganisationChangeAdmin(admin.ModelAdmin):
-    list_display = ('organisation', 'status', 'user_link', 'completed_by_user', 'last_modified_by_user', 'last_modified')
+    list_display = (
+        'organisation', 'status', 'user_link', 'completed_by_user', 'last_modified_by_user', 'last_modified')
     raw_id_fields = ("user", "last_modified_by_user", "completed_by_user", "organisation", "original_organisation")
     search_fields = ('user__username', 'organisation__name', 'reason')
     ordering = ['-last_modified']
@@ -358,12 +359,13 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         'id', 'username', 'primary_email', 'first_name', 'last_name', 'is_staff', 'last_login', 'date_joined',
         'last_modified', 'get_last_modified_by_user', 'get_created_by_user')
     search_fields = ('username', 'first_name', 'last_name', 'useremail__email', 'uuid')
-    list_filter = (SuperuserFilter,) + (
-        'is_staff', 'is_center', 'is_service', 'is_active', LoggedInFilter, 'groups', ApplicationAdminApplicationFilter,
-        RoleProfileAdminRoleProfileFilter,
-        UserAssociatedSystemFilter, UserRegionListFilter,
-        RoleProfilesFilter, ExcludeRoleProfilesFilter,
-        ApplicationRolesFilter)  # ,UserOrganisationsListFilter, CreatedByUserFilter, LastModifiedUserFilter
+    list_filter = (SuperuserFilter,) + \
+                  ('is_staff', 'is_center', 'is_service', 'is_active', LoggedInFilter, 'groups',
+                   ApplicationAdminApplicationFilter,
+                   RoleProfileAdminRoleProfileFilter,
+                   UserAssociatedSystemFilter, UserRegionListFilter,
+                   RoleProfilesFilter, ExcludeRoleProfilesFilter,
+                   ApplicationRolesFilter)  # ,UserOrganisationsListFilter, CreatedByUserFilter, LastModifiedUserFilter
     filter_horizontal = DjangoUserAdmin.filter_horizontal + (
         'admin_associations', 'admin_organisation_countries', 'admin_regions', 'groups', 'application_roles',
         'role_profiles', 'organisations',
