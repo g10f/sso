@@ -12,11 +12,11 @@
 {% block form %}
 <form class="form-horizontal" method="post">{% csrf_token %}
     <h3>{% blocktrans %}Sign up for {{ site_name }}{% endblocktrans %}</h3>
-    
-    {% if "_edit_again" in form.errors.values.0 %}
+
+    {% if "_edit_again" in form.non_field_errors %}
         <div class="alert alert-info">
         {% trans "You can edit your data here again." %}
-        </div>    
+        </div>
     {% elif form.errors %}
         <div class="alert alert-danger">
         {% if form.errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
@@ -34,7 +34,7 @@
     {% include 'include/_field.html' with field=form.timezone %}
     {% include 'include/_field.html' with field=form.gender %}
     {% include 'include/_field.html' with field=form.dob %}
-    {% include 'include/_field.html' with field=form.about_me %}    
+    {% include 'include/_field.html' with field=form.about_me %}
     <span class="help-block">{% trans 'Please name a person who already has an account and can recommend you.' %}</span>
     {% include 'include/_field.html' with field=form.known_person1_first_name %}
     {% include 'include/_field.html' with field=form.known_person1_last_name %}
@@ -42,14 +42,14 @@
     {% include 'include/_field.html' with field=form.known_person2_first_name %}
     {% include 'include/_field.html' with field=form.known_person2_last_name %}
     {% include 'include/_field.html' with field=form.captcha %}
-    {# used to cache the captcha, that the user needs to solve only 1 captcha #} 
-    {% include 'include/_field.html' with field=form.state %}  
-        
+    {# used to cache the captcha, that the user needs to solve only 1 captcha #}
+    {% include 'include/_field.html' with field=form.state %}
+
      <div class="form-group">
          <div class="col-sm-offset-3 col-sm-9">
              <button type="submit" class="btn btn-primary">{% trans 'Register' %}</button>
          </div>
      </div>
-    
+
 </form>
 {% endblock %}
