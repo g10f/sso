@@ -402,7 +402,7 @@ class Distance(object):
 class OrganisationList(ListView):
     template_name = 'organisations/organisation_list.html'
     model = Organisation
-    list_display = ['name', _('picture'), 'email', 'google maps', 'organisation_country', 'founded']
+    list_display = ['name', _('picture'), 'email', _('Maps'), 'organisation_country', 'founded', 'is_active', 'is_live']
     filename = None
     export = False
 
