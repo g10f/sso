@@ -345,6 +345,16 @@ class IsLiveFilter(ViewChoicesFilter):
         return True if (value.pk == "1") else False
 
 
+class IsPrivateFilter(ViewChoicesFilter):
+    name = 'is_private'
+    choices = (('1', _('Private Organisations')), ('2', _('Public Organisations')))
+    select_text = _('private/public')
+    select_all_text = _("All")
+
+    def map_to_database(self, value):
+        return True if (value.pk == "1") else False
+
+
 class AssociationFilter(ViewQuerysetFilter):
     name = 'association'
     qs_name = 'association'
@@ -402,7 +412,8 @@ class Distance(object):
 class OrganisationList(ListView):
     template_name = 'organisations/organisation_list.html'
     model = Organisation
-    list_display = ['name', _('picture'), 'email', _('Maps'), 'organisation_country', 'founded', 'is_active', 'is_live']
+    list_display = ['name', _('picture'), 'email', _('Maps'), 'organisation_country', 'founded', 'is_active',
+                    'is_live']
     filename = None
     export = False
 
@@ -469,7 +480,8 @@ class OrganisationList(ListView):
             admin_regions = AdminRegion.objects.none()
         admin_region_filter = AdminRegionFilter().get(self, admin_regions)
 
-        filters = [my_organisations_filter, association_filter, country_filter, admin_region_filter, center_type_filter]
+        filters = [my_organisations_filter, association_filter, country_filter, admin_region_filter,
+                   center_type_filter, IsPrivateFilter().get(self)]
         # is_active filter is only for admins
         if self.request.user.is_organisation_admin:
             filters.append(IsActiveFilter().get(self))
@@ -504,6 +516,7 @@ class OrganisationList(ListView):
         qs = AssociationFilter().apply(self, qs)
         qs = CountryFilter().apply(self, qs)
         qs = AdminRegionFilter().apply(self, qs)
+        qs = IsPrivateFilter().apply(self, qs)
         # offer is_active and is_live filter only for admins
         if self.request.user.is_organisation_admin:
             qs = IsActiveFilter().apply(self, qs)
