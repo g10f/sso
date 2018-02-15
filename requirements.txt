@@ -2,7 +2,7 @@ django
 django-formtools
 django-ipware
 gunicorn
-psycopg2
+psycopg2-binary
 python-memcached
 docutils
 pyjwt

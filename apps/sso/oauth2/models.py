@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import logging
 from urllib.parse import urlparse, urlsplit, urlunsplit
 
@@ -68,7 +67,8 @@ CLIENT_TYPES = [
     ('web', _('Web Application')),  # response_type=code  grant_type=authorization_code or refresh_token
     ('javascript', _('Javascript Application')),  # response_type=token
     ('native', _('Native Application')),
-    # response_type=code  grant_type=authorization_code or refresh_token redirect_uris=http://localhost or  urn:ietf:wg:oauth:2.0:oob
+    # response_type=code  grant_type=authorization_code or refresh_token redirect_uris=http://localhost or
+    #  urn:ietf:wg:oauth:2.0:oob
     ('service', _('Service Account')),  # grant_type=client_credentials
     ('trusted', _('Trusted Client'))  # grant_type=password
 ]
@@ -85,19 +85,19 @@ class ClientManager(AbstractBaseModelManager):
         """
         all host from active client redirect_uris and default_redirect_uri are allowed
         """
-        allowed_hosts = cache.get('allowed_hosts', set())
-        if not allowed_hosts:
-            allowed_hosts.add(settings.SSO_DOMAIN)
+        _allowed_hosts = cache.get('allowed_hosts', set())
+        if not _allowed_hosts:
+            _allowed_hosts.add(settings.SSO_DOMAIN)
             for client in self.filter(is_active=True):
                 redirect_uris = client.redirect_uris.split() + [client.default_redirect_uri]
                 for redirect_uri in redirect_uris:
                     if redirect_uri:
                         netloc = urlparse(redirect_uri)[1]
                         if netloc:
-                            allowed_hosts.add(netloc)
-            cache.set('allowed_hosts', set(allowed_hosts))
+                            _allowed_hosts.add(netloc)
+            cache.set('allowed_hosts', set(_allowed_hosts))
 
-        return allowed_hosts
+        return _allowed_hosts
 
 
 def allowed_hosts():
@@ -118,10 +118,12 @@ class Client(AbstractBaseModel):
     # http://tools.ietf.org/html/rfc6749#section-3.3
     scopes = models.CharField(_('scopes'), max_length=512, blank=True, default='openid profile email',
                               help_text=_(
-                                  "Allowed space-delimited access token scopes ('openid', 'profile', 'email', 'role', 'offline_access', 'address', 'phone', 'users', 'picture')"))
+                                  "Allowed space-delimited access token scopes ('openid', 'profile', 'email', 'role',"
+                                  " 'offline_access', 'address', 'phone', 'users', 'picture')"))
     is_active = models.BooleanField(_('active'), default=True,
                                     help_text=_(
-                                        'Designates whether this client should be treated as active. Unselect this instead of deleting clients.'))
+                                        'Designates whether this client should be treated as active. Unselect this '
+                                        'instead of deleting clients.'))
     notes = models.TextField(_("Notes"), blank=True, max_length=2048)
     objects = ClientManager()
 
