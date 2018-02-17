@@ -81,7 +81,8 @@ class OrganisationMixin(object):
             data['distance'] = "%.1f km" % obj.distance.km
         except AttributeError:
             pass
-        if not obj.is_private:
+
+        if request.client.is_trustworthy or not obj.is_private:
             if obj.location:
                 data['location'] = {'geo': {'latitude': obj.location.y, 'longitude': obj.location.x},
                                     'type': obj.coordinates_type}
@@ -90,7 +91,7 @@ class OrganisationMixin(object):
             if ('users' in request.scopes) and (obj in request.user.get_administrable_user_organisations()):
                 data['users'] = "%s%s?org_id=%s" % (base, reverse('api:v2_users'), obj.uuid.hex)
 
-            if not obj.is_private:
+            if request.client.is_trustworthy or not obj.is_private:
                 data['addresses'] = {
                     address.uuid.hex: {
                         'address_type': map_address_type(address.address_type),

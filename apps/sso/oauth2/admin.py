@@ -9,7 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 from sso.oauth2.models import CONFIDENTIAL_CLIENTS
 
 logger = logging.getLogger(__name__)
-   
+
 
 class ClientAdminForm(forms.ModelForm):
     def clean(self):
@@ -28,8 +28,9 @@ class ClientAdminForm(forms.ModelForm):
 
 class ClientAdmin(admin.ModelAdmin):
     list_display = ('name', 'uuid', 'application', 'type', 'user', 'is_active')
-    list_filter = ('is_active', 'type', 'application')
-    fields = ('application', 'type', 'name', 'uuid', 'client_secret', 'redirect_uris', 'scopes', 'user', 'notes', 'is_active', 'last_modified')
+    list_filter = ('is_active', 'type', 'is_trustworthy', 'application')
+    fields = ('application', 'type', 'name', 'uuid', 'client_secret', 'redirect_uris', 'scopes', 'user', 'notes',
+              'is_active', 'last_modified', 'is_trustworthy')
     readonly_fields = ('last_modified', )
     list_select_related = ('application', 'user')
     form = ClientAdminForm
