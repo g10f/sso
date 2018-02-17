@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-30 14:49+0100\n"
+"POT-Creation-Date: 2018-02-17 09:53+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -110,6 +110,9 @@ msgid "Accounts"
 msgstr ""
 
 msgid "The new organisation is the same as the old organisation!"
+msgstr ""
+
+msgid "Organisation change was already processed"
 msgstr ""
 
 msgid "Name"
@@ -518,10 +521,28 @@ msgstr ""
 msgid "one time messages"
 msgstr ""
 
+msgid "open"
+msgstr ""
+
+msgid "canceled"
+msgstr ""
+
+msgid "verified"
+msgstr ""
+
+msgid "denied"
+msgstr ""
+
 msgid "reason"
 msgstr ""
 
 msgid "Comment"
+msgstr ""
+
+msgid "status"
+msgstr ""
+
+msgid "completed by"
 msgstr ""
 
 msgid "organisation change"
@@ -790,6 +811,13 @@ msgid "Process Organisation Change"
 msgstr ""
 
 msgid "Please accept or deny the organisation change request."
+msgstr ""
+
+#, python-format
+msgid ""
+"\n"
+"                        The organisation change was already %(status)s by "
+"%(user)s."
 msgstr ""
 
 msgid "Phone number"
@@ -1745,6 +1773,9 @@ msgstr ""
 msgid "Google Maps"
 msgstr ""
 
+msgid "Please select a coordinates type."
+msgstr ""
+
 msgid "Organisation type"
 msgstr ""
 
@@ -2063,6 +2094,12 @@ msgstr ""
 msgid "All Organisation Types"
 msgstr ""
 
+msgid "Coordinates Type"
+msgstr ""
+
+msgid "All Coordinates Types"
+msgstr ""
+
 msgid "Active Organisations"
 msgstr ""
 
@@ -2076,6 +2113,15 @@ msgid "Prelive Organisations"
 msgstr ""
 
 msgid "live/prelive"
+msgstr ""
+
+msgid "Private Organisations"
+msgstr ""
+
+msgid "Public Organisations"
+msgstr ""
+
+msgid "private/public"
 msgstr ""
 
 msgid "All Associations"
@@ -2440,23 +2486,19 @@ msgid "Edit registration"
 msgstr ""
 
 msgctxt "Organisation Type"
+msgid "Group"
+msgstr ""
+
+msgctxt "Organisation Type"
 msgid "Kreisverband"
 msgstr ""
 
 msgctxt "Organisation Type"
-msgid "Landesverband"
-msgstr ""
-
-msgctxt "Organisation Type"
-msgid "Bund"
+msgid "Ortsverband"
 msgstr ""
 
 msgctxt "Organisation Type"
 msgid "Center"
-msgstr ""
-
-msgctxt "Organisation Type"
-msgid "Group"
 msgstr ""
 
 msgctxt "Organisation Type"

@@ -55,7 +55,7 @@
                         </td>
                         {% endwith %}
                         <td>{{ object.email|default_if_none:"" }}</td>
-                        <td>{% if object.google_maps_url %}<a href="{{ object.google_maps_url }}">{#% trans 'Google Maps' %#} <span class="glyphicon glyphicon-map-marker"></span></a>{% endif %}</td>
+                        <td>{% if object.google_maps_url %}<a href="{{ object.google_maps_url }}"><span class="glyphicon glyphicon-map-marker"></span> {{ object.get_coordinates_type_display }}</a>{% endif %}</td>
                         <td>{{ object.organisationaddress_set.first.country.iso2_code }}</td>
                         <td>{{ object.founded|date:"Y-m-d" }}</td>
                         <td>{% if object.is_active %}<span class="glyphicon glyphicon-check"></span>{% else %}<span class="glyphicon glyphicon-unchecked"></span>{% endif %}</td>

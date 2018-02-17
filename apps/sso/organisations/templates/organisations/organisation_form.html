@@ -39,6 +39,14 @@
                 </div>
             {% endif %}
 
+            {% if form.non_field_errors %}
+                {% for error in form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {{ error }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
         </div>
 
         <ul class="nav nav-tabs dwbn-nav-tabs" id="myTab">

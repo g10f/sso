@@ -325,14 +325,26 @@ class CenterTypeFilter(ViewChoicesFilter):
     select_all_text = _("All Organisation Types")
 
 
+class CoordinatesTypeFilter(ViewChoicesFilter):
+    name = 'coordinates_type'
+    choices = Organisation.COORDINATES_TYPE_CHOICES + (('0', _('None')),)
+    select_text = _('Coordinates Type')
+    select_all_text = _("All Coordinates Types")
+
+    def map_to_database(self, qs_name, value):
+        if value.pk == '0':
+            return {qs_name: ''}
+        return {qs_name: value.pk}
+
+
 class IsActiveFilter(ViewChoicesFilter):
     name = 'is_active'
     choices = (('1', _('Active Organisations')), ('2', _('Inactive Organisations')))
     select_text = _('active/inactive')
     select_all_text = _("All")
 
-    def map_to_database(self, value):
-        return True if (value.pk == "1") else False
+    def map_to_database(self, qs_name, value):
+        return {qs_name: True if (value.pk == "1") else False}
 
 
 class IsLiveFilter(ViewChoicesFilter):
@@ -341,8 +353,8 @@ class IsLiveFilter(ViewChoicesFilter):
     select_text = _('live/prelive')
     select_all_text = _("All")
 
-    def map_to_database(self, value):
-        return True if (value.pk == "1") else False
+    def map_to_database(self, qs_name, value):
+        return {qs_name: True if (value.pk == "1") else False}
 
 
 class IsPrivateFilter(ViewChoicesFilter):
@@ -351,8 +363,8 @@ class IsPrivateFilter(ViewChoicesFilter):
     select_text = _('private/public')
     select_all_text = _("All")
 
-    def map_to_database(self, value):
-        return True if (value.pk == "1") else False
+    def map_to_database(self, qs_name, value):
+        return {qs_name: True if (value.pk == "1") else False}
 
 
 class AssociationFilter(ViewQuerysetFilter):
@@ -412,7 +424,7 @@ class Distance(object):
 class OrganisationList(ListView):
     template_name = 'organisations/organisation_list.html'
     model = Organisation
-    list_display = ['name', _('picture'), 'email', _('Maps'), 'organisation_country', 'founded', 'is_active',
+    list_display = ['name', _('picture'), 'email', 'coordinates_type', 'organisation_country', 'founded', 'is_active',
                     'is_live']
     filename = None
     export = False
@@ -474,6 +486,7 @@ class OrganisationList(ListView):
 
         country_filter = CountryFilter().get(self, countries)
         center_type_filter = CenterTypeFilter().get(self)
+        coordinates_type_filter = CoordinatesTypeFilter().get(self)
         if self.country:
             admin_regions = AdminRegion.objects.filter(organisation_country__country=self.country)
         else:
@@ -481,7 +494,7 @@ class OrganisationList(ListView):
         admin_region_filter = AdminRegionFilter().get(self, admin_regions)
 
         filters = [my_organisations_filter, association_filter, country_filter, admin_region_filter,
-                   center_type_filter, IsPrivateFilter().get(self)]
+                   center_type_filter, IsPrivateFilter().get(self), coordinates_type_filter]
         # is_active filter is only for admins
         if self.request.user.is_organisation_admin:
             filters.append(IsActiveFilter().get(self))
@@ -513,6 +526,7 @@ class OrganisationList(ListView):
         qs = MyOrganisationsFilter().apply(self, qs)
         qs = OrganisationSearchFilter().apply(self, qs)
         qs = CenterTypeFilter().apply(self, qs)
+        qs = CoordinatesTypeFilter().apply(self, qs)
         qs = AssociationFilter().apply(self, qs)
         qs = CountryFilter().apply(self, qs)
         qs = AdminRegionFilter().apply(self, qs)

@@ -22,8 +22,8 @@ class IsActiveFilter(ViewChoicesFilter):
     select_text = _('active/inactive')
     select_all_text = _("All")
 
-    def map_to_database(self, value):
-        return True if (value.pk == "1") else False
+    def map_to_database(self, qs_name, value):
+        return {qs_name: True if (value.pk == "1") else False}
 
 
 class CountryFilter(ViewQuerysetFilter):
