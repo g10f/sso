@@ -64,7 +64,7 @@ class OrganisationCountryUpdateView(OrganisationCountryBaseView, FormsetsUpdateV
     @method_decorator(login_required)
     @method_decorator(permission_required('organisations.change_organisationcountry', raise_exception=True))
     def dispatch(self, request, *args, **kwargs):
-        # additionally check if the user is admin of the country       
+        # additionally check if the user is admin of the country
         if not request.user.has_country_access(kwargs.get('uuid')):
             raise PermissionDenied
         return super(OrganisationCountryUpdateView, self).dispatch(request, *args, **kwargs)
@@ -144,8 +144,8 @@ class IsActiveFilter(ViewChoicesFilter):
     select_text = _('active/inactive')
     select_all_text = _("All")
 
-    def map_to_database(self, value):
-        return True if (value.pk == "1") else False
+    def map_to_database(self, qs_name, value):
+        return {qs_name: True if (value.pk == "1") else False}
 
 
 class OrganisationCountryList(ListView):

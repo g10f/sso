@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-30 14:49+0100\n"
+"POT-Creation-Date: 2018-02-17 09:53+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -108,6 +108,9 @@ msgstr "Konten"
 
 msgid "The new organisation is the same as the old organisation!"
 msgstr ""
+
+msgid "Organisation change was already processed"
+msgstr "Der Organisationswechsel wurde schon bearbeitet"
 
 msgid "Name"
 msgstr ""
@@ -543,11 +546,29 @@ msgstr "Einweg-Nachricht"
 msgid "one time messages"
 msgstr "Einweg-Nachrichten"
 
+msgid "open"
+msgstr ""
+
+msgid "canceled"
+msgstr "abgebrochen"
+
+msgid "verified"
+msgstr "überprüft"
+
+msgid "denied"
+msgstr "abgelehnt"
+
 msgid "reason"
 msgstr "Begründung"
 
 msgid "Comment"
 msgstr "Kommentar"
+
+msgid "status"
+msgstr "Status"
+
+msgid "completed by"
+msgstr "vervollständigt von"
 
 msgid "organisation change"
 msgstr "Organisationswechsel"
@@ -830,6 +851,13 @@ msgstr "Organisationswechsel bearbeiten"
 
 msgid "Please accept or deny the organisation change request."
 msgstr "Bitte den Organisationswechsel annehmen oder ablehnen"
+
+#, python-format
+msgid ""
+"\n"
+"                        The organisation change was already %(status)s by "
+"%(user)s."
+msgstr ""
 
 msgid "Phone number"
 msgstr "Telefonnummer"
@@ -1837,6 +1865,9 @@ msgstr ""
 msgid "Google Maps"
 msgstr ""
 
+msgid "Please select a coordinates type."
+msgstr "Bitte wähle einen Koordinatentyp aus"
+
 msgid "Organisation type"
 msgstr "Organisationstyp"
 
@@ -1923,16 +1954,16 @@ msgid "Regions"
 msgstr "Regionen"
 
 msgid "Unknown"
-msgstr ""
+msgstr "Unbekannt"
 
 msgid "City/Village"
-msgstr ""
+msgstr "Stadt/Dorf"
 
 msgid "Exact"
 msgstr ""
 
 msgid "Nearby"
-msgstr ""
+msgstr "in der Nähe"
 
 msgid "name in native language"
 msgstr "Name in der Landessprache"
@@ -2176,6 +2207,12 @@ msgstr "Organisationstyp"
 msgid "All Organisation Types"
 msgstr "Alle Organisationstypen"
 
+msgid "Coordinates Type"
+msgstr "Koordinatentyp"
+
+msgid "All Coordinates Types"
+msgstr "Alle Koordinatentypen"
+
 msgid "Active Organisations"
 msgstr "Aktive Organisationen"
 
@@ -2190,6 +2227,15 @@ msgstr "Prelive Organisationen"
 
 msgid "live/prelive"
 msgstr ""
+
+msgid "Private Organisations"
+msgstr "Private Organisationen"
+
+msgid "Public Organisations"
+msgstr "Öffentliche Organisationen"
+
+msgid "private/public"
+msgstr "privat/öffentlich"
 
 msgid "All Associations"
 msgstr "Alle Verbände"
@@ -2581,12 +2627,20 @@ msgid "Edit registration"
 msgstr "Registrierung bearbeiten"
 
 msgctxt "Organisation Type"
-msgid "Center"
-msgstr "Zentrum"
-
-msgctxt "Organisation Type"
 msgid "Group"
 msgstr "Gruppe"
+
+msgctxt "Organisation Type"
+msgid "Kreisverband"
+msgstr ""
+
+msgctxt "Organisation Type"
+msgid "Ortsverband"
+msgstr ""
+
+msgctxt "Organisation Type"
+msgid "Center"
+msgstr "Zentrum"
 
 msgctxt "Organisation Type"
 msgid "Retreat"

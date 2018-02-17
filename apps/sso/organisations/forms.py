@@ -129,6 +129,20 @@ class OrganisationBaseForm(BaseForm):
         if self.instance.location:
             self.fields['google_maps_url'].initial = self.instance.google_maps_url
 
+    def clean(self):
+        cleaned_data = super(OrganisationBaseForm, self).clean()
+
+        # check combination of coordinates_type location
+        coordinates_type = cleaned_data['coordinates_type']
+        location = cleaned_data['location']
+        if location and coordinates_type == '':
+            msg = _("Please select a coordinates type.")
+            self.add_error('coordinates_type', ValidationError(msg, params={'active': 'organisationaddress_set'}))
+        if not location and coordinates_type:
+            cleaned_data['coordinates_type'] = ''
+
+        return cleaned_data
+
 
 class OrganisationCenterAdminForm(OrganisationBaseForm):
     email_value = bootstrap.ReadOnlyField(label=_("Email address"))

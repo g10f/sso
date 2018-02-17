@@ -23,11 +23,11 @@ class BaseFilter(object):
     all_remove = ''
     remove = 'p'
 
-    def map_to_database(self, value):
+    def map_to_database(self, qs_name, value):
         """
         Returns the value for the database query
         """
-        return value
+        return {qs_name: value}
 
     def get_value_from_query_param(self, view, default):
         return view.request.GET.get(self.name, default)
@@ -45,7 +45,7 @@ class BaseFilter(object):
                 qs_name = self.name
             else:
                 qs_name = self.qs_name
-            qs = qs.filter(**{qs_name: self.map_to_database(value)})
+            qs = qs.filter(**self.map_to_database(qs_name, value))
         setattr(view, self.name, value)
         return qs
 
@@ -120,15 +120,17 @@ class ViewQuerysetFilter(BaseFilter):
 class ViewChoicesFilter(BaseFilter):
     choices = ()
 
-    def map_to_database(self, value):
-        return value.pk
+    def map_to_database(self, qs_name, value):
+        return {qs_name: value.pk}
 
     def get_value_from_query_param(self, view, default):
         value = view.request.GET.get(self.name, default)
-        if value:
-            return main.FilterItem((value, dict(self.choices)[value]))
-        else:
-            return None
+        try:
+            if value:
+                return main.FilterItem((value, dict(self.choices)[value]))
+        except KeyError:
+            pass
+        return None
 
     def get(self, view, choices=None):
         """
@@ -218,7 +220,11 @@ class FormsetsUpdateView(generic.UpdateView):
         active = ''
         if errors:
             if not form.is_valid():
-                active = 'object'
+                try:
+                    # Hack to activate the correct tab in the HTML view
+                    active = errors[0].data[0].params['active']
+                except KeyError:
+                    active = 'object'
             else:  # set the first formset with an error as active
                 for formset in formsets:
                     if not formset.is_valid():

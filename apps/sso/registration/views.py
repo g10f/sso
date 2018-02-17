@@ -66,8 +66,8 @@ class IsVerifiedFilter(ViewChoicesFilter):
     select_text = _('verified filter')
     select_all_text = _("All")
 
-    def map_to_database(self, value):
-        return False if (value.pk == "1") else True
+    def map_to_database(self, qs_name, value):
+        return {qs_name: False if (value.pk == "1") else True}
 
 
 class CheckBackFilter(ViewChoicesFilter):
@@ -76,8 +76,8 @@ class CheckBackFilter(ViewChoicesFilter):
     select_text = _('check back filter')
     select_all_text = _("All")
 
-    def map_to_database(self, value):
-        return True if (value.pk == "1") else False
+    def map_to_database(self, qs_name, value):
+        return {qs_name: True if (value.pk == "1") else False}
 
 
 class IsAccessDeniedFilter(ViewChoicesFilter):
@@ -86,8 +86,8 @@ class IsAccessDeniedFilter(ViewChoicesFilter):
     select_text = _('access denied filter')
     select_all_text = _("All")
 
-    def map_to_database(self, value):
-        return True if (value.pk == "1") else False
+    def map_to_database(self, qs_name, value):
+        return {qs_name: True if (value.pk == "1") else False}
 
 
 class UserRegistrationList(ListView):
