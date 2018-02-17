@@ -125,6 +125,8 @@ class Client(AbstractBaseModel):
                                         'Designates whether this client should be treated as active. Unselect this '
                                         'instead of deleting clients.'))
     notes = models.TextField(_("Notes"), blank=True, max_length=2048)
+    is_trustworthy = models.BooleanField(_("trustworthy"), default=False)
+
     objects = ClientManager()
 
     class Meta(AbstractBaseModel.Meta):
