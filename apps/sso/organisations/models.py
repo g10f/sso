@@ -215,7 +215,7 @@ class AdminRegion(AbstractBaseModel, ExtraManager):
 
 def get_near_organisations(current_point, distance_from_point=None, qs=None, order=True):
     """
-    get all centers with the distance from current_point 
+    get all centers with the distance from current_point
     where the distance is less than distance_from_point
     """
     if current_point is None:
@@ -235,7 +235,7 @@ def get_near_organisations(current_point, distance_from_point=None, qs=None, ord
 
 class Organisation(AbstractBaseModel):
     COORDINATES_TYPE_CHOICES = (
-        ('1', _('Unknown')),
+        # ('1', _('Unknown')),
         ('2', _('City/Village')),
         ('3', _('Exact')),
         ('4', _('Nearby')),
@@ -414,7 +414,7 @@ class Organisation(AbstractBaseModel):
 
     @mark_safe
     def google_maps_link(self):
-        return u'<a href="%s">%s</a>' % (self.google_maps_url, 'google maps')
+        return u'<a href="%s">%s</a>' % (self.google_maps_url, self.get_coordinates_type_display())
 
     google_maps_link.short_description = _('Maps')
 
@@ -491,7 +491,7 @@ class OrganisationAddress(AbstractBaseModel, AddressMixin):
 
 class OrganisationPhoneNumber(AbstractBaseModel, PhoneNumberMixin):
     PHONE_CHOICES = [
-        ('home', pgettext_lazy('phone number', 'Home')),  # with translation context 
+        ('home', pgettext_lazy('phone number', 'Home')),  # with translation context
         ('mobile', _('Mobile')),
         ('mobile2', _('Mobile#2')),
         ('fax', _('Fax')),

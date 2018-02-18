@@ -122,8 +122,7 @@ class PhoneNumber_Inline(admin.TabularInline):
     max_num = 6
     fieldsets = [
         (None,
-         {'fields':
-              ['phone_type', 'phone', 'primary'],
+         {'fields': ['phone_type', 'phone', 'primary'],
           'classes': ['wide'], }),
     ]
 
@@ -138,16 +137,18 @@ class OrganisationAdmin(OSMGeoAdmin):
     inlines = [PhoneNumber_Inline, Address_Inline]
     readonly_fields = ['uuid', 'last_modified', 'google_maps_link']
     date_hierarchy = 'founded'
-    list_filter = ('association', 'is_active', 'is_private', 'is_live', 'uses_user_activation', 'coordinates_type', 'admin_region',
-                   'organisation_country__country__continent', CountryListFilter, 'center_type',
-                   'organisationaddress__address_type', 'organisationphonenumber__phone_type')
+    list_filter = (
+        'association', 'is_active', 'is_private', 'is_live', 'uses_user_activation', 'coordinates_type', 'admin_region',
+        'organisation_country__country__continent', CountryListFilter, 'center_type',
+        'organisationaddress__address_type', 'organisationphonenumber__phone_type')
     list_display = ('slug', 'name', 'name_native', 'email', 'last_modified', 'homepage_link', 'google_maps_link',)
     fieldsets = [
         (None,
          {'fields':
               ['uuid', 'centerid', 'name', 'name_native', 'slug', 'center_type', 'association', 'organisation_country',
                'admin_region', 'founded', ('coordinates_type', 'google_maps_link'),
-               'location', 'email', 'homepage', 'source_urls', 'is_active', 'is_private', 'is_live', 'uses_user_activation',
+               'location', 'email', 'homepage', 'source_urls', 'is_active', 'is_private', 'is_live',
+               'uses_user_activation',
                'last_modified'],
           'classes': ['wide']}),
         (_('notes'),
