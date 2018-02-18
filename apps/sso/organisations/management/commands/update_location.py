@@ -64,4 +64,3 @@ def update_location():
             organisation.location = point
             organisation.coordinates_type = coordinates_type
             organisation.save()
-
