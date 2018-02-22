@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import permission_required
@@ -18,7 +17,8 @@ from sso.signals import user_registration_completed
 from sso.views import main
 from sso.views.generic import SearchFilter, ViewChoicesFilter, ViewQuerysetFilter, ListView
 from .forms import RegistrationProfileForm
-from .models import RegistrationProfile, RegistrationManager, send_set_password_email, send_check_back_email, send_access_denied_email
+from .models import RegistrationProfile, RegistrationManager, send_set_password_email, send_check_back_email, \
+    send_access_denied_email
 from .tokens import default_token_generator
 
 
@@ -42,7 +42,8 @@ class UserRegistrationDeleteView(DeleteView):
         # remove the the key with the name registration 'user' from the context,
         # because this would overwrite the current logged in user in the template
         context.pop('user')
-        context['cancel_url'] = reverse('registration:update_user_registration', args=[self.object.registrationprofile.pk])
+        context['cancel_url'] = reverse('registration:update_user_registration',
+                                        args=[self.object.registrationprofile.pk])
         return context
 
 
@@ -103,7 +104,8 @@ class UserRegistrationList(ListView):
 
     def get_queryset(self):
         qs = super(UserRegistrationList, self).get_queryset() \
-            .prefetch_related('user__organisations', 'user__organisations__organisation_country__country', 'user__useraddress_set', 'user__useraddress_set__country', 'user__useremail_set') \
+            .prefetch_related('user__organisations', 'user__organisations__organisation_country__country',
+                              'user__useraddress_set', 'user__useraddress_set__country', 'user__useremail_set') \
             .filter(user__is_active=False, is_validated=True, user__last_login__isnull=True)
 
         # display only users from centers where the logged in user has admin rights
@@ -139,7 +141,8 @@ class UserRegistrationList(ListView):
             user__is_active=False,
             user__registrationprofile__isnull=False,
             user__registrationprofile__is_validated=True)
-        countries = OrganisationCountry.objects.filter(pk__in=user_organisations.values_list('organisation_country', flat=True)).prefetch_related('country')
+        countries = OrganisationCountry.objects.filter(
+            pk__in=user_organisations.values_list('organisation_country', flat=True)).prefetch_related('country')
 
         country_filter = CountryFilter().get(self, countries)
         is_verified_filter = IsVerifiedFilter().get(self)
@@ -200,9 +203,12 @@ def update_user_registration(request, pk, template='registration/change_user_reg
     else:
         registrationprofile_form = RegistrationProfileForm(instance=registrationprofile, request=request)
 
-    app_roles_by_profile = {id for id in ApplicationRole.objects.filter(roleprofile__user__id=registrationprofile.user.pk).only("id").values_list('id', flat=True)}
+    app_roles_by_profile = {id for id in
+                            ApplicationRole.objects.filter(roleprofile__user__id=registrationprofile.user.pk).only(
+                                "id").values_list('id', flat=True)}
 
-    data = {'form': registrationprofile_form, 'app_roles_by_profile': app_roles_by_profile, 'title': _('Edit registration')}
+    data = {'form': registrationprofile_form, 'app_roles_by_profile': app_roles_by_profile,
+            'title': _('Edit registration')}
     return render(request, template, data)
 
 
@@ -244,4 +250,3 @@ def validation_confirm(request, uidb64=None, token=None, token_generator=default
         'validlink': validlink,
     }
     return TemplateResponse(request, template, context)
-

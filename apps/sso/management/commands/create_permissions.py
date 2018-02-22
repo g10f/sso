@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from optparse import make_option
 from django.apps import apps
 

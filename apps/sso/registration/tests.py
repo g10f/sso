@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import os
 import re
 from urllib.parse import urlsplit

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import json
 from uuid import uuid4
 

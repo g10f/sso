@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from sso.signals import user_m2m_field_updated
 
 

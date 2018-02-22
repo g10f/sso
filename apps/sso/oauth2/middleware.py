@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.utils.deprecation import MiddlewareMixin
 from jwt import InvalidTokenError
 from django.utils.functional import SimpleLazyObject, empty
