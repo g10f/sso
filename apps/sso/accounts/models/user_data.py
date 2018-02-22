@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
+import datetime
 import logging
 
 from current_user.models import CurrentUserField
 from django.conf import settings
 from django.db import models
 from django.urls import reverse
+from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _, pgettext_lazy
+from sso.accounts.models.application import ApplicationRole
 from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary, \
     CaseInsensitiveEmailField, AbstractBaseModelManager
 from sso.organisations.models import Organisation
@@ -124,8 +127,22 @@ class OrganisationChange(AbstractBaseModel):
         self.save()
 
     def verify(self, user):
+        self.user.organisations.set([self.organisation])
         self.status = 'v'
         self.completed_by_user = user
+
+        # check if organisation uses user activation
+        if self.organisation.uses_user_activation:
+            if self.user.valid_until is None:
+                self.user.valid_until = now() + datetime.timedelta(days=settings.SSO_VALIDATION_PERIOD_DAYS)
+                self.user.save()
+        else:
+            self.user.valid_until = None
+            self.user.save()
+
+        # remove organisation related permissions
+        organisation_related_application_roles = ApplicationRole.objects.filter(is_organisation_related=True)
+        self.user.application_roles.remove(*list(organisation_related_application_roles))
         self.save()
 
     def deny(self, user):

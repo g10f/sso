@@ -166,14 +166,8 @@ class OrganisationChangeAcceptView(FormView):
             messages.add_message(self.request, level=messages.WARNING, message=msg, fail_silently=True)
             return HttpResponseRedirect(self.get_success_url())
         else:
-            user = self.organisationchange.user
-            user.organisations.set([self.organisationchange.organisation])
             self.organisationchange.verify(self.request.user)
-
-            # remove organisation related permissions
-            organisation_related_application_roles = ApplicationRole.objects.filter(is_organisation_related=True)
-            user.application_roles.remove(*list(organisation_related_application_roles))
-
+            user = self.organisationchange.user
             # email user
             site_name = settings.SSO_SITE_NAME
             domain = settings.SSO_DOMAIN
