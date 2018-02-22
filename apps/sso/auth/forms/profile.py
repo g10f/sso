@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from base64 import b32encode
 from binascii import unhexlify
 

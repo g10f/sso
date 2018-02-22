@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import logging
 from calendar import timegm
 from functools import wraps

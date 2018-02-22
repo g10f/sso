@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.gis import forms
 from django.contrib.gis.forms import GeometryField

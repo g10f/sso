@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 """A central mechanism forsettings which have defaults.
 
 Repurposed from Sphene Community Tools: http://sct.sphene.net

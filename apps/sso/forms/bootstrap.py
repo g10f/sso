@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from sorl.thumbnail.shortcuts import get_thumbnail
 
 from django import forms

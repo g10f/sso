@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import os
 import logging
 
@@ -18,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
     help = 'Cleanup Users'  # @ReservedAssignment
-    
+
     def handle(self, *args, **options):
         check_validation()
 
@@ -65,7 +64,7 @@ def clean_pictures():
                 picture = User.objects.get(uuid=d).picture
             except ObjectDoesNotExist:
                 continue
-               
+
             for subdir, _, files in os.walk(os.path.join(basedir, d)):
                 for f in files:
                     fname1 = os.path.join(subdir, f)

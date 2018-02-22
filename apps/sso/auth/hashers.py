@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import hashlib
 import base64
 from binascii import b2a_hex

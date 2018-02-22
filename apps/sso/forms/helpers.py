@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from django.utils.text import get_text_list
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.utils.encoding import force_text

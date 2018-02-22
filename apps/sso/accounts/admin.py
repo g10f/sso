@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import logging
 
 from sorl.thumbnail.admin import AdminImageMixin

@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 from django.test import TestCase
 from l10n.validators import aupostcode, capostcode, uspostcode
 from l10n import l10n_settings

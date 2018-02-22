@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import logging
 
 from sorl.thumbnail import get_thumbnail

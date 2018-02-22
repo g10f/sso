@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import logging
 
 from sso.auth.backends import SSOBackend

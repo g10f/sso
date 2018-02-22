@@ -1,9 +1,6 @@
-# -*- coding: utf-8 -*-
-import json
 from django.urls import reverse
-from sso.utils.http import *  # @UnusedWildImport
-
 from sso.oauth2.tests import OAuth2BaseTestCase
+from sso.utils.http import *  # @UnusedWildImport
 
 
 class ApiTests(OAuth2BaseTestCase):
@@ -59,7 +56,7 @@ class ApiTests(OAuth2BaseTestCase):
         response = self.client.get(uri, HTTP_AUTHORIZATION=authorization)
         self.assertEqual(response.status_code, HTTP_200_OK)
 
-        # filter for usernames 
+        # filter for usernames
         response = self.client.get(uri, data={'q': 'unna'}, HTTP_AUTHORIZATION=authorization)
         self.assertEqual(response.status_code, HTTP_200_OK)
         userlist = response.json()
