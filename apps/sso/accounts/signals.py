@@ -1,10 +1,17 @@
+import datetime
+
+from django.conf import settings
 from django.contrib.auth import user_logged_in
 from django.db.models.signals import post_save
 from django.dispatch.dispatcher import receiver
 from django.utils import timezone
 from ipware.ip import get_real_ip
+
+from django.utils.timezone import now
 from sso.accounts.models import User, UserEmail
+from sso.organisations.models import is_validation_period_active_for_user
 from sso.utils.loaddata import disable_for_loaddata
+from sso.signals import user_m2m_field_updated
 
 
 @receiver(post_save, sender=User)
@@ -35,3 +42,13 @@ def update_last_ip(sender, user, **kwargs):
     if 'request' in kwargs:
         user.last_ip = get_real_ip(kwargs['request'])
         user.save(update_fields=['last_ip'])
+
+
+@receiver(user_m2m_field_updated, dispatch_uid="sso_user_m2m_field_updated")
+def sso_user_m2m_field_updated(sender, user, attribute_name, delete_pk_list, add_pk_list, **kwargs):
+    if attribute_name == 'organisations':
+        # the caller must save the data to the database
+        if is_validation_period_active_for_user(user) and user.valid_until is None:
+            user.valid_until = now() + datetime.timedelta(days=settings.SSO_VALIDATION_PERIOD_DAYS)
+        elif not is_validation_period_active_for_user(user) and user.valid_until is not None:
+            user.valid_until = None
