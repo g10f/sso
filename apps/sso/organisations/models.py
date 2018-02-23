@@ -38,6 +38,8 @@ def is_validation_period_active(organisation):
 
 
 def is_validation_period_active_for_user(user):
+    if user.is_center or user.is_service:
+        return False
     try:
         user_organisation = user.organisations.first()
     except ObjectDoesNotExist:
