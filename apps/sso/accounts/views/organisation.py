@@ -217,7 +217,7 @@ class OrganisationChangeList(ListView):
 
     @property
     def list_display(self):
-        return ['user', FromOrganisationHeader(), ToOrganisationHeader(), 'reason', _('primary email'),
+        return ['user', FromOrganisationHeader(), ToOrganisationHeader(), 'message', _('primary email'),
                 'last_modified', 'comment']
 
     @method_decorator(admin_login_required)
