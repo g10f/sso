@@ -192,7 +192,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.selenium.get('%s%s' % (self.live_server_url, reverse('accounts:organisationchange_me')))
 
         Select(self.selenium.find_element_by_name("organisation")).select_by_index(2)
-        self.selenium.find_element_by_name("reason").send_keys('Test')
+        self.selenium.find_element_by_name("message").send_keys('Test')
 
         self.selenium.find_element_by_tag_name("form").submit()
         self.wait_page_loaded()

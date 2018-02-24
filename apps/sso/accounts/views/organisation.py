@@ -15,7 +15,7 @@ from django.views.generic import DetailView, FormView
 from django.views.generic.detail import SingleObjectTemplateResponseMixin
 from django.views.generic.edit import ProcessFormView, ModelFormMixin
 from sso.accounts.forms import OrganisationChangeForm, OrganisationChangeAcceptForm
-from sso.accounts.models import OrganisationChange, ApplicationRole
+from sso.accounts.models import OrganisationChange
 from sso.accounts.views.filter import OrganisationChangeCountryFilter, OrganisationChangeAdminRegionFilter
 from sso.auth.decorators import admin_login_required
 from sso.oauth2.models import allowed_hosts
@@ -58,7 +58,8 @@ class OrganisationChangeDetailView(DetailView):
 class OrganisationChangeUpdateView(SingleObjectTemplateResponseMixin, ModelFormMixin, ProcessFormView):
     """
     like BaseUpdateView, but
-    - self.object is initialized from the current user (self.request.user.organisationchange) so that add new and update is handled
+    - self.object is initialized from the current user (self.request.user.organisationchange)
+      so that add new and update is handled
     - redirect_uri is saved
     - form user is initialized with current user
     """

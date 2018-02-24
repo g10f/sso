@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-02-17 22:36+0100\n"
+"POT-Creation-Date: 2018-02-24 20:08+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -533,7 +533,7 @@ msgstr ""
 msgid "denied"
 msgstr ""
 
-msgid "reason"
+msgid "Message for the organisation administrator."
 msgstr ""
 
 msgid "Comment"
@@ -1852,9 +1852,6 @@ msgid "Used for URLs, auto-generated from name if blank"
 msgstr ""
 
 msgid "Regions"
-msgstr ""
-
-msgid "Unknown"
 msgstr ""
 
 msgid "City/Village"
