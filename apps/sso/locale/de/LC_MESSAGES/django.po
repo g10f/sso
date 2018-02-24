@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-02-24 21:56+0100\n"
+"POT-Creation-Date: 2018-02-24 23:37+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -852,6 +852,7 @@ msgstr "Organisationswechsel bearbeiten"
 msgid "Please accept or deny the organisation change request."
 msgstr "Bitte den Organisationswechsel annehmen oder ablehnen"
 
+#, python-format
 msgid "The organisation change was already %(status)s by %(user)s."
 msgstr "Der Organisationswechsel wurde schon von %(user)s %(status)s."
 
@@ -863,9 +864,6 @@ msgstr "vorherige Organisation"
 
 msgid "New organisation"
 msgstr "Neue Organisation"
-
-msgid "Reason"
-msgstr "Begründung"
 
 msgid "Deny change"
 msgstr "Änderung ablehnen"
@@ -892,11 +890,6 @@ msgstr ""
 
 msgid "Update organisation change"
 msgstr "Organisationswechsel aktualisieren"
-
-msgid "Please select the organisation you moved to and insert a reason text."
-msgstr ""
-"Bitte wähle die Organisation zu der Du wechseln möchtest und gib einen "
-"Begründungstext ein."
 
 msgid "Cancel change of organisation"
 msgstr "Abbrechen des Organisationswechsel"
