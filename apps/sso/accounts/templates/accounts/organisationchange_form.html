@@ -23,8 +23,6 @@
 
         <h3>{% trans 'Update My Organisation' %}</h3>
 
-        <p>{% trans "Please select the organisation you moved to and insert a reason text." %}</p>
-
         {% if messages %}{% for message in messages %}
             <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
         {% endif %}
