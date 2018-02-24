@@ -44,10 +44,16 @@ class OrganisationChangeForm(BaseForm):
 
     class Meta:
         model = OrganisationChange
-        fields = ('organisation', 'reason')
+        fields = ('organisation', 'message')
         widgets = {
-            'reason': bootstrap.Textarea()
+            'message': bootstrap.Textarea()
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance.pk is not None:
+            # to change the organisation, we need a new "organisation change" because the admin got already an email
+            self.fields['organisation'].disabled = True
 
     def clean_organisation(self):
         organisation = self.cleaned_data['organisation']

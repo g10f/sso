@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-02-17 22:36+0100\n"
+"POT-Creation-Date: 2018-02-24 20:08+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -122,7 +122,7 @@ msgid "Subject"
 msgstr ""
 
 msgid "Message"
-msgstr ""
+msgstr "Nachricht"
 
 msgid "New password"
 msgstr ""
@@ -538,7 +538,7 @@ msgid "title"
 msgstr "Titel"
 
 msgid "message"
-msgstr ""
+msgstr "Nachricht"
 
 msgid "one time message"
 msgstr "Einweg-Nachricht"
@@ -558,8 +558,8 @@ msgstr "überprüft"
 msgid "denied"
 msgstr "abgelehnt"
 
-msgid "reason"
-msgstr "Begründung"
+msgid "Message for the organisation administrator."
+msgstr "Nachricht für den Administrator der Organisation."
 
 msgid "Comment"
 msgstr "Kommentar"
@@ -1955,9 +1955,6 @@ msgstr ""
 
 msgid "Regions"
 msgstr "Regionen"
-
-msgid "Unknown"
-msgstr "Unbekannt"
 
 msgid "City/Village"
 msgstr "Stadt/Dorf"

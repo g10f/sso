@@ -27,7 +27,7 @@ class OrganisationChangeAdmin(admin.ModelAdmin):
     list_display = (
         'organisation', 'status', 'user_link', 'completed_by_user', 'last_modified_by_user', 'last_modified')
     raw_id_fields = ("user", "last_modified_by_user", "completed_by_user", "organisation", "original_organisation")
-    search_fields = ('user__username', 'organisation__name', 'reason')
+    search_fields = ('user__username', 'organisation__name', 'message')
     ordering = ['-last_modified']
     date_hierarchy = 'last_modified'
     readonly_fields = ['uuid']

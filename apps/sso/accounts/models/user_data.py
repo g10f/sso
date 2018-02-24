@@ -107,7 +107,9 @@ class OrganisationChange(AbstractBaseModel):
     original_organisation = models.ForeignKey(Organisation, related_name='original_organisation', null=True,
                                               blank=True, on_delete=models.CASCADE)
     organisation = models.ForeignKey(Organisation, on_delete=models.CASCADE)
-    reason = models.TextField(_("reason"), max_length=2048)
+    message = models.TextField(_("message"), max_length=2048,
+                               help_text=_('Message for the organisation administrator.'),
+                               blank=True)
     comment = models.TextField(_("Comment"), max_length=2048, blank=True)
     status = models.CharField(_('status'), max_length=255, choices=STATUS_CHOICES, default='o')
     last_modified_by_user = CurrentUserField(verbose_name=_('last modified by'),
