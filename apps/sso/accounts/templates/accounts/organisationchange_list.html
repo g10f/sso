@@ -9,10 +9,10 @@
 <ol class="breadcrumb">
     <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
     <li class="active">{% trans 'Organisation Changes' %}</li>
-</ol> 
+</ol>
 {% endblock breadcrumb %}
-    
-    
+
+
 {% block content %}
 <div class="row">
 	<div class="col-sm-12">
@@ -27,7 +27,7 @@
 	   {% include 'include/_search_form.html' %}
     </div>
 	<div class="col-sm-9">
-        {% for filter in filters %}{% if filter %} 
+        {% for filter in filters %}{% if filter %}
         {% include filter.template_name with filter=filter %}
         {% endif %}{% endfor %}
     </div><!-- /.col-sm-9 -->
@@ -39,11 +39,11 @@
 	       {% include "include/table_header.html" %}
 	       <tbody>
 	           {% for object in object_list %}
-	           <tr> 
+	           <tr>
 	               <td><a class="" href="{% url 'accounts:organisationchange_accept' object.pk %}">{{ object.user.username }}</a></td>
 	               <td>{{ object.user.organisations.first|default_if_none:"" }}</td>
 	               <td>{{ object.organisation }}</td>
-	               <td>{{ object.reason }}</td>
+	               <td>{{ object.message }}</td>
 	               <td>{{ object.user.primary_email|default_if_none:"" }}</td>
 	               <td>{{ object.last_modified|utc|date:"Y-m-d H:i" }}</td>
 	               <td>{% if object.comment %}
