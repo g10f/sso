@@ -27,8 +27,7 @@
                 {% trans "Please accept or deny the organisation change request." %}
             {% else %}
                 <div class="alert alert-info">
-                    {% blocktrans with status=organisationchange.get_status_display user=organisationchange.completed_by_user.get_full_name %}
-                        The organisation change was already {{ status }} by {{ user }}.{% endblocktrans %}</div>
+                    {% blocktrans with status=organisationchange.get_status_display user=organisationchange.completed_by_user.get_full_name %}The organisation change was already {{ status }} by {{ user }}.{% endblocktrans %}</div>
             {% endif %}
         </p>
 
