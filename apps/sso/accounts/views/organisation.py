@@ -3,7 +3,7 @@ from urllib.parse import urlunsplit
 
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -73,6 +73,7 @@ class OrganisationChangeUpdateView(SingleObjectTemplateResponseMixin, ModelFormM
         return initial
 
     @method_decorator(login_required)
+    @method_decorator(user_passes_test(lambda u: not u.is_center))
     def dispatch(self, request, *args, **kwargs):
         return super(OrganisationChangeUpdateView, self).dispatch(request, *args, **kwargs)
 
@@ -130,7 +131,7 @@ class OrganisationChangeUpdateView(SingleObjectTemplateResponseMixin, ModelFormM
         form.instance.user = user
         form.instance.original_organisation = user.organisations.first()
 
-        response = super(OrganisationChangeUpdateView, self).form_valid(form)
+        response = super().form_valid(form)
         if 'organisation' in form.changed_data:
             # enable brand specific modification
             user_organisation_change_request.send_robust(sender=self.__class__, organisation_change=form.instance)

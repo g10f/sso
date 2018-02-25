@@ -242,7 +242,6 @@ def validation_confirm(request, uidb64=None, token=None, token_generator=default
                 profile.user.confirm_primary_email_if_no_confirmed()
                 # enable brand specific modification
                 user_registration_completed.send_robust(sender=None, user_registration=profile)
-                # send_user_validated_email(profile, request)
                 return HttpResponseRedirect(redirect_url)
 
     context = {
