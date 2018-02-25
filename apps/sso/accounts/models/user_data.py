@@ -99,7 +99,7 @@ class OrganisationChange(AbstractBaseModel):
     STATUS_CHOICES = [
         ('o', _('open')),  # opened by user
         ('c', _('canceled')),  # by user
-        ('v', _('verified')),
+        ('v', _('approved')),
         ('d', _('denied'))
     ]
 
