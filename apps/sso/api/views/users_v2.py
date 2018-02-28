@@ -119,6 +119,9 @@ class UserMixin(object):
             'is_center': obj.is_center,
             'last_modified': obj.get_last_modified_deep()
         }
+        if obj.valid_until:
+            data['valid_until'] = obj.valid_until
+
         if obj.timezone:
             data['timezone'] = obj.timezone
             # data['utc_offset'] = localtime(now(), timezone(obj.timezone)).strftime('%z')
