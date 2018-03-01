@@ -99,7 +99,8 @@ class ApplicationRoleAdmin(admin.ModelAdmin):
 
 
 class RoleProfileAdmin(admin.ModelAdmin):
-    list_display = ('name', 'uuid', 'is_inheritable_by_org_admin', 'is_inheritable_by_global_admin', 'last_modified')
+    list_display = ('name', 'uuid', 'is_inheritable_by_org_admin', 'is_inheritable_by_global_admin',
+                    'is_organisation_related', 'last_modified')
     date_hierarchy = 'last_modified'
     search_fields = ('name', 'uuid')
     list_filter = ('application_roles',)

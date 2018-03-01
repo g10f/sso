@@ -6,7 +6,8 @@ from django.conf import settings
 from django.db.models import Q
 from django.urls import reverse
 from sso.api.views.generic import JsonListView, JsonDetailView
-from sso.organisations.models import Organisation, get_near_organisations, multiple_associations
+from sso.organisations.models import Organisation, get_near_organisations, multiple_associations, \
+    is_validation_period_active
 from sso.utils.parse import parse_datetime_with_timezone_support
 from sso.utils.url import absolute_url, get_base_url
 
@@ -41,6 +42,7 @@ class OrganisationMixin(object):
             'facebook_page': obj.facebook_page,
             'twitter_page': obj.twitter_page,
             'last_modified': obj.get_last_modified_deep(),
+            'is_validation_period_active': is_validation_period_active(obj),
         }
         if multiple_associations():
             data['association'] = {
