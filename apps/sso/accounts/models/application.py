@@ -131,6 +131,9 @@ class RoleProfile(AbstractBaseModel):
     is_inheritable_by_global_admin = models.BooleanField(
         _('inheritable by global admin'), default=True,
         help_text=_('Designates that the role profile can inherited by a global admin.'))
+    is_organisation_related = models.BooleanField(
+        _('organisation related'), default=False,
+        help_text=_('Designates that the role will be deleted in case of a change of the organisation.'))
 
     class Meta(AbstractBaseModel.Meta):
         ordering = ['order', 'name']

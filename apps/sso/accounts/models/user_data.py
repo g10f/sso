@@ -7,7 +7,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _, pgettext_lazy
-from sso.accounts.models.application import ApplicationRole
+from sso.accounts.models.application import ApplicationRole, RoleProfile
 from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary, \
     CaseInsensitiveEmailField, AbstractBaseModelManager
 from sso.organisations.models import Organisation
@@ -143,7 +143,9 @@ class OrganisationChange(AbstractBaseModel):
 
         # remove organisation related permissions
         organisation_related_application_roles = ApplicationRole.objects.filter(is_organisation_related=True)
+        organisation_related_role_profiles = RoleProfile.objects.filter(is_organisation_related=True)
         self.user.application_roles.remove(*list(organisation_related_application_roles))
+        self.user.role_profiles.remove(*list(organisation_related_role_profiles))
         self.save()
 
     def deny(self, user):
