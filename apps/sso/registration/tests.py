@@ -35,8 +35,12 @@ class RegistrationTest(TestCase):
         username = default_username_generator("Gunnar", "Scherf")
         self.assertEqual(username, "GunnarScherf1")
 
-        username = default_username_generator("GunnarXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", "Scherf")
-        self.assertEqual(username, "GunnarXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
+        username = default_username_generator("Hans", "Meier")
+        self.assertEqual(username, "HansMeier")
+
+        username = default_username_generator("1234567890", "12345678901234567890123456789012345678901234567890"
+                                                            "1234567890")
+        self.assertEqual(username, "123456789012345678901234567890123456789012345678901234567890123456789")
 
     @override_settings(RECAPTCHA_PUBLIC_KEY='6LccjewSAAAAAPcFZmUtuzRVkU6hhOona0orqgKh',
                        RECAPTCHA_PRIVATE_KEY='6LccjewSAAAAAAhJzHuEyVV40AYApL6CpmjqlmX8')

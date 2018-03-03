@@ -17,7 +17,7 @@ from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from sso.organisations.models import Organisation, AdminRegion
-from .forms import AdminUserChangeForm, AdminUserCreationForm
+from .forms import AdminUserCreationForm
 from .models import Application, UserAssociatedSystem, UserAddress, UserPhoneNumber, UserEmail, RoleProfile
 
 logger = logging.getLogger(__name__)
@@ -352,15 +352,13 @@ class PhoneNumberInline(admin.TabularInline):
 
 
 class UserAdmin(AdminImageMixin, DjangoUserAdmin):
-    form = AdminUserChangeForm
     add_form = AdminUserCreationForm
     save_on_top = True
     list_display = (
         'id', 'username', 'primary_email', 'first_name', 'last_name', 'is_staff', 'last_login', 'date_joined',
         'last_modified', 'get_last_modified_by_user', 'get_created_by_user')
     search_fields = ('username', 'first_name', 'last_name', 'useremail__email', 'uuid')
-    list_filter = (SuperuserFilter,) + \
-                  ('is_staff', 'is_center', 'is_service', 'is_active', LoggedInFilter, 'groups',
+    list_filter = (SuperuserFilter, 'is_staff', 'is_center', 'is_service', 'is_active', LoggedInFilter, 'groups',
                    ApplicationAdminApplicationFilter,
                    RoleProfileAdminRoleProfileFilter,
                    UserAssociatedSystemFilter, UserRegionListFilter,
