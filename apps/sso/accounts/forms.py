@@ -286,15 +286,6 @@ class AdminUserCreationForm(forms.ModelForm):
         return user
 
 
-class AdminUserChangeForm(UserChangeForm):
-    """
-    extensions to the default form:
-    - allow also unicode characters in the username
-    """
-    username = forms.CharField(label=_("Username"), max_length=40, validators=[UnicodeUsernameValidator()],
-                               help_text=_("Required. 40 characters or fewer. Letters, digits and @/./+/-/_ only."))
-
-
 class UserAddForm(mixins.UserRolesMixin, forms.ModelForm):
     """
     form for SSO User Admins for adding users in the frontend
@@ -749,6 +740,22 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
         except ObjectDoesNotExist:
             return username
         raise forms.ValidationError(self.error_messages['duplicate_username'])
+
+    # def clean(self):
+    #     cd = super().clean()
+    #     if 'organisations' in self.changed_data:
+    #         application_roles = cd.get("application_roles")
+    #         role_profiles = cd.get("role_profiles")
+    #         organisation_related_role_profiles = RoleProfile.objects.filter(is_organisation_related=True)\
+    #             .values_list('id')
+    #
+    #         for role_profile in organisation_related_role_profiles:
+    #             id = str(role_profile[0])
+    #             if id in role_profiles:
+    #                 role_profiles.remove(id)
+    #         cd['application_roles'] = application_roles.exclude(is_organisation_related=True)
+    #         cd['role_profiles'] = role_profiles
+    #         return cd
 
     def save(self, extend_validity=False, activate=None):
         cd = self.cleaned_data

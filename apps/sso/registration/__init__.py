@@ -18,11 +18,11 @@ def default_username_generator(first_name, last_name, user=None):
     after first_name if necessary
     """
     remove_chars = [' ', '-']
-    
+
     first_name = capfirst(remove(first_name, *remove_chars))
     last_name = capfirst(remove(last_name, *remove_chars))
     username = u"%s%s" % (first_name, last_name)
-    username = username[:39]  # max 40 chars
+    username = username[:69]  # max 69 chars + number if name already exists
 
     if user is not None:
         exists = get_user_model().objects.filter(username=username).exclude(pk=user.pk).exists()
@@ -30,10 +30,10 @@ def default_username_generator(first_name, last_name, user=None):
         exists = get_user_model().objects.filter(username=username).exists()
     if not exists:
         return username
-    
+
     username_pattern = r'^%s([0-9]+)$' % username
     users = get_user_model().objects.filter(username__regex=username_pattern)
-    
+
     existing = set()
     username_pattern = r'%s(?P<no>[0-9]+)' % username
     prog = re.compile(username_pattern)

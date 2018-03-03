@@ -115,7 +115,7 @@
         <div class="form-group">
             <div class="dwbn-form-control_lg">
                 {% if form.user.is_active %}
-                    <button type="submit" class="btn btn-danger" name="_deactivate">{% trans 'Block User' %}</button>
+                    <button type="submit" class="btn btn-default" name="_deactivate">{% trans 'Block User' %}</button>
                 {% else %}
                     <button type="submit" class="btn btn-success" name="_activate">{% trans 'Activate User' %}</button>
                 {% endif %}

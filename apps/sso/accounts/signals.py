@@ -1,17 +1,17 @@
 import datetime
 
+from ipware.ip import get_real_ip
+
 from django.conf import settings
 from django.contrib.auth import user_logged_in
 from django.db.models.signals import post_save
 from django.dispatch.dispatcher import receiver
 from django.utils import timezone
-from ipware.ip import get_real_ip
-
 from django.utils.timezone import now
 from sso.accounts.models import User, UserEmail
 from sso.organisations.models import is_validation_period_active_for_user
-from sso.utils.loaddata import disable_for_loaddata
 from sso.signals import user_m2m_field_updated
+from sso.utils.loaddata import disable_for_loaddata
 
 
 @receiver(post_save, sender=User)
