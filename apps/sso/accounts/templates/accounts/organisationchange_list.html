@@ -43,7 +43,7 @@
 	               <td><a class="" href="{% url 'accounts:organisationchange_accept' object.pk %}">{{ object.user.username }}</a></td>
 	               <td>{{ object.user.organisations.first|default_if_none:"" }}</td>
 	               <td>{{ object.organisation }}</td>
-	               <td>{{ object.message }}</td>
+	               <td>{{ object.message|truncatechars:30 }}</td>
 	               <td>{{ object.user.primary_email|default_if_none:"" }}</td>
 	               <td>{{ object.last_modified|utc|date:"Y-m-d H:i" }}</td>
 	               <td>{% if object.comment %}
