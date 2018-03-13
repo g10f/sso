@@ -52,7 +52,7 @@ class Application(models.Model):
     @mark_safe
     def link(self):
         if self.url:
-            return u'<a href="%s">%s</a>' % (self.url, self.title)
+            return '<a href="%s">%s</a>' % (self.url, self.title)
         else:
             return ''
 
@@ -117,7 +117,7 @@ class ApplicationRole(models.Model):
         return self.application.natural_key() + self.role.natural_key()
 
     def __str__(self):
-        return u"%s - %s" % (self.application, self.role)
+        return "%s - %s" % (self.application, self.role)
 
 
 class RoleProfile(AbstractBaseModel):
@@ -158,7 +158,7 @@ class UserAssociatedSystem(models.Model):
         unique_together = (("application", "userid"),)
 
     def __str__(self):
-        return u"%s - %s" % (self.application, self.userid)
+        return "%s - %s" % (self.application, self.userid)
 
 
 class RoleProfileAdmin(AbstractBaseModel):

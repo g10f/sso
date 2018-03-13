@@ -36,7 +36,7 @@ class OrganisationChangeAdmin(admin.ModelAdmin):
     @mark_safe
     def user_link(self, obj):
         url = reverse('admin:accounts_user_change', args=(obj.user.pk,), current_app=self.admin_site.name)
-        return u'<a href="%s">%s</a>' % (url, obj.user)
+        return '<a href="%s">%s</a>' % (url, obj.user)
 
     user_link.short_description = _('user')
     user_link.admin_order_field = 'user'
@@ -53,7 +53,7 @@ class UserEmailAdmin(admin.ModelAdmin):
     @mark_safe
     def user_link(self, obj):
         url = reverse('admin:accounts_user_change', args=(obj.user.pk,), current_app=self.admin_site.name)
-        return u'<a href="%s">%s</a>' % (url, obj.user)
+        return '<a href="%s">%s</a>' % (url, obj.user)
 
     user_link.short_description = _('user')
     user_link.admin_order_field = 'user'
@@ -75,7 +75,7 @@ class OneTimeMessageAdmin(admin.ModelAdmin):
     def message_link(self, obj):
         if obj.uuid:
             url = reverse('accounts:view_message', args=[obj.uuid.hex])
-            return u'<div class="field-box"><a class="deletelink" href="%s">%s</a></div>' % (url, obj.title)
+            return '<div class="field-box"><a class="deletelink" href="%s">%s</a></div>' % (url, obj.title)
         else:
             return ''
 
@@ -435,7 +435,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
 
     def assigned_organisations(self, obj):
         if obj:
-            return u', '.join([str(x) for x in obj.organisations.all()])
+            return ', '.join([str(x) for x in obj.organisations.all()])
 
     def formfield_for_manytomany(self, db_field, request=None, **kwargs):
         user = request.user
@@ -484,7 +484,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         if obj.last_modified_by_user:
             url = reverse('admin:accounts_user_change', args=(obj.last_modified_by_user.pk,),
                           current_app=self.admin_site.name)
-            return u'<a href="%s">%s</a>' % (url, obj.last_modified_by_user)
+            return '<a href="%s">%s</a>' % (url, obj.last_modified_by_user)
         else:
             raise ObjectDoesNotExist()
 
@@ -495,7 +495,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         if obj.created_by_user:
             url = reverse('admin:accounts_user_change', args=(obj.created_by_user.pk,),
                           current_app=self.admin_site.name)
-            return u'<a href="%s">%s</a>' % (url, obj.created_by_user)
+            return '<a href="%s">%s</a>' % (url, obj.created_by_user)
         else:
             raise ObjectDoesNotExist()
 

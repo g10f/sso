@@ -256,7 +256,7 @@ class FilterItem(object):
         return self.item_tuple[0]
 
     def __str__(self):
-        return u"%s" % self.item_tuple[1]
+        return "%s" % self.item_tuple[1]
 
 
 class OrderByWithNulls(OrderBy):

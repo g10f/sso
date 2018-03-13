@@ -157,9 +157,9 @@ class OrganisationCountry(AbstractBaseModel, ExtraOrganisationCountryManager):
     def __str__(self):
         # return u"%s" % self.country
         if multiple_associations():
-            return u"%s, %s" % (self.country, self.association)
+            return "%s, %s" % (self.country, self.association)
         else:
-            return u'%s' % self.country
+            return '%s' % self.country
 
     def get_absolute_url(self):
         return reverse('organisations:organisationcountry_detail', kwargs={'uuid': self.uuid.hex, })
@@ -388,9 +388,9 @@ class Organisation(AbstractBaseModel):
     def __str__(self):
         if self.organisation_country:
             if multiple_associations():
-                return u'%s, %s (%s)' % (self.name, self.association, self.organisation_country.country.iso2_code)
+                return '%s, %s (%s)' % (self.name, self.association, self.organisation_country.country.iso2_code)
             else:
-                return u'%s (%s)' % (self.name, self.organisation_country.country.iso2_code)
+                return '%s (%s)' % (self.name, self.organisation_country.country.iso2_code)
         else:
             return self.name
 
@@ -416,14 +416,14 @@ class Organisation(AbstractBaseModel):
 
     @mark_safe
     def google_maps_link(self):
-        return u'<a href="%s">%s</a>' % (self.google_maps_url, self.get_coordinates_type_display())
+        return '<a href="%s">%s</a>' % (self.google_maps_url, self.get_coordinates_type_display())
 
     google_maps_link.short_description = _('Maps')
 
     @mark_safe
     def homepage_link(self):
         if self.homepage:
-            return u'<a href="%s">%s</a>' % (self.homepage, self.homepage)
+            return '<a href="%s">%s</a>' % (self.homepage, self.homepage)
         else:
             return ''
 
@@ -456,7 +456,7 @@ class Organisation(AbstractBaseModel):
 
 
 def generate_filename(instance, filename):
-    return u'organisation_image/%s/%s' % (
+    return 'organisation_image/%s/%s' % (
         instance.organisation.uuid.hex, get_filename(filename.encode('ascii', 'replace')))
 
 
@@ -554,5 +554,5 @@ def default_unique_slug_generator(slug, model, obj=None):
     while new_no in existing:
         new_no += 1
 
-    slug = u"%s-%d" % (slug, new_no)
+    slug = "%s-%d" % (slug, new_no)
     return slug

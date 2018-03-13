@@ -83,7 +83,7 @@ class EmailManagerInlineForm(BaseTabularInlineForm):
         try:
             manager = self.instance.manager
             self.fields['manager_email'].initial = manager.primary_email()
-            self.fields['name'].initial = u"%s %s" % (manager.first_name, manager.last_name)
+            self.fields['name'].initial = "%s %s" % (manager.first_name, manager.last_name)
         except ObjectDoesNotExist:
             pass
 

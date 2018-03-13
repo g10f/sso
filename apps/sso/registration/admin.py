@@ -77,7 +77,7 @@ class RegistrationAdmin(admin.ModelAdmin):
         user = obj.user
         url = reverse('admin:%s_%s_change' % (user._meta.app_label, user._meta.module_name), args=[user.pk],
                       current_app=self.admin_site.name)
-        return u'<a href="%s">%s</a>' % (url, user)
+        return '<a href="%s">%s</a>' % (url, user)
 
     user_link.short_description = _('user')
 

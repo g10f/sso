@@ -78,7 +78,7 @@ class UserPictureDetailView(JsonDetailView):
         base = get_base_url(request)
         data = {
             '@id': "%s%s" % (base, reverse('api:v2_picture', kwargs={'uuid': obj.uuid.hex})),
-            'id': u'%s' % obj.uuid.hex,
+            'id': '%s' % obj.uuid.hex,
             'last_modified': obj.last_modified,
             'max_size': User.MAX_PICTURE_SIZE
         }

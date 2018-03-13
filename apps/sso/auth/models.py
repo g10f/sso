@@ -34,7 +34,7 @@ class Device(AbstractBaseModel):
     DEVICES = [cls.split('.')[-1].lower() for cls in settings.OTP_DEVICES]
 
     def __str__(self):
-        return u"%s" % self.get_child()
+        return "%s" % self.get_child()
 
     class Meta:
         ordering = ['order', 'name']
@@ -102,7 +102,7 @@ class U2FDevice(Device):
         ordering = ['order', 'name']
 
     def __str__(self):
-        return u"%s:%s" % (self.__class__.__name__, self.user_id)
+        return "%s:%s" % (self.__class__.__name__, self.user_id)
 
     @classmethod
     def setup_template(cls):
@@ -207,7 +207,7 @@ class TOTPDevice(Device):
         ordering = ['order', 'name']
 
     def __str__(self):
-        return u"%s:%s" % (self.__class__.__name__, self.user_id)
+        return "%s:%s" % (self.__class__.__name__, self.user_id)
 
     @classmethod
     def setup_template(cls):
@@ -308,7 +308,7 @@ class TwilioSMSDevice(Device):
         ordering = ['order', 'name']
 
     def __str__(self):
-        return u"%s:%s:%s" % (self.__class__.__name__, self.user_id, self.number)
+        return "%s:%s:%s" % (self.__class__.__name__, self.user_id, self.number)
 
     @classmethod
     def setup_template(cls):

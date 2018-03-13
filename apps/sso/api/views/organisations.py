@@ -28,13 +28,13 @@ class OrganisationMixin(object):
         base = get_base_url(request)
         data = {
             '@id': "%s%s" % (base, reverse('api:v2_organisation', kwargs={'uuid': obj.uuid.hex})),
-            'id': u'%s' % obj.uuid.hex,
+            'id': '%s' % obj.uuid.hex,
             'is_active': obj.is_active,
             'is_live': obj.is_live,
             'is_private': obj.is_private,
-            'name': u'%s' % obj.name,
-            'name_native': u'%s' % obj.name_native,
-            'slug': u'%s' % obj.slug,
+            'name': '%s' % obj.name,
+            'name_native': '%s' % obj.name_native,
+            'slug': '%s' % obj.slug,
             'founded': obj.founded,
             'center_type': obj.center_type,
             'homepage': obj.homepage,
@@ -53,7 +53,7 @@ class OrganisationMixin(object):
         if obj.source_urls:
             data['source_urls'] = obj.source_urls
         if obj.email:
-            data['email'] = u'%s' % obj.email
+            data['email'] = '%s' % obj.email
         if obj.neighbour_distance:
             data['neighbour_distance'] = "%.1f km" % obj.neighbour_distance
         if obj.centerid:  # legacy id, should be removed when the resync ist done

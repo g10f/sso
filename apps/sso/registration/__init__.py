@@ -21,7 +21,7 @@ def default_username_generator(first_name, last_name, user=None):
 
     first_name = capfirst(remove(first_name, *remove_chars))
     last_name = capfirst(remove(last_name, *remove_chars))
-    username = u"%s%s" % (first_name, last_name)
+    username = "%s%s" % (first_name, last_name)
     username = username[:69]  # max 69 chars + number if name already exists
 
     if user is not None:
@@ -47,5 +47,5 @@ def default_username_generator(first_name, last_name, user=None):
     while new_no in existing:
         new_no += 1
 
-    username = u"%s%d" % (username, new_no)
+    username = "%s%d" % (username, new_no)
     return username

@@ -19,14 +19,14 @@ class AssociationMixin(object):
         base = get_base_url(request)
         data = {
             '@id': "%s%s" % (base, reverse('api:v2_association', kwargs={'uuid': obj.uuid.hex})),
-            'id': u'%s' % obj.uuid.hex,
-            'name': u'%s' % force_text(obj),
+            'id': '%s' % obj.uuid.hex,
+            'name': '%s' % force_text(obj),
             'homepage': obj.homepage,
             'last_modified': obj.last_modified,
             'is_active': obj.is_active,
         }
         if obj.email_domain:
-            data['email_domain'] = u'%s' % obj.email_domain
+            data['email_domain'] = '%s' % obj.email_domain
         if details:
             if 'users' in request.scopes:
                 users = User.objects.filter(organisations__association=obj)

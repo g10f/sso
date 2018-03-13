@@ -224,9 +224,9 @@ INSTALLED_APPS = [
 
 L10N_SETTINGS = {
     'currency_formats': {
-        'USD': {'symbol': u'$', 'positive': u"$%(val)0.2f", 'negative': u"-$%(val)0.2f", 'decimal': '.'},
-        'GBP': {'symbol': u'£', 'positive': u"£%(val)0.2f", 'negative': u"-£%(val)0.2f", 'decimal': '.'},
-        'EURO': {'symbol': u'€', 'positive': u"%(val)0.2f €", 'negative': u"-%(val)0.2f €", 'decimal': ','},
+        'USD': {'symbol': '$', 'positive': "$%(val)0.2f", 'negative': "-$%(val)0.2f", 'decimal': '.'},
+        'GBP': {'symbol': '£', 'positive': "£%(val)0.2f", 'negative': "-£%(val)0.2f", 'decimal': '.'},
+        'EURO': {'symbol': '€', 'positive': "%(val)0.2f €", 'negative': "-%(val)0.2f €", 'decimal': ','},
     },
     'default_currency': 'EURO',
 }

@@ -179,7 +179,7 @@ class BearerToken(models.Model):
         get_latest_by = 'created_at'
 
     def __str__(self):
-        return u'%s - %s' % (self.client, self.user)
+        return '%s - %s' % (self.client, self.user)
 
 
 class RefreshToken(models.Model):

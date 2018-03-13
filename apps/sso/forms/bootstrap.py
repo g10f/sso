@@ -21,7 +21,7 @@ def add_class_to_css_class(classes, new_class):
         if new_class not in classes:
             classes.append(new_class)
             # Convert to string
-        classes = u" ".join(classes)
+        classes = " ".join(classes)
     return classes
 
 
@@ -76,8 +76,8 @@ class ImageWidget(forms.ClearableFileInput):
     An ImageField Widget for django.contrib.admin that shows a thumbnailed
     image as well as a link to the current one if it has one.
     """
-    template_with_initial = u'<div>%(clear_template)s<br />%(input_text)s: %(input)s</div>'
-    template_with_clear = u'<div class="checkbox"><label>%(clear)s %(clear_checkbox_label)s </label></div>'
+    template_with_initial = '<div>%(clear_template)s<br />%(input_text)s: %(input)s</div>'
+    template_with_clear = '<div class="checkbox"><label>%(clear)s %(clear_checkbox_label)s </label></div>'
 
     def render(self, name, value, attrs=None, renderer=None):
         output = super(ImageWidget, self).render(name, value, attrs, renderer)
@@ -88,8 +88,8 @@ class ImageWidget(forms.ClearableFileInput):
                 pass
             else:
                 output = (
-                             u'<div><a href="%s">'
-                             u'<img class="img-thumbnail" src="%s" alt="%s"></a></div>%s'
+                             '<div><a href="%s">'
+                             '<img class="img-thumbnail" src="%s" alt="%s"></a></div>%s'
                          ) % (value.url, mini.url, name, output)
 
         return mark_safe(output)
@@ -144,7 +144,7 @@ class SelectMultipleWithCurrently(SelectMultiple):
         html = super(SelectMultipleWithCurrently, self).render(name, value, attrs)
         if self.currently is not None:
             html = format_html(
-                u'<p class="form-control-static">{} {}</p>{}',
+                '<p class="form-control-static">{} {}</p>{}',
                 _('Currently:'), self.currently,
                 html
             )
