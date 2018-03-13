@@ -63,7 +63,7 @@ class UserManager(BaseUserManager):
 
 
 def generate_filename(instance, filename):
-    return u'image/%s/%s' % (instance.uuid.hex, get_filename(filename.encode('ascii', 'replace')))
+    return 'image/%s/%s' % (instance.uuid.hex, get_filename(filename.encode('ascii', 'replace')))
 
 
 class User(AbstractBaseUser, PermissionsMixin):

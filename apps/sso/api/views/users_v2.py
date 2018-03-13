@@ -107,11 +107,11 @@ class UserMixin(object):
         email = obj.primary_email()
         data = {
             '@id': "%s%s" % (base, reverse('api:v2_user', kwargs={'uuid': obj.uuid.hex})),
-            'id': u'%s' % obj.uuid.hex,
+            'id': '%s' % obj.uuid.hex,
             'is_active': obj.is_active,
-            'name': u'%s' % obj,
-            'given_name': u'%s' % obj.first_name,
-            'family_name': u'%s' % obj.last_name,
+            'name': '%s' % obj,
+            'given_name': '%s' % obj.first_name,
+            'family_name': '%s' % obj.last_name,
             'gender': obj.gender,
             'birth_date': obj.dob,
             'homepage': obj.homepage,

@@ -39,7 +39,7 @@ class JsonHttpResponse(HttpResponse):
             callback = request.GET.get('callback', None)
         if callback:
             status = HTTP_200_OK
-            content = u"%s(%s)" % (callback, json.dumps(data, cls=DjangoJSONEncoder, ensure_ascii=False))
+            content = "%s(%s)" % (callback, json.dumps(data, cls=DjangoJSONEncoder, ensure_ascii=False))
         else:
             content = json.dumps(data, cls=DjangoJSONEncoder, ensure_ascii=False)
 

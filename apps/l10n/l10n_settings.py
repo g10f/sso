@@ -12,10 +12,10 @@ l10n_settings_defaults = {
     # the add_setting_defaults method !
 
     'currency_formats': {
-        'USD': {'symbol': u'$', 'positive': u"$%(val)0.2f", 'negative': u"-$%(val)0.2f", 'decimal': '.'},
-        'GBP': {'symbol': u'£', 'positive': u"£%(val)0.2f", 'negative': u"-£%(val)0.2f", 'decimal': '.'},
+        'USD': {'symbol': '$', 'positive': "$%(val)0.2f", 'negative': "-$%(val)0.2f", 'decimal': '.'},
+        'GBP': {'symbol': '£', 'positive': "£%(val)0.2f", 'negative': "-£%(val)0.2f", 'decimal': '.'},
     },
-    
+
     'default_currency': 'USD',
     'show_admin_translations': True,  # Display in the admin
     'allow_translation_choice': True,  # Display the list of languages to store user
@@ -26,7 +26,7 @@ def add_setting_defaults(newdefaults):
     """
     This method can be used by other applications to define their
     default values.
-    
+
     newdefaults has to be a dictionary containing name -> value of
     the settings.
     """
@@ -37,7 +37,7 @@ def set_l10n_setting(name, value):
     if not hasattr(settings, 'L10N_SETTINGS'):
         settings.L10N_SETTINGS = {}
     settings.L10N_SETTINGS[name] = value
-    
+
 
 def get_l10n_setting(name, default_value=None):
     if not hasattr(settings, 'L10N_SETTINGS'):

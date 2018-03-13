@@ -17,9 +17,9 @@ class RegionMixin(object):
         base = get_base_url(request)
         data = {
             '@id': "%s%s" % (base, reverse('api:v2_region', kwargs={'uuid': obj.uuid.hex})),
-            'id': u'%s' % obj.uuid.hex,
-            'name': u'%s' % obj.name,
-            'slug': u'%s' % obj.slug,
+            'id': '%s' % obj.uuid.hex,
+            'name': '%s' % obj.name,
+            'slug': '%s' % obj.slug,
             'homepage': obj.homepage,
             'last_modified': obj.last_modified,
             'country': {
@@ -29,7 +29,7 @@ class RegionMixin(object):
             }
         }
         if obj.email:
-            data['email'] = u'%s' % obj.email
+            data['email'] = '%s' % obj.email
         if details:
             if ('users' in request.scopes) and (obj in request.user.get_administrable_user_regions()):
                 data['users'] = "%s%s?region_id=%s" % (base, reverse('api:v2_users'), obj.uuid.hex)

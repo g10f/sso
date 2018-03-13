@@ -106,11 +106,11 @@ def get_userinfo(user, request, show_details=False):
     base = get_base_url(request)
     email = user.primary_email()
     userinfo = {
-        'id': u'%s' % user.uuid.hex,
-        # 'sub': u'%s' % user.uuid.hex,  # remove after all clients migrated to id
-        'name': u'%s' % user,
-        'given_name': u'%s' % user.first_name,
-        'family_name': u'%s' % user.last_name,
+        'id': '%s' % user.uuid.hex,
+        # 'sub': '%s' % user.uuid.hex,  # remove after all clients migrated to id
+        'name': '%s' % user,
+        'given_name': '%s' % user.first_name,
+        'family_name': '%s' % user.last_name,
         'gender': user.gender,
         'birth_date': date(user.dob, "c"),
         'homepage': user.homepage,

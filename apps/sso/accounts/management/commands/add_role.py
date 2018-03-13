@@ -44,4 +44,4 @@ class Command(BaseCommand):
                 else:
                     user.application_roles.add(app_role)
 
-            self.stdout.write(u"%s" % user)
+            self.stdout.write("%s" % user)

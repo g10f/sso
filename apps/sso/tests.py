@@ -35,7 +35,7 @@ class SSOSeleniumTests(StaticLiveServerTestCase):
         """
         from selenium.webdriver.support.wait import WebDriverWait
         WebDriverWait(self.selenium, timeout).until(callback)
-    
+
     def wait_loaded_tag(self, tag_name, timeout=10):
         """
         Helper function that blocks until the element with the given tag name
@@ -66,7 +66,7 @@ class SSOSeleniumTests(StaticLiveServerTestCase):
         driver.find_element_by_name("username").send_keys(username)
         driver.find_element_by_name("password").send_keys(password)
         driver.find_element_by_tag_name("form").submit()
-        
+
         # Wait until the response is received
         self.wait_page_loaded()
 
