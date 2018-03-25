@@ -14,9 +14,10 @@ logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
     help = 'Update user language'  # @ReservedAssignment
-    
+
     def handle(self, *args, **options):
         update_user_language()
+
 
 iso2_2_language = {
     'am': 'ru',  # Armenia -> Russian
@@ -107,7 +108,8 @@ def _iso2_2_language():
     # print country_languages
     cl = OrderedDict(sorted(country_languages.items(), key=lambda t: t[0]))
     for key in cl:
-        print("\t'{}': '{}',  # {} -> {}".format(key, cl[key]['language_info']['code'], cl[key]['country'], cl[key]['language_info']['name']))
+        print("\t'{}': '{}',  # {} -> {}".format(key, cl[key]['language_info']['code'], cl[key]['country'],
+                                                 cl[key]['language_info']['name']))
 
 
 def update_user_language():

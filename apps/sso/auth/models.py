@@ -1,5 +1,3 @@
-from __future__ import absolute_import  # we have utils at root and relativ path
-
 import json
 import logging
 import time
@@ -247,7 +245,7 @@ class TOTPDevice(Device):
         pass
 
     def verify_token(self, token):
-        OTP_TOTP_SYNC = getattr(settings, 'OTP_TOTP_SYNC', True)
+        otp_totp_sync = getattr(settings, 'OTP_TOTP_SYNC', True)
 
         try:
             token = int(token)
@@ -263,7 +261,7 @@ class TOTPDevice(Device):
                 totp.drift = self.drift + offset
                 if (totp.t() > self.last_t) and (totp.token() == token):
                     self.last_t = totp.t()
-                    if (offset != 0) and OTP_TOTP_SYNC:
+                    if (offset != 0) and otp_totp_sync:
                         self.drift += offset
 
                     self.last_used = timezone.now()

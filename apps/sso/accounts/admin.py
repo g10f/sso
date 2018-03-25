@@ -184,7 +184,7 @@ class UserOrganisationsListFilter(OrganisationsListFilter):
 class UserRegionListFilter(BaseFilter):
     title = _('Admin Region')
     parameter_name = 'admin_region'
-    field_path = 'admin_region'
+    field_path = 'organisations__admin_region'
 
     def get_lookup_qs(self, request, model_admin):
         return AdminRegion.objects.all()
@@ -359,11 +359,9 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         'last_modified', 'get_last_modified_by_user', 'get_created_by_user')
     search_fields = ('username', 'first_name', 'last_name', 'useremail__email', 'uuid')
     list_filter = (SuperuserFilter, 'is_staff', 'is_center', 'is_service', 'is_active', LoggedInFilter, 'groups',
-                   ApplicationAdminApplicationFilter,
-                   RoleProfileAdminRoleProfileFilter,
-                   UserAssociatedSystemFilter, UserRegionListFilter,
-                   RoleProfilesFilter, ExcludeRoleProfilesFilter,
-                   ApplicationRolesFilter)  # ,UserOrganisationsListFilter, CreatedByUserFilter, LastModifiedUserFilter
+                   ApplicationAdminApplicationFilter, RoleProfileAdminRoleProfileFilter, UserAssociatedSystemFilter,
+                   UserRegionListFilter, RoleProfilesFilter, ExcludeRoleProfilesFilter, ApplicationRolesFilter)
+    # ,UserOrganisationsListFilter, CreatedByUserFilter, LastModifiedUserFilter
     filter_horizontal = DjangoUserAdmin.filter_horizontal + (
         'admin_associations', 'admin_organisation_countries', 'admin_regions', 'groups', 'application_roles',
         'role_profiles', 'organisations',
