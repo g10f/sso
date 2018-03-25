@@ -26,11 +26,8 @@ class AddU2FView(FormView):
         return super(AddU2FView, self).get(request, *args, **kwargs)
 
     def get_origin(self):
-        return '{scheme}://{host}'.format(
-            # BBB: Django >= 1.7 has request.scheme
-            scheme='https' if self.request.is_secure() else 'http',
-            host=self.request.get_host(),
-        )
+        request = self.request
+        return '{scheme}://{host}'.format(scheme=request.scheme, host=request.get_host())
 
     def get_context_data(self, **kwargs):
         kwargs = super(AddU2FView, self).get_context_data(**kwargs)

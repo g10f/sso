@@ -1,5 +1,3 @@
-from __future__ import absolute_import
-
 from email.mime.image import MIMEImage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText

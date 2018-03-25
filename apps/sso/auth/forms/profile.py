@@ -131,7 +131,8 @@ class TOTPDeviceForm(forms.Form):
         token = cd.get("token")
         defaults = {
             'key': cd['key'],
-            'digits': self.digits
+            'digits': self.digits,
+            'tolerance': 5,
         }
 
         totp_device, created = TOTPDevice.objects.get_or_create(user=self.user, defaults=defaults)
