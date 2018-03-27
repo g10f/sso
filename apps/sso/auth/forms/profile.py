@@ -132,7 +132,7 @@ class TOTPDeviceForm(forms.Form):
         defaults = {
             'key': cd['key'],
             'digits': self.digits,
-            'tolerance': 5,
+            'tolerance': 2,
         }
 
         totp_device, created = TOTPDevice.objects.get_or_create(user=self.user, defaults=defaults)
