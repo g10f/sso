@@ -1,8 +1,8 @@
+import logging
+
 from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 from .models import EmailAlias, EmailForward
-
-import logging
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +14,7 @@ class EmailAlias_Inline(admin.TabularInline):
     fieldsets = [
         (None,
          {'fields':
-          ['alias', ],
+              ['alias', ],
           'classes': ['wide'], }),
     ]
 
@@ -26,7 +26,7 @@ class EmailForward_Inline(admin.TabularInline):
     fieldsets = [
         (None,
          {'fields':
-          ['forward', 'primary'],
+              ['forward', 'primary'],
           'classes': ['wide'], }),
     ]
 
@@ -34,6 +34,7 @@ class EmailForward_Inline(admin.TabularInline):
 class EmailTypeFilter(admin.SimpleListFilter):
     title = _('Email type')
     parameter_name = 'type'
+
     # TODO: check keys!
     def lookups(self, request, model_admin):
         return (
@@ -64,7 +65,8 @@ class EmailTypeFilter(admin.SimpleListFilter):
         if self.value() == 'group':
             return queryset.filter(groupemail__isnull=False)
         if self.value() == 'none':
-            return queryset.filter(countrygroup__isnull=True, organisationcountry__isnull=True, organisation__isnull=True, 
+            return queryset.filter(countrygroup__isnull=True, organisationcountry__isnull=True,
+                                   organisation__isnull=True,
                                    adminregion__isnull=True, groupemail__isnull=True)
 
 
@@ -96,6 +98,6 @@ class GroupEmailAdmin(admin.ModelAdmin):
 
 
 class GroupEmailManagerAdmin(admin.ModelAdmin):
-    list_select_related = ('group_email', )
+    list_select_related = ('group_email',)
     list_display = ('group_email', 'manager')
     raw_id_fields = ('manager',)

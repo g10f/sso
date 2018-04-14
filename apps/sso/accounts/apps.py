@@ -9,4 +9,5 @@ class AccountsConfig(AppConfig):
     def ready(self):
         # connect the receivers
         # https://docs.djangoproject.com/en/1.8/topics/signals/
+        # noinspection PyUnresolvedReferences
         from . import signals

@@ -25,7 +25,7 @@ class EmailConfirmationTokenGenerator(object):
         """
         # Parse the token
         try:
-            ts_b36, hash = token.split("-")
+            ts_b36, h = token.split("-")
         except ValueError:
             return False
 
@@ -58,8 +58,8 @@ class EmailConfirmationTokenGenerator(object):
 
         value = (six.text_type(user_email.user.pk) + user_email.email + six.text_type(user_email.confirmed) +
                  six.text_type(timestamp))
-        hash = salted_hmac(key_salt, value).hexdigest()[::2]
-        return "%s-%s" % (ts_b36, hash)
+        hash_value = salted_hmac(key_salt, value).hexdigest()[::2]
+        return "%s-%s" % (ts_b36, hash_value)
 
     @staticmethod
     def _num_minutes(dt):
