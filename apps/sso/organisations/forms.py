@@ -96,7 +96,7 @@ class OrganisationBaseForm(BaseForm):
         fields = (
             'name_native', 'homepage', 'source_urls', 'google_plus_page', 'facebook_page', 'twitter_page', 'founded',
             'coordinates_type',
-            'is_private', 'is_live', 'location', 'neighbour_distance', 'timezone')
+            'is_private', 'is_live', 'location', 'neighbour_distance', 'transregional_distance', 'timezone')
         years_to_display = range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1)
         widgets = {
             'homepage': bootstrap.URLInput(attrs={'size': 50}),
@@ -117,6 +117,7 @@ class OrganisationBaseForm(BaseForm):
             # 'can_publish': bootstrap.CheckboxInput(),
             'location': bootstrap.OSMWidget(attrs={'display_raw': False}),
             'neighbour_distance': bootstrap.TextInput(attrs={'type': 'number', 'step': '0.001'}),
+            'transregional_distance': bootstrap.TextInput(attrs={'type': 'number', 'step': '0.001'}),
         }
         field_classes = {
             'location': PointField,

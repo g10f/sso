@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-02-25 21:59+0100\n"
+"POT-Creation-Date: 2018-04-24 21:15+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -187,12 +187,6 @@ msgstr ""
 msgid "The two password fields didn't match."
 msgstr ""
 
-msgid "Username"
-msgstr ""
-
-msgid "Required. 40 characters or fewer. Letters, digits and @/./+/-/_ only."
-msgstr ""
-
 msgid "first name"
 msgstr ""
 
@@ -219,6 +213,9 @@ msgid "The email address \"%(email)s\" is already in use."
 msgstr ""
 
 msgid "This field is required."
+msgstr ""
+
+msgid "Username"
 msgstr ""
 
 msgid "Valid until"
@@ -373,6 +370,9 @@ msgid "female"
 msgstr ""
 
 msgid "username"
+msgstr ""
+
+msgid "Required. 70 characters or fewer. Letters, digits and @/./+/-/_ only."
 msgstr ""
 
 msgid "staff status"
@@ -1916,6 +1916,12 @@ msgstr ""
 msgid "Distance used for neighbour calculations [km]."
 msgstr ""
 
+msgid "transregional distance"
+msgstr ""
+
+msgid "Distance used for calculations of transregional events [km]."
+msgstr ""
+
 msgid "live"
 msgstr ""
 
@@ -2023,6 +2029,9 @@ msgid "Live"
 msgstr ""
 
 msgid "Designates whether this organisation is live or prelive."
+msgstr ""
+
+msgid "Transregional distance"
 msgstr ""
 
 msgid "Addressee"

@@ -147,7 +147,7 @@ class OrganisationAdmin(OSMGeoAdmin):
               ['uuid', 'centerid', 'name', 'name_native', 'slug', 'center_type', 'association', 'organisation_country',
                'admin_region', 'founded', ('coordinates_type', 'google_maps_link'),
                'location', 'email', 'homepage', 'source_urls', 'is_active', 'is_private', 'is_live',
-               'uses_user_activation',
+               'uses_user_activation', 'neighbour_distance', 'transregional_distance',
                'last_modified'],
           'classes': ['wide']}),
         (_('notes'),
