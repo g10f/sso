@@ -302,6 +302,9 @@ class Organisation(AbstractBaseModel):
     neighbour_distance = models.DecimalField(_("neighbour distance"),
                                              help_text=_('Distance used for neighbour calculations [km].'),
                                              max_digits=8, decimal_places=3, blank=True, null=True)
+    transregional_distance = models.DecimalField(_("transregional distance"),
+                                                 help_text=_('Distance used for calculations of transregional events [km].'),
+                                                 max_digits=8, decimal_places=3, blank=True, null=True)
     is_live = models.BooleanField(_('live'),
                                   default=True,
                                   help_text=_('Designates whether this organisation is live. '
@@ -336,6 +339,13 @@ class Organisation(AbstractBaseModel):
     def neighbour_measure_distance(self):
         if self.neighbour_distance:
             return measure.Distance(**{'km': self.neighbour_distance})
+        else:
+            return None
+
+    @property
+    def transregional_measure_distance(self):
+        if self.transregional_distance:
+            return measure.Distance(**{'km': self.transregional_distance})
         else:
             return None
 

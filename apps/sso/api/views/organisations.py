@@ -56,6 +56,8 @@ class OrganisationMixin(object):
             data['email'] = '%s' % obj.email
         if obj.neighbour_distance:
             data['neighbour_distance'] = "%.1f km" % obj.neighbour_distance
+        if obj.transregional_distance:
+            data['transregional_distance'] = "%.1f km" % obj.transregional_distance
         if obj.centerid:  # legacy id, should be removed when the resync ist done
             data['centerid'] = obj.centerid
         if obj.timezone:

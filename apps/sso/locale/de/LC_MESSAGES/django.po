@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-02-25 21:59+0100\n"
+"POT-Creation-Date: 2018-04-24 21:15+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -191,13 +191,6 @@ msgstr "Nachname"
 msgid "The two password fields didn't match."
 msgstr ""
 
-msgid "Username"
-msgstr ""
-
-msgid "Required. 40 characters or fewer. Letters, digits and @/./+/-/_ only."
-msgstr ""
-"Erforderlich. 40 Zeichen oder weniger. Nur Buchstaben, Ziffern und @/./+/-/_."
-
 msgid "first name"
 msgstr ""
 
@@ -224,6 +217,9 @@ msgid "The email address \"%(email)s\" is already in use."
 msgstr "Die E-Mail Adresse \"%(email)s\" wird schon benutzt."
 
 msgid "This field is required."
+msgstr ""
+
+msgid "Username"
 msgstr ""
 
 msgid "Valid until"
@@ -392,6 +388,10 @@ msgstr "Weiblich"
 
 msgid "username"
 msgstr "Benutzername"
+
+msgid "Required. 70 characters or fewer. Letters, digits and @/./+/-/_ only."
+msgstr ""
+"Erforderlich. 70 Zeichen oder weniger. Nur Buchstaben, Ziffern und @/./+/-/_."
 
 msgid "staff status"
 msgstr ""
@@ -2023,6 +2023,12 @@ msgstr "Entfernung Nachbarn"
 msgid "Distance used for neighbour calculations [km]."
 msgstr "Entfernung zur Berechnung der nächsten Nachbarn [km]"
 
+msgid "transregional distance"
+msgstr "Überregionale Entfernung"
+
+msgid "Distance used for calculations of transregional events [km]."
+msgstr "Entfernung zur Berechnung von überregionalen Veranstaltungen [km]."
+
 msgid "live"
 msgstr ""
 
@@ -2135,6 +2141,9 @@ msgstr ""
 
 msgid "Designates whether this organisation is live or prelive."
 msgstr "Gibt an, ob diese organisation Live oder Prelive ist."
+
+msgid "Transregional distance"
+msgstr "Überregionale Entfernung"
 
 msgid "Addressee"
 msgstr "Name / Addressat"
