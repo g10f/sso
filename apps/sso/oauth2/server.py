@@ -1,11 +1,12 @@
 import base64
 import calendar
+import json
 import logging
-import time
 from urllib.parse import urlsplit
 
+import time
 from oauthlib import oauth2
-from oauthlib.oauth2.rfc6749 import grant_types
+from oauthlib.oauth2.rfc6749 import grant_types, errors
 from oauthlib.oauth2.rfc6749.tokens import random_token_generator
 
 from django.contrib.auth import authenticate, get_user_model
@@ -14,6 +15,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.utils.encoding import force_text, force_bytes
+from sso.api.response import add_cors_header
 from sso.auth import get_session_auth_hash
 from .crypt import loads_jwt, make_jwt, MAX_AGE
 from .models import BearerToken, RefreshToken, AuthorizationCode, Client, check_redirect_uri, CONFIDENTIAL_CLIENTS
@@ -339,6 +341,51 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
         return True
 
 
+class AuthorizationCodeGrant(oauth2.AuthorizationCodeGrant):
+    def create_token_response(self, request, token_handler):
+        """Validate the authorization code.
+
+        The client MUST NOT use the authorization code more than once. If an
+        authorization code is used more than once, the authorization server
+        MUST deny the request and SHOULD revoke (when possible) all tokens
+        previously issued based on that authorization code. The authorization
+        code is bound to the client identifier and redirection URI.
+        """
+        headers = {
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-store',
+            'Pragma': 'no-cache',
+        }
+
+        try:
+            self.validate_token_request(request)
+            logger.debug('Token request validation ok for %r.', request)
+        except errors.OAuth2Error as e:
+            logger.debug('Client error during validation of %r. %r.', request, e)
+            return headers, e.json, e.status_code
+
+        token = token_handler.create_token(request, refresh_token=self.refresh_token, save_token=False)
+        for modifier in self._token_modifiers:
+            token = modifier(token, token_handler, request)
+        self.request_validator.save_token(token, request)
+        self.request_validator.invalidate_authorization_code(
+            request.client_id, request.code, request)
+
+        # custom extension of original oauthlib
+        if request.client and request.client.type not in CONFIDENTIAL_CLIENTS and 'HTTP_ORIGIN' in request.headers:
+            origin = request.headers['HTTP_ORIGIN']
+            add_cors_header(origin, request.client, headers)
+        return headers, json.dumps(token), 200
+
+
+class OpenIDConnectAuthCode(grant_types.OpenIDConnectBase):
+
+    def __init__(self, request_validator=None, **kwargs):
+        self.proxy_target = AuthorizationCodeGrant(request_validator=request_validator, **kwargs)  # custom
+        self.custom_validators.post_auth.append(self.openid_authorization_validator)
+        self.register_token_modifier(self.add_id_token)
+
+
 class Server(oauth2.AuthorizationEndpoint, oauth2.TokenEndpoint, oauth2.ResourceEndpoint, oauth2.RevocationEndpoint):
     """An all-in-one endpoint featuring all four major grant types."""
 
@@ -358,12 +405,12 @@ class Server(oauth2.AuthorizationEndpoint, oauth2.TokenEndpoint, oauth2.Resource
         :param kwargs: Extra parameters to pass to authorization-,
                        token-, resource-, and revocation-endpoint constructors.
         """
-        auth_grant = oauth2.AuthorizationCodeGrant(request_validator)
+        auth_grant = AuthorizationCodeGrant(request_validator)  # custom class
         implicit_grant = oauth2.ImplicitGrant(request_validator)
         password_grant = oauth2.ResourceOwnerPasswordCredentialsGrant(request_validator)
         credentials_grant = oauth2.ClientCredentialsGrant(request_validator)
         refresh_grant = oauth2.RefreshTokenGrant(request_validator)
-        openid_connect_auth = grant_types.OpenIDConnectAuthCode(request_validator)
+        openid_connect_auth = OpenIDConnectAuthCode(request_validator)
         openid_connect_implicit = grant_types.OpenIDConnectImplicit(request_validator)
 
         bearer = oauth2.BearerToken(request_validator, token_generator, token_expires_in, refresh_token_generator)

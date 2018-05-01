@@ -25,7 +25,7 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.vary import vary_on_headers
 from django.views.generic import TemplateView
-from sso.api.response import JsonHttpResponse, same_origin, add_cors_header
+from sso.api.response import JsonHttpResponse
 from sso.api.views.generic import PreflightMixin
 from sso.auth.utils import is_recent_auth_time
 from sso.auth.views import TWO_FACTOR_PARAM
@@ -315,8 +315,6 @@ def token(request):
     credentials = {}
     headers, body, status = server.create_token_response(uri, http_method, body, headers, credentials)
     response = HttpResponse(content=body, status=status)
-    # Add CORS Header if the client is javascript inside a browser
-    add_cors_header(request, response)
 
     for k, v in headers.items():
         response[k] = v
