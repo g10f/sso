@@ -28,13 +28,12 @@ def same_origin(url1, url2):
         return False
 
 
-def add_cors_header(request, response, public_cors=False):
-    origin = request.META.get('HTTP_ORIGIN')
+def add_cors_header(origin, client, response, public_cors=False):
     if origin:
         if public_cors:
             response['Access-Control-Allow-Origin'] = '*'
-        elif request.client:
-            for redirect_uri in request.client.redirect_uris.split():
+        elif client:
+            for redirect_uri in client.redirect_uris.split():
                 if same_origin(redirect_uri, origin):
                     response['Access-Control-Allow-Origin'] = origin
                     break
@@ -59,7 +58,8 @@ class JsonHttpResponse(HttpResponse):
                                                *args, **kwargs)
 
         if request:
-            add_cors_header(request, self, public_cors)
+            origin = request.META.get('HTTP_ORIGIN')
+            add_cors_header(origin, request.client, self, public_cors)
 
 
 class HttpApiErrorResponse(JsonHttpResponse):
