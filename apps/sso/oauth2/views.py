@@ -25,7 +25,7 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.vary import vary_on_headers
 from django.views.generic import TemplateView
-from sso.api.response import JsonHttpResponse
+from sso.api.response import JsonHttpResponse, same_origin, add_cors_header
 from sso.api.views.generic import PreflightMixin
 from sso.auth.utils import is_recent_auth_time
 from sso.auth.views import TWO_FACTOR_PARAM
@@ -309,15 +309,32 @@ def authorize(request):
         return HttpOAuth2ResponseRedirect(e.in_uri(redirect_uri))
 
 
-@csrf_exempt
+# @csrf_exempt
 def token(request):
     uri, http_method, body, headers = extract_params(request)
     credentials = {}
     headers, body, status = server.create_token_response(uri, http_method, body, headers, credentials)
     response = HttpResponse(content=body, status=status)
+    # Add CORS Header if the client is javascript inside a browser
+    add_cors_header(request, response)
+
     for k, v in headers.items():
         response[k] = v
     return response
+
+
+class TokenView(PreflightMixin, View):
+    http_method_names = ['get', 'post', 'options']
+
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super(TokenView, self).dispatch(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        return token(request)
+
+    def post(self, request, *args, **kwargs):
+        return token(request)
 
 
 @csrf_exempt
