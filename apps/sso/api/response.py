@@ -28,6 +28,18 @@ def same_origin(url1, url2):
         return False
 
 
+def add_cors_header(request, response, public_cors=False):
+    origin = request.META.get('HTTP_ORIGIN')
+    if origin:
+        if public_cors:
+            response['Access-Control-Allow-Origin'] = '*'
+        elif request.client:
+            for redirect_uri in request.client.redirect_uris.split():
+                if same_origin(redirect_uri, origin):
+                    response['Access-Control-Allow-Origin'] = origin
+                    break
+
+
 class JsonHttpResponse(HttpResponse):
     def __init__(self, data=None, request=None, status=None, allow_jsonp=False, public_cors=False, *args, **kwargs):
         # for security reasons, allow jsonp only for certain resources with more or less public data
@@ -47,15 +59,7 @@ class JsonHttpResponse(HttpResponse):
                                                *args, **kwargs)
 
         if request:
-            origin = request.META.get('HTTP_ORIGIN')
-            if origin:
-                if public_cors:
-                    self['Access-Control-Allow-Origin'] = '*'
-                elif request.client:
-                    for redirect_uri in request.client.redirect_uris.split():
-                        if same_origin(redirect_uri, origin):
-                            self['Access-Control-Allow-Origin'] = origin
-                            break
+            add_cors_header(request, self, public_cors)
 
 
 class HttpApiErrorResponse(JsonHttpResponse):

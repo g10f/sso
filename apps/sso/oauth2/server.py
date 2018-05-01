@@ -162,8 +162,7 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
         try:
             # 1. check the client_id
             client = self._get_client(request.client_id, request)
-            # 2. check client_secret except for native clients
-            # if client.type != "native" and client.client_secret != request.client_secret:
+            # 2. check client_secret
             if client.client_secret != request.client_secret:
                 raise ObjectDoesNotExist('client_secret does not match')
 
