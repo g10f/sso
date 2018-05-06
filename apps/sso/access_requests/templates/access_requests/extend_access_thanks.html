@@ -1,0 +1,21 @@
+{% extends "base_form.html" %}
+{% load i18n %}
+
+{% block title %}{% trans 'Request extended access' %}{% endblock %}
+
+{% block breadcrumb %}
+    <ol class="breadcrumb">
+        <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+        <li class="active">{% trans 'Feedback' %}</li>
+    </ol>
+{% endblock breadcrumb %}
+
+{% block form %}
+    <h3>{% blocktrans %}Request extended access to {{ site_name }}{% endblocktrans %}</h3>
+    <p>{% trans "Thank you for your message." %}</p>
+
+    {% if redirect_uri %}
+    <a class="btn btn-default" href="{{ redirect_uri }}">{% trans 'Back' %}</a>
+    {% endif %}
+
+{% endblock %}

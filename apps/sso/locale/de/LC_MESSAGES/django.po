@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-04-24 21:15+0200\n"
+"POT-Creation-Date: 2018-05-06 21:59+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,84 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
+msgid "Message"
+msgstr "Nachricht"
+
+msgid "Your picture"
+msgstr "Dein Bild"
+
+msgid ""
+"Please use a photo of your face. We are using it also to validate your "
+"registration."
+msgstr ""
+"Bitte verwende ein Bild, dass Dein Gesicht zeigt. Wir verwenden es auch um "
+"Deine Anmeldung zu prüfen."
+
+msgid "Dear administrator(s)"
+msgstr "Liebe Administratoren/Lieber Administrator"
+
+#, python-format
+msgid ""
+"%(name)s (%(email)s) requested extended access. Please check the request."
+msgstr ""
+"%(name)s (%(email)s) fragt nach erweiterter Zugriffsberechtigung. Bitte "
+"bearbeite die Anfrage."
+
+msgid "You can update the user data at:"
+msgstr "Du kannst die Anwenderdaten hier bearbeiten."
+
+#, python-format
+msgid "The %(site_name)s team"
+msgstr "Das %(site_name)s Team"
+
+#, python-format
+msgid "Message from %(name)s:"
+msgstr "Nachricht von %(name)s:"
+
+#, python-format
+msgid "%(name)s requested extended access"
+msgstr "%(name)s fragt nach erweiterter Zugriffsberechtigung"
+
+msgid "Request extended access"
+msgstr "Nach erweiterter Zugriffsberechtigung fragen"
+
+#, python-format
+msgid "Request extended access to %(site_name)s"
+msgstr "Nach erweiterter Zugriffsberechtigung auf %(site_name)s fragen"
+
+msgid "Please correct the error below."
+msgstr "Bitte korrigiere den Fehler unten."
+
+msgid "Please correct the errors below."
+msgstr "Bitte korrigiere die Fehler unten."
+
+#, python-format
+msgid "Dear %(first_name)s."
+msgstr "Lieber/Liebe %(first_name)s."
+
+#, python-format
+msgid ""
+"You tried to access a %(site_name)s application, with restricted access. If "
+"you can not access by mistake, you can apply for access to the "
+"administrators below."
+msgstr ""
+"Du hast versucht auf eine %(site_name)s Anwendung zuzugreifen, für die eine "
+"erweiterte Zugriffsberechtigung notwendig ist. Falls Du den Zugriff auf die "
+"Anwendung benötigts, kannst Du eine Nachricht an die unten aufgeführten "
+"Administratoren senden."
+
+msgid "Cancel"
+msgstr "Abbrechen"
+
+msgid "Home"
+msgstr ""
+
+msgid "Feedback"
+msgstr ""
+
+msgid "Thank you for your message."
+msgstr "Vielen Dank für Deine Nachricht."
 
 msgid "user"
 msgstr "Anwender"
@@ -120,9 +198,6 @@ msgstr "E-Mail Adresse"
 
 msgid "Subject"
 msgstr ""
-
-msgid "Message"
-msgstr "Nachricht"
 
 msgid "New password"
 msgstr ""
@@ -576,9 +651,6 @@ msgstr "Organisationswechsel"
 msgid "Add User"
 msgstr "Benutzer hinzufügen"
 
-msgid "Home"
-msgstr ""
-
 msgid "User List"
 msgstr "Benutzer Liste"
 
@@ -611,12 +683,6 @@ msgid ""
 msgstr ""
 "Nachdem das Konto erstellt wurde, erhält der neue Benutzer eine E-Mail mit "
 "Anweisungen zum Festlegen seines Passworts."
-
-msgid "Please correct the error below."
-msgstr "Bitte korrigiere den Fehler unten."
-
-msgid "Please correct the errors below."
-msgstr "Bitte korrigiere die Fehler unten."
 
 msgid "User data"
 msgstr "Benutzer Daten"
@@ -666,14 +732,8 @@ msgstr "Registrierung"
 msgid "Contact Information"
 msgstr "Kontakt Information"
 
-msgid "Feedback"
-msgstr ""
-
 msgid "Send"
 msgstr "Senden"
-
-msgid "Thank you for your message."
-msgstr "Vielen Dank für Deine Nachricht."
 
 msgid "Profile"
 msgstr "Profil"
@@ -692,9 +752,6 @@ msgstr ""
 
 msgid "or"
 msgstr "oder"
-
-msgid "Cancel"
-msgstr "Abbrechen"
 
 #, python-format
 msgid "Hi %(first_name)s."
@@ -720,10 +777,6 @@ msgid "This page will expire on %(date)s."
 msgstr "Diese Seite ist bis zum %(date)s gültig."
 
 #, python-format
-msgid "The %(site_name)s team"
-msgstr "Das %(site_name)s Team"
-
-#, python-format
 msgid "A user account at %(site_name)s was created for you"
 msgstr "Ein Benutzerkonto auf %(site_name)s wurde für Dich angelegt"
 
@@ -745,10 +798,6 @@ msgstr ""
 
 msgid "Action"
 msgstr ""
-
-#, python-format
-msgid "Dear %(first_name)s."
-msgstr "Lieber/Liebe %(first_name)s."
 
 #, python-format
 msgid ""
@@ -2337,23 +2386,10 @@ msgstr "Zugriff verweigert"
 msgid "Designates if access is denied to the user."
 msgstr "Gibt an, ob dem Benutzer der Zugang verweigert wurde."
 
-msgid "Your picture"
-msgstr "Dein Bild"
-
-msgid ""
-"Please use a photo of your face. We are using it also to validate your "
-"registration."
-msgstr ""
-"Bitte verwende ein Bild, dass Dein Gesicht zeigt. Wir verwenden es auch um "
-"Deine Anmeldung zu prüfen."
-
 msgid ""
 "If you would like to tell us something about yourself, please do so in this "
 "box."
 msgstr "Wenn Du möchtest, erzähle uns etwas über Dich."
-
-msgid "User registration"
-msgstr "Benutzer Registrierung"
 
 msgid "verified by"
 msgstr "überprüft durch"

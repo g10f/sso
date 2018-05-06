@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-04-24 21:15+0200\n"
+"POT-Creation-Date: 2018-05-06 21:59+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,76 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
+msgid "Message"
+msgstr ""
+
+msgid "Your picture"
+msgstr ""
+
+msgid ""
+"Please use a photo of your face. We are using it also to validate your "
+"registration."
+msgstr ""
+
+msgid "Dear administrator(s)"
+msgstr ""
+
+#, python-format
+msgid ""
+"%(name)s (%(email)s) requested extended access. Please check the request."
+msgstr ""
+
+msgid "You can update the user data at:"
+msgstr ""
+
+#, python-format
+msgid "The %(site_name)s team"
+msgstr ""
+
+#, python-format
+msgid "Message from %(name)s:"
+msgstr ""
+
+#, python-format
+msgid "%(name)s requested extended access"
+msgstr ""
+
+msgid "Request extended access"
+msgstr ""
+
+#, python-format
+msgid "Request extended access to %(site_name)s"
+msgstr ""
+
+msgid "Please correct the error below."
+msgstr ""
+
+msgid "Please correct the errors below."
+msgstr ""
+
+#, python-format
+msgid "Dear %(first_name)s."
+msgstr ""
+
+#, python-format
+msgid ""
+"You tried to access a %(site_name)s application, with restricted access. If "
+"you can not access by mistake, you can apply for access to the "
+"administrators below."
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Home"
+msgstr ""
+
+msgid "Feedback"
+msgstr ""
+
+msgid "Thank you for your message."
+msgstr ""
 
 msgid "user"
 msgstr ""
@@ -120,9 +190,6 @@ msgid "Email address"
 msgstr ""
 
 msgid "Subject"
-msgstr ""
-
-msgid "Message"
 msgstr ""
 
 msgid "New password"
@@ -549,9 +616,6 @@ msgstr ""
 msgid "Add User"
 msgstr ""
 
-msgid "Home"
-msgstr ""
-
 msgid "User List"
 msgstr ""
 
@@ -579,12 +643,6 @@ msgstr ""
 msgid ""
 "After the account was created, the new user will receive an email with "
 "instructions for setting a password."
-msgstr ""
-
-msgid "Please correct the error below."
-msgstr ""
-
-msgid "Please correct the errors below."
 msgstr ""
 
 msgid "User data"
@@ -635,13 +693,7 @@ msgstr ""
 msgid "Contact Information"
 msgstr ""
 
-msgid "Feedback"
-msgstr ""
-
 msgid "Send"
-msgstr ""
-
-msgid "Thank you for your message."
 msgstr ""
 
 msgid "Profile"
@@ -660,9 +712,6 @@ msgid "Delete"
 msgstr ""
 
 msgid "or"
-msgstr ""
-
-msgid "Cancel"
 msgstr ""
 
 #, python-format
@@ -687,10 +736,6 @@ msgid "This page will expire on %(date)s."
 msgstr ""
 
 #, python-format
-msgid "The %(site_name)s team"
-msgstr ""
-
-#, python-format
 msgid "A user account at %(site_name)s was created for you"
 msgstr ""
 
@@ -711,10 +756,6 @@ msgid "Object repr"
 msgstr ""
 
 msgid "Action"
-msgstr ""
-
-#, python-format
-msgid "Dear %(first_name)s."
 msgstr ""
 
 #, python-format
@@ -2224,20 +2265,9 @@ msgstr ""
 msgid "Designates if access is denied to the user."
 msgstr ""
 
-msgid "Your picture"
-msgstr ""
-
-msgid ""
-"Please use a photo of your face. We are using it also to validate your "
-"registration."
-msgstr ""
-
 msgid ""
 "If you would like to tell us something about yourself, please do so in this "
 "box."
-msgstr ""
-
-msgid "User registration"
 msgstr ""
 
 msgid "verified by"

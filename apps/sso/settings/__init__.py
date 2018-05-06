@@ -219,6 +219,7 @@ INSTALLED_APPS = [
     'sso.auth',
     'sso.oauth2',
     'sso.api',
+    'sso.access_requests',
 ]
 
 L10N_SETTINGS = {

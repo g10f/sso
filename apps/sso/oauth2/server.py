@@ -410,7 +410,7 @@ class Server(oauth2.AuthorizationEndpoint, oauth2.TokenEndpoint, oauth2.Resource
         password_grant = oauth2.ResourceOwnerPasswordCredentialsGrant(request_validator)
         credentials_grant = oauth2.ClientCredentialsGrant(request_validator)
         refresh_grant = oauth2.RefreshTokenGrant(request_validator)
-        openid_connect_auth = OpenIDConnectAuthCode(request_validator)
+        openid_connect_auth = OpenIDConnectAuthCode(request_validator)  # custom class
         openid_connect_implicit = grant_types.OpenIDConnectImplicit(request_validator)
 
         bearer = oauth2.BearerToken(request_validator, token_generator, token_expires_in, refresh_token_generator)

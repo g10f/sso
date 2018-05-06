@@ -1,12 +1,9 @@
 """
 Forms and validation code for user registration.
 """
-import datetime
 import logging
-import re
-from base64 import b64decode
-from mimetypes import guess_extension
 
+import datetime
 import pytz
 from formtools.preview import FormPreview
 
@@ -14,18 +11,17 @@ from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.files.base import ContentFile
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.shortcuts import redirect
 from django.utils.crypto import get_random_string
-from django.utils.encoding import force_text
 from django.utils.text import capfirst
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from l10n.models import Country
 from sso.accounts.models import UserAddress, User
 from sso.forms import bootstrap, mixins, BLANK_CHOICE_DASH
+from sso.forms.helpers import clean_base64_picture
 from sso.organisations.models import is_validation_period_active
 from . import default_username_generator
 from .models import RegistrationProfile, send_validation_email
@@ -244,36 +240,8 @@ class UserSelfRegistrationForm(forms.Form):
         raise forms.ValidationError(self.error_messages['duplicate_email'])
 
     def clean_base64_picture(self):
-        from django.template.defaultfilters import filesizeformat
-        max_upload_size = User.MAX_PICTURE_SIZE  # 5 MB
-
         base64_picture = self.cleaned_data["base64_picture"]
-        try:
-            content_type, image_content = base64_picture.split(',', 1)
-            content_type = re.findall('data:(\w+/\w+);base64', content_type)[0]
-
-            if base64_picture and content_type:
-                base_content_type = content_type.split('/')[0]
-                if base_content_type in ['image']:
-                    # mimetypes.guess_extension return jpe which is quite uncommon for jpeg
-                    if content_type == 'image/jpeg':
-                        file_ext = '.jpg'
-                    else:
-                        file_ext = guess_extension(content_type)
-                    name = "%s%s" % (
-                        get_random_string(7, allowed_chars='abcdefghijklmnopqrstuvwxyz0123456789'), file_ext)
-                    picture = ContentFile(b64decode(image_content), name=name)
-                    if picture._size > max_upload_size:
-                        raise forms.ValidationError(
-                            _('Please keep filesize under %(filesize)s. Current filesize %(current_filesize)s') %
-                            {'filesize': filesizeformat(max_upload_size),
-                             'current_filesize': filesizeformat(picture._size)})
-
-                else:
-                    raise forms.ValidationError(_('File type is not supported'))
-            return picture
-        except Exception as e:
-            raise forms.ValidationError(force_text(e))
+        return clean_base64_picture(base64_picture, User.MAX_PICTURE_SIZE)
 
     def clean(self):
         """
@@ -332,8 +300,7 @@ class UserSelfRegistrationFormPreview(FormPreview):
     def get_context(self, request, form):
         """Context for template rendering."""
         context = super(UserSelfRegistrationFormPreview, self).get_context(request, form)
-        context.update({'site_name': settings.SSO_SITE_NAME, 'title': _('User registration'),
-                        'max_file_size': User.MAX_PICTURE_SIZE})
+        context.update({'site_name': settings.SSO_SITE_NAME, 'max_file_size': User.MAX_PICTURE_SIZE})
         return context
 
     @transaction.atomic

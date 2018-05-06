@@ -1,0 +1,17 @@
+{% load i18n static thumbnail %}
+<div class="media">
+    <div class="media-left">
+        {% if admin.picture %}
+            {% thumbnail admin.picture "60x60" crop="center" as im %}
+                <img class="media-object img-thumbnail" src="{{ im.url }}"
+                     alt="{{ user.username }}">{% endthumbnail %}
+        {% else %}
+            <img class="media-object img-thumbnail" style="width: 70px; height: 70px;">
+        {% endif %}
+    </div>
+    <div class="media-body">
+        <h5 class="media-heading">{{ admin.get_full_name }}</h5>
+        {% for organisation in admin.organisations.all %}{{ organisation }}<br>{% endfor %}
+        <a href="mailto:{{ admin.primary_email }}">{{ admin.primary_email }}</a>
+    </div>
+</div>
