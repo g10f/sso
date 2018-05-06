@@ -21,6 +21,7 @@ urlpatterns = [
     url(r'^accounts/', include('sso.auth.urls')),
     url(r'^accounts/', include('sso.accounts.urls')),
     url(r'^accounts/', registration_site.urls),
+    url(r'^accounts/', include('sso.access_requests.urls')),
     url(r'^organisations/', include('sso.organisations.urls')),
     url(r'^emails/', include('sso.emails.urls')),
     url(r'^oauth2/', include('sso.oauth2.urls')),

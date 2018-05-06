@@ -11,7 +11,6 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import PasswordResetForm as DjangoPasswordResetForm
 from django.contrib.auth.forms import SetPasswordForm as DjangoSetPasswordForm
-from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.contrib.sites.shortcuts import get_current_site

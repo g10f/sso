@@ -1,0 +1,11 @@
+{% load i18n %}{% autoescape off %}{% blocktrans %}Dear administrator(s){% endblocktrans %}
+{% blocktrans with name=user.get_full_name email=user.primary_email %}{{ name }} ({{ email }}) requested extended access. Please check the request.{% endblocktrans %}
+{% trans 'You can update the user data at:' %}
+{{ protocol }}://{{ domain }}{{ update_user_url }}
+
+{% blocktrans %}The {{ site_name }} team{% endblocktrans %}
+
+{% blocktrans with name=user.get_full_name %}Message from {{ name }}:{% endblocktrans %}
+
+{{ message }}
+{% endautoescape %}

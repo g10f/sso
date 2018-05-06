@@ -426,7 +426,7 @@ class UserDetailView(UserMixin, JsonDetailView):
                 for application_role in application_roles:
                     if application_role.id in administrable_application_role_ids:
                         initial_application_roles += [application_role]
-            self.object.application_roles = initial_application_roles
+            self.object.application_roles.set(initial_application_roles)
 
         self.object.role_profiles.set([User.get_default_role_profile()])
 

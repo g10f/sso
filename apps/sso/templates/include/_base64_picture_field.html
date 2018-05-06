@@ -1,5 +1,5 @@
 {% load i18n %}
-
+{% if field %}
 <div id="base64-image" class="form-group form-group-file {% if field.errors %}has-error{% endif %}"
      data-max-size="250px" data-max-file-size="{{ max_file_size }}">
     <label class="control-label" for="id_{{ field.html_name }}">{{ field.label }}{% if field.field.required %}*{% endif %}</label>
@@ -16,4 +16,4 @@
             <span class="help-block-file help-block">{% if field.help_text or field.errors %}{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}{% endif %}</span>
     </div>
 </div>
-
+{% endif %}

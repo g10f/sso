@@ -292,8 +292,8 @@ class UserDetailView(View):
 
             user.create_primary_email(email)
 
-            user.application_roles = application_roles
-            user.organisations = organisations
+            user.application_roles.set(application_roles)
+            user.organisations.set(organisations)
             user.add_default_roles()
 
             send_account_created_email(user, request)

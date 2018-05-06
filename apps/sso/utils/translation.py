@@ -10,6 +10,8 @@ def _string_format(string, dictionary):
     constructed from multiple parts.
     """
     return string % dictionary
+
+
 string_format = lazy(_string_format, six.text_type)
 
 
@@ -30,4 +32,3 @@ def i18n_email_msg_and_subj(context, email_template_name, subject_template_name,
             activate(cur_language)
     else:
         return msg_and_subject()
-

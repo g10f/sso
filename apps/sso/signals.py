@@ -1,5 +1,8 @@
 import django.dispatch
 
+# you can modify the admins
+user_admins = django.dispatch.Signal(providing_args=["organisations", "admins"])
+
 # you can modify the app_roles and role_profiles
 default_roles = django.dispatch.Signal(providing_args=["user", "app_roles", "role_profiles"])
 
