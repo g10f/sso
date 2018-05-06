@@ -42,8 +42,6 @@
                 <button type="submit" class="btn btn-primary">{% trans 'Request extended access' %}</button>
                 {% if redirect_uri %}
                     <a class="btn btn-default" href="{{ redirect_uri }}">{% trans 'Back' %}</a>
-                {% else %}
-                    <button type="submit" class="btn btn-default">{% trans 'Cancel' %}</button>
                 {% endif %}
             </div>
         </div>
