@@ -1,5 +1,7 @@
 import logging
 
+from django.utils.encoding import force_text
+
 from django import forms
 from django.conf import settings
 from django.urls import reverse
@@ -19,7 +21,7 @@ def send_user_request_extended_access(admins,
                                       email_template_name='access_requests/email/access_request_email.txt',
                                       subject_template_name='access_requests/email/access_request_email_subject.txt',
                                       apply_async=False):
-    recipients = [admin.primary_email() for admin in admins]
+    recipients = [force_text(admin.primary_email()) for admin in admins]
     if len(recipients) > 0:
         domain = settings.SSO_DOMAIN
         use_https = settings.SSO_USE_HTTPS
