@@ -15,7 +15,6 @@
     <p>{% trans "Thank you for your message." %}</p>
 
     {% if redirect_uri %}
-    <a class="btn btn-default" href="{{ redirect_uri }}">{% trans 'Back' %}</a>
+        <a class="btn btn-default" href="{{ redirect_uri }}">{% trans 'Back' %}</a>
     {% endif %}
-
 {% endblock %}
