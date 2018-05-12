@@ -80,7 +80,7 @@ msgid ""
 msgstr ""
 "Du hast versucht auf eine %(site_name)s Anwendung zuzugreifen, für die eine "
 "erweiterte Zugriffsberechtigung notwendig ist. Falls Du den Zugriff auf die "
-"Anwendung benötigts, kannst Du eine Nachricht an die unten aufgeführten "
+"Anwendung benötigst, kannst Du eine Nachricht an die unten aufgeführten "
 "Administratoren senden."
 
 msgid "Cancel"
