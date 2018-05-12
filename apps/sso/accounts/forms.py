@@ -649,13 +649,15 @@ class UserSelfRegistrationForm2(UserSelfRegistrationForm):
         registration_profile = UserSelfRegistrationForm.save_data(data, username_generator)
         new_user = registration_profile.user
 
-        default_role_profile = User.get_default_role_profile()
-        if default_role_profile:
-            new_user.role_profiles.add(default_role_profile)
-
         organisation = data["organisation"]
         if organisation:
             new_user.organisations.add(data["organisation"])
+
+        role_id = None if organisation else settings.SSO_DEFAULT_GUEST_PROFILE_UUID
+        default_role_profile = User.get_default_role_profile(role_id)
+        if default_role_profile:
+            new_user.role_profiles.add(default_role_profile)
+
         return registration_profile
 
 

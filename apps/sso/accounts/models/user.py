@@ -244,11 +244,13 @@ class User(AbstractBaseUser, PermissionsMixin):
         return None
 
     @classmethod
-    def get_default_role_profile(cls):
-        if settings.SSO_DEFAULT_ROLE_PROFILE_UUID:
+    def get_default_role_profile(cls, role_uuid=None):
+        if role_uuid is None:
+            role_uuid = settings.SSO_DEFAULT_ROLE_PROFILE_UUID
+        if role_uuid:
             role_profile = RoleProfile.objects.none()
             try:
-                role_profile = RoleProfile.objects.get(uuid=settings.SSO_DEFAULT_ROLE_PROFILE_UUID)
+                role_profile = RoleProfile.objects.get(uuid=role_uuid)
             except ObjectDoesNotExist:
                 pass
             return role_profile
