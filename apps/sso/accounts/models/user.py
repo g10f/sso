@@ -246,7 +246,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     @classmethod
     def get_default_role_profile(cls, role_uuid=None):
         if role_uuid is None:
-            role_uuid = settings.SSO_DEFAULT_ROLE_PROFILE_UUID
+            role_uuid = settings.SSO_DEFAULT_MEMBER_PROFILE_UUID
         if role_uuid:
             role_profile = RoleProfile.objects.none()
             try:
