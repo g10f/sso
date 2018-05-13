@@ -141,8 +141,9 @@ class UserList(ListView):
             if h['sortable'] and h['sorted']:
                 num_sorted_fields += 1
 
-        user_countries = user.get_administrable_user_countries().filter(organisation__user__isnull=False)
-        countries = Country.objects.filter(organisationcountry__in=user_countries)
+        # .filter(organisation__user__isnull=False) causes performance degration
+        user_countries = user.get_administrable_user_countries()
+        countries = [user_country.country for user_country in user_countries]
         country_filter = CountryFilter().get(self, countries)
 
         centers = Organisation.objects.none()
