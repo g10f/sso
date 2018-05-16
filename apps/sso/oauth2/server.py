@@ -317,10 +317,7 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
             return False
 
     def revoke_token(self, token, token_type_hint, request, *args, **kwargs):
-        try:
-            RefreshToken.objects.filter(token=token).delete()
-        except ObjectDoesNotExist:
-            logger.info("Token not found")
+        RefreshToken.objects.filter(token=token).delete()
 
     def get_id_token(self, token, token_handler, request):
         # the request.scope should be used by the get_id_token() method to determine which claims to include in
