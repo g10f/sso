@@ -90,10 +90,7 @@ class RefreshTokenAdmin(admin.ModelAdmin):
 
     @mark_safe
     def bearer_token_link(self, obj):
-        if obj.bearer_token is not None:
-            url = reverse('admin:oauth2_bearertoken_change', args=(obj.bearer_token.pk,), current_app=self.admin_site.name)
-            return '<a href="%s">%s</a>' % (url, obj.bearer_token)
-        else:
-            return ''
+        url = reverse('admin:oauth2_bearertoken_change', args=(obj.bearer_token.pk,), current_app=self.admin_site.name)
+        return '<a href="%s">%s</a>' % (url, obj.bearer_token)
     bearer_token_link.short_description = _('bearer token')
     bearer_token_link.admin_order_field = 'bearer_token'
