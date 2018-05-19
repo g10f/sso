@@ -234,7 +234,7 @@ class OAuth2Tests(OAuth2BaseTestCase):
 
     def test_refresh_token(self):
         client_id = '5614cdb0aa3c48d59828681bd62e1741'
-        code = self.login_and_get_code(client_id=client_id)
+        code = self.login_and_get_code(client_id=client_id, scope='openid profile email offline_access')
         token_data = {
             'grant_type': "authorization_code",
             'redirect_uri': "http://localhost",
@@ -256,7 +256,7 @@ class OAuth2Tests(OAuth2BaseTestCase):
         self.assertIn('scope', token)
         self.assertIn('token_type', token)
 
-        self.assertTrue({'scope': 'openid profile email', 'token_type': 'Bearer'}, token)
+        self.assertTrue({'scope': 'openid profile email offline_access', 'token_type': 'Bearer'}, token)
 
         id_token = crypt.loads_jwt(token['id_token'])
         self.assertIn('iss', id_token)

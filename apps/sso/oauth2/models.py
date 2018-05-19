@@ -186,8 +186,8 @@ class RefreshToken(models.Model):
     """
     A RefreshToken instance represents a token that can be swapped for a new access token when it expires.
     """
-    bearer_token = models.OneToOneField(BearerToken, on_delete=models.CASCADE, verbose_name=_('bearer token'),
-                                        related_name='refresh_token')
+    bearer_token = models.OneToOneField(BearerToken, on_delete=models.SET_NULL, verbose_name=_('bearer token'),
+                                        related_name='refresh_token', null=True)
     token = models.CharField(_('token'), max_length=2048, unique=True)
     # otp_device = models.ForeignKey(Device, null=True, on_delete=models.SET_NULL)
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)

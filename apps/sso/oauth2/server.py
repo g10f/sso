@@ -364,7 +364,10 @@ class AuthorizationCodeGrant(oauth2.AuthorizationCodeGrant):
             logger.debug('Client error during validation of %r. %r.', request, e)
             return headers, e.json, e.status_code
 
-        token = token_handler.create_token(request, refresh_token=self.refresh_token, save_token=False)
+        # we only deliver refresh_tokens with scope 'offline_access'
+        refresh_token = 'offline_access' in request.scopes
+
+        token = token_handler.create_token(request, refresh_token=refresh_token, save_token=False)
         for modifier in self._token_modifiers:
             token = modifier(token, token_handler, request)
         self.request_validator.save_token(token, request)
