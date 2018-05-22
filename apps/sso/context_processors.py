@@ -21,4 +21,5 @@ def settings(request):
         'email_management': site_settings.SSO_ORGANISATION_EMAIL_MANAGEMENT,
         'region_management': site_settings.SSO_REGION_MANAGEMENT,
         'country_management': site_settings.SSO_COUNTRY_MANAGEMENT,
+        'data_protection_uri': site_settings.SSO_DATA_PROTECTION_URI,
     }

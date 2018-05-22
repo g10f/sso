@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-06 21:59+0200\n"
+"POT-Creation-Date: 2018-05-22 23:58+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,18 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
+msgid "Country"
+msgstr "Land"
+
+msgid "All Countries"
+msgstr "Alle Länder"
+
+msgid "Region"
+msgstr "Region"
+
+msgid "All Regions"
+msgstr "Alle Regionen"
 
 msgid "Message"
 msgstr "Nachricht"
@@ -30,30 +42,51 @@ msgstr ""
 "Bitte verwende ein Bild, dass Dein Gesicht zeigt. Wir verwenden es auch um "
 "Deine Anmeldung zu prüfen."
 
-msgid "Dear administrator(s)"
-msgstr "Liebe Administratoren/Lieber Administrator"
-
-#, python-format
-msgid ""
-"%(name)s (%(email)s) requested extended access. Please check the request."
+msgid "open"
 msgstr ""
-"%(name)s (%(email)s) fragt nach erweiterter Zugriffsberechtigung. Bitte "
-"bearbeite die Anfrage."
 
-msgid "You can update the user data at:"
-msgstr "Du kannst die Anwenderdaten hier bearbeiten."
+msgid "canceled"
+msgstr "abgebrochen"
 
-#, python-format
-msgid "The %(site_name)s team"
-msgstr "Das %(site_name)s Team"
+msgid "approved"
+msgstr "genehmigt"
 
-#, python-format
-msgid "Message from %(name)s:"
-msgstr "Nachricht von %(name)s:"
+msgid "denied"
+msgstr "abgelehnt"
 
-#, python-format
-msgid "%(name)s requested extended access"
-msgstr "%(name)s fragt nach erweiterter Zugriffsberechtigung"
+msgid "message"
+msgstr "Nachricht"
+
+#, fuzzy
+#| msgid "Message for the organisation administrator."
+msgid "Message for the administrators."
+msgstr "Nachricht für den Administrator der Organisation."
+
+msgid "Comment"
+msgstr "Kommentar"
+
+msgid "status"
+msgstr "Status"
+
+msgid "last modified by"
+msgstr "letzte Änderung durch"
+
+msgid "completed by"
+msgstr "vervollständigt von"
+
+#, fuzzy
+#| msgid "access denied"
+msgid "access request"
+msgstr "Zugriff verweigert"
+
+msgid "Organisation Change Request List"
+msgstr "Organisationswechsel Liste"
+
+msgid "Home"
+msgstr ""
+
+msgid "Organisation Changes"
+msgstr "Organisationswechsel"
 
 msgid "Request extended access"
 msgstr "Nach erweiterter Zugriffsberechtigung fragen"
@@ -83,17 +116,48 @@ msgstr ""
 "Anwendung benötigst, kannst Du eine Nachricht an die unten aufgeführten "
 "Administratoren senden."
 
-msgid "Cancel"
-msgstr "Abbrechen"
+msgid "Back"
+msgstr "Zurück"
 
-msgid "Home"
+msgid "Dear administrator(s)"
+msgstr "Liebe Administratoren/Lieber Administrator"
+
+#, python-format
+msgid ""
+"%(name)s (%(email)s) requested extended access. Please check the request."
 msgstr ""
+"%(name)s (%(email)s) fragt nach erweiterter Zugriffsberechtigung. Bitte "
+"bearbeite die Anfrage."
+
+msgid "You can update the user data at:"
+msgstr "Du kannst die Anwenderdaten hier bearbeiten."
+
+#, python-format
+msgid "The %(site_name)s team"
+msgstr "Das %(site_name)s Team"
+
+#, python-format
+msgid "Message from %(name)s:"
+msgstr "Nachricht von %(name)s:"
+
+#, python-format
+msgid "%(name)s requested extended access"
+msgstr "%(name)s fragt nach erweiterter Zugriffsberechtigung"
 
 msgid "Feedback"
 msgstr ""
 
 msgid "Thank you for your message."
 msgstr "Vielen Dank für Deine Nachricht."
+
+msgid "Active Users"
+msgstr "Aktive Benutzer"
+
+msgid "Inactive Users"
+msgstr "Inaktive Benutzer"
+
+msgid "primary email"
+msgstr "primäre E-Mail"
 
 msgid "user"
 msgstr "Anwender"
@@ -106,9 +170,6 @@ msgstr ""
 
 msgid "Organisation"
 msgstr "Organisation"
-
-msgid "last modified by"
-msgstr "letzte Änderung durch"
 
 msgid "created by"
 msgstr "angelegt von"
@@ -612,38 +673,14 @@ msgstr "Handy, privat, Büro, etc."
 msgid "title"
 msgstr "Titel"
 
-msgid "message"
-msgstr "Nachricht"
-
 msgid "one time message"
 msgstr "Einweg-Nachricht"
 
 msgid "one time messages"
 msgstr "Einweg-Nachrichten"
 
-msgid "open"
-msgstr ""
-
-msgid "canceled"
-msgstr "abgebrochen"
-
-msgid "approved"
-msgstr "genehmigt"
-
-msgid "denied"
-msgstr "abgelehnt"
-
 msgid "Message for the organisation administrator."
 msgstr "Nachricht für den Administrator der Organisation."
-
-msgid "Comment"
-msgstr "Kommentar"
-
-msgid "status"
-msgstr "Status"
-
-msgid "completed by"
-msgstr "vervollständigt von"
 
 msgid "organisation change"
 msgstr "Organisationswechsel"
@@ -664,9 +701,6 @@ msgid "The new user got an email with instructions for setting a password."
 msgstr ""
 "Der neue Benutzer hat eine E-Mail mit Anweisungen zum Erstellen eines "
 "Passworts erhalten."
-
-msgid "Back"
-msgstr "Zurück"
 
 msgid "Edit user"
 msgstr "Benutzer aktualisieren"
@@ -752,6 +786,9 @@ msgstr ""
 
 msgid "or"
 msgstr "oder"
+
+msgid "Cancel"
+msgstr "Abbrechen"
 
 #, python-format
 msgid "Hi %(first_name)s."
@@ -892,9 +929,6 @@ msgstr "Beachte bitte, dass die folgende Nachricht nur einmal angezeigt wird."
 msgid "Accept Organisation Change"
 msgstr "Organisationswechsel aktualisieren"
 
-msgid "Organisation Changes"
-msgstr "Organisationswechsel"
-
 msgid "Process Organisation Change"
 msgstr "Organisationswechsel bearbeiten"
 
@@ -942,9 +976,6 @@ msgstr "Organisationswechsel aktualisieren"
 
 msgid "Cancel change of organisation"
 msgstr "Abbrechen des Organisationswechsel"
-
-msgid "Organisation Change Request List"
-msgstr "Organisationswechsel Liste"
 
 msgid "Password change successful"
 msgstr ""
@@ -1087,9 +1118,6 @@ msgstr "Mein Konto"
 msgid "Delete user"
 msgstr "Benutzer löschen"
 
-msgid "Country"
-msgstr "Land"
-
 msgid "City"
 msgstr ""
 
@@ -1192,15 +1220,6 @@ msgstr "Vielen Dank, Deine Eingaben wurden gespeichert."
 msgid "last login"
 msgstr "letzte Anmeldung"
 
-msgid "Active Users"
-msgstr "Aktive Benutzer"
-
-msgid "Inactive Users"
-msgstr "Inaktive Benutzer"
-
-msgid "primary email"
-msgstr "primäre E-Mail"
-
 msgid "Add user"
 msgstr "Benutzer hinzufügen"
 
@@ -1247,15 +1266,6 @@ msgstr "aktiv/inaktiv"
 
 msgid "All"
 msgstr ""
-
-msgid "All Countries"
-msgstr "Alle Länder"
-
-msgid "Region"
-msgstr "Region"
-
-msgid "All Regions"
-msgstr "Alle Regionen"
 
 msgid "All Organisations"
 msgstr "Alle Organisationen"
@@ -2851,6 +2861,14 @@ msgstr ""
 "Eure Daten werden von uns nur für die Bereitstellung des %(brand)s-Services "
 "gespeichert und genutzt. Unter keinen Umständen geben wir Eure Daten an "
 "Dritte weiter!"
+
+#, python-format
+msgid ""
+"Our data protection declaration can be found on the Website <a href="
+"\"%(data_protection_uri)s\">%(data_protection_uri)s</a>."
+msgstr ""
+"Unsere Datenschutzerklärung kannst Du auf der Webseite <a href="
+"\"%(data_protection_uri)s\">%(data_protection_uri)s</a> einsehen."
 
 msgid "CSRF verification failed. Request aborted."
 msgstr ""
