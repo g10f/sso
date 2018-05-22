@@ -23,6 +23,7 @@ THUMBNAIL_QUALITY = 100
 THUMBNAIL_FORMAT = 'PNG'
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+SITE_ID = 1
 
 SSO_BRAND = 'G10F'
 SSO_SITE_NAME = 'G10F'
@@ -30,6 +31,7 @@ SSO_DOMAIN = "localhost:8000"
 SSO_USE_HTTPS = False
 SSO_SERVICE_DOCUMENTATION = ""  # part of http://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig
 SSO_ABOUT = 'http://g10f.de/'
+SSO_DATA_PROTECTION_URI = None
 SSO_APP_UUID = UUID('fa467234b81e4838a009e38d9e655d18')
 SSO_BROWSER_CLIENT_ID = UUID('ca96cd88bc2740249d0def68221cba88')
 SSO_STYLE = 'default'

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-06 21:59+0200\n"
+"POT-Creation-Date: 2018-05-22 23:58+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,6 +19,18 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n"
 "%100>=11 && n%100<=14)? 2 : 3);\n"
+
+msgid "Country"
+msgstr ""
+
+msgid "All Countries"
+msgstr ""
+
+msgid "Region"
+msgstr ""
+
+msgid "All Regions"
+msgstr ""
 
 msgid "Message"
 msgstr ""
@@ -31,27 +43,46 @@ msgid ""
 "registration."
 msgstr ""
 
-msgid "Dear administrator(s)"
+msgid "open"
 msgstr ""
 
-#, python-format
-msgid ""
-"%(name)s (%(email)s) requested extended access. Please check the request."
+msgid "canceled"
 msgstr ""
 
-msgid "You can update the user data at:"
+msgid "approved"
 msgstr ""
 
-#, python-format
-msgid "The %(site_name)s team"
+msgid "denied"
 msgstr ""
 
-#, python-format
-msgid "Message from %(name)s:"
+msgid "message"
 msgstr ""
 
-#, python-format
-msgid "%(name)s requested extended access"
+msgid "Message for the administrators."
+msgstr ""
+
+msgid "Comment"
+msgstr ""
+
+msgid "status"
+msgstr ""
+
+msgid "last modified by"
+msgstr ""
+
+msgid "completed by"
+msgstr ""
+
+msgid "access request"
+msgstr ""
+
+msgid "Organisation Change Request List"
+msgstr ""
+
+msgid "Home"
+msgstr ""
+
+msgid "Organisation Changes"
 msgstr ""
 
 msgid "Request extended access"
@@ -78,16 +109,45 @@ msgid ""
 "administrators below."
 msgstr ""
 
-msgid "Cancel"
+msgid "Back"
 msgstr ""
 
-msgid "Home"
+msgid "Dear administrator(s)"
+msgstr ""
+
+#, python-format
+msgid ""
+"%(name)s (%(email)s) requested extended access. Please check the request."
+msgstr ""
+
+msgid "You can update the user data at:"
+msgstr ""
+
+#, python-format
+msgid "The %(site_name)s team"
+msgstr ""
+
+#, python-format
+msgid "Message from %(name)s:"
+msgstr ""
+
+#, python-format
+msgid "%(name)s requested extended access"
 msgstr ""
 
 msgid "Feedback"
 msgstr ""
 
 msgid "Thank you for your message."
+msgstr ""
+
+msgid "Active Users"
+msgstr ""
+
+msgid "Inactive Users"
+msgstr ""
+
+msgid "primary email"
 msgstr ""
 
 msgid "user"
@@ -100,9 +160,6 @@ msgid "(None)"
 msgstr ""
 
 msgid "Organisation"
-msgstr ""
-
-msgid "last modified by"
 msgstr ""
 
 msgid "created by"
@@ -579,37 +636,13 @@ msgstr ""
 msgid "title"
 msgstr ""
 
-msgid "message"
-msgstr ""
-
 msgid "one time message"
 msgstr ""
 
 msgid "one time messages"
 msgstr ""
 
-msgid "open"
-msgstr ""
-
-msgid "canceled"
-msgstr ""
-
-msgid "approved"
-msgstr ""
-
-msgid "denied"
-msgstr ""
-
 msgid "Message for the organisation administrator."
-msgstr ""
-
-msgid "Comment"
-msgstr ""
-
-msgid "status"
-msgstr ""
-
-msgid "completed by"
 msgstr ""
 
 msgid "organisation change"
@@ -628,9 +661,6 @@ msgid "A new User was created."
 msgstr ""
 
 msgid "The new user got an email with instructions for setting a password."
-msgstr ""
-
-msgid "Back"
 msgstr ""
 
 msgid "Edit user"
@@ -714,6 +744,9 @@ msgid "Delete"
 msgstr ""
 
 msgid "or"
+msgstr ""
+
+msgid "Cancel"
 msgstr ""
 
 #, python-format
@@ -845,9 +878,6 @@ msgstr ""
 msgid "Accept Organisation Change"
 msgstr ""
 
-msgid "Organisation Changes"
-msgstr ""
-
 msgid "Process Organisation Change"
 msgstr ""
 
@@ -892,9 +922,6 @@ msgid "Update organisation change"
 msgstr ""
 
 msgid "Cancel change of organisation"
-msgstr ""
-
-msgid "Organisation Change Request List"
 msgstr ""
 
 msgid "Password change successful"
@@ -1018,9 +1045,6 @@ msgstr ""
 msgid "Delete user"
 msgstr ""
 
-msgid "Country"
-msgstr ""
-
 msgid "City"
 msgstr ""
 
@@ -1110,15 +1134,6 @@ msgstr ""
 msgid "last login"
 msgstr ""
 
-msgid "Active Users"
-msgstr ""
-
-msgid "Inactive Users"
-msgstr ""
-
-msgid "primary email"
-msgstr ""
-
 msgid "Add user"
 msgstr ""
 
@@ -1162,15 +1177,6 @@ msgid "active/inactive"
 msgstr ""
 
 msgid "All"
-msgstr ""
-
-msgid "All Countries"
-msgstr ""
-
-msgid "Region"
-msgstr ""
-
-msgid "All Regions"
 msgstr ""
 
 msgid "All Organisations"
@@ -2696,6 +2702,12 @@ msgid ""
 "Your data will be stored and used by us for the provision of %(brand)s "
 "services. Under no circumstances will we give your information to third "
 "parties!"
+msgstr ""
+
+#, python-format
+msgid ""
+"Our data protection declaration can be found on the Website <a href="
+"\"%(data_protection_uri)s\">%(data_protection_uri)s</a>."
 msgstr ""
 
 msgid "CSRF verification failed. Request aborted."
