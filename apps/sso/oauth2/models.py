@@ -126,6 +126,7 @@ class Client(AbstractBaseModel):
                                         'instead of deleting clients.'))
     notes = models.TextField(_("Notes"), blank=True, max_length=2048)
     is_trustworthy = models.BooleanField(_("trustworthy"), default=False)
+    # is_using_pkce = models.BooleanField(_('is using PKCE'), default=False)
 
     objects = ClientManager()
 

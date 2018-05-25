@@ -24,8 +24,7 @@ Prepare tests
 -------------
 
 #) Install selenium and uritemplate  in the sso virtualenv ``pip install selenium`` ``pip install uritemplate``
-#) Get the latest chromedriver from https://chromedriver.storage.googleapis.com/index.html and copy the binary in to
-a directory in the PATH (e.g. /usr/local/bin/)
+#) Get the latest chromedriver from https://chromedriver.storage.googleapis.com/index.html and copy the binary in to a directory in the PATH (e.g. /usr/local/bin/)
 
 Changelog
 ----------
