@@ -24,7 +24,7 @@ class ClientAdminForm(forms.ModelForm):
 
         if client_type and client_secret:
             # Only do something if both fields are valid so far.
-            if type not in CONFIDENTIAL_CLIENTS and client_secret:
+            if client_type not in CONFIDENTIAL_CLIENTS and client_secret:
                 self.add_error('client_secret', "Client secret must be empty for non-confidential client types")
         if client_type == 'service':
             if user is None:
