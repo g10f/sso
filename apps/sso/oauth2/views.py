@@ -408,4 +408,5 @@ class ErrorView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(ErrorView, self).get_context_data(**kwargs)
         context['error'] = get_request_param(self.request, 'error')
+        context['error_description'] = get_request_param(self.request, 'error_description')
         return context

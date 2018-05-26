@@ -1,6 +1,8 @@
 import logging
 from urllib.parse import urlparse, urlsplit, urlunsplit
 
+from django.utils.encoding import force_text
+
 from django.conf import settings
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
@@ -8,6 +10,7 @@ from django.db import models
 from django.http import QueryDict
 from django.urls import reverse
 from django.utils.crypto import get_random_string
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from sso.accounts.models import Application
 from sso.auth.models import Device
@@ -73,7 +76,22 @@ CLIENT_TYPES = [
     ('trusted', _('Trusted Client'))  # grant_type=password
 ]
 
+CLIENT_RESPONSE_TYPES = {
+    'web': ['code'],
+    'javascript': ["id_token token", "token", "id_token"],
+    'native': ['code']
+}
+
 CONFIDENTIAL_CLIENTS = ['web', 'service', 'trusted']
+
+
+def get_clients_by_response_type(response_type):
+    clients = []
+    client_types = dict(CLIENT_TYPES)
+    for client in CLIENT_RESPONSE_TYPES:
+        if response_type in CLIENT_RESPONSE_TYPES[client]:
+            clients.append(force_text(client_types[client]))
+    return clients
 
 
 def get_default_secret():
@@ -126,7 +144,10 @@ class Client(AbstractBaseModel):
                                         'instead of deleting clients.'))
     notes = models.TextField(_("Notes"), blank=True, max_length=2048)
     is_trustworthy = models.BooleanField(_("trustworthy"), default=False)
-    # is_using_pkce = models.BooleanField(_('is using PKCE'), default=False)
+    is_using_pkce = models.BooleanField(_('is using PKCE'), default=False,
+                                        help_text=mark_safe(_('Proof Key for Code Exchange for OAuth Public Clients '
+                                                              '<a href="https://tools.ietf.org/html/rfc7636">'
+                                                              'https://tools.ietf.org/html/rfc7636</a>')))
 
     objects = ClientManager()
 
@@ -157,6 +178,8 @@ class AuthorizationCode(models.Model):
     is_valid = models.BooleanField(_('is valid'), default=True)
     state = models.CharField(_('client state'), max_length=2047, blank=True)
     scopes = models.CharField(_('scopes'), max_length=2047, blank=True)
+    code_challenge = models.CharField(_('code_challenge'), max_length=128, blank=True)
+    code_challenge_method = models.CharField(_('code_challenge_method'), max_length=4, blank=True)
 
     class Meta:
         ordering = ['-created_at']

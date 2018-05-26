@@ -1,5 +1,6 @@
 import base64
 import calendar
+import hashlib
 import json
 import logging
 from urllib.parse import urlsplit
@@ -18,7 +19,8 @@ from django.utils.encoding import force_text, force_bytes
 from sso.api.response import add_cors_header
 from sso.auth import get_session_auth_hash
 from .crypt import loads_jwt, make_jwt, MAX_AGE
-from .models import BearerToken, RefreshToken, AuthorizationCode, Client, check_redirect_uri, CONFIDENTIAL_CLIENTS
+from .models import BearerToken, RefreshToken, AuthorizationCode, Client, check_redirect_uri, CONFIDENTIAL_CLIENTS, \
+    CLIENT_RESPONSE_TYPES
 
 logger = logging.getLogger(__name__)
 
@@ -82,6 +84,26 @@ def default_idtoken_generator(request, max_age=MAX_AGE):
     return make_jwt(claim_set)
 
 
+def validate_code_verifier(authorization_code, client, request):
+    if client.is_using_pkce:
+        try:
+            code_verifier = request.code_verifier
+        except AttributeError:
+            raise errors.InvalidGrantError(description='code verifier required', request=request)
+
+        if authorization_code.code_challenge_method == 'plain':
+            code_challenge = code_verifier
+        elif authorization_code.code_challenge_method == 'S256':
+            digest = hashlib.sha256(code_verifier.encode('ascii')).digest()
+            code_challenge = base64.urlsafe_b64encode(digest).rstrip(b'=').decode()
+        else:
+            raise errors.InvalidGrantError(description='code challenge method %s not supported' %
+                                                       authorization_code.code_challenge_method, request=request)
+
+        if authorization_code.code_challenge != code_challenge:
+            raise errors.InvalidGrantError(description='code verifier does not match', request=request)
+
+
 class OAuth2RequestValidator(oauth2.RequestValidator):
     def _get_client(self, client_id, request):
         if request.client:
@@ -122,31 +144,39 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
 
     def validate_response_type(self, client_id, response_type, client, request, *args, **kwargs):
         # currently we support "code", "token" and "id_token token"
-        client_type = client.type
+        return response_type in CLIENT_RESPONSE_TYPES[client.type]
 
-        if client_type in ['web', 'native']:
-            if response_type == "code":
-                return True
-        elif client_type == 'javascript':
-            if response_type in ["id_token token", "token", "id_token"]:
-                return True
-
-        return False
-
-        # Post-authorization
-
+    # Post-authorization
     def save_authorization_code(self, client_id, code, request, *args, **kwargs):
         # Remember to associate it with request.scopes, request.redirect_uri
         # request.client, request.state and request.user (the last is passed in
         # post_authorization credentials, i.e. { 'user': request.user}.
         self._get_client(client_id, request)
+        client = request.client
+        code_challenge = code_challenge_method = ''
+        if client.is_using_pkce:
+            try:
+                code_challenge = request.code_challenge
+            except AttributeError:
+                pass
+            try:
+                code_challenge_method = request.code_challenge_method
+            except AttributeError:
+                code_challenge_method = 'plain'
+                pass
+
+            if not code_challenge:
+                raise errors.InvalidRequestFatalError(description='code challenge required', request=request)
+            if code_challenge_method not in ['plain', 'S256']:
+                raise errors.InvalidRequestFatalError(description='code challenge method %s not supported' %
+                                                                  code_challenge_method, request=request)
 
         state = request.state if request.state else ''
         otp_device = getattr(request.user, 'otp_device', None)
         authorization_code = AuthorizationCode(client=request.client, code=code['code'], user=request.user,
-                                               otp_device=otp_device,
-                                               redirect_uri=request.redirect_uri, state=state,
-                                               scopes=' '.join(request.scopes))
+                                               otp_device=otp_device, redirect_uri=request.redirect_uri, state=state,
+                                               scopes=' '.join(request.scopes), code_challenge=code_challenge,
+                                               code_challenge_method=code_challenge_method)
         authorization_code.save()
 
     # Token request
@@ -202,10 +232,15 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
         # Validate the code belongs to the client. Add associated scopes
         # and user to request.scopes and request.user.
         try:
-            authorization_code = AuthorizationCode.objects.get(code=request.code, client__uuid=client_id, is_valid=True)
+            authorization_code = AuthorizationCode.objects.get(code=request.code, client__uuid=client_id,
+                                                               is_valid=True)
+            # PKCE
+            validate_code_verifier(authorization_code, client, request)
+
             request.user = authenticate(token=authorization_code)
             request.scopes = authorization_code.scopes.split()
-            client.authorization_code = authorization_code  # save the authorization_code for using in confirm_redirect_uri
+            # save the authorization_code for using in confirm_redirect_uri
+            client.authorization_code = authorization_code
             return True
         except ObjectDoesNotExist:
             return False
