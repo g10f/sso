@@ -85,7 +85,7 @@ def default_idtoken_generator(request, max_age=MAX_AGE):
 
 
 def validate_code_verifier(authorization_code, client, request):
-    if client.is_using_pkce:
+    if authorization_code.code_challenge:
         try:
             code_verifier = request.code_verifier
         except AttributeError:
@@ -154,19 +154,21 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
         self._get_client(client_id, request)
         client = request.client
         code_challenge = code_challenge_method = ''
-        if client.is_using_pkce:
-            try:
-                code_challenge = request.code_challenge
-            except AttributeError:
-                pass
+        try:
+            code_challenge = request.code_challenge
+        except AttributeError:
+            pass
+
+        if client.force_using_pkce and not code_challenge:
+            raise errors.InvalidRequestFatalError(description='code challenge required', request=request)
+
+        if code_challenge:
             try:
                 code_challenge_method = request.code_challenge_method
             except AttributeError:
                 code_challenge_method = 'plain'
                 pass
 
-            if not code_challenge:
-                raise errors.InvalidRequestFatalError(description='code challenge required', request=request)
             if code_challenge_method not in ['plain', 'S256']:
                 raise errors.InvalidRequestFatalError(description='code challenge method %s not supported' %
                                                                   code_challenge_method, request=request)

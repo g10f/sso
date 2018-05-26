@@ -16,11 +16,11 @@ class ClientAdminForm(forms.ModelForm):
         client_type = cleaned_data.get("type")
         client_secret = cleaned_data.get("client_secret")
         user = cleaned_data.get("user")
-        is_using_pkce = cleaned_data.get("is_using_pkce")
+        force_using_pkce = cleaned_data.get("force_using_pkce")
 
-        if is_using_pkce and 'code' not in CLIENT_RESPONSE_TYPES[client_type]:
+        if force_using_pkce and 'code' not in CLIENT_RESPONSE_TYPES[client_type]:
             clients = ', '.join(get_clients_by_response_type('code'))
-            self.add_error('is_using_pkce', 'PKCE can only be used for "%s".' % clients)
+            self.add_error('force_using_pkce', 'PKCE can only be used for "%s".' % clients)
 
         if client_type and client_secret:
             # Only do something if both fields are valid so far.
@@ -38,7 +38,7 @@ class ClientAdmin(admin.ModelAdmin):
     list_display = ('name', 'uuid', 'application', 'type', 'user', 'is_active')
     list_filter = ('is_active', 'type', 'is_trustworthy', 'application')
     fields = ('application', 'type', 'name', 'uuid', 'client_secret', 'redirect_uris', 'scopes', 'user', 'notes',
-              'is_active', 'last_modified', 'is_trustworthy', 'is_using_pkce')
+              'is_active', 'last_modified', 'is_trustworthy', 'force_using_pkce')
     readonly_fields = ('last_modified',)
     list_select_related = ('application', 'user')
     form = ClientAdminForm

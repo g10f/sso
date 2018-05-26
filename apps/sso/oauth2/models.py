@@ -144,10 +144,10 @@ class Client(AbstractBaseModel):
                                         'instead of deleting clients.'))
     notes = models.TextField(_("Notes"), blank=True, max_length=2048)
     is_trustworthy = models.BooleanField(_("trustworthy"), default=False)
-    is_using_pkce = models.BooleanField(_('is using PKCE'), default=False,
-                                        help_text=mark_safe(_('Proof Key for Code Exchange for OAuth Public Clients '
-                                                              '<a href="https://tools.ietf.org/html/rfc7636">'
-                                                              'https://tools.ietf.org/html/rfc7636</a>')))
+    force_using_pkce = models.BooleanField(_('force using PKCE'), default=False,
+                                           help_text=mark_safe(_('Enforce Proof Key for Code Exchange '
+                                                                 '<a href="https://tools.ietf.org/html/rfc7636">'
+                                                                 'https://tools.ietf.org/html/rfc7636</a>')))
 
     objects = ClientManager()
 
