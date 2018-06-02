@@ -15,6 +15,11 @@ class UserSearchFilter(SearchFilter):
                     'useremail__email__icontains']
 
 
+class UserSearchFilter2(SearchFilter):
+    search_names = ['user__username__icontains', 'user__first_name__icontains', 'user__last_name__icontains',
+                    'user__useremail__email__icontains']
+
+
 class IsActiveFilter(ViewChoicesFilter):
     name = 'is_active'
     choices = (('1', _('Active Users')), ('2', _('Inactive Users')))

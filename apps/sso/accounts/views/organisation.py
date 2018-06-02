@@ -16,14 +16,15 @@ from django.views.generic.detail import SingleObjectTemplateResponseMixin
 from django.views.generic.edit import ProcessFormView, ModelFormMixin
 from sso.accounts.forms import OrganisationChangeForm, OrganisationChangeAcceptForm
 from sso.accounts.models import OrganisationChange
-from sso.accounts.views.filter import OrganisationChangeCountryFilter, OrganisationChangeAdminRegionFilter
+from sso.accounts.views.filter import OrganisationChangeCountryFilter, OrganisationChangeAdminRegionFilter, \
+    UserSearchFilter2
 from sso.auth.decorators import admin_login_required
 from sso.oauth2.models import allowed_hosts
 from sso.organisations.models import is_validation_period_active
 from sso.signals import user_organisation_change_request
 from sso.utils.url import get_safe_redirect_uri
 from sso.views import main
-from sso.views.generic import ListView, SearchFilter
+from sso.views.generic import ListView
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +37,7 @@ class OrganisationChangeDetailView(DetailView):
         self.object = self.get_object()
         if self.object.user != self.request.user:
             raise PermissionDenied
-        return super(OrganisationChangeDetailView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         """
@@ -52,7 +53,7 @@ class OrganisationChangeDetailView(DetailView):
         context['update_url'] = update_url
 
         context.update(kwargs)
-        return super(OrganisationChangeDetailView, self).get_context_data(**context)
+        return super().get_context_data(**context)
 
 
 class OrganisationChangeUpdateView(SingleObjectTemplateResponseMixin, ModelFormMixin, ProcessFormView):
@@ -68,14 +69,14 @@ class OrganisationChangeUpdateView(SingleObjectTemplateResponseMixin, ModelFormM
     template_name_suffix = '_form'
 
     def get_initial(self):
-        initial = super(OrganisationChangeUpdateView, self).get_initial()
+        initial = super().get_initial()
         initial['user'] = self.request.user
         return initial
 
     @method_decorator(login_required)
     @method_decorator(user_passes_test(lambda u: not u.is_center))
     def dispatch(self, request, *args, **kwargs):
-        return super(OrganisationChangeUpdateView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         """
@@ -87,7 +88,7 @@ class OrganisationChangeUpdateView(SingleObjectTemplateResponseMixin, ModelFormM
             context['redirect_uri'] = redirect_uri
 
         context.update(kwargs)
-        return super(OrganisationChangeUpdateView, self).get_context_data(**context)
+        return super().get_context_data(**context)
 
     def cancel(self, request, *args, **kwargs):
         success_url = self.get_success_url()
@@ -102,17 +103,16 @@ class OrganisationChangeUpdateView(SingleObjectTemplateResponseMixin, ModelFormM
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
-        return super(OrganisationChangeUpdateView, self).get(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
         if '_cancel' in self.request.POST:
             return self.cancel(request, *args, **kwargs)
         else:
-            return super(OrganisationChangeUpdateView, self).post(request, *args, **kwargs)
+            return super().post(request, *args, **kwargs)
 
     def get_success_url(self):
-        success_url = ''
         if '_continue' in self.request.POST:
             success_url = self.request.path
         elif '_cancel' in self.request.POST:
@@ -148,10 +148,10 @@ class OrganisationChangeAcceptView(FormView):
     @method_decorator(permission_required('accounts.change_user'))
     def dispatch(self, request, *args, **kwargs):
         self.organisationchange = get_object_or_404(OrganisationChange, pk=self.kwargs['pk'])
-        return super(OrganisationChangeAcceptView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(OrganisationChangeAcceptView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['organisationchange'] = self.organisationchange
         return context
 
@@ -194,11 +194,6 @@ class OrganisationChangeAcceptView(FormView):
             return HttpResponseRedirect(reverse('accounts:update_user', args=(user.uuid.hex,)))
 
 
-class UserSearchFilter(SearchFilter):
-    search_names = ['user__username__icontains', 'user__first_name__icontains', 'user__last_name__icontains',
-                    'user__useremail__email__icontains']
-
-
 class ToOrganisationHeader(object):
     verbose_name = _('to organisation')
     sortable = True
@@ -224,7 +219,7 @@ class OrganisationChangeList(ListView):
     @method_decorator(admin_login_required)
     @method_decorator(permission_required('accounts.change_user'))
     def dispatch(self, request, *args, **kwargs):
-        return super(OrganisationChangeList, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
         user = self.request.user
@@ -234,7 +229,7 @@ class OrganisationChangeList(ListView):
 
         self.cl = main.ChangeList(self.request, self.model, self.list_display, default_ordering=['-last_modified'])
         # apply filters
-        qs = UserSearchFilter().apply(self, qs)
+        qs = UserSearchFilter2().apply(self, qs)
         qs = OrganisationChangeCountryFilter().apply(self, qs)
         qs = OrganisationChangeAdminRegionFilter().apply(self, qs)
 
@@ -268,4 +263,4 @@ class OrganisationChangeList(ListView):
             'filters': filters,
         }
         context.update(kwargs)
-        return super(OrganisationChangeList, self).get_context_data(**context)
+        return super().get_context_data(**context)

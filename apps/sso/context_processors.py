@@ -1,5 +1,7 @@
 import logging
 
+from django.apps import apps
+
 from django.conf import settings as site_settings
 from sso.auth.utils import get_device_classes
 from sso.utils.url import get_base_url
@@ -22,4 +24,5 @@ def settings(request):
         'region_management': site_settings.SSO_REGION_MANAGEMENT,
         'country_management': site_settings.SSO_COUNTRY_MANAGEMENT,
         'data_protection_uri': site_settings.SSO_DATA_PROTECTION_URI,
+        'sso_access_requests_is_installed': apps.is_installed('sso.access_requests')
     }

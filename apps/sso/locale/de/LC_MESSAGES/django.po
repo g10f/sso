@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-22 23:58+0200\n"
+"POT-Creation-Date: 2018-06-02 23:56+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,6 +16,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
+msgid "user"
+msgstr "Anwender"
 
 msgid "Country"
 msgstr "Land"
@@ -28,6 +31,9 @@ msgstr "Region"
 
 msgid "All Regions"
 msgstr "Alle Regionen"
+
+msgid "Request for access was already processed"
+msgstr "Die Berechtigungsanfrage wurde schon bearbeitet"
 
 msgid "Message"
 msgstr "Nachricht"
@@ -57,10 +63,8 @@ msgstr "abgelehnt"
 msgid "message"
 msgstr "Nachricht"
 
-#, fuzzy
-#| msgid "Message for the organisation administrator."
 msgid "Message for the administrators."
-msgstr "Nachricht für den Administrator der Organisation."
+msgstr "Nachricht für die Administratoren."
 
 msgid "Comment"
 msgstr "Kommentar"
@@ -74,19 +78,51 @@ msgstr "letzte Änderung durch"
 msgid "completed by"
 msgstr "vervollständigt von"
 
-#, fuzzy
-#| msgid "access denied"
 msgid "access request"
-msgstr "Zugriff verweigert"
+msgstr "Berechtigungsanfrage"
 
-msgid "Organisation Change Request List"
-msgstr "Organisationswechsel Liste"
+msgid "Request extended access list"
+msgstr "Berechtigungsanfragen"
 
 msgid "Home"
 msgstr ""
 
-msgid "Organisation Changes"
-msgstr "Organisationswechsel"
+msgid "Accept extended access"
+msgstr "Berechtigungsanfrage annehmen"
+
+msgid "Process extended access"
+msgstr "Berechtigungsanfrage bearbeiten"
+
+msgid "Please accept or deny the request for extended access."
+msgstr "Bitte die Berechtigungsanfrage annehmen oder ablehnen"
+
+#, python-format
+msgid "The request was already %(status)s by %(user)s."
+msgstr "Die Berechtigungsanfrage wurde schon von %(user)s %(status)s."
+
+msgid "Please correct the error below."
+msgstr "Bitte korrigiere den Fehler unten."
+
+msgid "Please correct the errors below."
+msgstr "Bitte korrigiere die Fehler unten."
+
+msgid "First name"
+msgstr "Vorname"
+
+msgid "Last name"
+msgstr "Nachname"
+
+msgid "Email address"
+msgstr "E-Mail Adresse"
+
+msgid "Phone number"
+msgstr "Telefonnummer"
+
+msgid "Edit details"
+msgstr "Details bearbeiten"
+
+msgid "Deny extended access"
+msgstr "Berechtigungsanfrage ablehnen"
 
 msgid "Request extended access"
 msgstr "Nach erweiterter Zugriffsberechtigung fragen"
@@ -94,12 +130,6 @@ msgstr "Nach erweiterter Zugriffsberechtigung fragen"
 #, python-format
 msgid "Request extended access to %(site_name)s"
 msgstr "Nach erweiterter Zugriffsberechtigung auf %(site_name)s fragen"
-
-msgid "Please correct the error below."
-msgstr "Bitte korrigiere den Fehler unten."
-
-msgid "Please correct the errors below."
-msgstr "Bitte korrigiere die Fehler unten."
 
 #, python-format
 msgid "Dear %(first_name)s."
@@ -118,6 +148,9 @@ msgstr ""
 
 msgid "Back"
 msgstr "Zurück"
+
+msgid "Cancel extended access"
+msgstr "Berechtigungsanfrage abbrechen"
 
 msgid "Dear administrator(s)"
 msgstr "Liebe Administratoren/Lieber Administrator"
@@ -150,6 +183,23 @@ msgstr ""
 msgid "Thank you for your message."
 msgstr "Vielen Dank für Deine Nachricht."
 
+msgid "Change my message"
+msgstr "Meine Nachricht bearbeiten"
+
+#, python-format
+msgid "The user has already the profile \"%(profile)s\"."
+msgstr "Der Benutzer hat schon das Profil \"%(profile)s\"."
+
+msgid "Denied access request."
+msgstr "Berechtigungsanfrage wurde abgelehnt."
+
+msgid "Successfully extended access."
+msgstr "Berechtigungsanfrage wurde angenommen"
+
+#, python-format
+msgid "You have already the profile \"%(profile)s\"."
+msgstr "Du hast schon das Profil \"%(profile)s\"."
+
 msgid "Active Users"
 msgstr "Aktive Benutzer"
 
@@ -158,9 +208,6 @@ msgstr "Inaktive Benutzer"
 
 msgid "primary email"
 msgstr "primäre E-Mail"
-
-msgid "user"
-msgstr "Anwender"
 
 msgid "Link"
 msgstr ""
@@ -254,9 +301,6 @@ msgstr "Der Organisationswechsel wurde schon bearbeitet"
 msgid "Name"
 msgstr ""
 
-msgid "Email address"
-msgstr "E-Mail Adresse"
-
 msgid "Subject"
 msgstr ""
 
@@ -317,12 +361,6 @@ msgstr ""
 
 msgid "Enter the same password as above, for verification."
 msgstr ""
-
-msgid "First name"
-msgstr "Vorname"
-
-msgid "Last name"
-msgstr "Nachname"
 
 msgid "The two password fields didn't match."
 msgstr ""
@@ -929,6 +967,9 @@ msgstr "Beachte bitte, dass die folgende Nachricht nur einmal angezeigt wird."
 msgid "Accept Organisation Change"
 msgstr "Organisationswechsel aktualisieren"
 
+msgid "Organisation Changes"
+msgstr "Organisationswechsel"
+
 msgid "Process Organisation Change"
 msgstr "Organisationswechsel bearbeiten"
 
@@ -938,9 +979,6 @@ msgstr "Bitte den Organisationswechsel annehmen oder ablehnen"
 #, python-format
 msgid "The organisation change was already %(status)s by %(user)s."
 msgstr "Der Organisationswechsel wurde schon von %(user)s %(status)s."
-
-msgid "Phone number"
-msgstr "Telefonnummer"
 
 msgid "Previous organisation"
 msgstr "vorherige Organisation"
@@ -976,6 +1014,9 @@ msgstr "Organisationswechsel aktualisieren"
 
 msgid "Cancel change of organisation"
 msgstr "Abbrechen des Organisationswechsel"
+
+msgid "Organisation Change Request List"
+msgstr "Organisationswechsel Liste"
 
 msgid "Password change successful"
 msgstr ""
@@ -1863,6 +1904,14 @@ msgstr ""
 msgid "trustworthy"
 msgstr "vertrauenswürdig"
 
+msgid "force using PKCE"
+msgstr ""
+
+msgid ""
+"Enforce Proof Key for Code Exchange <a href=\"https://tools.ietf.org/html/"
+"rfc7636\">https://tools.ietf.org/html/rfc7636</a>"
+msgstr ""
+
 msgid "code"
 msgstr "Code"
 
@@ -1873,6 +1922,12 @@ msgid "is valid"
 msgstr "ist gültig"
 
 msgid "client state"
+msgstr ""
+
+msgid "code_challenge"
+msgstr ""
+
+msgid "code_challenge_method"
 msgstr ""
 
 msgid "access token"
@@ -2824,6 +2879,9 @@ msgstr "Registrierungen"
 msgid "Users"
 msgstr "Benutzer"
 
+msgid "Access Requests"
+msgstr "Anfragen"
+
 msgid "My Email Addresses"
 msgstr "Meine E-Mail Adressen"
 
@@ -2872,3 +2930,9 @@ msgstr ""
 
 msgid "CSRF verification failed. Request aborted."
 msgstr ""
+
+#~ msgid "Denied extended access."
+#~ msgstr "Nach erweiterter Zugriffsberechtigung fragen"
+
+#~ msgid "Extended access"
+#~ msgstr "Berechtigungsanfrage"

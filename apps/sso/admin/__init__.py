@@ -11,6 +11,8 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from l10n.admin import CountryOptions
 from l10n.models import Country
+from sso.access_requests.admin import AccessRequestAdmin
+from sso.access_requests.models import AccessRequest
 from sso.accounts import models
 from sso.accounts.admin import ApplicationAdmin, ApplicationAdminAdmin, ApplicationRoleAdmin, GroupAdmin, RoleAdmin, \
     OneTimeMessageAdmin, OrganisationChangeAdmin, RoleProfileAdmin, RoleProfileAdminAdmin, UserAdmin, UserEmailAdmin
@@ -33,7 +35,7 @@ class SSOAdminSite(admin.AdminSite):
     copy of django admin view with:
     - redirecting to accounts:login instead of admin:login
     """
-    site_title = string_format(_('%(brand)s SSO site admin') , {'brand': settings.SSO_BRAND})
+    site_title = string_format(_('%(brand)s SSO site admin'), {'brand': settings.SSO_BRAND})
     site_header = string_format(_('%(brand)s SSO administration'), {'brand': settings.SSO_BRAND})
 
     def admin_view(self, view, cacheable=False):
@@ -50,6 +52,7 @@ class SSOAdminSite(admin.AdminSite):
                     reverse('auth:login')
                 )
             return view(request, *args, **kwargs)
+
         if not cacheable:
             inner = never_cache(inner)
         # We add csrf_protect here so this function can be used as a utility
@@ -78,6 +81,8 @@ sso_admin_site.register(models.OneTimeMessage, OneTimeMessageAdmin)
 # sso_admin_site.register(Permission, PermissionAdmin)
 # sso_admin_site.register(ContentType)
 
+sso_admin_site.register(AccessRequest, AccessRequestAdmin)
+
 sso_admin_site.register(models.UserEmail, UserEmailAdmin)
 sso_admin_site.register(get_user_model(), UserAdmin)
 sso_admin_site.register(models.ApplicationRole, ApplicationRoleAdmin)
@@ -101,7 +106,6 @@ sso_admin_site.register(org_models.AdminRegion, org_admin.AdminRegionAdmin)
 sso_admin_site.register(org_models.OrganisationCountry, org_admin.OrganisationCountryAdmin)
 sso_admin_site.register(org_models.CountryGroup, org_admin.CountryGroupAdmin)
 sso_admin_site.register(org_models.Association, org_admin.AssociationAdmin)
-
 
 sso_admin_site.register(Email, EmailAdmin)
 sso_admin_site.register(EmailAlias, EmailAliasAdmin)

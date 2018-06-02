@@ -49,6 +49,11 @@
             <i class="glyphicon glyphicon-list"></i> {% trans 'Organisation Changes' %} <span class="badge">{{ user.get_count_of_organisationchanges }}</span></a>
     {% endif %}
 
+    {% if sso_access_requests_is_installed and perms.accounts.change_user %}
+        <a class="list-group-item" href="{% url 'access_requests:extend_access_list' %}">
+            <i class="glyphicon glyphicon-list"></i> {% trans 'Access Requests' %} <span class="badge">{{ user.get_count_of_extend_access }}</span></a>
+    {% endif %}
+
     {% if email_management and perms.emails.add_groupemail %}
         <a class="list-group-item {% if active_navigation == "groupemail_create" %}active{% endif %}" href="{% url 'emails:groupemail_create' %}">
             <i class="glyphicon glyphicon-plus-sign"></i> {% trans 'Add Email' %}</a>

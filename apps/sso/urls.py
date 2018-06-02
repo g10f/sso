@@ -1,3 +1,5 @@
+from django.apps import apps
+
 from django.conf import settings
 from django.conf.urls import url, include
 from django.conf.urls.static import static
@@ -21,7 +23,6 @@ urlpatterns = [
     url(r'^accounts/', include('sso.auth.urls')),
     url(r'^accounts/', include('sso.accounts.urls')),
     url(r'^accounts/', registration_site.urls),
-    url(r'^accounts/', include('sso.access_requests.urls')),
     url(r'^organisations/', include('sso.organisations.urls')),
     url(r'^emails/', include('sso.emails.urls')),
     url(r'^oauth2/', include('sso.oauth2.urls')),
@@ -35,3 +36,8 @@ urlpatterns = [
     url(r'^chained_filter/(?P<app>organisations)/(?P<model>AdminRegion)/(?P<field>[\w\-]+)/(?P<value>[\w\-]+)/$',
         filterchain, kwargs={'manager': 'active_objects'}, name='chained_filter'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if apps.is_installed('sso.access_requests'):
+    urlpatterns += [
+        url(r'^extend_access/', include('sso.access_requests.urls')),
+    ]
