@@ -19,6 +19,10 @@
             </div>
         {% endif %}
 
+        {% if messages %}{% for message in messages %}
+            <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
+        {% endif %}
+
         <p>{% blocktrans with first_name=user.first_name %}Dear {{ first_name }}.{% endblocktrans %}</p>
         <p>{% blocktrans trimmed %}You tried to access a {{ site_name }} application, with restricted access.
             If you can not access by mistake, you can apply for access to the administrators below.{% endblocktrans %}
@@ -39,10 +43,15 @@
 
         <div class="form-group">
             <div class="col-sm-offset-3 col-sm-9">
-                <button type="submit" class="btn btn-primary">{% trans 'Request extended access' %}</button>
-                {% if redirect_uri %}
-                    <a class="btn btn-default" href="{{ redirect_uri }}">{% trans 'Back' %}</a>
-                {% endif %}
+                {% block submit_group %}
+                    <button type="submit" class="btn btn-primary">{% trans 'Request extended access' %}</button>
+                    {% if redirect_uri %}
+                        <a class="btn btn-default" href="{{ redirect_uri }}">{% trans 'Back' %}</a>
+                    {% endif %}
+                    {% if form.instance.pk %}
+                        <button type="submit" class="btn btn-default"
+                                name="_cancel">{% trans 'Cancel extended access' %}</button>{% endif %}
+                {% endblock %}
             </div>
         </div>
     </form>

@@ -20,3 +20,6 @@ user_organisation_change_request = django.dispatch.Signal(providing_args=["organ
 
 # a user has finished registration with the email validation
 user_registration_completed = django.dispatch.Signal(providing_args=["user_registration"])
+
+# a user requests extended access
+user_access_request = django.dispatch.Signal(providing_args=["access_request"])

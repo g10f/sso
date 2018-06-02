@@ -10,7 +10,7 @@ from django.utils.translation import ugettext_lazy as _, pgettext_lazy
 from sso.accounts.models.application import ApplicationRole, RoleProfile
 from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary, \
     CaseInsensitiveEmailField, AbstractBaseModelManager
-from sso.organisations.models import Organisation
+from sso.organisations.models import Organisation, is_validation_period_active
 
 logger = logging.getLogger(__name__)
 
@@ -133,7 +133,7 @@ class OrganisationChange(AbstractBaseModel):
         self.completed_by_user = user
 
         # check if organisation uses user activation
-        if self.organisation.uses_user_activation:
+        if is_validation_period_active(self.organisation):
             if self.user.valid_until is None:
                 self.user.valid_until = now() + datetime.timedelta(days=settings.SSO_VALIDATION_PERIOD_DAYS)
                 self.user.save()

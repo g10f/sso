@@ -13,7 +13,15 @@
 {% block form %}
     <h3>{% blocktrans %}Request extended access to {{ site_name }}{% endblocktrans %}</h3>
     <p>{% trans "Thank you for your message." %}</p>
-
+    {% if edit_uri %}
+        <p><a class="btn btn-default" href="{{ edit_uri }}">
+            {% if object %}
+                {% trans 'Change my message' %}
+            {% else %}
+                {% trans 'Request extended access' %}
+            {% endif %}
+        </a></p>
+    {% endif %}
     {% if redirect_uri %}
         <a class="btn btn-default" href="{{ redirect_uri }}">{% trans 'Back' %}</a>
     {% endif %}

@@ -1,7 +1,7 @@
 {% extends "base_form.html" %}
 {% load i18n admin_static %}
 
-{% block title %}{% trans 'Accept Organisation Change' %}{% endblock %}
+{% block title %}{% trans 'Accept extended access' %}{% endblock %}
 
 {% block extrascript %}{{ media }}{% endblock extrascript %}
 
@@ -9,8 +9,8 @@
 {% block breadcrumb %}
     <ol class="breadcrumb">
         <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-        <li><a href="{% url 'accounts:organisationchange_list' %}">{% trans 'Organisation Changes' %}</a></li>
-        <li class="active">{% trans 'Accept Organisation Change' %}</li>
+        <li><a href="{% url 'access_requests:extend_access_list' %}">{% trans 'Request extended access list' %}</a></li>
+        <li class="active">{% trans 'Accept extended access' %}</li>
     </ol>
 {% endblock breadcrumb %}
 
@@ -21,13 +21,15 @@
             {{ hidden }}
         {% endfor %}
 
-        <h3>{% trans 'Process Organisation Change' %}</h3>
+        <h3>{% trans 'Process extended access' %}</h3>
         <p>
-            {% if organisationchange.is_open %}
-                {% trans "Please accept or deny the organisation change request." %}
+            {% if access_request.is_open %}
+                {% trans "Please accept or deny the request for extended access." %}
             {% else %}
                 <div class="alert alert-info">
-                    {% blocktrans with status=organisationchange.get_status_display user=organisationchange.completed_by_user.get_full_name %}The organisation change was already {{ status }} by {{ user }}.{% endblocktrans %}</div>
+                    {% blocktrans trimmed with status=access_request.get_status_display user=access_request.completed_by_user.get_full_name %}
+                        The request was already {{ status }} by {{ user }}.
+                    {% endblocktrans %}</div>
             {% endif %}
         </p>
 
@@ -50,62 +52,43 @@
             {% endfor %}
         {% endif %}
 
-        {% include 'include/_static_picture_field.html' with field=organisationchange.user.picture %}
+        {% include 'include/_static_picture_field.html' with field=access_request.user.picture %}
 
         <div class="form-group">
             <label class="control-label">{% trans 'First name' %}</label>
-
-            <div class="dwbn-form-control"><p class="form-control-static">{{ organisationchange.user.first_name }}</p>
+            <div class="dwbn-form-control"><p class="form-control-static">{{ access_request.user.first_name }}</p>
             </div>
         </div>
-
         <div class="form-group">
             <label class="control-label">{% trans 'Last name' %}</label>
-
-            <div class="dwbn-form-control"><p class="form-control-static">{{ organisationchange.user.last_name }}</p>
+            <div class="dwbn-form-control"><p class="form-control-static">{{ access_request.user.last_name }}</p>
             </div>
         </div>
-
         <div class="form-group">
             <label class="control-label">{% trans 'Email address' %}</label>
-
             <div class="dwbn-form-control"><p
-                class="form-control-static">{{ organisationchange.user.primary_email }}</p></div>
+                class="form-control-static">{{ access_request.user.primary_email }}</p></div>
         </div>
-
         <div class="form-group">
             <label class="control-label">{% trans 'Phone number' %}</label>
-
             <div class="dwbn-form-control"><p
-                class="form-control-static">{{ organisationchange.user.primary_phone }}</p></div>
-        </div>
-
-        <div class="form-group">
-            <label class="control-label">{% trans 'Previous organisation' %}</label>
-
-            <div class="dwbn-form-control"><p
-                class="form-control-static">{{ organisationchange.original_organisation|default_if_none:"" }}</p>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label class="control-label">{% trans 'New organisation' %}</label>
-
-            <div class="dwbn-form-control"><p class="form-control-static">{{ organisationchange.organisation }}</p>
-            </div>
+                class="form-control-static">{{ access_request.user.primary_phone }}</p></div>
         </div>
         <div class="form-group">
             <label class="control-label">{% trans 'Message' %}</label>
-
-            <div class="dwbn-form-control"><p class="form-control-static">{{ organisationchange.message }}</p></div>
+            <div class="dwbn-form-control"><p class="form-control-static">{{ access_request.message }}</p></div>
+        </div>
+        <div class="form-group">
+            <label class="control-label">{% trans 'Edit details' %}</label>
+            <div class="dwbn-form-control"><p class="form-control-static"><a href="{% url 'accounts:update_user' access_request.user.uuid.hex %}">{{ access_request.user.username }}</a></p></div>
         </div>
 
-        {% if organisationchange.is_open %}
+        {% if access_request.is_open %}
             <div class="form-group">
                 <div class="dwbn-form-control_lg">
                     {% block submit_group %}
-                        <button type="submit" class="btn btn-default" name="_delete">{% trans 'Deny change' %}</button>
-                        <button type="submit" class="btn btn-primary">{% trans 'Accept change' %}</button>
+                        <button type="submit" class="btn btn-default" name="_delete">{% trans 'Deny extended access' %}</button>
+                        <button type="submit" class="btn btn-primary">{% trans 'Accept extended access' %}</button>
                     {% endblock submit_group %}
                 </div>
             </div>

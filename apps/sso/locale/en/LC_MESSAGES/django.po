@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-05-22 23:58+0200\n"
+"POT-Creation-Date: 2018-06-02 23:56+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,9 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
+
+msgid "user"
+msgstr ""
 
 msgid "Country"
 msgstr ""
@@ -28,6 +31,9 @@ msgid "Region"
 msgstr ""
 
 msgid "All Regions"
+msgstr ""
+
+msgid "Request for access was already processed"
 msgstr ""
 
 msgid "Message"
@@ -74,13 +80,47 @@ msgstr ""
 msgid "access request"
 msgstr ""
 
-msgid "Organisation Change Request List"
+msgid "Request extended access list"
 msgstr ""
 
 msgid "Home"
 msgstr ""
 
-msgid "Organisation Changes"
+msgid "Accept extended access"
+msgstr ""
+
+msgid "Process extended access"
+msgstr ""
+
+msgid "Please accept or deny the request for extended access."
+msgstr ""
+
+#, python-format
+msgid "The request was already %(status)s by %(user)s."
+msgstr ""
+
+msgid "Please correct the error below."
+msgstr ""
+
+msgid "Please correct the errors below."
+msgstr ""
+
+msgid "First name"
+msgstr ""
+
+msgid "Last name"
+msgstr ""
+
+msgid "Email address"
+msgstr ""
+
+msgid "Phone number"
+msgstr ""
+
+msgid "Edit details"
+msgstr ""
+
+msgid "Deny extended access"
 msgstr ""
 
 msgid "Request extended access"
@@ -88,12 +128,6 @@ msgstr ""
 
 #, python-format
 msgid "Request extended access to %(site_name)s"
-msgstr ""
-
-msgid "Please correct the error below."
-msgstr ""
-
-msgid "Please correct the errors below."
 msgstr ""
 
 #, python-format
@@ -108,6 +142,9 @@ msgid ""
 msgstr ""
 
 msgid "Back"
+msgstr ""
+
+msgid "Cancel extended access"
 msgstr ""
 
 msgid "Dear administrator(s)"
@@ -139,6 +176,23 @@ msgstr ""
 msgid "Thank you for your message."
 msgstr ""
 
+msgid "Change my message"
+msgstr ""
+
+#, python-format
+msgid "The user has already the profile \"%(profile)s\"."
+msgstr ""
+
+msgid "Denied access request."
+msgstr ""
+
+msgid "Successfully extended access."
+msgstr ""
+
+#, python-format
+msgid "You have already the profile \"%(profile)s\"."
+msgstr ""
+
 msgid "Active Users"
 msgstr ""
 
@@ -146,9 +200,6 @@ msgid "Inactive Users"
 msgstr ""
 
 msgid "primary email"
-msgstr ""
-
-msgid "user"
 msgstr ""
 
 msgid "Link"
@@ -243,9 +294,6 @@ msgstr ""
 msgid "Name"
 msgstr ""
 
-msgid "Email address"
-msgstr ""
-
 msgid "Subject"
 msgstr ""
 
@@ -298,12 +346,6 @@ msgid "Password confirmation"
 msgstr ""
 
 msgid "Enter the same password as above, for verification."
-msgstr ""
-
-msgid "First name"
-msgstr ""
-
-msgid "Last name"
 msgstr ""
 
 msgid "The two password fields didn't match."
@@ -876,6 +918,9 @@ msgstr ""
 msgid "Accept Organisation Change"
 msgstr ""
 
+msgid "Organisation Changes"
+msgstr ""
+
 msgid "Process Organisation Change"
 msgstr ""
 
@@ -884,9 +929,6 @@ msgstr ""
 
 #, python-format
 msgid "The organisation change was already %(status)s by %(user)s."
-msgstr ""
-
-msgid "Phone number"
 msgstr ""
 
 msgid "Previous organisation"
@@ -920,6 +962,9 @@ msgid "Update organisation change"
 msgstr ""
 
 msgid "Cancel change of organisation"
+msgstr ""
+
+msgid "Organisation Change Request List"
 msgstr ""
 
 msgid "Password change successful"
@@ -1759,6 +1804,14 @@ msgstr ""
 msgid "trustworthy"
 msgstr ""
 
+msgid "force using PKCE"
+msgstr ""
+
+msgid ""
+"Enforce Proof Key for Code Exchange <a href=\"https://tools.ietf.org/html/"
+"rfc7636\">https://tools.ietf.org/html/rfc7636</a>"
+msgstr ""
+
 msgid "code"
 msgstr ""
 
@@ -1769,6 +1822,12 @@ msgid "is valid"
 msgstr ""
 
 msgid "client state"
+msgstr ""
+
+msgid "code_challenge"
+msgstr ""
+
+msgid "code_challenge_method"
 msgstr ""
 
 msgid "access token"
@@ -2668,6 +2727,9 @@ msgid "Registrations"
 msgstr ""
 
 msgid "Users"
+msgstr ""
+
+msgid "Access Requests"
 msgstr ""
 
 msgid "My Email Addresses"

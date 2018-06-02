@@ -1,0 +1,57 @@
+{% extends 'base_site.html' %}
+{% load i18n list tz static %}
+
+{% block title %}{% trans 'Request extended access list' %}{% endblock %}
+
+{% block nav_accounts_user_list_class %}active{% endblock %}
+
+{% block breadcrumb %}
+<ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+    <li class="active">{% trans 'Request extended access list' %}</li>
+</ol>
+{% endblock breadcrumb %}
+
+
+{% block content %}
+<div class="row">
+	<div class="col-sm-12">
+	    {% if messages %}{% for message in messages %}
+	       <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
+	    {% endif %}
+	</div>
+</div><!-- /.row -->
+
+<div class="row dwbn-filter-row">
+	<div class="col-sm-3">
+	   {% include 'include/_search_form.html' %}
+    </div>
+	<div class="col-sm-9">
+        {% for filter in filters %}{% if filter %}
+        {% include filter.template_name with filter=filter %}
+        {% endif %}{% endfor %}
+    </div><!-- /.col-sm-9 -->
+</div>
+
+<main>
+    <div class="col-sm-12 table-responsive">
+	   <table class="table table-bordered table-striped">
+	       {% include "include/table_header.html" %}
+	       <tbody>
+	           {% for object in object_list %}
+	           <tr>
+	               <td><a class="" href="{% url 'access_requests:extend_access_accept' object.pk %}">{{ object.user.username }}</a></td>
+	               <td>{{ object.message|truncatechars:30 }}</td>
+	               <td>{{ object.user.primary_email|default_if_none:"" }}</td>
+	               <td>{{ object.last_modified|utc|date:"Y-m-d H:i" }}</td>
+	               <td>{% if object.comment %}
+                            <button type="button" class="btn btn-sm btn-default" data-container="body" data-toggle="popover" data-html="true" data-trigger="hover click"
+                                    data-placement="top" data-content="{{ object.comment }}"><span class="glyphicon glyphicon-paperclip"></span></button>{% endif %}</td>
+	           </tr>
+	           {% endfor %}
+	       </tbody>
+	   </table>
+	   {% if is_paginated %}{% pagination page_obj cl %}{% endif %}
+    </div>
+</main>
+{% endblock content %}

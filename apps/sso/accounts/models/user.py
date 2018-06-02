@@ -15,6 +15,7 @@ from django.db.utils import IntegrityError
 from django.utils import timezone
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
+from sso.access_requests.models import AccessRequest
 from sso.accounts.models import OrganisationChange
 from sso.accounts.models.application import ApplicationRole, RoleProfile, Application, Role, get_applicationrole_ids
 from sso.accounts.models.user_data import UserEmail
@@ -643,6 +644,25 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_count_of_organisationchanges(self):
         organisationchanges = OrganisationChange.open.all()
         return self.filter_administrable_organisationchanges(organisationchanges).count()
+
+    @memoize
+    def get_count_of_extend_access(self):
+        access_requests = AccessRequest.open.all()
+        return self.filter_administrable_access_requests(access_requests).count()
+
+    def filter_administrable_access_requests(self, qs):
+        #  filter the access_request for who the authenticated user has access to
+        if self.is_superuser:
+            pass
+        elif self.is_global_user_admin:
+            qs = qs.filter(user__is_superuser=False)
+        elif self.is_user_admin:
+            organisations = self.get_administrable_user_organisations()
+            q = Q(user__is_superuser=False) & Q(user__is_service=False) & Q(user__organisations__in=organisations)
+            qs = qs.filter(q).distinct()
+        else:
+            qs = AccessRequest.objects.none()
+        return qs
 
     def filter_administrable_organisationchanges(self, qs):
         #  filter the organisationchanges for who the authenticated user has access to
