@@ -4,6 +4,7 @@ from django import forms
 from django.conf import settings
 from django.urls import reverse
 from django.utils.encoding import force_text
+from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from sso.access_requests.models import AccessRequest
 from sso.accounts.models import User
@@ -33,6 +34,7 @@ def send_user_request_extended_access(admins,
             'update_user_url': reverse("access_requests:extend_access_accept", args=(access_request.pk,)),
             'user': access_request.user,
             'site_name': site_name,
+            'days_since_access_request': (now() - access_request.last_modified).days,
         }
         message, subject = i18n_email_msg_and_subj(c, email_template_name, subject_template_name)
         send_mail(subject, message, recipient_list=recipients, apply_async=apply_async)
