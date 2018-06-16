@@ -25,7 +25,7 @@ def send_account_created_email(user, request, token_generator=default_pwd_reset_
     site_name = settings.SSO_SITE_NAME
     domain = current_site.domain
     user_primary_email = request.user.primary_email()
-    from_email = user_primary_email.email if user_primary_email else None
+    reply_to = [user_primary_email.email] if user_primary_email else None
     expiration_date = now() + datetime.timedelta(settings.PASSWORD_RESET_TIMEOUT_DAYS)
     email = user.primary_email()
     c = {
@@ -43,7 +43,7 @@ def send_account_created_email(user, request, token_generator=default_pwd_reset_
     language = user.language if user.language else settings.LANGUAGE_CODE
     message, subject = i18n_email_msg_and_subj(c, email_template_name, subject_template_name, language)
 
-    user.email_user(subject, message, from_email=from_email, fail_silently=settings.DEBUG, async=async,
+    user.email_user(subject, message, reply_to=reply_to, fail_silently=settings.DEBUG, async=async,
                     countdown=countdown)
 
 

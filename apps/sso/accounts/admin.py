@@ -568,12 +568,14 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
             n = queryset.count()
             subject = request.POST.get('subject', _('%s SSO Information') % settings.SSO_BRAND)
             body = request.POST.get('body')
-            from_email = request.POST.get('from_email', None)
+            reply_to = request.POST.get('reply_to', None)
+            if reply_to:
+                reply_to = [reply_to]
             if n:
                 from django.core.mail import get_connection
                 connection = get_connection()
                 for user in queryset:
-                    msg = EmailMessage(subject, body, to=[user.primary_email()], from_email=from_email,
+                    msg = EmailMessage(subject, body, to=[user.primary_email()], reply_to=reply_to,
                                        connection=connection)
                     # msg.content_subtype = "html"
                     msg.send(fail_silently=True)
@@ -599,8 +601,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
             'action_checkbox_name': admin.ACTION_CHECKBOX_NAME,
         }
         # Display the confirmation page
-        return TemplateResponse(request, "admin/accounts/send_mail_selected_confirmation.html", context,
-                                current_app=self.admin_site.name)
+        return TemplateResponse(request, "admin/accounts/send_mail_selected_confirmation.html", context)
 
     mark_info_mail.short_description = _('Send info email')
 

@@ -27,8 +27,8 @@
             <fieldset class="module aligned wide">
                 <div class="form-row">
                     <div>
-                        <label for="id_from_email">{% trans 'from email' %}</label>
-                        <input type="text" class="vTextField" name="from_email" id="id_from_email"/>
+                        <label for="id_reply_to">{% trans 'reply to email' %}</label>
+                        <input type="text" class="vTextField" name="reply_to" id="id_reply_to"/>
                     </div>
                 </div>
                 <div class="form-row">
@@ -44,7 +44,7 @@
                     </div>
                 </div>
             </fieldset>
-            <button type="submit">{% trans "Send mail" %}</button>
+            <input type="submit" class="default">{% trans "Send mail" %}</input>
         </div>
     </form>
 {% endblock %}
