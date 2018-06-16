@@ -206,8 +206,7 @@ class UserSelfRegistrationForm(forms.Form):
                                 widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('last name'))}))
     email = forms.EmailField(label=_('Email'), required=True, widget=bootstrap.EmailInput())
     base64_picture = forms.CharField(label=_('Your picture'), help_text=_(
-        'Please use a photo of your face. We are using it also to validate your registration.'),
-                                     widget=bootstrap.HiddenInput)
+        'Please use a photo of your face. We are using it also to validate your registration.'))
     known_person1_first_name = forms.CharField(label=_("First name"), max_length=100, widget=bootstrap.TextInput())
     known_person1_last_name = forms.CharField(label=_("Last name"), max_length=100, widget=bootstrap.TextInput())
     known_person2_first_name = forms.CharField(label=_("First name"), max_length=100, widget=bootstrap.TextInput())

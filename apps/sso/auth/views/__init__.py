@@ -160,8 +160,9 @@ class TokenView(FormView):
         device_classes = get_device_classes()
         other_devices = []
         for device_class in device_classes:
-            for device in device_class.objects.filter(user=self.user).exclude(
-                device_ptr_id=self.device.id).prefetch_related('device_ptr'):
+            devices = device_class.objects.filter(user=self.user).exclude(
+                device_ptr_id=self.device.id).prefetch_related('device_ptr')
+            for device in devices:
                 device_info = {
                     'device': device,
                     'url': "%s?%s" % (

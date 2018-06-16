@@ -79,6 +79,15 @@
             <div class="dwbn-form-control"><p class="form-control-static">{{ access_request.message }}</p></div>
         </div>
         <div class="form-group">
+            <label class="control-label">{% trans 'Organisation' %}</label>
+            <div class="dwbn-form-control"><p class="form-control-static">
+                {% for organisation in access_request.user.organisations.all %}{{ organisation }}{% if not forloop.last %}, {% endif %}{% endfor %}</p></div>
+        </div>
+        <div class="form-group">
+            <label class="control-label">{% trans 'Application' %}</label>
+            <div class="dwbn-form-control"><p class="form-control-static">{{ access_request.application|default_if_none:"" }}</p></div>
+        </div>
+        <div class="form-group">
             <label class="control-label">{% trans 'Edit details' %}</label>
             <div class="dwbn-form-control"><p class="form-control-static"><a href="{% url 'accounts:update_user' access_request.user.uuid.hex %}">{{ access_request.user.username }}</a></p></div>
         </div>

@@ -10,7 +10,7 @@
             <div class="btn btn-default btn-file">
                 <span class="">{% trans 'Select image' %}</span>
                 <input type="file" name="_dummy">
-                {{ field }}
+                <input type="hidden" name="{{ field.name }}" id="{{ field.auto_id }}"{% if field.value != None %} value="{{ field.value|stringformat:'s' }}"{% endif %} />
             </div>
             <a href="#" class="btn btn-default btn-remove hidden">{% trans 'Remove' %}</a>
             <span class="help-block-file help-block">{% if field.help_text or field.errors %}{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}{% endif %}</span>

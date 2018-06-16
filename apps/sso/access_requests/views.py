@@ -1,28 +1,25 @@
 import logging
 
-from django.template import loader
-
-from django.contrib import messages
-from django.http import HttpResponseRedirect
-
-from django.shortcuts import get_object_or_404
-
-from django.utils.encoding import force_text
-
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
+from django.template import loader
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
+from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import TemplateView
 from django.views.generic.edit import UpdateView, FormView
 from sso.access_requests.forms import AccessRequestForm, send_user_request_extended_access, AccessRequestAcceptForm
-from sso.accounts.models import User
+from sso.accounts.models import User, Application
 from sso.accounts.views.filter import UserSearchFilter2
 from sso.auth.decorators import admin_login_required
 from sso.oauth2.models import allowed_hosts
 from sso.signals import user_admins, user_access_request
+from sso.utils.http import get_request_param
 from sso.utils.url import get_safe_redirect_uri, update_url
 from sso.views import main
 from sso.views.generic import ListView
@@ -131,6 +128,16 @@ class AccountExtendAccessDoneView(TemplateView):
         return context
 
 
+def get_application_from_request(request):
+    application_uuid = get_request_param(request, 'app_id')
+    if application_uuid:
+        try:
+            return Application.objects.get_by_natural_key(application_uuid)
+        except (ObjectDoesNotExist, ValidationError):
+            pass
+    return None
+
+
 class AccountExtendAccessView(UpdateView):
     """
     like UpdateView, but
@@ -144,7 +151,15 @@ class AccountExtendAccessView(UpdateView):
 
     def get_initial(self):
         initial = super().get_initial()
-        initial['user'] = self.request.user
+        if not self.object:
+            initial['user'] = self.request.user
+            initial['created'] = True
+            application = get_application_from_request(self.request)
+            if application:
+                initial['application'] = application
+            message = get_request_param(self.request, 'msg')
+            if message:
+                initial['message'] = message
         return initial
 
     @method_decorator(login_required)
@@ -164,16 +179,17 @@ class AccountExtendAccessView(UpdateView):
         """
         Insert the redirect_uri into the context dict.
         """
-        context = {}
-        redirect_uri = get_safe_redirect_uri(self.request, allowed_hosts())
-        if redirect_uri:
-            context['redirect_uri'] = redirect_uri
+        context = {
+            'redirect_uri': get_safe_redirect_uri(self.request, allowed_hosts()),
+            'application': get_request_param(self.request, 'application')
+        }
+
         user = self.request.user
 
         # enable brand specific modification
         admins = get_user_admins(sender=self.__class__, organisations=user.organisations.all())
         context.update({'site_name': settings.SSO_SITE_NAME, 'max_file_size': User.MAX_PICTURE_SIZE,
-                        'admins': admins, 'redirect_uri': redirect_uri})
+                        'admins': admins})
 
         context.update(kwargs)
         return super().get_context_data(**context)
@@ -206,20 +222,22 @@ class AccountExtendAccessView(UpdateView):
         """
         kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user
+        # kwargs['application'] = get_application_from_request(self.request)
+        # kwargs['message'] = get_request_param(self.request, 'msg')
         return kwargs
 
     def form_valid(self, form):
         user = self.request.user
-        form.instance.user = user
 
-        response = super().form_valid(form)
-        if 'message' in form.changed_data:
+        if form.cleaned_data['created'] or 'message' in form.changed_data:
             # enable brand specific modification
             admins = get_user_admins(sender=self.__class__, organisations=user.organisations.all())
             form.instance.comment = get_comment(admins)
-            instance = form.save()
-            send_user_request_extended_access(admins, instance, form.instance.message)
+            response = super().form_valid(form)
+            send_user_request_extended_access(admins, form.instance, form.instance.message)
             user_access_request.send_robust(sender=self.__class__, access_request=form.instance)
+        else:
+            response = super().form_valid(form)
 
         return response
 
@@ -231,7 +249,7 @@ class AccessRequestList(ListView):
 
     @property
     def list_display(self):
-        return ['user', 'message', _('primary email'), 'last_modified', 'comment']
+        return ['user', 'message', 'application', _('primary email'), 'last_modified', 'comment']
 
     @method_decorator(admin_login_required)
     @method_decorator(permission_required('accounts.change_user'))

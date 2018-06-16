@@ -14,7 +14,8 @@ class BaseForm(forms.ModelForm):
         return forms.Media(js=['js/%s' % url for url in js]) + media
     """
     def save(self, commit=True):
-        if self.has_changed():
+        # attention: a form with initial data has_unchanged if the initial data are unchanged
+        if self.instance.pk is None or self.has_changed():
             return super(BaseForm, self).save(commit)
         else:
             return self.instance
@@ -24,7 +25,7 @@ class BaseForm(forms.ModelForm):
         return self._meta.model._meta
 
 
-class BaseTabularInlineForm(BaseForm):    
+class BaseTabularInlineForm(BaseForm):
     def template(self):
         return 'edit_inline/tabular.html'
 
