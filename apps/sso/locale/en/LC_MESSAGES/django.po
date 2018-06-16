@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-06-02 23:56+0200\n"
+"POT-Creation-Date: 2018-06-16 17:13+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -117,6 +117,12 @@ msgstr ""
 msgid "Phone number"
 msgstr ""
 
+msgid "Organisation"
+msgstr ""
+
+msgid "Application"
+msgstr ""
+
 msgid "Edit details"
 msgstr ""
 
@@ -145,6 +151,17 @@ msgid "Back"
 msgstr ""
 
 msgid "Cancel extended access"
+msgstr ""
+
+#, python-format
+msgid "Your request for extended access on %(site_name)s has been accepted."
+msgstr ""
+
+#, python-format
+msgid "Best wishes %(organisation_admin)s"
+msgstr ""
+
+msgid "Request for extended access accepted"
 msgstr ""
 
 msgid "Dear administrator(s)"
@@ -206,9 +223,6 @@ msgid "Link"
 msgstr ""
 
 msgid "(None)"
-msgstr ""
-
-msgid "Organisation"
 msgstr ""
 
 msgid "created by"
@@ -836,10 +850,6 @@ msgstr ""
 #, python-format
 msgid ""
 "Your change on %(site_name)s to %(organisation_name)s has been accepted."
-msgstr ""
-
-#, python-format
-msgid "Best wishes %(organisation_admin)s"
 msgstr ""
 
 #, python-format
