@@ -42,6 +42,7 @@
 	           <tr>
 	               <td><a class="" href="{% url 'access_requests:extend_access_accept' object.pk %}">{{ object.user.username }}</a></td>
 	               <td>{{ object.message|truncatechars:30 }}</td>
+	               <td>{{ object.application|default_if_none:"" }}</td>
 	               <td>{{ object.user.primary_email|default_if_none:"" }}</td>
 	               <td>{{ object.last_modified|utc|date:"Y-m-d H:i" }}</td>
 	               <td>{% if object.comment %}

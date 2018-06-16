@@ -9,8 +9,12 @@
 {% block title %}{% trans 'Request extended access' %}{% endblock %}
 
 {% block form %}
+    <h3>{% blocktrans %}Request extended access to {{ site_name }}{% endblocktrans %}</h3>
     <form class="form-horizontal" method="post">{% csrf_token %}
-        <h3>{% blocktrans %}Request extended access to {{ site_name }}{% endblocktrans %}</h3>
+        {# Include the hidden fields in the form #}
+        {% for hidden in form.hidden_fields %}
+            {{ hidden }}
+        {% endfor %}
 
         {% if form.errors %}
             <div class="alert alert-danger">

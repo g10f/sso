@@ -6,6 +6,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
+from sso.accounts.models import Application
 from sso.models import AbstractBaseModel, AbstractBaseModelManager
 from sso.organisations.models import is_validation_period_active
 
@@ -43,6 +44,7 @@ class AccessRequest(AbstractBaseModel):
     completed_by_user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True,
                                           verbose_name=_('completed by'),
                                           related_name='accessrequest_completed_by', on_delete=models.SET_NULL)
+    application = models.ForeignKey(Application, blank=True, null=True, on_delete=models.SET_NULL)
 
     objects = AccessRequestManager()
     open = OpenAccessRequestManager()

@@ -59,20 +59,30 @@ class AccessRequestAcceptForm(forms.Form):
 class AccessRequestForm(BaseForm):
     message = forms.CharField(label=_("Message"), widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 5}))
     base64_picture = forms.CharField(label=_('Your picture'), help_text=_(
-        'Please use a photo of your face. We are using it also to validate your registration.'),
-                                     widget=bootstrap.HiddenInput)
+        'Please use a photo of your face. We are using it also to validate your registration.'))
+    created = forms.BooleanField(widget=forms.HiddenInput(), required=False)
 
     class Meta:
         model = AccessRequest
-        fields = ('message', 'base64_picture')
+        fields = ('message', 'application', 'user', 'base64_picture')
         widgets = {
-            'message': bootstrap.Textarea()
+            'message': bootstrap.Textarea(),
+            'application': forms.HiddenInput(),
+            'user': forms.HiddenInput()
         }
 
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user')  # remove custom user keyword
-        super().__init__(*args, **kwargs)
-        if self.user.picture:
+    def __init__(self, initial=None, instance=None, *args, **kwargs):
+        user = kwargs.pop('user')  # remove custom user keyword
+        # message = kwargs.pop('message')  # remove custom user keyword
+        # application = kwargs.pop('application')  # remove custom user keyword
+        # if instance is None:
+        #     initial['user'] = user
+        #     initial['message'] = message
+        #     initial['application'] = application
+
+        super().__init__(initial=initial, instance=instance, *args, **kwargs)
+
+        if user.picture:
             del self.fields['base64_picture']
 
     def clean_base64_picture(self):
@@ -82,6 +92,6 @@ class AccessRequestForm(BaseForm):
     def save(self, commit=True):
         cd = self.cleaned_data
         if 'base64_picture' in cd:
-            self.user.picture = cd.get('base64_picture')
-            self.user.save()
+            self.instance.user.picture = cd.get('base64_picture')
+            self.instance.user.save()
         return super().save(commit)
