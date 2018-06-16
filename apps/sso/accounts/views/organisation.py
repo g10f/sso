@@ -186,7 +186,8 @@ class OrganisationChangeAcceptView(FormView):
             subject = ''.join(subject.splitlines())
             message = loader.render_to_string('accounts/email/organisationchange_accepted_email.txt', c)
             html_message = None  # loader.render_to_string(html_email_template_name, c)
-            user.email_user(subject, message, self.request.user.primary_email(), html_message=html_message)
+            user.email_user(subject, message, reply_to=['self.request.user.primary_email()'],
+                            html_message=html_message)
 
             # display success message
             msg = _('Successfully changed the organisation.')

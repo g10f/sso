@@ -24,6 +24,7 @@ THUMBNAIL_FORMAT = 'PNG'
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 SITE_ID = 1
+DEFAULT_FROM_EMAIL = 'webmaster@g10f.de'
 
 SSO_BRAND = 'G10F'
 SSO_SITE_NAME = 'G10F'
@@ -53,7 +54,7 @@ SSO_COUNTRY_MANAGEMENT = False
 SSO_GOOGLE_GEO_API_KEY = 'insert your key'
 SSO_EMAIL_LOGO = ""
 SSO_ASYNC_EMAILS = False  # send emails async via celery task
-SSO_NOREPLY_EMAIL = None
+SSO_NOREPLY_EMAIL = DEFAULT_FROM_EMAIL
 SSO_POST_RESET_LOGIN = True
 
 OTP_DEVICES = [
@@ -101,7 +102,6 @@ CENTER_TYPE_CHOICES = (
 )
 
 MANAGERS = ADMINS
-DEFAULT_FROM_EMAIL = 'webmaster@g10f.de'
 
 DATABASES = {
     'default': {
@@ -260,7 +260,8 @@ REGISTRATION = {
 
 # with AWS SES e.g can only send from verified emails
 # https://docs.aws.amazon.com/ses/latest/DeveloperGuide/verify-addresses-and-domains.html
-SSO_SEND_FROM_VERIFIED_EMAIL_ADDRESSES = '%s|%s' % (DEFAULT_FROM_EMAIL, REGISTRATION['CONTACT_EMAIL'])
+SSO_SEND_FROM_VERIFIED_EMAIL_ADDRESSES = '%s|%s|%s' % \
+                                         (DEFAULT_FROM_EMAIL, SSO_NOREPLY_EMAIL, REGISTRATION['CONTACT_EMAIL'])
 
 NOCAPTCHA = True  # use the new No Captcha reCaptcha (django_recaptcha)
 
