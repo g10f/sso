@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-06-02 23:56+0200\n"
+"POT-Creation-Date: 2018-06-16 17:13+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -118,6 +118,12 @@ msgstr "E-Mail Adresse"
 msgid "Phone number"
 msgstr "Telefonnummer"
 
+msgid "Organisation"
+msgstr "Organisation"
+
+msgid "Application"
+msgstr "Anwendung"
+
 msgid "Edit details"
 msgstr "Details bearbeiten"
 
@@ -125,11 +131,11 @@ msgid "Deny extended access"
 msgstr "Berechtigungsanfrage ablehnen"
 
 msgid "Request extended access"
-msgstr "Nach erweiterter Zugriffsberechtigung fragen"
+msgstr "Nach zusätzlicher Berechtigung fragen"
 
 #, python-format
 msgid "Request extended access to %(site_name)s"
-msgstr "Nach erweiterter Zugriffsberechtigung auf %(site_name)s fragen"
+msgstr "Nach zusätzlicher Berechtigung auf %(site_name)s fragen"
 
 #, python-format
 msgid "Dear %(first_name)s."
@@ -142,7 +148,7 @@ msgid ""
 "administrators below."
 msgstr ""
 "Du hast versucht auf eine %(site_name)s Anwendung zuzugreifen, für die eine "
-"erweiterte Zugriffsberechtigung notwendig ist. Falls Du den Zugriff auf die "
+"zusätzliche Berechtigung notwendig ist. Falls Du den Zugriff auf die "
 "Anwendung benötigst, kannst Du eine Nachricht an die unten aufgeführten "
 "Administratoren senden."
 
@@ -151,6 +157,16 @@ msgstr "Zurück"
 
 msgid "Cancel extended access"
 msgstr "Berechtigungsanfrage abbrechen"
+
+msgid "Your request for extended access on %(site_name)s has been accepted."
+msgstr "Deine Berechtigung auf %(site_name)s wurde erweitert"
+
+#, python-format
+msgid "Best wishes %(organisation_admin)s"
+msgstr "Viele Grüße %(organisation_admin)s"
+
+msgid "Request for extended access accepted"
+msgstr "Berechtigungsanfragen"
 
 msgid "Dear administrator(s)"
 msgstr "Liebe Administratoren/Lieber Administrator"
@@ -214,9 +230,6 @@ msgstr ""
 
 msgid "(None)"
 msgstr ""
-
-msgid "Organisation"
-msgstr "Organisation"
 
 msgid "created by"
 msgstr "angelegt von"
@@ -879,10 +892,6 @@ msgid ""
 "Your change on %(site_name)s to %(organisation_name)s has been accepted."
 msgstr ""
 "Dein Wechsel auf %(site_name)s zu %(organisation_name)s wurde angenommen."
-
-#, python-format
-msgid "Best wishes %(organisation_admin)s"
-msgstr "Viele Grüße %(organisation_admin)s"
 
 #, python-format
 msgid "Change to %(organisation_name)s accepted"
@@ -2930,9 +2939,3 @@ msgstr ""
 
 msgid "CSRF verification failed. Request aborted."
 msgstr ""
-
-#~ msgid "Denied extended access."
-#~ msgstr "Nach erweiterter Zugriffsberechtigung fragen"
-
-#~ msgid "Extended access"
-#~ msgstr "Berechtigungsanfrage"
