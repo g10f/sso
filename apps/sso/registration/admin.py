@@ -61,7 +61,7 @@ class RegistrationAdmin(admin.ModelAdmin):
           'classes': ['wide']}), ]
 
     def get_queryset(self, request):
-        return super(RegistrationAdmin, self).get_queryset(request).prefetch_related('user__useremail_set')
+        return super().get_queryset(request).prefetch_related('user__useremail_set')
 
     def is_active(self, obj):
         return obj.user.is_active
@@ -122,7 +122,7 @@ class RegistrationAdmin(admin.ModelAdmin):
     def validate_users(self, request, queryset):
         """
         validates the selected users, if they are not alrady
-        validated.        
+        validated.
         """
         queryset = queryset.filter(is_validated=False)
         changecount = 0

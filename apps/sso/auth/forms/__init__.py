@@ -44,7 +44,7 @@ class EmailAuthenticationForm(AuthenticationForm):
 
     """
     def confirm_login_allowed(self, user):
-        super(EmailAuthenticationForm, self).confirm_login_allowed(user)
+        super().confirm_login_allowed(user)
 
         # check if the activation is not expired
         validate = False
@@ -73,7 +73,7 @@ class U2FForm(forms.Form):
     def __init__(self, device=None, **kwargs):
         self.user = kwargs.pop('user')
         self.device = device
-        super(U2FForm, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def clean(self):
         try:
@@ -98,7 +98,7 @@ class AuthenticationTokenForm(forms.Form):
     def __init__(self, device=None, **kwargs):
         self.user = kwargs.pop('user')
         self.device = device
-        super(AuthenticationTokenForm, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
     def clean(self):
         if self.user is None:

@@ -138,12 +138,12 @@ class OrganisationDetailView(OrganisationMixin, JsonDetailView):
     operations = {}
 
     def get_queryset(self):
-        return super(OrganisationDetailView, self).get_queryset().prefetch_related(
+        return super().get_queryset().prefetch_related(
             'organisation_country__country', 'email', 'organisationaddress_set', 'organisationphonenumber_set',
             'organisationpicture_set')
 
     def get_object_data(self, request, obj):
-        return super(OrganisationDetailView, self).get_object_data(request, obj, details=True)
+        return super().get_object_data(request, obj, details=True)
 
     def delete_object(self, request, obj):
         obj.is_active = False
@@ -153,7 +153,7 @@ class OrganisationDetailView(OrganisationMixin, JsonDetailView):
 class OrganisationList(OrganisationMixin, JsonListView):
     # TODO: caching
     def get_queryset(self):
-        qs = super(OrganisationList, self).get_queryset().prefetch_related(
+        qs = super().get_queryset().prefetch_related(
             'organisation_country__country', 'admin_region', 'email', 'organisationaddress_set',
             'organisationaddress_set__country',
             'association', 'organisationphonenumber_set', 'organisationpicture_set').distinct()

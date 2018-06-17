@@ -48,16 +48,16 @@ class CountryGroupDetailView(CountryGroupMixin, JsonDetailView):
     operations = {}
 
     def get_queryset(self):
-        return super(CountryGroupDetailView, self).get_queryset().prefetch_related('email')
+        return super().get_queryset().prefetch_related('email')
 
     def get_object_data(self, request, obj):
-        return super(CountryGroupDetailView, self).get_object_data(request, obj, details=True)
+        return super().get_object_data(request, obj, details=True)
 
 
 class CountryGroupList(CountryGroupMixin, JsonListView):
 
     def get_queryset(self):
-        qs = super(CountryGroupList, self).get_queryset().prefetch_related('email')
+        qs = super().get_queryset().prefetch_related('email')
         name = self.request.GET.get('q', None)
         if name:
             qs = qs.filter(name__icontains=name)

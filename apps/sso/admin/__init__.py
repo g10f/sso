@@ -70,7 +70,7 @@ class SSOAdminSite(admin.AdminSite):
         Returns True if the given HttpRequest has permission to view
         *at least one* page in the admin site.
         """
-        return super(SSOAdminSite, self).has_permission(request) and is_recent_auth_time(request)
+        return super().has_permission(request) and is_recent_auth_time(request)
 
 
 sso_admin_site = SSOAdminSite()

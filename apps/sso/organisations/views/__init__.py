@@ -48,7 +48,7 @@ class OrganisationBaseView(object):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        return super(OrganisationBaseView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         """
@@ -63,7 +63,7 @@ class OrganisationBaseView(object):
             context['has_organisation_access'] = self.request.user.has_organisation_access(self.object.uuid)
 
         context.update(kwargs)
-        return super(OrganisationBaseView, self).get_context_data(**context)
+        return super().get_context_data(**context)
 
     def get_success_url(self):
         msg_dict = {'name': force_text(self.model._meta.verbose_name), 'obj': force_text(self.object)}
@@ -77,6 +77,7 @@ class OrganisationBaseView(object):
                 success_url = redirect_uri
             else:
                 msg = _('The %(name)s "%(obj)s" was changed successfully.') % msg_dict
+                # hack?
                 success_url = super(FormsetsUpdateView, self).get_success_url()
                 messages.add_message(self.request, level=messages.SUCCESS, message=msg, fail_silently=True)
 
@@ -106,7 +107,7 @@ class OrganisationDeleteView(OrganisationBaseView, DeleteView):
         # additionally check if the user is admin of the organisation
         if not request.user.has_organisation_access(kwargs.get('uuid')):
             raise PermissionDenied
-        return super(OrganisationDeleteView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def delete(self, request, *args, **kwargs):
         """
@@ -147,13 +148,13 @@ class OrganisationCreateView(OrganisationBaseView, CreateView):
     @method_decorator(login_required)
     @method_decorator(permission_required('organisations.add_organisation', raise_exception=True))
     def dispatch(self, request, *args, **kwargs):
-        return super(OrganisationCreateView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
         """
         add user to form kwargs for filtering the adminregions
         """
-        kwargs = super(OrganisationCreateView, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
 
@@ -189,7 +190,7 @@ class OrganisationPictureUpdateView(OrganisationBaseView, FormsetsUpdateView):
         if not user.has_organisation_access(kwargs.get('uuid')):
             raise PermissionDenied
 
-        return super(OrganisationPictureUpdateView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_formsets(self):
 
@@ -224,13 +225,13 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
         if not user.has_organisation_access(kwargs.get('uuid')):
             raise PermissionDenied
 
-        return super(OrganisationUpdateView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
         """
         add user to form kwargs for filtering the adminregions
         """
-        kwargs = super(OrganisationUpdateView, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
 
@@ -240,7 +241,7 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
         the result in admin_type
         """
         user = self.request.user
-        obj = super(OrganisationUpdateView, self).get_object(queryset)
+        obj = super().get_object(queryset)
         if obj.association in user.get_assignable_associations():
             self.admin_type = 'association'
         elif obj.organisation_country in user.get_assignable_organisation_countries():
@@ -445,14 +446,14 @@ class OrganisationList(ListView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        return super(OrganisationList, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
         """
         Get the list of items for this view. This must be an iterable, and may
         be a queryset (in which qs-specific behavior will be enabled).
         """
-        qs = super(OrganisationList, self).get_queryset().only(
+        qs = super().get_queryset().only(
             'location', 'uuid', 'name', 'email', 'organisation_country', 'founded').prefetch_related(
             'organisationaddress_set__country', 'email', 'organisationpicture_set')
         return self.apply_filters(qs)
@@ -509,13 +510,13 @@ class OrganisationList(ListView):
             'filters': filters,
         }
         context.update(kwargs)
-        return super(OrganisationList, self).get_context_data(**context)
+        return super().get_context_data(**context)
 
     def get(self, request, *args, **kwargs):
         if self.export:
             return self.get_export()
         else:
-            return super(OrganisationList, self).get(self, request, *args, **kwargs)
+            return super().get(self, request, *args, **kwargs)
 
     def apply_filters(self, qs):
         # create the change list, which is required for apply filter

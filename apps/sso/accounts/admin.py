@@ -462,7 +462,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         if db_field.name == "app_admin_regions":
             kwargs["queryset"] = user.get_administrable_app_admin_user_regions()
 
-        return super(UserAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
+        return super().formfield_for_manytomany(db_field, request, **kwargs)
 
     def save_form(self, request, form, change):
         """
@@ -475,7 +475,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
             self.merge_allowed_values(form, 'role_profiles', user.get_administrable_role_profiles())
             self.merge_allowed_values(form, 'organisations', user.get_administrable_user_organisations())
 
-        return super(UserAdmin, self).save_form(request, form, change)
+        return super().save_form(request, form, change)
 
     @mark_safe
     def get_last_modified_by_user(self, obj):
@@ -504,7 +504,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         remove some actions if the user is not superuser or
         has not the required permissions
         """
-        actions = super(UserAdmin, self).get_actions(request)
+        actions = super().get_actions(request)
         user = request.user
         if not user.is_superuser:
             actions.pop('mark_info_mail')
@@ -517,7 +517,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         if obj is None:
             return []
         else:
-            return super(UserAdmin, self).get_formsets(request, obj)
+            return super().get_formsets(request, obj)
 
     def get_fieldsets(self, request, obj=None):
         """
@@ -525,23 +525,23 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         permissions should be managed via groups
         """
         if request.user.is_superuser or obj is None:
-            return super(UserAdmin, self).get_fieldsets(request, obj)
+            return super().get_fieldsets(request, obj)
         else:
             return self.non_su_fieldsets
 
     def get_form(self, request, obj=None, **kwargs):
         if request.user.is_superuser or obj is None:
-            return super(UserAdmin, self).get_form(request, obj, **kwargs)
+            return super().get_form(request, obj, **kwargs)
         else:
             defaults = {
                 'fields': flatten_fieldsets(self.non_su_fieldsets),
             }
             defaults.update(kwargs)
-            return super(UserAdmin, self).get_form(request, obj, **defaults)
+            return super().get_form(request, obj, **defaults)
 
     def get_readonly_fields(self, request, obj=None):
         if request.user.is_superuser or obj is None:
-            return super(UserAdmin, self).get_readonly_fields(request, obj)
+            return super().get_readonly_fields(request, obj)
         else:
             return self.non_su_readonly_fields
 
@@ -549,7 +549,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         """
         display no superusers in the changelist for non superusers
         """
-        qs = super(UserAdmin, self).get_queryset(request).prefetch_related('last_modified_by_user', 'created_by_user',
+        qs = super().get_queryset(request).prefetch_related('last_modified_by_user', 'created_by_user',
                                                                            'useremail_set')
         user = request.user
         if user.is_superuser:

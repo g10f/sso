@@ -26,7 +26,7 @@ class URLValidatorEx(URLValidator):
         if kwargs is None:
             kwargs = {}
         kwargs['regex'] = regex
-        super(URLValidatorEx, self).__init__(**kwargs)
+        super().__init__(**kwargs)
 
 
 class URLFormFieldEx(forms.URLField):
@@ -38,17 +38,17 @@ class URLFormFieldEx(forms.URLField):
         }
         kwargs['error_messages'] = error_messages
         kwargs['validators'] = validators
-        super(URLFormFieldEx, self).__init__(max_length=max_length, min_length=min_length, *args, **kwargs)
+        super().__init__(max_length=max_length, min_length=min_length, *args, **kwargs)
 
 
 class URLFieldEx(URLField):
     def __init__(self, domain, verbose_name=None, name=None, **kwargs):
         self.domain = domain
         self.default_validators = [URLValidatorEx(domain)]
-        super(URLFieldEx, self).__init__(verbose_name, name, **kwargs)
+        super().__init__(verbose_name, name, **kwargs)
 
     def deconstruct(self):
-        name, path, args, kwargs = super(URLFieldEx, self).deconstruct()
+        name, path, args, kwargs = super().deconstruct()
         kwargs['domain'] = self.domain
         return name, path, args, kwargs
 
@@ -58,7 +58,7 @@ class URLFieldEx(URLField):
             'domain': self.domain
         }
         defaults.update(kwargs)
-        return super(URLFieldEx, self).formfield(**defaults)
+        return super().formfield(**defaults)
 
 
 class SimpleArrayFieldEx(SimpleArrayField):
@@ -68,10 +68,11 @@ class SimpleArrayFieldEx(SimpleArrayField):
     }
 
     def __init__(self, base_field, delimiter='\n', max_length=None, min_length=None, *args, **kwargs):
-        super(SimpleArrayFieldEx, self).__init__(base_field, delimiter=delimiter, max_length=max_length,
+        super().__init__(base_field, delimiter=delimiter, max_length=max_length,
                                                  min_length=min_length, *args, **kwargs)
 
     def validate(self, value):
+        # don't call SimpleArrayField validate method!
         super(SimpleArrayField, self).validate(value)
         errors = []
         for index, item in enumerate(value):
@@ -88,6 +89,7 @@ class SimpleArrayFieldEx(SimpleArrayField):
             raise ValidationError(errors)
 
     def run_validators(self, value):
+        # don't call SimpleArrayField run_validators method!
         super(SimpleArrayField, self).run_validators(value)
         errors = []
         for index, item in enumerate(value):
@@ -109,12 +111,12 @@ class SimpleArrayFieldEx(SimpleArrayField):
 
 class URLArrayField(ArrayField):
     def __init__(self, size=None, **kwargs):
-        super(URLArrayField, self).__init__(
+        super().__init__(
             base_field=models.URLField(_('url'), validators=[validators.URLValidator(schemes=['http', 'https'])]),
             size=size, **kwargs)
 
     def deconstruct(self):
-        name, path, args, kwargs = super(URLArrayField, self).deconstruct()
+        name, path, args, kwargs = super().deconstruct()
         kwargs.pop('base_field')
         return name, path, args, kwargs
 

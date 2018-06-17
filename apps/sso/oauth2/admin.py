@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 class ClientAdminForm(forms.ModelForm):
     def clean(self):
-        cleaned_data = super(ClientAdminForm, self).clean()
+        cleaned_data = super().clean()
         client_type = cleaned_data.get("type")
         client_secret = cleaned_data.get("client_secret")
         user = cleaned_data.get("user")

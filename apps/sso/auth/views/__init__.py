@@ -46,7 +46,7 @@ class LoginView(FormView):
     @method_decorator(never_cache)
     @method_decorator(throttle(duration=30, max_calls=12))
     def dispatch(self, request, *args, **kwargs):
-        return super(LoginView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         self.is_two_factor_required = get_request_param(request, 'two_factor', False) is not False
@@ -62,10 +62,10 @@ class LoginView(FormView):
             token_url = get_token_url(user.id, expiry, redirect_url, backend, display, device.id)
             return redirect(token_url)
 
-        return super(LoginView, self).get(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
     def get_initial(self):
-        initial = super(LoginView, self).get_initial()
+        initial = super().get_initial()
         initial['remember_me'] = not self.request.session.get_expire_at_browser_close()
         return initial
 
@@ -95,10 +95,10 @@ class LoginView(FormView):
 
             auth_login(self.request, user)
 
-        return super(LoginView, self).form_valid(form)
+        return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
-        context = super(LoginView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         redirect_url = get_safe_login_redirect_url(self.request)
         context['cancel_url'] = get_oauth2_cancel_url(redirect_url)
         context['site_name'] = settings.SSO_SITE_NAME
@@ -119,7 +119,7 @@ class TokenView(FormView):
     @method_decorator(never_cache)
     @method_decorator(throttle(duration=30, max_calls=12))
     def dispatch(self, *args, **kwargs):
-        return super(TokenView, self).dispatch(*args, **kwargs)
+        return super().dispatch(*args, **kwargs)
 
     def get_form_class(self):
         state = signing.loads(self.kwargs['user_data'], salt=SALT)
@@ -133,10 +133,10 @@ class TokenView(FormView):
         try:
             return self.device.login_form_templates
         except Exception:
-            return super(TokenView, self).get_template_names()
+            return super().get_template_names()
 
     def get_form_kwargs(self):
-        kwargs = super(TokenView, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs['user'] = self.user
         kwargs['device'] = self.device
         return kwargs
@@ -149,13 +149,13 @@ class TokenView(FormView):
             messages.add_message(self.request, level=messages.INFO, message=challenge, fail_silently=True)
             return redirect("%s?%s" % (self.request.path, self.request.GET.urlencode()))
 
-        return super(TokenView, self).post(request, *args, **kwargs)
+        return super().post(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         """
         Adds user's default and backup OTP devices to the context.
         """
-        context = super(TokenView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         device_classes = get_device_classes()
         other_devices = []
@@ -179,7 +179,7 @@ class TokenView(FormView):
         return context
 
     def get_initial(self):
-        initial = super(TokenView, self).get_initial()
+        initial = super().get_initial()
         if self.request.method == 'GET':
             initial.update({'challenges': self.device.challenges()})
         else:
@@ -194,4 +194,4 @@ class TokenView(FormView):
         user._auth_session_expiry = self.expiry
         auth_login(self.request, form.user)
         self.success_url = redirect_url
-        return super(TokenView, self).form_valid(form)
+        return super().form_valid(form)

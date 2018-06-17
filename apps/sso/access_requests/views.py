@@ -218,13 +218,8 @@ class AccountExtendAccessView(UpdateView):
         return update_url(reverse('access_requests:extend_access_thanks'), {'redirect_uri': redirect_uri})
 
     def get_form_kwargs(self):
-        """
-        add user to form kwargs for filtering the adminregions
-        """
         kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user
-        # kwargs['application'] = get_application_from_request(self.request)
-        # kwargs['message'] = get_request_param(self.request, 'msg')
         return kwargs
 
     def form_valid(self, form):

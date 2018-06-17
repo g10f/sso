@@ -95,7 +95,7 @@ class PasswordChangeDoneView(auth_views.PasswordChangeDoneView):
     template_name = 'accounts/password_change_done.html'
 
     def get_context_data(self, **kwargs):
-        context = super(PasswordChangeDoneView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['redirect_uri'] = get_safe_redirect_uri(self.request, allowed_hosts())
         return context
 
@@ -392,7 +392,7 @@ class PasswordCreateConfirmView(auth_views.PasswordResetConfirmView):
     template_name = 'accounts/password_create_confirm.html'
 
     def get_context_data(self, **kwargs):
-        context = super(PasswordCreateConfirmView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['password_validators_help_texts'] = password_validators_help_texts()
         return context
 
@@ -413,7 +413,7 @@ class PasswordCreateCompleteView(auth_views.PasswordResetCompleteView):
     template_name = 'accounts/password_create_complete.html'
 
     def get_context_data(self, **kwargs):
-        context = super(PasswordCreateCompleteView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         uidb64 = kwargs.get('uidb64')
         if uidb64 is not None:
             app = get_start_app(uidb64)
@@ -440,7 +440,7 @@ class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
     template_name = 'accounts/password_reset_confirm.html'
 
     def get_context_data(self, **kwargs):
-        context = super(PasswordResetConfirmView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['password_validators_help_texts'] = password_validators_help_texts()
         return context
 

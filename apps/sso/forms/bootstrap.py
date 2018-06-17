@@ -35,7 +35,7 @@ class Widget(forms.Widget):
     def __init__(self, attrs=None, **kwargs):
         # add form-control class
         new_attrs = add_class_to_attr(attrs, 'form-control')
-        super(Widget, self).__init__(new_attrs, **kwargs)
+        super().__init__(new_attrs, **kwargs)
 
 
 class ReadOnlyWidget(forms.Widget):
@@ -44,7 +44,7 @@ class ReadOnlyWidget(forms.Widget):
     def __init__(self, attrs=None, **kwargs):
         # add form-control class
         new_attrs = add_class_to_attr(attrs, 'form-control-static')
-        super(ReadOnlyWidget, self).__init__(new_attrs, **kwargs)
+        super().__init__(new_attrs, **kwargs)
 
 
 class YesNoWidget(ReadOnlyWidget):
@@ -56,7 +56,7 @@ class ReadOnlyField(forms.Field):
 
     def __init__(self, *args, **kwargs):
         kwargs.setdefault("required", False)
-        super(ReadOnlyField, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def bound_data(self, data, initial):
         # Always return initial because the widget doesn't
@@ -80,7 +80,7 @@ class ImageWidget(forms.ClearableFileInput):
     template_with_clear = '<div class="checkbox"><label>%(clear)s %(clear_checkbox_label)s </label></div>'
 
     def render(self, name, value, attrs=None, renderer=None):
-        output = super(ImageWidget, self).render(name, value, attrs, renderer)
+        output = super().render(name, value, attrs, renderer)
         if value and hasattr(value, 'url'):
             try:
                 mini = get_thumbnail(value, '240x240', crop='center')
@@ -101,8 +101,8 @@ class CheckboxSelectMultiple(forms.widgets.CheckboxSelectMultiple):
 
 class HiddenInput(Widget, forms.HiddenInput):
     """
-    Hidden field, can be used as honey pot for bots. 
-    The field is hidden with a css class and not with type="hidden" 
+    Hidden field, can be used as honey pot for bots.
+    The field is hidden with a css class and not with type="hidden"
     """
     pass
 
@@ -137,11 +137,11 @@ class SelectMultiple(Widget, forms.SelectMultiple):
 
 class SelectMultipleWithCurrently(SelectMultiple):
     def __init__(self, attrs=None, currently=None):
-        super(SelectMultipleWithCurrently, self).__init__(attrs)
+        super().__init__(attrs)
         self.currently = currently
 
     def render(self, name, value, attrs=None, choices=()):
-        html = super(SelectMultipleWithCurrently, self).render(name, value, attrs)
+        html = super().render(name, value, attrs)
         if self.currently is not None:
             html = format_html(
                 '<p class="form-control-static">{} {}</p>{}',
@@ -164,7 +164,7 @@ class SelectDateWidget(widgets.SelectDateWidget):
         css_classes = a.get('class', '').split()
         css_classes.append('form-control')
         a['class'] = ' '.join(css_classes)
-        super(SelectDateWidget, self).__init__(attrs=a, years=years, months=months, empty_label=empty_label)
+        super().__init__(attrs=a, years=years, months=months, empty_label=empty_label)
 
 
 class OSMWidget(gis_forms.OSMWidget):

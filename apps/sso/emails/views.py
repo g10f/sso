@@ -25,7 +25,7 @@ class GroupEmailForwardCreateView(CreateView):
     def dispatch(self, request, *args, **kwargs):
         if not request.user.has_groupemail_access(self.kwargs['uuid']):
             raise PermissionDenied
-        return super(GroupEmailForwardCreateView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_initial(self):
         group_email = GroupEmail.objects.get_by_natural_key(self.kwargs['uuid'])
@@ -36,7 +36,7 @@ class GroupEmailForwardCreateView(CreateView):
         return reverse('emails:groupemail_detail', args=[self.kwargs['uuid']])
 
     def get_context_data(self, **kwargs):
-        context = super(GroupEmailForwardCreateView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['uuid'] = self.kwargs['uuid']
         return context
 
@@ -48,13 +48,13 @@ class GroupEmailForwardDeleteView(DeleteView):
     def dispatch(self, request, *args, **kwargs):
         if not request.user.has_groupemail_access(self.kwargs['uuid']):
             raise PermissionDenied
-        return super(GroupEmailForwardDeleteView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
         return reverse('emails:groupemail_detail', args=[self.kwargs['uuid']])
 
     def get_context_data(self, **kwargs):
-        context = super(GroupEmailForwardDeleteView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['uuid'] = self.kwargs['uuid']
         return context
 
@@ -65,7 +65,7 @@ class GroupEmailBaseView(object):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        return super(GroupEmailBaseView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = {}
@@ -73,7 +73,7 @@ class GroupEmailBaseView(object):
             context['has_groupmail_access'] = self.request.user.has_groupemail_access(self.kwargs.get('uuid'))
 
         context.update(kwargs)
-        return super(GroupEmailBaseView, self).get_context_data(**context)
+        return super().get_context_data(**context)
 
 
 class GroupEmailDetailView(GroupEmailBaseView, DetailView):
@@ -90,7 +90,7 @@ class GroupEmailCreateView(GroupEmailBaseView, CreateView):
     @method_decorator(login_required)
     @method_decorator(permission_required('emails.add_groupemail', raise_exception=True))
     def dispatch(self, request, *args, **kwargs):
-        return super(GroupEmailCreateView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
 
 class GroupEmailUpdateView(GroupEmailBaseView, FormsetsUpdateView):
@@ -99,7 +99,7 @@ class GroupEmailUpdateView(GroupEmailBaseView, FormsetsUpdateView):
     @method_decorator(login_required)
     @method_decorator(permission_required('emails.change_groupemail', raise_exception=True))
     def dispatch(self, request, *args, **kwargs):
-        return super(GroupEmailUpdateView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_formsets(self):
         formsets = []
@@ -162,7 +162,7 @@ class GroupEmailList(ListView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        return super(GroupEmailList, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
         """
@@ -170,7 +170,7 @@ class GroupEmailList(ListView):
         be a queryset (in which qs-specific behavior will be enabled).
         """
         user = self.request.user
-        qs = super(GroupEmailList, self).get_queryset().select_related()
+        qs = super().get_queryset().select_related()
         if not user.has_perms(["emails.change_groupemail"]):
             qs = qs.filter(Q(email__is_active=True) & (Q(groupemailmanager__manager=user) | Q(email__permission=PERM_EVERYBODY)))
 
@@ -209,4 +209,4 @@ class GroupEmailList(ListView):
             'filters': filters,
         }
         context.update(kwargs)
-        return super(GroupEmailList, self).get_context_data(**context)
+        return super().get_context_data(**context)

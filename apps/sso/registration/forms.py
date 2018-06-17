@@ -133,7 +133,7 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
         initial['verified_by_user'] = verified_by_user if verified_by_user else ''
         kwargs['initial'] = initial
 
-        super(RegistrationProfileForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         current_user = self.request.user
         if not current_user.has_perm('registration.verify_users'):
             self.fields['is_verified'].widget.attrs['disabled'] = True
@@ -251,7 +251,7 @@ class UserSelfRegistrationForm(forms.Form):
         if edit_again:
             raise forms.ValidationError('_edit_again', '_edit_again')
 
-        return super(UserSelfRegistrationForm, self).clean()
+        return super().clean()
 
     @staticmethod
     def save_data(data, username_generator=default_username_generator):
@@ -298,7 +298,7 @@ class UserSelfRegistrationFormPreview(FormPreview):
 
     def get_context(self, request, form):
         """Context for template rendering."""
-        context = super(UserSelfRegistrationFormPreview, self).get_context(request, form)
+        context = super().get_context(request, form)
         context.update({'site_name': settings.SSO_SITE_NAME, 'max_file_size': User.MAX_PICTURE_SIZE})
         return context
 

@@ -11,13 +11,13 @@ class EmailFieldLower(fields.EmailField):
     widget = bootstrap.EmailInput(attrs={'size': 50})
 
     def to_python(self, value):
-        email = super(EmailFieldLower, self).to_python(value).rstrip().lstrip()
+        email = super().to_python(value).rstrip().lstrip()
         return BaseUserManager.normalize_email(email)
 
     def __init__(self, max_length=None, min_length=None, *args, **kwargs):
         if 'label' not in kwargs:
             kwargs['label'] = _('email address')
-        super(EmailFieldLower, self).__init__(max_length=max_length, min_length=min_length, *args, **kwargs)
+        super().__init__(max_length=max_length, min_length=min_length, *args, **kwargs)
 
 
 class PointField(GeometryField):

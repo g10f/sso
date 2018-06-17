@@ -97,7 +97,7 @@ class SetPasswordForm(DjangoSetPasswordForm):
     new_password2 = forms.CharField(label=_("New password confirmation"), widget=bootstrap.PasswordInput())
 
     def save(self, commit=True):
-        self.user = super(SetPasswordForm, self).save(commit)
+        self.user = super().save(commit)
         self.user.confirm_primary_email_if_no_confirmed()
 
         return self.user
@@ -206,7 +206,7 @@ class SetPictureAndPasswordForm(SetPasswordForm):
     """
 
     def __init__(self, user, *args, **kwargs):
-        super(SetPictureAndPasswordForm, self).__init__(user, *args, **kwargs)
+        super().__init__(user, *args, **kwargs)
         if not user.picture:
             self.fields['picture'] = forms.ImageField(label=_('Profile picture'), widget=bootstrap.ImageWidget())
 
@@ -239,7 +239,7 @@ class SetPictureAndPasswordForm(SetPasswordForm):
             self.user.picture.delete(save=False)
             self.user.picture = cd['picture'] if cd['picture'] else None
 
-        self.user = super(SetPictureAndPasswordForm, self).save(commit)
+        self.user = super().save(commit)
         return self.user
 
 
@@ -263,7 +263,7 @@ class AdminUserCreationForm(forms.ModelForm):
         fields = ("first_name", "last_name")
 
     def clean(self):
-        cleaned_data = super(AdminUserCreationForm, self).clean()
+        cleaned_data = super().clean()
         password1 = cleaned_data.get("password1")
         password2 = cleaned_data.get("password2")
         if password1 or password2:
@@ -271,7 +271,7 @@ class AdminUserCreationForm(forms.ModelForm):
                 raise forms.ValidationError(self.error_messages['password_mismatch'])
 
     def save(self, commit=True):
-        user = super(AdminUserCreationForm, self).save(commit=False)
+        user = super().save(commit=False)
         password = self.cleaned_data.get("password1", "")
         if password == "":
             password = get_random_string(40)
@@ -321,7 +321,7 @@ class UserAddForm(mixins.UserRolesMixin, forms.ModelForm):
     def __init__(self, request, *args, **kwargs):
         self.request = request
         user = request.user
-        super(UserAddForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['application_roles'].queryset = user.get_administrable_application_roles()
         self.fields['role_profiles'].choices = [(role_profile.id, role_profile) for role_profile in
                                                 user.get_administrable_role_profiles()]
@@ -345,7 +345,7 @@ class UserAddForm(mixins.UserRolesMixin, forms.ModelForm):
         return email
 
     def save(self, commit=True):
-        user = super(UserAddForm, self).save(commit=False)
+        user = super().save(commit=False)
         user.set_password(get_random_string(40))
         user.username = default_username_generator(capfirst(self.cleaned_data.get('first_name')),
                                                    capfirst(self.cleaned_data.get('last_name')))
@@ -478,7 +478,7 @@ class UserSelfProfileForm(forms.Form):
         initial = kwargs.get('initial', {})
         object_data.update(initial)
         kwargs['initial'] = object_data
-        super(UserSelfProfileForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         organisation_field = bootstrap.ReadOnlyField(
             initial=', '.join([str(x) for x in self.user.organisations.all()]),
@@ -567,7 +567,7 @@ class CenterSelfProfileForm(forms.Form):
         initial = kwargs.get('initial', {})
         object_data.update(initial)
         kwargs['initial'] = object_data
-        super(CenterSelfProfileForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if self.user.organisations.exists():
             organisation = ', '.join([str(x) for x in self.user.organisations.all()])
@@ -584,7 +584,7 @@ class CenterSelfProfileForm(forms.Form):
 class UserSelfProfileDeleteForm(forms.Form):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('instance')
-        super(UserSelfProfileDeleteForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def save(self):
         self.user.is_active = False
@@ -607,7 +607,7 @@ class UserSelfRegistrationForm2(UserSelfRegistrationForm):
     signer = signing.TimestampSigner()
 
     def __init__(self, data=None, *args, **kwargs):
-        super(UserSelfRegistrationForm2, self).__init__(data, *args, **kwargs)
+        super().__init__(data, *args, **kwargs)
 
         if self.is_captcha_needed():
             self.fields['captcha'] = ReCaptchaField()
@@ -632,7 +632,7 @@ class UserSelfRegistrationForm2(UserSelfRegistrationForm):
             data['state'] = self.signer.sign('True')
             self.data = data
             del self.fields['captcha']
-        return super(UserSelfRegistrationForm2, self).clean()
+        return super().clean()
 
     """
     def clean_state(self):
@@ -715,7 +715,7 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
         initial['created_by_user'] = created_by_user if created_by_user else ''
 
         kwargs['initial'] = initial
-        super(UserProfileForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.fields['application_roles'].queryset = self.request.user.get_administrable_application_roles()
         # role_profiles field with custom data to show application_roles for each role profile,
@@ -818,7 +818,7 @@ class CenterProfileForm(mixins.UserRolesMixin, forms.Form):
         initial = kwargs.get('initial', {})
         initial.update(user_data)
         kwargs['initial'] = initial
-        super(CenterProfileForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.fields['application_roles'].queryset = self.request.user.get_administrable_application_roles()
         self.fields['role_profiles'].choices = [(role_profile.id, role_profile) for role_profile in
@@ -876,7 +876,7 @@ class AppAdminUserProfileForm(mixins.UserRolesMixin, forms.Form):
         initial = kwargs.get('initial', {})
         initial.update(user_data)
         kwargs['initial'] = initial
-        super(AppAdminUserProfileForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         self.fields['application_roles'].queryset = self.request.user.get_administrable_app_admin_application_roles()
         self.fields['role_profiles'].choices = [(role_profile.id, role_profile) for role_profile in

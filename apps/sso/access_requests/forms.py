@@ -44,7 +44,6 @@ class AccessRequestAcceptForm(forms.Form):
     """
     Form for user admins to accept an request for extended access
     """
-
     def __init__(self, access_request, *args, **kwargs):
         self.access_request = access_request
         super().__init__(*args, **kwargs)
@@ -73,15 +72,7 @@ class AccessRequestForm(BaseForm):
 
     def __init__(self, initial=None, instance=None, *args, **kwargs):
         user = kwargs.pop('user')  # remove custom user keyword
-        # message = kwargs.pop('message')  # remove custom user keyword
-        # application = kwargs.pop('application')  # remove custom user keyword
-        # if instance is None:
-        #     initial['user'] = user
-        #     initial['message'] = message
-        #     initial['application'] = application
-
         super().__init__(initial=initial, instance=instance, *args, **kwargs)
-
         if user.picture:
             del self.fields['base64_picture']
 

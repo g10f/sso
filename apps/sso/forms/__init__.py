@@ -16,7 +16,7 @@ class BaseForm(forms.ModelForm):
     def save(self, commit=True):
         # attention: a form with initial data has_unchanged if the initial data are unchanged
         if self.instance.pk is None or self.has_changed():
-            return super(BaseForm, self).save(commit)
+            return super().save(commit)
         else:
             return self.instance
 

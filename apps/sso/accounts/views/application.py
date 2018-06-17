@@ -46,10 +46,10 @@ class UserDeleteView(DeleteView):
         # additionally check if the user is admin of the user
         if not request.user.has_user_access(kwargs.get('uuid')):
             raise PermissionDenied
-        return super(UserDeleteView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(UserDeleteView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['cancel_url'] = reverse('accounts:update_user', args=[self.object.uuid.hex])
         # the user is initialized from the ViewClass with the user to delete
         # so reinitialize it with the request user
@@ -92,7 +92,7 @@ class UserList(ListView):
     @method_decorator(admin_login_required)
     @method_decorator(user_passes_test(lambda u: u.is_user_admin))
     def dispatch(self, request, *args, **kwargs):
-        return super(UserList, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     @property
     def list_display(self):
@@ -110,7 +110,7 @@ class UserList(ListView):
         """
         user = self.request.user
 
-        qs = super(UserList, self).get_queryset().only('uuid', 'last_login', 'username', 'first_name', 'last_name',
+        qs = super().get_queryset().only('uuid', 'last_login', 'username', 'first_name', 'last_name',
                                                        'date_joined', 'picture', 'valid_until') \
             .prefetch_related('useremail_set', 'organisations')
         # exclude user who were not activated, this users must first be activated on the registration page
@@ -183,7 +183,7 @@ class UserList(ListView):
             'sso_validation_period_is_active': settings.SSO_VALIDATION_PERIOD_IS_ACTIVE
         }
         context.update(kwargs)
-        return super(UserList, self).get_context_data(**context)
+        return super().get_context_data(**context)
 
 
 class AppAdminUserList(ListView):
@@ -193,7 +193,7 @@ class AppAdminUserList(ListView):
     @method_decorator(admin_login_required)
     @method_decorator(user_passes_test(lambda u: u.is_app_admin()))
     def dispatch(self, request, *args, **kwargs):
-        return super(AppAdminUserList, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     @property
     def list_display(self):
@@ -206,7 +206,7 @@ class AppAdminUserList(ListView):
         """
         user = self.request.user
 
-        qs = super(AppAdminUserList, self).get_queryset().only('uuid', 'last_login', 'username', 'first_name',
+        qs = super().get_queryset().only('uuid', 'last_login', 'username', 'first_name',
                                                                'last_name', 'date_joined',
                                                                'picture', 'valid_until') \
             .prefetch_related('useremail_set', 'organisations')
@@ -274,7 +274,7 @@ class AppAdminUserList(ListView):
             'filters': filters
         }
         context.update(kwargs)
-        return super(AppAdminUserList, self).get_context_data(**context)
+        return super().get_context_data(**context)
 
 
 @admin_login_required

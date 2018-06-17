@@ -29,7 +29,7 @@ class OrganisationCountryBaseView(object):
             context['has_country_access'] = self.request.user.has_country_access(self.object.uuid)
 
         context.update(kwargs)
-        return super(OrganisationCountryBaseView, self).get_context_data(**context)
+        return super().get_context_data(**context)
 
 
 class OrganisationCountryDetailView(OrganisationCountryBaseView, DetailView):
@@ -46,13 +46,13 @@ class OrganisationCountryCreateView(OrganisationCountryBaseView, CreateView):
     @method_decorator(login_required)
     @method_decorator(permission_required('organisations.add_organisationcountry', raise_exception=True))
     def dispatch(self, request, *args, **kwargs):
-        return super(OrganisationCountryCreateView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
         """
         add user to form kwargs for filtering the associations
         """
-        kwargs = super(OrganisationCountryCreateView, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
 
@@ -66,7 +66,7 @@ class OrganisationCountryUpdateView(OrganisationCountryBaseView, FormsetsUpdateV
         # additionally check if the user is admin of the country
         if not request.user.has_country_access(kwargs.get('uuid')):
             raise PermissionDenied
-        return super(OrganisationCountryUpdateView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_formsets(self):
         formsets = []
@@ -88,7 +88,7 @@ class OrganisationCountryUpdateView(OrganisationCountryBaseView, FormsetsUpdateV
         """
         add user to form kwargs for filtering the associations
         """
-        kwargs = super(OrganisationCountryUpdateView, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
 
@@ -154,7 +154,7 @@ class OrganisationCountryList(ListView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        return super(OrganisationCountryList, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
         """
@@ -162,7 +162,7 @@ class OrganisationCountryList(ListView):
         be a queryset (in which qs-specific behavior will be enabled).
         """
         self.cl = main.ChangeList(self.request, self.model, self.list_display, default_ordering=['country'])
-        qs = super(OrganisationCountryList, self).get_queryset().select_related('country', 'email')
+        qs = super().get_queryset().select_related('country', 'email')
 
         # apply filters
         qs = MyCountriesFilter().apply(self, qs)
@@ -217,4 +217,4 @@ class OrganisationCountryList(ListView):
             'filters': filters,
         }
         context.update(kwargs)
-        return super(OrganisationCountryList, self).get_context_data(**context)
+        return super().get_context_data(**context)

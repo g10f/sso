@@ -69,7 +69,7 @@ class OrganisationAddressForm(BaseForm):
             # update initial field because of to_field_name in ModelChoiceField
             kwargs['initial'] = {'country': instance.country.iso2_code}
 
-        super(OrganisationAddressForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def template(self):
         return 'organisations/addresses.html'
@@ -125,12 +125,12 @@ class OrganisationBaseForm(BaseForm):
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')  # remove custom user keyword
-        super(OrganisationBaseForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.location:
             self.fields['google_maps_url'].initial = self.instance.google_maps_url
 
     def clean(self):
-        cleaned_data = super(OrganisationBaseForm, self).clean()
+        cleaned_data = super().clean()
 
         # check combination of coordinates_type location
         coordinates_type = cleaned_data['coordinates_type']
@@ -151,7 +151,7 @@ class OrganisationCenterAdminForm(OrganisationBaseForm):
     is_active = bootstrap.ReadOnlyYesNoField(label=_("Active"))
 
     def __init__(self, *args, **kwargs):
-        super(OrganisationCenterAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if self.instance.organisation_country:
             self.fields['organisation_country'] = bootstrap.ReadOnlyField(initial=self.instance.organisation_country,
@@ -175,7 +175,7 @@ class OrganisationEmailAdminForm(OrganisationBaseForm):
     email_value = EmailFieldLower(required=True, label=_("Email address"))
 
     def __init__(self, *args, **kwargs):
-        super(OrganisationEmailAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.email:
             self.fields['email_value'].initial = force_text(self.instance.email)
         else:
@@ -219,7 +219,7 @@ class OrganisationEmailAdminForm(OrganisationBaseForm):
                 email.save()
                 self.instance.email = email
 
-        instance = super(OrganisationEmailAdminForm, self).save(commit)
+        instance = super().save(commit)
 
         # enable brand specific modification
         update_or_create_organisation_account.send_robust(sender=self.__class__, organisation=self.instance,
@@ -235,7 +235,7 @@ class OrganisationAssociationAdminForm(OrganisationEmailAdminForm):
             'is_active')  # , 'can_publish')
 
     def __init__(self, *args, **kwargs):
-        super(OrganisationAssociationAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         assignable_associations = self.user.get_assignable_associations()
         if not OrganisationCountry.objects.filter(association__in=assignable_associations).exists():
             del self.fields['organisation_country']
@@ -257,14 +257,14 @@ class OrganisationCountryAdminForm(OrganisationEmailAdminForm):
             'organisation_country', 'admin_region', 'name', 'center_type', 'is_active')  # , 'can_publish')
 
     def __init__(self, *args, **kwargs):
-        super(OrganisationCountryAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         assignable_countries = self.user.get_assignable_organisation_countries()
         self.fields['organisation_country'].queryset = assignable_countries
         if not AdminRegion.objects.filter(organisation_country__in=assignable_countries).exists():
             del self.fields['admin_region']
 
     def clean(self):
-        cleaned_data = super(OrganisationCountryAdminForm, self).clean()
+        cleaned_data = super().clean()
         self.instance.association = cleaned_data['organisation_country'].association
         return cleaned_data
 
@@ -285,7 +285,7 @@ class OrganisationRegionAdminForm(OrganisationEmailAdminForm):
             'organisation_country', 'admin_region', 'name', 'center_type', 'is_active')  # , 'can_publish')
 
     def __init__(self, *args, **kwargs):
-        super(OrganisationRegionAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         regions = self.user.get_assignable_organisation_regions()
         self.fields['admin_region'].queryset = regions
         self.fields['organisation_country'].queryset = OrganisationCountry.objects.filter(adminregion__in=regions,
@@ -295,7 +295,7 @@ class OrganisationRegionAdminForm(OrganisationEmailAdminForm):
         """
         check if the admin_region and country fits together
         """
-        cleaned_data = super(OrganisationRegionAdminForm, self).clean()
+        cleaned_data = super().clean()
         admin_region = cleaned_data['admin_region']
         organisation_country = cleaned_data['organisation_country']
         if admin_region.organisation_country != organisation_country:
@@ -340,7 +340,7 @@ class OrganisationAssociationAdminCreateForm(EmailForwardMixin, OrganisationAsso
                                     widget=bootstrap.EmailInput())
 
     def clean(self):
-        super(OrganisationAssociationAdminCreateForm, self).clean()
+        super().clean()
         # check email forward
         return self.check_email_forward()
 
@@ -348,7 +348,7 @@ class OrganisationAssociationAdminCreateForm(EmailForwardMixin, OrganisationAsso
         """
         creating a new center with a forward address
         """
-        instance = super(OrganisationAssociationAdminCreateForm, self).save(commit)
+        instance = super().save(commit)
         return self.save_email_forward(instance)
 
 
@@ -362,7 +362,7 @@ class OrganisationCountryAdminCreateForm(EmailForwardMixin, OrganisationCountryA
                                     widget=bootstrap.EmailInput())
 
     def clean(self):
-        super(OrganisationCountryAdminCreateForm, self).clean()
+        super().clean()
         # check email forward
         return self.check_email_forward()
 
@@ -370,7 +370,7 @@ class OrganisationCountryAdminCreateForm(EmailForwardMixin, OrganisationCountryA
         """
         creating a new center with a forward address
         """
-        instance = super(OrganisationCountryAdminCreateForm, self).save(commit)
+        instance = super().save(commit)
         return self.save_email_forward(instance)
 
 
@@ -385,7 +385,7 @@ class OrganisationRegionAdminCreateForm(EmailForwardMixin, OrganisationRegionAdm
                                     widget=bootstrap.EmailInput())
 
     def clean(self):
-        super(OrganisationRegionAdminCreateForm, self).clean()
+        super().clean()
         # check email forward
         return self.check_email_forward()
 
@@ -393,7 +393,7 @@ class OrganisationRegionAdminCreateForm(EmailForwardMixin, OrganisationRegionAdm
         """
         creating a new center with a forward address
         """
-        instance = super(OrganisationRegionAdminCreateForm, self).save(commit)
+        instance = super().save(commit)
         return self.save_email_forward(instance)
 
 
@@ -412,7 +412,7 @@ class AdminRegionForm(BaseForm):
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')  # remove custom user keyword
-        super(AdminRegionForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['organisation_country'].queryset = self.user.get_administrable_region_countries()
         if self.instance.email:
             self.fields['email_value'].initial = force_text(self.instance.email)
@@ -437,7 +437,7 @@ class AdminRegionForm(BaseForm):
         return email_value
 
     def save(self, commit=True):
-        instance = super(AdminRegionForm, self).save(commit)
+        instance = super().save(commit)
         if 'email_value' in self.changed_data:
             if self.instance.email:
                 self.instance.email.email = self.cleaned_data['email_value']
@@ -469,7 +469,7 @@ class OrganisationCountryForm(BaseForm):
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')  # remove custom user keyword
-        super(OrganisationCountryForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if self.instance.email:
             self.fields['email_value'].initial = force_text(self.instance.email)
         else:
@@ -503,7 +503,7 @@ class OrganisationCountryForm(BaseForm):
         return email_value
 
     def save(self, commit=True):
-        instance = super(OrganisationCountryForm, self).save(commit)
+        instance = super().save(commit)
         if 'email_value' in self.changed_data:
             if self.instance.email:
                 self.instance.email.email = self.cleaned_data['email_value']

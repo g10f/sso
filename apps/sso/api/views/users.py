@@ -208,7 +208,7 @@ class UserDetailView(View):
     @method_decorator(csrf_exempt)
     @method_decorator(catch_errors)
     def dispatch(self, request, *args, **kwargs):
-        return super(UserDetailView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def options(self, request, *args, **kwargs):
         """
@@ -218,14 +218,14 @@ class UserDetailView(View):
         # origin is mandatory
         origin = request.META.get('HTTP_ORIGIN')
         if not origin:
-            return super(UserDetailView, self).options(request, *args, **kwargs)
+            return super().options(request, *args, **kwargs)
 
         # ACCESS_CONTROL_REQUEST_METHOD is optional
         acrm = request.META.get('HTTP_ACCESS_CONTROL_REQUEST_METHOD')
         if acrm:
             if acrm not in self._allowed_methods():
                 logger.warning('ACCESS_CONTROL_REQUEST_METHOD %s not allowed' % acrm)
-                return super(UserDetailView, self).options(request, *args, **kwargs)
+                return super().options(request, *args, **kwargs)
 
             response = HttpResponse()
             response['Access-Control-Allow-Methods'] = ', '.join(self._allowed_methods())

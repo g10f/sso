@@ -1,4 +1,3 @@
-
 import logging
 from urllib.parse import urlparse
 
@@ -54,8 +53,8 @@ class JsonHttpResponse(HttpResponse):
         else:
             content = json.dumps(data, cls=DjangoJSONEncoder, ensure_ascii=False)
 
-        super(JsonHttpResponse, self).__init__(content, status=status, content_type='application/json; charset=utf-8;',
-                                               *args, **kwargs)
+        super().__init__(content, status=status, content_type='application/json; charset=utf-8;',
+                         *args, **kwargs)
 
         if request:
             origin = request.META.get('HTTP_ORIGIN')
@@ -77,12 +76,12 @@ class HttpApiErrorResponse(JsonHttpResponse):
         if state:
             content["state"] = state
 
-        super(HttpApiErrorResponse, self).__init__(content, status=self.status_code, request=request, *args, **kwargs)
+        super().__init__(content, status=self.status_code, request=request, *args, **kwargs)
 
 
 class HttpApiResponseNotAuthorized(HttpApiErrorResponse):
     def __init__(self, error_description=_('The request requires user authentication'), request=None, status_code=401,
                  *args, **kwargs):
-        super(HttpApiResponseNotAuthorized, self).__init__(error='not_authorized', error_description=error_description,
-                                                           request=request, status_code=status_code, *args, **kwargs)
+        super().__init__(error='not_authorized', error_description=error_description,
+                         request=request, status_code=status_code, *args, **kwargs)
         self['Access-Control-Allow-Headers'] = 'Authorization'

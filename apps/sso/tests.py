@@ -18,13 +18,13 @@ class SSOSeleniumTests(StaticLiveServerTestCase):
         # cls.selenium = WebDriver(firefox_binary=FirefoxBinary(log_file=open('./ff.log', 'w')))
         # cls.selenium = WebDriver(capabilities=capabilities)
         cls.selenium = WebDriver()
-        super(SSOSeleniumTests, cls).setUpClass()
+        super().setUpClass()
 
     @classmethod
     def tearDownClass(cls):
         del os.environ['THROTTELING_DISABLED']
         cls.selenium.quit()
-        super(SSOSeleniumTests, cls).tearDownClass()
+        super().tearDownClass()
 
     def wait_until(self, callback, timeout=10):
         """

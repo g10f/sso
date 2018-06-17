@@ -19,12 +19,12 @@ class EmailForwardForm(BaseForm):
         }
 
     def __init__(self, *args, **kwargs):
-        super(EmailForwardForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 
 class EmailForwardInlineForm(BaseTabularInlineForm):
     """
-    form without a primary field and with 
+    form without a primary field and with
     a list of readonly primary emails
     """
     forward = EmailFieldLower(max_length=254, label=_('Email forwarding address'))
@@ -79,7 +79,7 @@ class EmailManagerInlineForm(BaseTabularInlineForm):
         fields = ()
 
     def __init__(self, *args, **kwargs):
-        super(EmailManagerInlineForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         try:
             manager = self.instance.manager
             self.fields['manager_email'].initial = manager.primary_email()
@@ -101,7 +101,7 @@ class EmailManagerInlineForm(BaseTabularInlineForm):
             manager = get_user_model().objects.get(useremail__email=manager_email)
             self.instance.manager = manager
 
-        instance = super(EmailManagerInlineForm, self).save(commit)
+        instance = super().save(commit)
 
         return instance
 
@@ -120,7 +120,7 @@ class GroupEmailForm(BaseForm):
         }
 
     def __init__(self, *args, **kwargs):
-        super(GroupEmailForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         try:
             email = self.instance.email
             self.fields['is_active'].initial = email.is_active
@@ -157,6 +157,6 @@ class GroupEmailForm(BaseForm):
             if created:
                 self.instance.email = email
 
-        instance = super(GroupEmailForm, self).save(commit)
+        instance = super().save(commit)
 
         return instance

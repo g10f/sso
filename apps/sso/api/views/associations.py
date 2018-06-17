@@ -48,13 +48,13 @@ class AssociationDetailView(AssociationMixin, JsonDetailView):
     operations = {}
 
     def get_object_data(self, request, obj):
-        return super(AssociationDetailView, self).get_object_data(request, obj, details=True)
+        return super().get_object_data(request, obj, details=True)
 
 
 class AssociationList(AssociationMixin, JsonListView):
 
     def get_queryset(self):
-        qs = super(AssociationList, self).get_queryset()
+        qs = super().get_queryset()
         name = self.request.GET.get('q', None)
         if name:
             qs = qs.filter(name__icontains=name)
