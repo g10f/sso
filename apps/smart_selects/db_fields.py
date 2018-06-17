@@ -32,4 +32,4 @@ class ChainedForeignKey(ForeignKey):
             'auto_choose': self.auto_choose,
         }
         defaults.update(kwargs)
-        return super(ChainedForeignKey, self).formfield(**defaults)
+        return super().formfield(**defaults)

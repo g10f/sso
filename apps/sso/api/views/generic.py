@@ -123,14 +123,14 @@ class PreflightMixin(object):
         # origin is mandatory
         origin = self.request.META.get('HTTP_ORIGIN')
         if not origin:
-            return super(PreflightMixin, self).options(request, *args, **kwargs)
+            return super().options(request, *args, **kwargs)
 
         # ACCESS_CONTROL_REQUEST_METHOD is optional
         acrm = self.request.META.get('HTTP_ACCESS_CONTROL_REQUEST_METHOD')
         if acrm:
             if acrm not in self._allowed_methods():
                 logger.warning('ACCESS_CONTROL_REQUEST_METHOD %s not allowed' % acrm)
-                return super(PreflightMixin, self).options(request, *args, **kwargs)
+                return super().options(request, *args, **kwargs)
 
             response = HttpResponse()
             response['Access-Control-Allow-Methods'] = ', '.join(self._allowed_methods())
@@ -163,7 +163,7 @@ class JsonDetailView(JSONResponseMixin, PreflightMixin, PermissionMixin, BaseDet
     @method_decorator(csrf_exempt)
     @method_decorator(catch_errors)
     def dispatch(self, request, *args, **kwargs):
-        return super(JsonDetailView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     @method_decorator(vary_on_headers('Origin', 'Authorization', 'Cookie', 'Accept-Language'))
     def get(self, request, *args, **kwargs):
@@ -251,7 +251,7 @@ class JsonListView(JSONResponseMixin, PermissionMixin, BaseListView):
     @method_decorator(csrf_exempt)
     @method_decorator(catch_errors)
     def dispatch(self, request, *args, **kwargs):
-        return super(JsonListView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_paginate_by(self, queryset):
         paginate_by = int(self.request.GET.get('per_page', self.paginate_by))

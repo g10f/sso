@@ -28,7 +28,7 @@ class AdminRegionBaseView(object):
             context['has_region_access'] = self.request.user.has_region_access(self.object.uuid)
 
         context.update(kwargs)
-        return super(AdminRegionBaseView, self).get_context_data(**context)
+        return super().get_context_data(**context)
 
 
 class AdminRegionDetailView(AdminRegionBaseView, DetailView):
@@ -45,13 +45,13 @@ class AdminRegionCreateView(AdminRegionBaseView, CreateView):
     @method_decorator(login_required)
     @method_decorator(permission_required('organisations.add_adminregion', raise_exception=True))
     def dispatch(self, request, *args, **kwargs):
-        return super(AdminRegionCreateView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
         """
         add user to form kwargs for filtering the adminregions
         """
-        kwargs = super(AdminRegionCreateView, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
 
@@ -65,13 +65,13 @@ class AdminRegionUpdateView(AdminRegionBaseView, FormsetsUpdateView):
         # additionally check if the user is admin of the region
         if not request.user.has_region_access(kwargs.get('uuid')):
             raise PermissionDenied
-        return super(AdminRegionUpdateView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
         """
         add user to form kwargs for filtering the adminregions
         """
-        kwargs = super(AdminRegionUpdateView, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user
         return kwargs
 
@@ -81,7 +81,7 @@ class AdminRegionUpdateView(AdminRegionBaseView, FormsetsUpdateView):
         the result in admin_type
         """
         user = self.request.user
-        obj = super(AdminRegionUpdateView, self).get_object(queryset)
+        obj = super().get_object(queryset)
         if obj.organisation_country in user.get_assignable_organisation_countries():
             self.admin_type = 'country'
         else:
@@ -163,14 +163,14 @@ class AdminRegionList(ListView):
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
-        return super(AdminRegionList, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
         """
         Get the list of items for this view. This must be an iterable, and may
         be a queryset (in which qs-specific behavior will be enabled).
         """
-        qs = super(AdminRegionList, self).get_queryset().select_related('organisation_country__country', 'email')
+        qs = super().get_queryset().select_related('organisation_country__country', 'email')
 
         self.cl = main.ChangeList(self.request, self.model, self.list_display, default_ordering=['name'])
 
@@ -225,4 +225,4 @@ class AdminRegionList(ListView):
             'my_organisations': getattr(self, 'my_organisations', '')
         }
         context.update(kwargs)
-        return super(AdminRegionList, self).get_context_data(**context)
+        return super().get_context_data(**context)

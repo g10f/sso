@@ -57,13 +57,13 @@ class CountryGroupAdminForm(forms.ModelForm):
         fields = ('name', 'homepage', 'email')
 
     def __init__(self, *args, **kwargs):
-        super(CountryGroupAdminForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if self.instance and self.instance.pk:
             self.fields['countries'].initial = self.instance.countries.all()
 
     def save(self, commit=True):
-        country_group = super(CountryGroupAdminForm, self).save(commit=False)
+        country_group = super().save(commit=False)
 
         if commit:
             country_group.save()
@@ -108,7 +108,7 @@ class Address_Inline(admin.StackedInline):
         if db_field.name == "country":
             kwargs["queryset"] = Country.objects.filter(active=True)
 
-        return super(Address_Inline, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
 
 class AddressAdmin(admin.ModelAdmin):
@@ -168,8 +168,8 @@ class OrganisationAdmin(OSMGeoAdmin):
         if db_field.name == "organisation_country":
             kwargs["queryset"] = OrganisationCountry.objects.filter(is_active=True).select_related('country')
 
-        return super(OrganisationAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
 
     def save_model(self, request, obj, form, change):
         if form.has_changed():
-            return super(OrganisationAdmin, self).save_model(request, obj, form, change)
+            return super().save_model(request, obj, form, change)

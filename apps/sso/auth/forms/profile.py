@@ -21,7 +21,7 @@ class ProfileForm(forms.Form):
     is_otp_enabled = forms.NullBooleanField()
 
     def __init__(self, user, **kwargs):
-        super(ProfileForm, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.user = user
 
     def save(self):
@@ -64,7 +64,7 @@ class AddPhoneForm(forms.Form):
     key = forms.CharField(label=_('Key'), widget=forms.HiddenInput())
 
     def __init__(self, user, **kwargs):
-        super(AddPhoneForm, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.user = user
 
     def save(self):
@@ -87,7 +87,7 @@ class PhoneSetupForm(forms.Form):
     }
 
     def __init__(self, sms_device, **kwargs):
-        super(PhoneSetupForm, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.sms_device = sms_device
 
     def clean_token(self):
@@ -113,7 +113,7 @@ class TOTPDeviceForm(forms.Form):
     }
 
     def __init__(self, user, issuer, **kwargs):
-        super(TOTPDeviceForm, self).__init__(**kwargs)
+        super().__init__(**kwargs)
         self.digits = totp_digits()
         self.user = user
         self.issuer = issuer
@@ -127,7 +127,7 @@ class TOTPDeviceForm(forms.Form):
         return get_qrcode_data_url(b32key, force_text(self.user), self.issuer)
 
     def clean(self):
-        cd = super(TOTPDeviceForm, self).clean()
+        cd = super().clean()
         token = cd.get("token")
         defaults = {
             'key': cd['key'],

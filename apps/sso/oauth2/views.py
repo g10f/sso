@@ -176,10 +176,10 @@ class SessionView(TemplateView):
     @method_decorator(cache_control(max_age=60 * 5))
     @method_decorator(xframe_options_exempt)
     def dispatch(self, request, *args, **kwargs):
-        return super(SessionView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(SessionView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['session_cookie_name'] = settings.SESSION_COOKIE_NAME
         return context
 
@@ -326,7 +326,7 @@ class TokenView(PreflightMixin, View):
 
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
-        return super(TokenView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
         return token(request)
@@ -406,7 +406,7 @@ class ErrorView(TemplateView):
     template_name = "oauth2/error.html"
 
     def get_context_data(self, **kwargs):
-        context = super(ErrorView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['error'] = get_request_param(self.request, 'error')
         context['error_description'] = get_request_param(self.request, 'error_description')
         return context

@@ -72,7 +72,7 @@ class ErrorList(DjangoErrorList):
     """
 
     def __init__(self, form, inline_formsets):
-        super(ErrorList, self).__init__()
+        super().__init__()
 
         if form.is_bound:
             self.extend(list(six.itervalues(form.errors)))

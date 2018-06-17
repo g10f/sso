@@ -25,7 +25,7 @@ class ChainedSelect(Select):
         css_classes = attrs.get('class', '').split()
         css_classes.append('form-control')
         attrs['class'] = ' '.join(css_classes)
-        super(ChainedSelect, self).__init__(attrs, *args, **kwargs)
+        super().__init__(attrs, *args, **kwargs)
 
     # bootstrap
     def add_required(self):
@@ -104,5 +104,5 @@ class ChainedSelect(Select):
         final_attrs['data-chainfield'] = chain_field
         final_attrs['data-url'] = url
         final_attrs['data-empty_label'] = empty_label
-        output = super(ChainedSelect, self).render(name, value, final_attrs, renderer)
+        output = super().render(name, value, final_attrs, renderer)
         return mark_safe(output)

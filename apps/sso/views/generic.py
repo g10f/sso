@@ -208,7 +208,7 @@ class FormsetsUpdateView(generic.UpdateView):
         return True
 
     def get_context_data(self, **kwargs):
-        context = super(FormsetsUpdateView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         form = context.get("form")
         media = self.media + form.media
@@ -257,7 +257,7 @@ class FormsetsUpdateView(generic.UpdateView):
             success_url = urlunsplit(('', '', self.request.path, self.request.GET.urlencode(safe='/'), ''))
         else:
             msg = _('The %(name)s "%(obj)s" was changed successfully.') % msg_dict
-            success_url = super(FormsetsUpdateView, self).get_success_url()
+            success_url = super().get_success_url()
 
         messages.add_message(self.request, level=messages.SUCCESS, message=msg, fail_silently=True)
         return success_url

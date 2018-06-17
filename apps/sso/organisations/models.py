@@ -124,7 +124,7 @@ class ActiveOrganisationCountryManager(models.Manager):
     """
 
     def get_queryset(self):
-        return super(ActiveOrganisationCountryManager, self).get_queryset().filter(is_active=True)
+        return super().get_queryset().filter(is_active=True)
 
 
 class ExtraOrganisationCountryManager(models.Model):
@@ -178,7 +178,7 @@ class ActiveAdminRegionManager(models.Manager):
     """
 
     def get_queryset(self):
-        return super(ActiveAdminRegionManager, self).get_queryset().filter(is_active=True)
+        return super().get_queryset().filter(is_active=True)
 
 
 class ExtraManager(models.Model):
@@ -325,14 +325,14 @@ class Organisation(AbstractBaseModel):
         save original location that we can check if the location changed and update the timezone
         in pre_save if the location changed
         """
-        super(Organisation, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._original_location = self.location
 
     def save(self, force_insert=False, force_update=False, *args, **kwargs):
         if self.timezone == '' and self.location != self._original_location:
             self.timezone = self.timezone_from_location
 
-        super(Organisation, self).save(force_insert, force_update, *args, **kwargs)
+        super().save(force_insert, force_update, *args, **kwargs)
         self._original_location = self.location
 
     @property

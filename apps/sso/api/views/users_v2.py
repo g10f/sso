@@ -316,13 +316,13 @@ class UserDetailView(UserMixin, JsonDetailView):
     @method_decorator(csrf_exempt)  # required here because the middleware will be executed before the view function
     @method_decorator(condition(last_modified_and_etag_func=get_last_modified_and_etag))
     def dispatch(self, request, *args, **kwargs):
-        return super(UserDetailView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        return super(UserDetailView, self).get_queryset().prefetch_related('useraddress_set', 'userphonenumber_set')
+        return super().get_queryset().prefetch_related('useraddress_set', 'userphonenumber_set')
 
     def get_object_data(self, request, obj):
-        return super(UserDetailView, self).get_object_data(request, obj, details=True)
+        return super().get_object_data(request, obj, details=True)
 
     def _update_user_organisation(self, data):
         request = self.request
@@ -470,12 +470,12 @@ class GlobalNavigationView(UserDetailView):
 
     def render_to_json_response(self, context, allow_jsonp=True, **response_kwargs):
         # allow jsonp requests for the global navigation bar
-        return super(GlobalNavigationView, self).render_to_json_response(context, allow_jsonp=allow_jsonp,
+        return super().render_to_json_response(context, allow_jsonp=allow_jsonp,
                                                                          **response_kwargs)
 
     @method_decorator(cache_control(must_revalidate=True, max_age=60 * 5))
     def get(self, request, *args, **kwargs):
-        return super(GlobalNavigationView, self).get(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
 
     def get_object_data(self, request, obj, details=False):
         applications = []
@@ -551,7 +551,7 @@ class UserList(UserMixin, JsonListView):
         }
 
     def get_queryset(self):
-        qs = super(UserList, self).get_queryset().prefetch_related('useraddress_set', 'userphonenumber_set',
+        qs = super().get_queryset().prefetch_related('useraddress_set', 'userphonenumber_set',
                                                                    'useremail_set').distinct()
         qs = qs.order_by('username')
         qs = self.request.user.filter_administrable_users(qs)

@@ -144,10 +144,10 @@ class RegistrationManager(models.Manager):
         return q
 
     def get_expired(self):
-        return super(RegistrationManager, self).filter(self.expired_q())
+        return super().filter(self.expired_q())
 
     def get_not_expired(self):
-        return super(RegistrationManager, self).exclude(self.expired_q())
+        return super().exclude(self.expired_q())
 
     @classmethod
     def filter_administrable_registrationprofiles(cls, user, qs):

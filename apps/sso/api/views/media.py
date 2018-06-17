@@ -72,7 +72,7 @@ class UserPictureDetailView(JsonDetailView):
     @method_decorator(catch_errors)
     @method_decorator(condition(last_modified_and_etag_func=get_last_modified_and_etag))
     def dispatch(self, request, *args, **kwargs):
-        return super(UserPictureDetailView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_object_data(self, request, obj):
         base = get_base_url(request)

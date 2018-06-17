@@ -44,16 +44,16 @@ class RegionDetailView(RegionMixin, JsonDetailView):
     operations = {}
 
     def get_queryset(self):
-        return super(RegionDetailView, self).get_queryset().prefetch_related('organisation_country__country', 'email')
+        return super().get_queryset().prefetch_related('organisation_country__country', 'email')
 
     def get_object_data(self, request, obj):
-        return super(RegionDetailView, self).get_object_data(request, obj, details=True)
+        return super().get_object_data(request, obj, details=True)
 
 
 class RegionList(RegionMixin, JsonListView):
 
     def get_queryset(self):
-        qs = super(RegionList, self).get_queryset().filter(is_active=True).prefetch_related(
+        qs = super().get_queryset().filter(is_active=True).prefetch_related(
             'organisation_country__country', 'email')
         name = self.request.GET.get('q', None)
         if name:

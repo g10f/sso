@@ -28,17 +28,17 @@ class UserRegistrationDeleteView(DeleteView):
 
     def get_queryset(self):
         # filter the users for who the authenticated user has admin rights
-        qs = super(UserRegistrationDeleteView, self).get_queryset()
+        qs = super().get_queryset()
         user = self.request.user
         return user.filter_administrable_users(qs)
 
     @method_decorator(admin_login_required)
     @method_decorator(permission_required('registration.delete_registrationprofile', raise_exception=True))
     def dispatch(self, request, *args, **kwargs):
-        return super(UserRegistrationDeleteView, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
-        context = super(UserRegistrationDeleteView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         # remove the the key with the name registration 'user' from the context,
         # because this would overwrite the current logged in user in the template
         context.pop('user')
@@ -100,10 +100,10 @@ class UserRegistrationList(ListView):
     @method_decorator(admin_login_required)
     @method_decorator(permission_required('registration.change_registrationprofile', raise_exception=True))
     def dispatch(self, request, *args, **kwargs):
-        return super(UserRegistrationList, self).dispatch(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        qs = super(UserRegistrationList, self).get_queryset() \
+        qs = super().get_queryset() \
             .prefetch_related('user__organisations', 'user__organisations__organisation_country__country',
                               'user__useraddress_set', 'user__useraddress_set__country', 'user__useremail_set') \
             .filter(user__is_active=False, is_validated=True, user__last_login__isnull=True)
@@ -160,7 +160,7 @@ class UserRegistrationList(ListView):
             'filters': filters,
         }
         context.update(kwargs)
-        return super(UserRegistrationList, self).get_context_data(**context)
+        return super().get_context_data(**context)
 
 
 @admin_login_required
