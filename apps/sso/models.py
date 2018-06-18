@@ -98,10 +98,6 @@ class AddressMixin(models.Model):
     postal_code = models.CharField(_("postal code"), max_length=30, blank=True)
     country = models.ForeignKey(Country, on_delete=models.CASCADE, verbose_name=_("country"),
                                 limit_choices_to={'active': True})
-    # TODO: remove unused state field
-    state = ChainedForeignKey(AdminArea, chained_field='country', chained_model_field="country",
-                              on_delete=models.SET_NULL, verbose_name=_("State"),
-                              help_text=_('State or region'), blank=True, null=True)
     region = models.CharField(_("region"), help_text=_('State or region'), blank=True, max_length=100)
     primary = models.BooleanField(_("primary"), default=False)
 
