@@ -99,7 +99,7 @@ class Address_Inline(admin.StackedInline):
         (None,
          {'fields':
               ['address_type', 'addressee', 'street_address', 'careof', 'postal_code', 'city',
-               'country', 'state', 'primary', ],
+               'country', 'region', 'primary', ],
           'classes': ['wide'], }),
     ]
 

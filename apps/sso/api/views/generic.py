@@ -197,7 +197,7 @@ class JsonDetailView(JSONResponseMixin, PreflightMixin, PermissionMixin, BaseDet
 
         # get the new id for the object
         slug = self.kwargs.get(self.slug_url_kwarg, None)
-        data[self.slug_field] = UUID(slug)
+        data[self.slug_field] = slug
 
         self.object = self.create_object(request, data)
 

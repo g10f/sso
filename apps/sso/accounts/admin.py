@@ -333,7 +333,7 @@ class AddressInline(admin.StackedInline):
     fieldsets = [
         (None,
          {'fields':
-              ['address_type', 'addressee', 'street_address', 'postal_code', 'city', 'country', 'state', 'primary', ],
+              ['address_type', 'addressee', 'street_address', 'postal_code', 'city', 'country', 'region', 'primary', ],
           'classes': ['wide'], }),
     ]
 

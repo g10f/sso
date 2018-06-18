@@ -1,6 +1,6 @@
-from django.conf.urls import patterns
+from django.urls import path
+from django.views.i18n import set_language
 
-urlpatterns = patterns(
-    '',
-    (r'^setlang/$', 'django.views.i18n.set_language', {}, 'satchmo_set_language'),
-)
+urlpatterns = [
+    path('setlang/', set_language),
+]

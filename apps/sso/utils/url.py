@@ -1,6 +1,8 @@
 import logging
 from urllib.parse import urlparse, urlsplit, urlunsplit
 
+import uuid
+
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import QueryDict
@@ -9,6 +11,19 @@ from sso.utils.http import get_request_param
 logger = logging.getLogger(__name__)
 
 REDIRECT_URI_FIELD_NAME = 'redirect_uri'
+
+
+class UUIDConverter:
+    """
+    UUID converter which accepts uuids with or without hyphens
+    """
+    regex = '[0-9a-f]{32}|[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+
+    def to_python(self, value):
+        return uuid.UUID(value)
+
+    def to_url(self, value):
+        return str(value)
 
 
 def get_safe_redirect_uri(request, hosts, redirect_field_name=REDIRECT_URI_FIELD_NAME):
