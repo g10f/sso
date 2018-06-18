@@ -98,6 +98,7 @@ class AddressMixin(models.Model):
     postal_code = models.CharField(_("postal code"), max_length=30, blank=True)
     country = models.ForeignKey(Country, on_delete=models.CASCADE, verbose_name=_("country"),
                                 limit_choices_to={'active': True})
+    # TODO: remove unused state field
     state = ChainedForeignKey(AdminArea, chained_field='country', chained_model_field="country",
                               on_delete=models.SET_NULL, verbose_name=_("State"),
                               help_text=_('State or region'), blank=True, null=True)
@@ -140,10 +141,10 @@ def update_object_from_dict(destination, source_dict, key_mapping=None):
     """
     check if the values in the destination object differ from
     the values in the source_dict and update if needed
-    
+
     key_mapping can be a simple mapping of key names or
     a mapping of key names to a tuple with a key name and a transformation
-    for the value, 
+    for the value,
     for example {'key': ('new_key', lambda x : x + 2), ..}
     """
     if not key_mapping: key_mapping = {}
