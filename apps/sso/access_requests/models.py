@@ -44,7 +44,8 @@ class AccessRequest(AbstractBaseModel):
     completed_by_user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True,
                                           verbose_name=_('completed by'),
                                           related_name='accessrequest_completed_by', on_delete=models.SET_NULL)
-    application = models.ForeignKey(Application, blank=True, null=True, on_delete=models.SET_NULL)
+    application = models.ForeignKey(Application, blank=True, null=True, on_delete=models.SET_NULL,
+                                    verbose_name=_('application'))
 
     objects = AccessRequestManager()
     open = OpenAccessRequestManager()
