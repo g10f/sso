@@ -30,9 +30,6 @@ urlpatterns = [
     path('emails/', include('sso.emails.urls')),
     path('oauth2/', include('sso.oauth2.urls')),
     path('api/', include('sso.api.urls')),
-    # TODO: remove with unused state field
-    path('chained_filter/l10n/<slug:model>/<slug:field>/<slug:value>/', filterchain, kwargs={'app': 'l10n'},
-         name='chained_filter'),
     path('chained_filter/organisations/OrganisationCountry/<slug:field>/<slug:value>/', filterchain,
          kwargs={'app': 'organisations', 'model': 'OrganisationCountry', 'manager': 'active_objects'},
          name='chained_filter'),
