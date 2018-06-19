@@ -273,8 +273,8 @@ class OrganisationRegionAdminForm(OrganisationEmailAdminForm):
     """
     A form for a regional admin
     """
-    # don't use the default ModelChoiceField, because the regions are restricted to the administrable_organisation_regions
-    # of the region admin
+    # don't use the default ModelChoiceField, because the regions are restricted to the
+    # administrable_organisation_regions of the region admin
     organisation_country = ModelChoiceField(queryset=OrganisationCountry.objects.none(), required=True,
                                             label=_("Country"), widget=bootstrap.Select())
     admin_region = ModelChoiceField(queryset=AdminRegion.objects.none(), required=True, label=_("Admin Region"),

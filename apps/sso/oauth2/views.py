@@ -309,7 +309,6 @@ def authorize(request):
         return HttpOAuth2ResponseRedirect(e.in_uri(redirect_uri))
 
 
-# @csrf_exempt
 def token(request):
     uri, http_method, body, headers = extract_params(request)
     credentials = {}
