@@ -246,25 +246,37 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @classmethod
     def get_default_role_profile(cls, role_uuid=None):
+        role_profile = RoleProfile.objects.none()
         if role_uuid is None:
             role_uuid = settings.SSO_DEFAULT_MEMBER_PROFILE_UUID
         if role_uuid:
-            role_profile = RoleProfile.objects.none()
             try:
                 role_profile = RoleProfile.objects.get(uuid=role_uuid)
             except ObjectDoesNotExist:
                 pass
-            return role_profile
+        return role_profile
+
+    @classmethod
+    def get_default_guest_profile(cls, role_uuid=None):
+        role_profile = RoleProfile.objects.none()
+        if role_uuid is None:
+            role_uuid = settings.SSO_DEFAULT_GUEST_PROFILE_UUID
+        if role_uuid:
+            try:
+                role_profile = RoleProfile.objects.get(uuid=role_uuid)
+            except ObjectDoesNotExist:
+                pass
+        return role_profile
 
     @classmethod
     def get_default_admin_profile(cls):
+        role_profile = RoleProfile.objects.none()
         if settings.SSO_DEFAULT_ADMIN_PROFILE_UUID:
-            role_profile = RoleProfile.objects.none()
             try:
                 role_profile = RoleProfile.objects.get(uuid=settings.SSO_DEFAULT_ADMIN_PROFILE_UUID)
             except ObjectDoesNotExist:
                 pass
-            return role_profile
+        return role_profile
 
     @property
     def primary_address(self):

@@ -1,6 +1,7 @@
 import json
 
-from django.test.client import JSON_CONTENT_TYPE_RE
+
+# from django.test.client import JSON_CONTENT_TYPE_RE
 
 
 def get_request_param(request, name, default=None):
@@ -14,6 +15,7 @@ def parse_json(request, **extra):
     #         .format(request.content_type)
     #     )
     return json.loads(request.body.decode(), **extra)
+
 
 """
 Descriptive HTTP status codes, for code readability.
