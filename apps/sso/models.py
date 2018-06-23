@@ -1,8 +1,9 @@
 import logging
 import os
 import re
-import uuid
 from mimetypes import guess_extension
+
+import uuid
 
 from django.core.validators import RegexValidator
 from django.db import models
@@ -13,7 +14,6 @@ from django.utils.crypto import get_random_string
 from django.utils.text import get_valid_filename
 from django.utils.translation import ugettext_lazy as _
 from l10n.models import Country, AdminArea
-from smart_selects.db_fields import ChainedForeignKey
 
 logger = logging.getLogger(__name__)
 

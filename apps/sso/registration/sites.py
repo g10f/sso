@@ -13,9 +13,7 @@ class RegistrationSite(object):
     username_generator
     """
 
-    def __init__(self,
-                 form_cls=UserSelfRegistrationForm,
-                 token_generator=default_token_generator,
+    def __init__(self, form_cls=UserSelfRegistrationForm, token_generator=default_token_generator,
                  username_generator=default_username_generator):
         self.form_cls = form_cls
         self.token_generator = token_generator

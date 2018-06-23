@@ -4,7 +4,6 @@ from . import views
 app_name = 'oauth2'
 
 urlpatterns = [
-    path('client/<int:object_id>/', views.client_details, name='client.details.json'),
     path('authorize/', views.authorize, name='authorize'),
     path('revoke/', views.revoke, name='revoke'),
     path('certs/', views.CertsView.as_view(), name='certs'),
@@ -14,4 +13,5 @@ urlpatterns = [
     path('approval/', views.approval, name='approval'),
     path('error/', views.ErrorView.as_view(), name='oauth2_error'),
     path('session/', views.SessionView.as_view(template_name="oauth2/session.html"), name='session'),
+    path('client/<int:object_id>/', views.client_details, name='client.details.json'),
 ]

@@ -1,7 +1,6 @@
 from django.conf import settings
-
-from django.core import signing
 from django.contrib.sessions.backends.signed_cookies import SessionStore as SignedCookiesSessionStore
+from django.core import signing
 from sso.sessions.backends import map_keys, inv_key_map, key_map
 
 
@@ -17,10 +16,10 @@ class SessionStore(SignedCookiesSessionStore):
         try:
 
             parsed = signing.loads(self.session_key,
-                serializer=self.serializer,
-                # This doesn't handle non-default expiry dates, see #19201
-                max_age=settings.SESSION_COOKIE_AGE,
-                salt=self.salt)
+                                   serializer=self.serializer,
+                                   # This doesn't handle non-default expiry dates, see #19201
+                                   max_age=settings.SESSION_COOKIE_AGE,
+                                   salt=self.salt)
             parsed = map_keys(parsed, inv_key_map)
             if "_auth_user_backend" not in parsed:
                 parsed["_auth_user_backend"] = "sso.auth.backends.EmailBackend"
@@ -41,6 +40,5 @@ class SessionStore(SignedCookiesSessionStore):
         if "_auth_user_backend" in session_cache:
             del session_cache["_auth_user_backend"]
         return signing.dumps(session_cache, compress=True,
-            salt=self.salt,
-            serializer=self.serializer)
-
+                             salt=self.salt,
+                             serializer=self.serializer)

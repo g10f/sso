@@ -46,7 +46,7 @@ def check_validation():
         expired_user.role_profiles.set([guest_profile])
         logger.debug("%s" % expired_user)
 
-    # 2. user with valid_until__isnull=True and a center which uses user activation will expire in 30 days
+    # 2. user with valid_until__isnull=True and a organisation which uses user activation will expire in 30 days
     new_users = User.objects.annotate(count_profiles=Count('role_profiles'))\
         .filter(is_active=True, valid_until__isnull=True, is_service=False, is_center=False)
     if not settings.SSO_VALIDATION_PERIOD_IS_ACTIVE_FOR_ALL:

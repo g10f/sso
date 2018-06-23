@@ -22,9 +22,6 @@ class OpenAccessRequestManager(AbstractBaseModelManager):
 
 
 class AccessRequest(AbstractBaseModel):
-    """
-    a request from an user to change the organisation
-    """
     STATUS_CHOICES = [
         ('o', _('open')),  # opened by user
         ('c', _('canceled')),  # by user
@@ -73,6 +70,7 @@ class AccessRequest(AbstractBaseModel):
 
         # add default member profile
         self.user.role_profiles.add(user.get_default_role_profile())
+        self.user.role_profiles.remove(user.get_default_guest_profile())
         self.save()
 
     def deny(self, user):
