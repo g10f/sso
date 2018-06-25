@@ -1,8 +1,8 @@
 from datetime import date
+
 from django.conf import settings
-from django.utils.http import int_to_base36, base36_to_int
 from django.utils.crypto import constant_time_compare, salted_hmac
-from django.utils import six
+from django.utils.http import int_to_base36, base36_to_int
 
 
 class RegistrationTokenGenerator(object):
@@ -10,6 +10,7 @@ class RegistrationTokenGenerator(object):
     Strategy object used to generate and check tokens for the password
     reset mechanism.
     """
+
     def make_token(self, profile):
         """
         Returns a token that can be used once to do a password reset
@@ -56,8 +57,8 @@ class RegistrationTokenGenerator(object):
         # Ensure results are consistent across DB backends
         registered_timestamp = profile.date_registered.replace(microsecond=0, tzinfo=None)
 
-        value = (six.text_type(profile.id) + six.text_type(profile.is_validated) +
-                 six.text_type(registered_timestamp) + six.text_type(timestamp))
+        value = (str(profile.id) + str(profile.is_validated) +
+                 str(registered_timestamp) + str(timestamp))
         hash = salted_hmac(key_salt, value).hexdigest()[::2]  # @ReservedAssignment
         return "%s-%s" % (ts_b36, hash)
 
@@ -67,5 +68,6 @@ class RegistrationTokenGenerator(object):
     def _today(self):
         # Used for mocking in tests
         return date.today()
+
 
 default_token_generator = RegistrationTokenGenerator()

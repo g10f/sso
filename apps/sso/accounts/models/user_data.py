@@ -132,20 +132,20 @@ class OrganisationChange(AbstractBaseModel):
         self.status = 'v'
         self.completed_by_user = user
 
-        # check if organisation uses user activation
-        if is_validation_period_active(self.organisation):
-            if self.user.valid_until is None:
-                self.user.valid_until = now() + datetime.timedelta(days=settings.SSO_VALIDATION_PERIOD_DAYS)
-                self.user.save()
-        else:
-            self.user.valid_until = None
-            self.user.save()
-
         # remove organisation related permissions
         organisation_related_application_roles = ApplicationRole.objects.filter(is_organisation_related=True)
         organisation_related_role_profiles = RoleProfile.objects.filter(is_organisation_related=True)
         self.user.application_roles.remove(*list(organisation_related_application_roles))
         self.user.role_profiles.remove(*list(organisation_related_role_profiles))
+
+        # check if organisation uses user activation
+        if is_validation_period_active(self.organisation):
+            if self.user.valid_until is None:
+                self.user.valid_until = now() + datetime.timedelta(days=settings.SSO_VALIDATION_PERIOD_DAYS)
+        else:
+            self.user.valid_until = None
+        # save changes and update last_modified field!
+        self.user.save()
         self.save()
 
     def deny(self, user):

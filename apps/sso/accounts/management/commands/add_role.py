@@ -44,4 +44,6 @@ class Command(BaseCommand):
                 else:
                     user.application_roles.add(app_role)
 
+                user.update_last_modified()
+
             self.stdout.write("%s" % user)

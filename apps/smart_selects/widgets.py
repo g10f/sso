@@ -4,7 +4,6 @@ from django import forms
 from django.apps import apps
 from django.forms.widgets import Select
 from django.urls import reverse
-from django.utils import six
 from django.utils.safestring import mark_safe
 from smart_selects.utils import strcoll
 
@@ -82,7 +81,7 @@ class ChainedSelect(Select):
                     apps.get_model(self.app_name, self.model_name).objects.filter(**objects_filter).distinct())
                 sorted(filtered, key=cmp_to_key(strcoll))
                 for choice in filtered:
-                    final_choices.append((choice.pk, six.text_type(choice)))
+                    final_choices.append((choice.pk, str(choice)))
             except IndexError:
                 pass
         if len(final_choices) > 1:

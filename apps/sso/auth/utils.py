@@ -1,11 +1,12 @@
 import base64
 import logging
-import time
 from binascii import unhexlify, hexlify
+from io import BytesIO
 from os import urandom
 from urllib.parse import quote, urlencode
 
 import qrcode
+import time
 
 from django.apps import apps as django_apps
 from django.conf import settings
@@ -13,9 +14,7 @@ from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.core.exceptions import ValidationError
 from django.shortcuts import resolve_url
 from django.utils import lru_cache
-from django.utils import six
 from django.utils.decorators import method_decorator
-from django.utils.six import BytesIO
 from sso.auth import SESSION_AUTH_DATE
 from sso.utils.http import get_request_param
 from sso.utils.url import is_safe_ext_url
@@ -173,7 +172,7 @@ def hex_validator(length=0):
 
     def _validator(value):
         try:
-            if isinstance(value, six.text_type):
+            if isinstance(value, str):
                 value = value.encode()
 
             unhexlify(value)

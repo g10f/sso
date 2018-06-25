@@ -1,5 +1,4 @@
 from django.template import loader
-from django.utils import six
 from django.utils.functional import lazy
 from django.utils.translation import get_language, activate
 
@@ -12,7 +11,7 @@ def _string_format(string, dictionary):
     return string % dictionary
 
 
-string_format = lazy(_string_format, six.text_type)
+string_format = lazy(_string_format, str)
 
 
 def i18n_email_msg_and_subj(context, email_template_name, subject_template_name, language=None):
