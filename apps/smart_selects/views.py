@@ -3,7 +3,6 @@ from functools import cmp_to_key
 
 from django.apps import apps
 from django.http import HttpResponse
-from django.utils import six
 from django.views.decorators.cache import cache_page
 from smart_selects.utils import strcoll
 
@@ -23,6 +22,6 @@ def filterchain(request, app, model, field, value, manager=None):
     sorted(results, key=cmp_to_key(strcoll))
     result = []
     for item in results:
-        result.append({'value': item.pk, 'display': six.text_type(item)})
+        result.append({'value': item.pk, 'display': str(item)})
     content = json.dumps(result)
     return HttpResponse(content, content_type='application/json')

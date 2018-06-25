@@ -1,8 +1,7 @@
 import logging
-from uuid import UUID
 
-import six
 from sorl.thumbnail import get_thumbnail
+from uuid import UUID
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
@@ -63,7 +62,7 @@ SCOPE_MAPPING = {
 
 
 def _non_empty_string(s):
-    if issubclass(type(s), six.text_type):
+    if issubclass(type(s), str):
         return len(s) > 0
     return False
 
@@ -428,7 +427,8 @@ class UserDetailView(UserMixin, JsonDetailView):
                         initial_application_roles += [application_role]
             self.object.application_roles.set(initial_application_roles)
 
-        self.object.role_profiles.set([User.get_default_role_profile()])
+        self.object.role_profiles.set([User.get_default_guest_profile()])
+        self.object.update_last_modified()
 
         self.object.create_primary_email(email=data['email'])
 
@@ -471,7 +471,7 @@ class GlobalNavigationView(UserDetailView):
     def render_to_json_response(self, context, allow_jsonp=True, **response_kwargs):
         # allow jsonp requests for the global navigation bar
         return super().render_to_json_response(context, allow_jsonp=allow_jsonp,
-                                                                         **response_kwargs)
+                                               **response_kwargs)
 
     @method_decorator(cache_control(must_revalidate=True, max_age=60 * 5))
     def get(self, request, *args, **kwargs):
@@ -552,7 +552,7 @@ class UserList(UserMixin, JsonListView):
 
     def get_queryset(self):
         qs = super().get_queryset().prefetch_related('useraddress_set', 'userphonenumber_set',
-                                                                   'useremail_set').distinct()
+                                                     'useremail_set').distinct()
         qs = qs.order_by('username')
         qs = self.request.user.filter_administrable_users(qs)
 

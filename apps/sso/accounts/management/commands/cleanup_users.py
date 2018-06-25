@@ -44,6 +44,7 @@ def check_validation():
     for expired_user in expired_users:
         expired_user.application_roles.clear()
         expired_user.role_profiles.set([guest_profile])
+        expired_user.update_last_modified()
         logger.debug("%s" % expired_user)
 
     # 2. user with valid_until__isnull=True and a organisation which uses user activation will expire in 30 days
@@ -56,7 +57,7 @@ def check_validation():
     logger.debug("-----------------------------------------")
     for new_user in new_users:
         new_user.valid_until = now() + timedelta(days=30)
-        new_user.save(update_fields=['valid_until'])
+        new_user.save(update_fields=['valid_until', 'last_modified'])
         logger.debug("%s" % new_user)
 
 

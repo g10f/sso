@@ -217,6 +217,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     def ensure_single_primary_email(self):
         ensure_single_primary(self.useremail_set.all())
 
+    def update_last_modified(self):
+        self.save(update_fields=['last_modified'])
+
     @memoize
     def get_last_modified_deep(self):
         """
@@ -872,6 +875,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
         for role_profile in role_profiles:
             self.role_profiles.add(role_profile)
+        self.update_last_modified()
 
     def add_roles(self, app_roles_dict_array):
         # get or create Roles

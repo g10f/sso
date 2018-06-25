@@ -10,7 +10,6 @@ from django.forms.models import inlineformset_factory
 from django.http import HttpResponseRedirect
 from django.http.response import HttpResponse
 from django.urls import reverse
-from django.utils import six
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
@@ -566,10 +565,10 @@ class OrganisationList(ListView):
                "street_address", "city", "postal_code", "founded"]
         writer.writerow(row)
         for organisation in qs:
-            admin_region = six.text_type(organisation.admin_region) if organisation.admin_region else six.text_type('')
-            row = [organisation.name, six.text_type(organisation.is_active), organisation.homepage,
-                   six.text_type(organisation.email), six.text_type(organisation.primary_phone),
-                   six.text_type(organisation.organisation_country), admin_region]
+            admin_region = str(organisation.admin_region) if organisation.admin_region else str('')
+            row = [organisation.name, str(organisation.is_active), organisation.homepage,
+                   str(organisation.email), str(organisation.primary_phone),
+                   str(organisation.organisation_country), admin_region]
 
             primary_address = organisation.primary_address
             if not organisation.is_private and primary_address:

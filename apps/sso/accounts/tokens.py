@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from django.conf import settings
-from django.utils import six
 from django.utils.crypto import constant_time_compare, salted_hmac
 from django.utils.http import int_to_base36, base36_to_int
 
@@ -56,8 +55,8 @@ class EmailConfirmationTokenGenerator(object):
         # We limit the hash to 20 chars to keep URL short
         key_salt = "sso.accounts.tokens.EmailConfirmationTokenGenerator"
 
-        value = (six.text_type(user_email.user.pk) + user_email.email + six.text_type(user_email.confirmed) +
-                 six.text_type(timestamp))
+        value = (str(user_email.user.pk) + user_email.email + str(user_email.confirmed) +
+                 str(timestamp))
         hash_value = salted_hmac(key_salt, value).hexdigest()[::2]
         return "%s-%s" % (ts_b36, hash_value)
 

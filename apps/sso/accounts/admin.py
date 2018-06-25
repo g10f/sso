@@ -62,7 +62,7 @@ class UserEmailAdmin(admin.ModelAdmin):
 class OneTimeMessageAdmin(admin.ModelAdmin):
     list_display = ('user', 'last_modified', 'uuid')
     date_hierarchy = 'last_modified'
-    raw_id_fields = ("user",)
+    autocomplete_fields = ['user']
     readonly_fields = ['message_link']
     fieldsets = [
         (None,

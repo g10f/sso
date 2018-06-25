@@ -13,7 +13,6 @@ from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db import models
 from django.urls import reverse
-from django.utils import six
 from django.utils.safestring import mark_safe
 from django.utils.timezone import localtime, now
 from django.utils.translation import pgettext_lazy, ugettext_lazy as _
@@ -303,7 +302,8 @@ class Organisation(AbstractBaseModel):
                                              help_text=_('Distance used for neighbour calculations [km].'),
                                              max_digits=8, decimal_places=3, blank=True, null=True)
     transregional_distance = models.DecimalField(_("transregional distance"),
-                                                 help_text=_('Distance used for calculations of transregional events [km].'),
+                                                 help_text=_(
+                                                     'Distance used for calculations of transregional events [km].'),
                                                  max_digits=8, decimal_places=3, blank=True, null=True)
     is_live = models.BooleanField(_('live'),
                                   default=True,
@@ -448,7 +448,7 @@ class Organisation(AbstractBaseModel):
             return queryset.first()
         else:
             try:
-                attr, value = six.next(six.iteritems(kwargs))
+                attr, value = next(iter(kwargs.items()))
                 for item in queryset:
                     if getattr(item, attr) == value:
                         return item

@@ -1,5 +1,4 @@
 from django.db.models.fields.related import ForeignKey
-from django.utils import six
 from . import form_fields
 
 
@@ -7,8 +6,9 @@ class ChainedForeignKey(ForeignKey):
     """
     chains the choices of a previous combo box with this one
     """
+
     def __init__(self, to, chained_field=None, chained_model_field=None, show_all=False, auto_choose=False, **kwargs):
-        if isinstance(to, six.string_types):
+        if isinstance(to, str):
             self.app_name, self.model_name = to.split('.')
         else:
             self.app_name = to._meta.app_label

@@ -9,7 +9,6 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.files.base import ContentFile
 from django.forms.models import inlineformset_factory
 from django.forms.utils import ErrorList as DjangoErrorList
-from django.utils import six
 from django.utils.crypto import get_random_string
 from django.utils.encoding import force_text
 from django.utils.text import get_text_list
@@ -75,11 +74,11 @@ class ErrorList(DjangoErrorList):
         super().__init__()
 
         if form.is_bound:
-            self.extend(list(six.itervalues(form.errors)))
+            self.extend(form.errors.values())
             for inline_formset in inline_formsets:
                 self.extend(inline_formset.non_form_errors())
                 for errors_in_inline_form in inline_formset.errors:
-                    self.extend(list(six.itervalues(errors_in_inline_form)))
+                    self.extend(errors_in_inline_form.values())
 
 
 class ChangedDataList(list):
