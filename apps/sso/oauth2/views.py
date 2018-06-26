@@ -29,6 +29,7 @@ from sso.api.response import JsonHttpResponse
 from sso.api.views.generic import PreflightMixin
 from sso.auth.utils import is_recent_auth_time
 from sso.auth.views import TWO_FACTOR_PARAM
+from sso.middleware import revision_exempt
 from sso.utils.convert import long_to_base64
 from sso.utils.http import get_request_param
 from sso.utils.url import get_base_url
@@ -258,6 +259,7 @@ def is_login_required(request, client_state):
     return False, two_factor
 
 
+@revision_exempt
 @never_cache
 @xframe_options_exempt
 def authorize(request):
@@ -323,6 +325,7 @@ def token(request):
 class TokenView(PreflightMixin, View):
     http_method_names = ['get', 'post', 'options']
 
+    @method_decorator(revision_exempt)
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
