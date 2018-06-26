@@ -1,3 +1,5 @@
+from functools import wraps
+
 import pytz
 import time
 
@@ -6,6 +8,46 @@ from django.contrib import auth
 from django.core.exceptions import ImproperlyConfigured
 from django.utils import timezone
 from django.utils.deprecation import MiddlewareMixin
+from reversion.views import create_revision
+
+
+def revision_exempt(view_func):
+    """Mark a view function as being exempt from the revision mechanismus."""
+    def wrapped_view(*args, **kwargs):
+        return view_func(*args, **kwargs)
+
+    wrapped_view.revision_exempt = True
+    return wraps(view_func)(wrapped_view)
+
+
+class RevisionMiddleware(object):
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        return response
+
+    def _accept(self, request):
+        # Avoid checking the request twice by adding a custom attribute to
+        # request.  This will be relevant when both decorator and middleware
+        # are used.
+        request.revision_processing_done = True
+        return None
+
+    def process_view(self, request, callback, callback_args, callback_kwargs):
+        if getattr(request, 'revision_processing_done', False):
+            return None
+
+        if getattr(callback, 'revision_exempt', False):
+            return None
+
+        # Assume that anything not defined as 'safe' by RFC7231 needs protection
+        if request.method not in ('GET', 'HEAD', 'OPTIONS', 'TRACE'):
+            return create_revision()(callback)(request, *callback_args, **callback_kwargs)
+
+        return self._accept(request)
 
 
 class CookieProlongationMiddleware(MiddlewareMixin):

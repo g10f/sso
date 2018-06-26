@@ -17,6 +17,7 @@ from sso.auth import is_otp_login, auth_login
 from sso.auth.forms import EmailAuthenticationForm, AuthenticationTokenForm
 from sso.auth.models import Device
 from sso.auth.utils import get_safe_login_redirect_url, get_request_param, get_device_classes
+from sso.middleware import revision_exempt
 from sso.oauth2.models import get_oauth2_cancel_url
 from throttle.decorators import throttle
 
@@ -42,6 +43,7 @@ class LoginView(FormView):
     success_url = reverse_lazy('home')
     is_two_factor_required = False
 
+    @method_decorator(revision_exempt)
     @method_decorator(sensitive_post_parameters())
     @method_decorator(never_cache)
     @method_decorator(throttle(duration=30, max_calls=12))
@@ -115,6 +117,7 @@ class TokenView(FormView):
     expiry = 0
     challenges = None
 
+    @method_decorator(revision_exempt)
     @method_decorator(sensitive_post_parameters())
     @method_decorator(never_cache)
     @method_decorator(throttle(duration=30, max_calls=12))

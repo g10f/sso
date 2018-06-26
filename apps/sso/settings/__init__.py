@@ -192,7 +192,7 @@ MIDDLEWARE = [
     'django.middleware.locale.LocaleMiddleware',
     'current_user.middleware.CurrentUserMiddleware',
     'sso.middleware.TimezoneMiddleware',
-    'reversion.middleware.RevisionMiddleware'
+    'sso.middleware.RevisionMiddleware'
 ]
 
 ROOT_URLCONF = 'sso.urls'
