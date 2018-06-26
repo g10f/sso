@@ -16,6 +16,7 @@ from django.urls import reverse
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
+from reversion.admin import VersionAdmin
 from sso.organisations.models import Organisation, AdminRegion
 from .forms import AdminUserCreationForm
 from .models import Application, UserAssociatedSystem, UserAddress, UserPhoneNumber, UserEmail, RoleProfile
@@ -351,7 +352,7 @@ class PhoneNumberInline(admin.TabularInline):
     ]
 
 
-class UserAdmin(AdminImageMixin, DjangoUserAdmin):
+class UserAdmin(VersionAdmin, AdminImageMixin, DjangoUserAdmin):
     add_form = AdminUserCreationForm
     save_on_top = True
     list_display = (
@@ -550,7 +551,7 @@ class UserAdmin(AdminImageMixin, DjangoUserAdmin):
         display no superusers in the changelist for non superusers
         """
         qs = super().get_queryset(request).prefetch_related('last_modified_by_user', 'created_by_user',
-                                                                           'useremail_set')
+                                                            'useremail_set')
         user = request.user
         if user.is_superuser:
             return qs
