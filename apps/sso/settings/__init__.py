@@ -192,6 +192,7 @@ MIDDLEWARE = [
     'django.middleware.locale.LocaleMiddleware',
     'current_user.middleware.CurrentUserMiddleware',
     'sso.middleware.TimezoneMiddleware',
+    'reversion.middleware.RevisionMiddleware'
 ]
 
 ROOT_URLCONF = 'sso.urls'
@@ -214,6 +215,7 @@ INSTALLED_APPS = [
     'captcha',
     'l10n',
     'smart_selects',
+    'reversion',
     'sso.emails',
     'sso.organisations',
     'sso.accounts',

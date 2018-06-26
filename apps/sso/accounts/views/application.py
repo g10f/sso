@@ -1,6 +1,7 @@
 import logging
-from datetime import timedelta
 from urllib.parse import urlunsplit
+
+from datetime import timedelta
 
 from django.conf import settings
 from django.contrib import messages
@@ -111,7 +112,7 @@ class UserList(ListView):
         user = self.request.user
 
         qs = super().get_queryset().only('uuid', 'last_login', 'username', 'first_name', 'last_name',
-                                                       'date_joined', 'picture', 'valid_until') \
+                                         'date_joined', 'picture', 'valid_until') \
             .prefetch_related('useremail_set', 'organisations')
         # exclude user who were not activated, this users must first be activated on the registration page
         qs = qs.exclude(last_login__isnull=True, is_active=False)
@@ -207,8 +208,8 @@ class AppAdminUserList(ListView):
         user = self.request.user
 
         qs = super().get_queryset().only('uuid', 'last_login', 'username', 'first_name',
-                                                               'last_name', 'date_joined',
-                                                               'picture', 'valid_until') \
+                                         'last_name', 'date_joined',
+                                         'picture', 'valid_until') \
             .prefetch_related('useremail_set', 'organisations')
         qs = user.filter_administrable_app_admin_users(qs)
 

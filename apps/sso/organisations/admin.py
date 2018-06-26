@@ -6,6 +6,7 @@ from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.gis.admin import OSMGeoAdmin
 from django.utils.translation import ugettext_lazy as _
 from l10n.models import Country
+from reversion.admin import VersionAdmin
 from sso.emails.models import Email, CENTER_EMAIL_TYPE
 from .models import OrganisationAddress, OrganisationPhoneNumber, OrganisationCountry, CountryGroup
 
@@ -31,14 +32,14 @@ class CountryListFilter(SimpleListFilter):
             return queryset.all()
 
 
-class AdminRegionAdmin(admin.ModelAdmin):
+class AdminRegionAdmin(VersionAdmin, admin.ModelAdmin):
     list_display = ('name', 'uuid', 'last_modified')
     list_filter = (CountryListFilter,)
     date_hierarchy = 'last_modified'
     search_fields = ('name', 'uuid')
 
 
-class AssociationAdmin(admin.ModelAdmin):
+class AssociationAdmin(VersionAdmin, admin.ModelAdmin):
     list_display = ('name', 'last_modified', 'is_active', 'is_external')
     date_hierarchy = 'last_modified'
     search_fields = ('name', 'uuid')
@@ -75,14 +76,14 @@ class CountryGroupAdminForm(forms.ModelForm):
         return country_group
 
 
-class CountryGroupAdmin(admin.ModelAdmin):
+class CountryGroupAdmin(VersionAdmin, admin.ModelAdmin):
     list_display = ('name', 'email', 'homepage', 'last_modified')
     date_hierarchy = 'last_modified'
     search_fields = ('name', 'email', 'homepage', 'uuid')
     form = CountryGroupAdminForm
 
 
-class OrganisationCountryAdmin(admin.ModelAdmin):
+class OrganisationCountryAdmin(VersionAdmin, admin.ModelAdmin):
     list_select_related = ('country', 'email')
     list_display = ('country', 'homepage', 'email', 'is_active', 'last_modified')
     list_filter = ('association', 'country__continent', 'is_active', 'country_groups')
@@ -126,7 +127,7 @@ class PhoneNumber_Inline(admin.TabularInline):
     ]
 
 
-class OrganisationAdmin(OSMGeoAdmin):
+class OrganisationAdmin(VersionAdmin, OSMGeoAdmin):
     openlayers_url = '//cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js'
     list_select_related = ('email',)
     ordering = ['name']

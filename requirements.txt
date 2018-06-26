@@ -1,6 +1,7 @@
 django
 django-formtools
 django-ipware
+django-reversion
 gunicorn
 psycopg2-binary
 python-memcached
