@@ -337,6 +337,7 @@ class TokenView(PreflightMixin, View):
         return token(request)
 
 
+@revision_exempt
 @csrf_exempt
 def revoke(request):
     uri, http_method, body, headers = extract_params(request)
