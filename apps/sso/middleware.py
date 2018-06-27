@@ -26,8 +26,7 @@ class RevisionMiddleware(object):
         self.get_response = get_response
 
     def __call__(self, request):
-        response = self.get_response(request)
-        return response
+        return self.get_response(request)
 
     def _accept(self, request):
         # Avoid checking the request twice by adding a custom attribute to
