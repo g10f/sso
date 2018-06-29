@@ -3,6 +3,7 @@ import re
 from base64 import b64decode
 from mimetypes import guess_extension
 
+import reversion
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
@@ -110,8 +111,11 @@ def log_change(request, object, message):  # @ReservedAssignment
 
     The default implementation creates an admin LogEntry object.
     """
+    # first use reversion API
+    if reversion.is_active():
+        reversion.set_comment(message)
+
     from django.contrib.admin.models import LogEntry, CHANGE
-    user_id = None
     if request.user.is_authenticated:
         user_id = request.user.pk
     else:
