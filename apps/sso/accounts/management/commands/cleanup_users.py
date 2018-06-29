@@ -3,6 +3,7 @@ import logging
 
 from datetime import timedelta
 
+import reversion
 from django.db.models.aggregates import Count
 from django.db.models.query_utils import Q
 
@@ -41,11 +42,13 @@ def check_validation():
 
     logger.info("Expired Users:")
     logger.debug("-----------------------------------------")
-    for expired_user in expired_users:
-        expired_user.application_roles.clear()
-        expired_user.role_profiles.set([guest_profile])
-        expired_user.update_last_modified()
-        logger.debug("%s" % expired_user)
+    with reversion.create_revision():
+        reversion.set_comment("cleared application_roles and set guest_profile in cleanup_users task")
+        for expired_user in expired_users:
+            expired_user.application_roles.clear()
+            expired_user.role_profiles.set([guest_profile])
+            expired_user.update_last_modified()
+            logger.debug("%s" % expired_user)
 
     # 2. user with valid_until__isnull=True and a organisation which uses user activation will expire in 30 days
     new_users = User.objects.annotate(count_profiles=Count('role_profiles'))\
@@ -55,10 +58,12 @@ def check_validation():
 
     logger.debug("new Users:")
     logger.debug("-----------------------------------------")
-    for new_user in new_users:
-        new_user.valid_until = now() + timedelta(days=30)
-        new_user.save(update_fields=['valid_until', 'last_modified'])
-        logger.debug("%s" % new_user)
+    with reversion.create_revision():
+        reversion.set_comment("set valid_until in cleanup_users task")
+        for new_user in new_users:
+            new_user.valid_until = now() + timedelta(days=30)
+            new_user.save(update_fields=['valid_until', 'last_modified'])
+            logger.debug("%s" % new_user)
 
 
 def clean_pictures():
