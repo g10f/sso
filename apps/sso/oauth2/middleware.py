@@ -43,7 +43,7 @@ def get_auth_data_from_token(access_token):
             return AnonymousUser(), None, set()
         data = loads_jwt(access_token)
         client = Client.objects.get(uuid=data['aud'])
-        
+
         session_hash = data.get(sso_auth.HASH_SESSION_KEY)
         user = get_user_model().objects.get(uuid=data['sub'])
         session_hash_verified = session_hash and \
@@ -78,13 +78,13 @@ def get_auth_data_from_cookie(request, with_client_and_scopes=False):
 def get_auth_data(request):
     """
     Look for
-    
+
     1. Authorization Header if path starts with /api/
     2. access_token Parameter if path starts with /api/
     3. Standard django session_id
-    
+
     for authentication information
-    
+
     """
     if not hasattr(request, '_cached_auth_data'):
         if request.path[:5] == '/api/':
@@ -100,7 +100,7 @@ def get_auth_data(request):
 
 
 class OAuthAuthenticationMiddleware(MiddlewareMixin):
-    def process_request(self, request):            
+    def process_request(self, request):
         assert hasattr(request, 'session'), "The Django authentication middleware requires session middleware to be installed. \
         Edit your MIDDLEWARE_CLASSES setting to insert 'django.contrib.sessions.middleware.SessionMiddleware'."
 
