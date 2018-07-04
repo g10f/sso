@@ -133,9 +133,9 @@ class RegistrationManager(models.Manager):
     @classmethod
     def expired_q(cls):
         """
-        If the user is marked with is_access_denied, we don't delete the user, so that the user can not register with the same email.
-        Users who don't complete the email validation in TOKEN_EXPIRATION_DAYS or did not activated by an admin in ACTIVATION_EXPIRATION_DAYS
-        will be deleted
+        If the user is marked with is_access_denied, we don't delete the user, so that the user can not register with
+        the same email. Users who don't complete the email validation in TOKEN_EXPIRATION_DAYS or did not activated by
+        an admin in ACTIVATION_EXPIRATION_DAYS will be deleted.
         """
         q = Q(user__is_active=False) & Q(is_validated=False) & Q(date_registered__lte=cls.token_expiration_date()) & Q(
             is_access_denied=False) & Q(user__last_login__isnull=True)

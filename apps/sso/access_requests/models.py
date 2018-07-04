@@ -63,7 +63,7 @@ class AccessRequest(AbstractBaseModel):
                 if self.user.valid_until is None:
                     self.user.valid_until = now() + datetime.timedelta(days=settings.SSO_VALIDATION_PERIOD_DAYS)
                     self.user.save()
-                    validation_period_active = True
+                validation_period_active = True
         if not validation_period_active:
             self.user.valid_until = None
             self.user.save()
