@@ -135,7 +135,8 @@ class OrganisationAdmin(VersionAdmin, OSMGeoAdmin):
     save_on_top = True
     search_fields = ('email__email', 'name', 'homepage', 'uuid')
     inlines = [PhoneNumber_Inline, Address_Inline]
-    readonly_fields = ['uuid', 'last_modified', 'google_maps_link']
+    readonly_fields = ['last_modified', 'google_maps_link']
+    non_su_readonly_fields = ['uuid', 'last_modified', 'google_maps_link']
     date_hierarchy = 'founded'
     list_filter = (
         'association', 'is_active', 'is_private', 'is_live', 'uses_user_activation', 'coordinates_type', 'admin_region',
@@ -174,3 +175,9 @@ class OrganisationAdmin(VersionAdmin, OSMGeoAdmin):
     def save_model(self, request, obj, form, change):
         if form.has_changed():
             return super().save_model(request, obj, form, change)
+
+    def get_readonly_fields(self, request, obj=None):
+        if request.user.is_superuser or obj is None:
+            return super().get_readonly_fields(request, obj)
+        else:
+            return self.non_su_readonly_fields
