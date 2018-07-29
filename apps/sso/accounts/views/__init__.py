@@ -364,8 +364,9 @@ def delete_profile(request):
         form = UserSelfProfileDeleteForm(request.POST, instance=user)
         if form.is_valid():
             form.save()
-            auth_logout(request)
-            return redirect('home')
+            change_message = ChangedDataList(form, None).change_message()
+            log_change(request, user, change_message)
+            return redirect('accounts:logout')
     else:
         form = UserSelfProfileDeleteForm(instance=user)
     context = {'form': form, }

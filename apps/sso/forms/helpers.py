@@ -87,12 +87,13 @@ class ChangedDataList(list):
     Stores all errors for the form/formsets in an add/change stage view.
     """
 
-    def __init__(self, form, inline_formsets):
+    def __init__(self, form, inline_formsets=None):
         if form.is_bound:
             self.extend(form.changed_data)
-            for inline_formset in inline_formsets:
-                for inline_form in inline_formset.forms:
-                    self.extend(inline_form.changed_data)
+            if inline_formsets is not None:
+                for inline_formset in inline_formsets:
+                    for inline_form in inline_formset.forms:
+                        self.extend(inline_form.changed_data)
 
     def change_message(self):
         """

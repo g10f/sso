@@ -1,8 +1,8 @@
-import datetime
 import logging
 from collections import OrderedDict
 from mimetypes import guess_extension
 
+import datetime
 import pytz
 from captcha.fields import ReCaptchaField
 
@@ -20,6 +20,7 @@ from django.forms.models import model_to_dict
 from django.template import loader
 from django.utils.crypto import get_random_string
 from django.utils.encoding import force_bytes, force_text
+from django.utils.functional import cached_property
 from django.utils.http import urlsafe_base64_encode
 from django.utils.text import capfirst
 from django.utils.timezone import now
@@ -589,6 +590,10 @@ class UserSelfProfileDeleteForm(forms.Form):
     def save(self):
         self.user.is_active = False
         self.user.save()
+
+    @cached_property
+    def changed_data(self):
+        return ['is_active']
 
 
 class UserSelfRegistrationForm2(UserSelfRegistrationForm):
