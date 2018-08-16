@@ -251,6 +251,7 @@ class Organisation(AbstractBaseModel):
     _original_location = None
 
     name = models.CharField(_("name"), max_length=255)
+    order = models.IntegerField(default=0, help_text=_('Overwrites the alphabetic order.'))
     name_native = models.CharField(_("name in native language"), max_length=255, blank=True)
     association = models.ForeignKey(Association, verbose_name=_("association"), default=default_association, null=True,
                                     limit_choices_to={'is_active': True},
@@ -316,7 +317,7 @@ class Organisation(AbstractBaseModel):
             # ("read_organisation", "Can read organisation data"),
         )
         required_db_features = ['gis_enabled']
-        ordering = ['name']
+        ordering = ['order', 'name']
         verbose_name = _('Organisation')
         verbose_name_plural = _('Organisations')
 

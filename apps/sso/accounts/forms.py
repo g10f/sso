@@ -27,6 +27,7 @@ from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from sso.forms import bootstrap, mixins, BLANK_CHOICE_DASH, BaseForm
 from sso.forms.fields import EmailFieldLower
+from sso.models import clean_picture
 from sso.organisations.models import Organisation, is_validation_period_active
 from sso.registration import default_username_generator
 from sso.registration.forms import UserSelfRegistrationForm
@@ -212,27 +213,8 @@ class SetPictureAndPasswordForm(SetPasswordForm):
             self.fields['picture'] = forms.ImageField(label=_('Profile picture'), widget=bootstrap.ImageWidget())
 
     def clean_picture(self):
-        from django.template.defaultfilters import filesizeformat
-        max_upload_size = User.MAX_PICTURE_SIZE  # 5 MB
         picture = self.cleaned_data["picture"]
-        if picture and hasattr(picture, 'content_type'):
-            base_content_type = picture.content_type.split('/')[0]
-            if base_content_type in ['image']:
-                if picture._size > max_upload_size:
-                    raise forms.ValidationError(
-                        _('Please keep filesize under %(filesize)s. Current filesize %(current_filesize)s') %
-                        {'filesize': filesizeformat(max_upload_size),
-                         'current_filesize': filesizeformat(picture._size)})
-                # mimetypes.guess_extension return jpe which is quite uncommon for jpeg
-                if picture.content_type == 'image/jpeg':
-                    file_ext = '.jpg'
-                else:
-                    file_ext = guess_extension(picture.content_type)
-                picture.name = "%s%s" % (
-                    get_random_string(7, allowed_chars='abcdefghijklmnopqrstuvwxyz0123456789'), file_ext)
-            else:
-                raise forms.ValidationError(_('File type is not supported'))
-        return picture
+        return clean_picture(picture, User.MAX_PICTURE_SIZE)
 
     def save(self, commit=True):
         cd = self.cleaned_data
@@ -494,27 +476,8 @@ class UserSelfProfileForm(forms.Form):
             return self.cleaned_data['organisation']
 
     def clean_picture(self):
-        from django.template.defaultfilters import filesizeformat
-        max_upload_size = User.MAX_PICTURE_SIZE  # 5 MB
         picture = self.cleaned_data["picture"]
-        if picture and hasattr(picture, 'content_type'):
-            base_content_type = picture.content_type.split('/')[0]
-            if base_content_type in ['image']:
-                if picture._size > max_upload_size:
-                    raise forms.ValidationError(
-                        _('Please keep filesize under %(filesize)s. Current filesize %(current_filesize)s') %
-                        {'filesize': filesizeformat(max_upload_size),
-                         'current_filesize': filesizeformat(picture._size)})
-                # mimetypes.guess_extension return jpe which is quite uncommon for jpeg
-                if picture.content_type == 'image/jpeg':
-                    file_ext = '.jpg'
-                else:
-                    file_ext = guess_extension(picture.content_type)
-                picture.name = "%s%s" % (
-                    get_random_string(7, allowed_chars='abcdefghijklmnopqrstuvwxyz0123456789'), file_ext)
-            else:
-                raise forms.ValidationError(_('File type is not supported'))
-        return picture
+        return clean_picture(picture, User.MAX_PICTURE_SIZE)
 
     def save(self):
         cd = self.cleaned_data

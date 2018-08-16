@@ -36,11 +36,11 @@ def clean_base64_picture(base64_picture, max_upload_size=5242880):
                 name = "%s%s" % (
                     get_random_string(7, allowed_chars='abcdefghijklmnopqrstuvwxyz0123456789'), file_ext)
                 picture = ContentFile(b64decode(image_content), name=name)
-                if picture._size > max_upload_size:
+                if picture.size > max_upload_size:
                     raise ValidationError(
                         _('Please keep filesize under %(filesize)s. Current filesize %(current_filesize)s') %
                         {'filesize': filesizeformat(max_upload_size),
-                         'current_filesize': filesizeformat(picture._size)})
+                         'current_filesize': filesizeformat(picture.size)})
 
             else:
                 raise ValidationError(_('File type is not supported'))
