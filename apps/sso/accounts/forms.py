@@ -1,8 +1,7 @@
+import datetime
 import logging
 from collections import OrderedDict
-from mimetypes import guess_extension
 
-import datetime
 import pytz
 from captcha.fields import ReCaptchaField
 
@@ -564,8 +563,7 @@ class UserSelfRegistrationForm2(UserSelfRegistrationForm):
     Overwritten UserSelfRegistrationForm Form with additional organisation field
     """
     organisation = forms.ModelChoiceField(
-        queryset=Organisation.objects.filter(
-            is_active=True, is_live=True, association__is_selectable=True).select_related(
+        queryset=Organisation.objects.filter(is_active=True, association__is_selectable=True).select_related(
             'organisation_country__country'),
         required=settings.SSO_ORGANISATION_REQUIRED,
         label=_("Organisation"), widget=bootstrap.Select())
