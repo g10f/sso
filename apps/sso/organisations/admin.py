@@ -1,3 +1,5 @@
+from reversion.admin import VersionAdmin
+
 from django import forms
 from django.contrib import admin
 from django.contrib.admin import SimpleListFilter
@@ -6,7 +8,6 @@ from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.gis.admin import OSMGeoAdmin
 from django.utils.translation import ugettext_lazy as _
 from l10n.models import Country
-from reversion.admin import VersionAdmin
 from sso.emails.models import Email, CENTER_EMAIL_TYPE
 from .models import OrganisationAddress, OrganisationPhoneNumber, OrganisationCountry, CountryGroup
 
@@ -146,7 +147,8 @@ class OrganisationAdmin(VersionAdmin, OSMGeoAdmin):
     fieldsets = [
         (None,
          {'fields':
-              ['uuid', 'centerid', 'name', 'name_native', 'slug', 'center_type', 'association', 'organisation_country',
+              ['uuid', 'centerid', 'order', 'name', 'name_native', 'slug', 'center_type', 'association',
+               'organisation_country',
                'admin_region', 'founded', ('coordinates_type', 'google_maps_link'),
                'location', 'email', 'homepage', 'source_urls', 'is_active', 'is_private', 'is_live',
                'uses_user_activation', 'neighbour_distance', 'transregional_distance',

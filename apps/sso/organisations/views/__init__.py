@@ -441,7 +441,7 @@ class OrganisationList(ListView):
         if latlng:
             return ['distance']
         else:
-            return ['name']
+            return ['order', 'name']
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):

@@ -27,10 +27,11 @@ def clean_picture(picture, max_upload_size):
     if picture and hasattr(picture, 'content_type'):
         base_content_type = picture.content_type.split('/')[0]
         if base_content_type in ['image']:
-            if picture._size > max_upload_size:
+            if picture.size > max_upload_size:
                 raise forms.ValidationError(
                     _('Please keep filesize under %(filesize)s. Current filesize %(current_filesize)s') %
-                    {'filesize': filesizeformat(max_upload_size), 'current_filesize': filesizeformat(picture._size)})
+                    {'filesize': filesizeformat(max_upload_size),
+                     'current_filesize': filesizeformat(picture.size)})
             # mimetypes.guess_extension return jpe which is quite uncommon for jpeg
             if picture.content_type == 'image/jpeg':
                 file_ext = '.jpg'
