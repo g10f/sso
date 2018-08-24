@@ -104,6 +104,15 @@ def validate_code_verifier(authorization_code, client, request):
             raise errors.InvalidGrantError(description='code verifier does not match', request=request)
 
 
+def get_client_id_and_secret_from_auth_header(request):
+    if 'HTTP_AUTHORIZATION' in request.headers:
+        # client credentials grant type
+        http_authorization = request.headers['HTTP_AUTHORIZATION'].split(' ')
+        if (len(http_authorization) == 2) and http_authorization[0] == 'Basic':
+            data = base64.b64decode(force_bytes(http_authorization[1])).decode()
+            return data.split(':')
+
+
 class OAuth2RequestValidator(oauth2.RequestValidator):
     def _get_client(self, client_id, request):
         if request.client:
@@ -188,11 +197,7 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
         if request.grant_type in ['client_credentials', 'password', 'refresh_token']:
             # http://tools.ietf.org/html/rfc6749#section-4.4
             if 'HTTP_AUTHORIZATION' in request.headers:
-                # client credentials grant type
-                http_authorization = request.headers['HTTP_AUTHORIZATION'].split(' ')
-                if (len(http_authorization) == 2) and http_authorization[0] == 'Basic':
-                    data = base64.b64decode(force_bytes(http_authorization[1])).decode()
-                    request.client_id, request.client_secret = data.split(':')
+                request.client_id, request.client_secret = get_client_id_and_secret_from_auth_header(request)
         try:
             # 1. check the client_id
             client = self._get_client(request.client_id, request)
@@ -347,6 +352,11 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
         return False
 
     def client_authentication_required(self, request, *args, **kwargs):
+        if not request.client_id:
+            if 'HTTP_AUTHORIZATION' in request.headers:
+                # client credentials grant type
+                request.client_id, request.client_secret = get_client_id_and_secret_from_auth_header(request)
+
         client = self._get_client(request.client_id, request)
         if client.type in CONFIDENTIAL_CLIENTS:
             return True
