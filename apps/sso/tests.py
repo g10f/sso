@@ -17,8 +17,9 @@ class SSOSeleniumTests(StaticLiveServerTestCase):
         # capabilities['binary'] = '/opt/mozilla/geckodriver'
         # cls.selenium = WebDriver(firefox_binary=FirefoxBinary(log_file=open('./ff.log', 'w')))
         # cls.selenium = WebDriver(capabilities=capabilities)
-        cls.selenium = WebDriver()
         super().setUpClass()
+        cls.selenium = WebDriver()
+        cls.selenium.implicitly_wait(10)
 
     @classmethod
     def tearDownClass(cls):
