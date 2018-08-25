@@ -72,7 +72,7 @@ OTP_TWILIO_TOKEN_VALIDITY = 300  # seconds
 
 # Celery settings see https://www.cloudamqp.com/docs/celery.html
 CELERY_BROKER_USE_SSL = False
-CELERY_BROKER_URL = 'amqp://guest:guest@localhost//'
+CELERY_BROKER_URL = None  # 'amqp://guest:guest@localhost//'
 CELERY_BROKER_POOL_LIMIT = 1  # Will decrease connection usage
 CELERY_BROKER_HEARTBEAT = None
 CELERY_BROKER_CONNECTION_TIMEOUT = 30  # May require a long timeout due to Linux DNS timeouts etc
