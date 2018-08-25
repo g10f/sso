@@ -15,9 +15,9 @@ from django.core.exceptions import ValidationError
 from django.shortcuts import resolve_url
 from django.utils import lru_cache
 from django.utils.decorators import method_decorator
+from django.utils.http import is_safe_url
 from sso.auth import SESSION_AUTH_DATE
 from sso.utils.http import get_request_param
-from sso.utils.url import is_safe_ext_url
 
 logger = logging.getLogger(__name__)
 
@@ -115,10 +115,10 @@ def get_safe_login_redirect_url(request):
     redirect_to = get_request_param(request, REDIRECT_FIELD_NAME, '')
     # Ensure the user-originating redirection url is safe.
     # allow external hosts, for redirect after password_create_complete
-    if not is_safe_ext_url(redirect_to, set(allowed_hosts())):
-        return resolve_url(settings.LOGIN_REDIRECT_URL)
-    else:
+    if is_safe_url(redirect_to, allowed_hosts=set(allowed_hosts())):
         return redirect_to
+    else:
+        return resolve_url(settings.LOGIN_REDIRECT_URL)
 
 
 def get_otpauth_url(accountname, secret, issuer=None, digits=None):

@@ -1,5 +1,4 @@
 import logging
-from uuid import UUID
 
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.db import transaction
@@ -7,6 +6,7 @@ from django.forms.models import model_to_dict
 from django.http import HttpResponse, Http404
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_text
+from django.utils.http import is_safe_url
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.vary import vary_on_headers
 from django.views.generic.detail import BaseDetailView
@@ -16,7 +16,7 @@ from sso.api.response import JsonHttpResponse
 from sso.auth.utils import is_browser_client
 from sso.oauth2.models import allowed_hosts
 from sso.utils.http import parse_json
-from sso.utils.url import update_url, is_safe_ext_url, get_base_url
+from sso.utils.url import update_url, get_base_url
 
 logger = logging.getLogger(__name__)
 
@@ -54,9 +54,8 @@ class PermissionMixin(object):
 
     def is_referer_allowed(self):
         # check the referer if cookie based browser authentication is used
-        if 'HTTP_REFERER' in self.request.META and is_browser_client(self.request) and \
-            not is_safe_ext_url(self.request.META['HTTP_REFERER'], set(allowed_hosts())):
-            return False
+        if 'HTTP_REFERER' in self.request.META and is_browser_client(self.request):
+            return is_safe_url(self.request.META['HTTP_REFERER'], allowed_hosts=set(allowed_hosts()))
         else:
             return True
 
@@ -66,13 +65,13 @@ class PermissionMixin(object):
             if not self.is_referer_allowed():
                 if raise_exception:
                     raise PermissionDenied("Access to: %s not allowed to referer %s'" % (
-                    self.request.path, self.request.META['HTTP_REFERER']))
+                        self.request.path, self.request.META['HTTP_REFERER']))
                 else:
                     return False
             is_allowed, reason = permission_check(self.request, obj)
             if not is_allowed and raise_exception:
-                raise PermissionDenied(
-                    "operation '%s' not allowed, user: '%s', reason '%s'" % (operation_name, self.request.user, reason))
+                raise PermissionDenied("operation '%s' not allowed, user: '%s', reason '%s'" %
+                                       (operation_name, self.request.user, reason))
             else:
                 return is_allowed
         else:  # default is no permission
