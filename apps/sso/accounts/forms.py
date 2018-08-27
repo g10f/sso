@@ -505,7 +505,7 @@ class UserSelfProfileForm(forms.Form):
         if 'organisation' in cd and cd['organisation']:
             # user selected an organisation, this can only happen if the user before had
             # no organisation (see clean_organisation).
-            self.user.organisations.add(cd['organisation'])
+            self.user.set_organisations([cd["organisation"]])
 
 
 class CenterSelfProfileForm(forms.Form):
@@ -617,7 +617,7 @@ class UserSelfRegistrationForm2(UserSelfRegistrationForm):
 
         organisation = data["organisation"]
         if organisation:
-            new_user.organisations.add(data["organisation"])
+            new_user.set_organisations([organisation])
 
         role_id = None if organisation else settings.SSO_DEFAULT_GUEST_PROFILE_UUID
         default_role_profile = User.get_default_role_profile(role_id)

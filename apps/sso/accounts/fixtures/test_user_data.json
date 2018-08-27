@@ -14,7 +14,6 @@
       "password": "pbkdf2_sha1$10000$tW4pBVoq45Dk$gP0qOqRozGKtx9oAWbnWyL5pe+0=",
       "date_joined": "2012-03-23T07:00:46.076Z",
       "uuid": "cf904d34c00447689d163a62730a5b99",
-      "organisations": [["31664dd38ca4454e916e55fe8b1f0745"]],
       "is_subscriber": false,
       "is_center": false,
       "last_modified": "2012-03-23T07:00:46.076Z"
@@ -35,7 +34,6 @@
       "password": "pbkdf2_sha256$10000$JuM5NUO9HJ7e$61H65Og8koE7TCu37DfS1AqshlDiqmL1skZ6EzjrrGg=",
       "date_joined": "2012-03-23T07:02:04Z",
       "uuid": "a8992f0348634f76b0dac2de4e4c83ee",
-      "organisations": [["31664dd38ca4454e916e55fe8b1f0745"]],
       "application_roles": [
         [
           "bc0ee635a536491eb8e7fbe5749e8111",
@@ -66,7 +64,6 @@
       "password": "pbkdf2_sha256$10000$JuM5NUO9HJ7e$61H65Og8koE7TCu37DfS1AqshlDiqmL1skZ6EzjrrGg=",
       "date_joined": "2017-02-26T07:18:33.143Z",
       "uuid": "8b5ef43b30754ce4a6d769435019a83c",
-      "organisations": [["31664dd38ca4454e916e55fe8b1f0745"]],
       "application_roles": [
         [
           "bc0ee635a536491eb8e7fbe5749e8111",
@@ -97,7 +94,6 @@
       "password": "pbkdf2_sha256$10000$JuM5NUO9HJ7e$61H65Og8koE7TCu37DfS1AqshlDiqmL1skZ6EzjrrGg=",
       "date_joined": "2012-03-23T07:02:04Z",
       "uuid": "f601b1b2bc934b45920ab3addc105faf",
-      "organisations": [["31664dd38ca4454e916e55fe8b1f0745"]],
       "application_roles": [
         [
           "fa467234b81e4838a009e38d9e655d18",
@@ -125,7 +121,6 @@
       "password": "pbkdf2_sha256$10000$JuM5NUO9HJ7e$61H65Og8koE7TCu37DfS1AqshlDiqmL1skZ6EzjrrGg=",
       "date_joined": "2012-03-23T07:02:04Z",
       "uuid": "c02d6a3d1a634c269a7f10c147d480c2",
-      "organisations": [["31664dd38ca4454e916e55fe8b1f0745"]],
       "application_roles": [
         [
           "fa467234b81e4838a009e38d9e655d18",
@@ -153,7 +148,6 @@
       "password": "pbkdf2_sha256$10000$JuM5NUO9HJ7e$61H65Og8koE7TCu37DfS1AqshlDiqmL1skZ6EzjrrGg=",
       "date_joined": "2012-03-23T07:02:04Z",
       "uuid": "b3a8a5bb86704bca89bb4425ec618e9c",
-      "organisations": [["31664dd38ca4454e916e55fe8b1f0745"]],
       "application_roles": [
         [
           "fa467234b81e4838a009e38d9e655d18",
@@ -222,6 +216,48 @@
       "application": ["bc0ee635a536491eb8e7fbe5749e8111"],
       "admin": ["ApplicationAdmin"],
       "last_modified": "2017-02-26T11:20:46.076Z"
+    }
+  },
+  {
+    "model": "accounts.membership",
+    "fields": {
+      "user": ["GlobalAdmin"],
+      "organisation": ["31664dd38ca4454e916e55fe8b1f0745"]
+    }
+  },
+  {
+    "model": "accounts.membership",
+    "fields": {
+      "user": ["GunnarScherf"],
+      "organisation": ["31664dd38ca4454e916e55fe8b1f0745"]
+    }
+  },
+  {
+    "model": "accounts.membership",
+    "fields": {
+      "user": ["ApplicationAdmin"],
+      "organisation": ["31664dd38ca4454e916e55fe8b1f0745"]
+    }
+  },
+  {
+    "model": "accounts.membership",
+    "fields": {
+      "user": ["CenterAdmin"],
+      "organisation": ["31664dd38ca4454e916e55fe8b1f0745"]
+    }
+  },
+  {
+    "model": "accounts.membership",
+    "fields": {
+      "user": ["RegionAdmin"],
+      "organisation": ["31664dd38ca4454e916e55fe8b1f0745"]
+    }
+  },
+  {
+    "model": "accounts.membership",
+    "fields": {
+      "user": ["CountryAdmin"],
+      "organisation": ["31664dd38ca4454e916e55fe8b1f0745"]
     }
   }
 ]

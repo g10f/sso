@@ -130,7 +130,7 @@ class PhoneNumber_Inline(admin.TabularInline):
 
 class OrganisationAdmin(VersionAdmin, OSMGeoAdmin):
     openlayers_url = '//cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js'
-    list_select_related = ('email',)
+    list_select_related = ('organisation_country__country', 'email', 'association')
     actions = ['mark_uses_user_activation']
     save_on_top = True
     search_fields = ('email__email', 'name', 'homepage', 'uuid')
@@ -158,6 +158,11 @@ class OrganisationAdmin(VersionAdmin, OSMGeoAdmin):
               ['notes'],
           'classes': ['collapse', 'wide'], }),
     ]
+
+    # performance optimisation for MembershipInline autocomplete_field organisation
+    def get_search_results(self, request, queryset, search_term):
+        queryset = queryset.select_related('organisation_country__country', 'email', 'association').distinct()
+        return super().get_search_results(request, queryset, search_term)
 
     def mark_uses_user_activation(self, request, queryset):
         n = queryset.update(uses_user_activation=True)

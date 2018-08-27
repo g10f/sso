@@ -378,17 +378,17 @@ class Organisation(AbstractBaseModel):
     @memoize
     def get_last_modified_deep(self):
         last_modified_list = [self.last_modified]
-        if hasattr(self, '_prefetched_objects_cache') and ('organisationaddress' in self._prefetched_objects_cache):
+        if hasattr(self, '_prefetched_objects_cache') and ('organisationaddress_set' in self._prefetched_objects_cache):
             last_modified_list += [obj.last_modified for obj in self.organisationaddress_set.all()]
         else:
             last_modified_list += self.organisationaddress_set.values_list("last_modified", flat=True)
 
-        if hasattr(self, '_prefetched_objects_cache') and ('organisationphonenumber' in self._prefetched_objects_cache):
+        if hasattr(self, '_prefetched_objects_cache') and ('organisationphonenumber_set' in self._prefetched_objects_cache):
             last_modified_list += [obj.last_modified for obj in self.organisationphonenumber_set.all()]
         else:
             last_modified_list += self.organisationphonenumber_set.values_list("last_modified", flat=True)
 
-        if hasattr(self, '_prefetched_objects_cache') and ('organisationpicture' in self._prefetched_objects_cache):
+        if hasattr(self, '_prefetched_objects_cache') and ('organisationpicture_set' in self._prefetched_objects_cache):
             last_modified_list += [obj.last_modified for obj in self.organisationpicture_set.all()]
         else:
             last_modified_list += self.organisationpicture_set.values_list("last_modified", flat=True)

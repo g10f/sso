@@ -273,7 +273,7 @@ class UserDetailView(View):
         organisations = Organisation.objects.filter(uuid__in=userinfo['organisations'].keys())
 
         if user:
-            user.organisations.set(organisations)
+            user.set_organisations(organisations)
             user.is_active = True
             user.save()
         else:
@@ -293,7 +293,7 @@ class UserDetailView(View):
             user.create_primary_email(email)
 
             user.application_roles.set(application_roles)
-            user.organisations.set(organisations)
+            user.set_organisations(organisations)
             user.add_default_roles()
 
             send_account_created_email(user, request)

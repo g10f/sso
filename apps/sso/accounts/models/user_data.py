@@ -128,7 +128,7 @@ class OrganisationChange(AbstractBaseModel):
         self.save()
 
     def verify(self, user):
-        self.user.organisations.set([self.organisation])
+        self.user.set_organisations([self.organisation])
         self.status = 'v'
         self.completed_by_user = user
 
@@ -163,3 +163,17 @@ class OrganisationChange(AbstractBaseModel):
 
     def get_absolute_url(self):
         return reverse('accounts:organisationchange_detail', kwargs={'pk': self.pk})
+
+
+class Membership(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    organisation = models.ForeignKey(Organisation, on_delete=models.CASCADE)
+    primary = models.BooleanField(_("primary"), default=False)
+
+    class Meta:
+        unique_together = (("user", "organisation"),)
+        verbose_name = _('organisation membership')
+        verbose_name_plural = _('organisation memberships')
+
+    def __str__(self):
+        return '%s - %s' % (self.organisation, self.user)

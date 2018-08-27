@@ -18,7 +18,7 @@ from django.utils.translation import ugettext_lazy as _
 from sso.access_requests.models import AccessRequest
 from sso.accounts.models import OrganisationChange
 from sso.accounts.models.application import ApplicationRole, RoleProfile, Application, Role, get_applicationrole_ids
-from sso.accounts.models.user_data import UserEmail
+from sso.accounts.models.user_data import UserEmail, Membership
 from sso.decorators import memoize
 from sso.emails.models import GroupEmailManager
 from sso.models import ensure_single_primary, get_filename
@@ -89,7 +89,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     # extension
     # nickname = models.CharField(_('nickname'), max_length=30, blank=True)
     uuid = models.UUIDField(unique=True, default=uuid.uuid4, editable=True)
-    organisations = models.ManyToManyField(Organisation, verbose_name=_('organisations'),
+    organisations = models.ManyToManyField(Organisation, verbose_name=_('organisations'), through=Membership,
                                            blank=(not settings.SSO_ORGANISATION_REQUIRED))
     admin_regions = models.ManyToManyField(AdminRegion, verbose_name=_('admin regions'), blank=True)
     admin_organisation_countries = models.ManyToManyField(OrganisationCountry, verbose_name=_('admin countries'),
@@ -227,15 +227,21 @@ class User(AbstractBaseUser, PermissionsMixin):
         and use _prefetched_objects_cache if available for performance in api lists
         """
         last_modified_list = [self.last_modified]
-        if hasattr(self, '_prefetched_objects_cache') and ('useraddress' in self._prefetched_objects_cache):
+        if hasattr(self, '_prefetched_objects_cache') and ('useraddress_set' in self._prefetched_objects_cache):
             last_modified_list += [obj.last_modified for obj in self.useraddress_set.all()]
         else:
             last_modified_list += self.useraddress_set.values_list("last_modified", flat=True)
 
-        if hasattr(self, '_prefetched_objects_cache') and ('userphonenumber' in self._prefetched_objects_cache):
+        if hasattr(self, '_prefetched_objects_cache') and ('userphonenumber_set' in self._prefetched_objects_cache):
             last_modified_list += [obj.last_modified for obj in self.userphonenumber_set.all()]
         else:
             last_modified_list += self.userphonenumber_set.values_list("last_modified", flat=True)
+
+        if hasattr(self, '_prefetched_objects_cache') and ('useremail_set' in self._prefetched_objects_cache):
+            last_modified_list += [obj.last_modified for obj in self.useremail_set.all()]
+        else:
+            last_modified_list += self.useremail_set.values_list("last_modified", flat=True)
+
         last_modified = max(last_modified_list)
         return last_modified
 
@@ -897,3 +903,16 @@ class User(AbstractBaseUser, PermissionsMixin):
             except IntegrityError as e:
                 # programming error?
                 logger.exception(e)
+
+    def set_organisations(self, organisations):
+        # Force evaluation of `organisations` in case it's a queryset whose value
+        # could be affected by `manager.clear()`. Refs #19816.
+        organisations = tuple(organisations)
+        self.organisations.clear()
+        self.organisations.through.objects.bulk_create([
+            self.organisations.through(**{
+                'user_id': self.id,
+                'organisation_id': organisation.id,
+            })
+            for organisation in organisations
+        ])
