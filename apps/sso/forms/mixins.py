@@ -1,3 +1,5 @@
+from django.db.models.query_utils import Q
+
 from sso.signals import user_m2m_field_updated
 
 
@@ -24,10 +26,27 @@ class UserRolesMixin(object):
         new_value_set = (new_value_set - existing_values)            
         
         user_attribute = getattr(self.user, '%s' % attribute_name)
+
         if remove_values:
-            user_attribute.remove(*remove_values)
+            if user_attribute.through._meta.auto_created:
+                user_attribute.remove(*remove_values)
+            else:
+                # ManyRelatedManager does not supports add and remove when using a custom through Model
+                filters = Q(**{user_attribute.source_field_name: self.user}) & \
+                          Q(**{'%s__in' % user_attribute.target_field_name: remove_values})
+                user_attribute.through.objects.filter(filters).delete()
         if new_value_set:
-            user_attribute.add(*new_value_set)
+            if user_attribute.through._meta.auto_created:
+                user_attribute.add(*new_value_set)
+            else:
+                # ManyRelatedManager does not supports add and remove when using a custom through Model
+                user_attribute.through.objects.bulk_create([
+                    user_attribute.through(**{
+                        '%s_id' % user_attribute.source_field_name: self.user.id,
+                        '%s_id' % user_attribute.target_field_name: obj_id,
+                    })
+                    for obj_id in new_value_set
+                ])
 
         if remove_values or new_value_set:
             # enable brand specific modification

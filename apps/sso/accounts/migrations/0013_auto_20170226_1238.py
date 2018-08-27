@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 from django.db import migrations
 
 
-
 def update_organisation_country(apps, reverse=False):
     User = apps.get_model("accounts", "User")
     OrganisationCountry = apps.get_model("organisations", "OrganisationCountry")

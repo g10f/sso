@@ -333,7 +333,7 @@ class UserDetailView(UserMixin, JsonDetailView):
                 denied_organisations = organisations.exclude(id__in=allowed_organisations.values_list('id', flat=True))
                 raise ValueError(_("You are not allowed to add users to %s.") % denied_organisations)
 
-            self.object.organisations.set(organisations)
+            self.object.set_organisations(organisations)
 
     def _save_user_details(self, data, name, mapping, cls, update_existing=True):
         """

@@ -48,7 +48,7 @@ def update_url(url, params):
 
     for k, v in params.items():
         if v is not None:  # filter out None values
-            q[k] = v
+            q[k] = str(v)
 
     new_query_string = q.urlencode(safe='/')
     return urlunsplit((scheme, netloc, path, new_query_string, fragment))

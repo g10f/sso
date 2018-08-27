@@ -1,6 +1,7 @@
 import logging
 
 from sorl.thumbnail.admin import AdminImageMixin
+from sso.accounts.models.user_data import Membership
 
 from django.conf import settings
 from django.contrib import admin
@@ -327,6 +328,18 @@ class UserEmailInline(admin.TabularInline):
     ]
 
 
+class MembershipInline(admin.TabularInline):
+    model = Membership
+    extra = 0
+    autocomplete_fields = ['organisation']
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        user = request.user
+        if db_field.name == "organisation":
+            kwargs["queryset"] = user.get_administrable_user_organisations()
+        return super().formfield_for_foreignkey(db_field, request, **kwargs)
+
+
 class AddressInline(admin.StackedInline):
     model = UserAddress
     extra = 0
@@ -365,11 +378,11 @@ class UserAdmin(VersionAdmin, AdminImageMixin, DjangoUserAdmin):
     # ,UserOrganisationsListFilter, CreatedByUserFilter, LastModifiedUserFilter
     filter_horizontal = DjangoUserAdmin.filter_horizontal + (
         'admin_associations', 'admin_organisation_countries', 'admin_regions', 'groups', 'application_roles',
-        'role_profiles', 'organisations',
+        'role_profiles', # 'organisations',
         'app_admin_organisation_countries', 'app_admin_regions')
     ordering = ['-last_login', '-first_name', '-last_name']
     actions = ['mark_info_mail']
-    inlines = [UserEmailInline, PhoneNumberInline, AddressInline, UserAssociatedSystemInline]
+    inlines = [MembershipInline, UserEmailInline, PhoneNumberInline, AddressInline, UserAssociatedSystemInline]
 
     fieldsets = (
         (None, {'fields': ('username', 'password'), 'classes': ['wide']}),
@@ -382,7 +395,6 @@ class UserAdmin(VersionAdmin, AdminImageMixin, DjangoUserAdmin):
             'valid_until', 'last_login', 'last_ip', 'date_joined', 'last_modified', 'get_last_modified_by_user',
             'get_created_by_user',
             'assigned_organisations'), 'classes': ['wide']}),
-        (_('Organisations'), {'fields': ('organisations',), 'classes': ['collapse', 'wide']}),
         (_('Permissions'), {'fields': (
             'is_active', 'is_staff', 'is_superuser', 'role_profiles', 'application_roles', 'groups',
             'user_permissions'),
@@ -400,7 +412,6 @@ class UserAdmin(VersionAdmin, AdminImageMixin, DjangoUserAdmin):
         (_('Important dates'),
          {'fields': ('last_login', 'date_joined', 'last_modified', 'get_last_modified_by_user', 'get_created_by_user',
                      'assigned_organisations'), 'classes': ['wide']}),
-        (_('Organisations'), {'fields': ('organisations',), 'classes': ['collapse', 'wide']}),
         (_('Permissions'),
          {'fields': ('is_active', 'role_profiles', 'application_roles'), 'classes': ['collapse', 'wide']}),
     )
@@ -509,8 +520,6 @@ class UserAdmin(VersionAdmin, AdminImageMixin, DjangoUserAdmin):
         user = request.user
         if not user.is_superuser:
             actions.pop('mark_info_mail')
-        if not user.has_perm('auth.delete_user'):
-            actions.pop('delete_selected')
         return actions
 
     def get_formsets(self, request, obj=None):
