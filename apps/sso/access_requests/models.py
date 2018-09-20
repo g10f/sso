@@ -60,9 +60,8 @@ class AccessRequest(AbstractBaseModel):
         validation_period_active = False
         for organisation in self.user.organisations.all():
             if is_validation_period_active(organisation):
-                if self.user.valid_until is None:
-                    self.user.valid_until = now() + datetime.timedelta(days=settings.SSO_VALIDATION_PERIOD_DAYS)
-                    self.user.save()
+                self.user.valid_until = now() + datetime.timedelta(days=settings.SSO_VALIDATION_PERIOD_DAYS)
+                self.user.save()
                 validation_period_active = True
         if not validation_period_active:
             self.user.valid_until = None
