@@ -110,6 +110,10 @@ class AccountExtendAccessAcceptView(FormView):
 class AccountExtendAccessDoneView(TemplateView):
     template_name = 'access_requests/extend_access_thanks.html'
 
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
     def get_object(self, queryset=None):
         try:
             return AccessRequest.open.get(user=self.request.user)
