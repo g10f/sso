@@ -3,7 +3,7 @@ from calendar import timegm
 from functools import wraps
 
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist, ValidationError
-from django.http import HttpResponseNotModified, HttpResponse
+from django.http import HttpResponseNotModified, HttpResponse, Http404
 from django.utils.decorators import available_attrs
 from django.utils.encoding import force_text
 from django.utils.http import http_date, parse_http_date_safe, parse_etags, quote_etag
@@ -62,6 +62,9 @@ def catch_errors(view_func):
             logger.warning('AttributeError caught while processing request, %s.' % e)
             return HttpApiErrorResponse(error='bad_request', error_description=force_text(e), request=request,
                                         status_code=400)
+        except Http404 as e:
+            logger.warning('Object not found, %s.' % e)
+            return HttpApiErrorResponse(error_description=force_text(e), request=request, status_code=404)
         except Exception as e:
             logger.exception('Exception caught while processing request, %s.' % e)
             return HttpApiErrorResponse(error_description=force_text(e), request=request)
