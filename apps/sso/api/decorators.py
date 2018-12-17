@@ -63,7 +63,7 @@ def catch_errors(view_func):
             return HttpApiErrorResponse(error='bad_request', error_description=force_text(e), request=request,
                                         status_code=400)
         except Exception as e:
-            logger.warning('Exception caught while processing request, %s.' % e)
+            logger.exception('Exception caught while processing request, %s.' % e)
             return HttpApiErrorResponse(error_description=force_text(e), request=request)
 
     return _wrapped_view
