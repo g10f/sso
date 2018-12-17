@@ -50,6 +50,10 @@ def catch_errors(view_func):
             logger.warning('ObjectDoesNotExist caught while processing request, %s.' % e)
             return HttpApiErrorResponse(error='not_found', error_description=force_text(e), request=request,
                                         status_code=404)
+        except Http404 as e:
+            logger.warning('Object not found, %s.' % e)
+            return HttpApiErrorResponse(error='not_found', error_description=force_text(e), request=request,
+                                        status_code=404)
         except ValueError as e:
             logger.warning('ValueError caught while processing request, %s.' % e)
             return HttpApiErrorResponse(error='bad_request', error_description=force_text(e), request=request,
@@ -62,9 +66,6 @@ def catch_errors(view_func):
             logger.warning('AttributeError caught while processing request, %s.' % e)
             return HttpApiErrorResponse(error='bad_request', error_description=force_text(e), request=request,
                                         status_code=400)
-        except Http404 as e:
-            logger.warning('Object not found, %s.' % e)
-            return HttpApiErrorResponse(error_description=force_text(e), request=request, status_code=404)
         except Exception as e:
             logger.exception('Exception caught while processing request, %s.' % e)
             return HttpApiErrorResponse(error_description=force_text(e), request=request)
