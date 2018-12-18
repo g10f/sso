@@ -46,24 +46,12 @@ def catch_errors(view_func):
         except PermissionDenied as e:
             logger.warning('PermissionDenied caught while processing request, %s.' % e)
             return HttpApiResponseNotAuthorized(error_description=force_text(e), request=request)
-        except ObjectDoesNotExist as e:
+        except (Http404, ObjectDoesNotExist) as e:
             logger.warning('ObjectDoesNotExist caught while processing request, %s.' % e)
             return HttpApiErrorResponse(error='not_found', error_description=force_text(e), request=request,
                                         status_code=404)
-        except Http404 as e:
-            logger.warning('Object not found, %s.' % e)
-            return HttpApiErrorResponse(error='not_found', error_description=force_text(e), request=request,
-                                        status_code=404)
-        except ValueError as e:
-            logger.warning('ValueError caught while processing request, %s.' % e)
-            return HttpApiErrorResponse(error='bad_request', error_description=force_text(e), request=request,
-                                        status_code=400)
-        except ValidationError as e:
-            logger.warning('ValidationError caught while processing request, %s.' % e)
-            return HttpApiErrorResponse(error='bad_request', error_description=force_text(e), request=request,
-                                        status_code=400)
-        except AttributeError as e:
-            logger.warning('AttributeError caught while processing request, %s.' % e)
+        except (ValueError, ValidationError, AttributeError) as e:
+            logger.warning('Error caught while processing request, %s.' % e)
             return HttpApiErrorResponse(error='bad_request', error_description=force_text(e), request=request,
                                         status_code=400)
         except Exception as e:
