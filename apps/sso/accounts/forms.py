@@ -567,9 +567,7 @@ class UserSelfRegistrationForm2(UserSelfRegistrationForm):
             'organisation_country__country'),
         required=settings.SSO_ORGANISATION_REQUIRED,
         label=_("Organisation"), widget=bootstrap.Select())
-    # for Bots. If you enter anything in this field you will be treated as a robot
     state = forms.CharField(label=_('State'), required=False, widget=bootstrap.HiddenInput())
-
     signer = signing.TimestampSigner()
 
     def __init__(self, data=None, *args, **kwargs):
@@ -599,16 +597,6 @@ class UserSelfRegistrationForm2(UserSelfRegistrationForm):
             self.data = data
             del self.fields['captcha']
         return super().clean()
-
-    """
-    def clean_state(self):
-        # Honey pot field for bots, can be used instead of a captcha
-        state = self.cleaned_data.get('state')
-        if state:
-            # is invisible, if it is filled, this must be a bot
-            raise forms.ValidationError('wrong value')
-        return state
-    """
 
     @staticmethod
     def save_data(data, username_generator=default_username_generator):
