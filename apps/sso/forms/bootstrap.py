@@ -140,8 +140,8 @@ class SelectMultipleWithCurrently(SelectMultiple):
         super().__init__(attrs)
         self.currently = currently
 
-    def render(self, name, value, attrs=None, choices=()):
-        html = super().render(name, value, attrs)
+    def render(self, name, value, attrs=None, renderer=None):
+        html = super().render(name, value, attrs, renderer)
         if self.currently is not None:
             html = format_html(
                 '<p class="form-control-static">{} {}</p>{}',
