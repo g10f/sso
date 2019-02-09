@@ -8,7 +8,7 @@ python-memcached
 docutils
 pyjwt
 cryptography
-oauthlib
+oauthlib<3.0
 sorl-thumbnail
 pillow
 django-recaptcha
