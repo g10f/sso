@@ -62,7 +62,7 @@ class RegistrationTest(TestCase):
             'g-recaptcha-response': 'xyz'
         }
         response = self.client.post(reverse('registration:registration_register'), data=data)
-        self.assertFormError(response, 'form', 'captcha', ['Incorrect, please try again.'])
+        self.assertFormError(response, 'form', 'captcha', ['Error verifying reCAPTCHA, please try again.'])
 
     def test_registration(self):
         """
