@@ -120,20 +120,30 @@
                     <button type="submit" class="btn btn-success" name="_activate">{% trans 'Activate User' %}</button>
                 {% endif %}
                 {% if perms.accounts.delete_user and not form.user.is_active %}
-                    <a class="btn btn-default" href="{% url 'accounts:delete_user' form.user.uuid.hex %}">{% trans 'Delete User' %}</a>
+                    <a class="btn btn-default"
+                       href="{% url 'accounts:delete_user' form.user.uuid.hex %}">{% trans 'Delete User' %}</a>
                 {% endif %}
                 {% if perms.accounts.add_user %}
-                    <button type="submit" class="btn btn-default" name="_addanother">{% trans 'Save and add another' %}</button>
+                    <button type="submit" class="btn btn-default"
+                            name="_addanother">{% trans 'Save and add another' %}</button>
                 {% endif %}
                 {% if not logged_in %}
-                    <button type="submit" class="btn btn-default" name="_resend_invitation">{% trans 'Save and resend Invitation Mail' %}</button>
+                    <button type="submit" class="btn btn-default"
+                            name="_resend_invitation">{% trans 'Save and resend Invitation Mail' %}</button>
                 {% endif %}
-                <button type="submit" class="btn btn-default" name="_continue">{% trans 'Save and continue editing' %}</button>
-                {% if is_validation_period_active %}
-                    <button type="submit" class="btn btn-default" name="_extend_validity">{% trans 'Save and extend validity' %}</button>
-                {% endif %}
+                <button type="submit" class="btn btn-default"
+                        name="_continue">{% trans 'Save and continue editing' %}</button>
                 <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
             </div>
+            {% if is_validation_period_active %}
+                <div class="dwbn-form-control_lg">
+                    {% with tooltip=form.extend_validity_tooltip %}
+                        <button type="submit" class="btn btn-default" name="_extend_validity"
+                                {% if tooltip %}data-toggle="tooltip" data-placement="top"
+                                title="{{ tooltip }}" {% endif %}>{% trans 'Save and extend validity' %}</button>
+                    {% endwith %}
+                </div>
+            {% endif %}
         </div>
 
     </form>

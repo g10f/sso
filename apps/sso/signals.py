@@ -12,6 +12,9 @@ update_or_create_organisation_account = django.dispatch.Signal(providing_args=["
 # the validation of a user was extended
 extend_user_validity = django.dispatch.Signal(providing_args=["user"])
 
+# get optional tooltip message
+extend_user_validity_tooltip = django.dispatch.Signal(providing_args=["user", "tooltips"])
+
 # a user m2m field was updated in the frontend application
 user_m2m_field_updated = django.dispatch.Signal(providing_args=["user", "attribute_name", "delete_pk_list", "add_pk_list"])
 
