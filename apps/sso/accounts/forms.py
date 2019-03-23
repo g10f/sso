@@ -30,7 +30,7 @@ from sso.models import clean_picture
 from sso.organisations.models import Organisation, is_validation_period_active
 from sso.registration import default_username_generator
 from sso.registration.forms import UserSelfRegistrationForm
-from sso.signals import extend_user_validity
+from sso.signals import extend_user_validity, extend_user_validity_tooltip
 from .models import User, UserAddress, UserPhoneNumber, UserEmail, OrganisationChange
 
 logger = logging.getLogger(__name__)
@@ -687,6 +687,10 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
                 label=_("Organisation"))
         self.fields['organisations'].queryset = self.request.user.get_administrable_user_organisations(). \
             filter(is_active=True, association__is_selectable=True)
+
+        tooltips = []
+        extend_user_validity_tooltip.send_robust(sender=self.__class__, user=self.user, tooltips=tooltips)
+        self.extend_validity_tooltip = " ".join(tooltips)
 
     def clean_username(self):
         username = self.cleaned_data["username"]

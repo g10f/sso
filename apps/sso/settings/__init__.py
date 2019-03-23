@@ -54,7 +54,7 @@ SSO_COUNTRY_MANAGEMENT = False
 SSO_GOOGLE_GEO_API_KEY = 'insert your key'
 SSO_EMAIL_LOGO = ""
 SSO_ASYNC_EMAILS = False  # send emails async via celery task
-SSO_NOREPLY_EMAIL = DEFAULT_FROM_EMAIL
+SSO_NOREPLY_EMAIL = 'webmaster@g10f.de'
 SSO_POST_RESET_LOGIN = True
 
 OTP_DEVICES = [
