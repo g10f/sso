@@ -15,7 +15,8 @@ FIND_ORGANISATION_EXPRESSION = "{?q,per_page,modified_since,is_active,country_gr
 FIND_COUNTRY_EXPRESSION = "{?q,per_page,modified_since,country_group_id}"
 FIND_REGION_EXPRESSION = "{?q,per_page,modified_since,country_group_id,country}"
 FIND_COUNTRY_GROUP_EXPRESSION = "{?q,per_page,modified_since,country}"
-FIND_USER_EMAILS_EXPRESSION = "{?q,app_id,modified_since,country_group_id,country,region_id,org_id,is_center}"
+FIND_USER_EMAILS_EXPRESSION = "{?q,app_id,modified_since,country_group_id,country,region_id,org_id,is_center," \
+                              "profile_id,exclude_profile_id,}"
 
 
 @cache_page(60 * 60)
