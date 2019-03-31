@@ -645,6 +645,14 @@ def user_emails(request):
     if app_uuid:
         qs = qs.filter(user__application_roles__application__uuid=app_uuid)
 
+    profile_uuid = request.GET.get('profile_uuid', None)
+    if profile_uuid:
+        qs = qs.filter(user__role_profiles__uuid=profile_uuid)
+
+    exclude_profile_uuid = request.GET.get('exclude_profile_uuid', None)
+    if exclude_profile_uuid:
+        qs = qs.exclude(user__role_profiles__uuid=exclude_profile_uuid)
+
     modified_since = request.GET.get('modified_since', None)
     if modified_since:  # parse modified_since
         parsed = parse_datetime_with_timezone_support(modified_since)
