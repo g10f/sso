@@ -639,19 +639,22 @@ def user_emails(request):
 
     org_id = request.GET.get('org_id', None)
     if org_id:
-        qs = qs.filter(user__organisations__uuid=org_id)
+        if org_id.lower() == "null":
+            qs = qs.filter(user__organisations__isnull=True)
+        else:
+            qs = qs.filter(user__organisations__uuid=org_id)
 
     app_uuid = request.GET.get('app_id', None)
     if app_uuid:
         qs = qs.filter(user__application_roles__application__uuid=app_uuid)
 
-    profile_uuid = request.GET.get('profile_uuid', None)
-    if profile_uuid:
-        qs = qs.filter(user__role_profiles__uuid=profile_uuid)
+    profile_id = request.GET.get('profile_id', None)
+    if profile_id:
+        qs = qs.filter(user__role_profiles__uuid=profile_id)
 
-    exclude_profile_uuid = request.GET.get('exclude_profile_uuid', None)
-    if exclude_profile_uuid:
-        qs = qs.exclude(user__role_profiles__uuid=exclude_profile_uuid)
+    exclude_profile_id = request.GET.get('exclude_profile_id', None)
+    if exclude_profile_id:
+        qs = qs.exclude(user__role_profiles__uuid=exclude_profile_id)
 
     modified_since = request.GET.get('modified_since', None)
     if modified_since:  # parse modified_since
