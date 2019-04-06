@@ -53,20 +53,22 @@ class UserRolesMixin(object):
             user_m2m_field_updated.send_robust(sender=self.__class__, user=self.user, attribute_name=attribute_name,
                                                delete_pk_list=list(remove_values), add_pk_list=list(new_value_set))
 
-    def update_user_m2m_fields(self, attribute_name, current_user, admin_attribute_format='get_administrable_%s'):
+    def update_user_m2m_fields(self, attribute_name, current_user, admin_attribute_format='get_administrable_%s',
+                               new_value_set=None):
         """
         get the new values from a ModelMultipleChoiceField and the existing from a queryset
         """
-        # first get the new values. This can be a queryset or a single object
-        cd = self.cleaned_data.get(attribute_name)
-        try:
-            if isinstance(cd, list):  # role_profiles
-                new_value_set = set([int(x) for x in cd])  # convert strings list to int set
-            else:  # queryset
-                new_value_set = set(cd.values_list('id', flat=True))
-        except AttributeError:
-            # should be a single object instead of queryset
-            new_value_set = {cd.id} if cd else set()
+        if new_value_set is None:
+            # get the new values if not provided as argument. This can be a queryset or a single object
+            cd = self.cleaned_data.get(attribute_name)
+            try:
+                if isinstance(cd, list):  # role_profiles
+                    new_value_set = set([int(x) for x in cd])  # convert strings list to int set
+                else:  # queryset
+                    new_value_set = set(cd.values_list('id', flat=True))
+            except AttributeError:
+                # should be a single object instead of queryset
+                new_value_set = {cd.id} if cd else set()
                                 
         administrable_values = set(getattr(current_user, admin_attribute_format % attribute_name)().values_list('id', flat=True))
         self._update_user_m2m(new_value_set, administrable_values, attribute_name)

@@ -134,16 +134,19 @@
                 <button type="submit" class="btn btn-default"
                         name="_continue">{% trans 'Save and continue editing' %}</button>
                 <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
+                {% if form.user.organisations.all %}
+                    <button type="submit" class="btn btn-danger" name="_remove_org" data-toggle="tooltip"
+                            data-placement="top"
+                            title="{% trans "After removing the user from your organisation, only the global admin has access to the user." %}">{% trans 'Remove from organisation' %}</button>
+                {% endif %}
+                {% if is_validation_period_active %}
+                        {% with tooltip=form.extend_validity_tooltip %}
+                            <button type="submit" class="btn btn-default" name="_extend_validity"
+                                    {% if tooltip %}data-toggle="tooltip" data-placement="top"
+                                    title="{{ tooltip }}" {% endif %}>{% trans 'Save and extend validity' %}</button>
+                        {% endwith %}
+                {% endif %}
             </div>
-            {% if is_validation_period_active %}
-                <div class="dwbn-form-control_lg">
-                    {% with tooltip=form.extend_validity_tooltip %}
-                        <button type="submit" class="btn btn-default" name="_extend_validity"
-                                {% if tooltip %}data-toggle="tooltip" data-placement="top"
-                                title="{{ tooltip }}" {% endif %}>{% trans 'Save and extend validity' %}</button>
-                    {% endwith %}
-                </div>
-            {% endif %}
         </div>
 
     </form>

@@ -480,8 +480,8 @@ class UserSelfProfileForm(forms.Form):
 
     def save(self):
         cd = self.cleaned_data
-        if (not self.initial['first_name'] and not self.initial['last_name']) and cd.get('first_name') and cd.get(
-            'last_name'):
+        if (not self.initial['first_name'] and not self.initial['last_name']) and cd.get('first_name') \
+                and cd.get('last_name'):
             # should be a streaming user, which has no initial first_name and last_name
             # we create the new username because the streaming user has his email as username
             self.user.username = default_username_generator(capfirst(cd.get('first_name')),
@@ -700,27 +700,11 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
             return username
         raise forms.ValidationError(self.error_messages['duplicate_username'])
 
-    # def clean(self):
-    #     cd = super().clean()
-    #     if 'organisations' in self.changed_data:
-    #         application_roles = cd.get("application_roles")
-    #         role_profiles = cd.get("role_profiles")
-    #         organisation_related_role_profiles = RoleProfile.objects.filter(is_organisation_related=True)\
-    #             .values_list('id')
-    #
-    #         for role_profile in organisation_related_role_profiles:
-    #             id = str(role_profile[0])
-    #             if id in role_profiles:
-    #                 role_profiles.remove(id)
-    #         cd['application_roles'] = application_roles.exclude(is_organisation_related=True)
-    #         cd['role_profiles'] = role_profiles
-    #         return cd
-
-    def save(self, extend_validity=False, activate=None):
+    def save(self, extend_validity=False, activate=None, remove_org=False):
         cd = self.cleaned_data
         current_user = self.request.user
-
-        self.update_user_m2m_fields('organisations', current_user)
+        new_orgs = set() if remove_org else None
+        self.update_user_m2m_fields('organisations', current_user, new_value_set=new_orgs)
         self.update_user_m2m_fields('application_roles', current_user)
         self.update_user_m2m_fields('role_profiles', current_user)
 
@@ -844,7 +828,6 @@ class AppAdminUserProfileForm(mixins.UserRolesMixin, forms.Form):
                                                    self.request.user.get_administrable_app_admin_role_profiles()}
 
     def save(self):
-        cd = self.cleaned_data
         current_user = self.request.user
 
         self.update_user_m2m_fields('application_roles', current_user,

@@ -330,15 +330,25 @@ def _update_standard_user(request, user, app_roles_by_profile, template='account
         user_email_inline_formset = UserEmailInlineFormSet(request.POST, instance=user)
 
         if form.is_valid() and user_email_inline_formset.is_valid():
+            formsets = [user_email_inline_formset]
+            changed_data_list = ChangedDataList(form, formsets)
+
             activate = None
             if "_deactivate" in request.POST:
                 activate = False
+                changed_data_list.append("deactivated")
             elif "_activate" in request.POST:
                 activate = True
+                changed_data_list.append("activated")
 
+            remove_org = "_remove_org" in request.POST
+            if remove_org:
+                changed_data_list.append("\"removed from organisation\"")
             extend_validity = "_extend_validity" in request.POST
+            if extend_validity:
+                changed_data_list.append("\"extended validity\"")
 
-            user = form.save(extend_validity, activate=activate)
+            user = form.save(extend_validity, activate=activate, remove_org=remove_org)
             user_email_inline_formset.save()
 
             if not user.useremail_set.exists():
@@ -347,8 +357,7 @@ def _update_standard_user(request, user, app_roles_by_profile, template='account
             else:
                 user.ensure_single_primary_email()
 
-            formsets = [user_email_inline_formset]
-            change_message = ChangedDataList(form, formsets).change_message()
+            change_message = changed_data_list.change_message()
             log_change(request, user, change_message)
 
             msg_dict = {'name': force_text(get_user_model()._meta.verbose_name), 'obj': force_text(user)}
@@ -370,6 +379,9 @@ def _update_standard_user(request, user, app_roles_by_profile, template='account
             elif "_activate" in request.POST:
                 msg = _('The %(name)s "%(obj)s" was activated successfully.') % msg_dict
                 success_url = reverse('accounts:update_user', args=[user.uuid.hex])
+            elif "_remove_org" in request.POST:
+                msg = _('The %(name)s "%(obj)s" was removed from the organisation successfully.') % msg_dict
+                success_url = reverse('accounts:user_list') + "?" + request.GET.urlencode()
             else:
                 msg = _('The %(name)s "%(obj)s" was changed successfully.') % msg_dict
                 success_url = reverse('accounts:user_list') + "?" + request.GET.urlencode()
