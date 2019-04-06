@@ -38,6 +38,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
 
     def set_reset_password(self, path, new_password):
         self.selenium.get('%s%s' % (self.live_server_url, path))
+        self.wait_page_loaded()
         self.selenium.find_element_by_name("new_password1").send_keys(new_password)
         self.selenium.find_element_by_name("new_password2").send_keys(new_password)
         self.selenium.find_element_by_tag_name("form").submit()
@@ -238,6 +239,8 @@ class AccountsSeleniumTests(SSOSeleniumTests):
 
         username = 'gunnar@g10f.de'
         self.selenium.get('%s%s' % (self.live_server_url, reverse('accounts:password_reset')))
+        self.wait_page_loaded()
+
         self.selenium.find_element_by_name("email").send_keys('gunnar@g10f.de')
         self.selenium.find_element_by_tag_name("form").submit()
         self.wait_page_loaded()

@@ -1,3 +1,6 @@
+===
+SSO
+===
 SSO is an OpenID Connect Identity Provider with user and organisation management.
 The user and organisation data are exposed via a JSONLD/Hydra Api. Api entry point is /api/
 
@@ -23,7 +26,7 @@ Prepare a development environment
 Prepare tests
 -------------
 
-#) Install selenium and uritemplate  in the sso virtualenv ``pip install selenium`` ``pip install uritemplate``
+#) Install selenium and uritemplate packages in the sso virtualenv ``pip install selenium`` ``pip install uritemplate``
 #) Get the latest chromedriver from https://chromedriver.storage.googleapis.com/index.html and copy the binary in to a directory in the PATH (e.g. /usr/local/bin/)
 
 Changelog
