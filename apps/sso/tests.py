@@ -1,6 +1,7 @@
 import os
 
 from selenium.webdriver.chrome.webdriver import WebDriver
+
 # from selenium.webdriver.firefox.webdriver import WebDriver
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.urls import reverse
@@ -19,7 +20,7 @@ class SSOSeleniumTests(StaticLiveServerTestCase):
         # cls.selenium = WebDriver(capabilities=capabilities)
         super().setUpClass()
         cls.selenium = WebDriver()
-        # cls.selenium.implicitly_wait(10)
+        cls.selenium.implicitly_wait(1)
 
     @classmethod
     def tearDownClass(cls):
@@ -64,6 +65,7 @@ class SSOSeleniumTests(StaticLiveServerTestCase):
     def login(self, username, password):
         driver = self.selenium
         driver.get('%s%s' % (self.live_server_url, reverse('auth:login')))
+        self.wait_page_loaded()
         driver.find_element_by_name("username").send_keys(username)
         driver.find_element_by_name("password").send_keys(password)
         driver.find_element_by_tag_name("form").submit()
