@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-06-16 17:13+0200\n"
+"POT-Creation-Date: 2019-04-06 23:28+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -77,6 +77,9 @@ msgstr "letzte Änderung durch"
 
 msgid "completed by"
 msgstr "vervollständigt von"
+
+msgid "application"
+msgstr "Anwendung"
 
 msgid "access request"
 msgstr "Berechtigungsanfrage"
@@ -158,6 +161,7 @@ msgstr "Zurück"
 msgid "Cancel extended access"
 msgstr "Berechtigungsanfrage abbrechen"
 
+#, python-format
 msgid "Your request for extended access on %(site_name)s has been accepted."
 msgstr "Deine Berechtigung auf %(site_name)s wurde erweitert"
 
@@ -273,9 +277,6 @@ msgstr ""
 msgid "Important dates"
 msgstr ""
 
-msgid "Organisations"
-msgstr "Organisationen"
-
 msgid "Permissions"
 msgstr ""
 
@@ -354,17 +355,6 @@ msgstr ""
 
 msgid "Profile picture"
 msgstr "Profilbild"
-
-#, python-format
-msgid ""
-"Please keep filesize under %(filesize)s. Current filesize "
-"%(current_filesize)s"
-msgstr ""
-"Bitte Dateien mit einer Größe unter %(filesize)s hochladen. Aktuelle "
-"Dateigröße %(current_filesize)s."
-
-msgid "File type is not supported"
-msgstr "Dateitype wird nicht unterstützt"
 
 msgid "Password"
 msgstr ""
@@ -480,9 +470,6 @@ msgid ""
 msgstr ""
 "Legt fest, ob der Benutzer zu dieser Anwendung beim ersten Anmelden "
 "umgeleitet werden soll."
-
-msgid "application"
-msgstr "Anwendung"
 
 msgid "applications"
 msgstr "Anwendungen"
@@ -736,6 +723,12 @@ msgstr "Nachricht für den Administrator der Organisation."
 msgid "organisation change"
 msgstr "Organisationswechsel"
 
+msgid "organisation membership"
+msgstr "Organisationsmitgliedschaft"
+
+msgid "organisation memberships"
+msgstr "Organisationsmitgliedschaften"
+
 msgid "Add User"
 msgstr "Benutzer hinzufügen"
 
@@ -752,6 +745,9 @@ msgid "The new user got an email with instructions for setting a password."
 msgstr ""
 "Der neue Benutzer hat eine E-Mail mit Anweisungen zum Erstellen eines "
 "Passworts erhalten."
+
+msgid "Organisations"
+msgstr "Organisationen"
 
 msgid "Edit user"
 msgstr "Benutzer aktualisieren"
@@ -813,6 +809,16 @@ msgstr "Basis Daten"
 
 msgid "Registration"
 msgstr "Registrierung"
+
+msgid ""
+"After removing the user from your organisation, only the global admin has "
+"access to the user."
+msgstr ""
+"Nach dem Löschen aus der Organisation hat nur noch der globale Admin Zugriff "
+"auf den User."
+
+msgid "Remove from organisation"
+msgstr "Aus der Organisation löschen"
 
 msgid "Contact Information"
 msgstr "Kontakt Information"
@@ -1206,8 +1212,8 @@ msgstr "Als primär festlegen"
 msgid "Resend confirmation email"
 msgstr "Bestätigungs E-Mail erneut senden"
 
-msgid "from email"
-msgstr ""
+msgid "reply to email"
+msgstr "Antwort an E-Mail"
 
 msgid "subject"
 msgstr ""
@@ -1300,6 +1306,11 @@ msgstr ""
 #, python-format
 msgid "The %(name)s \"%(obj)s\" was activated successfully."
 msgstr "%(name)s \"%(obj)s\" wurde erfolgreich aktiviert."
+
+#, python-format
+msgid ""
+"The %(name)s \"%(obj)s\" was removed from the organisation successfully."
+msgstr "%(name)s \"%(obj)s\" wurde erfolgreich aus der Organisation gelöscht."
 
 #, python-format
 msgid "The %(name)s \"%(obj)s\" was changed successfully."
@@ -1801,6 +1812,17 @@ msgid "Currently:"
 msgstr ""
 
 #, python-format
+msgid ""
+"Please keep filesize under %(filesize)s. Current filesize "
+"%(current_filesize)s"
+msgstr ""
+"Bitte Dateien mit einer Größe unter %(filesize)s hochladen. Aktuelle "
+"Dateigröße %(current_filesize)s."
+
+msgid "File type is not supported"
+msgstr "Dateitype wird nicht unterstützt"
+
+#, python-format
 msgid "Changed %s."
 msgstr "Geändert %s"
 
@@ -1835,11 +1857,11 @@ msgstr "Postleitzahl"
 msgid "country"
 msgstr "Land"
 
-msgid "State or region"
-msgstr "Bundesland oder Region"
-
 msgid "region"
 msgstr "Region"
+
+msgid "State or region"
+msgstr "Bundesland oder Region"
 
 msgid "address"
 msgstr "Adresse"
@@ -2938,4 +2960,4 @@ msgstr ""
 "\"%(data_protection_uri)s\">%(data_protection_uri)s</a> einsehen."
 
 msgid "CSRF verification failed. Request aborted."
-msgstr ""
+msgstr "Die CSRF-Überprüfung ist fehlgeschlagen. Anfrage abgebrochen."

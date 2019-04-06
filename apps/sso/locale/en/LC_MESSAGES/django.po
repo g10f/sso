@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-06-16 17:13+0200\n"
+"POT-Creation-Date: 2019-04-06 23:28+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -75,6 +75,9 @@ msgid "last modified by"
 msgstr ""
 
 msgid "completed by"
+msgstr ""
+
+msgid "application"
 msgstr ""
 
 msgid "access request"
@@ -267,9 +270,6 @@ msgstr ""
 msgid "Important dates"
 msgstr ""
 
-msgid "Organisations"
-msgstr ""
-
 msgid "Permissions"
 msgstr ""
 
@@ -342,15 +342,6 @@ msgid "Email"
 msgstr ""
 
 msgid "Profile picture"
-msgstr ""
-
-#, python-format
-msgid ""
-"Please keep filesize under %(filesize)s. Current filesize "
-"%(current_filesize)s"
-msgstr ""
-
-msgid "File type is not supported"
 msgstr ""
 
 msgid "Password"
@@ -464,9 +455,6 @@ msgstr ""
 msgid ""
 "Designates whether the user should redirected to this app after the first "
 "login."
-msgstr ""
-
-msgid "application"
 msgstr ""
 
 msgid "applications"
@@ -702,6 +690,12 @@ msgstr ""
 msgid "organisation change"
 msgstr ""
 
+msgid "organisation membership"
+msgstr ""
+
+msgid "organisation memberships"
+msgstr ""
+
 msgid "Add User"
 msgstr ""
 
@@ -715,6 +709,9 @@ msgid "A new User was created."
 msgstr ""
 
 msgid "The new user got an email with instructions for setting a password."
+msgstr ""
+
+msgid "Organisations"
 msgstr ""
 
 msgid "Edit user"
@@ -774,6 +771,14 @@ msgid "Basis data"
 msgstr ""
 
 msgid "Registration"
+msgstr ""
+
+msgid ""
+"After removing the user from your organisation, only the global admin has "
+"access to the user."
+msgstr ""
+
+msgid "Remove from organisation"
 msgstr ""
 
 msgid "Contact Information"
@@ -1132,7 +1137,7 @@ msgstr ""
 msgid "Resend confirmation email"
 msgstr ""
 
-msgid "from email"
+msgid "reply to email"
 msgstr ""
 
 msgid "subject"
@@ -1214,6 +1219,11 @@ msgstr ""
 
 #, python-format
 msgid "The %(name)s \"%(obj)s\" was activated successfully."
+msgstr ""
+
+#, python-format
+msgid ""
+"The %(name)s \"%(obj)s\" was removed from the organisation successfully."
 msgstr ""
 
 #, python-format
@@ -1706,6 +1716,15 @@ msgid "Currently:"
 msgstr ""
 
 #, python-format
+msgid ""
+"Please keep filesize under %(filesize)s. Current filesize "
+"%(current_filesize)s"
+msgstr ""
+
+msgid "File type is not supported"
+msgstr ""
+
+#, python-format
 msgid "Changed %s."
 msgstr ""
 
@@ -1738,10 +1757,10 @@ msgstr ""
 msgid "country"
 msgstr ""
 
-msgid "State or region"
+msgid "region"
 msgstr ""
 
-msgid "region"
+msgid "State or region"
 msgstr ""
 
 msgid "address"
