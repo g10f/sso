@@ -10,6 +10,7 @@ from sso.access_requests.models import AccessRequest
 from sso.accounts.models import User
 from sso.forms import bootstrap, BaseForm
 from sso.forms.helpers import clean_base64_picture
+from sso.organisations.models import Organisation
 from sso.utils.email import send_mail
 from sso.utils.translation import i18n_email_msg_and_subj
 
@@ -60,10 +61,14 @@ class AccessRequestForm(BaseForm):
     base64_picture = forms.CharField(label=_('Your picture'), help_text=_(
         'Please use a photo of your face. We are using it also to validate your registration.'))
     created = forms.BooleanField(widget=forms.HiddenInput(), required=False)
+    organisation = forms.ModelChoiceField(queryset=Organisation.objects.filter(
+        is_active=True, association__is_selectable=True).only(
+        'id', 'location', 'name', 'organisation_country__country__iso2_code', 'association__name').prefetch_related(
+        'organisation_country__country', 'association'), label=_("Organisation"), widget=bootstrap.Select())
 
     class Meta:
         model = AccessRequest
-        fields = ('message', 'application', 'user', 'base64_picture')
+        fields = ('message', 'application', 'user', 'base64_picture', 'organisation')
         widgets = {
             'message': bootstrap.Textarea(),
             'application': forms.HiddenInput(),
@@ -75,6 +80,8 @@ class AccessRequestForm(BaseForm):
         super().__init__(initial=initial, instance=instance, *args, **kwargs)
         if user.picture:
             del self.fields['base64_picture']
+        if user.organisations.all():
+            del self.fields['organisation']
 
     def clean_base64_picture(self):
         base64_picture = self.cleaned_data["base64_picture"]

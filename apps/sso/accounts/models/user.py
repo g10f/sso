@@ -679,7 +679,8 @@ class User(AbstractBaseUser, PermissionsMixin):
             qs = qs.filter(user__is_superuser=False)
         elif self.is_user_admin:
             organisations = self.get_administrable_user_organisations()
-            q = Q(user__is_superuser=False) & Q(user__is_service=False) & Q(user__organisations__in=organisations)
+            q = Q(user__is_superuser=False) & Q(user__is_service=False)
+            q &= (Q(user__organisations__in=organisations) | Q(organisation__in=organisations))
             qs = qs.filter(q).distinct()
         else:
             qs = AccessRequest.objects.none()
