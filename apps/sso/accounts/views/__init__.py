@@ -48,7 +48,7 @@ def contact(request):
             cd = form.cleaned_data
             html_message = render_to_string('accounts/email/contact_email.html', cd)
             send_mail_managers(cd['subject'], message=strip_tags(html_message), html_message=html_message,
-                               fail_silently=settings.DEBUG)
+                               fail_silently=settings.DEBUG, reply_to=[cd['email']])
             return redirect('accounts:contact_thanks')
     else:
         initial = {}
