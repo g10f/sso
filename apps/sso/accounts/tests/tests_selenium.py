@@ -322,6 +322,38 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         denied_orgs = Organisation.objects.filter(uuid__in=['31664dd38ca4454e916e55fe8b1f0746'])
         self.add_user(applicationrole=applicationrole, allowed_orgs=allowed_orgs, denied_orgs=denied_orgs)
 
+    def test_remove_user_from_organisations(self):
+        # remove user from all organisations where CenterAdmin has admin rights
+        self.login(username='CenterAdmin', password='gsf')
+        self.selenium.get('%s%s' % (
+            self.live_server_url, reverse('accounts:update_user', kwargs={'uuid': 'a8992f0348634f76b0dac2de4e4c83ee'})))
+        self.selenium.find_element_by_xpath('//button[@name="_remove_org"]').click()
+        self.wait_page_loaded()
+        self.selenium.find_element_by_xpath('//div[@class="alert alert-success"]')
+
+        user = get_user_model().objects.get(username='GunnarScherf')
+        user_organisations = user.organisations.all()
+        for organisation in get_user_model().objects.get(username='CenterAdmin').organisations.all():
+            self.assertNotIn(organisation, user_organisations)
+
+    def test_remove_user_with_2_orgs_from_organisations(self):
+        user = get_user_model().objects.get(username='GunnarScherf')
+        # add user to TestCenter2
+        user.add_organisation(Organisation.objects.get(uuid='31664dd38ca4454e916e55fe8b1f0746'))
+
+        # remove user from all organisations where CenterAdmin has admin rights
+        self.login(username='CenterAdmin', password='gsf')
+        self.selenium.get('%s%s' % (
+            self.live_server_url,
+            reverse('accounts:update_user', kwargs={'uuid': 'a8992f0348634f76b0dac2de4e4c83ee'})))
+        self.selenium.find_element_by_xpath('//button[@name="_remove_org"]').click()
+        self.wait_page_loaded()
+        self.selenium.find_element_by_xpath('//div[@class="alert alert-success"]')
+
+        user_organisations = user.organisations.all()
+        for organisation in get_user_model().objects.get(username='CenterAdmin').organisations.all():
+            self.assertNotIn(organisation, user_organisations)
+
     def add_user(self, applicationrole, allowed_orgs, denied_orgs=None, region=None):
         if denied_orgs is None:
             denied_orgs = []

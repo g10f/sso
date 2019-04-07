@@ -916,3 +916,12 @@ class User(AbstractBaseUser, PermissionsMixin):
             })
             for organisation in organisations
         ])
+        ensure_single_primary(self.organisations.through.objects.filter(user_id=self.id))
+
+    def add_organisation(self, organisation, primary=False):
+        self.organisations.through.objects.create(**{
+            'user_id': self.id,
+            'organisation_id': organisation.id,
+            'primary': primary
+        })
+        ensure_single_primary(self.organisations.through.objects.filter(user_id=self.id))
