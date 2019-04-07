@@ -5,6 +5,7 @@ from selenium.webdriver.support.select import Select
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse
+from sso.organisations.models import Organisation
 from sso.tests import SSOSeleniumTests
 
 
@@ -29,6 +30,26 @@ class AccessRequestsSeleniumTests(SSOSeleniumTests):
         url = reverse('access_requests:extend_access_thanks')
         full_url = self.live_server_url + url
         self.assertEqual(self.selenium.current_url, full_url)
+        self.logout()
+
+        # login as organisation admin and accept the request
+        self.login(username='CenterAdmin', password='gsf')
+        list_url = reverse('access_requests:extend_access_list')
+        self.selenium.get('%s%s' % (self.live_server_url, list_url))
+        elems = self.selenium.find_elements_by_xpath("//a[starts-with(@href, '%s')]" % list_url)
+        # should be one element in the list
+        elems[0].click()
+        self.wait_page_loaded()
+        self.selenium.find_element_by_tag_name("form").submit()
+        # check success message
+        self.wait_page_loaded()
+        self.selenium.find_element_by_class_name("alert-success")
+        self.logout()
+
+        # check if the user got the member profile
+        user = get_user_model().objects.get(username='GunnarScherf')
+        self.assertIn(get_user_model().get_default_role_profile(), user.role_profiles.all())
+        self.assertNotIn(get_user_model().get_default_guest_profile(), user.role_profiles.all())
 
     def test_new_access_request_for_user_without_organisation(self):
         # remove all organisations from user
@@ -54,7 +75,6 @@ class AccessRequestsSeleniumTests(SSOSeleniumTests):
 
         # login as organisation admin and accept the request
         self.login(username='CenterAdmin', password='gsf')
-
         list_url = reverse('access_requests:extend_access_list')
         self.selenium.get('%s%s' % (self.live_server_url, list_url))
         elems = self.selenium.find_elements_by_xpath("//a[starts-with(@href, '%s')]" % list_url)
@@ -62,8 +82,14 @@ class AccessRequestsSeleniumTests(SSOSeleniumTests):
         elems[0].click()
         self.wait_page_loaded()
         self.selenium.find_element_by_tag_name("form").submit()
-
         # check success message
         self.wait_page_loaded()
         self.selenium.find_element_by_class_name("alert-success")
         self.logout()
+
+        user.refresh_from_db()
+        organisation = Organisation.objects.get(uuid='31664dd38ca4454e916e55fe8b1f0745')
+        self.assertIn(organisation, user.organisations.all())
+        self.assertEqual(len(user.organisations.all()), 1)
+        self.assertIn(get_user_model().get_default_role_profile(), user.role_profiles.all())
+        self.assertNotIn(get_user_model().get_default_guest_profile(), user.role_profiles.all())
