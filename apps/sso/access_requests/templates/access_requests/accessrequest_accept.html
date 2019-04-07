@@ -1,5 +1,5 @@
 {% extends "base_form.html" %}
-    {% load i18n static %}
+{% load i18n static %}
 
 {% block title %}{% trans 'Accept extended access' %}{% endblock %}
 
@@ -78,25 +78,42 @@
             <label class="control-label">{% trans 'Message' %}</label>
             <div class="dwbn-form-control"><p class="form-control-static">{{ access_request.message }}</p></div>
         </div>
-        <div class="form-group">
-            <label class="control-label">{% trans 'Organisation' %}</label>
-            <div class="dwbn-form-control"><p class="form-control-static">
-                {% for organisation in access_request.user.organisations.all %}{{ organisation }}{% if not forloop.last %}, {% endif %}{% endfor %}</p></div>
-        </div>
+        {% if access_request.user.organisations.all %}
+            <div class="form-group">
+                <label class="control-label">{% trans 'Organisation' %}</label>
+                <div class="dwbn-form-control"><p class="form-control-static">
+                    {% for organisation in access_request.user.organisations.all %}{{ organisation }}
+                        {% if not forloop.last %}, {% endif %}{% endfor %}</p></div>
+            </div>
+        {% endif %}
+        {% if access_request.organisation %}
+            <div class="form-group">
+                <label class="control-label">{% trans 'New Organisation' %}</label>
+                <div class="dwbn-form-control"><p class="form-control-static">{{ access_request.organisation }}</p>
+                </div>
+            </div>
+        {% endif %}
         <div class="form-group">
             <label class="control-label">{% trans 'Application' %}</label>
-            <div class="dwbn-form-control"><p class="form-control-static">{{ access_request.application|default_if_none:"" }}</p></div>
+            <div class="dwbn-form-control"><p class="form-control-static">
+                {{ access_request.application|default_if_none:"" }}</p></div>
         </div>
+        {% if has_user_access %}
         <div class="form-group">
             <label class="control-label">{% trans 'Edit details' %}</label>
-            <div class="dwbn-form-control"><p class="form-control-static"><a href="{% url 'accounts:update_user' access_request.user.uuid.hex %}">{{ access_request.user.username }}</a></p></div>
+            <div class="dwbn-form-control"><p class="form-control-static">
+                <a href="{% url 'accounts:update_user' access_request.user.uuid.hex %}">
+                    {{ access_request.user.username }}</a>
+            </p></div>
         </div>
+        {% endif %}
 
         {% if access_request.is_open %}
             <div class="form-group">
                 <div class="dwbn-form-control_lg">
                     {% block submit_group %}
-                        <button type="submit" class="btn btn-default" name="_delete">{% trans 'Deny extended access' %}</button>
+                        <button type="submit" class="btn btn-default"
+                                name="_delete">{% trans 'Deny extended access' %}</button>
                         <button type="submit" class="btn btn-primary">{% trans 'Accept extended access' %}</button>
                     {% endblock submit_group %}
                 </div>

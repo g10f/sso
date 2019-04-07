@@ -8,7 +8,7 @@ from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from sso.accounts.models import Application
 from sso.models import AbstractBaseModel, AbstractBaseModelManager
-from sso.organisations.models import is_validation_period_active
+from sso.organisations.models import is_validation_period_active, Organisation
 
 
 class AccessRequestManager(AbstractBaseModelManager):
@@ -43,6 +43,8 @@ class AccessRequest(AbstractBaseModel):
                                           related_name='accessrequest_completed_by', on_delete=models.SET_NULL)
     application = models.ForeignKey(Application, blank=True, null=True, on_delete=models.SET_NULL,
                                     verbose_name=_('application'))
+    # required field if the user has no organisation
+    organisation = models.ForeignKey(Organisation, blank=True, null=True, on_delete=models.CASCADE)
 
     objects = AccessRequestManager()
     open = OpenAccessRequestManager()
@@ -55,6 +57,8 @@ class AccessRequest(AbstractBaseModel):
     def verify(self, user):
         self.status = 'v'
         self.completed_by_user = user
+        if self.organisation:
+            self.user.set_organisations([self.organisation])
 
         # check if organisation uses user activation
         validation_period_active = False

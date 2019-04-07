@@ -49,6 +49,7 @@ class AccountExtendAccessAcceptView(FormView):
     success_url = reverse_lazy('access_requests:extend_access_list')
     template_name = 'access_requests/accessrequest_accept.html'
 
+    # TODO: check if admin has access to the specific user
     @method_decorator(admin_login_required)
     @method_decorator(permission_required('accounts.change_user'))
     def dispatch(self, request, *args, **kwargs):
@@ -58,6 +59,7 @@ class AccountExtendAccessAcceptView(FormView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['access_request'] = self.access_request
+        context['has_user_access'] = self.request.user.has_user_access(self.access_request.user.uuid)
         return context
 
     def get(self, request, *args, **kwargs):
@@ -192,7 +194,10 @@ class AccountExtendAccessView(UpdateView):
         user = self.request.user
 
         # enable brand specific modification
-        admins = get_user_admins(sender=self.__class__, organisations=user.organisations.all())
+        if user.organisations.all():
+            admins = get_user_admins(sender=self.__class__, organisations=user.organisations.all())
+        else:
+            admins = []
         context.update({'site_name': settings.SSO_SITE_NAME, 'max_file_size': User.MAX_PICTURE_SIZE,
                         'admins': admins})
 
@@ -229,9 +234,14 @@ class AccountExtendAccessView(UpdateView):
     def form_valid(self, form):
         user = self.request.user
 
-        if form.cleaned_data['created'] or 'message' in form.changed_data:
+        if form.cleaned_data['created'] or 'message' in form.changed_data or 'organisation' in form.changed_data:
+            # check if the user selected a new organisation (if he did not have one before)
+            if form.instance.organisation:
+                organisations = [form.instance.organisation]
+            else:
+                organisations = user.organisations.all()
             # enable brand specific modification
-            admins = get_user_admins(sender=self.__class__, organisations=user.organisations.all())
+            admins = get_user_admins(sender=self.__class__, organisations=organisations)
             form.instance.comment = get_comment(admins)
             response = super().form_valid(form)
             send_user_request_extended_access(admins, form.instance, form.instance.message)

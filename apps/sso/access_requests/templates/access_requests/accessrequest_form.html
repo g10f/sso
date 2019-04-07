@@ -29,7 +29,7 @@
 
         <p>{% blocktrans with first_name=user.first_name %}Dear {{ first_name }}.{% endblocktrans %}</p>
         <p>{% blocktrans trimmed %}You tried to access a {{ site_name }} application, with restricted access.
-            If you can not access by mistake, you can apply for access to the administrators below.{% endblocktrans %}
+            If you can not access by mistake, you can apply for access to the administrators.{% endblocktrans %}
         </p>
         <div class="row">
             <div class="col-sm-6">
@@ -43,6 +43,7 @@
         </div>
         <hr>
         {% include 'include/_base64_picture_field.html' with field=form.base64_picture %}
+        {% include 'include/_field.html' with field=form.organisation %}
         {% include 'include/_field.html' with field=form.message %}
 
         <div class="form-group">
