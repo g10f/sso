@@ -28,17 +28,18 @@ def send_user_request_extended_access(admins,
         domain = settings.SSO_DOMAIN
         use_https = settings.SSO_USE_HTTPS
         site_name = settings.SSO_SITE_NAME
+        user = access_request.user
         c = {
             'message': message,
             'protocol': use_https and 'https' or 'http',
             'domain': domain,
             'update_user_url': reverse("access_requests:extend_access_accept", args=(access_request.pk,)),
-            'user': access_request.user,
+            'user': user,
             'site_name': site_name,
             'days_since_access_request': (now() - access_request.last_modified).days,
         }
         message, subject = i18n_email_msg_and_subj(c, email_template_name, subject_template_name)
-        send_mail(subject, message, recipient_list=recipients, apply_async=apply_async)
+        send_mail(subject, message, recipient_list=recipients, reply_to=[user.primary_email()], apply_async=apply_async)
 
 
 class AccessRequestAcceptForm(forms.Form):
