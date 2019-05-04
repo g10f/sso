@@ -34,6 +34,7 @@ from sso.auth.views import get_token_url
 from sso.forms.helpers import ErrorList, ChangedDataList, log_change
 from sso.oauth2.models import allowed_hosts
 from sso.organisations.models import is_validation_period_active
+from sso.utils.http import get_request_param
 from sso.utils.url import get_safe_redirect_uri, update_url
 
 logger = logging.getLogger(__name__)
@@ -108,6 +109,8 @@ def logout(request, next_page=None,
     """
     Logs out the user and displays 'You are logged out' message.
     TODO: replace next with post_logout_redirect_uri
+    TODO: remove next
+    TODO: optimize code readability
     see http://openid.net/specs/openid-connect-session-1_0.html#RPLogout
     """
     auth_logout(request)
@@ -118,6 +121,8 @@ def logout(request, next_page=None,
     if redirect_to is None:
         # try OIDC version with parameter name "post_logout_redirect_uri"
         redirect_to = get_safe_redirect_uri(request, allowed_hosts(), redirect_field_name='post_logout_redirect_uri')
+        if redirect_to is not None:
+            redirect_to = update_url(redirect_to, {'state', get_request_param(request, 'state', '')})
     if redirect_to:
         return HttpResponseRedirect(redirect_to)
 
