@@ -122,7 +122,7 @@ def logout(request, next_page=None,
         # try OIDC version with parameter name "post_logout_redirect_uri"
         redirect_to = get_safe_redirect_uri(request, allowed_hosts(), redirect_field_name='post_logout_redirect_uri')
         if redirect_to is not None:
-            redirect_to = update_url(redirect_to, {'state', get_request_param(request, 'state', '')})
+            redirect_to = update_url(redirect_to, {'state': get_request_param(request, 'state', '')})
     if redirect_to:
         return HttpResponseRedirect(redirect_to)
 
