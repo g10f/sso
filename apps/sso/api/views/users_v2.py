@@ -107,6 +107,7 @@ class UserMixin(object):
         data = {
             '@id': "%s%s" % (base, reverse('api:v2_user', kwargs={'uuid': obj.uuid.hex})),
             'id': '%s' % obj.uuid.hex,
+            'sub': '%s' % obj.uuid.hex,
             'is_active': obj.is_active,
             'name': '%s' % obj,
             'given_name': '%s' % obj.first_name,
