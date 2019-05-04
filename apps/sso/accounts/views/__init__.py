@@ -115,6 +115,9 @@ def logout(request, next_page=None,
     if redirect_to is None:
         # try deprecated version with parameter name "next"
         redirect_to = get_safe_redirect_uri(request, allowed_hosts(), redirect_field_name=redirect_field_name)
+    if redirect_to is None:
+        # try OIDC version with parameter name "post_logout_redirect_uri"
+        redirect_to = get_safe_redirect_uri(request, allowed_hosts(), redirect_field_name='post_logout_redirect_uri')
     if redirect_to:
         return HttpResponseRedirect(redirect_to)
 
