@@ -28,8 +28,19 @@ class UUIDConverter:
 
 
 def get_safe_redirect_uri(request, hosts, redirect_field_name=REDIRECT_URI_FIELD_NAME):
-    redirect_uri = get_request_param(request, redirect_field_name)
+    # redirect_field_name may be an array of field names
+    if isinstance(redirect_field_name, list):
+        for field_name in redirect_field_name:
+            redirect_uri = get_request_param(request, field_name)
+            if redirect_uri is not None:
+                break
+    else:
+        redirect_uri = get_request_param(request, redirect_field_name)
+
     if is_safe_url(redirect_uri, allowed_hosts=set(hosts)):
+        state = get_request_param(request, 'state')
+        if state is not None:
+            redirect_uri = update_url(redirect_uri, {'state': state})
         return redirect_uri
     else:
         return None
