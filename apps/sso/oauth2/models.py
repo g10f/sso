@@ -103,19 +103,19 @@ class ClientManager(AbstractBaseModelManager):
         """
         all host from active client redirect_uris and default_redirect_uri are allowed
         """
-        _allowed_hosts = cache.get('allowed_hosts', set())
-        if not _allowed_hosts:
-            _allowed_hosts.add(settings.SSO_DOMAIN)
+        hosts = cache.get('allowed_hosts')
+        if hosts is None:
+            hosts = {settings.SSO_DOMAIN}
             for client in self.filter(is_active=True):
                 redirect_uris = client.redirect_uris.split() + [client.default_redirect_uri]
                 for redirect_uri in redirect_uris:
                     if redirect_uri:
                         netloc = urlparse(redirect_uri)[1]
                         if netloc:
-                            _allowed_hosts.add(netloc)
-            cache.set('allowed_hosts', set(_allowed_hosts))
+                            hosts.add(netloc)
+            cache.set('allowed_hosts', hosts)
 
-        return _allowed_hosts
+        return hosts
 
 
 def allowed_hosts():

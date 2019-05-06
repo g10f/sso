@@ -55,7 +55,7 @@ class PermissionMixin(object):
     def is_referer_allowed(self):
         # check the referer if cookie based browser authentication is used
         if 'HTTP_REFERER' in self.request.META and is_browser_client(self.request):
-            return is_safe_url(self.request.META['HTTP_REFERER'], allowed_hosts=set(allowed_hosts()))
+            return is_safe_url(self.request.META['HTTP_REFERER'], allowed_hosts=allowed_hosts())
         else:
             return True
 

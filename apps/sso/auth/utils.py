@@ -1,6 +1,7 @@
 import base64
 import logging
 from binascii import unhexlify, hexlify
+from functools import lru_cache
 from io import BytesIO
 from os import urandom
 from urllib.parse import quote, urlencode
@@ -13,7 +14,6 @@ from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.core.exceptions import ValidationError
 from django.shortcuts import resolve_url
-from django.utils import lru_cache
 from django.utils.decorators import method_decorator
 from django.utils.http import is_safe_url
 from sso.auth import SESSION_AUTH_DATE
@@ -43,7 +43,7 @@ def is_recent_auth_time(request, max_age=None):
     return True
 
 
-@lru_cache.lru_cache()
+@lru_cache()
 def get_device_classes():
     device_classes = []
     for device_class_path in settings.OTP_DEVICES:
@@ -115,7 +115,7 @@ def get_safe_login_redirect_url(request):
     redirect_to = get_request_param(request, REDIRECT_FIELD_NAME, '')
     # Ensure the user-originating redirection url is safe.
     # allow external hosts, for redirect after password_create_complete
-    if is_safe_url(redirect_to, allowed_hosts=set(allowed_hosts())):
+    if is_safe_url(redirect_to, allowed_hosts=allowed_hosts()):
         return redirect_to
     else:
         return resolve_url(settings.LOGIN_REDIRECT_URL)
