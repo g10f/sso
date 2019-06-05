@@ -6,6 +6,8 @@ import logging
 from urllib.parse import urlsplit
 
 import time
+from uuid import UUID
+
 from oauthlib import oauth2
 from oauthlib.oauth2.rfc6749 import grant_types, errors
 from oauthlib.oauth2.rfc6749.tokens import random_token_generator
@@ -116,7 +118,7 @@ def get_client_id_and_secret_from_auth_header(request):
 class OAuth2RequestValidator(oauth2.RequestValidator):
     def _get_client(self, client_id, request):
         if request.client:
-            assert (request.client.uuid.hex == client_id)
+            assert (request.client.uuid == UUID(client_id))
         else:
             request.client = Client.objects.get(uuid=client_id, is_active=True)
         return request.client

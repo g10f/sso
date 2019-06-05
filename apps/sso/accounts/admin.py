@@ -381,7 +381,7 @@ class UserAdmin(VersionAdmin, AdminImageMixin, DjangoUserAdmin):
         'role_profiles', # 'organisations',
         'app_admin_organisation_countries', 'app_admin_regions')
     ordering = ['-last_login', '-first_name', '-last_name']
-    actions = ['mark_info_mail']
+    actions = DjangoUserAdmin.actions + ['mark_info_mail']
     inlines = [MembershipInline, UserEmailInline, PhoneNumberInline, AddressInline, UserAssociatedSystemInline]
 
     fieldsets = (

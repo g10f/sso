@@ -33,7 +33,7 @@ def send_access_denied_email(user, request,
         'username': user.username,
         'domain': domain,
         'site_name': site_name,
-        'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
         'protocol': use_https and 'https' or 'http',
     }
     # use the user language or the default language (en-us)
@@ -60,7 +60,7 @@ def send_check_back_email(user, request,
         'username': user.username,
         'domain': domain,
         'site_name': site_name,
-        'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
         'protocol': use_https and 'https' or 'http',
     }
     # use the user language or the default language (en-us)
@@ -85,7 +85,7 @@ def send_set_password_email(user, request, token_generator=default_pwd_reset_tok
         'username': user.username,
         'domain': domain,
         'site_name': site_name,
-        'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
         'token': token_generator.make_token(user),
         'protocol': use_https and 'https' or 'http',
         'expiration_date': expiration_date
@@ -111,7 +111,7 @@ def send_validation_email(registration_profile, request, token_generator=default
         'site_name': site_name,
         'protocol': use_https and 'https' or 'http',
         'token': token_generator.make_token(registration_profile),
-        'uid': urlsafe_base64_encode(force_bytes(registration_profile.pk)).decode(),
+        'uid': urlsafe_base64_encode(force_bytes(registration_profile.pk)),
         'expiration_date': expiration_date
     }
     # use the user language or the current language from the browser

@@ -219,7 +219,7 @@ def validation_confirm(request, uidb64=None, token=None, token_generator=default
     """
     try:
         from django.utils.http import urlsafe_base64_decode
-        uid = urlsafe_base64_decode(uidb64)
+        uid = urlsafe_base64_decode(uidb64).decode()
         profile = RegistrationProfile.objects.get(pk=uid)
     except (ValueError, RegistrationProfile.DoesNotExist):
         profile = None
