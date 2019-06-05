@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 def send_account_created_email(user, request, token_generator=default_pwd_reset_token_generator,
                                email_template_name='accounts/email/account_created_email.txt',
                                subject_template_name='accounts/email/account_created_email_subject.txt',
-                               async=None,
+                               apply_async=None,
                                countdown=0
                                ):
     use_https = request.is_secure()
@@ -34,7 +34,7 @@ def send_account_created_email(user, request, token_generator=default_pwd_reset_
         'username': user.username,
         'domain': domain,
         'site_name': site_name,
-        'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
         'token': token_generator.make_token(user),
         'protocol': use_https and 'https' or 'http',
         'expiration_date': expiration_date
@@ -43,7 +43,7 @@ def send_account_created_email(user, request, token_generator=default_pwd_reset_
     language = user.language if user.language else settings.LANGUAGE_CODE
     message, subject = i18n_email_msg_and_subj(c, email_template_name, subject_template_name, language)
 
-    user.email_user(subject, message, reply_to=reply_to, fail_silently=settings.DEBUG, async=async,
+    user.email_user(subject, message, reply_to=reply_to, fail_silently=settings.DEBUG, apply_async=apply_async,
                     countdown=countdown)
 
 
@@ -63,7 +63,7 @@ def send_useremail_confirmation(user_email, request, token_generator=email_confi
         'username': user.username,
         'domain': domain,
         'site_name': site_name,
-        'uid': urlsafe_base64_encode(force_bytes(user_email.pk)).decode(),
+        'uid': urlsafe_base64_encode(force_bytes(user_email.pk)),
         'token': token_generator.make_token(user_email),
         'protocol': use_https and 'https' or 'http',
         'expiration_date': expiration_date

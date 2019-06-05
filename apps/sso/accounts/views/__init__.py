@@ -144,7 +144,7 @@ def confirm_email(request, uidb64, token, post_reset_redirect=None):
     else:
         post_reset_redirect = resolve_url(post_reset_redirect)
     try:
-        uid = urlsafe_base64_decode(uidb64)
+        uid = urlsafe_base64_decode(uidb64).decode()
         user_email = UserEmail.objects.get(pk=uid, user=request.user)
     except (TypeError, ValueError, OverflowError, UserEmail.DoesNotExist):
         messages.error(request, _('The confirmation was not succesfull, please resend the confirmation.'))
@@ -377,7 +377,7 @@ def delete_profile(request):
 def get_start_app(uidb64):
     # try to find the first application with redirect_to_after_first_login
     try:
-        uid = urlsafe_base64_decode(uidb64)
+        uid = urlsafe_base64_decode(uidb64).decode()
         applicationrole_ids = get_applicationrole_ids(uid, Q(application__redirect_to_after_first_login=True))
         if applicationrole_ids:
             app = Application.objects.distinct().filter(applicationrole__in=applicationrole_ids, is_active=True).first()
@@ -407,7 +407,7 @@ class PasswordCreateConfirmView(auth_views.PasswordResetConfirmView):
         return super(auth_views.PasswordResetConfirmView, self).form_valid(form)
 
     def get_success_url(self):
-        uidb64 = urlsafe_base64_encode(force_bytes(self.user.pk)).decode()
+        uidb64 = urlsafe_base64_encode(force_bytes(self.user.pk))
         return reverse('accounts:password_create_complete', args=[uidb64])
 
 
