@@ -13,7 +13,7 @@ Prepare a development environment
 #) Activate the virtual environment ``source /venv/sso/bin/activate``
 #) Update the Python package manager ``pip install -U pip``
 #) Install sso requirements in the virtualenv with: ``pip install -r requirements.txt``
-#) Install postgresql ``sudo apt install postgres``
+#) Install postgresql ``sudo apt install postgresql``
 #) Install postgis ``sudo apt install postgis``
 #) Update template1 database for using citext extension:  ``sudo -u postgres psql -c "CREATE EXTENSION IF NOT EXISTS citext;" template1``
 #) Update template1 database for using postgis extension:  ``sudo -u postgres psql -c "CREATE EXTENSION IF NOT EXISTS postgis;" template1``
