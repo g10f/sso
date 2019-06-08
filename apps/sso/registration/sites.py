@@ -29,7 +29,6 @@ class RegistrationSite(object):
                  TemplateView.as_view(template_name='registration/validation_complete2.html'),
                  name='validation_complete2'),
             path('register/validate/<slug:uidb64>/<slug:token>/', validation_confirm, name='validation_confirm'),
-            path('register/validate/(<slug:uidb64>/<slug:token>/', validation_confirm),  # TODO: remove
             path('register/', UserSelfRegistrationFormPreview(self.form_cls), name='registration_register'),
             path('register/done/', TemplateView.as_view(template_name='registration/registration_done.html'),
                  name='registration_done'),

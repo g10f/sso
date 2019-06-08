@@ -65,6 +65,7 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
                                               widget=bootstrap.TextInput())
     last_modified_by_user = forms.CharField(label=_("Last modified by"), required=False,
                                             widget=bootstrap.TextInput(attrs={'disabled': ''}))
+    # TODO:is_verified and verified_by_user is not used anymore and can be deleted
     verified_by_user = forms.CharField(label=_("Verified by"), help_text=_('administrator who verified the user'),
                                        required=False, widget=bootstrap.TextInput(attrs={'disabled': ''}))
     is_verified = forms.BooleanField(label=_("Is verified"),
