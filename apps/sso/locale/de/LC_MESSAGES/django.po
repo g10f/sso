@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-07 18:31+0200\n"
+"POT-Creation-Date: 2019-06-09 11:13+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -124,6 +124,9 @@ msgstr "E-Mail Adresse"
 msgid "Phone number"
 msgstr "Telefonnummer"
 
+msgid "New Organisation"
+msgstr "Neue Organisation"
+
 msgid "Application"
 msgstr "Anwendung"
 
@@ -144,12 +147,23 @@ msgstr "Nach zusätzlicher Berechtigung auf %(site_name)s fragen"
 msgid "Dear %(first_name)s."
 msgstr "Lieber/Liebe %(first_name)s."
 
+#, python-format
 msgid ""
 "You tried to access a %(site_name)s application, with restricted access. If "
 "you can not access by mistake, you can apply for access to the "
 "administrators."
 msgstr ""
 "Du hast versucht auf eine %(site_name)s Anwendung zuzugreifen, für die eine "
+"zusätzliche Berechtigung notwendig ist. Falls Du den Zugriff auf die "
+"Anwendung benötigst, kannst Du eine Nachricht an die Administratoren senden."
+
+#, python-format
+msgid ""
+"You tried to access the %(application)s application, with restricted access. "
+"If you can not access by mistake, you can apply for access to the "
+"administrators."
+msgstr ""
+"Du hast versucht auf die %(application)s Anwendung zuzugreifen, für die eine "
 "zusätzliche Berechtigung notwendig ist. Falls Du den Zugriff auf die "
 "Anwendung benötigst, kannst Du eine Nachricht an die Administratoren senden."
 

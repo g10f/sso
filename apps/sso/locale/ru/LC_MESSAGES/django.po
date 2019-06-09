@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-07 18:31+0200\n"
+"POT-Creation-Date: 2019-06-09 11:13+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -125,6 +125,9 @@ msgstr ""
 msgid "Phone number"
 msgstr ""
 
+msgid "New Organisation"
+msgstr ""
+
 msgid "Application"
 msgstr ""
 
@@ -149,6 +152,13 @@ msgstr ""
 msgid ""
 "You tried to access a %(site_name)s application, with restricted access. If "
 "you can not access by mistake, you can apply for access to the "
+"administrators."
+msgstr ""
+
+#, python-format
+msgid ""
+"You tried to access the %(application)s application, with restricted access. "
+"If you can not access by mistake, you can apply for access to the "
 "administrators."
 msgstr ""
 
