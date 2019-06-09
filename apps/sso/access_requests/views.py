@@ -187,8 +187,7 @@ class AccountExtendAccessView(UpdateView):
         Insert the redirect_uri into the context dict.
         """
         context = {
-            'redirect_uri': get_safe_redirect_uri(self.request, allowed_hosts()),
-            'application': get_request_param(self.request, 'application')
+            'redirect_uri': get_safe_redirect_uri(self.request, allowed_hosts())
         }
 
         user = self.request.user
