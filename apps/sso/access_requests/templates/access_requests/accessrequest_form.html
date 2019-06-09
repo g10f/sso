@@ -11,6 +11,7 @@
 {% block form %}
     <h3>{% blocktrans %}Request extended access to {{ site_name }}{% endblocktrans %}</h3>
     <form class="form-horizontal" method="post">{% csrf_token %}
+        {% with application=form.initial.application %}
         {# Include the hidden fields in the form #}
         {% for hidden in form.hidden_fields %}
             {{ hidden }}
@@ -28,9 +29,16 @@
         {% endif %}
 
         <p>{% blocktrans with first_name=user.first_name %}Dear {{ first_name }}.{% endblocktrans %}</p>
+
+        {% if not application %}
         <p>{% blocktrans trimmed %}You tried to access a {{ site_name }} application, with restricted access.
             If you can not access by mistake, you can apply for access to the administrators.{% endblocktrans %}
         </p>
+        {% else %}
+        <p>{% blocktrans trimmed %}You tried to access the {{ application }} application, with restricted access.
+            If you can not access by mistake, you can apply for access to the administrators.{% endblocktrans %}
+        </p>
+        {% endif %}
         <div class="row">
             <div class="col-sm-6">
                 {% for admin in admins %}
@@ -59,5 +67,6 @@
                 {% endblock %}
             </div>
         </div>
+        {% endwith %}
     </form>
 {% endblock %}
