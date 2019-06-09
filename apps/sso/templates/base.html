@@ -11,7 +11,7 @@
     {% block style %}{% if False %}
         <link rel="stylesheet/less" href="{% static stylesheet_less %}">
         <script>less = { env: 'development'};</script>
-        <script src="{% static "js/vendor/less-2.7.3.min.js" %}"></script>
+        <script src="{% static "js/vendor/less-3.9.0.min.js" %}"></script>
         <script>
           less.modifyVars({'@base-dir': '"../less"', '@icon-font-path': '"/static/fonts/"'});
           less.watch();
@@ -23,8 +23,8 @@
     {% block extrahead %}{% endblock %}
     <script>window.__media_prefix__ = "{% filter escapejs %}{% static "" %}{% endfilter %}";</script>
     <script>(function (H) {H.className = H.className.replace(/\bno-js\b/, 'js')})(document.documentElement)</script>
-    <script src="{% static "js/vendor/jquery-3.2.1.min.js" %}"></script>
-    <script src="{% static "js/vendor/bootstrap-3.3.7.min.js" %}"></script>
+    <script src="{% static "js/vendor/jquery-3.4.1.min.js" %}"></script>
+    <script src="{% static "js/vendor/bootstrap-3.4.1.min.js" %}"></script>
     <script src="{% static "js/plugins-1.0.6.js" %}"></script>
     {% block extrascript %}{% endblock extrascript %}
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
