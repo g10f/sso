@@ -35,7 +35,7 @@ class ChainedSelect(Select):
 
     @property
     def media(self):
-        js = ['js/vendor/jquery-3.2.1.min.js', 'js/smart_select.js']
+        js = ['js/vendor/jquery-3.4.1.min.js', 'js/smart_select.js']
         return super().media + forms.Media(js=js)
 
     def render(self, name, value, attrs=None, renderer=None):

@@ -23,7 +23,7 @@ def clean_base64_picture(base64_picture, max_upload_size=5242880):
 
     try:
         content_type, image_content = base64_picture.split(',', 1)
-        content_type = re.findall('data:(\w+/\w+);base64', content_type)[0]
+        content_type = re.findall(r'data:(\w+/\w+);base64', content_type)[0]
 
         if base64_picture and content_type:
             base_content_type = content_type.split('/')[0]
