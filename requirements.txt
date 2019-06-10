@@ -8,7 +8,7 @@ python-memcached
 docutils
 pyjwt
 cryptography
-oauthlib<3.0
+oauthlib
 sorl-thumbnail
 pillow
 django-recaptcha
@@ -18,16 +18,3 @@ qrcode
 requests
 celery
 python-u2flib-server
-
-# for local testing only
-#selenium
-#uritemplate
-
-# themes
-#git+https://bitbucket.org/g10f/sso-dwbn-theme
-#git+https://bitbucket.org/g10f/sso-vw-theme
-#git+https://bitbucket.org/g10f/sso-kagyu-theme
-# per ssh
-#git+ssh://git@bitbucket.org/g10f/sso-dwbn-theme.git
-#git+ssh://git@bitbucket.org/g10f/sso-vw-theme.git
-#git+ssh://git@bitbucket.org/g10f/sso-kagyu-theme.git
