@@ -1,3 +1,5 @@
+import base64
+import hashlib
 from time import sleep
 from urllib.parse import urlsplit
 
@@ -35,7 +37,8 @@ class OAuth2BaseTestCase(TestCase):
         self.client.cookies = SimpleCookie()
 
     def login_and_get_code(self, client_id=None, max_age=None, wait=0, username='GunnarScherf', password='gsf',
-                           scope="openid profile email"):
+                           scope="openid profile email", code_challenge=None, code_challenge_method=None,
+                           should_succeed=True):
         self.client.login(username=username, password=password)
         if wait > 0:
             sleep(wait)
@@ -49,14 +52,19 @@ class OAuth2BaseTestCase(TestCase):
         }
         if max_age:
             authorize_data['max_age'] = max_age
+        if code_challenge:
+            authorize_data['code_challenge'] = code_challenge
+        if code_challenge_method:
+            authorize_data['code_challenge_method'] = code_challenge_method
 
         response = self.client.get(reverse('oauth2:authorize'), data=authorize_data)
         self.assertEqual(response.status_code, 302)
         query_dict = get_query_dict(response['Location'])
-
-        self.assertIn('code', query_dict)
         self.assertTrue(set({'state': self._state}.items()).issubset(set(query_dict.items())))
-        return query_dict['code']
+        if should_succeed:
+            self.assertIn('code', query_dict)
+            return query_dict['code']
+        return query_dict
 
     def login_and_get_implicit_id_token(self, client_id='92d7d9d71d5d41caa652080c19aaa6d8', max_age=None, wait=0,
                                         username='GunnarScherf', password='gsf', response_type="id_token token"):
@@ -93,12 +101,26 @@ class OAuth2BaseTestCase(TestCase):
             'client_id': client_id if client_id else self._client_id,
             'code': code
         }
-        token_response = self.client.post(reverse('oauth2:token'), token_data)
+        token_response = self.token_request(token_data)
         self.assertEqual(token_response.status_code, 200)
         self.assertIn('application/json', token_response['Content-Type'])
         token = token_response.json()
         self.logout()
         return 'Bearer %s' % token['access_token']
+
+    def get_http_authorization(self, data):
+        if 'client_secret' in data and data['client_secret']:
+            auth = b"%s:%s" % (data['client_id'].encode(), data['client_secret'].encode())
+            del data['client_id']
+            del data['client_secret']
+            return '%s %s' % ('Basic', base64.b64encode(auth).decode("ascii"))
+        else:
+            return None
+
+    def token_request(self, token_data):
+        data = token_data.copy()
+        authorization = self.get_http_authorization(data)
+        return self.client.post(reverse('oauth2:token'), data, HTTP_AUTHORIZATION=authorization)
 
 
 class OAuth2Tests(OAuth2BaseTestCase):
@@ -172,7 +194,7 @@ class OAuth2Tests(OAuth2BaseTestCase):
             'client_id': self._client_id,
             'code': code,
         }
-        token_response = self.client.post(reverse('oauth2:token'), token_data)
+        token_response = self.token_request(token_data)
         self.assertEqual(token_response.status_code, 200)
         self.assertIn('application/json', token_response['Content-Type'])
         self.assertEqual(token_response['Cache-Control'], 'no-store')
@@ -242,7 +264,7 @@ class OAuth2Tests(OAuth2BaseTestCase):
             'client_id': client_id,
             'code': code,
         }
-        token_response = self.client.post(reverse('oauth2:token'), token_data)
+        token_response = self.token_request(token_data)
         self.assertEqual(token_response.status_code, 200)
         self.assertIn('application/json', token_response['Content-Type'])
         self.assertEqual(token_response['Cache-Control'], 'no-store')
@@ -309,7 +331,7 @@ class OAuth2Tests(OAuth2BaseTestCase):
             'client_id': client_id,
             'client_secret': "geheim",
         }
-        token_response = self.client.post(reverse('oauth2:token'), token_data)
+        token_response = self.token_request(token_data)
         self.assertEqual(token_response.status_code, 200)
         self.assertIn('application/json', token_response['Content-Type'])
         self.assertEqual(token_response['Cache-Control'], 'no-store')
@@ -341,10 +363,107 @@ class OAuth2Tests(OAuth2BaseTestCase):
             'client_id': client_id,
             'client_secret': "geheim",
         }
-        token_response = self.client.post(reverse('oauth2:token'), token_data)
-        self.assertEqual(token_response.status_code, 401)
+        token_response = self.token_request(token_data)
+        self.assertEqual(token_response.status_code, 400)
         token = token_response.json()
         self.assertIn('error', token)
+
+    def test_revoke_refresh_token(self):
+        client_id = '5614cdb0aa3c48d59828681bd62e1741'
+        code = self.login_and_get_code(client_id=client_id, scope='openid profile email offline_access')
+
+        token_data = {
+            'grant_type': "authorization_code",
+            'redirect_uri': "http://localhost",
+            'client_secret': "geheim",
+            'client_id': client_id,
+            'code': code,
+        }
+        token_response = self.token_request(token_data)
+        self.assertEqual(token_response.status_code, 200)
+        token = token_response.json()
+
+        authorization = self.get_http_authorization(token_data)
+
+        data = {'token': token['refresh_token']}
+        response = self.client.get(reverse('oauth2:introspect'), data, HTTP_AUTHORIZATION=authorization)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(True, response.json()['active'])
+
+        data = {'token': token['access_token']}
+        response = self.client.get(reverse('oauth2:introspect'), data, HTTP_AUTHORIZATION=authorization)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(True, response.json()['active'])
+
+        data = {'token': token['refresh_token']}
+        response = self.client.post(reverse('oauth2:revoke'), data, HTTP_AUTHORIZATION=authorization)
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(reverse('oauth2:introspect'), data, HTTP_AUTHORIZATION=authorization)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(False, response.json()['active'])
+
+    def test_pkce(self):
+        # test client with optional pkce
+        client_id = '5614cdb0aa3c48d59828681bd62e1741'
+        code_verifier = get_random_string()
+        digest = hashlib.sha256(code_verifier.encode('ascii')).digest()
+        code_challenge = base64.urlsafe_b64encode(digest).rstrip(b'=')
+        code = self.login_and_get_code(client_id=client_id, scope='openid profile email',
+                                       code_challenge=code_challenge, code_challenge_method='S256')
+
+        token_data = {
+            'grant_type': "authorization_code",
+            'redirect_uri': "http://localhost",
+            'client_secret': "geheim",
+            'client_id': client_id,
+            'code': code,
+            'code_verifier': code_verifier,
+        }
+        token_response = self.token_request(token_data)
+        self.assertEqual(token_response.status_code, 200)
+        # test client with optional pkce and wrong code_verifier
+        code_verifier = get_random_string()
+        digest = hashlib.sha256(code_verifier.encode('ascii')).digest()
+        code_challenge = base64.urlsafe_b64encode(digest).rstrip(b'=')
+        code = self.login_and_get_code(client_id=client_id, scope='openid profile email',
+                                       code_challenge=code_challenge, code_challenge_method='S256')
+
+        token_data = {
+            'grant_type': "authorization_code",
+            'redirect_uri': "http://localhost",
+            'client_secret': "geheim",
+            'client_id': client_id,
+            'code': code,
+            'code_verifier': 'wrong_code_verifier',
+        }
+        token_response = self.token_request(token_data)
+        self.assertEqual(token_response.status_code, 400)
+
+        # test client with pkce required
+        client_id = 'ec4c46551416431db114a4c54d552f5b'
+        code_verifier = get_random_string()
+        digest = hashlib.sha256(code_verifier.encode('ascii')).digest()
+        code_challenge = base64.urlsafe_b64encode(digest).rstrip(b'=')
+        code = self.login_and_get_code(client_id=client_id, scope='openid profile email',
+                                       code_challenge=code_challenge, code_challenge_method='S256')
+
+        token_data = {
+            'grant_type': "authorization_code",
+            'redirect_uri': "http://localhost",
+            'client_secret': "geheim",
+            'client_id': client_id,
+            'code': code,
+            'code_verifier': code_verifier,
+        }
+        token_response = self.token_request(token_data)
+        self.assertEqual(token_response.status_code, 200)
+
+        # test client with pkce required not sending pkce data
+        query_dict = self.login_and_get_code(client_id=client_id, scope='openid profile email', should_succeed=False)
+        self.assertIn('error', query_dict)
+        self.assertEqual('invalid_request', query_dict['error'])
+        self.assertEqual('Code challenge required.', query_dict['error_description'])
 
     def test_get_token_failure(self):
         code = self.login_and_get_code()
@@ -356,7 +475,7 @@ class OAuth2Tests(OAuth2BaseTestCase):
             'code': code
         }
 
-        token_response = self.client.post(reverse('oauth2:token'), token_data)
+        token_response = self.token_request(token_data)
         self.assertEqual(token_response.status_code, 400)
         # self.assertEqual(token_response.status_code, 401)
         self.assertIn('application/json', token_response['Content-Type'])
@@ -370,8 +489,8 @@ class OAuth2Tests(OAuth2BaseTestCase):
         token_data['redirect_uri'] = "http://localhost"
         token_data['code'] = "wrong_code"
 
-        token_response = self.client.post(reverse('oauth2:token'), token_data)
-        self.assertEqual(token_response.status_code, 401)
+        token_response = self.token_request(token_data)
+        self.assertEqual(token_response.status_code, 400)
         self.assertIn('application/json', token_response['Content-Type'])
 
         token = token_response.json()

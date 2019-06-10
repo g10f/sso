@@ -3,14 +3,11 @@ import calendar
 import hashlib
 import json
 import logging
-from urllib.parse import urlsplit
-
 import time
+from urllib.parse import urlsplit
 from uuid import UUID
 
-from oauthlib import oauth2
-from oauthlib.oauth2.rfc6749 import grant_types, errors
-from oauthlib.oauth2.rfc6749.tokens import random_token_generator
+from jwt import InvalidTokenError
 
 from django.contrib.auth import authenticate, get_user_model
 from django.core import signing
@@ -18,6 +15,17 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.utils.encoding import force_text, force_bytes
+from oauthlib.oauth2.rfc6749 import errors
+from oauthlib.oauth2.rfc6749 import tokens
+from oauthlib.oauth2.rfc6749.endpoints import AuthorizationEndpoint, RevocationEndpoint, TokenEndpoint
+from oauthlib.oauth2.rfc6749.endpoints.introspect import IntrospectEndpoint
+from oauthlib.oauth2.rfc6749.grant_types import AuthorizationCodeGrant as OAuth2AuthorizationCodeGrant, \
+    ImplicitGrant as OAuth2ImplicitGrant, ClientCredentialsGrant, RefreshTokenGrant, \
+    ResourceOwnerPasswordCredentialsGrant
+from oauthlib.openid.connect.core.grant_types import ImplicitGrant, GrantTypeBase
+from oauthlib.openid.connect.core.grant_types.dispatchers import AuthorizationCodeGrantDispatcher, \
+    ImplicitTokenGrantDispatcher, AuthorizationTokenGrantDispatcher
+from oauthlib.openid.connect.core.request_validator import RequestValidator
 from sso.api.response import add_cors_header
 from sso.auth import get_session_auth_hash
 from .crypt import loads_jwt, make_jwt, MAX_AGE
@@ -86,26 +94,6 @@ def default_idtoken_generator(request, max_age=MAX_AGE):
     return make_jwt(claim_set)
 
 
-def validate_code_verifier(authorization_code, client, request):
-    if authorization_code.code_challenge:
-        try:
-            code_verifier = request.code_verifier
-        except AttributeError:
-            raise errors.InvalidGrantError(description='code verifier required', request=request)
-
-        if authorization_code.code_challenge_method == 'plain':
-            code_challenge = code_verifier
-        elif authorization_code.code_challenge_method == 'S256':
-            digest = hashlib.sha256(code_verifier.encode('ascii')).digest()
-            code_challenge = base64.urlsafe_b64encode(digest).rstrip(b'=').decode()
-        else:
-            raise errors.InvalidGrantError(description='code challenge method %s not supported' %
-                                                       authorization_code.code_challenge_method, request=request)
-
-        if authorization_code.code_challenge != code_challenge:
-            raise errors.InvalidGrantError(description='code verifier does not match', request=request)
-
-
 def get_client_id_and_secret_from_auth_header(request):
     if 'HTTP_AUTHORIZATION' in request.headers:
         # client credentials grant type
@@ -115,13 +103,48 @@ def get_client_id_and_secret_from_auth_header(request):
             return data.split(':')
 
 
-class OAuth2RequestValidator(oauth2.RequestValidator):
+class OIDCRequestValidator(RequestValidator):
     def _get_client(self, client_id, request):
         if request.client:
             assert (request.client.uuid == UUID(client_id))
         else:
             request.client = Client.objects.get(uuid=client_id, is_active=True)
         return request.client
+
+    def is_pkce_required(self, client_id, request):
+        client = self._get_client(client_id, request)
+        return client.force_using_pkce
+
+    def get_code_challenge(self, code, request):
+        return request.client.authorization_code.code_challenge or None
+
+    def get_code_challenge_method(self, code, request):
+        return request.client.authorization_code.code_challenge_method or None
+
+    def get_jwt_bearer_token(self, token, token_handler, request):
+        raise NotImplementedError()
+
+    def validate_jwt_bearer_token(self, token, scopes, request):
+        raise NotImplementedError()
+
+    def validate_id_token(self, token, scopes, request):
+        raise NotImplementedError()
+
+    def introspect_token(self, token, token_type_hint, request, *args, **kwargs):
+        try:
+            refresh_token = RefreshToken.objects.get(token=token)
+            return {'active': True, 'username': refresh_token.user.username, 'token_type': 'refresh_token'}
+        except RefreshToken.DoesNotExist:
+            pass
+
+        try:
+            data = loads_jwt(token)
+            data.update({'token_type': 'access_token'})
+            return data
+        except (InvalidTokenError, NotImplementedError):
+            pass
+
+        return None
 
     # Ordered roughly in order of appearance in the authorization grant flow
     # Pre- and Post-authorization.
@@ -166,12 +189,9 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
         client = request.client
         code_challenge = code_challenge_method = ''
         try:
-            code_challenge = request.code_challenge
+            code_challenge = request.code_challenge or ''
         except AttributeError:
             pass
-
-        if client.force_using_pkce and not code_challenge:
-            raise errors.InvalidRequestFatalError(description='code challenge required', request=request)
 
         if code_challenge:
             try:
@@ -179,10 +199,6 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
             except AttributeError:
                 code_challenge_method = 'plain'
                 pass
-
-            if code_challenge_method not in ['plain', 'S256']:
-                raise errors.InvalidRequestFatalError(description='code challenge method %s not supported' %
-                                                                  code_challenge_method, request=request)
 
         state = request.state if request.state else ''
         otp_device = getattr(request.user, 'otp_device', None)
@@ -241,15 +257,14 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
         # Validate the code belongs to the client. Add associated scopes
         # and user to request.scopes and request.user.
         try:
-            authorization_code = AuthorizationCode.objects.get(code=request.code, client__uuid=client_id,
-                                                               is_valid=True)
-            # PKCE
-            validate_code_verifier(authorization_code, client, request)
-
+            if not hasattr(client, 'authorization_code'):
+                # save the authorization_code for using in confirm_redirect_uri
+                client.authorization_code = AuthorizationCode.objects.get(code=request.code, client__uuid=client_id,
+                                                                          is_valid=True)
+            authorization_code = client.authorization_code
             request.user = authenticate(token=authorization_code)
             request.scopes = authorization_code.scopes.split()
-            # save the authorization_code for using in confirm_redirect_uri
-            client.authorization_code = authorization_code
+
             return True
         except ObjectDoesNotExist:
             return False
@@ -389,31 +404,43 @@ class OAuth2RequestValidator(oauth2.RequestValidator):
             return False
         return True
 
+    def get_authorization_code_scopes(self, client_id, code, redirect_uri, request):
+        # Validate the code belongs to the client. Add associated scopes
+        # and user to request.scopes and request.user.
+        try:
+            request.scopes = ()
+            authorization_code = AuthorizationCode.objects.get(code=request.code, is_valid=True)
 
-class AuthorizationCodeGrant(oauth2.AuthorizationCodeGrant):
+            if client_id:
+                if authorization_code.client.uuid == UUID(client_id):
+                    client = self._get_client(client_id, request)
+                    # check if code belongs to client
+                    # save the authorization_code for using later
+                    client.authorization_code = authorization_code
+                    request.scopes = authorization_code.scopes.split()
+                    request.user = authorization_code.user
+                else:
+                    logger.warning("authorization code does not belong to client")
+            else:
+                # client is authenticating client_id is not required https://tools.ietf.org/html/rfc6749#page-29
+                request.scopes = authorization_code.scopes.split()
+        except ObjectDoesNotExist:
+            logger.warning("authorization code not found")
+        return request.scopes
+
+
+class OAuth2AuthorizationCodeGrantEx(OAuth2AuthorizationCodeGrant):
     def create_token_response(self, request, token_handler):
-        """Validate the authorization code.
-
-        The client MUST NOT use the authorization code more than once. If an
-        authorization code is used more than once, the authorization server
-        MUST deny the request and SHOULD revoke (when possible) all tokens
-        previously issued based on that authorization code. The authorization
-        code is bound to the client identifier and redirection URI.
-        """
-        headers = {
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-store',
-            'Pragma': 'no-cache',
-        }
-
+        headers = self._get_default_headers()
         try:
             self.validate_token_request(request)
             logger.debug('Token request validation ok for %r.', request)
         except errors.OAuth2Error as e:
             logger.debug('Client error during validation of %r. %r.', request, e)
+            headers.update(e.headers)
             return headers, e.json, e.status_code
 
-        # we only deliver refresh_tokens with scope 'offline_access'
+        # custom extension of original oauthlib: we only deliver refresh_tokens with scope 'offline_access'
         refresh_token = 'offline_access' in request.scopes
 
         token = token_handler.create_token(request, refresh_token=refresh_token, save_token=False)
@@ -422,7 +449,6 @@ class AuthorizationCodeGrant(oauth2.AuthorizationCodeGrant):
         self.request_validator.save_token(token, request)
         self.request_validator.invalidate_authorization_code(
             request.client_id, request.code, request)
-
         # custom extension of original oauthlib
         if request.client and request.client.type not in CONFIDENTIAL_CLIENTS and 'HTTP_ORIGIN' in request.headers:
             origin = request.headers['HTTP_ORIGIN']
@@ -430,72 +456,80 @@ class AuthorizationCodeGrant(oauth2.AuthorizationCodeGrant):
         return headers, json.dumps(token), 200
 
 
-class OpenIDConnectAuthCode(grant_types.OpenIDConnectBase):
+class AuthorizationCodeGrantEx(GrantTypeBase):
 
     def __init__(self, request_validator=None, **kwargs):
-        self.proxy_target = AuthorizationCodeGrant(request_validator=request_validator, **kwargs)  # custom
+        # custom proxy_target
+        self.proxy_target = OAuth2AuthorizationCodeGrantEx(request_validator=request_validator, **kwargs)
         self.custom_validators.post_auth.append(self.openid_authorization_validator)
         self.register_token_modifier(self.add_id_token)
 
 
-class Server(oauth2.AuthorizationEndpoint, oauth2.TokenEndpoint, oauth2.ResourceEndpoint, oauth2.RevocationEndpoint):
-    """An all-in-one endpoint featuring all four major grant types."""
+class HybridGrantEx(GrantTypeBase):
+    def __init__(self, request_validator=None, **kwargs):
+        self.request_validator = request_validator or RequestValidator()
+        # custom proxy_target
+        self.proxy_target = OAuth2AuthorizationCodeGrantEx(request_validator=request_validator, **kwargs)
+        # All hybrid response types should be fragment-encoded.
+        self.proxy_target.default_response_mode = "fragment"
+        self.register_response_type('code id_token')
+        self.register_response_type('code token')
+        self.register_response_type('code id_token token')
+        self.custom_validators.post_auth.append(self.openid_authorization_validator)
+        # Hybrid flows can return the id_token from the authorization
+        # endpoint as part of the 'code' response
+        self.register_code_modifier(self.add_token)
+        self.register_code_modifier(self.add_id_token)
+        self.register_token_modifier(self.add_id_token)
 
-    def __init__(self, request_validator, token_expires_in=MAX_AGE,
-                 token_generator=None, refresh_token_generator=None,
+
+class Server(AuthorizationEndpoint, IntrospectEndpoint, TokenEndpoint, RevocationEndpoint):
+    """ An all-in-one endpoint  see oauthlib.openid.connect.core.endpoints.pre_configured """
+
+    def __init__(self, request_validator, token_expires_in=None, token_generator=None, refresh_token_generator=None,
                  *args, **kwargs):
-        """Construct a new all-grants-in-one server.
+        auth_grant = OAuth2AuthorizationCodeGrantEx(request_validator)
+        implicit_grant = OAuth2ImplicitGrant(request_validator)
+        password_grant = ResourceOwnerPasswordCredentialsGrant(request_validator)
+        credentials_grant = ClientCredentialsGrant(request_validator)
+        refresh_grant = RefreshTokenGrant(request_validator)
+        openid_connect_auth = AuthorizationCodeGrantEx(request_validator)
+        openid_connect_implicit = ImplicitGrant(request_validator)
+        openid_connect_hybrid = HybridGrantEx(request_validator)
 
-        :param request_validator: An implementation of
-                                  oauthlib.oauth2.RequestValidator.
-        :param token_expires_in: An int or a function to generate a token
-                                 expiration offset (in seconds) given a
-                                 oauthlib.common.Request object.
-        :param token_generator: A function to generate a token from a request.
-        :param refresh_token_generator: A function to generate a token from a
-                                        request for the refresh token.
-        :param kwargs: Extra parameters to pass to authorization-,
-                       token-, resource-, and revocation-endpoint constructors.
-        """
-        auth_grant = AuthorizationCodeGrant(request_validator)  # custom class
-        implicit_grant = oauth2.ImplicitGrant(request_validator)
-        password_grant = oauth2.ResourceOwnerPasswordCredentialsGrant(request_validator)
-        credentials_grant = oauth2.ClientCredentialsGrant(request_validator)
-        refresh_grant = oauth2.RefreshTokenGrant(request_validator)
-        openid_connect_auth = OpenIDConnectAuthCode(request_validator)  # custom class
-        openid_connect_implicit = grant_types.OpenIDConnectImplicit(request_validator)
+        bearer = tokens.BearerToken(request_validator, token_generator, token_expires_in, refresh_token_generator)
+        auth_grant_choice = AuthorizationCodeGrantDispatcher(default_grant=auth_grant, oidc_grant=openid_connect_auth)
+        implicit_grant_choice = ImplicitTokenGrantDispatcher(default_grant=implicit_grant,
+                                                             oidc_grant=openid_connect_implicit)
 
-        bearer = oauth2.BearerToken(request_validator, token_generator, token_expires_in, refresh_token_generator)
+        AuthorizationEndpoint.__init__(self, default_response_type='code',
+                                       response_types={
+                                           'code': auth_grant_choice,
+                                           'token': implicit_grant_choice,
+                                           'id_token': openid_connect_implicit,
+                                           'id_token token': openid_connect_implicit,
+                                           'code token': openid_connect_hybrid,
+                                           'code id_token': openid_connect_hybrid,
+                                           'code id_token token': openid_connect_hybrid,
+                                           'none': auth_grant
+                                       },
+                                       default_token_type=bearer)
 
-        auth_grant_choice = grant_types.AuthCodeGrantDispatcher(default_auth_grant=auth_grant,
-                                                                oidc_auth_grant=openid_connect_auth)
+        token_grant_choice = AuthorizationTokenGrantDispatcher(request_validator, default_grant=auth_grant,
+                                                               oidc_grant=openid_connect_auth)
 
-        # See http://openid.net/specs/oauth-v2-multiple-response-types-1_0.html#Combinations for valid combinations
-        # internally our AuthorizationEndpoint will ensure they can appear in any order for any valid combination
-        oauth2.AuthorizationEndpoint.__init__(self, default_response_type='code',
-                                              response_types={
-                                                  'code': auth_grant_choice,
-                                                  'token': implicit_grant,
-                                                  'id_token': openid_connect_implicit,
-                                                  'id_token token': openid_connect_implicit,
-                                                  'code token': openid_connect_auth,
-                                                  'code id_token': openid_connect_auth,
-                                                  'code token id_token': openid_connect_auth,
-                                                  'none': auth_grant
-                                              },
-                                              default_token_type=bearer)
-        oauth2.TokenEndpoint.__init__(self, default_grant_type='authorization_code',
-                                      grant_types={
-                                          'authorization_code': openid_connect_auth,
-                                          'password': password_grant,
-                                          'client_credentials': credentials_grant,
-                                          'refresh_token': refresh_grant,
-                                          'openid': openid_connect_auth
-                                      },
-                                      default_token_type=bearer)
-        oauth2.ResourceEndpoint.__init__(self, default_token='Bearer', token_types={'Bearer': bearer})
-        oauth2.RevocationEndpoint.__init__(self, request_validator, supported_token_types=('refresh_token',))
+        TokenEndpoint.__init__(self, default_grant_type='authorization_code',
+                               grant_types={
+                                   'authorization_code': token_grant_choice,
+                                   'password': password_grant,
+                                   'client_credentials': credentials_grant,
+                                   'refresh_token': refresh_grant,
+                               },
+                               default_token_type=bearer)
+        RevocationEndpoint.__init__(self, request_validator)
+        IntrospectEndpoint.__init__(self, request_validator)
 
 
-server = Server(OAuth2RequestValidator(), token_generator=default_token_generator,
-                refresh_token_generator=random_token_generator)
+oidc_request_validator = OIDCRequestValidator()
+server = Server(oidc_request_validator, token_generator=default_token_generator,
+                refresh_token_generator=tokens.random_token_generator)

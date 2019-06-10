@@ -130,6 +130,7 @@ class OpenidConfigurationView(PreflightMixin, View):
             "subject_types_supported":
                 ["public"],
             "end_session_endpoint": '%s%s' % (base_uri, reverse('accounts:logout')),
+            "introspection_endpoint": '%s%s' % (base_uri, reverse('oauth2:introspect')),
             "check_session_iframe": '%s%s' % (base_uri, reverse('oauth2:session')),
             "certs_uri": '%s%s' % (base_uri, reverse('oauth2:certs')),
             "profile_uri": '%s%s' % (base_uri, reverse('accounts:profile')),
@@ -348,9 +349,20 @@ def revoke(request):
     return response
 
 
+@revision_exempt
+@never_cache
+def introspect(request):
+    uri, http_method, body, headers = extract_params(request)
+    headers, body, status = server.create_introspect_response(uri, http_method=http_method, body=body, headers=headers)
+    response = HttpResponse(content=body, status=status)
+    for k, v in headers.items():
+        response[k] = v
+    return response
+
+
+@revision_exempt
 @never_cache
 def tokeninfo(request):
-    # TODO: check revokation
     max_length = 2048
     try:
         if 'access_token' in request.GET:

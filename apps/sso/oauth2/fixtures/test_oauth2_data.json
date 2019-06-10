@@ -91,5 +91,22 @@
       "user": null,
       "type": "web"
     }
+  },
+  {
+    "model": "oauth2.client",
+    "fields": {
+      "uuid": "ec4c46551416431db114a4c54d552f5b",
+      "last_modified": "2019-06-10T10:00:46.076Z",
+      "name": "Test Client2 (pkce) - web",
+      "application": [
+        "bc0ee635a536491eb8e7fbe5749e8111"
+      ],
+      "redirect_uris": "http://localhost",
+      "client_secret": "geheim",
+      "scopes": "openid profile email offline_access",
+      "user": null,
+      "type": "web",
+      "force_using_pkce": true
+    }
   }
 ]
