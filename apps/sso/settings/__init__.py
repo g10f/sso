@@ -90,7 +90,6 @@ BROKER_USE_SSL = CELERY_BROKER_USE_SSL
 BROKER_URL = CELERY_BROKER_URL
 
 EMAIL_SUBJECT_PREFIX = '[SSO] '
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
