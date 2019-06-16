@@ -26,6 +26,7 @@ urlpatterns = [
     path('accounts/', include('sso.auth.urls')),
     path('accounts/', include('sso.accounts.urls')),
     path('accounts/', registration_site.urls),
+    path('accounts/', include('sso.impersonate.urls')),
     path('organisations/', include('sso.organisations.urls')),
     path('emails/', include('sso.emails.urls')),
     path('oauth2/', include('sso.oauth2.urls')),
