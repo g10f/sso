@@ -1,7 +1,6 @@
 import logging
-from urllib.parse import urlunsplit
-
 from datetime import timedelta
+from urllib.parse import urlunsplit
 
 from django.conf import settings
 from django.contrib import messages

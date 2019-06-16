@@ -170,5 +170,5 @@ class SelectDateWidget(widgets.SelectDateWidget):
 class OSMWidget(gis_forms.OSMWidget):
     class Media:
         js = (
-            'js/gis/OLMapWidgetExt-1.0.5.js',
+            'js/gis/OLMapWidgetExt-1.0.6.js',
         )

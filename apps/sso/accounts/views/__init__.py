@@ -34,12 +34,12 @@ from sso.auth.views import get_token_url
 from sso.forms.helpers import ErrorList, ChangedDataList, log_change
 from sso.oauth2.models import allowed_hosts
 from sso.organisations.models import is_validation_period_active
-from sso.utils.http import get_request_param
 from sso.utils.url import get_safe_redirect_uri, update_url, REDIRECT_URI_FIELD_NAME
 
 logger = logging.getLogger(__name__)
 
 LOGIN_FORM_KEY = 'login_form_key'
+OIDC_LOGOUT_REDIRECT_FIELD_NAME = 'post_logout_redirect_uri'
 
 
 def contact(request):
@@ -108,13 +108,10 @@ def logout(request, next_page=None,
            current_app=None, extra_context=None):
     """
     Logs out the user and displays 'You are logged out' message.
-    TODO: replace next with post_logout_redirect_uri
-    TODO: remove next
-    TODO: optimize code readability
     see http://openid.net/specs/openid-connect-session-1_0.html#RPLogout
     """
     auth_logout(request)
-    redirect_uris = [redirect_field_name, REDIRECT_URI_FIELD_NAME, 'post_logout_redirect_uri']
+    redirect_uris = [redirect_field_name, REDIRECT_URI_FIELD_NAME, OIDC_LOGOUT_REDIRECT_FIELD_NAME]
     redirect_to = get_safe_redirect_uri(request, allowed_hosts(), redirect_uris)
     if redirect_to:
         return HttpResponseRedirect(redirect_to)

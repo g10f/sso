@@ -66,7 +66,8 @@
         }
         var extent = ol.extent.createEmpty();
         ol.extent.extend(extent, feature.getGeometry().getExtent());
-        geodjango_widget.map.getView().fit(extent, geodjango_widget.map.getSize(), {maxZoom: geodjango_widget.options.default_zoom});
+        // Center/zoom the map
+        geodjango_widget.map.getView().fit(extent, {maxZoom: geodjango_widget.options.default_zoom});
     }
 	$(function() {
         $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {

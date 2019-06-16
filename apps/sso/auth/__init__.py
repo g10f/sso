@@ -1,8 +1,9 @@
 import logging
-import uuid
 import time
+import uuid
+
 from django.conf import settings
-from django.contrib.auth import rotate_token, user_logged_in, load_backend, BACKEND_SESSION_KEY, get_backends
+from django.contrib.auth import rotate_token, user_logged_in, load_backend, BACKEND_SESSION_KEY, _get_backends
 from django.utils.crypto import constant_time_compare, salted_hmac
 
 logger = logging.getLogger(__name__)
@@ -47,8 +48,8 @@ def auth_login(request, user, backend=None):
 
     if SESSION_KEY in request.session:
         if _get_user_session_key(request) != _get_user_key(user) or (
-                session_auth_hash and
-                request.session.get(HASH_SESSION_KEY) != session_auth_hash):
+            session_auth_hash and
+            request.session.get(HASH_SESSION_KEY) != session_auth_hash):
             # To avoid reusing another user's session, create a new, empty
             # session if the existing session corresponds to a different
             # authenticated user.
@@ -59,7 +60,7 @@ def auth_login(request, user, backend=None):
     try:
         backend = backend or user.backend
     except AttributeError:
-        backends = get_backends(return_tuples=True)
+        backends = _get_backends(return_tuples=True)
         if len(backends) == 1:
             _, backend = backends[0]
         else:
