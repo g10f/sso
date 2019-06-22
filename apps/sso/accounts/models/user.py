@@ -799,6 +799,16 @@ class User(AbstractBaseUser, PermissionsMixin):
                    Q(organisations__organisation_country__user=self) |
                    Q(organisations__association__user=self))).exists()
 
+    def has_access_request_access(self, access_request):
+        """
+        Check if the user is an admin of organisation the user with uuid
+        or if the user is an admin of the organisation in the AccessRequest
+        """
+        if access_request.organisation:
+            return self.has_organisation_user_access(access_request.organisation.uuid)
+        else:
+            return self.has_user_access(access_request.user.uuid)
+
     def has_app_admin_user_access(self, uuid):
         """
         Check if the user is an admin of the user with uuid

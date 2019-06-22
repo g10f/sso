@@ -3,7 +3,7 @@ import logging
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.core.exceptions import ObjectDoesNotExist, ValidationError, PermissionDenied
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.template import loader
@@ -49,11 +49,13 @@ class AccountExtendAccessAcceptView(FormView):
     success_url = reverse_lazy('access_requests:extend_access_list')
     template_name = 'access_requests/accessrequest_accept.html'
 
-    # TODO: check if admin has access to the specific user
     @method_decorator(admin_login_required)
     @method_decorator(permission_required('accounts.change_user'))
     def dispatch(self, request, *args, **kwargs):
         self.access_request = get_object_or_404(AccessRequest, pk=self.kwargs['pk'])
+        # check if admin has access to the specific user
+        if not request.user.has_access_request_access(self.access_request):
+            raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
