@@ -60,17 +60,6 @@ class CountryFilter(ViewQuerysetFilter):
     select_all_text = _('All Countries')
 
 
-class IsVerifiedFilter(ViewChoicesFilter):
-    name = 'is_verified'
-    qs_name = 'verified_by_user__isnull'
-    choices = (('1', _('Verified Users')), ('2', _('Unverified Users')))
-    select_text = _('verified filter')
-    select_all_text = _("All")
-
-    def map_to_database(self, qs_name, value):
-        return {qs_name: False if (value.pk == "1") else True}
-
-
 class CheckBackFilter(ViewChoicesFilter):
     name = 'check_back'
     choices = (('1', _('Check Back Required')), ('2', _('No Check Back Required')))
@@ -94,8 +83,8 @@ class IsAccessDeniedFilter(ViewChoicesFilter):
 class UserRegistrationList(ListView):
     template_name = 'registration/user_registration_list.html'
     model = RegistrationProfile
-    list_display = ['user', _('picture'), 'email', 'center', 'date_registered', 'verified_by_user', 'check_back',
-                    'is_access_denied', 'comment']
+    list_display = ['user', _('picture'), 'email', 'center', 'date_registered', 'check_back', 'is_access_denied',
+                    'comment']
 
     @method_decorator(admin_login_required)
     @method_decorator(permission_required('registration.change_registrationprofile', raise_exception=True))
@@ -120,7 +109,6 @@ class UserRegistrationList(ListView):
         qs = CountryFilter().apply(self, qs)
         qs = CheckBackFilter().apply(self, qs, default='2')
         qs = IsAccessDeniedFilter().apply(self, qs, default='2')
-        qs = IsVerifiedFilter().apply(self, qs)
 
         ordering = self.cl.get_ordering(self.request, qs)
         qs = qs.order_by(*ordering)
@@ -145,11 +133,10 @@ class UserRegistrationList(ListView):
             pk__in=user_organisations.values_list('organisation_country', flat=True)).prefetch_related('country')
 
         country_filter = CountryFilter().get(self, countries)
-        is_verified_filter = IsVerifiedFilter().get(self)
         check_back_filter = CheckBackFilter().get(self)
         is_access_denied_filter = IsAccessDeniedFilter().get(self)
 
-        filters = [country_filter, is_verified_filter, check_back_filter, is_access_denied_filter]
+        filters = [country_filter, check_back_filter, is_access_denied_filter]
         context = {
             'result_headers': headers,
             'num_sorted_fields': num_sorted_fields,

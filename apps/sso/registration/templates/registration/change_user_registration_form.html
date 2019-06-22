@@ -65,9 +65,6 @@
                 {% include 'registration/include/_user_search_field.html' with field=form.known_person2_first_name %}
                 {% include 'registration/include/_user_search_field.html' with field=form.known_person2_last_name %}
                 <span class="help-block">{% trans 'Registration processing information' %}</span>
-                {# TODO: remove verified_by_user  #}
-                {#% include 'include/_field.html' with field=form.is_verified %#}
-                {#% include 'include/_user_field.html' with field=form.verified_by_user %#}
                 {% include 'include/_field.html' with field=form.check_back %}
                 {% include 'include/_field.html' with field=form.is_access_denied %}
                 {% include 'include/_user_field.html' with field=form.last_modified_by_user %}
