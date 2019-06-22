@@ -65,12 +65,6 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
                                               widget=bootstrap.TextInput())
     last_modified_by_user = forms.CharField(label=_("Last modified by"), required=False,
                                             widget=bootstrap.TextInput(attrs={'disabled': ''}))
-    # TODO:is_verified and verified_by_user is not used anymore and can be deleted
-    verified_by_user = forms.CharField(label=_("Verified by"), help_text=_('administrator who verified the user'),
-                                       required=False, widget=bootstrap.TextInput(attrs={'disabled': ''}))
-    is_verified = forms.BooleanField(label=_("Is verified"),
-                                     help_text=_('Designates if the user was verified by another administrator'),
-                                     required=False)
     organisations = forms.ModelChoiceField(queryset=None, label=_("Organisation"), widget=bootstrap.Select(),
                                            required=settings.SSO_ORGANISATION_REQUIRED)
     application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False,
@@ -129,15 +123,10 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
         initial['email'] = self.user.primary_email()
         last_modified_by_user = self.registrationprofile.last_modified_by_user
         initial['last_modified_by_user'] = last_modified_by_user if last_modified_by_user else ''
-        initial['is_verified'] = True if self.registrationprofile.verified_by_user else False
-        verified_by_user = self.registrationprofile.verified_by_user
-        initial['verified_by_user'] = verified_by_user if verified_by_user else ''
         kwargs['initial'] = initial
 
         super().__init__(*args, **kwargs)
         current_user = self.request.user
-        if not current_user.has_perm('registration.verify_users'):
-            self.fields['is_verified'].widget.attrs['disabled'] = True
         self.fields['application_roles'].queryset = current_user.get_administrable_application_roles()
         # self.fields['role_profiles'].queryset = current_user.get_administrable_role_profiles()
         self.fields['role_profiles'].choices = [(role_profile.id, role_profile) for role_profile in
@@ -158,8 +147,6 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
         self.registrationprofile.known_person2_last_name = cd['known_person2_last_name']
         self.registrationprofile.check_back = cd['check_back']
         self.registrationprofile.is_access_denied = cd['is_access_denied']
-        if current_user.has_perm('registration.verify_users'):
-            self.registrationprofile.verified_by_user = current_user if cd['is_verified'] else None
         if check_back is not None:
             self.registrationprofile.check_back = check_back
         if deny is not None:

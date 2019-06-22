@@ -176,9 +176,6 @@ class RegistrationProfile(models.Model):
     last_modified_by_user = CurrentUserField(verbose_name=_('last modified by'),
                                              related_name='registrationprofile_last_modified_by',
                                              on_delete=models.SET_NULL)
-    # TODO: verified_by_user is not used anymore and can be deleted
-    verified_by_user = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, verbose_name=_('verified by'),
-                                         related_name='registrationprofile_verified_by', on_delete=models.SET_NULL)
     date_registered = models.DateTimeField(_('date registered'), default=timezone.now)
     is_validated = models.BooleanField(_('validated'), default=False, db_index=True, help_text=_(
         'Designates whether this profile was already validated by the user.'))
@@ -196,9 +193,6 @@ class RegistrationProfile(models.Model):
     objects = RegistrationManager()
 
     class Meta:
-        permissions = (
-            ("verify_users", "Can verify users"),
-        )
         verbose_name = _('registration profile')
         verbose_name_plural = _('registration profiles')
 

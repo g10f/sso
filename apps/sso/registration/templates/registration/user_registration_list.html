@@ -56,11 +56,6 @@
                         <td>{{ registration.user.primary_email }}</td>
                         <td>{{ registration.user.organisations.all|join:", " }}</td>
                         <td>{{ registration.date_registered|utc|date:"Y-m-d H:i" }}</td>
-                        <td>
-                            {% if registration.verified_by_user %}
-                                <a class="" href="{% url 'accounts:update_user' registration.verified_by_user.uuid.hex %}{{ cl.get_query_string }}">{{ registration.verified_by_user }}</a>
-                            {% endif %}
-                        </td>
                         <td>{% if registration.check_back %}<span class="glyphicon glyphicon glyphicon-exclamation-sign"></span>{% endif %}</td>
                         <td>{% if registration.is_access_denied %}<span class="glyphicon glyphicon glyphicon-minus-sign"></span>{% endif %}</td>
                         <td>{% if registration.comment %}
