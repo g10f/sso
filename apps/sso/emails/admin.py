@@ -35,7 +35,6 @@ class EmailTypeFilter(admin.SimpleListFilter):
     title = _('Email type')
     parameter_name = 'type'
 
-    # TODO: check keys!
     def lookups(self, request, model_admin):
         return (
             ('countrygroup', _('Country group')),
@@ -52,8 +51,6 @@ class EmailTypeFilter(admin.SimpleListFilter):
         provided in the query string and retrievable via
         `self.value()`.
         """
-        # Compare the requested value (either '80s' or '90s')
-        # to decide how to filter the queryset.
         if self.value() == 'countrygroup':
             return queryset.filter(countrygroup__isnull=False)
         if self.value() == 'country':

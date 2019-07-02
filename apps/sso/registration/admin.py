@@ -50,11 +50,11 @@ class RegistrationAdmin(admin.ModelAdmin):
     date_hierarchy = 'date_registered'
     list_filter = ['is_validated', ExpiredFilter, IsActiveFilter, 'check_back']
     list_select_related = True
-    readonly_fields = ['last_modified', 'is_active', 'user_link']
+    readonly_fields = ['last_modified', 'is_active']
     fieldsets = [
         (None,
          {'fields':
-              ['user', 'user_link', 'last_modified', 'last_modified_by_user', 'date_registered', 'is_validated',
+              ['user', 'last_modified', 'last_modified_by_user', 'date_registered', 'is_validated',
                'is_active', 'about_me','known_person1_first_name', 'known_person2_first_name',
                'known_person1_last_name', 'known_person2_last_name', 'check_back', 'is_access_denied',
                'comment'],
@@ -71,15 +71,6 @@ class RegistrationAdmin(admin.ModelAdmin):
 
     def primary_email(self, obj):
         return obj.user.primary_email()
-
-    @mark_safe
-    def user_link(self, obj):
-        user = obj.user
-        url = reverse('admin:%s_%s_change' % (user._meta.app_label, user._meta.module_name), args=[user.pk],
-                      current_app=self.admin_site.name)
-        return '<a href="%s">%s</a>' % (url, user)
-
-    user_link.short_description = _('user')
 
     def user_message(self, request, changecount, action_result_text=_('changed successfully')):
         if changecount:
