@@ -56,7 +56,7 @@ class CenterFilter(ViewQuerysetFilter):
     model = Organisation
     select_text = _('Organisation')
     select_all_text = _('All Organisations')
-    remove = 'app_role,p'
+    remove = 'app_role,role_profile,p'
 
 
 class ApplicationRoleFilter(ViewQuerysetFilter):
