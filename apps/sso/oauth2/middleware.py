@@ -50,7 +50,7 @@ def get_auth_data_from_token(access_token):
             constant_time_compare(session_hash, get_session_auth_hash(user, client))
 
         if not session_hash_verified:
-            logger.error('session_ hash verification failed. jwt data: %s', data)
+            logger.warning('session_ hash verification failed. jwt data: %s', data)
             return AnonymousUser(), None, set()
         scopes = set()
         if data.get('scope'):

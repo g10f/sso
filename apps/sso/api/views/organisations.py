@@ -19,7 +19,6 @@ class OrganisationMixin(object):
     api_mappings = getattr(settings, 'SSO_API_MAPPINGS', {})
 
     def get_object_data(self, request, obj, details=False):
-        # TODO: phase out
         def map_address_type(address_type):
             if 'organisation__address__address_type' not in self.api_mappings:
                 return address_type
