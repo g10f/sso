@@ -146,28 +146,38 @@ class UserList(ListView):
         countries = [user_country.country for user_country in user_countries]
         country_filter = CountryFilter().get(self, countries)
 
-        centers = Organisation.objects.none()
         application_roles = user.get_administrable_application_roles()
         role_profiles = user.get_administrable_role_profiles()
         admin_regions = user.get_administrable_user_regions()
 
         if self.country:
             centers = user.get_administrable_user_organisations().filter(organisation_country__country=self.country)
-            if self.admin_region:
-                centers = centers.filter(admin_region=self.admin_region)
-            if self.center:
-                application_roles = application_roles.filter(user__organisations__in=[self.center]).distinct()
-                role_profiles = role_profiles.filter(user__organisations__in=[self.center]).distinct()
-            else:
-                application_roles = application_roles.filter(user__organisations__in=centers).distinct()
-                role_profiles = role_profiles.filter(user__organisations__in=centers).distinct()
+            admin_regions = admin_regions.filter(organisation_country__country=self.country)
+        else:
+            centers = user.get_administrable_user_organisations()
+        if self.admin_region:
+            centers = centers.filter(admin_region=self.admin_region)
+        if self.center:
+            application_roles = application_roles.filter(user__organisations__in=[self.center]).distinct()
+            role_profiles = role_profiles.filter(user__organisations__in=[self.center]).distinct()
+        elif centers:
+            application_roles = application_roles.filter(user__organisations__in=centers).distinct()
+            role_profiles = role_profiles.filter(user__organisations__in=centers).distinct()
 
         admin_region_filter = AdminRegionFilter().get(self, admin_regions)
         center_filter = CenterFilter().get(self, centers)
         application_role_filter = ApplicationRoleFilter().get(self, application_roles)
         role_profile_filter = RoleProfileFilter().get(self, role_profiles)
 
-        filters = [country_filter, admin_region_filter, center_filter, role_profile_filter, application_role_filter]
+        filters = []
+        if len(countries) > 1:
+            filters += [country_filter]
+        if len(admin_regions) > 1:
+            filters += [admin_region_filter]
+        if len(centers) > 1:
+            filters += [center_filter]
+
+        filters += [role_profile_filter, application_role_filter]
         if user.is_user_admin:
             filters += [IsActiveFilter().get(self)]
 
