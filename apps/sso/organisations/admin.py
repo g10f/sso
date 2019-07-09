@@ -139,7 +139,7 @@ class OrganisationAdmin(VersionAdmin, OSMGeoAdmin):
     non_su_readonly_fields = ['uuid', 'last_modified', 'google_maps_link']
     date_hierarchy = 'founded'
     list_filter = (
-        'association', 'is_active', 'is_private', 'is_live', 'uses_user_activation', 'coordinates_type', 'admin_region',
+        'association', 'is_active', 'is_private', 'is_live', 'is_selectable', 'uses_user_activation', 'coordinates_type', 'admin_region',
         'organisation_country__country__continent', CountryListFilter, 'center_type',
         'organisationaddress__address_type', 'organisationphonenumber__phone_type')
     list_display = ('slug', 'name', 'name_native', 'email', 'last_modified', 'homepage_link', 'google_maps_link',)
@@ -149,7 +149,7 @@ class OrganisationAdmin(VersionAdmin, OSMGeoAdmin):
               ['uuid', 'centerid', 'order', 'name', 'name_native', 'slug', 'center_type', 'association',
                'organisation_country',
                'admin_region', 'founded', ('coordinates_type', 'google_maps_link'),
-               'location', 'email', 'homepage', 'source_urls', 'is_active', 'is_private', 'is_live',
+               'location', 'email', 'homepage', 'source_urls', 'is_active', 'is_private', 'is_live', 'is_selectable',
                'uses_user_activation', 'neighbour_distance', 'transregional_distance',
                'last_modified'],
           'classes': ['wide']}),

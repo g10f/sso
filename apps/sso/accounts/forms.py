@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 
 class OrganisationChangeForm(BaseForm):
     organisation = forms.ModelChoiceField(queryset=Organisation.objects.filter(
-        is_active=True, association__is_selectable=True).only(
+        is_active=True, is_selectable=True, association__is_selectable=True).only(
         'id', 'location', 'name', 'organisation_country__country__iso2_code', 'association__name').prefetch_related(
         'organisation_country__country', 'association'), label=_("Organisation"), widget=bootstrap.Select())
 
@@ -481,7 +481,7 @@ class UserSelfProfileForm(forms.Form):
     def save(self):
         cd = self.cleaned_data
         if (not self.initial['first_name'] and not self.initial['last_name']) and cd.get('first_name') \
-                and cd.get('last_name'):
+            and cd.get('last_name'):
             # should be a streaming user, which has no initial first_name and last_name
             # we create the new username because the streaming user has his email as username
             self.user.username = default_username_generator(capfirst(cd.get('first_name')),
@@ -563,8 +563,8 @@ class UserSelfRegistrationForm2(UserSelfRegistrationForm):
     Overwritten UserSelfRegistrationForm Form with additional organisation field
     """
     organisation = forms.ModelChoiceField(
-        queryset=Organisation.objects.filter(is_active=True, association__is_selectable=True).select_related(
-            'organisation_country__country'),
+        queryset=Organisation.objects.filter(is_active=True, is_selectable=True, association__is_selectable=True
+                                             ).select_related('organisation_country__country'),
         required=settings.SSO_ORGANISATION_REQUIRED,
         label=_("Organisation"), widget=bootstrap.Select())
     state = forms.CharField(label=_('State'), required=False, widget=bootstrap.HiddenInput())

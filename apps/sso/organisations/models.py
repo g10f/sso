@@ -311,6 +311,10 @@ class Organisation(AbstractBaseModel):
                                   help_text=_('Designates whether this organisation is live. '
                                               'Unselect this for organisations which are prelive.'))
 
+    is_selectable = models.BooleanField(_('selectable'), default=True, help_text=_(
+        'Designates whether the organisations can be selected by users in the registration and '
+        'organisation change form.'))
+
     class Meta(AbstractBaseModel.Meta):
         permissions = (
             ("access_all_organisations", "Can access all organisations"),
