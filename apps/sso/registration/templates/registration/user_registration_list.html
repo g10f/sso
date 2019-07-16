@@ -1,4 +1,4 @@
-{% extends 'base_site.html' %}
+{% extends 'base_list.html' %}
 {% load i18n list static tz thumbnail %}
 
 {% block title %}{% trans 'users' %}{% endblock %}
@@ -33,9 +33,9 @@
         </div>
 
         <div class="col-sm-9">
-            {% for filter in filters %}
-                {% include 'include/_list_filter.html' with filter=filter %}
-            {% endfor %}
+            {% for filter in filters %}{% if filter %}
+                {% include filter.template_name with filter=filter %}
+            {% endif %}{% endfor %}
         </div>
     </div><!-- /.row -->
 

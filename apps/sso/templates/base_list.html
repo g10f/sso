@@ -1,0 +1,9 @@
+{% extends "base_site.html" %}
+{% load static %}
+{% block extrastyle %}
+    <link rel="stylesheet" href="{% static 'css/select2.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/select2-bootstrap.css' %}">
+{% endblock %}
+{% block extrascript %}
+    <script src="{% static 'js/vendor/select2.min.js' %}"></script>
+{% endblock extrascript %}

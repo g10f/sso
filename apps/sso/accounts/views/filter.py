@@ -38,6 +38,7 @@ class CountryFilter(ViewQuerysetFilter):
     select_all_text = _('All Countries')
     all_remove = 'admin_region,center'
     remove = 'admin_region,center,app_role,role_profile,p'
+    style = "width: 12em"
 
 
 class AdminRegionFilter(ViewQuerysetFilter):
@@ -57,6 +58,7 @@ class CenterFilter(ViewQuerysetFilter):
     select_text = _('Organisation')
     select_all_text = _('All Organisations')
     remove = 'app_role,role_profile,p'
+    style = "width: 17em"
 
 
 class ApplicationRoleFilter(ViewQuerysetFilter):
