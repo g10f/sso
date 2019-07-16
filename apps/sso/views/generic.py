@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 class BaseFilter(object):
-    template_name = 'include/_list_filter.html'
+    template_name = 'include/_list_filter2.html'
     name = 'name'
     qs_name = None
     select_text = 'Select Choice'
@@ -87,6 +87,7 @@ class ViewButtonFilter(BaseFilter):
 class ViewQuerysetFilter(BaseFilter):
     model = None
     filter_list = None
+    style = ""
 
     def get_value_from_query_param(self, view, default):
         value = view.request.GET.get(self.name, default)
@@ -113,7 +114,8 @@ class ViewQuerysetFilter(BaseFilter):
             'selected': getattr(view, self.name), 'list': filter_list, 'select_text': self.select_text,
             'select_all_text': self.select_all_text,
             'param_name': self.name, 'all_remove': self.all_remove, 'remove': self.remove,
-            'template_name': self.template_name
+            'template_name': self.template_name,
+            'style': self.style
         }
 
 

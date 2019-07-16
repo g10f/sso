@@ -46,12 +46,18 @@
         }
         window.location = $("button.geo-location").data("href").replace("latlng=", "latlng=" + latlng);
     }
-
     $(function () {
         $("button.geo-location").click(function () {
             getLocation();
         });
         $('[data-toggle="tooltip"]').tooltip();
         $('[data-toggle="popover"]').popover();
+        $('.select2').select2({theme: "bootstrap"});
+        $('.select2').on('select2:select', function (e) {
+            var data = e.params.data;
+            if ($(data.element).data('url')) {
+                window.location = $(data.element).data('url');
+            }
+        });
     });
 })(jQuery);

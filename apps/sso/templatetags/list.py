@@ -1,10 +1,17 @@
-from django.utils.html import format_html
 from django.template import Library
+from django.utils.html import format_html
 from sso.views.main import PAGE_VAR
 
 register = Library()
 
 DOT = '.'
+
+
+@register.simple_tag(takes_context=True)
+def selected(context, param_name, param_value):
+    if context.request.GET.get(param_name) == str(param_value):
+        return 'selected'
+    return ''
 
 
 @register.simple_tag
