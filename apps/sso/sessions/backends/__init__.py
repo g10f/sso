@@ -2,7 +2,7 @@
 key_map = {
     #  "_auth_user_backend": "", # Authentication with session is always from sso.auth.backends.EmailBackend
     # "_auth_device_id": "dev",  # custom
-    # "_auth_user_hash": "at_hash",  # custom, used in get_user
+    # "_auth_user_hash": "au_hash",  # custom, used in get_user
     # "_auth_user_id": "sub",
     "_session_expiry": "se_exp",
     # "_auth_date": "iat"
