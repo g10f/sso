@@ -386,12 +386,12 @@ class OAuth2Tests(OAuth2BaseTestCase):
         authorization = self.get_http_authorization(token_data)
 
         data = {'token': token['refresh_token']}
-        response = self.client.get(reverse('oauth2:introspect'), data, HTTP_AUTHORIZATION=authorization)
+        response = self.client.post(reverse('oauth2:introspect'), data, HTTP_AUTHORIZATION=authorization)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(True, response.json()['active'])
 
         data = {'token': token['access_token']}
-        response = self.client.get(reverse('oauth2:introspect'), data, HTTP_AUTHORIZATION=authorization)
+        response = self.client.post(reverse('oauth2:introspect'), data, HTTP_AUTHORIZATION=authorization)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(True, response.json()['active'])
 
@@ -399,7 +399,7 @@ class OAuth2Tests(OAuth2BaseTestCase):
         response = self.client.post(reverse('oauth2:revoke'), data, HTTP_AUTHORIZATION=authorization)
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.get(reverse('oauth2:introspect'), data, HTTP_AUTHORIZATION=authorization)
+        response = self.client.post(reverse('oauth2:introspect'), data, HTTP_AUTHORIZATION=authorization)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(False, response.json()['active'])
 
