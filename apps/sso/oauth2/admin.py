@@ -51,6 +51,7 @@ class BearerTokenAdmin(admin.ModelAdmin):
     raw_id_fields = ("user",)
     readonly_fields = ('created_at',)
     list_select_related = ('user', 'client')
+    date_hierarchy = 'created_at'
 
     @mark_safe
     def user_link(self, obj):
@@ -75,6 +76,7 @@ class AuthorizationCodeAdmin(admin.ModelAdmin):
     search_fields = ('user__username', 'user__first_name', 'user__last_name', 'user__uuid', 'user__useremail__email')
     raw_id_fields = ("user",)
     list_select_related = ('user', 'client')
+    date_hierarchy = 'created_at'
 
     @mark_safe
     def user_link(self, obj):
@@ -100,6 +102,7 @@ class RefreshTokenAdmin(admin.ModelAdmin):
     raw_id_fields = ("bearer_token",)
     readonly_fields = ('created_at',)
     list_select_related = ('bearer_token__user', 'bearer_token__client')
+    date_hierarchy = 'created_at'
 
     @mark_safe
     def bearer_token_link(self, obj):
