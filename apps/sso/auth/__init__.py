@@ -13,7 +13,7 @@ default_app_config = 'sso.auth.apps.AuthConfig'
 SESSION_AUTH_DATE = 'iat'
 DEVICE_KEY = 'dev'
 SESSION_KEY = 'sub'
-HASH_SESSION_KEY = 'at_hash'
+HASH_SESSION_KEY = 'au_hash'  # shorter version of django _auth_user_hash
 
 
 def _get_user_session_key(request):
@@ -47,9 +47,8 @@ def auth_login(request, user, backend=None):
     device_id = getattr(user, '_auth_device_id', None)
 
     if SESSION_KEY in request.session:
-        if _get_user_session_key(request) != _get_user_key(user) or (
-            session_auth_hash and
-            request.session.get(HASH_SESSION_KEY) != session_auth_hash):
+        if _get_user_session_key(request) != _get_user_key(user) or \
+                (session_auth_hash and request.session.get(HASH_SESSION_KEY) != session_auth_hash):
             # To avoid reusing another user's session, create a new, empty
             # session if the existing session corresponds to a different
             # authenticated user.
@@ -103,7 +102,7 @@ def get_session_auth_hash(user, client=None):
     if user is None:
         logger.debug("get_session_auth_hash with user == None")
         return ""
-    key_salt = "at_hash"
+    key_salt = HASH_SESSION_KEY
     data = user.password
     if client is not None:
         data += client.client_secret
