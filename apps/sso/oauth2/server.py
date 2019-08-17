@@ -27,7 +27,7 @@ from oauthlib.openid.connect.core.grant_types.dispatchers import AuthorizationCo
     ImplicitTokenGrantDispatcher, AuthorizationTokenGrantDispatcher
 from oauthlib.openid.connect.core.request_validator import RequestValidator
 from sso.api.response import add_cors_header
-from sso.auth import get_session_auth_hash
+from sso.auth import get_session_auth_hash, HASH_SESSION_KEY
 from .crypt import loads_jwt, make_jwt, MAX_AGE
 from .models import BearerToken, RefreshToken, AuthorizationCode, Client, check_redirect_uri, CONFIDENTIAL_CLIENTS, \
     CLIENT_RESPONSE_TYPES
@@ -58,7 +58,7 @@ def default_token_generator(request, max_age=MAX_AGE):
         'email': force_text(user.primary_email()),  # custom
         'name': user.username,  # custom
         # session authentication hash,
-        'at_hash': get_session_auth_hash(user, request.client),  # custom, required
+        HASH_SESSION_KEY: get_session_auth_hash(user, request.client),  # custom, required
     }
     if request.client.application:
         claim_set['roles'] = ' '.join(
@@ -443,7 +443,7 @@ class OAuth2AuthorizationCodeGrantEx(OAuth2AuthorizationCodeGrant):
         # custom extension of original oauthlib: we only deliver refresh_tokens with scope 'offline_access'
         refresh_token = 'offline_access' in request.scopes
 
-        token = token_handler.create_token(request, refresh_token=refresh_token, save_token=False)
+        token = token_handler.create_token(request, refresh_token=refresh_token)
         for modifier in self._token_modifiers:
             token = modifier(token, token_handler, request)
         self.request_validator.save_token(token, request)
