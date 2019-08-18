@@ -2,8 +2,7 @@
 {% load i18n static thumbnail %}
 
 {% block extrascript %}
-    <script src="{% url 'jsi18n' %}"></script>
-    <script src="{% static "js/base64_image-1.0.0.js" %}"></script>
+    {{ form.media }}
 {% endblock extrascript %}
 
 {% block title %}{% trans 'Request extended access' %}{% endblock %}
