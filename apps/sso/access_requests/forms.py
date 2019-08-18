@@ -63,7 +63,7 @@ class AccessRequestForm(BaseForm):
         'Please use a photo of your face. We are using it also to validate your registration.'))
     created = forms.BooleanField(widget=forms.HiddenInput(), required=False)
     organisation = forms.ModelChoiceField(queryset=Organisation.objects.filter(
-        is_active=True, association__is_selectable=True).only(
+        is_active=True, is_selectable=True, association__is_selectable=True).only(
         'id', 'location', 'name', 'organisation_country__country__iso2_code', 'association__name').prefetch_related(
         'organisation_country__country', 'association'), label=_("Organisation"), widget=bootstrap.Select())
 
