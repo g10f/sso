@@ -131,6 +131,19 @@ class Select(Widget, forms.Select):
     pass
 
 
+class Select2(Widget, forms.Select):
+    class Media:
+        css = {
+            'all': ('css/select2.min.css', 'css/select2-bootstrap.css')
+        }
+        js = ('js/vendor/select2.min.js', )
+
+    def __init__(self, attrs=None, **kwargs):
+        # add select2 class
+        new_attrs = add_class_to_attr(attrs, 'select2')
+        super().__init__(new_attrs, **kwargs)
+
+
 class SelectMultiple(Widget, forms.SelectMultiple):
     pass
 

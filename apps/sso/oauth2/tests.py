@@ -185,6 +185,25 @@ class OAuth2Tests(OAuth2BaseTestCase):
         self.assertNotIn('access_token', fragment_dict)
         self.assertEqual(fragment_dict['state'], self._state)
 
+    def test_get_token_scopes(self):
+        code = self.login_and_get_code(scope="openid profile email test")
+        token_data = {
+            'grant_type': "authorization_code",
+            'redirect_uri': "http://localhost",
+            'client_secret': "geheim",
+            'client_id': self._client_id,
+            'code': code,
+        }
+        token_response = self.token_request(token_data)
+        self.assertEqual(token_response.status_code, 200)
+        token = token_response.json()
+        expected = {'scope': 'openid profile email test', 'token_type': 'Bearer'}
+        self.assertTrue(set(expected.items()).issubset(set(token.items())))
+
+        with self.assertRaises(AssertionError) as cm:
+            self.login_and_get_code(scope="openid profile email test2")
+        self.assertIn("invalid_scope", str(cm.exception))
+
     def test_get_token(self):
         code = self.login_and_get_code()
         token_data = {

@@ -40,7 +40,7 @@ class OrganisationChangeForm(BaseForm):
     organisation = forms.ModelChoiceField(queryset=Organisation.objects.filter(
         is_active=True, is_selectable=True, association__is_selectable=True).only(
         'id', 'location', 'name', 'organisation_country__country__iso2_code', 'association__name').prefetch_related(
-        'organisation_country__country', 'association'), label=_("Organisation"), widget=bootstrap.Select())
+        'organisation_country__country', 'association'), label=_("Organisation"), widget=bootstrap.Select2())
 
     class Meta:
         model = OrganisationChange
@@ -284,7 +284,7 @@ class UserAddForm(mixins.UserRolesMixin, forms.ModelForm):
     notes = forms.CharField(label=_("Notes"), required=False, max_length=1024,
                             widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
     organisations = forms.ModelChoiceField(queryset=None, required=settings.SSO_ORGANISATION_REQUIRED,
-                                           label=_("Organisation"), widget=bootstrap.Select())
+                                           label=_("Organisation"), widget=bootstrap.Select2())
     application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False,
                                                        widget=bootstrap.CheckboxSelectMultiple(),
                                                        label=_("Application roles"))
@@ -362,7 +362,7 @@ class AddressForm(BaseForm):
             'city': bootstrap.TextInput(attrs={'size': 50}),
             'city_native': bootstrap.TextInput(attrs={'size': 50}),
             'postal_code': bootstrap.TextInput(attrs={'size': 50}),
-            'country': bootstrap.Select(),
+            'country': bootstrap.Select2(),
             'region': bootstrap.TextInput(attrs={'size': 50}),
         }
 
@@ -445,10 +445,10 @@ class UserSelfProfileForm(forms.Form):
     homepage = forms.URLField(label=_('Homepage'), required=False, max_length=512, widget=bootstrap.TextInput())
     language = forms.ChoiceField(label=_("Language"), required=False,
                                  choices=(BLANK_CHOICE_DASH + sorted(list(settings.LANGUAGES), key=lambda x: x[1])),
-                                 widget=bootstrap.Select())
+                                 widget=bootstrap.Select2())
     timezone = forms.ChoiceField(label=_("Timezone"), required=False,
                                  choices=BLANK_CHOICE_DASH + list(zip(pytz.common_timezones, pytz.common_timezones)),
-                                 widget=bootstrap.Select())
+                                 widget=bootstrap.Select2())
 
     error_messages = {
         'duplicate_username': _("A user with that username already exists."),
@@ -517,10 +517,10 @@ class CenterSelfProfileForm(forms.Form):
     email = bootstrap.ReadOnlyField(label=_('Email address'))
     language = forms.ChoiceField(label=_("Language"), required=False,
                                  choices=(BLANK_CHOICE_DASH + sorted(list(settings.LANGUAGES), key=lambda x: x[1])),
-                                 widget=bootstrap.Select())
+                                 widget=bootstrap.Select2())
     timezone = forms.ChoiceField(label=_("Timezone"), required=False,
                                  choices=BLANK_CHOICE_DASH + list(zip(pytz.common_timezones, pytz.common_timezones)),
-                                 widget=bootstrap.Select())
+                                 widget=bootstrap.Select2())
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('instance')
@@ -566,7 +566,7 @@ class UserSelfRegistrationForm2(UserSelfRegistrationForm):
         queryset=Organisation.objects.filter(is_active=True, is_selectable=True, association__is_selectable=True
                                              ).select_related('organisation_country__country'),
         required=settings.SSO_ORGANISATION_REQUIRED,
-        label=_("Organisation"), widget=bootstrap.Select())
+        label=_("Organisation"), widget=bootstrap.Select2())
     state = forms.CharField(label=_('State'), required=False, widget=bootstrap.HiddenInput())
     signer = signing.TimestampSigner()
 
@@ -636,7 +636,7 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
     status = bootstrap.ReadOnlyField(label=_('Status'))
     organisations = forms.ModelChoiceField(queryset=None, required=settings.SSO_ORGANISATION_REQUIRED,
                                            label=_("Organisation"),
-                                           widget=bootstrap.Select())
+                                           widget=bootstrap.Select2())
     application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False,
                                                        widget=bootstrap.CheckboxSelectMultiple(),
                                                        label=_("Application roles"),
