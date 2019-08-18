@@ -11,7 +11,8 @@
       "redirect_uris": "http://localhost",
       "client_secret": "geheim",
       "user": null,
-      "type": "web"
+      "type": "web",
+      "scopes": "openid profile email test"
     }
   },
   {

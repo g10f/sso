@@ -44,7 +44,7 @@ class OrganisationPictureForm(BaseStackedInlineForm):
 
 class OrganisationAddressForm(BaseForm):
     country = ModelChoiceField(queryset=Country.objects.filter(active=True), required=True,
-                               label=_("Country"), widget=bootstrap.Select(), to_field_name="iso2_code")
+                               label=_("Country"), widget=bootstrap.Select2(), to_field_name="iso2_code")
 
     class Meta:
         model = OrganisationAddress
@@ -59,7 +59,7 @@ class OrganisationAddressForm(BaseForm):
             'city': bootstrap.TextInput(attrs={'size': 50}),
             'city_native': bootstrap.TextInput(attrs={'size': 50}),
             'postal_code': bootstrap.TextInput(attrs={'size': 50}),
-            'country': bootstrap.Select(),
+            'country': bootstrap.Select2(),
             'region': bootstrap.TextInput(attrs={'size': 50}),
         }
 
@@ -113,7 +113,7 @@ class OrganisationBaseForm(BaseForm):
             'is_private': bootstrap.CheckboxInput(),
             'is_active': bootstrap.CheckboxInput(),
             'is_live': bootstrap.CheckboxInput(),
-            'timezone': bootstrap.Select(),
+            'timezone': bootstrap.Select2(),
             # 'can_publish': bootstrap.CheckboxInput(),
             'location': bootstrap.OSMWidget(attrs={'display_raw': False}),
             'neighbour_distance': bootstrap.TextInput(attrs={'type': 'number', 'step': '0.001'}),
@@ -248,9 +248,10 @@ class OrganisationCountryAdminForm(OrganisationEmailAdminForm):
     """
     A form for a country admin for update organisations
     """
-    # use the ModelChoiceField, because organisation_country is a ChainedForeignKey and we don't display the association
+    # use the ModelChoiceField, because organisation_country is a ChainedForeignKey and we don't display the
+    # association
     organisation_country = ModelChoiceField(queryset=OrganisationCountry.objects.none(), required=True,
-                                            label=_("Country"), widget=bootstrap.Select())
+                                            label=_("Country"), widget=bootstrap.Select2())
 
     class Meta(OrganisationBaseForm.Meta):
         fields = OrganisationBaseForm.Meta.fields + (
@@ -276,9 +277,9 @@ class OrganisationRegionAdminForm(OrganisationEmailAdminForm):
     # don't use the default ModelChoiceField, because the regions are restricted to the
     # administrable_organisation_regions of the region admin
     organisation_country = ModelChoiceField(queryset=OrganisationCountry.objects.none(), required=True,
-                                            label=_("Country"), widget=bootstrap.Select())
+                                            label=_("Country"), widget=bootstrap.Select2())
     admin_region = ModelChoiceField(queryset=AdminRegion.objects.none(), required=True, label=_("Admin Region"),
-                                    widget=bootstrap.Select())
+                                    widget=bootstrap.Select2())
 
     class Meta(OrganisationBaseForm.Meta):
         fields = OrganisationBaseForm.Meta.fields + (
@@ -332,7 +333,7 @@ class EmailForwardMixin(object):
 
 class OrganisationAssociationAdminCreateForm(EmailForwardMixin, OrganisationAssociationAdminForm):
     """
-    A form for a country admin for create organisations with
+    A form for a association admins for create organisations with
     additionally email_forward field
     """
     email_forward = EmailFieldLower(required=True, label=_("Email forwarding address"),
@@ -399,14 +400,15 @@ class OrganisationRegionAdminCreateForm(EmailForwardMixin, OrganisationRegionAdm
 
 class AdminRegionForm(BaseForm):
     email_value = EmailFieldLower(required=True, label=_("Email address"))
-    organisation_country = ModelChoiceField(queryset=None, required=True, label=_("Country"), widget=bootstrap.Select())
+    organisation_country = ModelChoiceField(queryset=None, required=True, label=_("Country"),
+                                            widget=bootstrap.Select2())
 
     class Meta:
         model = AdminRegion
         fields = ('name', 'homepage', 'organisation_country', 'is_active')
         widgets = {
             'homepage': bootstrap.TextInput(attrs={'size': 50}),
-            'organisation_country': bootstrap.Select(),
+            'organisation_country': bootstrap.Select2(),
             'name': bootstrap.TextInput(attrs={'size': 50}),
         }
 
@@ -444,7 +446,8 @@ class AdminRegionForm(BaseForm):
                 self.instance.email.save()
             else:
                 # create email object
-                email = Email(email_type=REGION_EMAIL_TYPE, permission=PERM_DWB, email=self.cleaned_data['email_value'])
+                email = Email(email_type=REGION_EMAIL_TYPE, permission=PERM_DWB,
+                              email=self.cleaned_data['email_value'])
                 email.save()
                 instance.email = email
                 instance.save()
@@ -464,7 +467,7 @@ class OrganisationCountryForm(BaseForm):
         widgets = {
             'homepage': bootstrap.TextInput(attrs={'size': 50}),
             'association': bootstrap.Select(),
-            'country': bootstrap.Select(),
+            'country': bootstrap.Select2(),
         }
 
     def __init__(self, *args, **kwargs):

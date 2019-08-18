@@ -65,7 +65,7 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
                                               widget=bootstrap.TextInput())
     last_modified_by_user = forms.CharField(label=_("Last modified by"), required=False,
                                             widget=bootstrap.TextInput(attrs={'disabled': ''}))
-    organisations = forms.ModelChoiceField(queryset=None, label=_("Organisation"), widget=bootstrap.Select(),
+    organisations = forms.ModelChoiceField(queryset=None, label=_("Organisation"), widget=bootstrap.Select2(),
                                            required=settings.SSO_ORGANISATION_REQUIRED)
     application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False,
                                                        widget=bootstrap.CheckboxSelectMultiple,
@@ -203,14 +203,14 @@ class UserSelfRegistrationForm(forms.Form):
         'If you would like to tell us something about yourself, please do so in this box.'),
                                widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 5}))
     country = forms.ModelChoiceField(queryset=Country.objects.filter(active=True), label=_("Country"),
-                                     widget=bootstrap.Select())
+                                     widget=bootstrap.Select2())
     city = forms.CharField(label=_("City"), max_length=100, widget=bootstrap.TextInput())
     language = forms.ChoiceField(label=_("Language"), required=False,
                                  choices=(BLANK_CHOICE_DASH + sorted(list(settings.LANGUAGES), key=lambda x: x[1])),
-                                 widget=bootstrap.Select())
+                                 widget=bootstrap.Select2())
     timezone = forms.ChoiceField(label=_("Timezone"), required=False,
                                  choices=BLANK_CHOICE_DASH + list(zip(pytz.common_timezones, pytz.common_timezones)),
-                                 widget=bootstrap.Select())
+                                 widget=bootstrap.Select2())
     gender = forms.ChoiceField(label=_('Gender'), required=False, choices=(BLANK_CHOICE_DASH + User.GENDER_CHOICES),
                                widget=bootstrap.Select())
     dob = forms.DateField(label=_('Date of birth'), required=False,
