@@ -2,7 +2,7 @@ import logging
 
 from django import forms
 from django.conf import settings
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.encoding import force_text
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
@@ -65,7 +65,10 @@ class AccessRequestForm(BaseForm):
     organisation = forms.ModelChoiceField(queryset=Organisation.objects.filter(
         is_active=True, is_selectable=True, association__is_selectable=True).only(
         'id', 'location', 'name', 'organisation_country__country__iso2_code', 'association__name').prefetch_related(
-        'organisation_country__country', 'association'), label=_("Organisation"), widget=bootstrap.Select())
+        'organisation_country__country', 'association'), label=_("Organisation"), widget=bootstrap.Select2())
+
+    class Media:
+        js = (reverse_lazy('jsi18n'), 'js/base64_image-1.0.0.js')
 
     class Meta:
         model = AccessRequest
