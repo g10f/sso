@@ -6,8 +6,6 @@ from urllib.parse import urlparse, urlunparse, urlsplit, urlunsplit
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
 from jwt import InvalidTokenError
-from oauthlib import oauth2
-from oauthlib.common import urlencode, urlencoded, quote
 
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
@@ -25,6 +23,8 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.vary import vary_on_headers
 from django.views.generic import TemplateView
+from oauthlib import oauth2
+from oauthlib.common import urlencode, urlencoded, quote
 from sso.api.response import JsonHttpResponse
 from sso.api.views.generic import PreflightMixin
 from sso.auth.utils import is_recent_auth_time
@@ -35,7 +35,7 @@ from sso.utils.http import get_request_param
 from sso.utils.url import get_base_url
 from .crypt import loads_jwt
 from .models import Client
-from .server import server
+from .oauthlib_server import oidc_server
 
 logger = logging.getLogger(__name__)
 
@@ -268,7 +268,7 @@ def authorize(request):
     error_uri = reverse('oauth2:oauth2_error')
     redirect_uri = None
     try:
-        scopes, credentials = server.validate_authorization_request(uri, http_method, body, headers)
+        scopes, credentials = oidc_server.validate_authorization_request(uri, http_method, body, headers)
         credentials['user'] = request.user
         credentials['session_state'] = get_session_state(credentials['client_id'],
                                                          browser_state=request.session.session_key)
@@ -296,8 +296,8 @@ def authorize(request):
             return redirect_to_login(request, two_factor=two_factor)
 
         # if we are here, the user is already logged in does not need to login again
-        headers, body, status = server.create_authorization_response(uri, http_method, body, headers, scopes,
-                                                                     credentials)  # @UnusedVariable
+        headers, body, status = oidc_server.create_authorization_response(uri, http_method, body, headers, scopes,
+                                                                          credentials)  # @UnusedVariable
         return HttpOAuth2ResponseRedirect(headers['Location'])
     except oauth2.FatalClientError as e:
         logger.warning('Fatal client error, redirecting to error page.')
@@ -315,7 +315,7 @@ def authorize(request):
 def token(request):
     uri, http_method, body, headers = extract_params(request)
     credentials = {}
-    headers, body, status = server.create_token_response(uri, http_method, body, headers, credentials)
+    headers, body, status = oidc_server.create_token_response(uri, http_method, body, headers, credentials)
     response = HttpResponse(content=body, status=status)
 
     for k, v in headers.items():
@@ -342,7 +342,8 @@ class TokenView(PreflightMixin, View):
 @csrf_exempt
 def revoke(request):
     uri, http_method, body, headers = extract_params(request)
-    headers, body, status = server.create_revocation_response(uri, http_method=http_method, body=body, headers=headers)
+    headers, body, status = oidc_server.create_revocation_response(uri, http_method=http_method, body=body,
+                                                                   headers=headers)
     response = HttpResponse(content=body, status=status)
     for k, v in headers.items():
         response[k] = v
@@ -353,7 +354,8 @@ def revoke(request):
 @never_cache
 def introspect(request):
     uri, http_method, body, headers = extract_params(request)
-    headers, body, status = server.create_introspect_response(uri, http_method=http_method, body=body, headers=headers)
+    headers, body, status = oidc_server.create_introspect_response(uri, http_method=http_method, body=body,
+                                                                   headers=headers)
     response = HttpResponse(content=body, status=status)
     for k, v in headers.items():
         response[k] = v
