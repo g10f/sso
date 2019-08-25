@@ -93,7 +93,7 @@ class U2FForm(forms.Form):
 
 class AuthenticationTokenForm(forms.Form):
     otp_token = forms.IntegerField(label=_("Token"), min_value=1, max_value=int('9' * totp_digits()),
-                                   widget=bootstrap.TextInput(attrs={'autofocus': ''}))
+                                   widget=bootstrap.TextInput(attrs={'autofocus': '', 'autocomplete': 'off'}))
 
     def __init__(self, device=None, **kwargs):
         self.user = kwargs.pop('user')
