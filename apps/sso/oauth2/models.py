@@ -180,6 +180,7 @@ class AuthorizationCode(models.Model):
     scopes = models.CharField(_('scopes'), max_length=2047, blank=True)
     code_challenge = models.CharField(_('code_challenge'), max_length=128, blank=True)
     code_challenge_method = models.CharField(_('code_challenge_method'), max_length=4, blank=True)
+    nonce = models.CharField(_('Nonce'), max_length=2047, blank=True)
 
     class Meta:
         ordering = ['-created_at']
