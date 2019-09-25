@@ -225,7 +225,7 @@ class FormsetsUpdateView(generic.UpdateView):
                 try:
                     # Hack to activate the correct tab in the HTML view
                     active = errors[0].data[0].params['active']
-                except KeyError:
+                except Exception:
                     active = 'object'
             else:  # set the first formset with an error as active
                 for formset in formsets:
