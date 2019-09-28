@@ -105,13 +105,13 @@
                         <a class="btn btn-default"
                            href="{% url 'registration:delete_user_registration' form.user.pk %}">{% trans 'Delete' %}</a>
                     {% endif %}
-                    <button class="btn btn-default" name="_save">{% trans 'Save' %}</button>
+                    <button name="action" value="save" class="btn btn-default">{% trans 'Save' %}</button>
                     <button class="btn btn-default"
-                            name="_continue">{% trans 'Save and continue editing' %}</button>
-                    <button class="btn btn-default" name="_deny">{% trans 'Save and deny' %}</button>
+                            name="action" value="continue">{% trans 'Save and continue editing' %}</button>
+                    <button name="action" value="deny" class="btn btn-default">{% trans 'Save and deny' %}</button>
                     <button class="btn btn-default"
-                            name="_check_back">{% trans 'Save and mark for check back' %}</button>
-                    <button class="btn btn-primary">{% trans 'Save and activate' %}</button>
+                            name="action" value="check_back">{% trans 'Save and mark for check back' %}</button>
+                    <button name="action" value="activate" class="btn btn-primary">{% trans 'Save and activate' %}</button>
                 </div>
             </div>
         {% endif %}
