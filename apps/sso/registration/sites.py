@@ -4,7 +4,7 @@ from . import default_username_generator
 from .forms import UserSelfRegistrationForm, UserSelfRegistrationFormPreview
 from .tokens import default_token_generator
 from .views import validation_confirm, UserRegistrationList, UserRegistrationDeleteView, \
-    update_user_registration  # , register
+    update_user_registration, RegistrationSendMailFormView  # , register
 
 
 class RegistrationSite(object):
@@ -38,6 +38,8 @@ class RegistrationSite(object):
             path('registrations/<int:pk>/', update_user_registration, name="update_user_registration"),
             path('registrations/delete/<int:pk>/', UserRegistrationDeleteView.as_view(),
                  name="delete_user_registration"),
+            path('registrations/process/<int:pk>/<slug:action>/', RegistrationSendMailFormView.as_view(),
+                 name="process_user_registration"),
         ]
         return urlpatterns
 

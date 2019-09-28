@@ -4,5 +4,4 @@
 {% trans 'Your registration has been checked, but one of the references could not be found. Please send a second valid reference and / or write a bit about yourself.' %}
 
 {% blocktrans %}The {{ site_name }} registration team{% endblocktrans %}
-{{ from_email }}
-{% endautoescape %}
+{{ reply_to_email }}{% endautoescape %}

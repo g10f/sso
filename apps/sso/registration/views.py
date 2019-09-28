@@ -9,16 +9,16 @@ from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic import DeleteView
+from django.views.generic import DeleteView, FormView
 from sso.accounts.models import ApplicationRole
 from sso.auth.decorators import admin_login_required
 from sso.organisations.models import is_validation_period_active_for_user, OrganisationCountry
 from sso.signals import user_registration_completed
 from sso.views import main
 from sso.views.generic import SearchFilter, ViewChoicesFilter, ViewQuerysetFilter, ListView
-from .forms import RegistrationProfileForm
-from .models import RegistrationProfile, RegistrationManager, send_set_password_email, send_check_back_email, \
-    send_access_denied_email
+from .forms import RegistrationProfileForm, SendMailForm
+from .models import RegistrationProfile, RegistrationManager, get_check_back_email_message, \
+    get_access_denied_email_message, send_set_password_email
 from .tokens import default_token_generator
 
 
@@ -163,27 +163,28 @@ def update_user_registration(request, pk, template='registration/change_user_reg
     if request.method == 'POST':
         registrationprofile_form = RegistrationProfileForm(request.POST, instance=registrationprofile, request=request)
         if registrationprofile_form.is_valid():
-            msg_dict = {'name': force_text(get_user_model()._meta.verbose_name), 'obj': force_text(registrationprofile)}
-            success_url = reverse('registration:user_registration_list') + "?" + request.GET.urlencode()
-            if "_continue" in request.POST:
-                registrationprofile = registrationprofile_form.save()
+            msg_dict = {'name': force_text(get_user_model()._meta.verbose_name),
+                        'obj': force_text(registrationprofile)}
+            action = request.POST.get("action")
+            registrationprofile_form.save()
+            if action == "continue":
                 msg = _('The %(name)s "%(obj)s" was changed successfully. You may edit it again below.') % msg_dict
-                success_url = reverse('registration:update_user_registration', args=[registrationprofile.pk])
-            elif "_save" in request.POST:
-                registrationprofile_form.save()
+                success_url = reverse('registration:update_user_registration', args=[pk])
+            elif action == "save":
                 msg = _('The %(name)s "%(obj)s" was changed successfully.') % msg_dict
-            elif "_deny" in request.POST:
-                registrationprofile_form.save(deny=True)
-                msg = _('Access denied for %(obj)s.') % msg_dict
-                send_access_denied_email(registrationprofile.user, request)
-            elif "_check_back" in request.POST:
-                registrationprofile_form.save(check_back=True)
-                msg = _('The %(name)s "%(obj)s" was saved successfully.') % msg_dict
-                send_check_back_email(registrationprofile.user, request)
+                success_url = reverse('registration:user_registration_list') + "?" + request.GET.urlencode()
+            elif action in ["deny", "check_back"]:
+                msg = _('The %(name)s "%(obj)s" was changed successfully.') % msg_dict
+                success_url = reverse('registration:process_user_registration',
+                                      kwargs={'pk': pk, 'action': action}) + "?" + request.GET.urlencode()
+            elif action == "activate":
+                msg = _('The %(name)s "%(obj)s" was changed successfully.') % msg_dict
+                registrationprofile.process(action)
+                send_set_password_email(registrationprofile.user, request,
+                                        reply_to=[request.user.primary_email().email])
+                success_url = reverse('registration:user_registration_list') + "?" + request.GET.urlencode()
             else:
-                registrationprofile = registrationprofile_form.save(activate=True)
-                msg = _('The %(name)s "%(obj)s" was activated successfully.') % msg_dict
-                send_set_password_email(registrationprofile.user, request)
+                raise ValueError(f"Unknown action: {action}")
 
             messages.add_message(request, level=messages.SUCCESS, message=msg, fail_silently=True)
             return HttpResponseRedirect(success_url)
@@ -236,3 +237,46 @@ def validation_confirm(request, uidb64=None, token=None, token_generator=default
         'validlink': validlink,
     }
     return TemplateResponse(request, template, context)
+
+
+class RegistrationSendMailFormView(FormView):
+    email_messages = {
+        'check_back': get_check_back_email_message,
+        'deny': get_access_denied_email_message
+    }
+    success_url = reverse_lazy('registration:user_registration_list')
+    template_name = 'registration/process_registration.html'
+
+    def __init__(self, form_class=SendMailForm, *args, **kwargs):
+        # form_class should be a Form class, not an instance.
+        self.form_class = form_class
+        self.instance = None
+        super().__init__(*args, **kwargs)
+
+    @method_decorator(admin_login_required)
+    @method_decorator(permission_required('accounts.change_user'))
+    def dispatch(self, request, *args, **kwargs):
+        self.instance = get_object_or_404(RegistrationProfile, pk=self.kwargs['pk'])
+        # check if admin has access to the specific user
+        if not request.user.has_user_access(self.instance.user):
+            raise PermissionDenied
+        self.extra_context = {'action': self.kwargs['action']}
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['instance'] = self.instance
+        kwargs['request'] = self.request
+        return kwargs
+
+    def get_initial(self):
+        reply_to_email = self.request.user.primary_email().email
+        message, subject = self.email_messages[self.kwargs['action']](self.instance.user, self.request, reply_to_email)
+        return {'message': message, 'subject': subject}
+
+    def form_valid(self, form):
+        self.instance.process(self.kwargs['action'])
+        message = form.cleaned_data['message']
+        subject = form.cleaned_data['subject']
+        self.instance.user.email_user(subject, message, reply_to=[self.request.user.primary_email().email])
+        return super().form_valid(form)

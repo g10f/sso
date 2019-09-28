@@ -1,9 +1,9 @@
 """
 Forms and validation code for user registration.
 """
+import datetime
 import logging
 
-import datetime
 import pytz
 from formtools.preview import FormPreview
 
@@ -14,7 +14,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.shortcuts import redirect
-from django.utils.crypto import get_random_string
 from django.utils.text import capfirst
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
@@ -137,7 +136,7 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
 
         self.fields['organisations'].queryset = current_user.get_administrable_user_organisations()
 
-    def save(self, activate=None, deny=None, check_back=None):
+    def save(self):
         cd = self.cleaned_data
         current_user = self.request.user
         # registrationprofile data
@@ -147,10 +146,6 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
         self.registrationprofile.known_person2_last_name = cd['known_person2_last_name']
         self.registrationprofile.check_back = cd['check_back']
         self.registrationprofile.is_access_denied = cd['is_access_denied']
-        if check_back is not None:
-            self.registrationprofile.check_back = check_back
-        if deny is not None:
-            self.registrationprofile.is_access_denied = deny
 
         self.registrationprofile.save()
 
@@ -165,15 +160,9 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
         self.update_user_m2m_fields('application_roles', current_user)
         self.update_user_m2m_fields('role_profiles', current_user)
 
-        if activate is not None:
-            self.user.is_active = activate
-            if activate:
-                self.user.set_password(get_random_string(40))
-        if deny is not None and deny:
-            self.user.is_active = False
-
         organisation = self.cleaned_data['organisations']
         if is_validation_period_active(organisation):
+            # a new registered user is valid_until from now for the validation period
             self.user.valid_until = now() + datetime.timedelta(days=settings.SSO_VALIDATION_PERIOD_DAYS)
         self.user.save()
 
@@ -296,3 +285,14 @@ class UserSelfRegistrationFormPreview(FormPreview):
         send_validation_email(registration_profile, request)
 
         return redirect('registration:registration_done')
+
+
+class SendMailForm(forms.Form):
+    subject = forms.CharField(label=_("Subject"), required=True, max_length=1024, widget=bootstrap.TextInput())
+    message = forms.CharField(label=_("Message"), required=True, max_length=4096,
+                              widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 20}))
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request')
+        self.instance = kwargs.pop('instance')
+        super().__init__(*args, **kwargs)

@@ -7,6 +7,7 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
+from django.utils.crypto import get_random_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.utils.timezone import now
@@ -15,20 +16,25 @@ from sso.utils.translation import i18n_email_msg_and_subj
 from .tokens import default_token_generator
 
 
-def send_access_denied_email(user, request,
+def send_access_denied_email(user, request, reply_to_email,
                              email_template_name='registration/email/access_denied_email.txt',
                              subject_template_name='registration/email/access_denied_subject.txt'
                              ):
+    from_email = settings.REGISTRATION.get('CONTACT_EMAIL', None)
+    message, subject = get_access_denied_email_message(user, request, reply_to_email, email_template_name,
+                                                       subject_template_name)
+    user.email_user(subject, message, from_email)
+
+
+def get_email_message(user, request, reply_to_email, email_template_name, subject_template_name):
     use_https = request.is_secure()
     current_site = get_current_site(request)
     site_name = settings.SSO_SITE_NAME
     domain = current_site.domain
 
-    from_email = settings.REGISTRATION.get('CONTACT_EMAIL', None)
-
     c = {
+        'reply_to_email': reply_to_email,
         'brand': settings.SSO_BRAND,
-        'from_email': from_email,
         'email': user.primary_email(),
         'username': user.username,
         'domain': domain,
@@ -38,42 +44,37 @@ def send_access_denied_email(user, request,
     }
     # use the user language or the default language (en-us)
     language = user.language if user.language else settings.LANGUAGE_CODE
-    message, subject = i18n_email_msg_and_subj(c, email_template_name, subject_template_name, language)
-    user.email_user(subject, message, from_email)
+    return i18n_email_msg_and_subj(c, email_template_name, subject_template_name, language)
 
 
-def send_check_back_email(user, request,
+def get_access_denied_email_message(user, request, reply_to_email,
+                                    email_template_name='registration/email/access_denied_email.txt',
+                                    subject_template_name='registration/email/access_denied_subject.txt'
+                                    ):
+    return get_email_message(user, request, reply_to_email, email_template_name, subject_template_name)
+
+
+def send_check_back_email(user, request, reply_to_email,
                           email_template_name='registration/email/check_back_email.txt',
                           subject_template_name='registration/email/check_back_subject.txt'
                           ):
-    use_https = request.is_secure()
-    current_site = get_current_site(request)
-    site_name = settings.SSO_SITE_NAME
-    domain = current_site.domain
-
     from_email = settings.REGISTRATION.get('CONTACT_EMAIL', None)
-
-    c = {
-        'brand': settings.SSO_BRAND,
-        'from_email': from_email,
-        'email': user.primary_email(),
-        'username': user.username,
-        'domain': domain,
-        'site_name': site_name,
-        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-        'protocol': use_https and 'https' or 'http',
-    }
-    # use the user language or the default language (en-us)
-    language = user.language if user.language else settings.LANGUAGE_CODE
-    message, subject = i18n_email_msg_and_subj(c, email_template_name, subject_template_name, language)
+    message, subject = get_check_back_email_message(user, request, reply_to_email, email_template_name,
+                                                    subject_template_name)
     user.email_user(subject, message, from_email)
 
 
-def send_set_password_email(user, request, token_generator=default_pwd_reset_token_generator,
-                            from_email=None,
-                            email_template_name='registration/email/set_password_email.txt',
-                            subject_template_name='registration/email/set_password_subject.txt'
-                            ):
+def get_check_back_email_message(user, request, reply_to_email,
+                                 email_template_name='registration/email/check_back_email.txt',
+                                 subject_template_name='registration/email/check_back_subject.txt'
+                                 ):
+    return get_email_message(user, request, reply_to_email, email_template_name, subject_template_name)
+
+
+def get_set_password_email_message(user, request, token_generator=default_pwd_reset_token_generator,
+                                   email_template_name='registration/email/set_password_email.txt',
+                                   subject_template_name='registration/email/set_password_subject.txt'
+                                   ):
     use_https = request.is_secure()
     current_site = get_current_site(request)
     site_name = settings.SSO_SITE_NAME
@@ -92,8 +93,17 @@ def send_set_password_email(user, request, token_generator=default_pwd_reset_tok
     }
     # use the user language or the default language (en-us)
     language = user.language if user.language else settings.LANGUAGE_CODE
-    message, subject = i18n_email_msg_and_subj(c, email_template_name, subject_template_name, language)
-    user.email_user(subject, message, from_email)
+    return i18n_email_msg_and_subj(c, email_template_name, subject_template_name, language)
+
+
+def send_set_password_email(user, request, token_generator=default_pwd_reset_token_generator,
+                            from_email=None,
+                            email_template_name='registration/email/set_password_email.txt',
+                            subject_template_name='registration/email/set_password_subject.txt',
+                            **kwargs):
+    message, subject = get_set_password_email_message(user, request, token_generator, email_template_name,
+                                                      subject_template_name)
+    user.email_user(subject, message, from_email, **kwargs)
 
 
 def send_validation_email(registration_profile, request, token_generator=default_token_generator,
@@ -210,3 +220,18 @@ class RegistrationProfile(models.Model):
         return self.user.is_active or (self.date_registered > activation_expiration_date)
 
     activation_valid.boolean = True
+
+    def process(self, action=None):
+        if action == 'activate':
+            self.user.is_active = True
+            if not self.user.has_usable_password():
+                self.user.set_password(get_random_string(40))
+            self.user.save()
+        elif action == 'deny':
+            self.is_access_denied = True
+            self.user.is_active = False
+            self.save()
+            self.user.save()
+        elif action == 'check_back':
+            self.check_back = True
+            self.save()

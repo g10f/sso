@@ -137,7 +137,7 @@ class Client(AbstractBaseModel):
     scopes = models.CharField(_('scopes'), max_length=512, blank=True, default='openid profile email',
                               help_text=_(
                                   "Allowed space-delimited access token scopes ('openid', 'profile', 'email', 'role',"
-                                  " 'offline_access', 'address', 'phone', 'users', 'picture')"))
+                                  " 'offline_access', 'address', 'phone', 'users', 'picture', 'events')"))
     is_active = models.BooleanField(_('active'), default=True,
                                     help_text=_(
                                         'Designates whether this client should be treated as active. Unselect this '
