@@ -184,7 +184,7 @@ def update_user_registration(request, pk, template='registration/change_user_reg
                                         reply_to=[request.user.primary_email().email])
                 success_url = reverse('registration:user_registration_list') + "?" + request.GET.urlencode()
             else:
-                raise ValueError(f"Unknown action: {action}")
+                raise ValueError("Unknown action: %s" % action)
 
             messages.add_message(request, level=messages.SUCCESS, message=msg, fail_silently=True)
             return HttpResponseRedirect(success_url)
