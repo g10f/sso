@@ -224,8 +224,11 @@ class RegistrationProfile(models.Model):
     def process(self, action=None):
         if action == 'activate':
             self.user.is_active = True
+            self.is_access_denied = False
+            self.check_back = False
             if not self.user.has_usable_password():
                 self.user.set_password(get_random_string(40))
+            self.save()
             self.user.save()
         elif action == 'deny':
             self.is_access_denied = True

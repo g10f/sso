@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-09 11:13+0200\n"
+"POT-Creation-Date: 2019-09-29 11:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1161,6 +1161,15 @@ msgstr ""
 msgid "Send mail"
 msgstr ""
 
+msgid "Impersonate User"
+msgstr ""
+
+msgid "History"
+msgstr ""
+
+msgid "View on site"
+msgstr ""
+
 msgid "Logged out"
 msgstr ""
 
@@ -1375,15 +1384,6 @@ msgstr ""
 
 #, python-format
 msgid "Invalid token value: %(token)s."
-msgstr ""
-
-msgid "algorithm"
-msgstr ""
-
-msgid "salt"
-msgstr ""
-
-msgid "hash"
 msgstr ""
 
 msgid "created at"
@@ -1746,6 +1746,14 @@ msgstr ""
 msgid "No fields changed."
 msgstr ""
 
+#, python-format
+msgid "You are logged in as %s ."
+msgstr ""
+
+#, python-format
+msgid "There was an error %s"
+msgstr ""
+
 msgid "addressee"
 msgstr ""
 
@@ -1834,7 +1842,7 @@ msgstr ""
 
 msgid ""
 "Allowed space-delimited access token scopes ('openid', 'profile', 'email', "
-"'role', 'offline_access', 'address', 'phone', 'users', 'picture')"
+"'role', 'offline_access', 'address', 'phone', 'users', 'picture', 'events')"
 msgstr ""
 
 msgid ""
@@ -1869,6 +1877,9 @@ msgid "code_challenge"
 msgstr ""
 
 msgid "code_challenge_method"
+msgstr ""
+
+msgid "Nonce"
 msgstr ""
 
 msgid "access token"
@@ -2073,6 +2084,11 @@ msgstr ""
 msgid ""
 "Designates whether this organisation is live. Unselect this for "
 "organisations which are prelive."
+msgstr ""
+
+msgid ""
+"Designates whether the organisations can be selected by users in the "
+"registration and organisation change form."
 msgstr ""
 
 msgid "Maps"
@@ -2347,18 +2363,6 @@ msgstr ""
 msgid "Last modified by"
 msgstr ""
 
-msgid "Verified by"
-msgstr ""
-
-msgid "administrator who verified the user"
-msgstr ""
-
-msgid "Is verified"
-msgstr ""
-
-msgid "Designates if the user was verified by another administrator"
-msgstr ""
-
 msgid "Check back"
 msgstr ""
 
@@ -2374,9 +2378,6 @@ msgstr ""
 msgid ""
 "If you would like to tell us something about yourself, please do so in this "
 "box."
-msgstr ""
-
-msgid "verified by"
 msgstr ""
 
 msgid "date registered"
@@ -2498,6 +2499,12 @@ msgstr ""
 msgid "Find user"
 msgstr ""
 
+msgid "Activate user"
+msgstr ""
+
+msgid "Email Message"
+msgstr ""
+
 msgid "Registration closed"
 msgstr ""
 
@@ -2581,15 +2588,6 @@ msgstr ""
 msgid "The validation link was invalid, possibly because it had expired."
 msgstr ""
 
-msgid "Verified Users"
-msgstr ""
-
-msgid "Unverified Users"
-msgstr ""
-
-msgid "verified filter"
-msgstr ""
-
 msgid "Check Back Required"
 msgstr ""
 
@@ -2609,7 +2607,8 @@ msgid "access denied filter"
 msgstr ""
 
 #, python-format
-msgid "Access denied for %(obj)s."
+msgid ""
+"The %(name)s \"%(obj)s\" was saved successfully. You may edit it again below."
 msgstr ""
 
 #, python-format
@@ -2617,6 +2616,18 @@ msgid "The %(name)s \"%(obj)s\" was saved successfully."
 msgstr ""
 
 msgid "Edit registration"
+msgstr ""
+
+msgid "Mark user for check back"
+msgstr ""
+
+msgid "Deny user"
+msgstr ""
+
+msgid "Mark user for check back and send email"
+msgstr ""
+
+msgid "Deny user and send email"
 msgstr ""
 
 msgctxt "Organisation Type"
