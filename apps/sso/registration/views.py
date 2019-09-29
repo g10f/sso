@@ -198,7 +198,7 @@ def update_user_registration(request, pk, template='registration/change_user_reg
                                 "id").values_list('id', flat=True)}
 
     data = {'form': registrationprofile_form, 'app_roles_by_profile': app_roles_by_profile,
-            'media': registrationprofile_form.media, 'title': _('Edit registration')}
+            'media': registrationprofile_form.media, 'instance': registrationprofile, 'title': _('Edit registration')}
     return render(request, template, data)
 
 
