@@ -168,17 +168,17 @@ def update_user_registration(request, pk, template='registration/change_user_reg
             action = request.POST.get("action")
             registrationprofile_form.save()
             if action == "continue":
-                msg = _('The %(name)s "%(obj)s" was changed successfully. You may edit it again below.') % msg_dict
+                msg = _('The %(name)s "%(obj)s" was saved successfully. You may edit it again below.') % msg_dict
                 success_url = reverse('registration:update_user_registration', args=[pk])
             elif action == "save":
-                msg = _('The %(name)s "%(obj)s" was changed successfully.') % msg_dict
+                msg = _('The %(name)s "%(obj)s" was saved successfully.') % msg_dict
                 success_url = reverse('registration:user_registration_list') + "?" + request.GET.urlencode()
             elif action in ["deny", "check_back"]:
-                msg = _('The %(name)s "%(obj)s" was changed successfully.') % msg_dict
+                msg = _('The %(name)s "%(obj)s" was saved successfully.') % msg_dict
                 success_url = reverse('registration:process_user_registration',
                                       kwargs={'pk': pk, 'action': action}) + "?" + request.GET.urlencode()
             elif action == "activate":
-                msg = _('The %(name)s "%(obj)s" was changed successfully.') % msg_dict
+                msg = _('The %(name)s "%(obj)s" was saved successfully.') % msg_dict
                 registrationprofile.process(action)
                 send_set_password_email(registrationprofile.user, request,
                                         reply_to=[request.user.primary_email().email])
@@ -244,6 +244,10 @@ class RegistrationSendMailFormView(FormView):
         'check_back': get_check_back_email_message,
         'deny': get_access_denied_email_message
     }
+    action_msgs = {
+        'check_back': _("Mark user for check back"),
+        'deny': _("Deny user")
+    }
     success_url = reverse_lazy('registration:user_registration_list')
     template_name = 'registration/process_registration.html'
 
@@ -260,7 +264,7 @@ class RegistrationSendMailFormView(FormView):
         # check if admin has access to the specific user
         if not request.user.has_user_access(self.instance.user):
             raise PermissionDenied
-        self.extra_context = {'action': self.kwargs['action']}
+        self.extra_context = {'action_msg': self.action_msgs[self.kwargs['action']]}
         return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
