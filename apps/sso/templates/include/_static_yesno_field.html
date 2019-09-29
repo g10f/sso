@@ -1,0 +1,10 @@
+<div class="form-group">
+    <label class="control-label">{{ field.label }}</label>
+    <div class="dwbn-form-control">
+        <p class="form-control-static">
+            <span data-toggle="tooltip"
+                  title="{{ field.help_text }}"
+                  class="glyphicon glyphicon-{% if field.value %}check{% else %}unchecked{% endif %}"></span>
+        </p>
+    </div>
+</div>

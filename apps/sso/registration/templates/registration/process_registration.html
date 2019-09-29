@@ -8,7 +8,7 @@
         <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
         <li><a href="{% url 'registration:user_registration_list' %}">{% trans 'User Registration List' %}</a></li>
         <li><a href="{% url 'registration:update_user_registration' form.instance.pk %}">{{ form.instance }}</a></li>
-        <li class="active">{{ action_msg }}</li>
+        <li class="active">{{ action_breadcrumb }}</li>
     </ol>
 {% endblock breadcrumb %}
 
@@ -36,7 +36,7 @@
         {% include 'include/_form_snippet.html' %}
         <div class="form-group">
             <div class="dwbn-form-submit">
-                <button class="btn btn-primary">{{ action_msg }}</button>
+                <button class="btn btn-primary">{{ action_txt }}</button>
                 {% trans 'or' %}
                 <a class="btn btn-default"
                    href="{% url 'registration:update_user_registration' form.instance.pk %}">{% trans 'Cancel' %}</a>

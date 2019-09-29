@@ -1,6 +1,10 @@
 {% extends "base_form.html" %}
 {% load i18n static %}
 
+{% block extrascript %}
+    {{ media }}
+{% endblock extrascript %}
+
 {% block breadcrumb %}
     <ol class="breadcrumb">
         <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
@@ -64,11 +68,11 @@
                 <span class="help-block">{% trans 'A second person who already has an account and can recommend the user.' %}</span>
                 {% include 'registration/include/_user_search_field.html' with field=form.known_person2_first_name %}
                 {% include 'registration/include/_user_search_field.html' with field=form.known_person2_last_name %}
-                <span class="help-block">{% trans 'Registration processing information' %}</span>
-                {% include 'include/_field.html' with field=form.check_back %}
-                {% include 'include/_field.html' with field=form.is_access_denied %}
                 {% include 'include/_user_field.html' with field=form.last_modified_by_user %}
                 {% include 'accounts/includes/_profiles_field.html' with field=form.role_profiles %}
+                <span class="help-block">{% trans 'Registration processing information' %}</span>
+                {% include 'include/_static_yesno_field.html' with field=form.check_back %}
+                {% include 'include/_static_yesno_field.html' with field=form.is_access_denied %}
             </div>
 
             <div class="tab-pane" id="app_roles">

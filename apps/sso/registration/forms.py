@@ -144,8 +144,6 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
         self.registrationprofile.known_person1_last_name = cd['known_person1_last_name']
         self.registrationprofile.known_person2_first_name = cd['known_person2_first_name']
         self.registrationprofile.known_person2_last_name = cd['known_person2_last_name']
-        self.registrationprofile.check_back = cd['check_back']
-        self.registrationprofile.is_access_denied = cd['is_access_denied']
 
         self.registrationprofile.save()
 

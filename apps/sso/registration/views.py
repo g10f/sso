@@ -196,7 +196,7 @@ def update_user_registration(request, pk, template='registration/change_user_reg
                                 "id").values_list('id', flat=True)}
 
     data = {'form': registrationprofile_form, 'app_roles_by_profile': app_roles_by_profile,
-            'title': _('Edit registration')}
+            'media': registrationprofile_form.media, 'title': _('Edit registration')}
     return render(request, template, data)
 
 
@@ -244,9 +244,13 @@ class RegistrationSendMailFormView(FormView):
         'check_back': get_check_back_email_message,
         'deny': get_access_denied_email_message
     }
-    action_msgs = {
+    action_breadcrumbs = {
         'check_back': _("Mark user for check back"),
         'deny': _("Deny user")
+    }
+    action_txts = {
+        'check_back': _("Mark user for check back and send email"),
+        'deny': _("Deny user and send email")
     }
     success_url = reverse_lazy('registration:user_registration_list')
     template_name = 'registration/process_registration.html'
@@ -264,7 +268,8 @@ class RegistrationSendMailFormView(FormView):
         # check if admin has access to the specific user
         if not request.user.has_user_access(self.instance.user):
             raise PermissionDenied
-        self.extra_context = {'action_msg': self.action_msgs[self.kwargs['action']]}
+        self.extra_context = {'action_txt': self.action_txts[self.kwargs['action']],
+                              'action_breadcrumb': self.action_breadcrumbs[self.kwargs['action']]}
         return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
