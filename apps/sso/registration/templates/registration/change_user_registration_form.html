@@ -112,9 +112,13 @@
                     <button name="action" value="save" class="btn btn-default">{% trans 'Save' %}</button>
                     <button class="btn btn-default"
                             name="action" value="continue">{% trans 'Save and continue editing' %}</button>
-                    <button name="action" value="deny" class="btn btn-default">{% trans 'Save and deny' %}</button>
-                    <button class="btn btn-default"
-                            name="action" value="check_back">{% trans 'Save and mark for check back' %}</button>
+                    {% if not instance.is_access_denied %}
+                        <button name="action" value="deny" class="btn btn-default">{% trans 'Save and deny' %}</button>
+                    {% endif %}
+                    {% if not instance.check_back %}
+                        <button class="btn btn-default"
+                                name="action" value="check_back">{% trans 'Save and mark for check back' %}</button>
+                    {% endif %}
                     <button name="action" value="activate" class="btn btn-primary">{% trans 'Save and activate' %}</button>
                 </div>
             </div>
