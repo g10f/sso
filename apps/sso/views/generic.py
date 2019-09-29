@@ -22,6 +22,7 @@ class BaseFilter(object):
     select_all_text = 'All Choices'
     all_remove = ''
     remove = 'p'
+    default = None
 
     def map_to_database(self, qs_name, value):
         """
@@ -35,11 +36,11 @@ class BaseFilter(object):
     def get_filter_list(self):
         raise NotImplemented
 
-    def apply(self, view, qs, default=''):
+    def apply(self, view, qs):
         """
         filter the queryset with the selected value from the HTTP query parameter
         """
-        value = self.get_value_from_query_param(view, default)
+        value = self.get_value_from_query_param(view, self.default)
         if value:
             if self.qs_name is None:
                 qs_name = self.name
@@ -143,6 +144,7 @@ class ViewChoicesFilter(BaseFilter):
 
         filter_list = [main.FilterItem(item) for item in self.choices]
         return {
+            'default': self.default,
             'selected': getattr(view, self.name), 'list': filter_list, 'select_text': self.select_text,
             'select_all_text': self.select_all_text,
             'param_name': self.name, 'all_remove': self.all_remove, 'remove': self.remove,
