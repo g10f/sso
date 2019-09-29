@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-06-09 11:13+0200\n"
+"POT-Creation-Date: 2019-09-29 11:33+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1237,6 +1237,15 @@ msgstr ""
 msgid "Send mail"
 msgstr "E-Mail Senden"
 
+msgid "Impersonate User"
+msgstr "Auftreten als User"
+
+msgid "History"
+msgstr ""
+
+msgid "View on site"
+msgstr ""
+
 msgid "Logged out"
 msgstr ""
 
@@ -1465,15 +1474,6 @@ msgstr ""
 
 #, python-format
 msgid "Invalid token value: %(token)s."
-msgstr ""
-
-msgid "algorithm"
-msgstr ""
-
-msgid "salt"
-msgstr ""
-
-msgid "hash"
 msgstr ""
 
 msgid "created at"
@@ -1844,6 +1844,14 @@ msgstr ""
 msgid "No fields changed."
 msgstr ""
 
+#, python-format
+msgid "You are logged in as %s ."
+msgstr ""
+
+#, python-format
+msgid "There was an error %s"
+msgstr ""
+
 msgid "addressee"
 msgstr "Name / Adressat"
 
@@ -1934,7 +1942,7 @@ msgstr ""
 
 msgid ""
 "Allowed space-delimited access token scopes ('openid', 'profile', 'email', "
-"'role', 'offline_access', 'address', 'phone', 'users', 'picture')"
+"'role', 'offline_access', 'address', 'phone', 'users', 'picture', 'events')"
 msgstr ""
 
 msgid ""
@@ -1971,6 +1979,9 @@ msgid "code_challenge"
 msgstr ""
 
 msgid "code_challenge_method"
+msgstr ""
+
+msgid "Nonce"
 msgstr ""
 
 msgid "access token"
@@ -2195,6 +2206,11 @@ msgid ""
 msgstr ""
 "Legt fest, ob diese Organisation live ist. Deaktiviere dies für "
 "Organisationen die PreLive sind."
+
+msgid ""
+"Designates whether the organisations can be selected by users in the "
+"registration and organisation change form."
+msgstr "Legt fest, ob diese Organisation vom User ausgewählt werden kann."
 
 msgid "Maps"
 msgstr ""
@@ -2470,18 +2486,6 @@ msgstr "Über mich"
 msgid "Last modified by"
 msgstr "Letzte Änderung durch"
 
-msgid "Verified by"
-msgstr "Überprüft durch"
-
-msgid "administrator who verified the user"
-msgstr "Administrator, der den Benutzer geprüft hat"
-
-msgid "Is verified"
-msgstr "Überprüft"
-
-msgid "Designates if the user was verified by another administrator"
-msgstr "Gibt an, ob die Daten von einem Administrator geprüft wurden."
-
 msgid "Check back"
 msgstr "Rücksprache"
 
@@ -2498,9 +2502,6 @@ msgid ""
 "If you would like to tell us something about yourself, please do so in this "
 "box."
 msgstr "Wenn Du möchtest, erzähle uns etwas über Dich."
-
-msgid "verified by"
-msgstr "überprüft durch"
 
 msgid "date registered"
 msgstr "Registrierungsdatum"
@@ -2631,6 +2632,12 @@ msgstr "Bestätige Deine E-Mail Adresse auf %(site_name)s"
 msgid "Find user"
 msgstr "Benutzer finden"
 
+msgid "Activate user"
+msgstr "Aktiviere Benutzer"
+
+msgid "Email Message"
+msgstr "E-Mail Nachricht"
+
 msgid "Registration closed"
 msgstr "Registrierung geschlossen"
 
@@ -2730,15 +2737,6 @@ msgstr ""
 "Der Link zum Bestätigen Deiner E-Mail Adresse ist ungültig, wahrscheinlich "
 "weil er abgelaufen ist."
 
-msgid "Verified Users"
-msgstr "Überprüfte Benutzer"
-
-msgid "Unverified Users"
-msgstr "Nicht Überprüfte Benutzer"
-
-msgid "verified filter"
-msgstr "\"überprüft\" Filter"
-
 msgid "Check Back Required"
 msgstr "Rücksprache erforderlich"
 
@@ -2758,8 +2756,11 @@ msgid "access denied filter"
 msgstr "\"Zugriff verweigert\" Filter"
 
 #, python-format
-msgid "Access denied for %(obj)s."
-msgstr "Zugriff verweigert für %(obj)s."
+msgid ""
+"The %(name)s \"%(obj)s\" was saved successfully. You may edit it again below."
+msgstr ""
+"%(name)s \"%(obj)s\" wurde erfolgreich gespeichert und kann weiter "
+"bearbeitet werden."
 
 #, python-format
 msgid "The %(name)s \"%(obj)s\" was saved successfully."
@@ -2767,6 +2768,18 @@ msgstr "%(name)s \"%(obj)s\" wurde erfolgreich gespeichert."
 
 msgid "Edit registration"
 msgstr "Registrierung bearbeiten"
+
+msgid "Mark user for check back"
+msgstr "\"Rücksprache erforderlich\" markieren"
+
+msgid "Deny user"
+msgstr "Zugriff verweigern"
+
+msgid "Mark user for check back and send email"
+msgstr "\"Rücksprache erforderlich\" markieren und E-Mail senden"
+
+msgid "Deny user and send email"
+msgstr "Zugriff verweigern und E-Mail senden"
 
 msgctxt "Organisation Type"
 msgid "Group"

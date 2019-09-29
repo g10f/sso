@@ -126,7 +126,7 @@ class UserList(ListView):
         qs = CenterFilter().apply(self, qs)
         qs = ApplicationRoleFilter().apply(self, qs)
         qs = RoleProfileFilter().apply(self, qs)
-        qs = IsActiveFilter().apply(self, qs, default='1')
+        qs = IsActiveFilter().apply(self, qs)
 
         # Set ordering.
         ordering = self.cl.get_ordering(self.request, qs)
@@ -233,7 +233,7 @@ class AppAdminUserList(ListView):
         qs = CenterFilter().apply(self, qs)
         qs = ApplicationRoleFilter().apply(self, qs)
         qs = RoleProfileFilter().apply(self, qs)
-        qs = IsActiveFilter().apply(self, qs, default='1')
+        qs = IsActiveFilter().apply(self, qs)
 
         # Set ordering.
         ordering = self.cl.get_ordering(self.request, qs)
