@@ -25,6 +25,7 @@ class IsActiveFilter(ViewChoicesFilter):
     choices = (('1', _('Active Users')), ('2', _('Inactive Users')))
     select_text = _('active/inactive')
     select_all_text = _("All")
+    default = '1'
 
     def map_to_database(self, qs_name, value):
         return {qs_name: True if (value.pk == "1") else False}

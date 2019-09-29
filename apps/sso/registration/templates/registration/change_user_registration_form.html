@@ -1,6 +1,10 @@
 {% extends "base_form.html" %}
 {% load i18n static %}
 
+{% block extrascript %}
+    {{ media }}
+{% endblock extrascript %}
+
 {% block breadcrumb %}
     <ol class="breadcrumb">
         <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
@@ -64,11 +68,11 @@
                 <span class="help-block">{% trans 'A second person who already has an account and can recommend the user.' %}</span>
                 {% include 'registration/include/_user_search_field.html' with field=form.known_person2_first_name %}
                 {% include 'registration/include/_user_search_field.html' with field=form.known_person2_last_name %}
-                <span class="help-block">{% trans 'Registration processing information' %}</span>
-                {% include 'include/_field.html' with field=form.check_back %}
-                {% include 'include/_field.html' with field=form.is_access_denied %}
                 {% include 'include/_user_field.html' with field=form.last_modified_by_user %}
                 {% include 'accounts/includes/_profiles_field.html' with field=form.role_profiles %}
+                <span class="help-block">{% trans 'Registration processing information' %}</span>
+                {% include 'include/_static_yesno_field.html' with field=form.check_back %}
+                {% include 'include/_static_yesno_field.html' with field=form.is_access_denied %}
             </div>
 
             <div class="tab-pane" id="app_roles">
@@ -105,13 +109,17 @@
                         <a class="btn btn-default"
                            href="{% url 'registration:delete_user_registration' form.user.pk %}">{% trans 'Delete' %}</a>
                     {% endif %}
-                    <button class="btn btn-default" name="_save">{% trans 'Save' %}</button>
+                    <button name="action" value="save" class="btn btn-default">{% trans 'Save' %}</button>
                     <button class="btn btn-default"
-                            name="_continue">{% trans 'Save and continue editing' %}</button>
-                    <button class="btn btn-default" name="_deny">{% trans 'Save and deny' %}</button>
-                    <button class="btn btn-default"
-                            name="_check_back">{% trans 'Save and mark for check back' %}</button>
-                    <button class="btn btn-primary">{% trans 'Save and activate' %}</button>
+                            name="action" value="continue">{% trans 'Save and continue editing' %}</button>
+                    {% if not instance.is_access_denied %}
+                        <button name="action" value="deny" class="btn btn-default">{% trans 'Save and deny' %}</button>
+                    {% endif %}
+                    {% if not instance.check_back %}
+                        <button class="btn btn-default"
+                                name="action" value="check_back">{% trans 'Save and mark for check back' %}</button>
+                    {% endif %}
+                    <button name="action" value="activate" class="btn btn-primary">{% trans 'Save and activate' %}</button>
                 </div>
             </div>
         {% endif %}
