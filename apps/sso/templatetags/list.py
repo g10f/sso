@@ -8,9 +8,13 @@ DOT = '.'
 
 
 @register.simple_tag(takes_context=True)
-def selected(context, param_name, param_value):
-    if context.request.GET.get(param_name) == str(param_value):
-        return 'selected'
+def selected(context, param_name, param_value, default=None):
+    if param_name in context.request.GET:
+        if context.request.GET[param_name] == str(param_value):
+            return 'selected'
+    else:
+        if default is not None and default == str(param_value):
+            return 'selected'
     return ''
 
 

@@ -65,6 +65,7 @@ class CheckBackFilter(ViewChoicesFilter):
     choices = (('1', _('Check Back Required')), ('2', _('No Check Back Required')))
     select_text = _('check back filter')
     select_all_text = _("All")
+    default = '2'
 
     def map_to_database(self, qs_name, value):
         return {qs_name: True if (value.pk == "1") else False}
@@ -75,6 +76,7 @@ class IsAccessDeniedFilter(ViewChoicesFilter):
     choices = (('1', _('Access Denied')), ('2', _('Access Not Denied')))
     select_text = _('access denied filter')
     select_all_text = _("All")
+    default = '2'
 
     def map_to_database(self, qs_name, value):
         return {qs_name: True if (value.pk == "1") else False}
@@ -107,8 +109,8 @@ class UserRegistrationList(ListView):
         # apply filters
         qs = RegistrationSearchFilter().apply(self, qs)
         qs = CountryFilter().apply(self, qs)
-        qs = CheckBackFilter().apply(self, qs, default='2')
-        qs = IsAccessDeniedFilter().apply(self, qs, default='2')
+        qs = CheckBackFilter().apply(self, qs)
+        qs = IsAccessDeniedFilter().apply(self, qs)
 
         ordering = self.cl.get_ordering(self.request, qs)
         qs = qs.order_by(*ordering)

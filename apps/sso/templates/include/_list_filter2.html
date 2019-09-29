@@ -4,7 +4,7 @@
         <option value="-" {% selected filter.param_name '' %}
                 data-url="{% query_string cl filter.param_name '' filter.all_remove %}">{{ filter.select_all_text }}</option>
         {% for item in filter.list %}
-            <option {% selected filter.param_name item.pk %} value="{{ item.pk }}"
+            <option {% selected filter.param_name item.pk filter.default %} value="{{ item.pk }}"
                                                              data-url="{% query_string cl filter.param_name item.pk filter.remove %}">{{ item }}</option>
         {% endfor %}
     </select>
