@@ -104,6 +104,9 @@ def get_session_auth_hash(user, client=None):
         return ""
     key_salt = HASH_SESSION_KEY
     data = user.password
+    # deactivate session when user was deactivated
+    if not user.is_active:
+        data += "0"
     if client is not None:
         data += client.client_secret
     return salted_hmac(key_salt, data).hexdigest()
