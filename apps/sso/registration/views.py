@@ -268,7 +268,7 @@ class RegistrationSendMailFormView(FormView):
     def dispatch(self, request, *args, **kwargs):
         self.instance = get_object_or_404(RegistrationProfile, pk=self.kwargs['pk'])
         # check if admin has access to the specific user
-        if not request.user.has_user_access(self.instance.user):
+        if not request.user.has_user_access(self.instance.user.uuid):
             raise PermissionDenied
         self.extra_context = {'action_txt': self.action_txts[self.kwargs['action']],
                               'action_breadcrumb': self.action_breadcrumbs[self.kwargs['action']]}
