@@ -22,7 +22,7 @@ from sso.accounts.email import send_account_created_email
 from sso.accounts.forms import UserAddForm, UserProfileForm, UserEmailForm, AppAdminUserProfileForm, CenterProfileForm
 from sso.accounts.models import User, UserEmail, ApplicationRole
 from sso.auth.decorators import admin_login_required
-from sso.forms.helpers import ChangedDataList, log_change, ErrorList
+from sso.forms.helpers import ChangedDataList, log_change, ErrorList, get_media_errors_and_active_form
 from sso.oauth2.models import allowed_hosts
 from sso.organisations.models import Organisation, is_validation_period_active
 from sso.utils.url import get_safe_redirect_uri
@@ -209,7 +209,8 @@ class AppAdminUserList(ListView):
 
     @property
     def list_display(self):
-        return ['username', 'picture', 'last_name', _('primary email'), OrganisationField(), LastLogin(), 'date_joined']
+        return ['username', 'picture', 'last_name', _('primary email'), OrganisationField(), LastLogin(),
+                'date_joined']
 
     def get_queryset(self):
         """
@@ -407,20 +408,7 @@ def _update_standard_user(request, user, app_roles_by_profile, template='account
     user_email_inline_formset.forms += [user_email_inline_formset.empty_form]
     formsets = [user_email_inline_formset]
 
-    media = form.media
-    for fs in formsets:
-        media = media + fs.media
-
-    errors = ErrorList(form, formsets)
-    active = ''
-    if errors:
-        if not form.is_valid():
-            active = 'object'
-        else:  # set the first formset with an error as active
-            for formset in formsets:
-                if not formset.is_valid():
-                    active = formset.prefix
-                    break
+    media, errors, active = get_media_errors_and_active_form(form, formsets)
 
     if (user.last_login is None) or (user.last_login - user.date_joined) < timedelta(seconds=1):
         logged_in = False

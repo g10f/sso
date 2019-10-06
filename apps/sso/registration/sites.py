@@ -1,10 +1,10 @@
 from django.urls import path
 from django.views.generic import TemplateView
 from . import default_username_generator
-from .forms import UserSelfRegistrationForm, UserSelfRegistrationFormPreview
+from .forms import UserSelfRegistrationForm
 from .tokens import default_token_generator
 from .views import validation_confirm, UserRegistrationList, UserRegistrationDeleteView, \
-    update_user_registration, RegistrationSendMailFormView  # , register
+    update_user_registration, RegistrationSendMailFormView, UserSelfRegistrationFormPreview  # , register
 
 
 class RegistrationSite(object):

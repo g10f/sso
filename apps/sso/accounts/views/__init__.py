@@ -31,7 +31,7 @@ from sso.accounts.models import User, UserAddress, UserPhoneNumber, UserEmail, g
 from sso.accounts.tokens import email_confirm_token_generator
 from sso.auth import update_session_auth_hash, auth_login, is_otp_login
 from sso.auth.views import get_token_url
-from sso.forms.helpers import ErrorList, ChangedDataList, log_change
+from sso.forms.helpers import ChangedDataList, log_change, get_media_errors_and_active_form
 from sso.oauth2.models import allowed_hosts
 from sso.organisations.models import is_validation_period_active
 from sso.utils.url import get_safe_redirect_uri, update_url, REDIRECT_URI_FIELD_NAME
@@ -149,7 +149,8 @@ def confirm_email(request, uidb64, token, post_reset_redirect=None):
 
     if user_email is not None and user_email.confirmed:
         messages.info(request,
-                      _('Your email address \"%(email)s\" was already confirmed successfully.') % {'email': user_email})
+                      _('Your email address \"%(email)s\" was already confirmed successfully.') % {
+                          'email': user_email})
     elif user_email is not None and email_confirm_token_generator.check_token(user_email, token):
         user_email.confirmed = True
         user_email.save()
@@ -189,7 +190,8 @@ def emails(request):
             user_email = UserEmail.objects.get(id=request.POST['set_primary'])
             user_email.primary = True
             user_email.save()
-            UserEmail.objects.filter(user=user_email.user, primary=True).exclude(pk=user_email.pk).update(primary=False)
+            UserEmail.objects.filter(user=user_email.user, primary=True).exclude(pk=user_email.pk).update(
+                primary=False)
             messages.success(request, _("The email \"%(email)s\" was changed successfully.") % {'email': user_email})
             return redirect(post_change_redirect)
         else:
@@ -329,21 +331,7 @@ def profile_with_address_and_phone(request, redirect_uri=None):
 
     formsets = [address_inline_formset, phonenumber_inline_formset]
 
-    media = form.media
-    for fs in formsets:
-        media = media + fs.media
-
-    errors = ErrorList(form, formsets)
-    active = ''
-    if errors:
-        if not form.is_valid():
-            active = 'object'
-        else:  # set the first formset with an error as active
-            for formset in formsets:
-                if not formset.is_valid():
-                    active = formset.prefix
-                    break
-
+    media, errors, active = get_media_errors_and_active_form(form, formsets)
     try:
         user_organisation = user.organisations.first()
     except ObjectDoesNotExist:
@@ -377,7 +365,8 @@ def get_start_app(uidb64):
         uid = urlsafe_base64_decode(uidb64).decode()
         applicationrole_ids = get_applicationrole_ids(uid, Q(application__redirect_to_after_first_login=True))
         if applicationrole_ids:
-            app = Application.objects.distinct().filter(applicationrole__in=applicationrole_ids, is_active=True).first()
+            app = Application.objects.distinct().filter(applicationrole__in=applicationrole_ids,
+                                                        is_active=True).first()
             if app is not None and app.url:
                 return app
     except (TypeError, ValueError, OverflowError) as e:
