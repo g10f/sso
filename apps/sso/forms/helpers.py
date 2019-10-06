@@ -4,6 +4,7 @@ from base64 import b64decode
 from mimetypes import guess_extension
 
 import reversion
+
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
@@ -80,6 +81,24 @@ class ErrorList(DjangoErrorList):
                 self.extend(inline_formset.non_form_errors())
                 for errors_in_inline_form in inline_formset.errors:
                     self.extend(errors_in_inline_form.values())
+
+
+def get_media_errors_and_active_form(form, formsets):
+    media = form.media
+    for fs in formsets:
+        media = media + fs.media
+
+    errors = ErrorList(form, formsets)
+    active = ''
+    if errors:
+        if not form.is_valid():
+            active = 'object'
+        else:  # set the first formset with an error as active
+            for formset in formsets:
+                if not formset.is_valid():
+                    active = formset.prefix
+                    break
+    return media, errors, active
 
 
 class ChangedDataList(list):

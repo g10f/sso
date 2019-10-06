@@ -5,15 +5,12 @@ import datetime
 import logging
 
 import pytz
-from formtools.preview import FormPreview
 
 from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ObjectDoesNotExist
-from django.db import transaction
 from django.forms.models import model_to_dict
-from django.shortcuts import redirect
 from django.utils.text import capfirst
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
@@ -23,7 +20,7 @@ from sso.forms import bootstrap, mixins, BLANK_CHOICE_DASH
 from sso.forms.helpers import clean_base64_picture
 from sso.organisations.models import is_validation_period_active
 from . import default_username_generator
-from .models import RegistrationProfile, send_validation_email
+from .models import RegistrationProfile
 
 logger = logging.getLogger(__name__)
 
@@ -265,24 +262,6 @@ class UserSelfRegistrationForm(forms.Form):
         registration_profile.known_person2_last_name = data['known_person2_last_name']
         registration_profile.save()
         return registration_profile
-
-
-class UserSelfRegistrationFormPreview(FormPreview):
-    form_template = 'registration/registration_form.html'
-    preview_template = 'registration/registration_preview.html'
-
-    def get_context(self, request, form):
-        """Context for template rendering."""
-        context = super().get_context(request, form)
-        context.update({'site_name': settings.SSO_SITE_NAME, 'max_file_size': User.MAX_PICTURE_SIZE})
-        return context
-
-    @transaction.atomic
-    def done(self, request, cleaned_data):
-        registration_profile = self.form.save_data(cleaned_data)
-        send_validation_email(registration_profile, request)
-
-        return redirect('registration:registration_done')
 
 
 class SendMailForm(forms.Form):

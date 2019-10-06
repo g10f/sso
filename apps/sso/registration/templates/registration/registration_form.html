@@ -5,6 +5,7 @@
     <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     <script src="{% url 'jsi18n' %}"></script>
     <script src="{% static "js/base64_image-1.0.0.js" %}"></script>
+     {{ media }}
 {% endblock extrascript %}
 
 {% block title %}{% trans 'Register for an account' %}{% endblock %}

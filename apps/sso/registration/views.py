@@ -1,16 +1,20 @@
+from formtools.preview import FormPreview
+
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import permission_required
 from django.core.exceptions import PermissionDenied
+from django.db import transaction
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404, resolve_url
+from django.shortcuts import render, get_object_or_404, resolve_url, redirect
 from django.template.response import TemplateResponse
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_text
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import DeleteView, FormView
-from sso.accounts.models import ApplicationRole
+from sso.accounts.models import ApplicationRole, User
 from sso.auth.decorators import admin_login_required
 from sso.organisations.models import is_validation_period_active_for_user, OrganisationCountry
 from sso.signals import user_registration_completed
@@ -18,8 +22,27 @@ from sso.views import main
 from sso.views.generic import SearchFilter, ViewChoicesFilter, ViewQuerysetFilter, ListView
 from .forms import RegistrationProfileForm, SendMailForm
 from .models import RegistrationProfile, RegistrationManager, get_check_back_email_message, \
-    get_access_denied_email_message, send_set_password_email
+    get_access_denied_email_message, send_set_password_email, send_validation_email
 from .tokens import default_token_generator
+
+
+class UserSelfRegistrationFormPreview(FormPreview):
+    form_template = 'registration/registration_form.html'
+    preview_template = 'registration/registration_preview.html'
+
+    def get_context(self, request, form):
+        """Context for template rendering."""
+        context = super().get_context(request, form)
+        context.update({'site_name': settings.SSO_SITE_NAME, 'max_file_size': User.MAX_PICTURE_SIZE,
+                        'media': form.media})
+        return context
+
+    @transaction.atomic
+    def done(self, request, cleaned_data):
+        registration_profile = self.form.save_data(cleaned_data)
+        send_validation_email(registration_profile, request)
+
+        return redirect('registration:registration_done')
 
 
 class UserRegistrationDeleteView(DeleteView):
