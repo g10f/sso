@@ -117,9 +117,25 @@ class ClientManager(AbstractBaseModelManager):
 
         return hosts
 
+    def get_post_logout_redirect_uris(self):
+        post_logout_redirect_uris = cache.get('post_logout_redirect_uris')
+        if post_logout_redirect_uris is None:
+            post_logout_redirect_uris = set()
+            for client in self.filter(is_active=True):
+                for post_logout_redirect_uri in client.post_logout_redirect_uris.split():
+                    if post_logout_redirect_uri:
+                        post_logout_redirect_uris.add(post_logout_redirect_uri)
+            cache.set('post_logout_redirect_uris', post_logout_redirect_uris)
+
+        return post_logout_redirect_uris
+
 
 def allowed_hosts():
     return Client.objects.get_allowed_hosts()
+
+
+def post_logout_redirect_uris():
+    return Client.objects.get_post_logout_redirect_uris()
 
 
 class Client(AbstractBaseModel):
@@ -127,6 +143,7 @@ class Client(AbstractBaseModel):
     application = models.ForeignKey(Application, on_delete=models.SET_NULL, verbose_name=_('application'), blank=True,
                                     null=True)
     redirect_uris = models.TextField(_('redirect uris'), blank=True)
+    post_logout_redirect_uris = models.TextField(_('post logout redirect uris'), blank=True)
     default_redirect_uri = models.CharField(_('default redirect uri'), max_length=2047, blank=True)
     client_secret = models.CharField(_('client secret'), max_length=2047, blank=True, default=get_default_secret)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, verbose_name=_('user'), null=True,

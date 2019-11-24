@@ -250,7 +250,7 @@ POSTGIS_VERSION = (2, 2, 1)
 
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = reverse_lazy('auth:login')
-LOGOUT_URL = reverse_lazy('accounts:logout')
+LOGOUT_URL = reverse_lazy('auth:logout')
 AUTH_USER_MODEL = 'accounts.User'
 
 REGISTRATION = {

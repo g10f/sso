@@ -37,8 +37,8 @@ class ClientAdminForm(forms.ModelForm):
 class ClientAdmin(admin.ModelAdmin):
     list_display = ('name', 'uuid', 'application', 'type', 'user', 'is_active')
     list_filter = ('is_active', 'type', 'is_trustworthy', 'application')
-    fields = ('application', 'type', 'name', 'uuid', 'client_secret', 'redirect_uris', 'scopes', 'user', 'notes',
-              'is_active', 'last_modified', 'is_trustworthy', 'force_using_pkce')
+    fields = ('application', 'type', 'name', 'uuid', 'client_secret', 'redirect_uris', 'post_logout_redirect_uris',
+              'scopes', 'user', 'notes', 'is_active', 'last_modified', 'is_trustworthy', 'force_using_pkce')
     readonly_fields = ('last_modified',)
     list_select_related = ('application', 'user')
     form = ClientAdminForm
