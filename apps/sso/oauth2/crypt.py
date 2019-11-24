@@ -36,7 +36,7 @@ def make_jwt(payload, max_age=MAX_AGE, algorithm="RS256"):
     return force_text(bytes_string)
 
 
-def loads_jwt(jwt, algorithm="RS256", verify=True):
+def loads_jwt(jwt, algorithm="RS256", verify=True, options=None):
     """
     Reverse of make_jwt(), raises InvalidTokenError if something fails.
     """
@@ -46,5 +46,7 @@ def loads_jwt(jwt, algorithm="RS256", verify=True):
         key = settings.SECRET_KEY
     else:
         raise NotImplementedError('Algorithm %s not supported', algorithm)
+    if options is None:
+        options = {"verify_aud": False, "require_exp": True, "require_iat": True}
 
-    return decode(jwt, algorithms=[algorithm], key=key, verify=verify, options={"verify_aud": False, "require_exp": True, "require_iat": True})
+    return decode(jwt, algorithms=[algorithm], key=key, verify=verify, options=options)
