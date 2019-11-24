@@ -1,5 +1,6 @@
 import logging
 from urllib.parse import urlencode
+from uuid import UUID
 
 from django.conf import settings
 from django.contrib import messages
@@ -219,20 +220,24 @@ def logout(request, next_page=None,
     Logs out the user and displays 'You are logged out' message.
     see http://openid.net/specs/openid-connect-session-1_0.html#RPLogout
     """
+    # save the user
+    user = request.user
     auth_logout(request)
     # 1. check if we have a post_logout_redirect_uri which is registered
-    redirect_to = ''
+    redirect_to = settings.LOGIN_REDIRECT_URL
     redirect_uri = get_request_param(request, OIDC_LOGOUT_REDIRECT_FIELD_NAME)
     allowed_schemes = ['http', 'https']
     if redirect_uri:
         id_token = get_request_param(request, OIDC_ID_TOKEN_HINT)
         if id_token:
-            data = loads_jwt(id_token)
-            client = Client.objects.get(uuid=data['aud'])
-            if redirect_uri in client.post_logout_redirect_uris.split():
-                # allow unsafe schemes
-                redirect_to = redirect_uri
-                allowed_schemes = None
+            # token maype expired
+            data = loads_jwt(id_token, options={"verify_exp": False, "verify_aud": False})
+            if not user.is_anonymous and user.uuid == UUID(data['sub']):
+                client = Client.objects.get(uuid=data['aud'])
+                if redirect_uri in client.post_logout_redirect_uris.split():
+                    # allow unsafe schemes
+                    redirect_to = redirect_uri
+                    allowed_schemes = None
         else:
             # if no OIDC_ID_TOKEN_HINT is there allow only safe schemes
             if redirect_uri in post_logout_redirect_uris():
