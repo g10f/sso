@@ -6,7 +6,7 @@ from .views import application, PasswordCreateCompleteView
 from .views import emails, confirm_email
 from .views import onetimemessage
 from .views import organisation
-from .views import password_change, logout, profile, contact, delete_profile
+from .views import password_change, profile, contact, delete_profile
 
 app_name = 'accounts'
 
@@ -19,7 +19,6 @@ urlpatterns = [
     path('<uuid:uuid>/delete/', application.UserDeleteView.as_view(), name="delete_user"),
     path('app_admin/', application.AppAdminUserList.as_view(), name='app_admin_user_list'),
     path('app_admin/<uuid:uuid>/', application.app_admin_update_user, name="app_admin_update_user"),
-    path('logout/', logout, name='logout'),
     path('contact/', contact, name='contact'),
     path('contact_thanks/', TemplateView.as_view(template_name="accounts/contact_thanks.html"), name='contact_thanks'),
     path('email/confirm/<str:uidb64>/<str:token>/', confirm_email, name='confirm_email'),

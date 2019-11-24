@@ -2,12 +2,11 @@ import logging
 
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import REDIRECT_FIELD_NAME, logout as auth_logout
+from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.password_validation import password_validators_help_texts
 from django.contrib.auth.views import INTERNAL_RESET_SESSION_TOKEN
-from django.contrib.sites.shortcuts import get_current_site
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.forms.models import inlineformset_factory
@@ -20,7 +19,6 @@ from django.utils.encoding import force_bytes
 from django.utils.html import strip_tags
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils.translation import ugettext as _
-from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from sso.accounts.email import send_useremail_confirmation, send_mail_managers
@@ -34,12 +32,11 @@ from sso.auth.views import get_token_url
 from sso.forms.helpers import ChangedDataList, log_change, get_media_errors_and_active_form
 from sso.oauth2.models import allowed_hosts
 from sso.organisations.models import is_validation_period_active
-from sso.utils.url import get_safe_redirect_uri, update_url, REDIRECT_URI_FIELD_NAME
+from sso.utils.url import get_safe_redirect_uri, update_url
 
 logger = logging.getLogger(__name__)
 
 LOGIN_FORM_KEY = 'login_form_key'
-OIDC_LOGOUT_REDIRECT_FIELD_NAME = 'post_logout_redirect_uri'
 
 
 def contact(request):
@@ -99,39 +96,6 @@ class PasswordChangeDoneView(auth_views.PasswordChangeDoneView):
         context = super().get_context_data(**kwargs)
         context['redirect_uri'] = get_safe_redirect_uri(self.request, allowed_hosts())
         return context
-
-
-@never_cache
-def logout(request, next_page=None,
-           template_name='accounts/logged_out.html',
-           redirect_field_name=REDIRECT_FIELD_NAME,
-           current_app=None, extra_context=None):
-    """
-    Logs out the user and displays 'You are logged out' message.
-    see http://openid.net/specs/openid-connect-session-1_0.html#RPLogout
-    """
-    auth_logout(request)
-    redirect_uris = [redirect_field_name, REDIRECT_URI_FIELD_NAME, OIDC_LOGOUT_REDIRECT_FIELD_NAME]
-    redirect_to = get_safe_redirect_uri(request, allowed_hosts(), redirect_uris)
-    if redirect_to:
-        return HttpResponseRedirect(redirect_to)
-
-    if next_page is None:
-        current_site = get_current_site(request)
-        site_name = settings.SSO_SITE_NAME
-        context = {
-            'site': current_site,
-            'site_name': site_name,
-            'title': _('Logged out')
-        }
-        if extra_context is not None:
-            context.update(extra_context)
-        if current_app is not None:
-            request.current_app = current_app
-        return TemplateResponse(request, template_name, context)
-    else:
-        # Redirect to this page until the session has been cleared.
-        return HttpResponseRedirect(next_page or request.path)
 
 
 @login_required
@@ -352,7 +316,7 @@ def delete_profile(request):
             form.save()
             change_message = ChangedDataList(form, None).change_message()
             log_change(request, user, change_message)
-            return redirect('accounts:logout')
+            return redirect('auth:logout')
     else:
         form = UserSelfProfileDeleteForm(instance=user)
     context = {'form': form, }

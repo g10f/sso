@@ -129,7 +129,7 @@ class OpenidConfigurationView(PreflightMixin, View):
                 ["page", "popup"],
             "subject_types_supported":
                 ["public"],
-            "end_session_endpoint": '%s%s' % (base_uri, reverse('accounts:logout')),
+            "end_session_endpoint": '%s%s' % (base_uri, reverse('auth:logout')),
             "introspection_endpoint": '%s%s' % (base_uri, reverse('oauth2:introspect')),
             "check_session_iframe": '%s%s' % (base_uri, reverse('oauth2:session')),
             "certs_uri": '%s%s' % (base_uri, reverse('oauth2:certs')),
@@ -414,7 +414,7 @@ def client_details(request, object_id):
         "client_id": client.uuid.hex,
         "auth_provider_x509_cert_url": request.build_absolute_uri(reverse('oauth2:certs')),
         "userinfo_uri": request.build_absolute_uri(reverse('api:v1_users_me')),
-        "logout_uri": request.build_absolute_uri(reverse('accounts:logout')),
+        "logout_uri": request.build_absolute_uri(reverse('auth:logout')),
     }
     return JsonHttpResponse(data, request)
 

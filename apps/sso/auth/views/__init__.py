@@ -3,9 +3,13 @@ from urllib.parse import urlencode
 
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import REDIRECT_FIELD_NAME, get_user_model, BACKEND_SESSION_KEY
+from django.contrib.auth import REDIRECT_FIELD_NAME, logout as auth_logout
+from django.contrib.auth import get_user_model, BACKEND_SESSION_KEY
+from django.contrib.sites.shortcuts import get_current_site
 from django.core import signing
+from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
+from django.template.response import TemplateResponse
 from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_text
@@ -18,11 +22,17 @@ from sso.auth.forms import EmailAuthenticationForm, AuthenticationTokenForm
 from sso.auth.models import Device
 from sso.auth.utils import get_safe_login_redirect_url, get_request_param, get_device_classes
 from sso.middleware import revision_exempt
+from sso.oauth2.crypt import loads_jwt
+from sso.oauth2.models import allowed_hosts, post_logout_redirect_uris, Client
 from sso.oauth2.models import get_oauth2_cancel_url
+from sso.utils.http import HttpPostLogoutRedirect
+from sso.utils.url import get_safe_redirect_uri, REDIRECT_URI_FIELD_NAME
 from throttle.decorators import throttle
 
 SALT = 'sso.auth.views.LoginView'
 TWO_FACTOR_PARAM = 'two_factor'
+OIDC_LOGOUT_REDIRECT_FIELD_NAME = 'post_logout_redirect_uri'
+OIDC_ID_TOKEN_HINT = 'id_token_hint'
 
 logger = logging.getLogger(__name__)
 
@@ -198,3 +208,58 @@ class TokenView(FormView):
         auth_login(self.request, form.user)
         self.success_url = redirect_url
         return super().form_valid(form)
+
+
+@never_cache
+def logout(request, next_page=None,
+           template_name='accounts/logged_out.html',
+           redirect_field_name=REDIRECT_FIELD_NAME,
+           current_app=None, extra_context=None):
+    """
+    Logs out the user and displays 'You are logged out' message.
+    see http://openid.net/specs/openid-connect-session-1_0.html#RPLogout
+    """
+    auth_logout(request)
+    # 1. check if we have a post_logout_redirect_uri which is registered
+    redirect_to = ''
+    redirect_uri = get_request_param(request, OIDC_LOGOUT_REDIRECT_FIELD_NAME)
+    allowed_schemes = ['http', 'https']
+    if redirect_uri:
+        id_token = get_request_param(request, OIDC_ID_TOKEN_HINT)
+        if id_token:
+            data = loads_jwt(id_token)
+            client = Client.objects.get(uuid=data['aud'])
+            if redirect_uri in client.post_logout_redirect_uris.split():
+                # allow unsafe schemes
+                redirect_to = redirect_uri
+                allowed_schemes = None
+        else:
+            # if no OIDC_ID_TOKEN_HINT is there allow only safe schemes
+            if redirect_uri in post_logout_redirect_uris():
+                redirect_to = redirect_uri
+
+        return HttpPostLogoutRedirect(redirect_to=redirect_to, allowed_schemes=allowed_schemes)
+    else:
+        # deprecated logic
+        # TODO: remove
+        redirect_uris = [redirect_field_name, REDIRECT_URI_FIELD_NAME, OIDC_LOGOUT_REDIRECT_FIELD_NAME]
+        redirect_to = get_safe_redirect_uri(request, allowed_hosts(), redirect_uris)
+        if redirect_to:
+            return HttpPostLogoutRedirect(redirect_to=redirect_to, allowed_schemes=['http', 'https'])
+
+    if next_page is None:
+        current_site = get_current_site(request)
+        site_name = settings.SSO_SITE_NAME
+        context = {
+            'site': current_site,
+            'site_name': site_name,
+            'title': _('Logged out')
+        }
+        if extra_context is not None:
+            context.update(extra_context)
+        if current_app is not None:
+            request.current_app = current_app
+        return TemplateResponse(request, template_name, context)
+    else:
+        # Redirect to this page until the session has been cleared.
+        return HttpResponseRedirect(next_page or request.path)

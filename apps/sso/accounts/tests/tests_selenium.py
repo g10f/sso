@@ -23,7 +23,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
     def login_test(self, username, password, test_success=True):
         self.login(username=username, password=password)
         if test_success:
-            self.selenium.find_element_by_xpath('//a[@href="%s"]' % reverse('accounts:logout'))
+            self.selenium.find_element_by_xpath('//a[@href="%s"]' % reverse('auth:logout'))
         else:
             self.selenium.find_element_by_xpath('//form[@id="login-form"]')
 
@@ -167,7 +167,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.selenium.find_element_by_xpath('//form/div[@class="alert alert-danger"]')  # there should be a form error
         # there should be no logout link, because user is not logged in
         self.assertEqual(
-            len(self.selenium.find_elements_by_xpath('//ul/li/a[@href="%s"]' % reverse('accounts:logout'))), 0)
+            len(self.selenium.find_elements_by_xpath('//ul/li/a[@href="%s"]' % reverse('auth:logout'))), 0)
 
     def test_change_password(self):
         username = 'GlobalAdmin'

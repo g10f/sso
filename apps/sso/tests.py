@@ -74,6 +74,6 @@ class SSOSeleniumTests(StaticLiveServerTestCase):
         self.wait_page_loaded()
 
     def logout(self):
-        self.selenium.get('%s%s' % (self.live_server_url, reverse('accounts:logout')))
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('auth:logout')))
         # Wait until the response is received
         self.wait_page_loaded()

@@ -1,7 +1,11 @@
 import json
+from urllib.parse import urlparse
 
+from django.core.exceptions import DisallowedRedirect
 
+from django.http import HttpResponse
 # from django.test.client import JSON_CONTENT_TYPE_RE
+from django.utils.encoding import iri_to_uri
 
 
 def get_request_param(request, name, default=None):
@@ -15,6 +19,29 @@ def parse_json(request, **extra):
     #         .format(request.content_type)
     #     )
     return json.loads(request.body.decode(), **extra)
+
+
+class HttpPostLogoutRedirect(HttpResponse):
+    # same as HttpResponseRedirect, but without checking the scheme, beause we have custom registered schemes
+    status_code = 302
+
+    def __init__(self, redirect_to, allowed_schemes=None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self['Location'] = iri_to_uri(redirect_to)
+        if allowed_schemes is not None:
+            parsed = urlparse(str(redirect_to))
+            if parsed.scheme and parsed.scheme not in allowed_schemes:
+                raise DisallowedRedirect("Unsafe redirect to URL with protocol '%s'" % parsed.scheme)
+
+    url = property(lambda self: self['Location'])
+
+    def __repr__(self):
+        return '<%(cls)s status_code=%(status_code)d%(content_type)s, url="%(url)s">' % {
+            'cls': self.__class__.__name__,
+            'status_code': self.status_code,
+            'content_type': self._content_type_for_repr,
+            'url': self.url,
+        }
 
 
 """

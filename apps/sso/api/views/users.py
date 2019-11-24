@@ -93,7 +93,7 @@ def get_userapps(user, request):
         'full_name': user.get_full_name(),
         'text': {'More': _('More'), 'Logout': _('Log out')},
         'links': {'profile': {'href': absolute_url(request, reverse('accounts:profile'))},
-                  'logout': {'href': reverse('accounts:logout')}}
+                  'logout': {'href': reverse('auth:logout')}}
     }
     if user.picture:
         userinfo['links']['picture_30x30'] = {
