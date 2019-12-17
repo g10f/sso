@@ -1,4 +1,4 @@
-django
+django<3
 django-formtools
 django-ipware
 django-reversion

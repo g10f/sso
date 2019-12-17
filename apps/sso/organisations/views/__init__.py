@@ -562,20 +562,21 @@ class OrganisationList(ListView):
 
         writer = csv.writer(response, quoting=csv.QUOTE_ALL)
         row = ["name", "is_active", "homepage", "email", "primary_phone", "country", "admin_region", "addressee",
-               "street_address", "city", "postal_code", "founded"]
+               "careof", "street_address", "city", "postal_code", "founded"]
         writer.writerow(row)
         for organisation in qs:
             admin_region = str(organisation.admin_region) if organisation.admin_region else str('')
+            primary_phone = str(organisation.primary_phone) if organisation.primary_phone else str('')
             row = [organisation.name, str(organisation.is_active), organisation.homepage,
-                   str(organisation.email), str(organisation.primary_phone),
+                   str(organisation.email), primary_phone,
                    str(organisation.organisation_country), admin_region]
 
             primary_address = organisation.primary_address
             if not organisation.is_private and primary_address:
-                row += [primary_address.addressee, primary_address.street_address, primary_address.city,
-                        primary_address.postal_code]
+                row += [primary_address.addressee, primary_address.careof, primary_address.street_address,
+                        primary_address.city, primary_address.postal_code]
             else:
-                row += ['', '', '', '']
+                row += ['', '', '', '', '']
 
             row += [organisation.founded]
 
