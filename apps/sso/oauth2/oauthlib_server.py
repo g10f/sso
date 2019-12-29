@@ -10,7 +10,7 @@ from jwt import InvalidTokenError
 
 from django.contrib.auth import authenticate, get_user_model
 from django.core import signing
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.utils.encoding import force_text, force_bytes
@@ -151,8 +151,8 @@ class OIDCRequestValidator(RequestValidator):
         try:
             self._get_client(client_id, request)
             return True
-        except (ObjectDoesNotExist, ValueError):
-            logger.warning("validate_client_id failed for client_id: %s", client_id, exc_info=True)
+        except (ObjectDoesNotExist, ValueError, ValidationError):
+            logger.warning("validate_client_id failed for client_id: %s", client_id)
             return False
 
     def validate_redirect_uri(self, client_id, redirect_uri, request, *args, **kwargs):
