@@ -5,7 +5,7 @@ from django.utils.encoding import force_text
 
 from django.conf import settings
 from django.core.cache import cache
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
 from django.http import QueryDict
 from django.urls import reverse
@@ -47,21 +47,21 @@ def get_oauth2_cancel_url(redirect_to):
             if check_redirect_uri(client, redirect_uri):
                 redirect_uri = replace_query_param(redirect_uri, 'error', 'access_denied')
                 return redirect_uri
-        except (ObjectDoesNotExist, ValueError):
-            logger.exception('Invalid client_id %s', query_dict['client_id'])
+        except (ObjectDoesNotExist, ValidationError, ValueError):
+            logger.warning('Invalid client_id %s', query_dict['client_id'])
 
     return reverse('home')
 
 
 """
 OAUTH2_RESPONSE_TYPES = [
-    ('code', 'Authorization code'), 
+    ('code', 'Authorization code'),
     ('token', 'Access token')
 ]
 OAUTH2_GRANT_TYPES = [
-    ('authorization_code', 'Authorization Code Grant'), 
+    ('authorization_code', 'Authorization Code Grant'),
     ('refresh_token', 'Refreshing an Access Token'),
-    ('client_credentials', 'Client Credentials Grant'), 
+    ('client_credentials', 'Client Credentials Grant'),
     ('password', 'Resource Owner Password Credentials Grant')
 ]
 """

@@ -324,15 +324,12 @@ def token(request):
 
 
 class TokenView(PreflightMixin, View):
-    http_method_names = ['get', 'post', 'options']
+    http_method_names = ['post', 'options']
 
     @method_decorator(revision_exempt)
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
-
-    def get(self, request, *args, **kwargs):
-        return token(request)
 
     def post(self, request, *args, **kwargs):
         return token(request)
