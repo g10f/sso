@@ -714,6 +714,20 @@ class User(AbstractBaseUser, PermissionsMixin):
             qs = User.objects.none()
         return qs
 
+    def filter_administrable_user_emails(self, qs):
+        # filter the users for who the authenticated user has admin rights
+        if self.is_superuser:
+            pass
+        elif self.is_global_user_admin:
+            qs = qs.filter(user__is_superuser=False, user__is_service=False)
+        elif self.is_user_admin:
+            organisations = self.get_administrable_user_organisations()
+            q = Q(user__is_superuser=False) & Q(user__is_service=False) & Q(user__organisations__in=organisations)
+            qs = qs.filter(q).distinct()
+        else:
+            qs = qs.none()
+        return qs
+
     def filter_administrable_app_admin_users(self, qs):
         # filter the users for who the authenticated user can manage app_roles
         if self.is_global_app_admin:

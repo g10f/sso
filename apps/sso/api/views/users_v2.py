@@ -1,7 +1,7 @@
 import logging
+from uuid import UUID
 
 from sorl.thumbnail import get_thumbnail
-from uuid import UUID
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
@@ -19,7 +19,7 @@ from django.views.decorators.csrf import csrf_exempt
 from l10n.models import Country
 from sso.accounts.email import send_account_created_email
 from sso.accounts.models import UserAddress, UserPhoneNumber, User, UserEmail, ApplicationRole
-from sso.api.decorators import condition
+from sso.api.decorators import condition, api_user_passes_test
 from sso.api.views.generic import JsonListView, JsonDetailView
 from sso.auth.utils import is_recent_auth_time
 from sso.models import update_object_from_dict, map_dict2dict
@@ -31,7 +31,7 @@ from sso.utils.url import absolute_url, get_base_url
 logger = logging.getLogger(__name__)
 
 """
-mapping consist of key values, where 
+mapping consist of key values, where
 
 1. the value is the name of the django object field or
 2. the value is a dictionary with the name of the django object field and optional a parser and validate function
@@ -78,7 +78,8 @@ API_USER_MAPPING = {
     'uuid': 'uuid',  # this value is created in JsonDetailView.create from the url
 }
 API_ADDRESS_MAP = {
-    'address_type': {'name': 'address_type', 'validate': lambda x: x in [i[0] for i in UserAddress.ADDRESSTYPE_CHOICES],
+    'address_type': {'name': 'address_type',
+                     'validate': lambda x: x in [i[0] for i in UserAddress.ADDRESSTYPE_CHOICES],
                      'default': UserAddress.ADDRESSTYPE_CHOICES[0][0]},
     'addressee': {'name': 'addressee', 'validate': _non_empty_string},
     'street_address': 'street_address',
@@ -138,8 +139,10 @@ class UserMixin(object):
 
         if details:
             if obj.picture:
-                data['picture']['30x30'] = absolute_url(request, get_thumbnail(obj.picture, "30x30", crop="center").url)
-                data['picture']['60x60'] = absolute_url(request, get_thumbnail(obj.picture, "60x60", crop="center").url)
+                data['picture']['30x30'] = absolute_url(request,
+                                                        get_thumbnail(obj.picture, "30x30", crop="center").url)
+                data['picture']['60x60'] = absolute_url(request,
+                                                        get_thumbnail(obj.picture, "60x60", crop="center").url)
                 data['picture']['120x120'] = absolute_url(request,
                                                           get_thumbnail(obj.picture, "120x120", crop="center").url)
                 data['picture']['240x240'] = absolute_url(request,
@@ -612,9 +615,11 @@ UserList.permissions_tests = {
 
 
 @login_required
-@permission_required(["accounts.access_all_users", "accounts.read_user"], raise_exception=True)
+@api_user_passes_test(lambda u: u.is_user_admin)
+@permission_required(["accounts.read_user"], raise_exception=True)
 def user_emails(request):
     qs = UserEmail.objects.filter(user__is_active=True, user__last_login__isnull=False, primary=True)
+    qs = request.user.filter_administrable_user_emails(qs)
 
     is_center = request.GET.get('is_center', None)
     if is_center in ['True', 'true', '1', 'yes', 'Yes', 'Y', 'y']:
