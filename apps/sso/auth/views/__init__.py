@@ -27,13 +27,14 @@ from sso.oauth2.crypt import loads_jwt
 from sso.oauth2.models import allowed_hosts, post_logout_redirect_uris, Client
 from sso.oauth2.models import get_oauth2_cancel_url
 from sso.utils.http import HttpPostLogoutRedirect
-from sso.utils.url import get_safe_redirect_uri, REDIRECT_URI_FIELD_NAME
+from sso.utils.url import get_safe_redirect_uri, REDIRECT_URI_FIELD_NAME, update_url
 from throttle.decorators import throttle
 
 SALT = 'sso.auth.views.LoginView'
 TWO_FACTOR_PARAM = 'two_factor'
 OIDC_LOGOUT_REDIRECT_FIELD_NAME = 'post_logout_redirect_uri'
 OIDC_ID_TOKEN_HINT = 'id_token_hint'
+OIDC_STATE = 'state'
 
 logger = logging.getLogger(__name__)
 
@@ -242,7 +243,7 @@ def logout(request, next_page=None,
             # if no OIDC_ID_TOKEN_HINT is there allow only safe schemes
             if redirect_uri in post_logout_redirect_uris():
                 redirect_to = redirect_uri
-
+        redirect_to = update_url(redirect_to, {OIDC_STATE: get_request_param(request, OIDC_STATE)})
         return HttpPostLogoutRedirect(redirect_to=redirect_to, allowed_schemes=allowed_schemes)
     else:
         # deprecated logic
