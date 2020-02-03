@@ -179,3 +179,14 @@ class ApplicationAdmin(AbstractBaseModel):
         unique_together = (("application", "admin"),)
         verbose_name = _('application admin')
         verbose_name_plural = _('application admins')
+
+
+class UserNote(AbstractBaseModel):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    note = models.TextField(_("Note"), max_length=1024)
+    created_by_user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('created by'), related_name='+',
+                                        null=True, on_delete=models.SET_NULL)
+
+    class Meta(AbstractBaseModel.Meta):
+        verbose_name = _('user note')
+        verbose_name_plural = _('user notes')

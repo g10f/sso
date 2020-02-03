@@ -1,0 +1,46 @@
+{% extends "base_form.html" %}
+{% load i18n %}
+
+{% block title %}{% trans 'Delete User' %}{% endblock %}
+
+{% block breadcrumb %}
+<ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+    <li><a href="{% url 'accounts:user_list' %}">{% trans 'User List' %}</a></li>
+    <li><a href="{% url 'accounts:update_user' usernote.user.uuid %}{{ usernotes_tab }}">{% trans 'Change User' %}</a></li>
+    <li class="active">{% trans 'User Note' %}</li>
+</ol>
+{% endblock breadcrumb %}
+
+{% block form %}
+<form class="form-horizontal" method="post">{% csrf_token %}
+    <h3>{% trans 'Delete User Note' %}</h3>
+
+	<div class="form-group">
+	  <label class="control-label">{% trans 'username' %}</label>
+	  <div class="dwbn-form-control"><p class="form-control-static">{{ object.user }}</p></div>
+	</div>
+
+    <div class="form-group">
+      <label class="control-label">{% trans 'Created by' %}</label>
+      <div class="dwbn-form-control"><p class="form-control-static">{{ object.created_by_user }}</p></div>
+    </div>
+
+    <div class="form-group">
+      <label class="control-label">{% trans 'Note' %}</label>
+      <div class="dwbn-form-control"><p class="form-control-static">{{ object.note }}</p></div>
+    </div>
+
+    <div class="form-group">
+      <label class="control-label">{% trans 'last modified' %}</label>
+      <div class="dwbn-form-control"><p class="form-control-static">{{ object.last_modified }}</p></div>
+    </div>
+
+    <div class="form-group">
+        <div class="dwbn-form-control_lg">
+            <button type="submit" class="btn btn-danger">{% trans 'Confirm Delete' %}</button>
+            {% if cancel_url %}&nbsp;{% trans 'or' %}&nbsp; <a class="btn btn-default" href="{{ cancel_url }}{{ usernotes_tab }}">{% trans 'Cancel' %}</a>{% endif %}
+        </div>
+   </div>
+</form>
+{% endblock %}

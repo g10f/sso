@@ -14,3 +14,4 @@
 /apps/gunicorn.conf
 start.sh
 local_fabconfig.py
+local.pth
