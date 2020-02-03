@@ -106,7 +106,7 @@
                 {% for usernote in form.user.usernote_set.all %}
                     <tr>
                         <td>{{ usernote.last_modified }}</td>
-                        <td>{{ usernote.created_by_user }}</td>
+                        <td>{{ usernote.created_by_user|default_if_none:""  }}</td>
                         <td>{{ usernote.note }}</td>
                         <td>{% if usernote.created_by_user == request.user %}
                             <a class="btn btn-default" href="{% url 'accounts:delete_user_note' usernote.uuid.hex %}">
