@@ -15,7 +15,8 @@ from sso.access_requests.admin import AccessRequestAdmin
 from sso.access_requests.models import AccessRequest
 from sso.accounts import models
 from sso.accounts.admin import ApplicationAdmin, ApplicationAdminAdmin, ApplicationRoleAdmin, GroupAdmin, RoleAdmin, \
-    OneTimeMessageAdmin, OrganisationChangeAdmin, RoleProfileAdmin, RoleProfileAdminAdmin, UserAdmin, UserEmailAdmin
+    OneTimeMessageAdmin, OrganisationChangeAdmin, RoleProfileAdmin, RoleProfileAdminAdmin, UserAdmin, UserEmailAdmin, \
+    UserNoteAdmin
 from sso.auth import admin as sso_auth_admin
 from sso.auth import models as sso_auth_models
 from sso.auth.utils import is_recent_auth_time
@@ -83,6 +84,7 @@ sso_admin_site.register(models.OneTimeMessage, OneTimeMessageAdmin)
 
 sso_admin_site.register(AccessRequest, AccessRequestAdmin)
 
+sso_admin_site.register(models.UserNote, UserNoteAdmin)
 sso_admin_site.register(models.UserEmail, UserEmailAdmin)
 sso_admin_site.register(get_user_model(), UserAdmin)
 sso_admin_site.register(models.ApplicationRole, ApplicationRoleAdmin)

@@ -2,7 +2,7 @@ from django.contrib.auth.views import PasswordResetDoneView, PasswordResetComple
 from django.urls import path
 from django.views.generic import TemplateView
 from .views import PasswordResetView, PasswordResetConfirmView, PasswordChangeDoneView, PasswordCreateConfirmView
-from .views import application, PasswordCreateCompleteView
+from .views import application, PasswordCreateCompleteView, usernote
 from .views import emails, confirm_email
 from .views import onetimemessage
 from .views import organisation
@@ -17,6 +17,7 @@ urlpatterns = [
     path('add/done/<uuid:uuid>/', application.add_user_done, name="add_user_done"),
     path('<uuid:uuid>/', application.update_user, name="update_user"),
     path('<uuid:uuid>/delete/', application.UserDeleteView.as_view(), name="delete_user"),
+    path('<uuid:uuid>/notes/delete/', usernote.UserNoteDeleteView.as_view(), name="delete_user_note"),
     path('app_admin/', application.AppAdminUserList.as_view(), name='app_admin_user_list'),
     path('app_admin/<uuid:uuid>/', application.app_admin_update_user, name="app_admin_update_user"),
     path('contact/', contact, name='contact'),

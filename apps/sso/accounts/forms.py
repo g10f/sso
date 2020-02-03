@@ -32,6 +32,7 @@ from sso.registration import default_username_generator
 from sso.registration.forms import UserSelfRegistrationForm
 from sso.signals import extend_user_validity, extend_user_validity_tooltip
 from .models import User, UserAddress, UserPhoneNumber, UserEmail, OrganisationChange
+from .models.application import UserNote
 
 logger = logging.getLogger(__name__)
 
@@ -715,7 +716,9 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
         self.user.dob = cd['dob']
         if activate is not None:
             self.user.is_active = activate
-        self.user.notes = cd['notes']
+
+        if cd['notes']:
+            UserNote.objects.create(user=self.user, note=cd['notes'], created_by_user=current_user)
 
         if extend_validity:
             # enable brand specific modification

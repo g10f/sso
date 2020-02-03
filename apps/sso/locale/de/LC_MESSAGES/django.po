@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-30 22:59+0200\n"
+"POT-Creation-Date: 2020-02-03 22:59+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -241,14 +241,14 @@ msgstr "Inaktive Benutzer"
 msgid "primary email"
 msgstr "primäre E-Mail"
 
+msgid "created by"
+msgstr "angelegt von"
+
 msgid "Link"
 msgstr ""
 
 msgid "(None)"
 msgstr ""
-
-msgid "created by"
-msgstr "angelegt von"
 
 msgid "associated system"
 msgstr "Assoziertes System"
@@ -297,9 +297,6 @@ msgstr "User Admin"
 
 msgid "App admin"
 msgstr "Anwendungsadmin"
-
-msgid "Notes"
-msgstr "Notizen"
 
 #, python-format
 msgid "%s SSO Information"
@@ -391,6 +388,9 @@ msgstr "Geschlecht"
 
 msgid "Date of birth"
 msgstr "Geburtsdatum"
+
+msgid "Notes"
+msgstr "Anmerkungen"
 
 msgid "Application roles"
 msgstr "Anwendungsrollen"
@@ -565,6 +565,15 @@ msgstr "Anwendungsadmin"
 
 msgid "application admins"
 msgstr "Anwendungensadmins"
+
+msgid "Note"
+msgstr "Anmerkung"
+
+msgid "user note"
+msgstr "Anmerkung zum Benutzer"
+
+msgid "user notes"
+msgstr "Anmerkungen zu Benutzern"
 
 msgid "male"
 msgstr "Männlich"
@@ -822,6 +831,12 @@ msgstr "Basis Daten"
 msgid "Registration"
 msgstr "Registrierung"
 
+msgid "Action"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
 msgid ""
 "After removing the user from your organisation, only the global admin has "
 "access to the user."
@@ -849,9 +864,6 @@ msgstr "Profil löschen"
 
 msgid "Do you want to delete your account?"
 msgstr "Möchtest Du Dein Konto löschen?"
-
-msgid "Delete"
-msgstr ""
 
 msgid "or"
 msgstr "oder"
@@ -900,9 +912,6 @@ msgid "Object id"
 msgstr ""
 
 msgid "Object repr"
-msgstr ""
-
-msgid "Action"
 msgstr ""
 
 #, python-format
@@ -1224,6 +1233,12 @@ msgstr "Als primär festlegen"
 msgid "Resend confirmation email"
 msgstr "Bestätigungs E-Mail erneut senden"
 
+msgid "User Note"
+msgstr "Anmerkung zum Benutzer "
+
+msgid "Delete User Note"
+msgstr "Anmerkung zum Benutzer Löschen"
+
 msgid "reply to email"
 msgstr "Antwort an E-Mail"
 
@@ -1244,9 +1259,6 @@ msgid "History"
 msgstr ""
 
 msgid "View on site"
-msgstr ""
-
-msgid "Logged out"
 msgstr ""
 
 msgid "The confirmation was not succesfull, please resend the confirmation."
@@ -1645,6 +1657,9 @@ msgstr ""
 msgid "Device error, select another device. (%(error)s)"
 msgstr ""
 
+msgid "Logged out"
+msgstr ""
+
 msgid "Email type"
 msgstr "Email Typ"
 
@@ -1923,6 +1938,9 @@ msgid "Trusted Client"
 msgstr ""
 
 msgid "redirect uris"
+msgstr ""
+
+msgid "post logout redirect uris"
 msgstr ""
 
 msgid "default redirect uri"
@@ -2635,6 +2653,7 @@ msgstr "Benutzer finden"
 msgid "Activate user"
 msgstr "Aktiviere Benutzer"
 
+#, python-format
 msgid "Email Message to %(fullname)s"
 msgstr "E-Mail Nachricht an %(fullname)s"
 

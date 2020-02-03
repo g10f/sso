@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-30 22:59+0200\n"
+"POT-Creation-Date: 2020-02-03 22:59+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -234,13 +234,13 @@ msgstr ""
 msgid "primary email"
 msgstr ""
 
+msgid "created by"
+msgstr ""
+
 msgid "Link"
 msgstr ""
 
 msgid "(None)"
-msgstr ""
-
-msgid "created by"
 msgstr ""
 
 msgid "associated system"
@@ -289,9 +289,6 @@ msgid "User admin"
 msgstr ""
 
 msgid "App admin"
-msgstr ""
-
-msgid "Notes"
 msgstr ""
 
 #, python-format
@@ -378,6 +375,9 @@ msgid "Gender"
 msgstr ""
 
 msgid "Date of birth"
+msgstr ""
+
+msgid "Notes"
 msgstr ""
 
 msgid "Application roles"
@@ -539,6 +539,15 @@ msgid "application admin"
 msgstr ""
 
 msgid "application admins"
+msgstr ""
+
+msgid "Note"
+msgstr ""
+
+msgid "user note"
+msgstr ""
+
+msgid "user notes"
 msgstr ""
 
 msgid "male"
@@ -785,6 +794,12 @@ msgstr ""
 msgid "Registration"
 msgstr ""
 
+msgid "Action"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
 msgid ""
 "After removing the user from your organisation, only the global admin has "
 "access to the user."
@@ -809,9 +824,6 @@ msgid "Delete Profile"
 msgstr ""
 
 msgid "Do you want to delete your account?"
-msgstr ""
-
-msgid "Delete"
 msgstr ""
 
 msgid "or"
@@ -859,9 +871,6 @@ msgid "Object id"
 msgstr ""
 
 msgid "Object repr"
-msgstr ""
-
-msgid "Action"
 msgstr ""
 
 #, python-format
@@ -1149,6 +1158,12 @@ msgstr ""
 msgid "Resend confirmation email"
 msgstr ""
 
+msgid "User Note"
+msgstr ""
+
+msgid "Delete User Note"
+msgstr ""
+
 msgid "reply to email"
 msgstr ""
 
@@ -1168,9 +1183,6 @@ msgid "History"
 msgstr ""
 
 msgid "View on site"
-msgstr ""
-
-msgid "Logged out"
 msgstr ""
 
 msgid "The confirmation was not succesfull, please resend the confirmation."
@@ -1553,6 +1565,9 @@ msgstr ""
 msgid "Device error, select another device. (%(error)s)"
 msgstr ""
 
+msgid "Logged out"
+msgstr ""
+
 msgid "Email type"
 msgstr ""
 
@@ -1823,6 +1838,9 @@ msgid "Trusted Client"
 msgstr ""
 
 msgid "redirect uris"
+msgstr ""
+
+msgid "post logout redirect uris"
 msgstr ""
 
 msgid "default redirect uri"

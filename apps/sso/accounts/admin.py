@@ -44,6 +44,33 @@ class OrganisationChangeAdmin(admin.ModelAdmin):
     user_link.admin_order_field = 'user'
 
 
+class UserNoteAdmin(admin.ModelAdmin):
+    list_display = ('last_modified', 'user_link', 'created_by_user_link', 'note', )
+    raw_id_fields = ("user", "created_by_user")
+    search_fields = ('user__username', 'user__useremail__email')
+    ordering = ['-last_modified']
+    list_select_related = ('user',)
+
+    @mark_safe
+    def user_link(self, obj):
+        url = reverse('admin:accounts_user_change', args=(obj.user.pk,), current_app=self.admin_site.name)
+        return '<a href="%s">%s</a>' % (url, obj.user)
+
+    user_link.short_description = _('user')
+    user_link.admin_order_field = 'user'
+
+    @mark_safe
+    def created_by_user_link(self, obj):
+        if obj.created_by_user is None:
+            return ""
+        url = reverse('admin:accounts_user_change', args=(obj.created_by_user.pk,),
+                      current_app=self.admin_site.name)
+        return '<a href="%s">%s</a>' % (url, obj.created_by_user)
+
+    created_by_user_link.short_description = _('created by')
+    created_by_user_link.admin_order_field = 'created_by_user'
+
+
 class UserEmailAdmin(admin.ModelAdmin):
     list_display = ('email', 'user_link', 'primary', 'confirmed', 'last_modified')
     raw_id_fields = ("user",)
@@ -403,7 +430,6 @@ class UserAdmin(VersionAdmin, AdminImageMixin, DjangoUserAdmin):
                            'classes': ['collapse', 'wide']}),
         (_('App admin'),
          {'fields': ('app_admin_organisation_countries', 'app_admin_regions'), 'classes': ['collapse', 'wide']}),
-        (_('Notes'), {'fields': ('notes',), 'classes': ['collapse', 'wide']}),
     )
     non_su_fieldsets = (
         (None, {'fields': ('username',), 'classes': ['wide']}),
