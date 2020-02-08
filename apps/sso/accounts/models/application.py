@@ -7,7 +7,7 @@ from django.contrib.auth.models import Group
 from django.db import models
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-from sso.models import AbstractBaseModel
+from sso.models import AbstractBaseModel, AbstractBaseModelManager
 
 logger = logging.getLogger(__name__)
 
@@ -181,11 +181,26 @@ class ApplicationAdmin(AbstractBaseModel):
         verbose_name_plural = _('application admins')
 
 
+class UserNoteManager(AbstractBaseModelManager):
+    def create_note(self, user, created_by_user, activate=None, extend_validity=False, note=None, **kwargs):
+        notes = []
+        if note:
+            notes.append(note)
+        if extend_validity:
+            notes.append('extended validity')
+        if activate is not None:
+            notes.append('activated' if activate else 'deactivated')
+
+        return self.create(user=user, note="\n".join(notes), created_by_user=created_by_user, **kwargs)
+
+
 class UserNote(AbstractBaseModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     note = models.TextField(_("Note"), max_length=1024)
     created_by_user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('created by'), related_name='+',
                                         null=True, on_delete=models.SET_NULL)
+
+    objects = UserNoteManager()
 
     class Meta(AbstractBaseModel.Meta):
         verbose_name = _('user note')

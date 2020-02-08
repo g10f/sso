@@ -93,28 +93,34 @@
                 {% include 'accounts/includes/_app_roles_field.html' with field=form.application_roles %}
             </div>
             <div class="tab-pane" id="notes">
-            <table class="table table-bordered table-striped">
-            <thead>
-                <tr>
-                    <th scope="col" >{%  trans 'last modified' %}</th>
-                    <th scope="col" >{%  trans 'created by' %}</th>
-                    <th scope="col" >{%  trans 'Note' %}</th>
-                    <th scope="col" >{%  trans 'Action' %}</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for usernote in form.user.usernote_set.all %}
+                <table class="table table-bordered table-striped">
+                    <thead>
                     <tr>
-                        <td>{{ usernote.last_modified }}</td>
-                        <td>{{ usernote.created_by_user|default_if_none:""  }}</td>
-                        <td>{{ usernote.note }}</td>
-                        <td>{% if usernote.created_by_user == request.user %}
-                            <a class="btn btn-default" href="{% url 'accounts:delete_user_note' usernote.uuid.hex %}">
-                                {% trans 'Delete' %}</a>{% endif %}</td>
+                        <th scope="col">{% trans 'last modified' %}</th>
+                        <th scope="col">{% trans 'created by' %}</th>
+                        <th scope="col">{% trans 'Note' %}</th>
+                        <th scope="col">{% trans 'Action' %}</th>
                     </tr>
-                 {% endfor %}
-            </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {% for usernote in usernotes %}
+                        <tr>
+                            <td>{{ usernote.last_modified }}</td>
+                            <td>{% with created_by_user=usernote.created_by_user %}
+                                {% if created_by_user %}
+                                    {% if created_by_user in editable_created_by_users %}
+                                        <a href="{% url 'accounts:update_user' usernote.created_by_user.uuid %}">
+                                            {{ created_by_user }}</a>
+                                        {% else %}{{ created_by_user }}{% endif %}{% endif %}{% endwith %}</td>
+                            <td>{{ usernote.note|linebreaks }}</td>
+                            <td>{% if usernote.created_by_user == request.user %}
+                                <a class="btn btn-default"
+                                   href="{% url 'accounts:delete_user_note' usernote.uuid.hex %}">
+                                    {% trans 'Delete' %}</a>{% endif %}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
                 {% with field=form.notes %}
                     <div class="form-group {% if field.errors %}has-error{% endif %}">
                         <div class="dwbn-form-control_lg">
@@ -162,11 +168,11 @@
                             title="{% trans "After removing the user from your organisation, only the global admin has access to the user." %}">{% trans 'Remove from organisation' %}</button>
                 {% endif %}
                 {% if is_validation_period_active %}
-                        {% with tooltip=form.extend_validity_tooltip %}
-                            <button type="submit" class="btn btn-default" name="_extend_validity"
-                                    {% if tooltip %}data-toggle="tooltip" data-placement="top"
-                                    title="{{ tooltip }}" {% endif %}>{% trans 'Save and extend validity' %}</button>
-                        {% endwith %}
+                    {% with tooltip=form.extend_validity_tooltip %}
+                        <button type="submit" class="btn btn-default" name="_extend_validity"
+                                {% if tooltip %}data-toggle="tooltip" data-placement="top"
+                                title="{{ tooltip }}" {% endif %}>{% trans 'Save and extend validity' %}</button>
+                    {% endwith %}
                 {% endif %}
             </div>
         </div>

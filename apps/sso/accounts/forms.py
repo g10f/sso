@@ -717,8 +717,9 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
         if activate is not None:
             self.user.is_active = activate
 
-        if cd['notes']:
-            UserNote.objects.create(user=self.user, note=cd['notes'], created_by_user=current_user)
+        if cd['notes'] or activate is not None or extend_validity:
+            UserNote.objects.create_note(user=self.user, note=cd['notes'], created_by_user=current_user,
+                                         activate=activate, extend_validity=extend_validity)
 
         if extend_validity:
             # enable brand specific modification

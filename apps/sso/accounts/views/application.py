@@ -419,8 +419,18 @@ def _update_standard_user(request, user, app_roles_by_profile, template='account
     except ObjectDoesNotExist:
         user_organisation = None
 
+    usernote_set = user.usernote_set.all()
+    # get the list of all users in the created_by_user field, to which the current user has
+    # admin rights. If the current user has admin rights then a link to the user form is generated,
+    # otherwise only the name is displayed
+    created_by_user_pk_list = usernote_set.values_list('created_by_user__pk', flat=True)
+    created_by_user_set = User.objects.filter(pk__in=created_by_user_pk_list).only('pk')
+    accessible_created_by_users = request.user.filter_administrable_users(created_by_user_set).only('pk')
+
     context = {'form': form, 'errors': errors, 'formsets': formsets, 'media': media, 'active': active,
+               'usernotes': usernote_set,
                'app_roles_by_profile': app_roles_by_profile,
+               'editable_created_by_users': accessible_created_by_users,
                'logged_in': logged_in, 'is_validation_period_active': is_validation_period_active(user_organisation),
                'title': _('Change user')}
     return render(request, template, context)
