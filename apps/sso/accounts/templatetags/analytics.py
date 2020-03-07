@@ -4,12 +4,12 @@ from django.conf import settings
 register = template.Library()
 
 
-@register.inclusion_tag("googleanalytics/tracker.html")
+@register.inclusion_tag("analytics/tracker.html")
 def show_tracker(secure=False):
     """
-    Output the google tracker code.
+    Output the analytics tracker code.
     """
-    google = getattr(settings, 'GOOGLE', {})
+    google = getattr(settings, 'ANALYTICS', {})
     if google:
         analytics_code = google.get('ANALYTICS_CODE')
         if analytics_code:
