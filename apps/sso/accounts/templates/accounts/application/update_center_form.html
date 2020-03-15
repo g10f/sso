@@ -4,6 +4,11 @@
 
 {% block title %}{% trans 'Change User' %}{% endblock %}
 
+{% block extrascript %}
+    {{ media }}
+    <script src="{% static "js/formsets-1.2.js" %}"></script>
+{% endblock extrascript %}
+
 {% block breadcrumb %}
     <ol class="breadcrumb">
         <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
@@ -59,15 +64,7 @@
                 {% include 'accounts/includes/_app_roles_field.html' with field=form.application_roles %}
             </div>
             <div class="tab-pane" id="notes">
-                {% with field=form.notes %}
-                    <div class="form-group {% if field.errors %}has-error{% endif %}">
-                        <div class="dwbn-form-control_lg">
-                            {{ field }}{% if field.help_text or field.errors %}
-                                <span class="help-inline">{{ field.help_text }} {% for error in field.errors %}
-                                    {{ error }} {% endfor %}</span>{% endif %}
-                        </div>
-                    </div>
-                {% endwith %}
+                {% include 'include/_usernote_field.html' with field=form.notes %}
             </div>
 
         </div>

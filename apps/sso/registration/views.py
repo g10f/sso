@@ -24,6 +24,7 @@ from .forms import RegistrationProfileForm, SendMailForm
 from .models import RegistrationProfile, RegistrationManager, get_check_back_email_message, \
     get_access_denied_email_message, send_set_password_email, send_validation_email
 from .tokens import default_token_generator
+from ..accounts.views.application import get_usernotes_and_accessible_created_by_users
 
 
 class UserSelfRegistrationFormPreview(FormPreview):
@@ -220,7 +221,13 @@ def update_user_registration(request, pk, template='registration/change_user_reg
                             ApplicationRole.objects.filter(roleprofile__user__id=registrationprofile.user.pk).only(
                                 "id").values_list('id', flat=True)}
 
+    usernote_set, accessible_created_by_users = \
+        get_usernotes_and_accessible_created_by_users(registrationprofile.user, request.user)
+
     data = {'form': registrationprofile_form, 'app_roles_by_profile': app_roles_by_profile,
+            'usernotes': usernote_set,
+            'editable_created_by_users': accessible_created_by_users,
+            'user_note_redirect_uri': reverse('registration:update_user_registration', args=[pk]),
             'media': registrationprofile_form.media, 'instance': registrationprofile, 'title': _('Edit registration')}
     return render(request, template, data)
 
