@@ -648,8 +648,6 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
     role_profiles = forms.MultipleChoiceField(required=False, widget=bootstrap.CheckboxSelectMultiple(),
                                               label=_("Role profiles"),
                                               help_text=_('Groups of application roles that are assigned together.'))
-
-    # extend_validity = forms.BooleanField(label=_('Extend validity'), widget=bootstrap.CheckboxInput(), required=False)
     created_by_user = forms.CharField(label=_("Created by"), required=False,
                                       widget=bootstrap.TextInput(attrs={'disabled': ''}))
 
@@ -783,9 +781,13 @@ class CenterProfileForm(mixins.UserRolesMixin, forms.Form):
         current_user = self.request.user
         self.update_user_m2m_fields('application_roles', current_user)
         self.update_user_m2m_fields('role_profiles', current_user)
-        self.user.notes = cd['notes']
         if activate is not None:
             self.user.is_active = activate
+
+        if cd['notes'] or activate is not None or extend_validity:
+            UserNote.objects.create_note(user=self.user, note=cd['notes'], created_by_user=current_user,
+                                         activate=activate, extend_validity=extend_validity)
+
         self.user.save()
 
         return self.user

@@ -1,0 +1,36 @@
+{% load i18n form %}
+<table class="table table-bordered table-striped">
+    <thead>
+    <tr>
+        <th scope="col">{% trans 'last modified' %}</th>
+        <th scope="col">{% trans 'created by' %}</th>
+        <th scope="col">{% trans 'Note' %}</th>
+        <th scope="col">{% trans 'Action' %}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for usernote in usernotes %}
+        <tr>
+            <td>{{ usernote.last_modified }}</td>
+            <td>{% with created_by_user=usernote.created_by_user %}
+                {% if created_by_user %}
+                    {% if created_by_user in editable_created_by_users %}
+                        <a href="{% url 'accounts:update_user' usernote.created_by_user.uuid %}">
+                            {{ created_by_user }}</a>
+                    {% else %}{{ created_by_user }}{% endif %}{% endif %}{% endwith %}</td>
+            <td>{{ usernote.note|linebreaks }}</td>
+            <td>{% if usernote.created_by_user == request.user %}
+                <a class="btn btn-default"
+                   href="{% url 'accounts:delete_user_note' usernote.uuid.hex %}{% if redirect_uri %}?redirect_uri={{ redirect_uri }}{% endif %}">
+                    {% trans 'Delete' %}</a>{% endif %}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<div class="form-group {% if field.errors %}has-error{% endif %}">
+    <div class="dwbn-form-control_lg">
+        {{ field }}{% if field.help_text or field.errors %}
+            <span class="help-inline">{{ field.help_text }} {% for error in field.errors %}
+                {{ error }} {% endfor %}</span>{% endif %}
+    </div>
+</div>

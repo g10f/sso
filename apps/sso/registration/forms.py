@@ -15,7 +15,7 @@ from django.utils.text import capfirst
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from l10n.models import Country
-from sso.accounts.models import UserAddress, User
+from sso.accounts.models import UserAddress, User, UserNote
 from sso.forms import bootstrap, mixins, BLANK_CHOICE_DASH
 from sso.forms.helpers import clean_base64_picture
 from sso.organisations.models import is_validation_period_active
@@ -148,7 +148,9 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
         self.user.username = cd['username']
         self.user.first_name = cd['first_name']
         self.user.last_name = cd['last_name']
-        self.user.notes = cd['notes']
+
+        if cd['notes']:
+            UserNote.objects.create_note(user=self.user, note=cd['notes'], created_by_user=current_user)
 
         # userprofile data
         self.update_user_m2m_fields('organisations', current_user)

@@ -7,6 +7,8 @@ from django.utils.decorators import method_decorator
 from django.views.generic import DeleteView
 from sso.auth.decorators import admin_login_required
 from ..models.application import UserNote
+from ...oauth2.models import allowed_hosts
+from ...utils.url import get_safe_redirect_uri, update_url
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +29,10 @@ class UserNoteDeleteView(DeleteView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_success_url(self):
-        return reverse('accounts:update_user', args=[self.object.user.uuid.hex]) + USERNOTES_TAB
+        redirect_uri = get_safe_redirect_uri(self.request, allowed_hosts())
+        if redirect_uri is None:
+            redirect_uri = reverse('accounts:update_user', args=[self.object.user.uuid.hex])
+        return redirect_uri + USERNOTES_TAB
 
     def get_object(self, queryset=None):
         if hasattr(self, 'object'):

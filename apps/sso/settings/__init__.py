@@ -265,7 +265,6 @@ REGISTRATION = {
 SSO_SEND_FROM_VERIFIED_EMAIL_ADDRESSES = '%s|%s|%s' % \
                                          (DEFAULT_FROM_EMAIL, SSO_NOREPLY_EMAIL, REGISTRATION['CONTACT_EMAIL'])
 
-NOCAPTCHA = True  # use the new No Captcha reCaptcha (django_recaptcha)
 SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error', 'admin.E408']
 
 SESSION_COOKIE_HTTPONLY = False
