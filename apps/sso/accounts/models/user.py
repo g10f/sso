@@ -8,6 +8,7 @@ from django.conf import settings
 from django.contrib.auth.models import Permission, \
     PermissionsMixin, AbstractBaseUser, BaseUserManager
 from django.contrib.auth.validators import UnicodeUsernameValidator
+from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models import Q
@@ -952,9 +953,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         })
         ensure_single_primary(self.organisations.through.objects.filter(user_id=self.id))
 
-    def remove_organisation_related_permissions(self):
-        # TODO: caching organisation_related_application_roles and organisation_related_role_profiles
-        organisation_related_application_roles = ApplicationRole.objects.filter(is_organisation_related=True)
-        organisation_related_role_profiles = RoleProfile.objects.filter(is_organisation_related=True)
+    def remove_organisation_related_permissions(self,
+                                                organisation_related_application_roles=None,
+                                                organisation_related_role_profiles=None):
+        if organisation_related_application_roles is None:
+            organisation_related_application_roles = ApplicationRole.objects.filter(is_organisation_related=True)
+        if organisation_related_role_profiles is None:
+            organisation_related_role_profiles = RoleProfile.objects.filter(is_organisation_related=True)
         self.application_roles.remove(*list(organisation_related_application_roles))
         self.role_profiles.remove(*list(organisation_related_role_profiles))
