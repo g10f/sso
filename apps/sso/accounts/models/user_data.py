@@ -132,11 +132,7 @@ class OrganisationChange(AbstractBaseModel):
         self.status = 'v'
         self.completed_by_user = user
 
-        # remove organisation related permissions
-        organisation_related_application_roles = ApplicationRole.objects.filter(is_organisation_related=True)
-        organisation_related_role_profiles = RoleProfile.objects.filter(is_organisation_related=True)
-        self.user.application_roles.remove(*list(organisation_related_application_roles))
-        self.user.role_profiles.remove(*list(organisation_related_role_profiles))
+        self.user.remove_organisation_related_permissions()
 
         # check if organisation uses user activation
         if is_validation_period_active(self.organisation):

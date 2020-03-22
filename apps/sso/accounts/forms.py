@@ -707,6 +707,9 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
         self.update_user_m2m_fields('application_roles', current_user)
         self.update_user_m2m_fields('role_profiles', current_user)
 
+        if remove_org:
+            self.user.remove_organisation_related_permissions()
+
         self.user.username = cd['username']
         self.user.first_name = cd['first_name']
         self.user.last_name = cd['last_name']

@@ -929,6 +929,7 @@ class User(AbstractBaseUser, PermissionsMixin):
                 logger.exception(e)
 
     def set_organisations(self, organisations):
+        # Ensure last_modified will be updated in all cases the user changes the organisation
         # Force evaluation of `organisations` in case it's a queryset whose value
         # could be affected by `manager.clear()`. Refs #19816.
         organisations = tuple(organisations)
@@ -943,9 +944,17 @@ class User(AbstractBaseUser, PermissionsMixin):
         ensure_single_primary(self.organisations.through.objects.filter(user_id=self.id))
 
     def add_organisation(self, organisation, primary=False):
+        # Ensure last_modified will be updated in all cases the user changes the organisation
         self.organisations.through.objects.create(**{
             'user_id': self.id,
             'organisation_id': organisation.id,
             'primary': primary
         })
         ensure_single_primary(self.organisations.through.objects.filter(user_id=self.id))
+
+    def remove_organisation_related_permissions(self):
+        # TODO: caching organisation_related_application_roles and organisation_related_role_profiles
+        organisation_related_application_roles = ApplicationRole.objects.filter(is_organisation_related=True)
+        organisation_related_role_profiles = RoleProfile.objects.filter(is_organisation_related=True)
+        self.application_roles.remove(*list(organisation_related_application_roles))
+        self.role_profiles.remove(*list(organisation_related_role_profiles))
