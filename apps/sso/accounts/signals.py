@@ -34,14 +34,19 @@ def update_last_modified(sender, instance, created, **kwargs):
 
 
 @receiver(user_logged_in)
-def update_last_ip(sender, user, **kwargs):
+def update_last_login_and_ip(sender, user, **kwargs):
     """
-    A signal receiver which updates the last_ip IP Address for
+    A signal receiver which updates the last_ip IP Address and last_login for
     the user logging in.
     """
+    user.last_login = timezone.now()
+    update_fields = ['last_login']
+
     if 'request' in kwargs:
         user.last_ip = get_real_ip(kwargs['request'])
-        user.save(update_fields=['last_ip'])
+        update_fields.append('last_ip')
+
+    user.save(update_fields=update_fields)
 
 
 @receiver(user_m2m_field_updated, dispatch_uid="sso_user_m2m_field_updated")
