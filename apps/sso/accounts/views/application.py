@@ -166,16 +166,19 @@ class UserList(ListView):
             admin_regions = admin_regions.filter(organisation_country__country=self.country)
         else:
             centers = user.get_administrable_user_organisations()
+
         if self.admin_region:
             centers = centers.filter(admin_region=self.admin_region)
+
         if self.center:
             application_roles = application_roles.filter(user__organisations__in=[self.center]).distinct()
             role_profiles = role_profiles.filter(user__organisations__in=[self.center]).distinct()
-        if self.country or self.admin_region:
-            # when there is no center selected
-            # only filter roles and profiles by center if at least country or region is selected
-            application_roles = application_roles.filter(user__organisations__in=centers).distinct()
-            role_profiles = role_profiles.filter(user__organisations__in=centers).distinct()
+        else:
+            if self.country or self.admin_region:
+                # when there is no center selected
+                # only filter roles and profiles by center if at least country or region is selected
+                application_roles = application_roles.filter(user__organisations__in=centers).distinct()
+                role_profiles = role_profiles.filter(user__organisations__in=centers).distinct()
 
         admin_region_filter = AdminRegionFilter().get(self, admin_regions)
         center_filter = CenterFilter().get(self, centers)
