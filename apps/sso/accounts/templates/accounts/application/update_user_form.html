@@ -106,6 +106,9 @@
 
         <div class="form-group">
             <div class="dwbn-form-control_lg">
+                <button type="submit" class="btn btn-default"
+                        name="_continue">{% trans 'Save and continue editing' %}</button>
+                <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
                 {% if form.user.is_active %}
                     <button type="submit" class="btn btn-default" name="_deactivate">{% trans 'Block User' %}</button>
                 {% else %}
@@ -123,9 +126,6 @@
                     <button type="submit" class="btn btn-default"
                             name="_resend_invitation">{% trans 'Save and resend Invitation Mail' %}</button>
                 {% endif %}
-                <button type="submit" class="btn btn-default"
-                        name="_continue">{% trans 'Save and continue editing' %}</button>
-                <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
                 {% if form.user.organisations.all %}
                     <button type="submit" class="btn btn-danger" name="_remove_org" data-toggle="tooltip"
                             data-placement="top"
