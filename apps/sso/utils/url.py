@@ -77,7 +77,8 @@ def get_base_url(request=None):
         url = '%s://%s' % ('https' if use_https else 'http', domain)
         if not settings.RUNNING_TEST:
             if use_https != settings.SSO_USE_HTTPS:
-                logger.error('Please check your SSO_USE_HTTPS setting. %s != %s', use_https, settings.SSO_USE_HTTPS)
+                logger.error('Please check your SSO_USE_HTTPS setting. %s != %s. Headers=%s', use_https,
+                             settings.SSO_USE_HTTPS, request.headers)
             if domain.lower() != settings.SSO_DOMAIN.lower():
                 logger.error('Please check your SSO_DOMAIN setting. %s != %s', domain, settings.SSO_DOMAIN)
         return url
