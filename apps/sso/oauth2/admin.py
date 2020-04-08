@@ -42,6 +42,7 @@ class ClientAdmin(admin.ModelAdmin):
     readonly_fields = ('last_modified',)
     list_select_related = ('application', 'user')
     form = ClientAdminForm
+    search_fields = ('name', 'redirect_uris', 'post_logout_redirect_uris', 'default_redirect_uri', 'uuid', 'notes')
 
 
 class BearerTokenAdmin(admin.ModelAdmin):
