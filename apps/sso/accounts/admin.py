@@ -114,6 +114,7 @@ class OneTimeMessageAdmin(admin.ModelAdmin):
 class ApplicationAdmin(admin.ModelAdmin):
     list_display = ('order', 'link', 'url', 'is_active', 'global_navigation', 'uuid')
     list_filter = ('global_navigation', 'is_active')
+    search_fields = ('url', 'title', 'uuid', 'notes')
 
 
 class RoleAdmin(admin.ModelAdmin):
@@ -666,3 +667,5 @@ class ApplicationAdminAdmin(admin.ModelAdmin):
               ['application', 'admin', "last_modified"],
           'classes': ['wide']}),
     ]
+    search_fields = ('admin__username', 'admin__first_name', 'admin__last_name', 'admin__useremail__email',
+                     'application__url', 'application__title')
