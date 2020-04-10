@@ -31,12 +31,8 @@
  * @requires jQuery
  */
 (function ($) {
-    function getLocation() {
-        if (!$("button.geo-location").hasClass("active")) {
-            navigator.geolocation.getCurrentPosition(showDistance);
-        } else {
-            showDistance(null);
-        }
+    function error(err) {
+        console.warn(`ERROR(${err.code}): ${err.message}`);
     }
 
     function showDistance(position) {
@@ -45,6 +41,14 @@
             latlng = position.coords.latitude + "," + position.coords.longitude;
         }
         window.location = $("button.geo-location").data("href").replace("latlng=", "latlng=" + latlng);
+    }
+
+    function getLocation() {
+        if (!$("button.geo-location").hasClass("active")) {
+            navigator.geolocation.getCurrentPosition(showDistance, error);
+        } else {
+            showDistance(null);
+        }
     }
 
     $(function () {
