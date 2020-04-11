@@ -650,6 +650,8 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
                                               help_text=_('Groups of application roles that are assigned together.'))
     created_by_user = forms.CharField(label=_("Created by"), required=False,
                                       widget=bootstrap.TextInput(attrs={'disabled': ''}))
+    last_modified_by_user = forms.CharField(label=_("Last modified by"), required=False,
+                                            widget=bootstrap.TextInput(attrs={'disabled': ''}))
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop('request')
@@ -664,8 +666,8 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
         initial = kwargs.get('initial', {})
         initial.update(user_data)
 
-        created_by_user = self.user.created_by_user
-        initial['created_by_user'] = created_by_user if created_by_user else ''
+        initial['created_by_user'] = self.user.created_by_user if self.user.created_by_user else ''
+        initial['last_modified_by_user'] = self.user.last_modified_by_user if self.user.last_modified_by_user else ''
 
         kwargs['initial'] = initial
         super().__init__(*args, **kwargs)
