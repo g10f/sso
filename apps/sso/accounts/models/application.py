@@ -36,6 +36,7 @@ class Application(models.Model):
         _('global navigation'),
         help_text=_('Designates whether this application should be shown in the global navigation bar.'),
         default=True)
+    is_internal = models.BooleanField(_('internal'), default=False)
     is_active = models.BooleanField(_('active'), default=True,
                                     help_text=_('Designates whether this application should be provided.'))
     redirect_to_after_first_login = models.BooleanField(

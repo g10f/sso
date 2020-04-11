@@ -26,7 +26,7 @@
             <h3>{% trans 'Applications' %}</h3>
             <ul>
                 {% for app in user.get_apps %}
-                    {% if app.url %}
+                    {% if app.url and not app.is_internal %}
                         <li><a href="{{ app.url }}">{{ app.title }}</a></li>{% endif %}
                 {% endfor %}
             </ul>
@@ -39,7 +39,7 @@
 
         {% url 'registration:registration_register' as registration_register_url %}
         {% if registration_register_url and registration_open %}
-        <p>        
+        <p>
         {% blocktrans %}New at {{ site_name }}? <a href="{{ registration_register_url }}">Register</a>{% endblocktrans %}.
         </p>
         {% endif %}
