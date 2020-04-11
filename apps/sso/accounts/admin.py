@@ -113,7 +113,7 @@ class OneTimeMessageAdmin(admin.ModelAdmin):
 
 class ApplicationAdmin(admin.ModelAdmin):
     list_display = ('order', 'link', 'url', 'is_active', 'global_navigation', 'uuid')
-    list_filter = ('global_navigation', 'is_active')
+    list_filter = ('global_navigation', 'is_internal', 'is_active')
     search_fields = ('url', 'title', 'uuid', 'notes')
 
 
