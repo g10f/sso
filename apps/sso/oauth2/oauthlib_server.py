@@ -14,6 +14,7 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.utils.encoding import force_text, force_bytes
+from oauthlib.oauth2 import FatalClientError
 from oauthlib.oauth2.rfc6749 import errors
 from oauthlib.oauth2.rfc6749 import tokens
 from oauthlib.oauth2.rfc6749.endpoints import AuthorizationEndpoint, RevocationEndpoint, TokenEndpoint
@@ -107,7 +108,10 @@ class OIDCRequestValidator(RequestValidator):
         if request.client:
             assert (request.client.uuid == UUID(client_id))
         else:
-            request.client = Client.objects.get(uuid=client_id, is_active=True)
+            try:
+                request.client = Client.objects.get(uuid=client_id, is_active=True)
+            except ValidationError as e:
+                raise FatalClientError(e)
         return request.client
 
     def is_pkce_required(self, client_id, request):
