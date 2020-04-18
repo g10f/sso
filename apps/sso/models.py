@@ -29,6 +29,10 @@ def transpose_image(picture):
     # copied from ImageOps.exif_transpose but avoiding to create a copy if not
     # transposed
     # argument is a UploadedFile Object instead of Image
+    # exif is only in TIFF and JPEG available
+    if picture.image.format not in ['JPEG', 'TIFF']:
+        return picture
+
     exif = picture.image.getexif()
     orientation = exif.get(0x0112)
     method = {
@@ -80,8 +84,10 @@ def clean_picture(picture, max_upload_size):
                 file_ext = guess_extension(picture.content_type)
             picture.name = "%s%s" % (
                 get_random_string(7, allowed_chars='abcdefghijklmnopqrstuvwxyz0123456789'), file_ext)
-
-            picture = transpose_image(picture)
+            try:
+                picture = transpose_image(picture)
+            except Exception as e:
+                logger.warning("Transpose image failed: ", e)
         else:
             raise forms.ValidationError(_('File type is not supported'))
     return picture
