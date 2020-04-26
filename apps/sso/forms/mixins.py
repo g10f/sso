@@ -1,5 +1,6 @@
 from django.db.models.query_utils import Q
 
+from sso.accounts.models import UserNote
 from sso.signals import user_m2m_field_updated
 
 
@@ -11,20 +12,35 @@ def ids_from_choices(listobject):
     return set([int(x) for x in listobject])
 
 
-class UserRolesMixin(object): 
+class UserNoteMixin:
+    def create_note_if_required(self, current_user, cd=None, activate=None, extend_validity=False, removed_orgs=None):
+        notes = []
+        if cd is not None and 'notes' in cd and cd['notes']:
+            notes.append(cd['notes'])
+        if activate is not None:
+            notes.append('activated' if activate else 'deactivated')
+        if extend_validity:
+            notes.append('extended validity')
+        if removed_orgs is not None:
+            notes.append('removed from %s' % ", ".join(str(org) for org in removed_orgs))
+
+        UserNote.objects.create_note(user=self.user, notes=notes, created_by_user=current_user)
+
+
+class UserRolesMixin(object):
     def _update_user_m2m(self, new_value_set, administrable_values, attribute_name):
         """
         get the new data from the form and then update or remove values from many2many fields.
         Adding and removing is done with respect to the permissions of the current user.
-        Only administrable values of the current user are changed at the user. The user object must have 
-        
+        Only administrable values of the current user are changed at the user. The user object must have
+
         a function: get_administrable_{{ attribute_name }}
-        and an attribute: {{ attribute_name }}        
+        and an attribute: {{ attribute_name }}
         """
         existing_values = set(getattr(self.user, '%s' % attribute_name).all().values_list('id', flat=True))
         remove_values = ((existing_values & administrable_values) - new_value_set)
-        new_value_set = (new_value_set - existing_values)            
-        
+        new_value_set = (new_value_set - existing_values)
+
         user_attribute = getattr(self.user, '%s' % attribute_name)
 
         if remove_values:
@@ -69,6 +85,7 @@ class UserRolesMixin(object):
             except AttributeError:
                 # should be a single object instead of queryset
                 new_value_set = {cd.id} if cd else set()
-                                
-        administrable_values = set(getattr(current_user, admin_attribute_format % attribute_name)().values_list('id', flat=True))
+
+        administrable_values = set(
+            getattr(current_user, admin_attribute_format % attribute_name)().values_list('id', flat=True))
         self._update_user_m2m(new_value_set, administrable_values, attribute_name)

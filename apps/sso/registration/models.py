@@ -14,6 +14,7 @@ from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from sso.utils.translation import i18n_email_msg_and_subj
 from .tokens import default_token_generator
+from ..accounts.models import UserNote
 
 
 def send_access_denied_email(user, request, reply_to_email,
@@ -221,7 +222,8 @@ class RegistrationProfile(models.Model):
 
     activation_valid.boolean = True
 
-    def process(self, action=None):
+    def process(self, action=None, user=None):
+        notes = []
         if action == 'activate':
             self.user.is_active = True
             self.is_access_denied = False
@@ -230,11 +232,16 @@ class RegistrationProfile(models.Model):
                 self.user.set_password(get_random_string(40))
             self.save()
             self.user.save()
+            notes.append('activated')
         elif action == 'deny':
             self.is_access_denied = True
             self.user.is_active = False
             self.save()
             self.user.save()
+            notes.append('denied')
         elif action == 'check_back':
             self.check_back = True
             self.save()
+            notes.append('check back required')
+
+        UserNote.objects.create_note(user=self.user, created_by_user=user, notes=notes)

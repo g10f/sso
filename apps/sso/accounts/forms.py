@@ -4,7 +4,6 @@ from collections import OrderedDict
 
 import pytz
 from captcha.fields import ReCaptchaField
-
 from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -24,6 +23,7 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.text import capfirst
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
+
 from sso.forms import bootstrap, mixins, BLANK_CHOICE_DASH, BaseForm
 from sso.forms.fields import EmailFieldLower
 from sso.models import clean_picture
@@ -32,7 +32,6 @@ from sso.registration import default_username_generator
 from sso.registration.forms import UserSelfRegistrationForm
 from sso.signals import extend_user_validity, extend_user_validity_tooltip
 from .models import User, UserAddress, UserPhoneNumber, UserEmail, OrganisationChange
-from .models.application import UserNote
 
 logger = logging.getLogger(__name__)
 
@@ -545,7 +544,7 @@ class CenterSelfProfileForm(forms.Form):
         self.user.save()
 
 
-class UserSelfProfileDeleteForm(forms.Form):
+class UserSelfProfileDeleteForm(mixins.UserNoteMixin, forms.Form):
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('instance')
         super().__init__(*args, **kwargs)
@@ -553,6 +552,7 @@ class UserSelfProfileDeleteForm(forms.Form):
     def save(self):
         self.user.is_active = False
         self.user.save()
+        self.create_note_if_required(self.user, activate=False)
 
     @cached_property
     def changed_data(self):
@@ -616,7 +616,7 @@ class UserSelfRegistrationForm2(UserSelfRegistrationForm):
         return registration_profile
 
 
-class UserProfileForm(mixins.UserRolesMixin, forms.Form):
+class UserProfileForm(mixins.UserRolesMixin, mixins.UserNoteMixin, forms.Form):
     """
     Form for SSO Staff
     """
@@ -704,7 +704,13 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
     def save(self, extend_validity=False, activate=None, remove_org=False):
         cd = self.cleaned_data
         current_user = self.request.user
-        new_orgs = set() if remove_org else None
+        if remove_org:
+            new_orgs = set()
+            removed_orgs = list(self.user.organisations.all())
+        else:
+            removed_orgs = None
+            new_orgs = None
+
         self.update_user_m2m_fields('organisations', current_user, new_value_set=new_orgs)
         self.update_user_m2m_fields('application_roles', current_user)
         self.update_user_m2m_fields('role_profiles', current_user)
@@ -720,9 +726,7 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
         if activate is not None:
             self.user.is_active = activate
 
-        if cd['notes'] or activate is not None or extend_validity:
-            UserNote.objects.create_note(user=self.user, note=cd['notes'], created_by_user=current_user,
-                                         activate=activate, extend_validity=extend_validity)
+        self.create_note_if_required(current_user, cd, activate, extend_validity, removed_orgs)
 
         if extend_validity:
             # enable brand specific modification
@@ -736,7 +740,7 @@ class UserProfileForm(mixins.UserRolesMixin, forms.Form):
         return self.user
 
 
-class CenterProfileForm(mixins.UserRolesMixin, forms.Form):
+class CenterProfileForm(mixins.UserRolesMixin, mixins.UserNoteMixin, forms.Form):
     """
     Form for SSO Staff for editing Center Accounts
     """
@@ -789,9 +793,7 @@ class CenterProfileForm(mixins.UserRolesMixin, forms.Form):
         if activate is not None:
             self.user.is_active = activate
 
-        if cd['notes'] or activate is not None or extend_validity:
-            UserNote.objects.create_note(user=self.user, note=cd['notes'], created_by_user=current_user,
-                                         activate=activate, extend_validity=extend_validity)
+        self.create_note_if_required(current_user, cd, activate, extend_validity)
 
         self.user.save()
 

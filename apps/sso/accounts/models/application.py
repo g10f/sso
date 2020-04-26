@@ -183,16 +183,11 @@ class ApplicationAdmin(AbstractBaseModel):
 
 
 class UserNoteManager(AbstractBaseModelManager):
-    def create_note(self, user, created_by_user, activate=None, extend_validity=False, note=None, **kwargs):
-        notes = []
-        if note:
-            notes.append(note)
-        if extend_validity:
-            notes.append('extended validity')
-        if activate is not None:
-            notes.append('activated' if activate else 'deactivated')
-
-        return self.create(user=user, note="\n".join(notes), created_by_user=created_by_user, **kwargs)
+    def create_note(self, user, created_by_user, notes, **kwargs):
+        if len(notes) > 0:
+            return self.create(user=user, note="\n".join(notes), created_by_user=created_by_user, **kwargs)
+        else:
+            return self.none()
 
 
 class UserNote(AbstractBaseModel):
