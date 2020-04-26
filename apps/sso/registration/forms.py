@@ -150,7 +150,7 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
         self.user.last_name = cd['last_name']
 
         if cd['notes']:
-            UserNote.objects.create_note(user=self.user, note=cd['notes'], created_by_user=current_user)
+            UserNote.objects.create_note(user=self.user, notes=[cd['notes']], created_by_user=current_user)
 
         # userprofile data
         self.update_user_m2m_fields('organisations', current_user)

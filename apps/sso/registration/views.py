@@ -205,7 +205,7 @@ def update_user_registration(request, pk, template='registration/change_user_reg
                                       kwargs={'pk': pk, 'action': action}) + "?" + request.GET.urlencode()
             elif action == "activate":
                 msg = _('The %(name)s "%(obj)s" was saved successfully.') % msg_dict
-                registrationprofile.process(action)
+                registrationprofile.process(action, request.user)
                 send_set_password_email(registrationprofile.user, request,
                                         reply_to=[request.user.primary_email().email])
                 success_url = reverse('registration:user_registration_list') + "?" + request.GET.urlencode()
@@ -316,7 +316,7 @@ class RegistrationSendMailFormView(FormView):
         return {'message': message, 'subject': subject}
 
     def form_valid(self, form):
-        self.instance.process(self.kwargs['action'])
+        self.instance.process(self.kwargs['action'], self.request.user)
         message = form.cleaned_data['message']
         subject = form.cleaned_data['subject']
         self.instance.user.email_user(subject, message, reply_to=[self.request.user.primary_email().email])
