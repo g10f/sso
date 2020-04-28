@@ -10,7 +10,7 @@
 """
 
 __author__ = 'Gunnar Scherf <gunnar@g10f.de>'
-__version__ = '2.0.3'
+__version__ = '2.0.4'
 
 
 # This will make sure the app is always imported when

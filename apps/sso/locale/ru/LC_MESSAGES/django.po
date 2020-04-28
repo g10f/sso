@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-03 22:59+0100\n"
+"POT-Creation-Date: 2020-04-28 21:16+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -441,6 +441,9 @@ msgstr ""
 msgid "Created by"
 msgstr ""
 
+msgid "Last modified by"
+msgstr ""
+
 msgid "active"
 msgstr ""
 
@@ -456,6 +459,9 @@ msgstr ""
 msgid ""
 "Designates whether this application should be shown in the global navigation "
 "bar."
+msgstr ""
+
+msgid "internal"
 msgstr ""
 
 msgid "Designates whether this application should be provided."
@@ -794,12 +800,6 @@ msgstr ""
 msgid "Registration"
 msgstr ""
 
-msgid "Action"
-msgstr ""
-
-msgid "Delete"
-msgstr ""
-
 msgid ""
 "After removing the user from your organisation, only the global admin has "
 "access to the user."
@@ -824,6 +824,9 @@ msgid "Delete Profile"
 msgstr ""
 
 msgid "Do you want to delete your account?"
+msgstr ""
+
+msgid "Delete"
 msgstr ""
 
 msgid "or"
@@ -871,6 +874,9 @@ msgid "Object id"
 msgstr ""
 
 msgid "Object repr"
+msgstr ""
+
+msgid "Action"
 msgstr ""
 
 #, python-format
@@ -1232,16 +1238,15 @@ msgstr ""
 msgid "The account %(username)s has no email address!"
 msgstr ""
 
-#, python-format
+#, python-brace-format
 msgid ""
-"The %(name)s \"%(obj)s\" was changed successfully. You may add another "
-"%(name)s below."
+"The {name} \"{obj}\" was changed successfully. You may add another {name} "
+"below."
 msgstr ""
 
-#, python-format
+#, python-brace-format
 msgid ""
-"The %(name)s \"%(obj)s\" was changed successfully. You may edit it again "
-"below."
+"The {name} \"{obj}\" was changed successfully. You may edit it again below."
 msgstr ""
 
 #, python-format
@@ -1259,8 +1264,8 @@ msgid ""
 "The %(name)s \"%(obj)s\" was removed from the organisation successfully."
 msgstr ""
 
-#, python-format
-msgid "The %(name)s \"%(obj)s\" was changed successfully."
+#, python-brace-format
+msgid "The {name} \"{obj}\" was changed successfully."
 msgstr ""
 
 msgid "Change user"
@@ -2376,9 +2381,6 @@ msgid "Date registered"
 msgstr ""
 
 msgid "About me"
-msgstr ""
-
-msgid "Last modified by"
 msgstr ""
 
 msgid "Check back"
