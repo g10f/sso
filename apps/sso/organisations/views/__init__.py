@@ -12,6 +12,7 @@ from django.http.response import HttpResponse
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_text
+from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import DeleteView, DetailView, CreateView
 from l10n.models import Country
@@ -67,7 +68,9 @@ class OrganisationBaseView(object):
     def get_success_url(self):
         msg_dict = {'name': force_text(self.model._meta.verbose_name), 'obj': force_text(self.object)}
         if "_continue" in self.request.POST:
-            msg = _('The %(name)s "%(obj)s" was changed successfully. You may edit it again below.') % msg_dict
+            msg = format_html(
+                _('The {name} "{obj}" was changed successfully. You may edit it again below.'),
+                **msg_dict)
             success_url = urlunsplit(('', '', self.request.path, self.request.GET.urlencode(safe='/'), ''))
             messages.add_message(self.request, level=messages.SUCCESS, message=msg, fail_silently=True)
         else:
@@ -75,7 +78,7 @@ class OrganisationBaseView(object):
             if redirect_uri:
                 success_url = redirect_uri
             else:
-                msg = _('The %(name)s "%(obj)s" was changed successfully.') % msg_dict
+                msg = format_html(_('The {name} "{obj}" was changed successfully.'), **msg_dict)
                 # hack?
                 success_url = super(FormsetsUpdateView, self).get_success_url()
                 messages.add_message(self.request, level=messages.SUCCESS, message=msg, fail_silently=True)

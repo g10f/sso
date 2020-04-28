@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-03 22:59+0100\n"
+"POT-Creation-Date: 2020-04-28 21:16+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -453,6 +453,9 @@ msgstr "* Anwendungsrollen, die durch Rollenprofile enthalten sind"
 msgid "Created by"
 msgstr "Angelegt von"
 
+msgid "Last modified by"
+msgstr "Letzte Änderung durch"
+
 msgid "active"
 msgstr "aktiv"
 
@@ -469,6 +472,10 @@ msgid ""
 "Designates whether this application should be shown in the global navigation "
 "bar."
 msgstr ""
+"Gibt an, ob die Anwendung in der globalen Navigation angezeigt werden soll."
+
+msgid "internal"
+msgstr "intern"
 
 msgid "Designates whether this application should be provided."
 msgstr "Gibt an, ob diese Anwendung aktiv ist."
@@ -831,12 +838,6 @@ msgstr "Basis Daten"
 msgid "Registration"
 msgstr "Registrierung"
 
-msgid "Action"
-msgstr ""
-
-msgid "Delete"
-msgstr ""
-
 msgid ""
 "After removing the user from your organisation, only the global admin has "
 "access to the user."
@@ -864,6 +865,9 @@ msgstr "Profil löschen"
 
 msgid "Do you want to delete your account?"
 msgstr "Möchtest Du Dein Konto löschen?"
+
+msgid "Delete"
+msgstr ""
 
 msgid "or"
 msgstr "oder"
@@ -912,6 +916,9 @@ msgid "Object id"
 msgstr ""
 
 msgid "Object repr"
+msgstr ""
+
+msgid "Action"
 msgstr ""
 
 #, python-format
@@ -1316,16 +1323,15 @@ msgstr "Benutzer hinzufügen"
 msgid "The account %(username)s has no email address!"
 msgstr "Zu dem Konto %(username)s wurde keine E-Mail Adresse angegeben!"
 
-#, python-format
+#, python-brace-format
 msgid ""
-"The %(name)s \"%(obj)s\" was changed successfully. You may add another "
-"%(name)s below."
+"The {name} \"{obj}\" was changed successfully. You may add another {name} "
+"below."
 msgstr ""
 
-#, python-format
+#, python-brace-format
 msgid ""
-"The %(name)s \"%(obj)s\" was changed successfully. You may edit it again "
-"below."
+"The {name} \"{obj}\" was changed successfully. You may edit it again below."
 msgstr ""
 
 #, python-format
@@ -1345,8 +1351,8 @@ msgid ""
 "The %(name)s \"%(obj)s\" was removed from the organisation successfully."
 msgstr "%(name)s \"%(obj)s\" wurde erfolgreich aus der Organisation gelöscht."
 
-#, python-format
-msgid "The %(name)s \"%(obj)s\" was changed successfully."
+#, python-brace-format
+msgid "The {name} \"{obj}\" was changed successfully."
 msgstr ""
 
 msgid "Change user"
@@ -2500,9 +2506,6 @@ msgstr "Registrierungsdatum"
 
 msgid "About me"
 msgstr "Über mich"
-
-msgid "Last modified by"
-msgstr "Letzte Änderung durch"
 
 msgid "Check back"
 msgstr "Rücksprache"
