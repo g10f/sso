@@ -184,14 +184,15 @@ class UserMixin(object):
                 applicationroles = obj.get_applicationroles()
 
                 for application in obj.get_apps():
-                    application_data = {'order': application.order,
-                                        'link': {'href': application.url, 'title': application.title,
-                                                 'global_navigation': application.global_navigation}, 'roles': []}
-                    for applicationrole in applicationroles:
-                        if applicationrole.application == application:
-                            application_data['roles'].append(applicationrole.role.name)
+                    if not application.required_scope or application.required_scope in scopes:
+                        application_data = {'order': application.order,
+                                            'link': {'href': application.url, 'title': application.title,
+                                                     'global_navigation': application.global_navigation}, 'roles': []}
+                        for applicationrole in applicationroles:
+                            if applicationrole.application == application:
+                                application_data['roles'].append(applicationrole.role.name)
 
-                    applications[application.uuid.hex] = application_data
+                        applications[application.uuid.hex] = application_data
                 data['apps'] = applications
 
             if 'address' in scopes:

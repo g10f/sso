@@ -4,6 +4,7 @@ from itertools import chain
 
 from django.conf import settings
 from django.contrib.auth.models import Group
+from django.core.validators import validate_slug
 from django.db import models
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
@@ -43,6 +44,9 @@ class Application(models.Model):
         _('redirect to after first login'), default=False,
         help_text=_('Designates whether the user should redirected to this app after the first login.'))
     notes = models.TextField(_("Notes"), blank=True, max_length=2048)
+    required_scope = models.CharField(_("Required scope"), blank=True, max_length=32,
+                                      validators=[validate_slug],
+                                      help_text=_('Required OAuth2 scope to get the application roles.'))
     objects = ApplicationManager()
 
     class Meta:
@@ -53,7 +57,7 @@ class Application(models.Model):
     @mark_safe
     def link(self):
         if self.url:
-            return '<a href="%s">%s</a>' % (self.url, self.title)
+            return '<a href="%s">%s</a>' % (self.url, self.url)
         else:
             return ''
 
