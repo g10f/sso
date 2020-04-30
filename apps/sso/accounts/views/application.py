@@ -18,6 +18,7 @@ from django.utils.encoding import force_text
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import DeleteView
+
 from l10n.models import Country
 from sso.accounts.email import send_account_created_email
 from sso.accounts.forms import UserAddForm, UserProfileForm, UserEmailForm, AppAdminUserProfileForm, CenterProfileForm
@@ -269,7 +270,7 @@ class AppAdminUserList(ListView):
         country_filter = CountryFilter().get(self, countries)
 
         centers = Organisation.objects.none()
-        application_roles = user.get_administrable_application_roles()
+        application_roles = user.get_administrable_app_admin_application_roles()
         role_profiles = user.get_administrable_app_admin_role_profiles()
         admin_regions = user.get_administrable_app_admin_user_regions()
 
@@ -392,7 +393,7 @@ def _update_standard_user(request, user, app_roles_by_profile, template='account
             if "_addanother" in request.POST:
                 msg = format_html(_(
                     'The {name} "{obj}" was changed successfully. You may add another {name} below.'),
-                      **msg_dict)
+                    **msg_dict)
                 success_url = reverse('accounts:add_user')
             elif "_continue" in request.POST:
                 msg = format_html(
