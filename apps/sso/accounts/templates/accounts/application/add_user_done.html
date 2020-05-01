@@ -55,10 +55,12 @@
                 <td>{{ application_role }}</td>
             </tr>
         {% endfor %}
+        {% if new_user.usernote_set.all %}
         <tr>
             <th>{% trans 'Notes' %}:</th>
-            <td>{{ new_user.notes }}</td>
+            <td>{{ new_user.usernote_set.all.0.note }}</td>
         </tr>
+        {% endif %}
         </tbody>
     </table>
     {% if redirect_uri %}<a class="btn btn-default" href="{{ redirect_uri }}">{% trans 'Back' %}</a>{% endif %}
