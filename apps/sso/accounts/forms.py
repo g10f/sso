@@ -267,7 +267,7 @@ class AdminUserCreationForm(forms.ModelForm):
         return user
 
 
-class UserAddForm(mixins.UserRolesMixin, forms.ModelForm):
+class UserAddForm(mixins.UserRolesMixin, mixins.UserNoteMixin, forms.ModelForm):
     """
     form for SSO User Admins for adding users in the frontend
     """
@@ -344,6 +344,7 @@ class UserAddForm(mixins.UserRolesMixin, forms.ModelForm):
         self.update_user_m2m_fields('application_roles', current_user)
         self.update_user_m2m_fields('role_profiles', current_user)
 
+        self.create_note_if_required(current_user, self.cleaned_data)
         user.create_primary_email(email=self.cleaned_data["email"])
         return user
 
