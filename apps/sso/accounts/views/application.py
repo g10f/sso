@@ -124,7 +124,7 @@ class UserList(ListView):
 
         qs = super().get_queryset().only('uuid', 'last_login', 'username', 'first_name', 'last_name',
                                          'date_joined', 'picture', 'valid_until') \
-            .prefetch_related('useremail_set', 'organisations')
+            .prefetch_related('useremail_set', 'organisations', 'role_profiles')
         # exclude user who were not activated, this users must first be activated on the registration page
         qs = qs.exclude(last_login__isnull=True, is_active=False)
         qs = user.filter_administrable_users(qs)

@@ -42,6 +42,7 @@
                 {% include "include/table_header.html" %}
                 <tbody>
                 {% for user_obj in object_list %}
+                    {% block user-detail %}
                     <tr>
                         <td>
                             {% if perms.accounts.change_user %}
@@ -52,9 +53,6 @@
                             {% if user_obj.picture %}<a href="{{ user_obj.picture.url }}">{% thumbnail user_obj.picture "30x30" crop="center" as im %}
                                 <img class="dwbn-icon-user" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="">{% endthumbnail %}</a>{% endif %}
                         </td>
-                        {% comment %}
-                        <td>{{ user_obj.first_name }}</td>
-                        {% endcomment %}
                         <td>{{ user_obj.last_name }}</td>
                         <td>
                             {% with primary_email=user_obj.primary_email %}
@@ -67,9 +65,12 @@
                         <td>{{ user_obj.last_login|date:"Y-m-d H:i" }}</td>
                         <td>{{ user_obj.date_joined|date:"Y-m-d H:i" }}</td>
                         {% if sso_validation_period_is_active %}
+                            {% block user-detail-valid_until %}
                             <td class="{{ user_obj|valid_until_class }}">{{ user_obj.valid_until|date:"Y-m-d H:i" }}</td>
+                            {% endblock user-detail-valid_until %}
                         {% endif %}
                     </tr>
+                    {% endblock user-detail %}
                 {% endfor %}
                 </tbody>
             </table>

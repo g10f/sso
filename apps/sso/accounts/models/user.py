@@ -741,6 +741,17 @@ class User(AbstractBaseUser, PermissionsMixin):
         return qs
 
     @property
+    def is_member(self):
+        # iterate over all profiles does not makes a new DB query
+        # when prefetch_related('role_profiles') is used
+        # otherwise self.role_profiles.filter(uuid=settings.SSO_DEFAULT_MEMBER_PROFILE_UUID).exists()
+        # would be better
+        for profile in self.role_profiles.all():
+            if profile.uuid == settings.SSO_DEFAULT_MEMBER_PROFILE_UUID:
+                return True
+        return False
+
+    @property
     def is_global_user_admin(self):
         # can access user data: name, email, center and roles for all users
         return self.is_user_admin and self.has_perm("accounts.access_all_users")
