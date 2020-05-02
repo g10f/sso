@@ -149,60 +149,51 @@ class UserList(ListView):
 
     def get_filters(self):
         user = self.request.user
-        cache_key = "filters-%(user_id)s-%(country_id)s-%(admin_region_id)s-%(center_id)s" % {
-            "user_id": user.id,
-            "country_id": "" if self.country is None else self.country.id,
-            "admin_region_id": "" if self.admin_region is None else self.admin_region.id,
-            "center_id": "" if self.center is None else self.center.id
-        }
-        filters = cache.get(cache_key)
-        if filters is None:
-            # .filter(organisation__user__isnull=False) causes performance degration
-            user_countries = user.get_administrable_user_countries()
-            countries = [user_country.country for user_country in user_countries]
-            country_filter = CountryFilter().get(self, countries)
+        # .filter(organisation__user__isnull=False) causes performance degration
+        user_countries = user.get_administrable_user_countries()
+        countries = [user_country.country for user_country in user_countries]
+        country_filter = CountryFilter().get(self, countries)
 
-            application_roles = user.get_administrable_application_roles()
-            role_profiles = user.get_administrable_role_profiles()
-            admin_regions = user.get_administrable_user_regions()
+        application_roles = user.get_administrable_application_roles()
+        role_profiles = user.get_administrable_role_profiles()
+        admin_regions = user.get_administrable_user_regions()
 
-            if self.country:
-                centers = user.get_administrable_user_organisations().filter(
-                    organisation_country__country=self.country)
-                admin_regions = admin_regions.filter(organisation_country__country=self.country)
-            else:
-                centers = user.get_administrable_user_organisations()
+        if self.country:
+            centers = user.get_administrable_user_organisations().filter(
+                organisation_country__country=self.country)
+            admin_regions = admin_regions.filter(organisation_country__country=self.country)
+        else:
+            centers = user.get_administrable_user_organisations()
 
-            if self.admin_region:
-                centers = centers.filter(admin_region=self.admin_region)
+        if self.admin_region:
+            centers = centers.filter(admin_region=self.admin_region)
 
-            if self.center:
-                application_roles = application_roles.filter(user__organisations__in=[self.center]).distinct()
-                role_profiles = role_profiles.filter(user__organisations__in=[self.center]).distinct()
-            else:
-                if self.country or self.admin_region:
-                    # when there is no center selected
-                    # only filter roles and profiles by center if at least country or region is selected
-                    application_roles = application_roles.filter(user__organisations__in=centers).distinct()
-                    role_profiles = role_profiles.filter(user__organisations__in=centers).distinct()
+        if self.center:
+            application_roles = application_roles.filter(user__organisations__in=[self.center]).distinct()
+            role_profiles = role_profiles.filter(user__organisations__in=[self.center]).distinct()
+        else:
+            if self.country or self.admin_region:
+                # when there is no center selected
+                # only filter roles and profiles by center if at least country or region is selected
+                application_roles = application_roles.filter(user__organisations__in=centers).distinct()
+                role_profiles = role_profiles.filter(user__organisations__in=centers).distinct()
 
-            admin_region_filter = AdminRegionFilter().get(self, admin_regions)
-            center_filter = CenterFilter().get(self, centers)
-            application_role_filter = ApplicationRoleFilter().get(self, application_roles)
-            role_profile_filter = RoleProfileFilter().get(self, role_profiles)
+        admin_region_filter = AdminRegionFilter().get(self, admin_regions)
+        center_filter = CenterFilter().get(self, centers)
+        application_role_filter = ApplicationRoleFilter().get(self, application_roles)
+        role_profile_filter = RoleProfileFilter().get(self, role_profiles)
 
-            filters = []
-            if len(countries) > 1:
-                filters += [country_filter]
-            if len(admin_regions) > 1:
-                filters += [admin_region_filter]
-            if len(centers) > 1:
-                filters += [center_filter]
+        filters = []
+        if len(countries) > 1:
+            filters += [country_filter]
+        if len(admin_regions) > 1:
+            filters += [admin_region_filter]
+        if len(centers) > 1:
+            filters += [center_filter]
 
-            filters += [role_profile_filter, application_role_filter]
-            if user.is_user_admin:
-                filters += [IsActiveFilter().get(self)]
-            cache.set(cache_key, filters)
+        filters += [role_profile_filter, application_role_filter]
+        if user.is_user_admin:
+            filters += [IsActiveFilter().get(self)]
         return filters
 
     def get_context_data(self, **kwargs):
