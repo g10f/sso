@@ -202,7 +202,7 @@ class UserList(ListView):
             "center": "" if self.center is None else self.center.id,
             "role_profile": "" if self.role_profile is None else self.role_profile.id,
             "app_role": "" if self.app_role is None else self.app_role.id,
-            "is_active": "" if self.is_active is None else self.is_active,
+            "is_active": "" if self.is_active is None else self.is_active.pk,
         }
         filters_cache_key = "filter-row-%(user)s-%(country)s-%(admin_region)s-%(center)s-%(role_profile)s-" \
                             "%(app_role)s-%(is_active)s" % cache_dict
