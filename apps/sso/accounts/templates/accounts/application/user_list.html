@@ -29,10 +29,10 @@
 
     <div class="row dwbn-filter-row">
         {% block dwbn-filter-row %}
+            <div class="col-sm-3">
+                {% include 'include/_search_form.html' %}
+            </div>
             {% cache 300 filters filters_cache_key LANGUAGE_CODE %}
-                <div class="col-sm-3">
-                    {% include 'include/_search_form.html' %}
-                </div>
                 <div class="col-sm-9">
                     {% for filter in filters %}{% if filter %}
                         {% include filter.template_name with filter=filter %}
@@ -54,6 +54,7 @@
                             <td>
                                 {% if perms.accounts.change_user %}
                                     <a class="" href="
+
 
 
                                             {% url 'accounts:update_user' user_obj.uuid.hex %}{{ cl.get_query_string }}">{{ user_obj.username }}</a>
