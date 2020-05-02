@@ -6,6 +6,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import permission_required, user_passes_test
+from django.core.cache import cache
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.db.models.expressions import F
 from django.forms import inlineformset_factory
@@ -18,6 +19,7 @@ from django.utils.encoding import force_text
 from django.utils.html import format_html
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import DeleteView
+
 from l10n.models import Country
 from sso.accounts.email import send_account_created_email
 from sso.accounts.forms import UserAddForm, UserProfileForm, UserEmailForm, AppAdminUserProfileForm, CenterProfileForm
@@ -145,58 +147,72 @@ class UserList(ListView):
         qs = qs.order_by(*ordering).distinct()
         return qs
 
-    def get_context_data(self, **kwargs):
+    def get_filters(self):
         user = self.request.user
+        cache_key = "filters-%(user_id)s-%(country_id)s-%(admin_region_id)s-%(center_id)s" % {
+            "user_id": user.id,
+            "country_id": "" if self.country is None else self.country.id,
+            "admin_region_id": "" if self.admin_region is None else self.admin_region.id,
+            "center_id": "" if self.center is None else self.center.id
+        }
+        filters = cache.get(cache_key)
+        if filters is None:
+            # .filter(organisation__user__isnull=False) causes performance degration
+            user_countries = user.get_administrable_user_countries()
+            countries = [user_country.country for user_country in user_countries]
+            country_filter = CountryFilter().get(self, countries)
+
+            application_roles = user.get_administrable_application_roles()
+            role_profiles = user.get_administrable_role_profiles()
+            admin_regions = user.get_administrable_user_regions()
+
+            if self.country:
+                centers = user.get_administrable_user_organisations().filter(
+                    organisation_country__country=self.country)
+                admin_regions = admin_regions.filter(organisation_country__country=self.country)
+            else:
+                centers = user.get_administrable_user_organisations()
+
+            if self.admin_region:
+                centers = centers.filter(admin_region=self.admin_region)
+
+            if self.center:
+                application_roles = application_roles.filter(user__organisations__in=[self.center]).distinct()
+                role_profiles = role_profiles.filter(user__organisations__in=[self.center]).distinct()
+            else:
+                if self.country or self.admin_region:
+                    # when there is no center selected
+                    # only filter roles and profiles by center if at least country or region is selected
+                    application_roles = application_roles.filter(user__organisations__in=centers).distinct()
+                    role_profiles = role_profiles.filter(user__organisations__in=centers).distinct()
+
+            admin_region_filter = AdminRegionFilter().get(self, admin_regions)
+            center_filter = CenterFilter().get(self, centers)
+            application_role_filter = ApplicationRoleFilter().get(self, application_roles)
+            role_profile_filter = RoleProfileFilter().get(self, role_profiles)
+
+            filters = []
+            if len(countries) > 1:
+                filters += [country_filter]
+            if len(admin_regions) > 1:
+                filters += [admin_region_filter]
+            if len(centers) > 1:
+                filters += [center_filter]
+
+            filters += [role_profile_filter, application_role_filter]
+            if user.is_user_admin:
+                filters += [IsActiveFilter().get(self)]
+            cache.set(cache_key, filters)
+        return filters
+
+    def get_context_data(self, **kwargs):
         headers = list(self.cl.result_headers())
         num_sorted_fields = 0
         for h in headers:
             if h['sortable'] and h['sorted']:
                 num_sorted_fields += 1
 
-        # .filter(organisation__user__isnull=False) causes performance degration
-        user_countries = user.get_administrable_user_countries()
-        countries = [user_country.country for user_country in user_countries]
-        country_filter = CountryFilter().get(self, countries)
-
-        application_roles = user.get_administrable_application_roles()
-        role_profiles = user.get_administrable_role_profiles()
-        admin_regions = user.get_administrable_user_regions()
-
-        if self.country:
-            centers = user.get_administrable_user_organisations().filter(organisation_country__country=self.country)
-            admin_regions = admin_regions.filter(organisation_country__country=self.country)
-        else:
-            centers = user.get_administrable_user_organisations()
-
-        if self.admin_region:
-            centers = centers.filter(admin_region=self.admin_region)
-
-        if self.center:
-            application_roles = application_roles.filter(user__organisations__in=[self.center]).distinct()
-            role_profiles = role_profiles.filter(user__organisations__in=[self.center]).distinct()
-        else:
-            if self.country or self.admin_region:
-                # when there is no center selected
-                # only filter roles and profiles by center if at least country or region is selected
-                application_roles = application_roles.filter(user__organisations__in=centers).distinct()
-                role_profiles = role_profiles.filter(user__organisations__in=centers).distinct()
-
-        admin_region_filter = AdminRegionFilter().get(self, admin_regions)
-        center_filter = CenterFilter().get(self, centers)
-        application_role_filter = ApplicationRoleFilter().get(self, application_roles)
-        role_profile_filter = RoleProfileFilter().get(self, role_profiles)
-
-        filters = []
-        if len(countries) > 1:
-            filters += [country_filter]
-        if len(admin_regions) > 1:
-            filters += [admin_region_filter]
-        if len(centers) > 1:
-            filters += [center_filter]
-
-        filters += [role_profile_filter, application_role_filter]
-        if user.is_user_admin:
-            filters += [IsActiveFilter().get(self)]
+        filters = self.get_filters()
 
         context = {
             'result_headers': headers,
@@ -392,7 +408,7 @@ def _update_standard_user(request, user, app_roles_by_profile, template='account
             if "_addanother" in request.POST:
                 msg = format_html(_(
                     'The {name} "{obj}" was changed successfully. You may add another {name} below.'),
-                      **msg_dict)
+                    **msg_dict)
                 success_url = reverse('accounts:add_user')
             elif "_continue" in request.POST:
                 msg = format_html(
