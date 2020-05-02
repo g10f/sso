@@ -194,7 +194,19 @@ class UserList(ListView):
         filters += [role_profile_filter, application_role_filter]
         if user.is_user_admin:
             filters += [IsActiveFilter().get(self)]
-        return filters
+
+        cache_dict = {
+            "user": user.id,
+            "country": "" if self.country is None else self.country.id,
+            "admin_region": "" if self.admin_region is None else self.admin_region.id,
+            "center": "" if self.center is None else self.center.id,
+            "role_profile": "" if self.role_profile is None else self.role_profile.id,
+            "app_role": "" if self.app_role is None else self.app_role.id,
+            "is_active": "" if self.is_active is None else self.is_active,
+        }
+        filters_cache_key = "filter-row-%(user)s-%(country)s-%(admin_region)s-%(center)s-%(role_profile)s-" \
+                            "%(app_role)s-%(is_active)s" % cache_dict
+        return filters, filters_cache_key
 
     def get_context_data(self, **kwargs):
         headers = list(self.cl.result_headers())
@@ -203,7 +215,7 @@ class UserList(ListView):
             if h['sortable'] and h['sorted']:
                 num_sorted_fields += 1
 
-        filters = self.get_filters()
+        filters, filters_cache_key = self.get_filters()
 
         context = {
             'result_headers': headers,
@@ -213,6 +225,7 @@ class UserList(ListView):
             'query': self.request.GET.get(main.SEARCH_VAR, ''),
             'cl': self.cl,
             'filters': filters,
+            'filters_cache_key': filters_cache_key,
             'is_active': self.is_active,
             'sso_validation_period_is_active': settings.SSO_VALIDATION_PERIOD_IS_ACTIVE
         }
