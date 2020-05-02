@@ -29,7 +29,7 @@
 
     <div class="row dwbn-filter-row">
         {% block dwbn-filter-row %}
-            {% cache 500 filter request.user.username request.META.QUERY_STRING LANGUAGE_CODE %}
+            {% cache 300 filters filters_cache_key LANGUAGE_CODE %}
                 <div class="col-sm-3">
                     {% include 'include/_search_form.html' %}
                 </div>
