@@ -429,6 +429,17 @@ class OIDCRequestValidator(RequestValidator):
 
 
 class OAuth2AuthorizationCodeGrantEx(OAuth2AuthorizationCodeGrant):
+    def __init__(self, request_validator=None, **kwargs):
+        super().__init__(request_validator, **kwargs)
+        self.register_code_modifier(self.add_session_state)
+
+    def add_session_state(self, token, token_handler, request):
+        try:
+            token['session_state'] = request.session_state
+        except AttributeError as e:
+            logger.exception(e)
+        return token
+
     def create_token_response(self, request, token_handler):
         headers = self._get_default_headers()
         try:
@@ -449,9 +460,9 @@ class OAuth2AuthorizationCodeGrantEx(OAuth2AuthorizationCodeGrant):
         self.request_validator.invalidate_authorization_code(
             request.client_id, request.code, request)
         # custom extension of original oauthlib
-        if request.client and request.client.type not in CONFIDENTIAL_CLIENTS and 'HTTP_ORIGIN' in request.headers:
-            origin = request.headers['HTTP_ORIGIN']
-            add_cors_header(origin, request.client, headers)
+        # if request.client and request.client.type not in CONFIDENTIAL_CLIENTS and 'HTTP_ORIGIN' in request.headers:
+        #     origin = request.headers['HTTP_ORIGIN']
+        #     add_cors_header(origin, request.client, headers)
         return headers, json.dumps(token), 200
 
 
