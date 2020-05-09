@@ -289,7 +289,7 @@ class AppAdminUserList(ListView):
         country_filter = CountryFilter().get(self, countries)
 
         centers = Organisation.objects.none()
-        application_roles = user.get_administrable_application_roles()
+        application_roles = user.get_administrable_app_admin_application_roles()
         role_profiles = user.get_administrable_app_admin_role_profiles()
         admin_regions = user.get_administrable_app_admin_user_regions()
 
