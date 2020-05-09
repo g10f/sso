@@ -233,7 +233,7 @@ def logout(request, next_page=None,
         if id_token:
             # token maype expired
             data = loads_jwt(id_token, options={"verify_exp": False, "verify_aud": False})
-            if not user.is_anonymous and user.uuid == UUID(data['sub']):
+            if user.is_anonymous or user.uuid == UUID(data['sub']):
                 client = Client.objects.get(uuid=data['aud'])
                 if redirect_uri in client.post_logout_redirect_uris.split():
                     # allow unsafe schemes

@@ -297,7 +297,7 @@ def authorize(request):
 
         # if we are here, the user is already logged in does not need to login again
         headers, body, status = oidc_server.create_authorization_response(uri, http_method, body, headers, scopes,
-                                                                          credentials)  # @UnusedVariable
+                                                                          credentials)
         return HttpOAuth2ResponseRedirect(headers['Location'])
     except oauth2.FatalClientError as e:
         logger.warning('Fatal client error, redirecting to error page.')
