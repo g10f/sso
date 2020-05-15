@@ -126,7 +126,7 @@ class UserList(ListView):
 
         qs = super().get_queryset().only('uuid', 'last_login', 'username', 'first_name', 'last_name',
                                          'date_joined', 'picture', 'valid_until') \
-            .prefetch_related('useremail_set', 'organisations', 'role_profiles')
+            .prefetch_related('useremail_set', 'organisations', 'role_profiles', 'application_roles')
         # exclude user who were not activated, this users must first be activated on the registration page
         qs = qs.exclude(last_login__isnull=True, is_active=False)
         qs = user.filter_administrable_users(qs)
@@ -395,7 +395,11 @@ def _update_standard_user(request, user, app_roles_by_profile, template='account
             if extend_validity:
                 changed_data_list.append("\"extended validity\"")
 
-            user = form.save(extend_validity, activate=activate, remove_org=remove_org)
+            make_member = "_make_member" in request.POST
+            if extend_validity:
+                changed_data_list.append("\"made to member\"")
+
+            user = form.save(extend_validity, activate=activate, remove_org=remove_org, make_member=make_member)
             user_email_inline_formset.save()
 
             if not user.useremail_set.exists():

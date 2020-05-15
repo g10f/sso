@@ -141,11 +141,8 @@
                 {% endif %}
                 {% if is_validation_period_active %}
                     {% block user-extend-validity-action %}
-                        {% with tooltip=form.extend_validity_tooltip %}
-                            <button type="submit" class="btn btn-default" name="_extend_validity"
-                                    {% if tooltip %}data-toggle="tooltip" data-placement="top"
-                                    title="{{ tooltip }}" {% endif %}>{% trans 'Save and extend validity' %}</button>
-                        {% endwith %}
+                        <button type="submit" class="btn btn-default"
+                                name="_extend_validity">{% trans 'Save and extend validity' %}</button>
                     {% endblock user-extend-validity-action %}
                 {% endif %}
             </div>
