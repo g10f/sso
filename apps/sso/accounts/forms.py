@@ -30,8 +30,8 @@ from sso.models import clean_picture
 from sso.organisations.models import Organisation, is_validation_period_active
 from sso.registration import default_username_generator
 from sso.registration.forms import UserSelfRegistrationForm
-from sso.signals import extend_user_validity, extend_user_validity_tooltip
-from .models import User, UserAddress, UserPhoneNumber, UserEmail, OrganisationChange
+# from sso.signals import extend_user_validity, extend_user_validity_tooltip
+from .models import User, UserAddress, UserPhoneNumber, UserEmail, OrganisationChange, RoleProfile
 
 logger = logging.getLogger(__name__)
 
@@ -690,10 +690,6 @@ class UserProfileForm(mixins.UserRolesMixin, mixins.UserNoteMixin, forms.Form):
         self.fields['organisations'].queryset = self.request.user.get_administrable_user_organisations(). \
             filter(is_active=True, association__is_selectable=True)
 
-        tooltips = []
-        extend_user_validity_tooltip.send_robust(sender=self.__class__, user=self.user, tooltips=tooltips)
-        self.extend_validity_tooltip = " ".join(tooltips)
-
     def clean_username(self):
         username = self.cleaned_data["username"]
         try:
@@ -702,7 +698,7 @@ class UserProfileForm(mixins.UserRolesMixin, mixins.UserNoteMixin, forms.Form):
             return username
         raise forms.ValidationError(self.error_messages['duplicate_username'])
 
-    def save(self, extend_validity=False, activate=None, remove_org=False):
+    def save(self, extend_validity=False, activate=None, remove_org=False, make_member=False):
         cd = self.cleaned_data
         current_user = self.request.user
         if remove_org:
@@ -729,11 +725,13 @@ class UserProfileForm(mixins.UserRolesMixin, mixins.UserNoteMixin, forms.Form):
 
         self.create_note_if_required(current_user, cd, activate, extend_validity, removed_orgs)
 
-        if extend_validity:
+        if make_member:
+            dwbn_member_profile = RoleProfile.objects.get_by_natural_key(uuid=settings.SSO_DEFAULT_MEMBER_PROFILE_UUID)
+            self.user.role_profiles.add(dwbn_member_profile)
+
+        if extend_validity or make_member:
             # enable brand specific modification
             valid_until = now() + datetime.timedelta(days=settings.SSO_VALIDATION_PERIOD_DAYS)
-            extend_user_validity.send_robust(sender=self.__class__, user=self.user, valid_until=valid_until,
-                                             admin=self.request.user)
             self.user.valid_until = valid_until
 
         self.user.save()

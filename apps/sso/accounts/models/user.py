@@ -741,15 +741,17 @@ class User(AbstractBaseUser, PermissionsMixin):
         return qs
 
     @property
-    def is_member(self):
+    def is_guest(self):
         # iterate over all profiles does not makes a new DB query
         # when prefetch_related('role_profiles') is used
         # otherwise self.role_profiles.filter(uuid=settings.SSO_DEFAULT_MEMBER_PROFILE_UUID).exists()
         # would be better
         for profile in self.role_profiles.all():
-            if profile.uuid == settings.SSO_DEFAULT_MEMBER_PROFILE_UUID:
-                return True
-        return False
+            if profile.uuid != settings.SSO_DEFAULT_GUEST_PROFILE_UUID:
+                return False
+        for _ in self.application_roles.all():
+            return False
+        return True
 
     @property
     def is_global_user_admin(self):
