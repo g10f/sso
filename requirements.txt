@@ -1,3 +1,4 @@
+wheel
 django<3
 django-formtools
 django-ipware

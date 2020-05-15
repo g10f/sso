@@ -3,7 +3,7 @@ import re
 from base64 import b64encode
 from urllib.parse import urlencode, urlsplit, parse_qs
 
-from locust import HttpLocust, TaskSet, task
+from locust import HttpLocust, TaskSet, task, between
 from pyquery import PyQuery
 
 pattern = re.compile("^{(?P<env_var>.*)}$")
@@ -24,7 +24,7 @@ test_data = {
     "idp": {
         "oidc": {
             "verify_tls": False,
-            "iss": "https://sso.elsapro.com",
+            "iss": "https://sso.dwbn.org",
         }
     },
     "proxies": {
@@ -91,11 +91,14 @@ class UserBehavior(TaskSet):
             "next": pq("input[name='next']").val()
         }
         path_url = response.request.path_url
-        headers={"referer": response.request.url}
+        headers = {"referer": response.request.url}
         response = self.client.post(path_url, data=data, headers=headers,
                                     proxies=self.proxies,
                                     allow_redirects=False,
                                     name=urlsplit(path_url).path)
+        if response.next is None:
+            print(response.text)
+            return
         response = self.client.get(response.next.url, headers=headers, proxies=self.proxies,
                                    allow_redirects=False,
                                    name=urlsplit(response.next.url).path)
@@ -131,6 +134,5 @@ class UserBehavior(TaskSet):
 
 class WebsiteUser(HttpLocust):
     task_set = UserBehavior
-    min_wait = 1000
-    max_wait = 2000
+    wait_time = between(1, 2)
     host = "{0}://{1}".format(*urlsplit(test_data['idp']['oidc']['iss']))
