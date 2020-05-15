@@ -133,7 +133,7 @@ class OrganisationAdmin(VersionAdmin, OSMGeoAdmin):
     list_select_related = ('organisation_country__country', 'email', 'association')
     actions = OSMGeoAdmin.actions + ['mark_uses_user_activation']
     save_on_top = True
-    search_fields = ('email__email', 'name', 'homepage', 'uuid')
+    search_fields = ('name', 'uuid')
     inlines = [PhoneNumber_Inline, Address_Inline]
     readonly_fields = ['last_modified', 'google_maps_link']
     non_su_readonly_fields = ['uuid', 'last_modified', 'google_maps_link']
