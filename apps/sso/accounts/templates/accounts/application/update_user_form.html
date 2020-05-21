@@ -18,7 +18,7 @@
     </ol>
 {% endblock breadcrumb %}
 
-{% block content %}
+{% block form %}
     <form class="form-horizontal" method="post" data-active="{{ active }}">{% csrf_token %}
         {# Include the hidden fields in the form #}
         {% for hidden in form.hidden_fields %}
