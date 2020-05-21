@@ -6,7 +6,6 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import permission_required, user_passes_test
-from django.core.cache import cache
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist
 from django.db.models.expressions import F
 from django.forms import inlineformset_factory
@@ -23,7 +22,7 @@ from django.views.generic import DeleteView
 from l10n.models import Country
 from sso.accounts.email import send_account_created_email
 from sso.accounts.forms import UserAddForm, UserProfileForm, UserEmailForm, AppAdminUserProfileForm, CenterProfileForm
-from sso.accounts.models import User, UserEmail, ApplicationRole
+from sso.accounts.models import User, UserEmail
 from sso.auth.decorators import admin_login_required
 from sso.forms.helpers import ChangedDataList, log_change, ErrorList, get_media_errors_and_active_form
 from sso.oauth2.models import allowed_hosts
@@ -363,7 +362,7 @@ def add_user_done(request, uuid, template='accounts/application/add_user_done.ht
     return render(request, template, data)
 
 
-def _update_standard_user(request, user, app_roles_by_profile, template='accounts/application/update_user_form.html'):
+def _update_standard_user(request, user, template='accounts/application/update_user_form.html'):
     if user.useremail_set.count() == 0:
         useremail_extra = 1
     else:
@@ -466,14 +465,12 @@ def _update_standard_user(request, user, app_roles_by_profile, template='account
     context = {'form': form, 'errors': errors, 'formsets': formsets, 'media': media, 'active': active,
                'usernotes': usernote_set,
                'editable_created_by_users': accessible_created_by_users,
-               'app_roles_by_profile': app_roles_by_profile,
                'logged_in': logged_in, 'is_validation_period_active': is_validation_period_active(user_organisation),
                'title': _('Change user')}
     return render(request, template, context)
 
 
-def _update_center_account(request, user, app_roles_by_profile,
-                           template='accounts/application/update_center_form.html'):
+def _update_center_account(request, user, template='accounts/application/update_center_form.html'):
     if request.method == 'POST':
         form = CenterProfileForm(request.POST, instance=user, request=request)
 
@@ -515,6 +512,8 @@ def _update_center_account(request, user, app_roles_by_profile,
     else:
         form = CenterProfileForm(instance=user, request=request)
 
+    media, errors, active = get_media_errors_and_active_form(form)
+
     if (user.last_login is None) or (user.last_login - user.date_joined) < timedelta(seconds=1):
         logged_in = False
     else:
@@ -522,10 +521,9 @@ def _update_center_account(request, user, app_roles_by_profile,
 
     usernote_set, accessible_created_by_users = get_usernotes_and_accessible_created_by_users(user, request.user)
 
-    context = {'form': form,
+    context = {'form': form, 'media': media, 'errors': errors, 'active': active,
                'usernotes': usernote_set,
                'editable_created_by_users': accessible_created_by_users,
-               'app_roles_by_profile': app_roles_by_profile,
                'logged_in': logged_in, 'title': _('Change user')}
     return render(request, template, context)
 
@@ -537,14 +535,12 @@ def update_user(request, uuid):
     if not request.user.has_user_access(uuid):
         raise PermissionDenied
     user = get_object_or_404(get_user_model(), uuid=uuid)
-    app_roles_by_profile = {id for id in ApplicationRole.objects.filter(
-        roleprofile__user__id=user.pk).only("id").values_list('id', flat=True)}
 
     # we use different forms for different kind of users
     if getattr(user, 'is_center', True):
-        return _update_center_account(request, user, app_roles_by_profile)
+        return _update_center_account(request, user)
     else:
-        return _update_standard_user(request, user, app_roles_by_profile)
+        return _update_standard_user(request, user)
 
 
 @admin_login_required

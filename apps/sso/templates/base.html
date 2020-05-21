@@ -10,9 +10,9 @@
     <link rel="apple-touch-icon" href="{% static 'ico/apple-touch-icon.png' %}">
     {% block style %}{% if False %}
         <link rel="stylesheet/less" href="{% static stylesheet_less %}">
-        <script>less = { env: 'development'};</script>
-        <script src="{% static "js/vendor/less-3.9.0.min.js" %}"></script>
-        <script>
+        <script type="text/javascript">less = { env: 'development'};</script>
+        <script type="text/javascript" src="{% static "js/vendor/less-3.9.0.min.js" %}"></script>
+        <script type="text/javascript">
           less.modifyVars({'@base-dir': '"../less"', '@icon-font-path': '"/static/fonts/"'});
           less.watch();
         </script>
@@ -21,16 +21,16 @@
     {% endblock style %}
     {% block extrastyle %}{% endblock %}
     {% block extrahead %}{% endblock %}
-    <script>window.__media_prefix__ = "{% filter escapejs %}{% static "" %}{% endfilter %}";</script>
-    <script>(function (H) {H.className = H.className.replace(/\bno-js\b/, 'js')})(document.documentElement)</script>
-    <script src="{% static "js/vendor/jquery-3.4.1.min.js" %}"></script>
-    <script src="{% static "js/vendor/bootstrap-3.4.1.min.js" %}"></script>
-    <script src="{% static "js/plugins-1.0.10.js" %}"></script>
+    <script type="text/javascript">window.__media_prefix__ = "{% filter escapejs %}{% static "" %}{% endfilter %}";</script>
+    <script type="text/javascript">(function (H) {H.className = H.className.replace(/\bno-js\b/, 'js')})(document.documentElement)</script>
+    <script type="text/javascript" src="{% static "js/vendor/jquery-3.4.1.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/vendor/bootstrap-3.4.1.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/plugins-1.0.10.js" %}"></script>
     {% block extrascript %}{% endblock extrascript %}
     <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
-      <script src="{% static "js/vendor/html5shiv-3.7.3.min.js" %}"></script>
-      <script src="{% static "js/vendor/respond-1.4.2.min.js" %}"></script>
+      <script type="text/javascript" src="{% static "js/vendor/html5shiv-3.7.3.min.js" %}"></script>
+      <script type="text/javascript" src="{% static "js/vendor/respond-1.4.2.min.js" %}"></script>
     <![endif]-->
 </head>
 <body class="{% block bodyclass %}{% endblock %}">

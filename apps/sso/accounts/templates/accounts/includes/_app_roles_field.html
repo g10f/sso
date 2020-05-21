@@ -1,14 +1,9 @@
 {% load i18n form %}
 {% if field|length %}
-<div class="form-group {% if field.errors %}has-error{% endif %}">
-
-  <div class="dwbn-form-control_lg">
-       {% for item in field %}
-       <div class="checkbox">
-           {{ item }} {% if item.data.value in app_roles_by_profile %}*{% endif %}
-       </div>
-       {% endfor %}
-       {% if field.help_text or field.errors %}<span class="help-block">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
-   </div>
-</div>
+    <div class="form-group {% if field.errors %}has-error{% endif %}">
+        <div class="dwbn-form-control_lg">
+            {{ field }}{% if field.help_text or field.errors %}
+                <span class="help-block">{{ field.help_text }} {% for error in field.errors %}
+                    {{ error }} {% endfor %}</span>{% endif %}</div>
+    </div>
 {% endif %}

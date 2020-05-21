@@ -7,6 +7,7 @@
 {% block extrascript %}
     {{ media }}
     <script src="{% static "js/formsets-1.2.js" %}"></script>
+    <script src="{% url 'jsi18n' %}"></script>
 {% endblock extrascript %}
 
 {% block breadcrumb %}
@@ -17,7 +18,7 @@
     </ol>
 {% endblock breadcrumb %}
 
-{% block form %}
+{% block content %}
     <form class="form-horizontal" method="post" data-active="{{ active }}">{% csrf_token %}
         {# Include the hidden fields in the form #}
         {% for hidden in form.hidden_fields %}
@@ -51,8 +52,8 @@
                        href="#{{ formset.prefix }}">{{ formset.form.opts.verbose_name_plural|title }}</a>
                 </li>
             {% endfor %}
-            <li><a data-toggle="tab" href="#app_roles">{{ form.application_roles.label }}</a></li>
             <li><a data-toggle="tab" href="#notes">{{ form.notes.label }}</a></li>
+            <li><a data-toggle="tab" href="#app_roles">{{ form.application_roles.label }}</a></li>
         </ul>
 
         <div class="tab-content">
