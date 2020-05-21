@@ -7,6 +7,7 @@
 {% block extrascript %}
     {{ media }}
     <script src="{% static "js/formsets-1.2.js" %}"></script>
+    <script src="{% url 'jsi18n' %}"></script>
 {% endblock extrascript %}
 
 {% block breadcrumb %}
@@ -45,8 +46,8 @@
                 <a data-toggle="tab"
                    href="#object">{% trans 'User data' %}</a>
             </li>
-            <li><a data-toggle="tab" href="#app_roles">{{ form.application_roles.label }}</a></li>
             <li><a data-toggle="tab" href="#notes">{{ form.notes.label }}</a></li>
+            <li><a data-toggle="tab" href="#app_roles">{{ form.application_roles.label }}</a></li>
         </ul>
 
         <div class="tab-content">

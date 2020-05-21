@@ -83,7 +83,9 @@ class ErrorList(DjangoErrorList):
                     self.extend(errors_in_inline_form.values())
 
 
-def get_media_errors_and_active_form(form, formsets):
+def get_media_errors_and_active_form(form, formsets=None):
+    if formsets is None:
+        formsets = {}
     media = form.media
     for fs in formsets:
         media = media + fs.media

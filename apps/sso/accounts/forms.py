@@ -30,8 +30,7 @@ from sso.models import clean_picture
 from sso.organisations.models import Organisation, is_validation_period_active
 from sso.registration import default_username_generator
 from sso.registration.forms import UserSelfRegistrationForm
-# from sso.signals import extend_user_validity, extend_user_validity_tooltip
-from .models import User, UserAddress, UserPhoneNumber, UserEmail, OrganisationChange, RoleProfile
+from .models import User, UserAddress, UserPhoneNumber, UserEmail, OrganisationChange, RoleProfile, ApplicationRole
 
 logger = logging.getLogger(__name__)
 
@@ -85,6 +84,7 @@ class ContactForm(forms.Form):
     email = forms.EmailField(label=_("Email address"), max_length=75, widget=bootstrap.TextInput())
     subject = forms.CharField(label=_("Subject"), widget=bootstrap.TextInput())
     message = forms.CharField(label=_("Message"), widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 5}))
+    captcha = ReCaptchaField()
 
 
 class SetPasswordForm(DjangoSetPasswordForm):
@@ -639,11 +639,12 @@ class UserProfileForm(mixins.UserRolesMixin, mixins.UserNoteMixin, forms.Form):
     organisations = forms.ModelChoiceField(queryset=None, required=settings.SSO_ORGANISATION_REQUIRED,
                                            label=_("Organisation"),
                                            widget=bootstrap.Select2())
-    application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False,
-                                                       widget=bootstrap.CheckboxSelectMultiple(),
-                                                       label=_("Application roles"),
-                                                       help_text=_(
-                                                           '* Application roles which are included by role profiles'))
+    application_roles = forms.MultipleChoiceField(
+        required=False,
+        widget=bootstrap.FilteredSelectMultiple(_("Application roles"), False),
+        label=_("Additional application roles"),
+        help_text=_("* You don't need to select the application roles which are already included by "
+                    "the role profiles."))
     notes = forms.CharField(label=_("Notes"), required=False, max_length=1024,
                             widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
     role_profiles = forms.MultipleChoiceField(required=False, widget=bootstrap.CheckboxSelectMultiple(),
@@ -660,6 +661,8 @@ class UserProfileForm(mixins.UserRolesMixin, mixins.UserNoteMixin, forms.Form):
         user_data = model_to_dict(self.user)
         user_data['status'] = _('active') if self.user.is_active else _('blocked')
         user_data['role_profiles'] = [role_profile.id for role_profile in self.user.role_profiles.all()]
+        user_data['application_roles'] = [application_role.id for application_role in
+                                          self.user.application_roles.all()]
 
         if self.user.organisations.count() == 1:
             user_data['organisations'] = self.user.organisations.first()
@@ -673,7 +676,13 @@ class UserProfileForm(mixins.UserRolesMixin, mixins.UserNoteMixin, forms.Form):
         kwargs['initial'] = initial
         super().__init__(*args, **kwargs)
 
-        self.fields['application_roles'].queryset = self.request.user.get_administrable_application_roles()
+        self.fields['application_roles'].choices = []
+        app_roles_by_profile = ApplicationRole.objects.filter(roleprofile__user__id=self.user.pk).only("id")
+        for application_role in self.request.user.get_administrable_application_roles():
+            app_role_text = str(application_role)
+            if application_role in app_roles_by_profile:
+                app_role_text += " *"
+            self.fields['application_roles'].choices.append((application_role.id, app_role_text))
         # role_profiles field with custom data to show application_roles for each role profile,
         # without a query for every role profile
         self.fields['role_profiles'].choices = [(role_profile.id, role_profile) for role_profile in
@@ -749,9 +758,12 @@ class CenterProfileForm(mixins.UserRolesMixin, mixins.UserNoteMixin, forms.Form)
     email = bootstrap.ReadOnlyField(label=_('Email address'))
     notes = forms.CharField(label=_("Notes"), required=False, max_length=1024,
                             widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
-    application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False,
-                                                       widget=bootstrap.CheckboxSelectMultiple(),
-                                                       label=_("Application roles"))
+    application_roles = forms.MultipleChoiceField(
+        required=False,
+        widget=bootstrap.FilteredSelectMultiple(_("Application roles"), False),
+        label=_("Additional application roles"),
+        help_text=_("* You don't need to select the application roles which are already included by "
+                    "the role profiles."))
     role_profiles = forms.MultipleChoiceField(required=False, widget=bootstrap.CheckboxSelectMultiple(),
                                               label=_("Role profiles"),
                                               help_text=_('Groups of application roles that are assigned together.'))
@@ -767,12 +779,21 @@ class CenterProfileForm(mixins.UserRolesMixin, mixins.UserNoteMixin, forms.Form)
         user_data['status'] = _('active') if self.user.is_active else _('blocked')
         user_data['email'] = force_text(self.user.primary_email())
         user_data['role_profiles'] = [str(role_profile.id) for role_profile in self.user.role_profiles.all()]
+        user_data['application_roles'] = [application_role.id for application_role in
+                                          self.user.application_roles.all()]
         initial = kwargs.get('initial', {})
         initial.update(user_data)
         kwargs['initial'] = initial
         super().__init__(*args, **kwargs)
 
-        self.fields['application_roles'].queryset = self.request.user.get_administrable_application_roles()
+        self.fields['application_roles'].choices = []
+        app_roles_by_profile = ApplicationRole.objects.filter(roleprofile__user__id=self.user.pk).only("id")
+        for application_role in self.request.user.get_administrable_application_roles():
+            app_role_text = str(application_role)
+            if application_role in app_roles_by_profile:
+                app_role_text += " *"
+            self.fields['application_roles'].choices.append((application_role.id, app_role_text))
+
         self.fields['role_profiles'].choices = [(role_profile.id, role_profile) for role_profile in
                                                 self.request.user.get_administrable_role_profiles()]
         # add custom data

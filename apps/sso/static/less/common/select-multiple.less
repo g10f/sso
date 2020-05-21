@@ -1,0 +1,293 @@
+/* SELECTOR (FILTER INTERFACE) */
+.selector-available h2, .selector-chosen h2 {
+    border: 1px solid #ccc;
+    border-radius: 4px 4px 0 0;
+}
+
+.selector .selector-filter {
+    background: white;
+    border: 1px solid #ccc;
+    border-width: 0 1px;
+    padding: 8px;
+    color: #999;
+    font-size: 10px;
+    margin: 0;
+    text-align: left;
+}
+
+.selector .selector-filter label,
+.inline-group .aligned .selector .selector-filter label {
+    float: left;
+    margin: 7px 0 0;
+    width: 18px;
+    height: 18px;
+    padding: 0;
+    overflow: hidden;
+    line-height: 1;
+}
+
+.selector .selector-available input {
+    width: 320px;
+    margin-left: 8px;
+}
+
+.selector-chooser {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    @media (min-width: @screen-sm-min) {
+        float: left;
+        width: 4%;
+    }
+}
+
+.selector-add > .glyphicon {
+    &:before {
+        content: "\e094";
+    }
+
+    @media (min-width: @screen-sm-min) {
+        &:before {
+            content: "\e092";
+        }
+    }
+}
+
+.selector-remove > .glyphicon {
+    &:before {
+        content: "\e093";
+    }
+
+    @media (min-width: @screen-sm-min) {
+        &:before {
+            content: "\e091";
+        }
+    }
+}
+
+
+.selector .selector-chooser ul {
+    background-color: @gray-lighter;
+    border-radius: 15px;
+    padding: 2px;
+    margin: 10px;
+    @media (min-width: @screen-sm-min) {
+        margin: 10em 5px 0 5px;
+    }
+}
+
+.selector-chooser li {
+    margin: 0;
+    padding: 6px;
+    list-style-type: none;
+    display: inline-block;
+}
+
+.selector select {
+    margin: 0 0 10px;
+    border-radius: 0 0 4px 4px;
+}
+
+.selector-add, .selector-remove {
+    overflow: hidden;
+    opacity: 0.4;
+}
+
+.active.selector-add, .active.selector-remove {
+    opacity: 1;
+}
+
+.active.selector-add:hover, .active.selector-remove:hover {
+    cursor: pointer;
+}
+
+a.selector-chooseall, a.selector-clearall {
+    font-weight: bold;
+    text-decoration: none;
+    opacity: 0.4;
+}
+
+a.active.selector-chooseall, a.active.selector-clearall {
+    opacity: 1;
+}
+
+a.active.selector-chooseall:hover, a.active.selector-clearall:hover {
+    cursor: pointer;
+}
+
+/* STACKED SELECTORS */
+
+.stacked {
+    float: left;
+    width: 490px;
+}
+
+.stacked select {
+    width: 480px;
+    height: 10.1em;
+}
+
+.stacked .selector-available, .stacked .selector-chosen {
+    width: 480px;
+}
+
+.stacked .selector-available {
+    margin-bottom: 0;
+}
+
+.stacked .selector-available input {
+    width: 422px;
+}
+
+.stacked ul.selector-chooser {
+    height: 22px;
+    width: 50px;
+    margin: 0 0 10px 40%;
+    background-color: #eee;
+    border-radius: 10px;
+}
+
+.stacked .selector-chooser li {
+    float: left;
+    padding: 3px 3px 3px 5px;
+}
+
+.stacked .selector-chooseall, .stacked .selector-clearall {
+    display: none;
+}
+
+.stacked .selector-add {
+    cursor: default;
+}
+
+.stacked .active.selector-add {
+    background-position: 0 -48px;
+    cursor: pointer;
+}
+
+.stacked .selector-remove {
+    cursor: default;
+}
+
+.stacked .active.selector-remove {
+    background-position: 0 -16px;
+    cursor: pointer;
+}
+
+.selector .help-icon {
+    display: inline-block;
+    vertical-align: middle;
+    margin: -2px 0 0 2px;
+    width: 13px;
+    height: 13px;
+}
+
+.selector .selector-chosen .help-icon {
+}
+
+.selector .search-label-icon {
+    display: inline-block;
+    height: 18px;
+    width: 18px;
+}
+
+/* SELECTOR (FILTER INTERFACE) */
+.selector .selector-filter {
+    border: 0 solid #ccc;
+    border-width: 0 0;
+    padding: 4px 0 4px 0;
+}
+
+.selector .selector-filter label {
+    display: none;
+}
+
+.selector select {
+    height: 17.2em;
+    width: 100%; /* fix offscreen scroll-bar on selector-chosen */
+    border: 1px #ccc solid;
+}
+
+.selector .selector-chosen select {
+    border-top: 0;
+}
+
+/* fix offscreen scroll-bar on selector-chosen */
+.selector-available, .selector-chosen {
+    position: relative;
+    min-height: 1px;
+    padding-right: (@grid-gutter-width / 2);
+    padding-left: (@grid-gutter-width / 2);
+    text-align: center;
+    @media (min-width: @screen-sm-min) {
+        float: left;
+        width: 48%;
+    }
+}
+
+/* selector object list */
+.selector > .selector-available > select, .selector > .selector-chosen > select {
+    font-size: 12px;
+    color: #666;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-radius: 0 0 4px 4px;
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0.075) inset;
+    transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+}
+
+/* selector object list items */
+.selector > .selector-available > select > option, .selector > .selector-chosen > select > option {
+    padding: 6px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(211, 211, 211, 0.35);
+    border-bottom-style: solid
+}
+
+/* selector field title */
+.selector > .selector-available > h2, .selector > .selector-chosen > h2 {
+    text-align: left;
+    background: rgba(211, 211, 211, 0.2);
+    color: #777;
+    border: 1px solid #ccc;
+    border-bottom: none;
+    font-size: 100%;
+    font-weight: 600;
+    margin: 0;
+    padding: 10px 0 6px 10px;
+    height: 36px;
+    border-radius: 4px 4px 0 0;
+}
+
+/* selector filter box bootstrapping */
+.selector .selector-available input {
+    width: 80%;
+    height: 34px;
+    padding: 6px 12px;
+    font-size: 14px;
+    line-height: 1.42857;
+    color: #777;
+    background-color: #fff;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset;
+    transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+}
+
+.selector .selector-available p {
+    background: rgba(211, 211, 211, 0.2);
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    padding: 0 0 7px 6px;
+}
+
+/* selector chooseall and clearall button spacing */
+a.selector-chooseall {
+    padding: 0 20px 3px 0;
+}
+
+a.selector-clearall {
+    padding: 0 0 3px 20px;
+}

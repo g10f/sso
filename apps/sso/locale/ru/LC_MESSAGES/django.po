@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-04-28 21:16+0200\n"
+"POT-Creation-Date: 2020-05-21 15:20+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -435,7 +435,12 @@ msgstr ""
 msgid "Status"
 msgstr ""
 
-msgid "* Application roles which are included by role profiles"
+msgid "Additional application roles"
+msgstr ""
+
+msgid ""
+"* You don't need to select the application roles which are already included "
+"by the role profiles."
 msgstr ""
 
 msgid "Created by"
@@ -473,6 +478,12 @@ msgstr ""
 msgid ""
 "Designates whether the user should redirected to this app after the first "
 "login."
+msgstr ""
+
+msgid "Required scope"
+msgstr ""
+
+msgid "Required OAuth2 scope to get the application roles."
 msgstr ""
 
 msgid "applications"
@@ -2381,6 +2392,9 @@ msgid "Date registered"
 msgstr ""
 
 msgid "About me"
+msgstr ""
+
+msgid "* Application roles which are included by role profiles"
 msgstr ""
 
 msgid "Check back"

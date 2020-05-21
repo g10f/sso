@@ -1,11 +1,10 @@
-from sorl.thumbnail.shortcuts import get_thumbnail
-
 from django import forms
 from django.contrib.gis import forms as gis_forms
 from django.forms import widgets
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
+from sorl.thumbnail.shortcuts import get_thumbnail
 
 
 def add_class_to_css_class(classes, new_class):
@@ -136,7 +135,7 @@ class Select2(Widget, forms.Select):
         css = {
             'all': ('css/select2.min.css', 'css/select2-bootstrap.css')
         }
-        js = ('js/vendor/select2.min.js', )
+        js = ('js/vendor/select2.min.js',)
 
     def __init__(self, attrs=None, **kwargs):
         # add select2 class
@@ -185,3 +184,36 @@ class OSMWidget(gis_forms.OSMWidget):
         js = (
             'js/gis/OLMapWidgetExt-1.0.6.js',
         )
+
+
+class FilteredSelectMultiple(forms.SelectMultiple):
+    """
+    A SelectMultiple with a JavaScript filter interface.
+
+    Note that the resulting JavaScript assumes that the jsi18n
+    catalog has been loaded in the page
+    copy from django admin
+    """
+    @property
+    def media(self):
+        js = [
+            'core.js',
+            'SelectBox.js',
+            'SelectFilter2.js',
+        ]
+        return forms.Media(js=["js/vendor/%s" % path for path in js])
+
+    def __init__(self, verbose_name, is_stacked, attrs=None, choices=()):
+        new_attrs = add_class_to_attr(attrs, 'form-control')
+        self.verbose_name = verbose_name
+        self.is_stacked = is_stacked
+        super().__init__(new_attrs, choices)
+
+    def get_context(self, name, value, attrs):
+        context = super().get_context(name, value, attrs)
+        context['widget']['attrs']['class'] = 'selectfilter'
+        if self.is_stacked:
+            context['widget']['attrs']['class'] += 'stacked'
+        context['widget']['attrs']['data-field-name'] = self.verbose_name
+        context['widget']['attrs']['data-is-stacked'] = int(self.is_stacked)
+        return context
