@@ -199,7 +199,7 @@ class FilteredSelectMultiple(forms.SelectMultiple):
         js = [
             'core.js',
             'SelectBox.js',
-            'SelectFilter2.js',
+            'SelectFilter2.0.1.js',
         ]
         return forms.Media(js=["js/vendor/%s" % path for path in js])
 
