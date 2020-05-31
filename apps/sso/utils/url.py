@@ -1,12 +1,12 @@
 import logging
-from urllib.parse import urlsplit, urlunsplit
-
 import uuid
+from urllib.parse import urlsplit, urlunsplit
 
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import QueryDict
 from django.utils.http import is_safe_url
+
 from sso.utils.http import get_request_param
 
 logger = logging.getLogger(__name__)
@@ -62,6 +62,25 @@ def update_url(url, params):
     for k, v in params.items():
         if v is not None:  # filter out None values
             q[k] = str(v)
+
+    new_query_string = q.urlencode(safe='/')
+    return urlunsplit((scheme, netloc, path, new_query_string, fragment))
+
+
+def remove_value_from_url_param(url, param, value):
+    """Given a URL removes a value from the param.
+
+    >>> remove_value_from_url_param('http://example.com?prompt=login%20consent&foo=sample', 'prompt', 'login')
+    'http://example.com?prompt=consent&foo=sample'
+    """
+    (scheme, netloc, path, query, fragment) = urlsplit(url)
+    q = QueryDict(query, mutable=True)
+
+    if param in q:
+        values = q[param].split()
+        if value in values:
+            values.remove(value)
+        q[param] = ' '.join(values)
 
     new_query_string = q.urlencode(safe='/')
     return urlunsplit((scheme, netloc, path, new_query_string, fragment))

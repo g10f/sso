@@ -27,7 +27,7 @@ from sso.oauth2.crypt import loads_jwt
 from sso.oauth2.models import allowed_hosts, post_logout_redirect_uris, Client
 from sso.oauth2.models import get_oauth2_cancel_url
 from sso.utils.http import HttpPostLogoutRedirect
-from sso.utils.url import get_safe_redirect_uri, REDIRECT_URI_FIELD_NAME, update_url
+from sso.utils.url import get_safe_redirect_uri, REDIRECT_URI_FIELD_NAME, update_url, remove_value_from_url_param
 from throttle.decorators import throttle
 
 SALT = 'sso.auth.views.LoginView'
@@ -104,7 +104,8 @@ class LoginView(FormView):
                 return self.render_to_response(self.get_context_data(form=form))
 
         else:
-            self.success_url = redirect_url
+            # remove the prompt login param, cause login was done here
+            self.success_url = remove_value_from_url_param(redirect_url, 'prompt', 'login')
             user._auth_session_expiry = expiry  # used to update the session in auth_login
 
             auth_login(self.request, user)
@@ -208,7 +209,8 @@ class TokenView(FormView):
         user._auth_device_id = self.device.id
         user._auth_session_expiry = self.expiry
         auth_login(self.request, form.user)
-        self.success_url = redirect_url
+        # remove the prompt login param, cause login was done here
+        self.success_url = remove_value_from_url_param(redirect_url, 'prompt', 'login')
         return super().form_valid(form)
 
 
