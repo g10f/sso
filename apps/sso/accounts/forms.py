@@ -4,6 +4,7 @@ from collections import OrderedDict
 
 import pytz
 from captcha.fields import ReCaptchaField
+
 from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -23,7 +24,6 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.text import capfirst
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
-
 from sso.forms import bootstrap, mixins, BLANK_CHOICE_DASH, BaseForm
 from sso.forms.fields import EmailFieldLower
 from sso.models import clean_picture
@@ -31,6 +31,7 @@ from sso.organisations.models import Organisation, is_validation_period_active
 from sso.registration import default_username_generator
 from sso.registration.forms import UserSelfRegistrationForm
 from .models import User, UserAddress, UserPhoneNumber, UserEmail, OrganisationChange, RoleProfile, ApplicationRole
+from ..signals import extend_user_validity
 
 logger = logging.getLogger(__name__)
 
@@ -741,6 +742,8 @@ class UserProfileForm(mixins.UserRolesMixin, mixins.UserNoteMixin, forms.Form):
         if extend_validity or make_member:
             # enable brand specific modification
             valid_until = now() + datetime.timedelta(days=settings.SSO_VALIDATION_PERIOD_DAYS)
+            extend_user_validity.send_robust(sender=self.__class__, user=self.user, valid_until=valid_until,
+                                             admin=self.request.user)
             self.user.valid_until = valid_until
 
         self.user.save()
