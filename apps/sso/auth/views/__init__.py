@@ -233,7 +233,7 @@ def logout(request, next_page=None,
     if redirect_uri:
         id_token = get_request_param(request, OIDC_ID_TOKEN_HINT)
         if id_token:
-            # token maype expired
+            # token maybe expired
             data = loads_jwt(id_token, options={"verify_exp": False, "verify_aud": False})
             if user.is_anonymous or user.uuid == UUID(data['sub']):
                 client = Client.objects.get(uuid=data['aud'])
@@ -242,7 +242,7 @@ def logout(request, next_page=None,
                     redirect_to = redirect_uri
                     allowed_schemes = None
         else:
-            # if no OIDC_ID_TOKEN_HINT is there allow only safe schemes
+            # if no OIDC_ID_TOKEN_HINT is there, allow only safe schemes
             if redirect_uri in post_logout_redirect_uris():
                 redirect_to = redirect_uri
         redirect_to = update_url(redirect_to, {OIDC_STATE: get_request_param(request, OIDC_STATE)})
