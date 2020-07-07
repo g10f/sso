@@ -18,7 +18,7 @@ from django.views.decorators.cache import cache_control
 from django.views.decorators.csrf import csrf_exempt
 from l10n.models import Country
 from sso.accounts.email import send_account_created_email
-from sso.accounts.models import UserAddress, UserPhoneNumber, User, UserEmail, ApplicationRole
+from sso.accounts.models import UserAddress, UserPhoneNumber, User, UserEmail, ApplicationRole, Application
 from sso.api.decorators import condition, api_user_passes_test
 from sso.api.views.generic import JsonListView, JsonDetailView
 from sso.auth.utils import is_recent_auth_time
@@ -597,7 +597,15 @@ class UserList(UserMixin, JsonListView):
 
         app_uuid = self.request.GET.get('app_id', None)
         if app_uuid:
-            qs = qs.filter(application_roles__application__uuid=app_uuid)
+            # only allow app_id if application.required_scope is in request.scopes
+            scopes = self.request.scopes
+            application = Application.objects.get_by_natural_key(app_uuid)
+            if not application.required_scope or application.required_scope in scopes:
+                q = Q(application_roles__application__uuid=app_uuid)
+                q |= Q(role_profiles__application_roles__application__uuid=app_uuid)
+                qs = qs.filter(q)
+            else:
+                raise ValueError("required scope %s not in scopes %s" % (application.required_scope, scopes))
 
         modified_since = self.request.GET.get('modified_since', None)
         if modified_since:  # parse modified_since
