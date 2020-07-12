@@ -44,7 +44,7 @@ def send_account_created_email(user, request, token_generator=default_pwd_reset_
     message, subject = i18n_email_msg_and_subj(c, email_template_name, subject_template_name, language)
 
     user.email_user(subject, message, reply_to=reply_to, fail_silently=settings.DEBUG, apply_async=apply_async,
-                    countdown=countdown)
+                    countdown=countdown, bcc=reply_to)
 
 
 def send_useremail_confirmation(user_email, request, token_generator=email_confirm_token_generator,

@@ -59,7 +59,7 @@
             <i class="glyphicon glyphicon-plus-sign"></i> {% trans 'Add Email' %}</a>
     {% endif %}
 
-    {% if country_management and perms.organisations.add_organisationcountry %}
+    {% if country_management and perms.organisations.add_organisationcountry and user.get_administrable_associations %}
         <a class="list-group-item {% if active_navigation == "organisationcountry_create" %}active{% endif %}" href="{% url 'organisations:organisationcountry_create' %}">
             <i class="glyphicon glyphicon-plus-sign"></i> {% trans 'Add Country' %}</a>
     {% endif %}
