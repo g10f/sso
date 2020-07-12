@@ -9,25 +9,26 @@ from sso.celery import send_mail_task
 
 
 def send_mail(subject, message, recipient_list, from_email=None, html_message=None, fail_silently=False,
-              apply_async=None, countdown=0, **kwargs):
+              apply_async=None, countdown=0, bcc=None, **kwargs):
     if apply_async is None:
         apply_async = settings.SSO_ASYNC_EMAILS
     kwargs.update({'subject': subject, 'message': message, 'from_email': from_email, 'recipient_list': recipient_list,
-                   'html_message': html_message, 'fail_silently': fail_silently})
+                   'html_message': html_message, 'fail_silently': fail_silently, 'bcc': bcc})
     if apply_async:
         return send_mail_task.apply_async(countdown=countdown, kwargs=kwargs)
     else:
         return send_mail_task(**kwargs)
 
 
-def send_html_mail(subject, message, recipient_list, from_email, html_message, fail_silently=False, reply_to=None):
+def send_html_mail(subject, message, recipient_list, from_email, html_message, fail_silently=False, reply_to=None,
+                   bcc=None):
     msg_alternative = MIMEMultipart('alternative')
     msg_html = MIMEText(html_message, _subtype='html', _charset='utf-8')
     msg_text = MIMEText(message, _charset='utf-8')
     msg_alternative.attach(msg_text)
     msg_alternative.attach(msg_html)
 
-    msg = EmailMessage(subject, '', from_email, recipient_list, reply_to=reply_to)
+    msg = EmailMessage(subject, '', from_email, recipient_list, reply_to=reply_to, bcc=bcc)
     msg.mixed_subtype = 'related'
     msg.attach(msg_alternative)
 
@@ -43,7 +44,7 @@ def send_html_mail(subject, message, recipient_list, from_email, html_message, f
 
 def send_text_mail(subject, message, from_email, recipient_list,
                    fail_silently=False, auth_user=None, auth_password=None,
-                   connection=None, html_message=None, reply_to=None):
+                   connection=None, html_message=None, reply_to=None, bcc=None):
     """
     extended version with reply_to
     """
@@ -53,7 +54,7 @@ def send_text_mail(subject, message, from_email, recipient_list,
         fail_silently=fail_silently,
     )
     mail = EmailMultiAlternatives(subject, message, from_email, recipient_list, connection=connection,
-                                  reply_to=reply_to)
+                                  reply_to=reply_to, bcc=bcc)
     if html_message:
         mail.attach_alternative(html_message, 'text/html')
 

@@ -21,7 +21,7 @@ SSO_SEND_FROM_VERIFIED_EMAIL_ADDRESSES_RE = re.compile(settings.SSO_SEND_FROM_VE
 
 @app.task(ignore_result=True)
 def send_mail_task(subject, message, recipient_list, from_email=None, html_message=None, fail_silently=False,
-                   reply_to=None, **kwargs):
+                   reply_to=None, bcc=None, **kwargs):
     if from_email and not SSO_SEND_FROM_VERIFIED_EMAIL_ADDRESSES_RE.match(from_email):
         from_email = None
     # use SSO_NOREPLY_EMAIL as sender if reply_to is not defined
@@ -30,7 +30,8 @@ def send_mail_task(subject, message, recipient_list, from_email=None, html_messa
 
     if html_message is not None:
         from sso.utils.email import send_html_mail
-        send_html_mail(subject, message, recipient_list, from_email, html_message, fail_silently, reply_to=reply_to)
+        send_html_mail(subject, message, recipient_list, from_email, html_message, fail_silently, reply_to=reply_to,
+                       bcc=bcc)
     else:
         from sso.utils.email import send_text_mail
-        send_text_mail(subject, message, from_email, recipient_list, fail_silently=False, reply_to=reply_to)
+        send_text_mail(subject, message, from_email, recipient_list, fail_silently=False, reply_to=reply_to, bcc=bcc)

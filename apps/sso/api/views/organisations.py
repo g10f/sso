@@ -150,7 +150,6 @@ class OrganisationDetailView(OrganisationMixin, JsonDetailView):
 
 
 class OrganisationList(OrganisationMixin, JsonListView):
-    # TODO: caching
     def get_queryset(self):
         qs = super().get_queryset().prefetch_related(
             'organisation_country__country', 'admin_region', 'email', 'organisationaddress_set',
