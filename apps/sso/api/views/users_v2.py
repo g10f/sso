@@ -327,7 +327,7 @@ class UserDetailView(UserMixin, JsonDetailView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        return super().get_queryset().prefetch_related('useraddress_set', 'userphonenumber_set')
+        return super().get_queryset().prefetch_related('useraddress_set', 'userphonenumber_set', 'userattribute_set')
 
     def get_object_data(self, request, obj):
         return super().get_object_data(request, obj, details=True)
@@ -561,7 +561,7 @@ class UserList(UserMixin, JsonListView):
         }
 
     def get_queryset(self):
-        qs = super().get_queryset().prefetch_related('useraddress_set', 'userphonenumber_set',
+        qs = super().get_queryset().prefetch_related('useraddress_set', 'userphonenumber_set', 'userattribute_set',
                                                      'useremail_set').distinct()
         qs = qs.order_by('username')
         qs = self.request.user.filter_administrable_users(qs)

@@ -241,6 +241,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         else:
             last_modified_list += self.useremail_set.values_list("last_modified", flat=True)
 
+        if hasattr(self, '_prefetched_objects_cache') and ('userattribute_set' in self._prefetched_objects_cache):
+            last_modified_list += [obj.last_modified for obj in self.userattribute_set.all()]
+        else:
+            last_modified_list += self.userattribute_set.values_list("last_modified", flat=True)
+
         last_modified = max(last_modified_list)
         return last_modified
 
