@@ -219,6 +219,10 @@ class UserMixin(object):
                     } for phone_number in obj.userphonenumber_set.all()
                 }
 
+            if 'profile' in scopes:
+                for user_attribute in obj.userattribute_set.all():
+                    data[user_attribute.name] = user_attribute.value
+
             if obj.has_perm("registration.change_registrationprofile"):
                 count_of_registrationprofiles = obj.get_count_of_registrationprofiles()
                 if settings.REGISTRATION.get('OPEN', True) or count_of_registrationprofiles > 0:

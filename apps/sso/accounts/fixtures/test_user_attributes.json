@@ -1,0 +1,11 @@
+[
+  {
+    "model": "accounts.userattribute",
+    "fields": {
+      "last_modified": "2020-08-22T11:58:46.076Z",
+      "name": "preferred_programming_language",
+      "value": "Python",
+      "user": ["GlobalAdmin"]
+    }
+  }
+]

@@ -35,6 +35,9 @@
     {% include 'include/_field.html' with field=form.timezone %}
     {% include 'include/_field.html' with field=form.gender %}
     {% include 'include/_field.html' with field=form.dob %}
+
+    {% block user-extra-form-fields %}{% endblock  %}
+
     {% include 'include/_field.html' with field=form.about_me %}
     <span class="help-block">{% trans 'Please name a person who already has an account and can recommend you.' %}</span>
     {% include 'include/_field.html' with field=form.known_person1_first_name %}

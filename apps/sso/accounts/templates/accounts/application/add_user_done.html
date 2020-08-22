@@ -43,6 +43,9 @@
             <th>{% trans 'Organisations' %}:</th>
             <td>{% for organisation in new_user.organisations.all %}{{ organisation }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
         </tr>
+
+        {% block user-extra-form-fields %}{% endblock  %}
+
         {% for role_profile in new_user.role_profiles.all %}
             <tr>
                 <th>{% if forloop.first %}{% trans 'Role profiles' %}: {% endif %}</th>
