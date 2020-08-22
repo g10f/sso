@@ -7,7 +7,6 @@ from django.db import models
 from django.urls import reverse
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _, pgettext_lazy
-from sso.accounts.models.application import ApplicationRole, RoleProfile
 from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary, \
     CaseInsensitiveEmailField, AbstractBaseModelManager
 from sso.organisations.models import Organisation, is_validation_period_active
@@ -173,3 +172,16 @@ class Membership(models.Model):
 
     def __str__(self):
         return '%s - %s' % (self.organisation, self.user)
+
+
+class UserAttribute(AbstractBaseModel):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    name = models.CharField(_('name'), max_length=255)
+    value = models.CharField(_('value'), max_length=255)
+
+    class Meta:
+        unique_together = (("user", "name"),)
+        indexes = [
+            models.Index(fields=['name', 'value']),
+            models.Index(fields=['user']),
+        ]

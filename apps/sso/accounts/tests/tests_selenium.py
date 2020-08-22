@@ -18,7 +18,7 @@ from sso.tests import SSOSeleniumTests
 
 class AccountsSeleniumTests(SSOSeleniumTests):
     fixtures = ['roles.json', 'test_l10n_data.json', 'app_roles.json', 'test_organisation_data.json',
-                'test_app_roles.json', 'test_user_data.json']
+                'test_app_roles.json', 'test_user_data.json', 'test_user_attributes.json']
 
     def login_test(self, username, password, test_success=True):
         self.login(username=username, password=password)
@@ -384,6 +384,15 @@ class AccountsSeleniumTests(SSOSeleniumTests):
 
         gender = self.selenium.find_element_by_name("gender")
         gender.send_keys(new_gender)
+
+        required_extra_fields = self.selenium.find_elements_by_xpath(
+            '//span[@class="user-extra-form-fields"]//node()[@class="form-control" and @required]')
+        for required_extra_field in required_extra_fields:
+            if required_extra_field.tag_name == 'select':
+                # select the first option with a non empty value
+                option = required_extra_field.find_elements_by_xpath("option[@value and string-length(@value)!=0]")[0]
+                option.click()
+            # TODO: cases for other types of extra fields
 
         organisation = Select(self.selenium.find_element_by_name("organisations"))
 

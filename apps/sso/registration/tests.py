@@ -2,6 +2,8 @@ import os
 import re
 from urllib.parse import urlsplit
 
+from django.conf import settings
+
 from django.core import mail
 from django.test import TestCase, override_settings
 from django.urls import reverse
@@ -88,8 +90,10 @@ class RegistrationTest(TestCase):
             'city': 'Megacity',
             'organisation': organisation.pk,
             'g-recaptcha-response': 'PASSED'
-
         }
+        for user_extra_attribute in settings.SSO_TEST_USER_EXTRA_ATTRIBUTES:
+            data[user_extra_attribute['name']] = user_extra_attribute['value']
+
         response = self.client.post(reverse('registration:registration_register'), data=data)
         self.assertNotContains(response, 'has-error')
 

@@ -20,7 +20,8 @@ from django.utils.translation import ugettext_lazy as _
 from reversion.admin import VersionAdmin
 from sso.organisations.models import Organisation, AdminRegion
 from .forms import AdminUserCreationForm
-from .models import Application, UserAssociatedSystem, UserAddress, UserPhoneNumber, UserEmail, RoleProfile
+from .models import Application, UserAssociatedSystem, UserAddress, UserPhoneNumber, UserEmail, RoleProfile, \
+    UserAttribute
 
 logger = logging.getLogger(__name__)
 
@@ -333,6 +334,13 @@ class UserAssociatedSystemInline(admin.StackedInline):
     readonly_fields = ('application', 'userid')
 
 
+class UserAttributeInline(admin.StackedInline):
+    model = UserAttribute
+    fk_name = 'user'
+    extra = 0
+    fieldsets = ((None, {'fields': (('name', 'value',),), 'classes': ['wide']}),)
+
+
 class GroupAdmin(DjangoGroupAdmin):
     fieldsets = (
         (None, {'fields': ('name', 'permissions'), 'classes': ['wide']}),
@@ -410,7 +418,8 @@ class UserAdmin(VersionAdmin, AdminImageMixin, DjangoUserAdmin):
         'app_admin_organisation_countries', 'app_admin_regions')
     ordering = ['-last_login', '-first_name', '-last_name']
     actions = DjangoUserAdmin.actions + ['mark_info_mail']
-    inlines = [MembershipInline, UserEmailInline, PhoneNumberInline, AddressInline, UserAssociatedSystemInline]
+    inlines = [MembershipInline, UserEmailInline, PhoneNumberInline, AddressInline, UserAssociatedSystemInline,
+               UserAttributeInline]
 
     fieldsets = (
         (None, {'fields': ('username', 'password'), 'classes': ['wide']}),

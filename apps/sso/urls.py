@@ -5,14 +5,14 @@ from django.urls import include, path, register_converter
 from django.views.generic import RedirectView, TemplateView
 from django.views.i18n import JavaScriptCatalog
 from smart_selects.views import filterchain
-from sso.accounts.forms import UserSelfRegistrationForm2
+from sso.accounts.views.application import get_default_user_self_registration_form_class
 from sso.admin import sso_admin_site
 from sso.oauth2.views import OpenidConfigurationView
 from sso.registration.sites import RegistrationSite
 from sso.utils.url import UUIDConverter
 from sso.views import home
 
-registration_site = RegistrationSite(form_cls=UserSelfRegistrationForm2)
+registration_site = RegistrationSite(form_cls=get_default_user_self_registration_form_class())
 
 register_converter(UUIDConverter, 'uuid')
 

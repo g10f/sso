@@ -56,6 +56,12 @@ SSO_EMAIL_LOGO = ""
 SSO_ASYNC_EMAILS = False  # send emails async via celery task
 SSO_NOREPLY_EMAIL = 'webmaster@g10f.de'
 SSO_POST_RESET_LOGIN = True
+# configured default forms and functions
+SSO_ADMIN_UPDATE_USER_FORM = 'sso.accounts.forms.UserProfileForm'
+SSO_ADMIN_ADD_USER_FORM = 'sso.accounts.forms.UserAddForm'
+SSO_SELF_REGISTRATION_FORM = 'sso.accounts.forms.UserSelfRegistrationForm2'
+SSO_DEFAULT_IDTOKEN_GENERATOR = 'sso.oauth2.oauthlib_server.default_idtoken_generator'
+SSO_TEST_USER_EXTRA_ATTRIBUTES = []
 
 OTP_DEVICES = [
     'sso_auth.TOTPDevice',

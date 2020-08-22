@@ -81,6 +81,10 @@
                         {% include 'include/_user_field.html' with field=form.last_modified_by_user %}
                     {% endif %}
 
+                    <span class="user-extra-form-fields">
+                        {% block user-extra-form-fields %}{% endblock  %}
+                    </span>
+
                     {% include 'accounts/includes/_profiles_field.html' with field=form.role_profiles %}
 
                     {% if perms.registration.change_registrationprofile %}

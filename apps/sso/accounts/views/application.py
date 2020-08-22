@@ -1,6 +1,9 @@
 import logging
 from datetime import timedelta
+from functools import lru_cache
 from urllib.parse import urlunsplit
+
+from django.utils.module_loading import import_string
 
 from django.conf import settings
 from django.contrib import messages
@@ -324,12 +327,30 @@ class AppAdminUserList(ListView):
         return super().get_context_data(**context)
 
 
+@lru_cache()
+def get_default_admin_update_user_form_class():
+    admin_update_user_form_class = import_string(settings.SSO_ADMIN_UPDATE_USER_FORM)
+    return admin_update_user_form_class
+
+
+@lru_cache()
+def get_default_admin_add_user_form_class():
+    admin_add_user_form_class = import_string(settings.SSO_ADMIN_ADD_USER_FORM)
+    return admin_add_user_form_class
+
+
+@lru_cache()
+def get_default_user_self_registration_form_class():
+    user_self_registration_form_class = import_string(settings.SSO_SELF_REGISTRATION_FORM)
+    return user_self_registration_form_class
+
+
 @admin_login_required
 @permission_required('accounts.add_user', raise_exception=True)
 def add_user(request, template='accounts/application/add_user_form.html'):
     redirect_uri = get_safe_redirect_uri(request, allowed_hosts())
     if request.method == 'POST':
-        form = UserAddForm(request, request.POST)
+        form = get_default_admin_add_user_form_class()(request, request.POST)
         if form.is_valid():
             user = form.save()
             send_account_created_email(user, request)
@@ -347,7 +368,7 @@ def add_user(request, template='accounts/application/add_user_form.html'):
         organisations = request.user.get_administrable_user_organisations()
         if len(organisations) == 1:
             initial['organisations'] = organisations[0]
-        form = UserAddForm(request, initial=initial)
+        form = get_default_admin_add_user_form_class()(request, initial=initial)
 
     data = {'form': form, 'redirect_uri': redirect_uri, 'title': _('Add user')}
     return render(request, template, data)
@@ -372,7 +393,7 @@ def _update_standard_user(request, user, template='accounts/application/update_u
                                                    max_num=UserEmail.MAX_EMAIL_ADRESSES)
 
     if request.method == 'POST':
-        form = UserProfileForm(request.POST, instance=user, request=request)
+        form = get_default_admin_update_user_form_class()(request.POST, instance=user, request=request)
         user_email_inline_formset = UserEmailInlineFormSet(request.POST, instance=user)
 
         if form.is_valid() and user_email_inline_formset.is_valid():
@@ -444,7 +465,7 @@ def _update_standard_user(request, user, template='accounts/application/update_u
 
     else:
         user_email_inline_formset = UserEmailInlineFormSet(instance=user)
-        form = UserProfileForm(instance=user, request=request)
+        form = get_default_admin_update_user_form_class()(instance=user, request=request)
 
     user_email_inline_formset.forms += [user_email_inline_formset.empty_form]
     formsets = [user_email_inline_formset]

@@ -2,18 +2,12 @@ import base64
 import calendar
 import json
 import logging
-import time
+from functools import lru_cache
 from urllib.parse import urlsplit
 from uuid import UUID
 
+import time
 from jwt import InvalidTokenError
-
-from django.contrib.auth import authenticate, get_user_model
-from django.core import signing
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.utils import timezone
-from django.utils.crypto import get_random_string
-from django.utils.encoding import force_text, force_bytes
 from oauthlib.oauth2 import FatalClientError
 from oauthlib.oauth2.rfc6749 import errors
 from oauthlib.oauth2.rfc6749 import tokens
@@ -26,7 +20,15 @@ from oauthlib.openid.connect.core.grant_types import ImplicitGrant, GrantTypeBas
 from oauthlib.openid.connect.core.grant_types.dispatchers import AuthorizationCodeGrantDispatcher, \
     ImplicitTokenGrantDispatcher, AuthorizationTokenGrantDispatcher
 from oauthlib.openid.connect.core.request_validator import RequestValidator
-from sso.api.response import add_cors_header
+
+from django.conf import settings
+from django.contrib.auth import authenticate, get_user_model
+from django.core import signing
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.utils import timezone
+from django.utils.crypto import get_random_string
+from django.utils.encoding import force_text, force_bytes
+from django.utils.module_loading import import_string
 from sso.auth import get_session_auth_hash, HASH_SESSION_KEY
 from .crypt import loads_jwt, make_jwt, MAX_AGE
 from .models import BearerToken, RefreshToken, AuthorizationCode, Client, check_redirect_uri, CONFIDENTIAL_CLIENTS, \
@@ -53,7 +55,7 @@ def default_token_generator(request, max_age=MAX_AGE):
         'aud': request.client.client_id,  # required
         'exp': int(time.time()) + max_age,  # required
         'iat': int(time.time()),  # required
-        'acr': '1' if user.is_verified else '0',
+        'acr': '2' if user.is_verified else '1',
         'scope': ' '.join(request.scopes),  # custom, required
         'email': force_text(user.primary_email()),  # custom
         'name': user.username,  # custom
@@ -66,11 +68,7 @@ def default_token_generator(request, max_age=MAX_AGE):
     return make_jwt(claim_set)
 
 
-# http://openid.net/specs/openid-connect-basic-1_0.html#IDToken
-def default_idtoken_generator(request, max_age=MAX_AGE):
-    """
-    The generated id_token contains additionally email, name and roles
-    """
+def get_idtoken_claim_set(request, max_age=MAX_AGE):
     user = request.user
     auth_time = int(calendar.timegm(user.last_login.utctimetuple()))
     claim_set = {
@@ -80,7 +78,7 @@ def default_idtoken_generator(request, max_age=MAX_AGE):
         'exp': int(time.time()) + max_age,
         'iat': int(time.time()),
         'auth_time': auth_time,  # required when max_age is in the request
-        'acr': '1' if user.is_verified else '0',
+        'acr': '2' if user.is_verified else '1',
         'email': force_text(user.primary_email()),  # custom
         'name': user.username,  # custom
         'given_name': user.first_name,  # custom
@@ -91,6 +89,15 @@ def default_idtoken_generator(request, max_age=MAX_AGE):
     if request.client.application:
         claim_set['roles'] = ' '.join(
             user.get_roles_by_app(request.client.application.uuid).values_list('name', flat=True))  # custom
+    return claim_set
+
+
+# http://openid.net/specs/openid-connect-basic-1_0.html#IDToken
+def default_idtoken_generator(request, max_age=MAX_AGE):
+    """
+    The generated id_token contains additionally email, name and roles
+    """
+    claim_set = get_idtoken_claim_set(request, max_age)
     return make_jwt(claim_set)
 
 
@@ -101,6 +108,12 @@ def get_client_id_and_secret_from_auth_header(request):
         if (len(http_authorization) == 2) and http_authorization[0] == 'Basic':
             data = base64.b64decode(force_bytes(http_authorization[1])).decode()
             return data.split(':')
+
+
+@lru_cache()
+def get_idtoken_generator():
+    idtoken_generator = import_string(settings.SSO_DEFAULT_IDTOKEN_GENERATOR)
+    return idtoken_generator
 
 
 class OIDCRequestValidator(RequestValidator):
@@ -385,7 +398,7 @@ class OIDCRequestValidator(RequestValidator):
     def get_id_token(self, token, token_handler, request):
         # the request.scope should be used by the get_id_token() method to determine which claims to include in
         # the resulting id_token
-        return default_idtoken_generator(request)
+        return get_idtoken_generator()(request)
 
     def validate_silent_authorization(self, request):
         # We have no consent dialog
