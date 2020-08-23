@@ -43,3 +43,20 @@ Changelog
 
 1.2.1:
  Django 2.0 compatibility
+
+1.3.0
+ - PKCE support
+
+1.3.1:
+ - User Organisations are stored through exlicit membership class/table
+
+2.0.2
+
+2.1.0
+ - django 2.2 compatibility
+ - oauthlib>=3
+ - New UserNote Model
+ - application specific scopes to restrict the clients which have access to user applicationroles
+ - Key value table to store arbitrary user attributes. The UI/forms can be overwritten by settings.
+ - new select box for administration of user applicationroles
+ - support post_logout_redirect_uri of OIDC spec
