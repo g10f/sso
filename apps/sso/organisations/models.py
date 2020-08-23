@@ -571,3 +571,29 @@ def default_unique_slug_generator(slug, model, obj=None):
 
     slug = "%s-%d" % (slug, new_no)
     return slug
+
+
+def get_organisations(organisation_or_region_or_country_id):
+    from sso.organisations.models import Organisation, AdminRegion, OrganisationCountry
+
+    if organisation_or_region_or_country_id == 'all':
+        return Organisation.objects.filter()
+
+    try:
+        admin_region = AdminRegion.objects.get_by_natural_key(organisation_or_region_or_country_id)
+        return Organisation.objects.filter(admin_region=admin_region)
+    except ObjectDoesNotExist:
+        pass
+
+    try:
+        organisation_country = OrganisationCountry.objects.get_by_natural_key(organisation_or_region_or_country_id)
+        return Organisation.objects.filter(organisation_country=organisation_country)
+    except ObjectDoesNotExist:
+        pass
+
+    try:
+        organisation = Organisation.objects.get_by_natural_key(organisation_or_region_or_country_id)
+        return Organisation.objects.filter(pk=organisation.pk)
+    except ObjectDoesNotExist:
+        raise ValueError("nor organisation and region and country found with uuid=%s" %
+                         organisation_or_region_or_country_id)
