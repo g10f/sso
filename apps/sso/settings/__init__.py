@@ -60,6 +60,7 @@ SSO_POST_RESET_LOGIN = True
 SSO_ADMIN_UPDATE_USER_FORM = 'sso.accounts.forms.UserProfileForm'
 SSO_ADMIN_ADD_USER_FORM = 'sso.accounts.forms.UserAddForm'
 SSO_SELF_REGISTRATION_FORM = 'sso.accounts.forms.UserSelfRegistrationForm2'
+SSO_ADMIN_REGISTRATION_PROFILE_FORM = 'sso.registration.forms.RegistrationProfileForm'
 SSO_DEFAULT_IDTOKEN_GENERATOR = 'sso.oauth2.oauthlib_server.default_idtoken_generator'
 SSO_TEST_USER_EXTRA_ATTRIBUTES = []
 
