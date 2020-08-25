@@ -73,6 +73,11 @@
                 {% include 'registration/include/_user_search_field.html' with field=form.known_person2_first_name %}
                 {% include 'registration/include/_user_search_field.html' with field=form.known_person2_last_name %}
                 {% include 'include/_user_field.html' with field=form.last_modified_by_user %}
+
+                <span class="user-extra-form-fields">
+                    {% block user-extra-form-fields %}{% endblock  %}
+                </span>
+
                 {% include 'accounts/includes/_profiles_field.html' with field=form.role_profiles %}
                 <span class="help-block">{% trans 'Registration processing information' %}</span>
                 {% include 'include/_static_yesno_field.html' with field=form.check_back %}

@@ -1,3 +1,5 @@
+from functools import lru_cache
+
 from formtools.preview import FormPreview
 
 from django.conf import settings
@@ -12,6 +14,7 @@ from django.template.response import TemplateResponse
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_text
+from django.utils.module_loading import import_string
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic import DeleteView, FormView
 from sso.accounts.models import ApplicationRole, User
@@ -20,7 +23,7 @@ from sso.organisations.models import is_validation_period_active_for_user, Organ
 from sso.signals import user_registration_completed
 from sso.views import main
 from sso.views.generic import SearchFilter, ViewChoicesFilter, ViewQuerysetFilter, ListView
-from .forms import RegistrationProfileForm, SendMailForm
+from .forms import SendMailForm
 from .models import RegistrationProfile, RegistrationManager, get_check_back_email_message, \
     get_access_denied_email_message, send_set_password_email, send_validation_email
 from .tokens import default_token_generator
@@ -176,6 +179,12 @@ class UserRegistrationList(ListView):
         return super().get_context_data(**context)
 
 
+@lru_cache()
+def get_default_admin_registration_profile_form_class():
+    admin_registration_profile_form_class = import_string(settings.SSO_ADMIN_REGISTRATION_PROFILE_FORM)
+    return admin_registration_profile_form_class
+
+
 @admin_login_required
 @permission_required('registration.change_registrationprofile', raise_exception=True)
 def update_user_registration(request, pk, template='registration/change_user_registration_form.html'):
@@ -187,7 +196,8 @@ def update_user_registration(request, pk, template='registration/change_user_reg
         raise PermissionDenied
 
     if request.method == 'POST':
-        registrationprofile_form = RegistrationProfileForm(request.POST, instance=registrationprofile, request=request)
+        registrationprofile_form = get_default_admin_registration_profile_form_class()(
+            request.POST, instance=registrationprofile, request=request)
         if registrationprofile_form.is_valid():
             msg_dict = {'name': force_text(get_user_model()._meta.verbose_name),
                         'obj': force_text(registrationprofile)}
@@ -215,7 +225,8 @@ def update_user_registration(request, pk, template='registration/change_user_reg
             messages.add_message(request, level=messages.SUCCESS, message=msg, fail_silently=True)
             return HttpResponseRedirect(success_url)
     else:
-        registrationprofile_form = RegistrationProfileForm(instance=registrationprofile, request=request)
+        registrationprofile_form = get_default_admin_registration_profile_form_class()(
+            instance=registrationprofile, request=request)
 
     app_roles_by_profile = {id for id in
                             ApplicationRole.objects.filter(roleprofile__user__id=registrationprofile.user.pk).only(
