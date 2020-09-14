@@ -1,7 +1,7 @@
 wheel
 django<3
 django-formtools
-django-ipware
+django-ipware>=3
 django-reversion
 gunicorn
 psycopg2-binary

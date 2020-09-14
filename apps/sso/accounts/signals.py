@@ -1,6 +1,6 @@
 import datetime
 
-from ipware.ip import get_real_ip
+from ipware.ip import get_client_ip
 
 from django.conf import settings
 from django.contrib.auth import user_logged_in
@@ -43,7 +43,7 @@ def update_last_login_and_ip(sender, user, **kwargs):
     update_fields = ['last_login']
 
     if 'request' in kwargs:
-        user.last_ip = get_real_ip(kwargs['request'])
+        user.last_ip, _ = get_client_ip(kwargs['request'])
         update_fields.append('last_ip')
 
     user.save(update_fields=update_fields)
