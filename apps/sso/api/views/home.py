@@ -1,4 +1,3 @@
-
 import logging
 
 from django.urls import reverse
@@ -9,7 +8,8 @@ from sso.utils.url import get_base_url
 logger = logging.getLogger(__name__)
 
 FIND_ASSOCIATION_EXPRESSION = "{?q,per_page,modified_since}"
-FIND_USER_EXPRESSION = "{?q,per_page,app_id,modified_since,is_active,country_group_id,country,region_id,org_id,email}"
+FIND_USER_EXPRESSION = "{?q,per_page,app_id,modified_since,is_active,country_group_id,country,region_id,org_id,email," \
+                       "associated_system_id}"
 FIND_ORGANISATION_EXPRESSION = "{?q,per_page,modified_since,is_active,country_group_id,country,country_code," \
                                "region_id,latlng,dlt,with_unofficial,org_type,is_live}"
 FIND_COUNTRY_EXPRESSION = "{?q,per_page,modified_since,country_group_id}"
@@ -17,6 +17,7 @@ FIND_REGION_EXPRESSION = "{?q,per_page,modified_since,country_group_id,country}"
 FIND_COUNTRY_GROUP_EXPRESSION = "{?q,per_page,modified_since,country}"
 FIND_USER_EMAILS_EXPRESSION = "{?q,app_id,modified_since,country_group_id,country,region_id,org_id,is_center," \
                               "profile_id,exclude_profile_id,}"
+CREATE_USER_QUERY_PARAMS = "{?send_email}"
 
 
 @cache_page(60 * 60)
@@ -36,7 +37,7 @@ def home(request):
         "organisations": "%s%s%s" % (base_uri, reverse('api:v2_organisations'), FIND_ORGANISATION_EXPRESSION),
         "organisation": "%s%s%s" % (base_uri, reverse('api:v2_organisations'), "{org_id}/"),
         "users": "%s%s%s" % (base_uri, reverse('api:v2_users'), FIND_USER_EXPRESSION),
-        "user": "%s%s%s" % (base_uri, reverse('api:v2_users'), "{user_id}/"),
+        "user": "%s%s%s%s" % (base_uri, reverse('api:v2_users'), "{user_id}/", CREATE_USER_QUERY_PARAMS),
         "me": "%s%s" % (base_uri, reverse('api:v2_users_me')),
         "navigation_me": "%s%s" % (base_uri, reverse('api:v2_navigation_me')),
         "navigation": "%s%s" % (base_uri, reverse('api:v2_navigation_me').replace('/me/', '/{user_id}/', 1)),
@@ -58,12 +59,12 @@ def home(request):
         "country": "schema:addressCountry",
         "last_modified": "schema:dateModified",
         "addresses": {
-            "@id": "schema:PostalAddress", 
+            "@id": "schema:PostalAddress",
             "@container": "@index",
         },
-        "street_address": "schema:streetAddress",        
-        "city": "schema:addressLocality",        
-        "postal_code": "schema:postalCode",        
+        "street_address": "schema:streetAddress",
+        "city": "schema:addressLocality",
+        "postal_code": "schema:postalCode",
         "region": "schema:addressRegion",
         "address_type": "schema:contactType",
         "primary": "http://g10f.de/primary",  # custom property

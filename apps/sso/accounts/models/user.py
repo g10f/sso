@@ -271,7 +271,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @classmethod
     def get_default_guest_profile(cls, role_uuid=None):
-        role_profile = RoleProfile.objects.none()
+        role_profile = None
         if role_uuid is None:
             role_uuid = settings.SSO_DEFAULT_GUEST_PROFILE_UUID
         if role_uuid:

@@ -1,4 +1,5 @@
 import logging
+from distutils.util import strtobool
 from uuid import UUID
 
 from sorl.thumbnail import get_thumbnail
@@ -18,7 +19,8 @@ from django.views.decorators.cache import cache_control
 from django.views.decorators.csrf import csrf_exempt
 from l10n.models import Country
 from sso.accounts.email import send_account_created_email
-from sso.accounts.models import UserAddress, UserPhoneNumber, User, UserEmail, ApplicationRole, Application
+from sso.accounts.models import UserAddress, UserPhoneNumber, User, UserEmail, ApplicationRole, Application, \
+    UserAssociatedSystem, RoleProfile
 from sso.api.decorators import condition, api_user_passes_test
 from sso.api.views.generic import JsonListView, JsonDetailView
 from sso.auth.utils import is_recent_auth_time
@@ -67,6 +69,7 @@ def _non_empty_string(s):
     return False
 
 
+# json name : {'name': obect attribute name, ... }
 API_USER_MAPPING = {
     'given_name': {'name': 'first_name', 'validate': _non_empty_string},
     'family_name': {'name': 'last_name', 'validate': _non_empty_string},
@@ -137,6 +140,11 @@ class UserMixin(object):
         if obj.picture:
             data['picture']['url'] = absolute_url(request, obj.picture.url)
 
+        data['associated_systems'] = {
+            associated_system.application.uuid.hex: {
+                'userid': associated_system.userid
+            } for associated_system in UserAssociatedSystem.objects.filter(user=obj)}
+
         if details:
             if obj.picture:
                 data['picture']['30x30'] = absolute_url(request,
@@ -194,6 +202,10 @@ class UserMixin(object):
 
                         applications[application.uuid.hex] = application_data
                 data['apps'] = applications
+
+            # be carefull to assign role_profile, because there can be private / secret role_profiles
+            if 'role_profile' in scopes:
+                data['role_profiles'] = [role_profile.uuid.hex for role_profile in obj.role_profiles.all()]
 
             if 'address' in scopes:
                 data['addresses'] = {
@@ -327,10 +339,11 @@ class UserDetailView(UserMixin, JsonDetailView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        return super().get_queryset().prefetch_related('useraddress_set', 'userphonenumber_set', 'userattribute_set')
+        return super().get_queryset().prefetch_related('useraddress_set', 'userphonenumber_set', 'userattribute_set',
+                                                       'userassociatedsystem_set')
 
-    def get_object_data(self, request, obj):
-        return super().get_object_data(request, obj, details=True)
+    def get_object_data(self, request, obj, details=True):
+        return super().get_object_data(request, obj, details=details)
 
     def _update_user_organisation(self, data):
         request = self.request
@@ -356,7 +369,7 @@ class UserDetailView(UserMixin, JsonDetailView):
         if name not in data:
             return
         scopes = self.request.scopes
-        if SCOPE_MAPPING[name] not in scopes:
+        if SCOPE_MAPPING.get(name) and SCOPE_MAPPING[name] not in scopes:
             raise ValueError("required scope \"%s\" is missing in %s." % (SCOPE_MAPPING[name], scopes))
 
         new_object_keys = []
@@ -402,6 +415,11 @@ class UserDetailView(UserMixin, JsonDetailView):
         self._save_user_details(data, 'addresses', API_ADDRESS_MAP, UserAddress)
         self._save_user_details(data, 'phone_numbers', API_PHONE_MAP, UserPhoneNumber)
 
+        for app_id, associated_system in data.get('associated_systems', {}).items():
+            app = Application.objects.get(uuid=app_id)
+            UserAssociatedSystem.objects.update_or_create(
+                user=self.object, application=app, defaults={'userid': associated_system['userid']})
+
     def create_object(self, request, data):
         """
         set create_object_with_put=True
@@ -423,9 +441,14 @@ class UserDetailView(UserMixin, JsonDetailView):
         self.object.set_password(get_random_string(40))
         self.object.save()
 
+        scopes = self.request.scopes
+
         # create initial app roles
         applications = data.get('apps', {}).items()
         if len(applications) > 0:
+            if 'role' not in scopes:
+                raise ValueError("required scope \"%s\" is missing in %s." % ('role', scopes))
+
             initial_application_roles = []
             administrable_application_role_ids = set(
                 request.user.get_administrable_application_roles().all().values_list('id', flat=True))
@@ -437,10 +460,27 @@ class UserDetailView(UserMixin, JsonDetailView):
                         initial_application_roles += [application_role]
             self.object.application_roles.set(initial_application_roles)
 
-        self.object.role_profiles.set([User.get_default_guest_profile()])
-        self.object.update_last_modified()
+        # add role profiles
+        initial_role_profiles = []
+        if User.get_default_guest_profile():
+            initial_role_profiles = [User.get_default_guest_profile()]
 
-        self.object.create_primary_email(email=data['email'])
+        if data.get('role_profiles'):
+            if 'role_profile' not in scopes:
+                raise ValueError("required scope \"%s\" is missing in %s." % ('role_profile', scopes))
+
+            administrable_role_profile_ids = set(
+                request.user.get_administrable_app_admin_role_profiles().all().values_list('id', flat=True))
+            for profile_uuid in data.get('role_profiles'):
+                role_profiles = RoleProfile.objects.filter(uuid=profile_uuid)
+                for role_profile in role_profiles:
+                    if role_profile.id in administrable_role_profile_ids:
+                        initial_role_profiles += [role_profile]
+
+        self.object.role_profiles.set(initial_role_profiles)
+
+        # email
+        self.object.create_primary_email(email=data['email'], confirmed=data.get('email_verified'))
 
         if 'organisations' in data:
             self._update_user_organisation(data)
@@ -450,7 +490,15 @@ class UserDetailView(UserMixin, JsonDetailView):
         self._save_user_details(data, 'addresses', API_ADDRESS_MAP, UserAddress, update_existing=False)
         self._save_user_details(data, 'phone_numbers', API_PHONE_MAP, UserPhoneNumber, update_existing=False)
 
-        send_account_created_email(self.object, request)
+        for app_id, associated_system in data.get('associated_systems', {}).items():
+            app = Application.objects.get(uuid=app_id)
+            UserAssociatedSystem.objects.create(application=app, userid=associated_system['userid'],
+                                                user=self.object)
+
+        if strtobool(request.GET.get('send_email', 'true')):
+            send_account_created_email(self.object, request)
+
+        self.object.update_last_modified()
         return self.object
 
     def delete_object(self, request, obj):
@@ -562,7 +610,7 @@ class UserList(UserMixin, JsonListView):
 
     def get_queryset(self):
         qs = super().get_queryset().prefetch_related('useraddress_set', 'userphonenumber_set', 'userattribute_set',
-                                                     'useremail_set').distinct()
+                                                     'useremail_set', 'userassociatedsystem_set').distinct()
         qs = qs.order_by('username')
         qs = self.request.user.filter_administrable_users(qs)
 
@@ -610,6 +658,11 @@ class UserList(UserMixin, JsonListView):
                 qs = qs.filter(q)
             else:
                 raise ValueError("required scope %s not in scopes %s" % (application.required_scope, scopes))
+
+        associated_system_uuid = self.request.GET.get('associated_system_id', None)
+        if associated_system_uuid:
+            q = Q(userassociatedsystem__application__uuid=associated_system_uuid)
+            qs = qs.filter(q)
 
         modified_since = self.request.GET.get('modified_since', None)
         if modified_since:  # parse modified_since
