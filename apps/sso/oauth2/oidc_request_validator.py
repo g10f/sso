@@ -1,104 +1,22 @@
 import base64
-import calendar
-import json
 import logging
-from functools import lru_cache
-from urllib.parse import urlsplit
 from uuid import UUID
 
-import time
 from jwt import InvalidTokenError
-from oauthlib.oauth2 import FatalClientError
-from oauthlib.oauth2.rfc6749 import errors
-from oauthlib.oauth2.rfc6749 import tokens
-from oauthlib.oauth2.rfc6749.endpoints import AuthorizationEndpoint, RevocationEndpoint, TokenEndpoint
-from oauthlib.oauth2.rfc6749.endpoints.introspect import IntrospectEndpoint
-from oauthlib.oauth2.rfc6749.grant_types import AuthorizationCodeGrant as OAuth2AuthorizationCodeGrant, \
-    ImplicitGrant as OAuth2ImplicitGrant, ClientCredentialsGrant, RefreshTokenGrant, \
-    ResourceOwnerPasswordCredentialsGrant
-from oauthlib.openid.connect.core.grant_types import ImplicitGrant, GrantTypeBase
-from oauthlib.openid.connect.core.grant_types.dispatchers import AuthorizationCodeGrantDispatcher, \
-    ImplicitTokenGrantDispatcher, AuthorizationTokenGrantDispatcher
-from oauthlib.openid.connect.core.request_validator import RequestValidator
 
-from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model
 from django.core import signing
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.utils import timezone
-from django.utils.crypto import get_random_string
-from django.utils.encoding import force_text, force_bytes
-from django.utils.module_loading import import_string
-from sso.auth import get_session_auth_hash, HASH_SESSION_KEY
-from .crypt import loads_jwt, make_jwt, MAX_AGE
+from django.utils.encoding import force_bytes
+from oauthlib.oauth2 import FatalClientError
+from oauthlib.openid.connect.core.request_validator import RequestValidator
+from .crypt import loads_jwt
 from .models import BearerToken, RefreshToken, AuthorizationCode, Client, check_redirect_uri, CONFIDENTIAL_CLIENTS, \
     CLIENT_RESPONSE_TYPES
+from .oidc_token import get_idtoken_finalizer
 
 logger = logging.getLogger(__name__)
-
-
-# SUPPORTED_SCOPES = ['openid', 'profile', 'email', 'offline_access', 'address', 'phone']
-# DEFAULT_SCOPES = ['openid', 'profile']
-
-
-def get_iss_from_absolute_uri(abs_uri):
-    (scheme, netloc, path, query, fragment) = urlsplit(abs_uri)  # @UnusedVariable
-    return "%s://%s" % (scheme, netloc)
-
-
-def default_token_generator(request, max_age=MAX_AGE):
-    user = request.user
-    claim_set = {
-        'jti': get_random_string(),
-        'iss': get_iss_from_absolute_uri(request.uri),
-        'sub': user.uuid.hex,  # required
-        'aud': request.client.client_id,  # required
-        'exp': int(time.time()) + max_age,  # required
-        'iat': int(time.time()),  # required
-        'acr': '2' if user.is_verified else '1',
-        'scope': ' '.join(request.scopes),  # custom, required
-        'email': force_text(user.primary_email()),  # custom
-        'name': user.username,  # custom
-        # session authentication hash,
-        HASH_SESSION_KEY: get_session_auth_hash(user, request.client),  # custom, required
-    }
-    if request.client.application:
-        claim_set['roles'] = ' '.join(
-            user.get_roles_by_app(request.client.application.uuid).values_list('name', flat=True))  # custom
-    return make_jwt(claim_set)
-
-
-def get_idtoken_claim_set(request, max_age=MAX_AGE):
-    user = request.user
-    auth_time = int(calendar.timegm(user.last_login.utctimetuple()))
-    claim_set = {
-        'iss': get_iss_from_absolute_uri(request.uri),
-        'sub': user.uuid.hex,
-        'aud': request.client.client_id,
-        'exp': int(time.time()) + max_age,
-        'iat': int(time.time()),
-        'auth_time': auth_time,  # required when max_age is in the request
-        'acr': '2' if user.is_verified else '1',
-        'email': force_text(user.primary_email()),  # custom
-        'name': user.username,  # custom
-        'given_name': user.first_name,  # custom
-        'family_name': user.last_name,  # custom
-    }
-    if request.nonce:
-        claim_set['nonce'] = request.nonce  # required if provided by the client
-    if request.client.application:
-        claim_set['roles'] = ' '.join(
-            user.get_roles_by_app(request.client.application.uuid).values_list('name', flat=True))  # custom
-    return claim_set
-
-
-# http://openid.net/specs/openid-connect-basic-1_0.html#IDToken
-def default_idtoken_generator(request, max_age=MAX_AGE):
-    """
-    The generated id_token contains additionally email, name and roles
-    """
-    claim_set = get_idtoken_claim_set(request, max_age)
-    return make_jwt(claim_set)
 
 
 def get_client_id_and_secret_from_auth_header(request):
@@ -108,12 +26,6 @@ def get_client_id_and_secret_from_auth_header(request):
         if (len(http_authorization) == 2) and http_authorization[0] == 'Basic':
             data = base64.b64decode(force_bytes(http_authorization[1])).decode()
             return data.split(':')
-
-
-@lru_cache()
-def get_idtoken_generator():
-    idtoken_generator = import_string(settings.SSO_DEFAULT_IDTOKEN_GENERATOR)
-    return idtoken_generator
 
 
 class OIDCRequestValidator(RequestValidator):
@@ -395,10 +307,9 @@ class OIDCRequestValidator(RequestValidator):
     def revoke_token(self, token, token_type_hint, request, *args, **kwargs):
         RefreshToken.objects.filter(token=token).delete()
 
-    def get_id_token(self, token, token_handler, request):
-        # the request.scope should be used by the get_id_token() method to determine which claims to include in
-        # the resulting id_token
-        return get_idtoken_generator()(request)
+    def finalize_id_token(self, id_token, token, token_handler, request):
+        # Finalize OpenID Connect ID token & Sign or Encrypt.
+        return get_idtoken_finalizer()(id_token, token, token_handler, request)
 
     def validate_silent_authorization(self, request):
         # We have no consent dialog
@@ -440,120 +351,5 @@ class OIDCRequestValidator(RequestValidator):
             logger.warning("authorization code not found")
         return request.scopes
 
-
-class OAuth2AuthorizationCodeGrantEx(OAuth2AuthorizationCodeGrant):
-    def __init__(self, request_validator=None, **kwargs):
-        super().__init__(request_validator, **kwargs)
-        self.register_code_modifier(self.add_session_state)
-
-    def add_session_state(self, token, token_handler, request):
-        try:
-            token['session_state'] = request.session_state
-        except AttributeError as e:
-            logger.exception(e)
-        return token
-
-    def create_token_response(self, request, token_handler):
-        headers = self._get_default_headers()
-        try:
-            self.validate_token_request(request)
-            logger.debug('Token request validation ok for %r.', request)
-        except errors.OAuth2Error as e:
-            logger.debug('Client error during validation of %r. %r.', request, e)
-            headers.update(e.headers)
-            return headers, e.json, e.status_code
-
-        # custom extension of original oauthlib: we only deliver refresh_tokens with scope 'offline_access'
-        refresh_token = 'offline_access' in request.scopes
-
-        token = token_handler.create_token(request, refresh_token=refresh_token)
-        for modifier in self._token_modifiers:
-            token = modifier(token, token_handler, request)
-        self.request_validator.save_token(token, request)
-        self.request_validator.invalidate_authorization_code(
-            request.client_id, request.code, request)
-        # custom extension of original oauthlib
-        # if request.client and request.client.type not in CONFIDENTIAL_CLIENTS and 'HTTP_ORIGIN' in request.headers:
-        #     origin = request.headers['HTTP_ORIGIN']
-        #     add_cors_header(origin, request.client, headers)
-        return headers, json.dumps(token), 200
-
-
-class AuthorizationCodeGrantEx(GrantTypeBase):
-
-    def __init__(self, request_validator=None, **kwargs):
-        # custom proxy_target
-        self.proxy_target = OAuth2AuthorizationCodeGrantEx(request_validator=request_validator, **kwargs)
-        self.custom_validators.post_auth.append(self.openid_authorization_validator)
-        self.register_token_modifier(self.add_id_token)
-
-
-class HybridGrantEx(GrantTypeBase):
-    def __init__(self, request_validator=None, **kwargs):
-        self.request_validator = request_validator or RequestValidator()
-        # custom proxy_target
-        self.proxy_target = OAuth2AuthorizationCodeGrantEx(request_validator=request_validator, **kwargs)
-        # All hybrid response types should be fragment-encoded.
-        self.proxy_target.default_response_mode = "fragment"
-        self.register_response_type('code id_token')
-        self.register_response_type('code token')
-        self.register_response_type('code id_token token')
-        self.custom_validators.post_auth.append(self.openid_authorization_validator)
-        # Hybrid flows can return the id_token from the authorization
-        # endpoint as part of the 'code' response
-        self.register_code_modifier(self.add_token)
-        self.register_code_modifier(self.add_id_token)
-        self.register_token_modifier(self.add_id_token)
-
-
-class Server(AuthorizationEndpoint, IntrospectEndpoint, TokenEndpoint, RevocationEndpoint):
-    """ An all-in-one endpoint  see oauthlib.openid.connect.core.endpoints.pre_configured """
-
-    def __init__(self, request_validator, token_expires_in=None, token_generator=None, refresh_token_generator=None,
-                 *args, **kwargs):
-        auth_grant_ex = OAuth2AuthorizationCodeGrantEx(request_validator)
-        implicit_grant = OAuth2ImplicitGrant(request_validator)
-        password_grant = ResourceOwnerPasswordCredentialsGrant(request_validator)
-        credentials_grant = ClientCredentialsGrant(request_validator)
-        refresh_grant = RefreshTokenGrant(request_validator)
-        openid_connect_auth_ex = AuthorizationCodeGrantEx(request_validator)
-        openid_connect_implicit = ImplicitGrant(request_validator)
-        openid_connect_hybrid_ex = HybridGrantEx(request_validator)
-
-        bearer = tokens.BearerToken(request_validator, token_generator, token_expires_in, refresh_token_generator)
-        auth_grant_choice = AuthorizationCodeGrantDispatcher(default_grant=auth_grant_ex,
-                                                             oidc_grant=openid_connect_auth_ex)
-        implicit_grant_choice = ImplicitTokenGrantDispatcher(default_grant=implicit_grant,
-                                                             oidc_grant=openid_connect_implicit)
-
-        AuthorizationEndpoint.__init__(self, default_response_type='code',
-                                       response_types={
-                                           'code': auth_grant_choice,
-                                           'token': implicit_grant_choice,
-                                           'id_token': openid_connect_implicit,
-                                           'id_token token': openid_connect_implicit,
-                                           'code token': openid_connect_hybrid_ex,
-                                           'code id_token': openid_connect_hybrid_ex,
-                                           'code id_token token': openid_connect_hybrid_ex,
-                                           'none': auth_grant_ex
-                                       },
-                                       default_token_type=bearer)
-
-        token_grant_choice = AuthorizationTokenGrantDispatcher(request_validator, default_grant=auth_grant_ex,
-                                                               oidc_grant=openid_connect_auth_ex)
-
-        TokenEndpoint.__init__(self, default_grant_type='authorization_code',
-                               grant_types={
-                                   'authorization_code': token_grant_choice,
-                                   'password': password_grant,
-                                   'client_credentials': credentials_grant,
-                                   'refresh_token': refresh_grant,
-                               },
-                               default_token_type=bearer)
-        RevocationEndpoint.__init__(self, request_validator)
-        IntrospectEndpoint.__init__(self, request_validator)
-
-
-oidc_request_validator = OIDCRequestValidator()
-oidc_server = Server(oidc_request_validator, token_generator=default_token_generator,
-                     refresh_token_generator=tokens.random_token_generator)
+    def get_authorization_code_nonce(self, client_id, code, redirect_uri, request):
+        return request.nonce

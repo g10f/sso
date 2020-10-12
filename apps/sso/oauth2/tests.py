@@ -350,6 +350,7 @@ class OAuth2Tests(OAuth2BaseTestCase):
             'client_id': client_id,
             'client_secret': "geheim",
         }
+        sleep(1)  # wait 1 sec, so that iat of the new id_token is different
         token_response = self.token_request(token_data)
         self.assertEqual(token_response.status_code, 200)
         self.assertIn('application/json', token_response['Content-Type'])
@@ -358,7 +359,20 @@ class OAuth2Tests(OAuth2BaseTestCase):
 
         token = token_response.json()
         self.assertIn('access_token', token)
-        self.assertNotIn('id_token', token)
+        if 'id_token' in token:
+            # check the id_token from refresh token response
+            # https://openid.net/specs/openid-connect-core-1_0.html#RefreshTokenResponse
+            id_token_from_refresh = crypt.loads_jwt(token['id_token'])
+            self.assertEqual(id_token_from_refresh['iss'], id_token['iss'])
+            self.assertEqual(id_token_from_refresh['sub'], id_token['sub'])
+            self.assertNotEqual(id_token_from_refresh['iat'], id_token['iat'])
+            self.assertEqual(id_token_from_refresh['aud'], id_token['aud'])
+            if 'auth_time' in id_token:
+                self.assertEqual(id_token_from_refresh['auth_time'], id_token['auth_time'])
+            if 'azp' in id_token:
+                self.assertEqual(id_token_from_refresh['azp'], id_token['azp'])
+
+        # self.assertNotIn('id_token', token)
         self.assertIn('refresh_token', token)
         self.assertIn('expires_in', token)
         self.assertIn('scope', token)

@@ -35,7 +35,7 @@ from sso.utils.http import get_request_param
 from sso.utils.url import get_base_url
 from .crypt import loads_jwt
 from .models import Client
-from .oauthlib_server import oidc_server
+from .oidc_server import oidc_server
 
 logger = logging.getLogger(__name__)
 
