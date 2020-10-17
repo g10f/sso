@@ -672,6 +672,13 @@ class UserList(UserMixin, JsonListView):
             qs = qs.filter(Q(last_modified__gte=parsed) | Q(useraddress__last_modified__gte=parsed) |
                            Q(userphonenumber__last_modified__gte=parsed))
 
+        valid_until_lt = self.request.GET.get('valid_until_lt', None)
+        if valid_until_lt:  # parse valid_until_less_then
+            parsed = parse_datetime_with_timezone_support(valid_until_lt)
+            if parsed is None:
+                raise ValueError("can not parse %s" % valid_until_lt)
+            qs = qs.filter(valid_until__lt=parsed)
+
         return qs
 
 
@@ -736,6 +743,13 @@ def user_emails(request):
             raise ValueError("can not parse %s" % modified_since)
         qs = qs.filter(Q(user__last_modified__gte=parsed) | Q(user__useraddress__last_modified__gte=parsed) |
                        Q(user__userphonenumber__last_modified__gte=parsed))
+
+    valid_until_lt = request.GET.get('valid_until_lt', None)
+    if valid_until_lt:  # parse valid_until_less_then
+        parsed = parse_datetime_with_timezone_support(valid_until_lt)
+        if parsed is None:
+            raise ValueError("can not parse %s" % valid_until_lt)
+        qs = qs.filter(user__valid_until__lt=parsed)
 
     email_list = []
     for user_email in qs:
