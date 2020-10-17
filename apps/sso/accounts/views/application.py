@@ -1,3 +1,4 @@
+import json
 import logging
 from datetime import timedelta
 from functools import lru_cache
@@ -196,9 +197,9 @@ class UserList(ListView):
         filters += [role_profile_filter, application_role_filter]
         if user.is_user_admin:
             filters += [IsActiveFilter().get(self)]
-
         cache_dict = {
             "user": user.id,
+            "q": self.request.GET.get(main.SEARCH_VAR, ''),
             "country": "" if self.country is None else self.country.id,
             "admin_region": "" if self.admin_region is None else self.admin_region.id,
             "center": "" if self.center is None else self.center.id,
@@ -206,8 +207,7 @@ class UserList(ListView):
             "app_role": "" if self.app_role is None else self.app_role.id,
             "is_active": "" if self.is_active is None else self.is_active.pk,
         }
-        filters_cache_key = "filter-row-%(user)s-%(country)s-%(admin_region)s-%(center)s-%(role_profile)s-" \
-                            "%(app_role)s-%(is_active)s" % cache_dict
+        filters_cache_key = hash(json.dumps(cache_dict, sort_keys=True))
         return filters, filters_cache_key
 
     def get_context_data(self, **kwargs):
