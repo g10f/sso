@@ -9,14 +9,14 @@ logger = logging.getLogger(__name__)
 
 FIND_ASSOCIATION_EXPRESSION = "{?q,per_page,modified_since}"
 FIND_USER_EXPRESSION = "{?q,per_page,app_id,modified_since,is_active,country_group_id,country,region_id,org_id,email," \
-                       "associated_system_id}"
+                       "associated_system_id,valid_until_lt}"
 FIND_ORGANISATION_EXPRESSION = "{?q,per_page,modified_since,is_active,country_group_id,country,country_code," \
                                "region_id,latlng,dlt,with_unofficial,org_type,is_live}"
 FIND_COUNTRY_EXPRESSION = "{?q,per_page,modified_since,country_group_id}"
 FIND_REGION_EXPRESSION = "{?q,per_page,modified_since,country_group_id,country}"
 FIND_COUNTRY_GROUP_EXPRESSION = "{?q,per_page,modified_since,country}"
 FIND_USER_EMAILS_EXPRESSION = "{?q,app_id,modified_since,country_group_id,country,region_id,org_id,is_center," \
-                              "profile_id,exclude_profile_id,}"
+                              "profile_id,exclude_profile_id,valid_until_lt}"
 CREATE_USER_QUERY_PARAMS = "{?send_email}"
 
 
