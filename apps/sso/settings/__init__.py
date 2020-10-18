@@ -64,6 +64,7 @@ SSO_ADMIN_REGISTRATION_PROFILE_FORM = 'sso.registration.forms.RegistrationProfil
 SSO_DEFAULT_IDTOKEN_FINALIZER = 'sso.oauth2.oidc_token.default_idtoken_finalizer'
 SSO_DEFAULT_TOKEN_GENERATOR = 'sso.oauth2.oidc_token.default_token_generator'
 SSO_TEST_USER_EXTRA_ATTRIBUTES = []
+SSO_USER_RECOVERY_PERIOD_MINUTES = 60 * 24 * 30  # 30 days
 
 OTP_DEVICES = [
     'sso_auth.TOTPDevice',

@@ -1,5 +1,6 @@
 import logging
 import uuid
+import datetime
 
 from sorl import thumbnail
 
@@ -46,6 +47,11 @@ class UserManager(BaseUserManager):
         user.set_password(password)
         user.save(using=self._db)
         return user
+
+    @classmethod
+    def recovery_expiration_date(cls):
+        # The date after deactivated users should be deleted
+        return timezone.now() - datetime.timedelta(minutes=settings.SSO_USER_RECOVERY_PERIOD_MINUTES)
 
     def create_user(self, username, password=None, **extra_fields):
         return self._create_user(username, password, False, False,
