@@ -1,7 +1,7 @@
 wheel
 django<3
 django-formtools
-django-ipware>=3
+django-ipware
 django-reversion
 gunicorn
 psycopg2-binary
@@ -17,5 +17,5 @@ pytz
 geopy
 qrcode
 requests
-celery
+celery<5
 python-u2flib-server

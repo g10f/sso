@@ -131,7 +131,7 @@ class UserList(ListView):
                                          'date_joined', 'picture', 'valid_until') \
             .prefetch_related('useremail_set', 'organisations', 'role_profiles', 'application_roles')
         # exclude user who were not activated, this users must first be activated on the registration page
-        qs = qs.exclude(last_login__isnull=True, is_active=False)
+        qs = qs.exclude(registrationprofile__isnull=False, last_login__isnull=True, is_active=False)
         qs = user.filter_administrable_users(qs)
 
         self.cl = main.ChangeList(self.request, self.model, self.list_display,
