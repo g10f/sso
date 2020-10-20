@@ -11,6 +11,7 @@ from django.db.models.aggregates import Count
 from django.db.models.query_utils import Q
 from django.utils.timezone import now
 from sso.accounts.models import User, RoleProfile, UserManager
+from sso.registration.models import RegistrationManager
 
 logger = logging.getLogger(__name__)
 
@@ -26,10 +27,18 @@ class Command(BaseCommand):
 def delete_deactivated_users():
     with reversion.create_revision():
         recovery_expiration_date = UserManager.recovery_expiration_date()
+        activation_expiration_date = RegistrationManager.activation_expiration_date()
         reversion.set_comment("Deleting deactivated accounts in cleanup_users task")
-        q = Q(last_login__isnull=True) | Q(last_login__lte=recovery_expiration_date)
+        q = (Q(last_login__isnull=True) | Q(last_login__lte=recovery_expiration_date))
+        q = q & Q(is_active=False) & Q(last_modified__lte=recovery_expiration_date)
+        q = q & (  # Users who did not registered themselve
+                Q(registrationprofile__isnull=True) |
+                # Users who registered themselve before activation_expiration_date
+                Q(registrationprofile__date_registered__lte=activation_expiration_date) &
+                Q(registrationprofile__is_access_denied=False))
+
         count = 0
-        for user in User.objects.filter(q, is_active=False, last_modified__lte=recovery_expiration_date):
+        for user in User.objects.filter(q):
             user.delete()
             count += 1
         logger.debug("Deleted %s user(s)" % count)

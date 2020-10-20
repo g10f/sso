@@ -41,21 +41,37 @@ class IsActiveFilter(SimpleListFilter):
             return queryset.all()
 
 
+class LoggedInFilter(SimpleListFilter):
+    parameter_name = 'logged_in'
+    title = _('logged in')
+
+    def lookups(self, request, model_admin):
+        return [('1', _('Yes')), ('0', _('No'))]
+
+    def queryset(self, request, queryset):
+        if self.value() == '1':
+            return queryset.filter(user__last_login__isnull=False)
+        elif self.value() == '0':
+            return queryset.filter(user__last_login__isnull=True)
+        else:
+            return queryset.all()
+
+
 class RegistrationAdmin(admin.ModelAdmin):
     actions = ['activate', 'validate_users', 'resend_validation_email', 'delete_expired']
-    list_display = ('user', 'primary_email', 'date_registered', 'about_me', 'is_validated', 'token_valid',
-                    'activation_valid', 'is_access_denied', 'is_active')
+    list_display = ('user', 'last_login', 'primary_email', 'date_registered', 'about_me', 'is_validated',
+                    'token_valid', 'activation_valid', 'is_access_denied', 'is_active')
     raw_id_fields = ['user', 'last_modified_by_user']
     search_fields = ('user__username', 'user__first_name', 'user__last_name', 'user__useremail__email')
     date_hierarchy = 'date_registered'
-    list_filter = ['is_validated', ExpiredFilter, IsActiveFilter, 'check_back']
+    list_filter = ['is_access_denied', 'is_validated', LoggedInFilter, ExpiredFilter, IsActiveFilter, 'check_back']
     list_select_related = True
     readonly_fields = ['last_modified', 'is_active']
     fieldsets = [
         (None,
          {'fields':
               ['user', 'last_modified', 'last_modified_by_user', 'date_registered', 'is_validated',
-               'is_active', 'about_me','known_person1_first_name', 'known_person2_first_name',
+               'is_active', 'about_me', 'known_person1_first_name', 'known_person2_first_name',
                'known_person1_last_name', 'known_person2_last_name', 'check_back', 'is_access_denied',
                'comment'],
           'classes': ['wide']}), ]
@@ -68,6 +84,9 @@ class RegistrationAdmin(admin.ModelAdmin):
 
     is_active.boolean = True
     is_active.short_description = _('active')
+
+    def last_login(self, obj):
+        return obj.user.last_login
 
     def primary_email(self, obj):
         return obj.user.primary_email()
