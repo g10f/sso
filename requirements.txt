@@ -19,3 +19,4 @@ qrcode
 requests
 celery<5
 python-u2flib-server
+wheel
