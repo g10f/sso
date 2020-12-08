@@ -1,5 +1,7 @@
 from collections import OrderedDict
 
+from django.core.exceptions import FieldDoesNotExist
+
 from django.db import models
 from django.db.models.expressions import OrderBy
 from django.utils.encoding import force_text
@@ -72,7 +74,7 @@ class ChangeList(object):
         try:
             field = self.lookup_opts.get_field(field_name)
             return field.verbose_name, {"sortable": True}
-        except models.FieldDoesNotExist:
+        except FieldDoesNotExist:
             label = [field_name, {"sortable": False}]
             if hasattr(field_name, 'verbose_name'):
                 label[0] = field_name.verbose_name

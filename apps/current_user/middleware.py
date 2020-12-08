@@ -1,7 +1,8 @@
+from functools import partial
+
 from django.db.models import signals
 from django.utils.decorators import decorator_from_middleware
 from django.utils.deprecation import MiddlewareMixin
-from django.utils.functional import curry
 from . import registration
 
 
@@ -17,7 +18,7 @@ class CurrentUserMiddleware(MiddlewareMixin):
         else:
             user = None
 
-        update_users = curry(self.update_users, user)
+        update_users = partial(self.update_users, user)
         signals.pre_save.connect(update_users, dispatch_uid=request, weak=False)
 
     def update_users(self, user, sender, instance, **kwargs):

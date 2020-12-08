@@ -4,7 +4,6 @@ from functools import wraps
 
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist, ValidationError
 from django.http import HttpResponseNotModified, HttpResponse, Http404
-from django.utils.decorators import available_attrs
 from django.utils.encoding import force_text
 from django.utils.http import http_date, parse_http_date_safe, parse_etags, quote_etag
 from sso.api.response import HttpApiResponseNotAuthorized, HttpApiErrorResponse
@@ -20,7 +19,7 @@ def api_user_passes_test(test_func):
     """
 
     def decorator(view_func):
-        @wraps(view_func, assigned=available_attrs(view_func))
+        @wraps(view_func)
         def _wrapped_view(request, *args, **kwargs):
             if test_func(request.user):
                 return view_func(request, *args, **kwargs)
@@ -39,7 +38,7 @@ def catch_errors(view_func):
     jsonp request, which does not handle HTTP Errors.
     """
 
-    @wraps(view_func, assigned=available_attrs(view_func))
+    @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
         try:
             return view_func(request, *args, **kwargs)
@@ -104,7 +103,7 @@ def condition(last_modified_and_etag_func=None):
         return res_last_modified, res_etag
 
     def decorator(func):
-        @wraps(func, assigned=available_attrs(func))
+        @wraps(func)
         def inner(request, *args, **kwargs):
             # Get HTTP request headers
             if_modified_since = request.META.get("HTTP_IF_MODIFIED_SINCE")

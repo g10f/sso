@@ -255,7 +255,6 @@ PASSWORD_HASHERS = (
     'django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher',
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
 )
-POSTGIS_VERSION = (2, 2, 1)
 
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = reverse_lazy('auth:login')
