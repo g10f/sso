@@ -5,7 +5,6 @@ from functools import wraps
 
 from django.core.cache import cache
 from django.http import HttpResponse
-from django.utils.decorators import available_attrs
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +40,7 @@ def throttle(method='POST', duration=15, max_calls=1, response=None):
                                 "be a either HttpResponse instance or " + 
                                 "callable with `request` argument.    ")
         
-        @wraps(func, assigned=available_attrs(func))
+        @wraps(func)
         def inner(request, *args, **kwargs):
             if request.method == method and (os.environ.get('THROTTELING_DISABLED', None) != 'True'):
                 remote_addr = request.META.get('HTTP_X_FORWARDED_FOR') or \

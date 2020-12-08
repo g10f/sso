@@ -26,13 +26,13 @@ def create_self_signed_cert(cert_dir, cn, serial=int(uuid.uuid4().hex, 16)):
     cert.set_issuer(cert.get_subject())
     cert.set_pubkey(k)
     cert.add_extensions([
-       crypto.X509Extension("basicConstraints", True, "CA:FALSE"),
-       crypto.X509Extension("keyUsage", True, "digitalSignature"),
-       crypto.X509Extension("extendedKeyUsage", True, "clientAuth"),
+        crypto.X509Extension("basicConstraints", True, "CA:FALSE"),
+        crypto.X509Extension("keyUsage", True, "digitalSignature"),
+        crypto.X509Extension("extendedKeyUsage", True, "clientAuth"),
     ])
 
     cert.sign(k, 'sha1')
-    fingerprint = cert.digest('sha1').replace(':','').lower()
+    fingerprint = cert.digest('sha1').replace(':', '').lower()
 
     cert_file = os.path.join(cert_dir, "%s.crt" % fingerprint)
     key_file = os.path.join(cert_dir, "%s.key" % fingerprint)
@@ -45,10 +45,11 @@ def create_self_signed_cert(cert_dir, cn, serial=int(uuid.uuid4().hex, 16)):
     with open(pub_file, "wt") as f:
         output = subprocess.check_output(["openssl", "x509", "-in", cert_file, "-pubkey", "-noout"])
         f.write(output)
-    
-  
+
+
 def main():
     create_self_signed_cert("../certs", "sso.kagyu.net")
-    
+
+
 if __name__ == "__main__":
     main()

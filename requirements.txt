@@ -4,7 +4,7 @@ django-formtools
 django-ipware
 django-reversion
 gunicorn
-psycopg2-binary
+psycopg2
 python-memcached
 docutils
 pyjwt
