@@ -1,7 +1,7 @@
 {% load i18n %}{% autoescape off %}
-{% blocktrans %}Dear {{ first_name }}.{% endblocktrans %}
+{% blocktrans with first_name=user.first_name %}Dear {{ first_name }}.{% endblocktrans %}
 {% blocktrans %}Your request for extended access on {{ site_name }} has been accepted.{% endblocktrans %}
 {{ protocol }}://{{ domain }}{% url 'accounts:profile' %}
 
-{% blocktrans %}Best wishes {{ organisation_admin }}{% endblocktrans %}
+{% blocktrans with admin=sender.get_full_name %}Best wishes {{ admin }}{% endblocktrans %}
 {% endautoescape %}

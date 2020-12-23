@@ -3,9 +3,13 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 from django.conf import settings
+from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import get_connection
 from django.core.mail.message import EmailMessage, EmailMultiAlternatives
+from django.utils.encoding import force_bytes
+from django.utils.http import urlsafe_base64_encode
 from sso.celery import send_mail_task
+from sso.utils.translation import i18n_email_msg_and_subj
 
 
 def send_mail(subject, message, recipient_list, from_email=None, html_message=None, fail_silently=False,
@@ -59,3 +63,26 @@ def send_text_mail(subject, message, from_email, recipient_list,
         mail.attach_alternative(html_message, 'text/html')
 
     return mail.send()
+
+
+def get_email_message(user, request, reply_to_email, email_template_name, subject_template_name):
+    use_https = request.is_secure()
+    current_site = get_current_site(request)
+    site_name = settings.SSO_SITE_NAME
+    domain = current_site.domain
+
+    c = {
+        'user': user,
+        'sender': request.user,
+        'reply_to_email': reply_to_email,
+        'brand': settings.SSO_BRAND,
+        'email': user.primary_email(),
+        'username': user.username,
+        'domain': domain,
+        'site_name': site_name,
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+        'protocol': use_https and 'https' or 'http',
+    }
+    # use the user language or the default language (en-us)
+    language = user.language if user.language else settings.LANGUAGE_CODE
+    return i18n_email_msg_and_subj(c, email_template_name, subject_template_name, language)

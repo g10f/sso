@@ -1,0 +1,40 @@
+{% extends "centered_form.html" %}
+{% load i18n thumbnail %}
+
+{% block form %}
+    <form role="form" class="form-horizontal" method="post">{% csrf_token %}
+
+        {% block messages %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endblock messages %}
+        {% with fullname=form.instance.user.get_full_name picture=form.instance.user.picture %}
+            <h3>{% blocktrans %}Email Message to {{ fullname }}{% endblocktrans %}
+                {% if picture %}{% thumbnail picture "60x60" crop="center" as im %}
+                    <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+                {% endthumbnail %}{% endif %}
+            </h3>
+        {% endwith %}
+        {% if form.errors %}
+            <div class="alert alert-danger">
+                {% if form.errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}
+                    {% trans "Please correct the errors below." %}{% endif %}
+            </div>
+        {% endif %}
+
+        {% include 'include/_form_snippet.html' %}
+        <div class="form-group">
+            <div class="dwbn-form-submit">
+                <button class="btn btn-primary">{{ action_txt }}</button>
+                {% trans 'or' %}
+                <a class="btn btn-default"
+                   href="{{ cancel_url }}">{% trans 'Cancel' %}</a>
+            </div>
+        </div>
+    </form>
+{% endblock %}

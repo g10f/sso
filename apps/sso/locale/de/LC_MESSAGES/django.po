@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-22 14:48+0200\n"
+"POT-Creation-Date: 2020-12-23 10:45+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -177,12 +177,21 @@ msgstr "Berechtigungsanfrage abbrechen"
 msgid "Your request for extended access on %(site_name)s has been accepted."
 msgstr "Deine Berechtigung auf %(site_name)s wurde erweitert"
 
-#, python-format
-msgid "Best wishes %(organisation_admin)s"
-msgstr "Viele Grüße %(organisation_admin)s"
+msgid "Best wishes %(admin)s"
+msgstr "Viele Grüße %(admin)s"
 
 msgid "Request for extended access accepted"
 msgstr "Berechtigungsanfragen"
+
+#, python-format
+msgid ""
+"Unfortunately,  your request for extended access on %(site_name)s has been "
+"denied."
+msgstr "Deine Anfrage auf Erweiterung Deiner Berechtigung auf %(site_name)s "
+"wurde leider abgelehnt."
+
+msgid "Request for extended access denied"
+msgstr "Berechtigungsanfrage"
 
 msgid "Dear administrator(s)"
 msgstr "Liebe Administratoren/Lieber Administrator"
@@ -222,9 +231,6 @@ msgstr "Meine Nachricht bearbeiten"
 msgid "The user has already the profile \"%(profile)s\"."
 msgstr "Der Benutzer hat schon das Profil \"%(profile)s\"."
 
-msgid "Denied access request."
-msgstr "Berechtigungsanfrage wurde abgelehnt."
-
 msgid "Successfully extended access."
 msgstr "Berechtigungsanfrage wurde angenommen"
 
@@ -240,6 +246,9 @@ msgstr "Inaktive Benutzer"
 
 msgid "primary email"
 msgstr "primäre E-Mail"
+
+msgid "Deny extended access and send email"
+msgstr "Berechtigungsanfrage ablehnen und E-Mail senden"
 
 msgid "created by"
 msgstr "angelegt von"
@@ -942,6 +951,10 @@ msgid ""
 "Your change on %(site_name)s to %(organisation_name)s has been accepted."
 msgstr ""
 "Dein Wechsel auf %(site_name)s zu %(organisation_name)s wurde angenommen."
+
+#, python-format
+msgid "Best wishes %(organisation_admin)s"
+msgstr "Viele Grüße %(organisation_admin)s"
 
 #, python-format
 msgid "Change to %(organisation_name)s accepted"
@@ -1982,7 +1995,8 @@ msgstr ""
 
 msgid ""
 "Allowed space-delimited access token scopes ('openid', 'profile', 'email', "
-"'role', 'offline_access', 'address', 'phone', 'users', 'picture', 'events')"
+"'role', 'role_profile', 'offline_access', 'address', 'phone', 'users', "
+"'picture', 'events')"
 msgstr ""
 
 msgid ""

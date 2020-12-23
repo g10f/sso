@@ -15,6 +15,7 @@ from django.utils.translation import ugettext_lazy as _
 from sso.utils.translation import i18n_email_msg_and_subj
 from .tokens import default_token_generator
 from ..accounts.models import UserNote
+from ..utils.email import get_email_message
 
 
 def send_access_denied_email(user, request, reply_to_email,
@@ -25,27 +26,6 @@ def send_access_denied_email(user, request, reply_to_email,
     message, subject = get_access_denied_email_message(user, request, reply_to_email, email_template_name,
                                                        subject_template_name)
     user.email_user(subject, message, from_email)
-
-
-def get_email_message(user, request, reply_to_email, email_template_name, subject_template_name):
-    use_https = request.is_secure()
-    current_site = get_current_site(request)
-    site_name = settings.SSO_SITE_NAME
-    domain = current_site.domain
-
-    c = {
-        'reply_to_email': reply_to_email,
-        'brand': settings.SSO_BRAND,
-        'email': user.primary_email(),
-        'username': user.username,
-        'domain': domain,
-        'site_name': site_name,
-        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
-        'protocol': use_https and 'https' or 'http',
-    }
-    # use the user language or the default language (en-us)
-    language = user.language if user.language else settings.LANGUAGE_CODE
-    return i18n_email_msg_and_subj(c, email_template_name, subject_template_name, language)
 
 
 def get_access_denied_email_message(user, request, reply_to_email,

@@ -6,7 +6,6 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ObjectDoesNotExist, ValidationError, PermissionDenied
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from django.template import loader
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_text
@@ -25,6 +24,8 @@ from sso.views import main
 from sso.views.generic import ListView
 from .filter import AccessRequestCountryFilter, AccessRequestAdminRegionFilter
 from .models import AccessRequest
+from ..utils.email import get_email_message
+from ..views.sendmail import SendMailFormView
 
 logger = logging.getLogger(__name__)
 
@@ -79,32 +80,18 @@ class AccountExtendAccessAcceptView(FormView):
 
     def form_valid(self, form):
         if '_delete' in self.request.POST:
-            self.access_request.deny(self.request.user)
-            msg = _('Denied access request.')
-            messages.add_message(self.request, level=messages.WARNING, message=msg, fail_silently=True)
-            return HttpResponseRedirect(self.get_success_url())
+            success_url = reverse('access_requests:process_access_request',
+                                  kwargs={'pk': self.access_request.pk,
+                                          'action': 'deny'}) + "?" + self.request.GET.urlencode()
+            return HttpResponseRedirect(success_url)
         else:
             self.access_request.verify(self.request.user)
             user = self.access_request.user
             # email user
-            site_name = settings.SSO_SITE_NAME
-            domain = settings.SSO_DOMAIN
-            use_https = settings.SSO_USE_HTTPS
-            c = {
-                'site_name': site_name,
-                'protocol': use_https and 'https' or 'http',
-                'domain': domain,
-                'first_name': user.get_full_name(),
-                'organisation_admin': self.request.user.get_full_name(),
-            }
-            subject = loader.render_to_string('access_requests/email/access_request_accepted_email_subject.txt', c)
-            # Email subject *must not* contain newlines
-            subject = ''.join(subject.splitlines())
-            message = loader.render_to_string('access_requests/email/access_request_accepted_email.txt', c)
-            html_message = None  # loader.render_to_string(html_email_template_name, c)
-            user.email_user(subject, message, reply_to=['self.request.user.primary_email()'],
-                            html_message=html_message)
-
+            message, subject = get_email_message(user, self.request, self.request.user.primary_email(),
+                                                 'access_requests/email/access_request_accepted_email.txt',
+                                                 'access_requests/email/access_request_accepted_email_subject.txt')
+            user.email_user(subject, message, reply_to=[self.request.user.primary_email()])
             # display success message
             msg = _('Successfully extended access.')
             messages.add_message(self.request, level=messages.SUCCESS, message=msg, fail_silently=True)
@@ -310,3 +297,28 @@ class AccessRequestList(ListView):
         }
         context.update(kwargs)
         return super().get_context_data(**context)
+
+
+def get_extended_access_denied_email_message(
+        user, request, reply_to_email,
+        email_template_name='access_requests/email/access_request_denied_email.txt',
+        subject_template_name='access_requests/email/access_request_denied_subject.txt'):
+    return get_email_message(user, request, reply_to_email, email_template_name, subject_template_name)
+
+
+class AccessRequestSendMailFormView(SendMailFormView):
+    email_messages = {
+        'deny': get_extended_access_denied_email_message
+    }
+    action_breadcrumbs = {
+        'deny': _("Deny extended access")
+    }
+    action_txts = {
+        'deny': _("Deny extended access and send email")
+    }
+    model = AccessRequest
+    success_url = reverse_lazy('access_requests:extend_access_list')
+    template_name = 'access_requests/process_access_request.html'
+
+    def get_cancel_url(self):
+        return reverse_lazy('access_requests:extend_access_accept', args=[self.instance.pk])
