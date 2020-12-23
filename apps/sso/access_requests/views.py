@@ -79,14 +79,18 @@ class AccountExtendAccessAcceptView(FormView):
         return kwargs
 
     def form_valid(self, form):
-        if '_delete' in self.request.POST:
+        user = self.access_request.user
+        action = self.request.POST.get('action')
+        if action == 'deny-with-email':
             success_url = reverse('access_requests:process_access_request',
                                   kwargs={'pk': self.access_request.pk,
                                           'action': 'deny'}) + "?" + self.request.GET.urlencode()
             return HttpResponseRedirect(success_url)
+        elif action == 'deny':
+            self.access_request.process(action, user)
+            return HttpResponseRedirect(reverse('access_requests:extend_access_list'))
         else:
-            self.access_request.verify(self.request.user)
-            user = self.access_request.user
+            self.access_request.process('verify', user)
             # email user
             message, subject = get_email_message(user, self.request, self.request.user.primary_email(),
                                                  'access_requests/email/access_request_accepted_email.txt',
