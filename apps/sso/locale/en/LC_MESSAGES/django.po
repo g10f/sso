@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-22 14:48+0200\n"
+"POT-Creation-Date: 2020-12-23 10:45+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -171,10 +171,19 @@ msgid "Your request for extended access on %(site_name)s has been accepted."
 msgstr ""
 
 #, python-format
-msgid "Best wishes %(organisation_admin)s"
+msgid "Best wishes %(admin)s"
 msgstr ""
 
 msgid "Request for extended access accepted"
+msgstr ""
+
+#, python-format
+msgid ""
+"Unfortunately,  your request for extended access on %(site_name)s has been "
+"denied."
+msgstr ""
+
+msgid "Request for extended access denied"
 msgstr ""
 
 msgid "Dear administrator(s)"
@@ -213,9 +222,6 @@ msgstr ""
 msgid "The user has already the profile \"%(profile)s\"."
 msgstr ""
 
-msgid "Denied access request."
-msgstr ""
-
 msgid "Successfully extended access."
 msgstr ""
 
@@ -230,6 +236,9 @@ msgid "Inactive Users"
 msgstr ""
 
 msgid "primary email"
+msgstr ""
+
+msgid "Deny extended access and send email"
 msgstr ""
 
 msgid "created by"
@@ -894,6 +903,10 @@ msgstr ""
 #, python-format
 msgid ""
 "Your change on %(site_name)s to %(organisation_name)s has been accepted."
+msgstr ""
+
+#, python-format
+msgid "Best wishes %(organisation_admin)s"
 msgstr ""
 
 #, python-format
@@ -1877,7 +1890,8 @@ msgstr ""
 
 msgid ""
 "Allowed space-delimited access token scopes ('openid', 'profile', 'email', "
-"'role', 'offline_access', 'address', 'phone', 'users', 'picture', 'events')"
+"'role', 'role_profile', 'offline_access', 'address', 'phone', 'users', "
+"'picture', 'events')"
 msgstr ""
 
 msgid ""

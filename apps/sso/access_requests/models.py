@@ -49,6 +49,12 @@ class AccessRequest(AbstractBaseModel):
     objects = AccessRequestManager()
     open = OpenAccessRequestManager()
 
+    def process(self, action=None, user=None):
+        if action in ['cancel', 'verify', 'deny']:
+            getattr(self, action)(user)
+        else:
+            raise ValueError
+
     def cancel(self, user):
         self.status = 'c'
         self.completed_by_user = user

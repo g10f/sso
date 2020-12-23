@@ -264,14 +264,3 @@ class UserSelfRegistrationForm(forms.Form):
         registration_profile.known_person2_last_name = data['known_person2_last_name']
         registration_profile.save()
         return registration_profile
-
-
-class SendMailForm(forms.Form):
-    subject = forms.CharField(label=_("Subject"), required=True, max_length=1024, widget=bootstrap.TextInput())
-    message = forms.CharField(label=_("Message"), required=True, max_length=4096,
-                              widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 20}))
-
-    def __init__(self, *args, **kwargs):
-        self.request = kwargs.pop('request')
-        self.instance = kwargs.pop('instance')
-        super().__init__(*args, **kwargs)
