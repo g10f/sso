@@ -14,8 +14,8 @@ from django.db import models
 from django.db.models import Q
 from django.db.utils import IntegrityError
 from django.utils import timezone
-from django.utils.encoding import force_text
-from django.utils.translation import ugettext_lazy as _
+from django.utils.encoding import force_str
+from django.utils.translation import gettext_lazy as _
 from sso.access_requests.models import AccessRequest
 from sso.accounts.models import OrganisationChange
 from sso.accounts.models.application import ApplicationRole, RoleProfile, Application, Role, get_applicationrole_ids
@@ -165,7 +165,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         if self.primary_email() is not None:
             recipient_list = [self.primary_email().email]
             if from_email is not None:
-                from_email = force_text(from_email)
+                from_email = force_str(from_email)
             return send_mail(subject, message, recipient_list, from_email=from_email, **kwargs)
         else:
             logger.error('User %s has no primary_email', self.username)

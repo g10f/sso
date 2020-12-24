@@ -14,9 +14,9 @@ from django.core.mail.message import EmailMessage
 from django.db.models import Q
 from django.template.response import TemplateResponse
 from django.urls import reverse
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from reversion.admin import VersionAdmin
 from sso.organisations.models import Organisation, AdminRegion
 from .forms import AdminUserCreationForm
@@ -634,9 +634,9 @@ class UserAdmin(VersionAdmin, AdminImageMixin, DjangoUserAdmin):
         opts = self.model._meta
         app_label = opts.app_label
         if len(queryset) == 1:
-            objects_name = force_text(opts.verbose_name)
+            objects_name = force_str(opts.verbose_name)
         else:
-            objects_name = force_text(opts.verbose_name_plural)
+            objects_name = force_str(opts.verbose_name_plural)
 
         context = {
             "title": _('Send information mail to selected users'),

@@ -10,7 +10,7 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.utils import timezone
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from sso.auth.forms import AuthenticationTokenForm, U2FForm
 from sso.auth.oath import TOTP
 from sso.auth.utils import random_hex, hex_validator

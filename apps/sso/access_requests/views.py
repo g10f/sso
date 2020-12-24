@@ -8,8 +8,8 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
-from django.utils.encoding import force_text
-from django.utils.translation import ugettext_lazy as _
+from django.utils.encoding import force_str
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import TemplateView
 from django.views.generic.edit import UpdateView, FormView
 from sso.access_requests.forms import AccessRequestForm, send_user_request_extended_access, AccessRequestAcceptForm
@@ -40,7 +40,7 @@ def get_user_admins(sender, organisations):
 def get_comment(admins):
     comments = []
     for admin in admins:
-        admin_email = force_text(admin.primary_email())
+        admin_email = force_str(admin.primary_email())
         comments.append('<a href="mailto:{email}">{name}</a>'.format(email=admin_email, name=admin.get_full_name()))
     return 'Notified Admins: ' + ', '.join(comments)
 

@@ -1,6 +1,6 @@
 import re
 
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 US_POSTCODE_RE = re.compile(r'^\d{5}(?:-\d{4})?$')
 def validate(postcode):

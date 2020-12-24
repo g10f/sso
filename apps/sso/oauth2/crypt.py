@@ -4,7 +4,7 @@ from django.conf import settings
 
 import logging
 
-from django.utils.encoding import force_str, force_text
+from django.utils.encoding import force_str
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ def make_jwt(payload, max_age=MAX_AGE, algorithm="RS256"):
     else:
         raise NotImplementedError('Algorithm %s not supported', algorithm)
     bytes_string = encode(payload, key=key, algorithm=algorithm)
-    return force_text(bytes_string)
+    return force_str(bytes_string)
 
 
 def loads_jwt(jwt, algorithm="RS256", verify=True, options=None):

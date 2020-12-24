@@ -1,7 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 
 from django.core.management.base import BaseCommand
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from sso.accounts.models import User, Application, ApplicationRole, Role  # , Interaction
 from sso.organisations.models import Organisation
 
@@ -27,7 +27,7 @@ class Command(BaseCommand):
             app_role = ApplicationRole.objects.get(application=app, role=user_role)
             organisation = Organisation.objects.get(uuid=options['orgid'])
         except ObjectDoesNotExist as e:
-            self.stdout.write(force_text(e))
+            self.stdout.write(force_str(e))
             return
 
         self.stdout.write("#################################################################")

@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext as _, ungettext
+from django.utils.translation import gettext as _, ungettext
 from django.contrib.auth.password_validation import CommonPasswordValidator as DjangoCommonPasswordValidator
 from django.contrib.auth.password_validation import MinimumLengthValidator as DjangoMinimumLengthValidator
 

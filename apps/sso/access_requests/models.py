@@ -5,7 +5,7 @@ from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.utils.timezone import now
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from sso.accounts.models import Application
 from sso.models import AbstractBaseModel, AbstractBaseModelManager
 from sso.organisations.models import is_validation_period_active, Organisation

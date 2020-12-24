@@ -1,10 +1,8 @@
 from collections import OrderedDict
 
 from django.core.exceptions import FieldDoesNotExist
-
-from django.db import models
 from django.db.models.expressions import OrderBy
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.html import format_html
 from django.utils.http import urlencode
 
@@ -27,7 +25,7 @@ IGNORED_PARAMS = (
 
 
 # Text to display within change-list table cells if the value is blank.
-# EMPTY_CHANGELIST_VALUE = ugettext_lazy('(None)')
+# EMPTY_CHANGELIST_VALUE = gettext_lazy('(None)')
 
 
 class ChangeList(object):
@@ -87,7 +85,7 @@ class ChangeList(object):
         if hasattr(field_name, 'ordering_field'):
             return field_name.ordering_field
         else:
-            return force_text(field_name)
+            return force_str(field_name)
 
     def get_ordering(self, request, queryset):
         """

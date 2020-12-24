@@ -7,7 +7,7 @@ from django.contrib.auth.models import Group
 from django.core.validators import validate_slug
 from django.db import models
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from sso.models import AbstractBaseModel, AbstractBaseModelManager
 
 logger = logging.getLogger(__name__)

@@ -10,7 +10,7 @@ from django.core.validators import URLValidator
 from django.db import models
 from django.db.models import URLField
 from django.utils.deconstruct import deconstructible
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from sso.utils.translation import string_format
 
 

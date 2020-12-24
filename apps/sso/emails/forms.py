@@ -1,8 +1,8 @@
 from django import forms
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
-from django.utils.encoding import force_text
-from django.utils.translation import ugettext_lazy as _
+from django.utils.encoding import force_str
+from django.utils.translation import gettext_lazy as _
 from sso.emails.models import EmailForward, EmailAlias, GroupEmail, GroupEmailManager, Email, GROUP_EMAIL_TYPE
 from sso.forms import bootstrap, BaseForm, BaseTabularInlineForm
 from sso.forms.fields import EmailFieldLower
@@ -124,7 +124,7 @@ class GroupEmailForm(BaseForm):
         try:
             email = self.instance.email
             self.fields['is_active'].initial = email.is_active
-            self.fields['email_value'].initial = force_text(email)
+            self.fields['email_value'].initial = force_str(email)
             self.fields['permission'].initial = email.permission
         except ObjectDoesNotExist:
             self.fields['is_active'].initial = True

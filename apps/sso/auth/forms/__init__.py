@@ -6,7 +6,7 @@ from django.conf import settings
 from django.contrib.auth.forms import AuthenticationForm
 from django.utils import timezone
 from django.utils.text import capfirst
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from sso.auth.utils import totp_digits, match_token
 from sso.forms import bootstrap
 from sso.utils.translation import string_format

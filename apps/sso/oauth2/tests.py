@@ -75,7 +75,7 @@ class OAuth2BaseTestCase(TestCase):
         authorize_data = {
             'scope': "openid profile email",
             'state': self._state,
-            'nonce': get_random_string(),
+            'nonce': get_random_string(12),
             'redirect_uri': "http://localhost",
             'response_type': response_type,
             'client_id': client_id,
@@ -439,7 +439,7 @@ class OAuth2Tests(OAuth2BaseTestCase):
     def test_pkce(self):
         # test client with optional pkce
         client_id = '5614cdb0aa3c48d59828681bd62e1741'
-        code_verifier = get_random_string()
+        code_verifier = get_random_string(12)
         digest = hashlib.sha256(code_verifier.encode('ascii')).digest()
         code_challenge = base64.urlsafe_b64encode(digest).rstrip(b'=')
         code = self.login_and_get_code(client_id=client_id, scope='openid profile email',
@@ -456,7 +456,7 @@ class OAuth2Tests(OAuth2BaseTestCase):
         token_response = self.token_request(token_data)
         self.assertEqual(token_response.status_code, 200)
         # test client with optional pkce and wrong code_verifier
-        code_verifier = get_random_string()
+        code_verifier = get_random_string(12)
         digest = hashlib.sha256(code_verifier.encode('ascii')).digest()
         code_challenge = base64.urlsafe_b64encode(digest).rstrip(b'=')
         code = self.login_and_get_code(client_id=client_id, scope='openid profile email',
@@ -475,7 +475,7 @@ class OAuth2Tests(OAuth2BaseTestCase):
 
         # test client with pkce required
         client_id = 'ec4c46551416431db114a4c54d552f5b'
-        code_verifier = get_random_string()
+        code_verifier = get_random_string(12)
         digest = hashlib.sha256(code_verifier.encode('ascii')).digest()
         code_challenge = base64.urlsafe_b64encode(digest).rstrip(b'=')
         code = self.login_and_get_code(client_id=client_id, scope='openid profile email',

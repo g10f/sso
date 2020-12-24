@@ -1,7 +1,7 @@
 import logging
 
 from django.db.models import Q
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from l10n.models import Country
 from sso.views.generic import SearchFilter, ViewChoicesFilter, ViewQuerysetFilter
 from sso.accounts.models import ApplicationRole, RoleProfile

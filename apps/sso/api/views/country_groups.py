@@ -2,7 +2,7 @@ import logging
 
 from django.db.models import Q
 from django.urls import reverse
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from sso.accounts.models import User
 from sso.api.views.generic import JsonListView, JsonDetailView
 from sso.organisations.models import CountryGroup, OrganisationCountry, Organisation, AdminRegion
@@ -20,7 +20,7 @@ class CountryGroupMixin(object):
         data = {
             '@id': "%s%s" % (base, reverse('api:v2_country_group', kwargs={'uuid': obj.uuid.hex})),
             'id': '%s' % obj.uuid.hex,
-            'name': '%s' % force_text(obj),
+            'name': '%s' % force_str(obj),
             'homepage': obj.homepage,
             'last_modified': obj.last_modified,
         }

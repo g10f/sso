@@ -18,12 +18,12 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import model_to_dict
 from django.template import loader
 from django.utils.crypto import get_random_string
-from django.utils.encoding import force_bytes, force_text
+from django.utils.encoding import force_bytes, force_str
 from django.utils.functional import cached_property
 from django.utils.http import urlsafe_base64_encode
 from django.utils.text import capfirst
 from django.utils.timezone import now
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from sso.forms import bootstrap, mixins, BLANK_CHOICE_DASH, BaseForm
 from sso.forms.fields import EmailFieldLower
 from sso.models import clean_picture
@@ -528,7 +528,7 @@ class CenterSelfProfileForm(forms.Form):
         self.user = kwargs.pop('instance')
         object_data = model_to_dict(self.user)
         object_data['account_type'] = _('Organisation Account') if self.user.is_center else _('Member Account')
-        object_data['email'] = force_text(self.user.primary_email())
+        object_data['email'] = force_str(self.user.primary_email())
         initial = kwargs.get('initial', {})
         object_data.update(initial)
         kwargs['initial'] = object_data
@@ -780,7 +780,7 @@ class CenterProfileForm(mixins.UserRolesMixin, mixins.UserNoteMixin, forms.Form)
         user_data = model_to_dict(self.user)
         user_data['account_type'] = _('Organisation Account') if self.user.is_center else _('Member Account')
         user_data['status'] = _('active') if self.user.is_active else _('blocked')
-        user_data['email'] = force_text(self.user.primary_email())
+        user_data['email'] = force_str(self.user.primary_email())
         user_data['role_profiles'] = [str(role_profile.id) for role_profile in self.user.role_profiles.all()]
         user_data['application_roles'] = [application_role.id for application_role in
                                           self.user.application_roles.all()]

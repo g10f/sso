@@ -3,7 +3,7 @@ from django.contrib.gis import forms as gis_forms
 from django.forms import widgets
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from sorl.thumbnail.shortcuts import get_thumbnail
 
 
