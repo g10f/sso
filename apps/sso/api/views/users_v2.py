@@ -14,7 +14,7 @@ from django.utils.crypto import get_random_string
 from django.utils.dateparse import parse_date
 from django.utils.decorators import method_decorator
 from django.utils.text import capfirst
-from django.utils.translation import get_language_from_request, ugettext as _
+from django.utils.translation import get_language_from_request, gettext as _
 from django.views.decorators.cache import cache_control
 from django.views.decorators.csrf import csrf_exempt
 from l10n.models import Country

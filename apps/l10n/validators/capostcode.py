@@ -6,7 +6,7 @@ http://www.canadapost.ca/tools/pg/manual/pgaddress-e.asp#1380891
 """
 import re
 
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 CA_POSTCODE_RE = re.compile(r'^(?P<FSA>[ABCEGHJKLMNPRSTVXYZ]\d[A-Z])\s*(?P<LDU>\d[A-Z]\d)$')
 def validate(postcode):

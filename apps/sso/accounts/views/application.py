@@ -18,9 +18,9 @@ from django.shortcuts import get_object_or_404
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.html import format_html
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import DeleteView
 
 from l10n.models import Country
@@ -423,7 +423,7 @@ def _update_standard_user(request, user, template='accounts/application/update_u
             user_email_inline_formset.save()
 
             if not user.useremail_set.exists():
-                msg = _('The account %(username)s has no email address!') % {'username': force_text(user)}
+                msg = _('The account %(username)s has no email address!') % {'username': force_str(user)}
                 messages.add_message(request, level=messages.ERROR, message=msg, fail_silently=True)
             else:
                 user.ensure_single_primary_email()
@@ -431,7 +431,7 @@ def _update_standard_user(request, user, template='accounts/application/update_u
             change_message = changed_data_list.change_message()
             log_change(request, user, change_message)
 
-            msg_dict = {'name': force_text(get_user_model()._meta.verbose_name), 'obj': force_text(user)}
+            msg_dict = {'name': force_str(get_user_model()._meta.verbose_name), 'obj': force_str(user)}
             msg = ''
             if "_addanother" in request.POST:
                 msg = format_html(_(
@@ -506,7 +506,7 @@ def _update_center_account(request, user, template='accounts/application/update_
             change_message = ChangedDataList(form, []).change_message()
             log_change(request, user, change_message)
 
-            msg_dict = {'name': force_text(get_user_model()._meta.verbose_name), 'obj': force_text(user)}
+            msg_dict = {'name': force_str(get_user_model()._meta.verbose_name), 'obj': force_str(user)}
             msg = ''
             if "_addanother" in request.POST:
                 msg = format_html(
@@ -580,7 +580,7 @@ def app_admin_update_user(request, uuid, template='accounts/application/app_admi
             change_message = ChangedDataList(form, []).change_message()
             log_change(request, user, change_message)
 
-            msg_dict = {'name': force_text(get_user_model()._meta.verbose_name), 'obj': force_text(user)}
+            msg_dict = {'name': force_str(get_user_model()._meta.verbose_name), 'obj': force_str(user)}
             if "_continue" in request.POST:
                 msg = format_html(
                     _('The {name} "{obj}" was changed successfully. You may edit it again below.'),

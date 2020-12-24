@@ -4,7 +4,7 @@ from functools import wraps
 
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist, ValidationError
 from django.http import HttpResponseNotModified, HttpResponse, Http404
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.http import http_date, parse_http_date_safe, parse_etags, quote_etag
 from sso.api.response import HttpApiResponseNotAuthorized, HttpApiErrorResponse
 
@@ -44,18 +44,18 @@ def catch_errors(view_func):
             return view_func(request, *args, **kwargs)
         except PermissionDenied as e:
             logger.warning('PermissionDenied caught while processing request, %s.' % e)
-            return HttpApiResponseNotAuthorized(error_description=force_text(e), request=request)
+            return HttpApiResponseNotAuthorized(error_description=force_str(e), request=request)
         except (Http404, ObjectDoesNotExist) as e:
             logger.warning('ObjectDoesNotExist caught while processing request, %s.' % e)
-            return HttpApiErrorResponse(error='not_found', error_description=force_text(e), request=request,
+            return HttpApiErrorResponse(error='not_found', error_description=force_str(e), request=request,
                                         status_code=404)
         except (ValueError, ValidationError, AttributeError) as e:
             logger.warning('Error caught while processing request, %s.' % e)
-            return HttpApiErrorResponse(error='bad_request', error_description=force_text(e), request=request,
+            return HttpApiErrorResponse(error='bad_request', error_description=force_str(e), request=request,
                                         status_code=400)
         except Exception as e:
             logger.exception('Exception caught while processing request, %s.' % e)
-            return HttpApiErrorResponse(error_description=force_text(e), request=request)
+            return HttpApiErrorResponse(error_description=force_str(e), request=request)
 
     return _wrapped_view
 

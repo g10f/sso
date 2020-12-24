@@ -7,7 +7,7 @@ import time
 
 from django.conf import settings
 from django.utils.crypto import get_random_string
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.module_loading import import_string
 from sso.auth import get_session_auth_hash, HASH_SESSION_KEY
 from .crypt import make_jwt, MAX_AGE
@@ -23,7 +23,7 @@ def get_iss_from_absolute_uri(abs_uri):
 def get_token_claim_set(request, max_age=MAX_AGE):
     user = request.user
     claim_set = {
-        'jti': get_random_string(),
+        'jti': get_random_string(12),
         'iss': get_iss_from_absolute_uri(request.uri),
         'sub': user.uuid.hex,  # required
         'aud': request.client.client_id,  # required
@@ -31,7 +31,7 @@ def get_token_claim_set(request, max_age=MAX_AGE):
         'iat': int(time.time()),  # required
         'acr': '2' if user.is_verified else '1',
         'scope': ' '.join(request.scopes),  # custom, required
-        'email': force_text(user.primary_email()),  # custom
+        'email': force_str(user.primary_email()),  # custom
         'name': user.username,  # custom
         # session authentication hash,
         HASH_SESSION_KEY: get_session_auth_hash(user, request.client),  # custom, required
@@ -59,7 +59,7 @@ def get_idtoken_claim_set(request, max_age=MAX_AGE):
         'exp': int(time.time()) + max_age,
         'auth_time': auth_time,  # required when max_age is in the request
         'acr': '2' if user.is_verified else '1',
-        'email': force_text(user.primary_email()),  # custom
+        'email': force_str(user.primary_email()),  # custom
         'name': user.username,  # custom
         'given_name': user.first_name,  # custom
         'family_name': user.last_name,  # custom

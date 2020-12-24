@@ -1,10 +1,8 @@
 from django.contrib import admin
 from django.contrib.admin import SimpleListFilter
 from django.contrib.auth import get_user_model
-from django.urls import reverse
-from django.utils.encoding import force_text
-from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _
+from django.utils.encoding import force_str
+from django.utils.translation import gettext_lazy as _
 from django.utils.translation import ungettext
 from .models import RegistrationProfile, RegistrationManager, send_set_password_email, send_validation_email
 
@@ -95,9 +93,9 @@ class RegistrationAdmin(admin.ModelAdmin):
         if changecount:
             opts = self.model._meta
             if changecount == 1:
-                name = force_text(opts.verbose_name)
+                name = force_str(opts.verbose_name)
             else:
-                name = force_text(opts.verbose_name_plural)
+                name = force_str(opts.verbose_name_plural)
 
             msg = ungettext("%(count)s %(name)s was %(action_result_text)s.",
                             "%(count)s %(name)s were %(action_result_text)s.",

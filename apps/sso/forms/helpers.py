@@ -12,9 +12,9 @@ from django.core.files.base import ContentFile
 from django.forms.models import inlineformset_factory
 from django.forms.utils import ErrorList as DjangoErrorList
 from django.utils.crypto import get_random_string
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.text import get_text_list
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +47,7 @@ def clean_base64_picture(base64_picture, max_upload_size=5242880):
                 raise ValidationError(_('File type is not supported'))
         return picture
     except Exception as e:
-        raise ValidationError(force_text(e))
+        raise ValidationError(force_str(e))
 
 
 def get_optional_inline_formset(request, instance, parent_model, model, form, max_num=6, extra=1, queryset=None):
@@ -151,7 +151,7 @@ def log_change(request, object, message):  # @ReservedAssignment
         user_id=user_id,  # request.user.pk,
         content_type_id=ContentType.objects.get_for_model(object).pk,
         object_id=object.pk,
-        object_repr=force_text(object),
+        object_repr=force_str(object),
         action_flag=CHANGE,
         change_message=message
     )

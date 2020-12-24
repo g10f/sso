@@ -3,9 +3,9 @@ import logging
 from django import forms
 from django.conf import settings
 from django.urls import reverse, reverse_lazy
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.timezone import now
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from sso.access_requests.models import AccessRequest
 from sso.accounts.models import User
 from sso.forms import bootstrap, BaseForm
@@ -23,7 +23,7 @@ def send_user_request_extended_access(admins,
                                       email_template_name='access_requests/email/access_request_email.txt',
                                       subject_template_name='access_requests/email/access_request_email_subject.txt',
                                       apply_async=False):
-    recipients = [force_text(admin.primary_email()) for admin in admins]
+    recipients = [force_str(admin.primary_email()) for admin in admins]
     if len(recipients) > 0:
         domain = settings.SSO_DOMAIN
         use_https = settings.SSO_USE_HTTPS

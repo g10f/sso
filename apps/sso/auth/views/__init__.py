@@ -13,8 +13,8 @@ from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
-from django.utils.encoding import force_text
-from django.utils.translation import ugettext_lazy as _
+from django.utils.encoding import force_str
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.cache import never_cache
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic.edit import FormView
@@ -100,7 +100,7 @@ class LoginView(FormView):
             except Exception as e:
                 messages.error(
                     self.request,
-                    _('Device error, select another device. (%(error)s)') % {'error': force_text(e)})
+                    _('Device error, select another device. (%(error)s)') % {'error': force_str(e)})
                 return self.render_to_response(self.get_context_data(form=form))
 
         else:

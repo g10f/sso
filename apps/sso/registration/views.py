@@ -13,9 +13,9 @@ from django.shortcuts import render, get_object_or_404, resolve_url, redirect
 from django.template.response import TemplateResponse
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.module_loading import import_string
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import DeleteView
 from sso.accounts.models import ApplicationRole, User
 from sso.auth.decorators import admin_login_required
@@ -199,8 +199,8 @@ def update_user_registration(request, pk, template='registration/change_user_reg
         registrationprofile_form = get_default_admin_registration_profile_form_class()(
             request.POST, instance=registrationprofile, request=request)
         if registrationprofile_form.is_valid():
-            msg_dict = {'name': force_text(get_user_model()._meta.verbose_name),
-                        'obj': force_text(registrationprofile)}
+            msg_dict = {'name': force_str(get_user_model()._meta.verbose_name),
+                        'obj': force_str(registrationprofile)}
             action = request.POST.get("action")
             registrationprofile_form.save()
             if action == "continue":

@@ -4,7 +4,7 @@ from django import forms
 from django.contrib import admin
 from django.urls import reverse
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from sso.oauth2.models import CONFIDENTIAL_CLIENTS, CLIENT_RESPONSE_TYPES, get_clients_by_response_type
 
 logger = logging.getLogger(__name__)

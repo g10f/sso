@@ -1,25 +1,25 @@
 import django.dispatch
 
 # you can modify the admins
-user_admins = django.dispatch.Signal(providing_args=["organisations", "admins"])
+user_admins = django.dispatch.Signal()
 
 # you can modify the app_roles and role_profiles
-default_roles = django.dispatch.Signal(providing_args=["user", "app_roles", "role_profiles"])
+default_roles = django.dispatch.Signal()
 
 # an organisation was created or updated, you can do whatever action you like
-update_or_create_organisation_account = django.dispatch.Signal(providing_args=["organisation", "old_email_value", "new_email_value", "user"])
+update_or_create_organisation_account = django.dispatch.Signal()
 
 # the validation of a user was extended
-extend_user_validity = django.dispatch.Signal(providing_args=["user", "valid_until", "admin"])
+extend_user_validity = django.dispatch.Signal()
 
 # a user m2m field was updated in the frontend application
-user_m2m_field_updated = django.dispatch.Signal(providing_args=["user", "attribute_name", "delete_pk_list", "add_pk_list"])
+user_m2m_field_updated = django.dispatch.Signal()
 
 # a user want's to change the organisation
-user_organisation_change_request = django.dispatch.Signal(providing_args=["organisation_change"])
+user_organisation_change_request = django.dispatch.Signal()
 
 # a user has finished registration with the email validation
-user_registration_completed = django.dispatch.Signal(providing_args=["user_registration"])
+user_registration_completed = django.dispatch.Signal()
 
 # a user requests extended access
-user_access_request = django.dispatch.Signal(providing_args=["access_request"])
+user_access_request = django.dispatch.Signal()

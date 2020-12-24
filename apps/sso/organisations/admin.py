@@ -6,7 +6,7 @@ from django.contrib.admin import SimpleListFilter
 from django.contrib.admin.utils import model_ngettext
 from django.contrib.admin.widgets import FilteredSelectMultiple
 from django.contrib.gis.admin import OSMGeoAdmin
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from l10n.models import Country
 from sso.emails.models import Email, CENTER_EMAIL_TYPE
 from .models import OrganisationAddress, OrganisationPhoneNumber, OrganisationCountry, CountryGroup

@@ -1,9 +1,7 @@
 import logging
-from urllib.parse import urlparse
 
 from django.core.serializers.json import DjangoJSONEncoder
-from django.http import HttpResponse
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from sso.utils.http import *  # @UnusedWildImport
 
 logger = logging.getLogger(__name__)

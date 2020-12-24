@@ -14,7 +14,7 @@ from django.forms import forms
 from django.forms.models import model_to_dict
 from django.utils.crypto import get_random_string
 from django.utils.text import get_valid_filename
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from l10n.models import Country, AdminArea
 

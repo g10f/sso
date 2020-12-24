@@ -1,7 +1,7 @@
 import logging
 from urllib.parse import urlparse, urlsplit, urlunsplit
 
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 
 from django.conf import settings
 from django.core.cache import cache
@@ -11,7 +11,7 @@ from django.http import QueryDict
 from django.urls import reverse
 from django.utils.crypto import get_random_string
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from sso.accounts.models import Application
 from sso.auth.models import Device
 from sso.models import AbstractBaseModel, AbstractBaseModelManager
@@ -90,7 +90,7 @@ def get_clients_by_response_type(response_type):
     client_types = dict(CLIENT_TYPES)
     for client in CLIENT_RESPONSE_TYPES:
         if response_type in CLIENT_RESPONSE_TYPES[client]:
-            clients.append(force_text(client_types[client]))
+            clients.append(force_str(client_types[client]))
     return clients
 
 

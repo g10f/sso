@@ -11,7 +11,7 @@ from django.utils.crypto import get_random_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
 from django.utils.timezone import now
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from sso.utils.translation import i18n_email_msg_and_subj
 from .tokens import default_token_generator
 from ..accounts.models import UserNote

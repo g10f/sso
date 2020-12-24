@@ -11,9 +11,9 @@ from django.http import HttpResponseRedirect
 from django.http.response import HttpResponse
 from django.urls import reverse
 from django.utils.decorators import method_decorator
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.utils.html import format_html
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import DeleteView, DetailView, CreateView
 from l10n.models import Country
 from sso.emails.forms import AdminEmailForwardInlineForm, EmailForwardInlineForm, EmailAliasInlineForm
@@ -66,7 +66,7 @@ class OrganisationBaseView(object):
         return super().get_context_data(**context)
 
     def get_success_url(self):
-        msg_dict = {'name': force_text(self.model._meta.verbose_name), 'obj': force_text(self.object)}
+        msg_dict = {'name': force_str(self.model._meta.verbose_name), 'obj': force_str(self.object)}
         if "_continue" in self.request.POST:
             msg = format_html(
                 _('The {name} "{obj}" was changed successfully. You may edit it again below.'),

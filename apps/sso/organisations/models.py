@@ -15,7 +15,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils.timezone import localtime, now
-from django.utils.translation import pgettext_lazy, ugettext_lazy as _
+from django.utils.translation import pgettext_lazy, gettext_lazy as _
 from l10n.models import Country
 from smart_selects.db_fields import ChainedForeignKey
 from sso.decorators import memoize

@@ -6,7 +6,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.forms import forms
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, get_object_or_404
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_POST
 from sso.auth import auth_login
 from sso.auth.decorators import admin_login_required

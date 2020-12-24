@@ -6,7 +6,7 @@ from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.utils.timezone import now
-from django.utils.translation import ugettext_lazy as _, pgettext_lazy
+from django.utils.translation import gettext_lazy as _, pgettext_lazy
 from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary, \
     CaseInsensitiveEmailField, AbstractBaseModelManager
 from sso.organisations.models import Organisation, is_validation_period_active

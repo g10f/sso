@@ -3,7 +3,7 @@ from django.contrib.gis import forms
 from django.contrib.gis.forms import GeometryField
 from django.contrib.gis.geos import GEOSGeometry, GEOSException
 from django.forms import fields
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from sso.forms import bootstrap
 
 

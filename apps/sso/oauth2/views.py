@@ -6,6 +6,8 @@ from urllib.parse import urlparse, urlunparse, urlsplit, urlunsplit
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.serialization import load_pem_public_key
 from jwt import InvalidTokenError
+from oauthlib import oauth2
+from oauthlib.common import urlencode, urlencoded, quote
 
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
@@ -16,15 +18,13 @@ from django.shortcuts import render, get_object_or_404, resolve_url
 from django.urls import reverse
 from django.utils.crypto import get_random_string
 from django.utils.decorators import method_decorator
-from django.utils.encoding import force_str, iri_to_uri, force_text, smart_bytes
+from django.utils.encoding import iri_to_uri, force_str, smart_bytes
 from django.views import View
 from django.views.decorators.cache import never_cache, cache_page, cache_control
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.vary import vary_on_headers
 from django.views.generic import TemplateView
-from oauthlib import oauth2
-from oauthlib.common import urlencode, urlencoded, quote
 from sso.api.response import JsonHttpResponse
 from sso.api.views.generic import PreflightMixin
 from sso.auth.utils import is_recent_auth_time
@@ -217,7 +217,7 @@ def redirect_to_login(request, redirect_field_name=REDIRECT_FIELD_NAME, two_fact
 
 
 def get_session_state(client_id, browser_state):
-    salt = get_random_string()
+    salt = get_random_string(12)
     if browser_state is None:
         browser_state = ""
     return hashlib.sha256((client_id + " " + browser_state + " " + salt).encode('utf-8')).hexdigest() + "." + salt
@@ -380,10 +380,10 @@ def tokeninfo(request):
     except oauth2.OAuth2Error as e:
         return HttpResponse(content=e.json, status=e.status_code, content_type='application/json')
     except InvalidTokenError as e:
-        error = oauth2.InvalidRequestError(description=force_text(e))
+        error = oauth2.InvalidRequestError(description=force_str(e))
         return HttpResponse(content=error.json, status=error.status_code, content_type='application/json')
     except Exception as e:
-        error = oauth2.ServerError(description=force_text(e))
+        error = oauth2.ServerError(description=force_str(e))
         logger.warning('Exception caught while processing request, %s.' % e)
         return HttpResponse(content=error.json, status=error.status_code)
 

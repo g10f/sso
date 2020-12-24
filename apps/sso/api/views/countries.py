@@ -2,7 +2,7 @@ import logging
 
 from django.db.models import Q
 from django.urls import reverse
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from sso.api.views.generic import JsonListView, JsonDetailView
 from sso.organisations.models import OrganisationCountry
 from sso.utils.parse import parse_datetime_with_timezone_support
@@ -20,7 +20,7 @@ class CountryMixin(object):
             '@id': "%s%s" % (base, reverse('api:v2_country', kwargs={'iso2_code': obj.country.iso2_code})),
             'id': '%s' % obj.uuid.hex,
             'code': obj.country.iso2_code,
-            'name': '%s' % force_text(obj),
+            'name': '%s' % force_str(obj),
             'homepage': obj.homepage,
             'last_modified': obj.get_last_modified_deep(),
             'continent': {
