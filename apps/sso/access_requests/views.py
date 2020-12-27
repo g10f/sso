@@ -95,7 +95,7 @@ class AccountExtendAccessAcceptView(FormView):
             message, subject = get_email_message(user, self.request, self.request.user.primary_email(),
                                                  'access_requests/email/access_request_accepted_email.txt',
                                                  'access_requests/email/access_request_accepted_email_subject.txt')
-            user.email_user(subject, message, reply_to=[self.request.user.primary_email()])
+            user.email_user(subject, message, reply_to=[self.request.user.primary_email().email])
             # display success message
             msg = _('Successfully extended access.')
             messages.add_message(self.request, level=messages.SUCCESS, message=msg, fail_silently=True)
