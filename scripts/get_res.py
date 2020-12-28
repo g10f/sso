@@ -1,55 +1,21 @@
 #!/usr/bin/env python
 import argparse
-import json
 import logging
-import sys
-from base64 import b64encode
-from urllib.parse import urlencode
 
-import requests
+import sys
+from oauthlib.oauth2 import BackendApplicationClient
+from requests_oauthlib import OAuth2Session
 from uritemplate import expand
 
-logging.basicConfig(stream=sys.stdout, level='DEBUG', format="%(levelname)s %(asctime)s: %(message)s")
+logging.basicConfig(stream=sys.stdout, level='INFO', format="%(levelname)s %(asctime)s: %(message)s")
 logger = logging.getLogger(__name__)
 
 
-def get_json(session, uri, access_token=None):
-    if access_token:
-        headers = {'authorization': '%s %s' % (access_token['token_type'], access_token['access_token'])}
-    else:
-        headers = {}
-    return session.get(uri, headers=headers).json()
-
-
-def get_access_token_with_client_credentials(session, base_uri, client_id, client_secret):
-    """
-    get the token endpoint from the well-known uri and 
-    then authenticate with grant_type client_credentials
-    """
-    openid_configuration = get_json(session, base_uri + '/.well-known/openid-configuration')
-    token_endpoint = openid_configuration['token_endpoint']
-
-    body = urlencode({'grant_type': 'client_credentials'})
-    auth = b"%s:%s" % (client_id.encode(), client_secret.encode())
-    # e2U5MWM4YWUxNThmYzQ0NTViYWE1Y2EzYWVkOTdlMjFjfTp7Tm8wcTBnVHJrUGVoMUF4Uk5aZEF5OURNZzVZa2JHfQ==
-    headers = {'Content-Type': 'application/x-www-form-urlencoded',
-               'authorization': '%s %s' % ('Basic', b64encode(auth).decode("ascii"))}
-    json_response = session.post(token_endpoint, headers=headers, data=body).json()
-    if 'error' in json_response:
-        logger.error(json_response)
-        raise Exception('authorization', json_response)
-    else:
-        return json_response
-
-
-def get_url(session, base_uri, resource, args):
-    """
-    get information about the resource from  API EntryPoint 
-    expand the uri template and return the path with the query string.
-    """
-    api_entry_point = get_json(session, base_uri + '/api/')
-    url = expand(api_entry_point[resource], args)
-    return url
+def print_app_roles(session, data, app_uuid):
+    for member in data['member']:
+        member_details = session.get(member['@id']).json()
+        if app_uuid in member_details['apps']:
+            print(member_details['name'], member_details['apps'][app_uuid]['roles'])
 
 
 def main():
@@ -57,7 +23,8 @@ def main():
     parser.add_argument('client_id')
     parser.add_argument('client_secret')
     parser.add_argument('-b', '--base_uri', help='The base_uri of the API ..', default='https://sso.g10f.de')
-    parser.add_argument('-r', '--resource', help='the resource name from the API EntryPoint (see https://<host>/api/ )',
+    parser.add_argument('-r', '--resource',
+                        help='the resource name from the API EntryPoint (see https://<host>/api/ )',
                         default='organisations')
     parser.add_argument('--disable_ssl_certificate_validation', dest='disable_ssl_certificate_validation',
                         action='store_true', default=True)
@@ -71,6 +38,7 @@ def main():
     parser.add_argument('--modified_since', help='date time filter')
     parser.add_argument('--user_id', help='uuid of the user for the user resource')
     parser.add_argument('--org_id', help='uuid of the organisation for the organisation resource')
+    parser.add_argument('--app_id', help='uuid of the application')
 
     # get a dictionary with the command line arguments
     args = vars(parser.parse_args())
@@ -80,19 +48,22 @@ def main():
     client_secret = args.pop('client_secret')
     verify = args.pop('disable_ssl_certificate_validation')
 
-    session = requests.Session()
+    session = OAuth2Session(client=BackendApplicationClient(client_id=client_id, client_secret=client_secret,
+                                                            scope='openid profile email users role tt'))
     session.verify = verify
-    access_token = get_access_token_with_client_credentials(session, base_uri, client_id, client_secret)
+    openid_configuration = session.get(base_uri + "/.well-known/openid-configuration").json()
+    session.fetch_token(token_url=openid_configuration['token_endpoint'], client_secret=client_secret)
+    api_entry_point = session.get(base_uri + '/api/').json()
+    url = expand(api_entry_point[resource], args)
 
-    url = get_url(session, base_uri, resource, args)
+    while True:
+        data = session.get(url).json()
+        print_app_roles(session, data, 'e0db912c871e4d1784d2b60aada2e234')
 
-    data = get_json(session, url, access_token)
-    print(json.dumps(data))
-
-    while 'next_page' in data:
-        url = data['next_page']
-        data = get_json(session, url, access_token)
-        print(json.dumps(data))
+        if 'next_page' in data:
+            url = data['next_page']
+        else:
+            break
 
 
 if __name__ == "__main__":
