@@ -1,5 +1,5 @@
 from django.core.exceptions import ValidationError
-from django.utils.translation import gettext as _, ungettext
+from django.utils.translation import gettext as _, ngettext
 from django.contrib.auth.password_validation import CommonPasswordValidator as DjangoCommonPasswordValidator
 from django.contrib.auth.password_validation import MinimumLengthValidator as DjangoMinimumLengthValidator
 
@@ -10,7 +10,7 @@ class MinimumLengthValidator(DjangoMinimumLengthValidator):
         self.min_length = min_length
 
     def get_help_text(self):
-        return ungettext(
+        return ngettext(
             "Your password must contain at least %(min_length)d character.",
             "Your password must contain at least %(min_length)d characters.",
             self.min_length
@@ -45,7 +45,7 @@ class DigitsValidator(object):
                 code=self.code)
 
     def get_help_text(self):
-        return ungettext(
+        return ngettext(
             "Your password must contain at least %(min_digits)d digit.",
             "Your password must contain at least %(min_digits)d digits.",
             self.min_digits

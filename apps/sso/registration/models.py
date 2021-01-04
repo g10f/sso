@@ -60,7 +60,7 @@ def get_set_password_email_message(user, request, token_generator=default_pwd_re
     current_site = get_current_site(request)
     site_name = settings.SSO_SITE_NAME
     domain = current_site.domain
-    expiration_date = now() + datetime.timedelta(settings.PASSWORD_RESET_TIMEOUT_DAYS)
+    expiration_date = now() + datetime.timedelta(seconds=settings.PASSWORD_RESET_TIMEOUT)
 
     c = {
         'email': user.primary_email(),
