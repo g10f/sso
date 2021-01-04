@@ -26,7 +26,7 @@ THUMBNAIL_FORMAT = 'PNG'
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 SITE_ID = 1
 DEFAULT_FROM_EMAIL = 'webmaster@g10f.de'
-
+PASSWORD_RESET_TIMEOUT = 60 * 60 * 24 * 3  # new default in django 3
 SSO_BRAND = 'G10F'
 SSO_SITE_NAME = 'G10F'
 SSO_DOMAIN = "localhost:8000"

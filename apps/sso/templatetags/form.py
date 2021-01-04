@@ -1,19 +1,20 @@
-from django.template import Library
+import logging
 
-register = Library()
+from django import template
+
+register = template.Library()
+logger = logging.getLogger(__name__)
 
 
 @register.filter
 def selected_choice(form, field_name):
     key = form.data.get(field_name, None)
-    if key is not None:
-        try:
-            return dict(form.fields[field_name].choices)[key]
-        except KeyError:
-            # key is int in model choices
-            return dict(form.fields[field_name].choices)[int(key)]
-    else:
+    if key is None:
+        logger.warning(f'key for field "{field_name}" is None')
         return ''
+
+    return next(map(lambda choice: choice[1],
+                    filter(lambda choice: str(choice[0]) == key, form.fields[field_name].choices)), '')
 
 
 @register.filter

@@ -3,7 +3,7 @@ from django.contrib.admin import SimpleListFilter
 from django.contrib.auth import get_user_model
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
-from django.utils.translation import ungettext
+from django.utils.translation import ngettext
 from .models import RegistrationProfile, RegistrationManager, send_set_password_email, send_validation_email
 
 
@@ -97,7 +97,7 @@ class RegistrationAdmin(admin.ModelAdmin):
             else:
                 name = force_str(opts.verbose_name_plural)
 
-            msg = ungettext("%(count)s %(name)s was %(action_result_text)s.",
+            msg = ngettext("%(count)s %(name)s was %(action_result_text)s.",
                             "%(count)s %(name)s were %(action_result_text)s.",
                             changecount) % {'count': changecount,
                                             'name': name,

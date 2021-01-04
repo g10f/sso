@@ -5,6 +5,7 @@
 *.py[co]
 /certs
 /secret
+/htdocs
 /temp
 /logs
 /data

@@ -26,7 +26,7 @@ def send_account_created_email(user, request, token_generator=default_pwd_reset_
     domain = current_site.domain
     user_primary_email = request.user.primary_email()
     reply_to = [user_primary_email.email] if user_primary_email else None
-    expiration_date = now() + datetime.timedelta(settings.PASSWORD_RESET_TIMEOUT_DAYS)
+    expiration_date = now() + datetime.timedelta(seconds=settings.PASSWORD_RESET_TIMEOUT)
     email = user.primary_email()
     c = {
         'email': email,

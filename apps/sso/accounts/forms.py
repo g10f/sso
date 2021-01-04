@@ -181,7 +181,7 @@ class PasswordResetForm(DjangoPasswordResetForm):
         # a password marked as unusable
         if not user.has_usable_password():
             logger.error("user has unusable password")
-        expiration_date = now() + datetime.timedelta(settings.PASSWORD_RESET_TIMEOUT_DAYS)
+        expiration_date = now() + datetime.timedelta(seconds=settings.PASSWORD_RESET_TIMEOUT)
         c = {
             'first_name': user.first_name,
             'email': user.primary_email(),
