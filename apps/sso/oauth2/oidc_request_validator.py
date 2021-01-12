@@ -2,7 +2,7 @@ import base64
 import logging
 from uuid import UUID
 
-from jwt import InvalidTokenError
+from jwt import InvalidTokenError, ExpiredSignatureError
 
 from django.contrib.auth import authenticate, get_user_model
 from django.core import signing
@@ -279,6 +279,8 @@ class OIDCRequestValidator(RequestValidator):
         try:
             data = loads_jwt(BearerToken.objects.get(refresh_token__token=refresh_token).access_token, verify=False)
             return data['scope'].split()
+        except ExpiredSignatureError as e:
+            logger.warning('confirm_scopes Error: %s' % e)
         except Exception as e:
             logger.error('confirm_scopes Error: %s' % e)
             return []
