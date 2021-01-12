@@ -283,7 +283,7 @@ class OIDCRequestValidator(RequestValidator):
             logger.warning('confirm_scopes Error: %s' % e)
         except Exception as e:
             logger.error('confirm_scopes Error: %s' % e)
-            return []
+        return []
 
     def validate_user(self, username, password, client, request, *args, **kwargs):
         # legacy client's can use grant_type=password
