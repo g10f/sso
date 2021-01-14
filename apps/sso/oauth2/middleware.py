@@ -10,6 +10,7 @@ from django.contrib.sessions.backends.base import UpdateError
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import SuspiciousOperation
+from django.urls import reverse
 from django.utils.cache import patch_vary_headers
 from django.utils.crypto import constant_time_compare
 from django.utils.deprecation import MiddlewareMixin
@@ -140,7 +141,7 @@ class SsoSessionMiddleware(SessionMiddleware):
             )
             response.delete_cookie(
                 settings.SSO_OIDC_SESSION_COOKIE_NAME,
-                path=settings.SESSION_COOKIE_PATH,
+                path=reverse('oauth2:session'),
                 domain=settings.SESSION_COOKIE_DOMAIN,
                 samesite='None' if settings.SESSION_COOKIE_SECURE else 'Lax',
             )
@@ -180,7 +181,7 @@ class SsoSessionMiddleware(SessionMiddleware):
                         settings.SSO_OIDC_SESSION_COOKIE_NAME,
                         get_oidc_session_state(request), max_age=max_age,
                         expires=expires, domain=settings.SESSION_COOKIE_DOMAIN,
-                        path=settings.SESSION_COOKIE_PATH,
+                        path=reverse('oauth2:session'),
                         secure=settings.SESSION_COOKIE_SECURE or None,
                         httponly=False,
                         samesite='None' if settings.SESSION_COOKIE_SECURE else 'Lax',
