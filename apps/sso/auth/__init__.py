@@ -109,7 +109,7 @@ def get_session_auth_hash(user, client=None):
         data += "0"
     if client is not None:
         data += client.client_secret
-    return salted_hmac(key_salt, data).hexdigest()
+    return salted_hmac(key_salt, data, algorithm=settings.DEFAULT_HASHING_ALGORITHM).hexdigest()
 
 
 def update_session_auth_hash(request, user):
