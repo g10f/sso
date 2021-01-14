@@ -1,4 +1,3 @@
-import hashlib
 import json
 import logging
 from urllib.parse import urlparse, urlunparse, urlsplit, urlunsplit
@@ -13,10 +12,10 @@ from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth.decorators import permission_required, login_required
 from django.http import HttpResponseRedirect, HttpResponse, QueryDict
-from django.http.response import HttpResponseRedirectBase
+from django.http.response import HttpResponseRedirectBase, Http404
 from django.shortcuts import render, get_object_or_404, resolve_url
 from django.urls import reverse
-from django.utils.crypto import get_random_string
+from django.utils.crypto import salted_hmac
 from django.utils.decorators import method_decorator
 from django.utils.encoding import iri_to_uri, force_str, smart_bytes
 from django.views import View
@@ -25,7 +24,7 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.vary import vary_on_headers
 from django.views.generic import TemplateView
-from sso.api.response import JsonHttpResponse
+from sso.api.response import JsonHttpResponse, same_origin
 from sso.api.views.generic import PreflightMixin
 from sso.auth.utils import is_recent_auth_time
 from sso.auth.views import TWO_FACTOR_PARAM
@@ -182,8 +181,19 @@ class SessionView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['session_cookie_name'] = settings.SESSION_COOKIE_NAME
+        context['session_cookie_name'] = settings.SSO_OIDC_SESSION_COOKIE_NAME
         return context
+
+
+def session_init(request):
+    client_id = request.GET.get('client_id')
+    origin = request.GET.get('origin')
+    client = get_object_or_404(Client, uuid=client_id)
+
+    for redirect_uri in client.redirect_uris.split():
+        if same_origin(redirect_uri, origin):
+            return HttpResponse(status=204)
+    return Http404()
 
 
 class LoginRequiredError(oauth2.OAuth2Error):
@@ -216,11 +226,13 @@ def redirect_to_login(request, redirect_field_name=REDIRECT_FIELD_NAME, two_fact
     return HttpResponseRedirect(urlunparse(login_url_parts))
 
 
-def get_session_state(client_id, browser_state):
-    salt = get_random_string(12)
-    if browser_state is None:
-        browser_state = ""
-    return hashlib.sha256((client_id + " " + browser_state + " " + salt).encode('utf-8')).hexdigest() + "." + salt
+def get_oidc_session_state(request):
+    if request.session.session_key is None:
+        data = ""
+    else:
+        data = request.session.session_key
+    key_salt = 'get_oidc_session_state'
+    return salted_hmac(key_salt, data, algorithm=settings.DEFAULT_HASHING_ALGORITHM).hexdigest()
 
 
 class TwoFactorRequiredError(oauth2.OAuth2Error):
@@ -270,8 +282,7 @@ def authorize(request):
     try:
         scopes, credentials = oidc_server.validate_authorization_request(uri, http_method, body, headers)
         credentials['user'] = request.user
-        credentials['session_state'] = get_session_state(credentials['client_id'],
-                                                         browser_state=request.session.session_key)
+        credentials['session_state'] = get_oidc_session_state(request)
         credentials['client'] = credentials['request'].client
         redirect_uri = credentials.get('redirect_uri')
         prompt = get_request_param(request, 'prompt', '').split()

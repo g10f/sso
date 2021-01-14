@@ -66,7 +66,7 @@ SSO_DEFAULT_IDTOKEN_FINALIZER = 'sso.oauth2.oidc_token.default_idtoken_finalizer
 SSO_DEFAULT_TOKEN_GENERATOR = 'sso.oauth2.oidc_token.default_token_generator'
 SSO_TEST_USER_EXTRA_ATTRIBUTES = []
 SSO_USER_RECOVERY_PERIOD_MINUTES = 60 * 24 * 30  # 30 days
-
+SSO_OIDC_SESSION_COOKIE_NAME = 'oidcsession'
 OTP_DEVICES = [
     'sso_auth.TOTPDevice',
     'sso_auth.U2FDevice',
@@ -181,7 +181,7 @@ TEMPLATES = [
 ]
 
 MIDDLEWARE = [
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    'sso.oauth2.middleware.SsoSessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'sso.oauth2.middleware.OAuthAuthenticationMiddleware',
@@ -254,9 +254,9 @@ REGISTRATION = {
 SSO_SEND_FROM_VERIFIED_EMAIL_ADDRESSES = '%s|%s|%s' % \
                                          (DEFAULT_FROM_EMAIL, SSO_NOREPLY_EMAIL, REGISTRATION['CONTACT_EMAIL'])
 
-SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error', 'admin.E408']
+SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error', 'admin.E408', 'admin.E410']
 
-SESSION_COOKIE_HTTPONLY = False
+SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 7 * 2  # 2 weeks
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True

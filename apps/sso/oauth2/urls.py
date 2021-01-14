@@ -13,6 +13,7 @@ urlpatterns = [
     path('introspect/', views.introspect, name='introspect'),
     path('approval/', views.approval, name='approval'),
     path('error/', views.ErrorView.as_view(), name='oauth2_error'),
-    path('session/', views.SessionView.as_view(template_name="oauth2/session.html"), name='session'),
+    path('session/', views.SessionView.as_view(template_name="oauth2/session2.html"), name='session'),
+    path('session/init/', views.session_init, name='session'),
     path('client/<int:object_id>/', views.client_details, name='client.details.json'),
 ]
