@@ -1,9 +1,9 @@
-import time
-from jwt import decode, encode
-from django.conf import settings
-
 import logging
 
+import time
+from jwt import decode, encode
+
+from django.conf import settings
 from django.utils.encoding import force_str
 
 logger = logging.getLogger(__name__)
@@ -47,6 +47,6 @@ def loads_jwt(jwt, algorithm="RS256", verify=True, options=None):
     else:
         raise NotImplementedError('Algorithm %s not supported', algorithm)
     if options is None:
-        options = {"verify_aud": False, "require_exp": True, "require_iat": True}
+        options = {"verify_aud": False, "require": ["exp", "iat"], "verify_exp": True, "verify_iat": True}
 
     return decode(jwt, algorithms=[algorithm], key=key, verify=verify, options=options)
