@@ -26,7 +26,7 @@ def make_jwt(payload, max_age=MAX_AGE, algorithm="RS256"):
     signing = settings.SIGNING[algorithm]
     kid = signing['active']
     key = signing['keys'][kid]['SECRET_KEY']
-    return encode(payload, key=key, algorithm=algorithm, headers={"kid": kid})
+    return encode(payload, key=key, algorithm=algorithm)  # , headers={"kid": kid})
 
 
 def loads_jwt(jwt, algorithm="RS256", verify=True, options=None):
