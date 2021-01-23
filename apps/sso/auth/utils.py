@@ -15,7 +15,7 @@ from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.core.exceptions import ValidationError
 from django.shortcuts import resolve_url
 from django.utils.decorators import method_decorator
-from django.utils.http import is_safe_url
+from django.utils.http import is_safe_url, url_has_allowed_host_and_scheme
 from sso.auth import SESSION_AUTH_DATE
 from sso.utils.http import get_request_param
 
@@ -115,7 +115,7 @@ def get_safe_login_redirect_url(request):
     redirect_to = get_request_param(request, REDIRECT_FIELD_NAME, '')
     # Ensure the user-originating redirection url is safe.
     # allow external hosts, for redirect after password_create_complete
-    if is_safe_url(redirect_to, allowed_hosts=allowed_hosts()):
+    if url_has_allowed_host_and_scheme(redirect_to, allowed_hosts=allowed_hosts()):
         return redirect_to
     else:
         return resolve_url(settings.LOGIN_REDIRECT_URL)

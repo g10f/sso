@@ -2,9 +2,8 @@ import json
 import logging
 from urllib.parse import urlparse, urlunparse, urlsplit, urlunsplit
 
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives.serialization import load_pem_public_key
 from jwt import InvalidTokenError
+from jwt.algorithms import RSAAlgorithm
 from oauthlib import oauth2
 from oauthlib.common import urlencode, urlencoded, quote
 
@@ -17,7 +16,7 @@ from django.shortcuts import render, get_object_or_404, resolve_url
 from django.urls import reverse
 from django.utils.crypto import salted_hmac
 from django.utils.decorators import method_decorator
-from django.utils.encoding import iri_to_uri, force_str, smart_bytes
+from django.utils.encoding import iri_to_uri, force_str
 from django.views import View
 from django.views.decorators.cache import never_cache, cache_page, cache_control
 from django.views.decorators.clickjacking import xframe_options_exempt
@@ -29,7 +28,6 @@ from sso.api.views.generic import PreflightMixin
 from sso.auth.utils import is_recent_auth_time
 from sso.auth.views import TWO_FACTOR_PARAM
 from sso.middleware import revision_exempt
-from sso.utils.convert import long_to_base64
 from sso.utils.http import get_request_param
 from sso.utils.url import get_base_url
 from .crypt import loads_jwt
@@ -131,7 +129,6 @@ class OpenidConfigurationView(PreflightMixin, View):
             "end_session_endpoint": '%s%s' % (base_uri, reverse('auth:logout')),
             "introspection_endpoint": '%s%s' % (base_uri, reverse('oauth2:introspect')),
             "check_session_iframe": '%s%s' % (base_uri, reverse('oauth2:session')),
-            "certs_uri": '%s%s' % (base_uri, reverse('oauth2:certs')),
             "profile_uri": '%s%s' % (base_uri, reverse('accounts:profile')),
         }
         if settings.SSO_SERVICE_DOCUMENTATION:
@@ -139,8 +136,8 @@ class OpenidConfigurationView(PreflightMixin, View):
         return JsonHttpResponse(configuration, request, allow_jsonp=True, public_cors=True)
 
 
-@method_decorator(cache_page(60 * 60), name='dispatch')
-@method_decorator(vary_on_headers('Origin', 'Accept-Language'), name='dispatch')
+# @method_decorator(cache_page(60 * 60), name='dispatch')
+# @method_decorator(vary_on_headers('Origin', 'Accept-Language'), name='dispatch')
 class JwksView(PreflightMixin, View):
     http_method_names = ['get', 'options']
 
@@ -148,29 +145,15 @@ class JwksView(PreflightMixin, View):
         """
         jwks_uri view (http://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata)
         """
-        key = load_pem_public_key(smart_bytes(settings.CERTS['default']['public_key']), backend=default_backend())
-        public_numbers = key.public_numbers()
-        data = {
-            "keys": [{
-                "kty": "RSA",
-                "alg": "RS256",
-                "use": "sig",
-                "kid": settings.CERTS['default']['uuid'],
-                "n": long_to_base64(public_numbers.n),
-                "e": long_to_base64(public_numbers.e)
-            }]
-        }
+        rsa256 = RSAAlgorithm(RSAAlgorithm.SHA256)
+        keys = []
+        for kid, value in settings.SIGNING['RS256']['keys'].items():
+            key_obj = rsa256.prepare_key(value['public_key'])
+            key = json.loads(RSAAlgorithm.to_jwk(key_obj))
+            key["kid"] = kid
+            keys.append(key)
+        data = {'keys': keys}
         return JsonHttpResponse(data, request, allow_jsonp=True, public_cors=True)
-
-
-@method_decorator(cache_page(60 * 60), name='dispatch')
-@method_decorator(vary_on_headers('Origin', 'Accept-Language'), name='dispatch')
-class CertsView(PreflightMixin, View):
-    http_method_names = ['get', 'options']
-
-    def get(self, request, *args, **kwargs):
-        return JsonHttpResponse({settings.CERTS['default']['uuid']: settings.CERTS['default']['certificate']}, request,
-                                allow_jsonp=True, public_cors=True)
 
 
 class SessionView(TemplateView):
