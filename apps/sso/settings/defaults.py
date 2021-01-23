@@ -263,8 +263,6 @@ SESSION_COOKIE_AGE = 60 * 60 * 24 * 7 * 2  # 2 weeks
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = False
 SESSION_ENGINE = 'sso.sessions.backends.jwt_cookies'
-CSRF_COOKIE_HTTPONLY = True
-CSRF_COOKIE_AGE = None
 CSRF_FAILURE_VIEW = 'sso.views.csrf.csrf_failure'
 
 if not (RUNNING_DEVSERVER or RUNNING_TEST):
