@@ -96,7 +96,7 @@ def is_otp_login(user, is_two_factor_required):
     return None
 
 
-def get_session_auth_hash(user, client=None):
+def get_session_auth_hash(user, secret=None, client=None):
     # Returns an HMAC of the password and client_secret field.
     if user is None:
         logger.debug("get_session_auth_hash with user == None")
@@ -109,7 +109,7 @@ def get_session_auth_hash(user, client=None):
         data += "0"
     if client is not None:
         data += client.client_secret
-    return salted_hmac(key_salt, data, algorithm=settings.DEFAULT_HASHING_ALGORITHM).hexdigest()
+    return salted_hmac(key_salt, data, secret=secret, algorithm=settings.DEFAULT_HASHING_ALGORITHM).hexdigest()
 
 
 def update_session_auth_hash(request, user):
@@ -143,10 +143,14 @@ def get_user(request, client=None):
             user = backend.get_user(user_id)
             # Verify the session
             session_hash = request.session.get(HASH_SESSION_KEY)
-            session_hash_verified = session_hash and constant_time_compare(
-                session_hash,
-                get_session_auth_hash(user, client)
-            )
+            session_hash_verified = False
+            if session_hash:
+                # Try all SECRET_KEY values
+                for val in settings.SIGNING['HS256']['keys'].values():
+                    auth_hash = get_session_auth_hash(user, val['SECRET_KEY'], client)
+                    session_hash_verified = constant_time_compare(session_hash, auth_hash)
+                    if session_hash_verified:
+                        break
             if not session_hash_verified:
                 request.session.flush()
                 user = None

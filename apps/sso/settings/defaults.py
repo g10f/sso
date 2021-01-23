@@ -1,6 +1,7 @@
 import os
-import sys
 from uuid import UUID
+
+import sys
 
 from django.urls import reverse_lazy
 from django.utils.translation import pgettext_lazy
@@ -280,47 +281,60 @@ AUTH_PASSWORD_VALIDATORS = [{
 
 # overwrite this if integration with other associations is required
 SSO_DEFAULT_ASSOCIATION_UUID = UUID('bad2e6edff274f2f900ff3dbb26e38ce')
-
-# overwrite the secrets in your local_settings.py
-SECRET_KEY = '7pvncv391)#rz%dhocfmic_#+(p**284lnsx2j#s)$n5ln-hnk'
-CERTS = {
-    'default': {
-        'uuid': 'f1aafae7b7764055926078b32fe81e5b',
-        'public_key': """-----BEGIN PUBLIC KEY-----
-MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC6B4KKFYlfMCM236RqBAs7pR+6
-TtyYicTRJv/amdUSWC3LwMkZhneFx/NflaRR24DwLjoYAiVoNDFn7NEfUCyqzo0u
-6daXmT95axOl7xUCpIC6TJB4kg5sZXiatvAmYURGIDC9DvbDcfpj0mAd4iVqpggw
-F1xFEy/YPkMMHSqQ4wIDAQAB
------END PUBLIC KEY-----""",
-        'PRIVATE_KEY': """-----BEGIN PRIVATE KEY-----
-MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBALoHgooViV8wIzbf
-pGoECzulH7pO3JiJxNEm/9qZ1RJYLcvAyRmGd4XH81+VpFHbgPAuOhgCJWg0MWfs
-0R9QLKrOjS7p1peZP3lrE6XvFQKkgLpMkHiSDmxleJq28CZhREYgML0O9sNx+mPS
-YB3iJWqmCDAXXEUTL9g+QwwdKpDjAgMBAAECgYAFR5lI2fugG/mj4Q0FhT/cXX9d
-Bkf0fFR9qyGvzpXhg2cpVTtf4hUaUuZxXAnh2Nz79BPqAoWVQ4XzcSEuRlQ+KFrD
-MQ4SQnqSkLuANtyhgz5Bnlo3ioIDP5m5ZY0MTLaPS2r6AJgp8F/J8bPczDY247X6
-U0mJAvBZk1HkkMOuIQJBAOr7OMWfVc8isw3oCW0chynpgmqawNjUsgj+lX94TCF1
-4Rw38KYoi43d+wG3fh6ZymtrLn9WNKM38DUM1SXGiZ8CQQDKq1lDbDPzScZ1qQDu
-T2pt9crK3CHgpn4hb2xEWDeZJnrDzAJrz4VxXIDVXWgmOkUgEXCg2frmsnfFkZ6m
-+no9AkAjpZTJNhC4aZUsKOU1Ljy6+PeV4IAc5LdVcfmP6tnxwYYy17GkI0Z4cRJh
-AksZrU7t2Mam/pbho9zGz3mOT34VAkBW9mlJ9e7gsMJYkFkW6Lq5TiNjIkvjEm3C
-uQXS2auZqpo405wiWJxgxRl+9CKRbKVmmjUiwAXZ4bBk9RQHgCjdAkEAxBosr42t
-0f4HxvKywdHMBvDqDzUulOmiEYFBi2D3iCXhJywTIeTTy1wdY5L+KciRvoAujrjJ
-71Ejrx9zYuIiEQ==
------END PRIVATE KEY-----""",
-        'certificate': """-----BEGIN CERTIFICATE-----
-MIIB7DCCAVWgAwIBAgIRALPILBkCAk5ikXGBjE2OcTEwDQYJKoZIhvcNAQEFBQAw
-FzEVMBMGA1UEAxMMc3NvLmR3Ym4ub3JnMB4XDTEzMDUwNTA5MTExMloXDTE0MDUw
-NTA5MTExMlowFzEVMBMGA1UEAxMMc3NvLmR3Ym4ub3JnMIGfMA0GCSqGSIb3DQEB
-AQUAA4GNADCBiQKBgQC6B4KKFYlfMCM236RqBAs7pR+6TtyYicTRJv/amdUSWC3L
-wMkZhneFx/NflaRR24DwLjoYAiVoNDFn7NEfUCyqzo0u6daXmT95axOl7xUCpIC6
-TJB4kg5sZXiatvAmYURGIDC9DvbDcfpj0mAd4iVqpggwF1xFEy/YPkMMHSqQ4wID
-AQABozgwNjAMBgNVHRMBAf8EAjAAMA4GA1UdDwEB/wQEAwIHgDAWBgNVHSUBAf8E
-DDAKBggrBgEFBQcDAjANBgkqhkiG9w0BAQUFAAOBgQACeJtnoFA21qgcr3qk372Y
-XznDRAGdP4gqBsiN8J3jij9j1kYNKFwaFWfua1sGAonbJRas3cezhUD57PpiQnhp
-vvmsEC0q1M/PA1HgfK8YoVttgp1j2i5rCpwnMRxewK609gP+79P+j8hBBhK/c+Ho
-9GB1oNtr9KHp6BpxXPo+Ag==
------END CERTIFICATE-----"""
+kid1 = '25e96efa6c654585b3f12986b355e42f'
+SIGNING = {
+    'HS256': {
+        'active': kid1,
+        'keys': {
+            kid1: {
+                'SECRET_KEY': '$20e%(in^nv_-&syxvx4$1%()nfx$dx@)omf)0i-%je&w!((^e',
+            }
+        }
+    },
+    'RS256': {
+        'active': kid1,
+        'keys': {
+            kid1: {
+                'public_key': """-----BEGIN PUBLIC KEY-----
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu8TOBiOu0mR499t8W+N6
+Y85zNl+puP+GSWzgoIclYDKrWCFZWVp164gHpShB3dp2dH9wpDH0fAh7AackrOiC
+temis3bTpCSbR7vJbKck3OBDgdMSvefGMwgOEvvptouEAKBSMqpAoASYpRWPC1f5
+W7K584+UOUMcLr/vHf2WFZMZCgbaTENAedbdUZZJplrz5rL5FTmYzWRzwmghI6SA
+FjV/SE85zjMJVtsGCCQF8fZZrcdZ6KJNNWOm2T7xIb/OqKvPhsqwRP8RVIIREoM7
+1PklpRtoLlbZ9LR/wKN6R4MrlZBtZDRKuW8mlnhEHhnj/ErvDI/K1zsDpMupWUUP
+MwIDAQAB
+-----END PUBLIC KEY-----
+""",
+                'SECRET_KEY': """-----BEGIN RSA PRIVATE KEY-----
+MIIEogIBAAKCAQEAu8TOBiOu0mR499t8W+N6Y85zNl+puP+GSWzgoIclYDKrWCFZ
+WVp164gHpShB3dp2dH9wpDH0fAh7AackrOiCtemis3bTpCSbR7vJbKck3OBDgdMS
+vefGMwgOEvvptouEAKBSMqpAoASYpRWPC1f5W7K584+UOUMcLr/vHf2WFZMZCgba
+TENAedbdUZZJplrz5rL5FTmYzWRzwmghI6SAFjV/SE85zjMJVtsGCCQF8fZZrcdZ
+6KJNNWOm2T7xIb/OqKvPhsqwRP8RVIIREoM71PklpRtoLlbZ9LR/wKN6R4MrlZBt
+ZDRKuW8mlnhEHhnj/ErvDI/K1zsDpMupWUUPMwIDAQABAoIBACW2ipbLFfLmATHv
+IJQoJU3killyb1lb4THgL2Guo0AmDSofUJ3UwHh1EuwGIOyZU09kxVAFRJCg92vG
+kWQ1MwOskGQxSqLeQ13uBq/PBmVimcx6g3onEjTvujvv4uoqLXIewUOx1FcPdUU7
+BkcF/WyAgj68KM4zf3aYUEOaykk8sR+dIFR1+V6VlHugJyNo+NZdyJHqW/zj2Vxw
+DcoOZfe5+hZc3bWAcqFKIjcIRXV5oOKWvJ0Obo3CftFeWSSXd3R4+KT53Bo6obqx
+uFtIKcE+hIa2CTxWUNbK2Mia/5yZyicVkeZWb2lCUoj9rMbiVAsxn/C51aMaI1m4
+G2pcN1ECgYEA4c2SmILTNibKrjV2C4gm5RGGo3va/09qMextC37oCR97RkcIxOHp
+caMOJkAbbNJQdAprM5it4/33a2J86LuYKA2iNYWyGAb5gNo319nQZ23YGSjQIqpx
+XPwzBjnvwmAALibIzm093e4iVfH4+V71/ZpUvk0szMup5deKy8W6lisCgYEA1OEe
+jHoZ+/Xo8S6W8O+BZk4mYmbr7vGaD2t+EMKCFHlxCrENHw0JHk9pdpnVhFaRmvOr
+g84YtZs2O216UQBUk2lCuCt74KWq73UllObFhNnKuLdx/pRWz5Xteu/nJ8KcMzDS
+iCdJFfZ2G6sp+eN3yFMcCNUiapuRTVYpXoKvrxkCgYBEtlDg1ha9yMoufxg/5Bup
+405sW1lGDf2L2Z1JPUIQ3KKfvSf++ZwXN34rx6BQ2iMfXLhIiDKKSZNL+zl1fPiN
+X7C3xspuI1kzi7QonCCeCMAUz+WeVu2OVTSVtXWvWZVUdfrvTjDgYwHR04NnJy2G
+Ebut+UAjxeoahh+3aKEh5wKBgHJn7fgHIvHTTfZYWIxx2zQ1KdHWiFOpCmfhGCY/
+spL4VTUuw+N9KPpeKUqxEBwIPkZtUC8M0yC+op27j3H64Hk8p7u8ut2Xi08XwTPN
+9jcYqScuh5gO9rynUbKxPaSTpUipo2vC2TdxdjYWff+rLNO/PqDMkquCoctTU/ZT
++8D5AoGABn8e+q6jbHsy0dJzKIoUqJ81RDVYhtc7yWZt0pA2IbSjWpdXCNNxUEuq
+NcWSqklhLQ5S932UzPFw3iDaDdR3/6DwG7wi8mZiVSWlBbLHIOMMzKvszVfJvDcI
+LLdXzhLAb/qsleh83t/tLENwOIF5PnaFihbYJ7i4THgYqmYeN+o=
+-----END RSA PRIVATE KEY-----
+"""
+            }
+        }
     }
 }
 
