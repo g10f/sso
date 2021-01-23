@@ -145,12 +145,14 @@ class JwksView(PreflightMixin, View):
         """
         jwks_uri view (http://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata)
         """
+        algorithm = 'RS256'
         rsa256 = RSAAlgorithm(RSAAlgorithm.SHA256)
         keys = []
-        for kid, value in settings.SIGNING['RS256']['keys'].items():
+        for kid, value in settings.SIGNING[algorithm]['keys'].items():
             key_obj = rsa256.prepare_key(value['public_key'])
             key = json.loads(RSAAlgorithm.to_jwk(key_obj))
             key["kid"] = kid
+            key["alg"] = algorithm
             keys.append(key)
         data = {'keys': keys}
         return JsonHttpResponse(data, request, allow_jsonp=True, public_cors=True)
