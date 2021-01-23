@@ -136,7 +136,7 @@ class OpenidConfigurationView(PreflightMixin, View):
         return JsonHttpResponse(configuration, request, allow_jsonp=True, public_cors=True)
 
 
-@method_decorator(cache_page(60 * 60), name='dispatch')
+@method_decorator(cache_page(60 * 5), name='dispatch')
 @method_decorator(vary_on_headers('Origin', 'Accept-Language'), name='dispatch')
 class JwksView(PreflightMixin, View):
     http_method_names = ['get', 'options']
@@ -153,6 +153,7 @@ class JwksView(PreflightMixin, View):
             key = json.loads(RSAAlgorithm.to_jwk(key_obj))
             key["kid"] = kid
             key["alg"] = algorithm
+            key["use"] = "sig"
             keys.append(key)
         data = {'keys': keys}
         return JsonHttpResponse(data, request, allow_jsonp=True, public_cors=True)
