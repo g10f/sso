@@ -136,8 +136,8 @@ class OpenidConfigurationView(PreflightMixin, View):
         return JsonHttpResponse(configuration, request, allow_jsonp=True, public_cors=True)
 
 
-# @method_decorator(cache_page(60 * 60), name='dispatch')
-# @method_decorator(vary_on_headers('Origin', 'Accept-Language'), name='dispatch')
+@method_decorator(cache_page(60 * 60), name='dispatch')
+@method_decorator(vary_on_headers('Origin', 'Accept-Language'), name='dispatch')
 class JwksView(PreflightMixin, View):
     http_method_names = ['get', 'options']
 
