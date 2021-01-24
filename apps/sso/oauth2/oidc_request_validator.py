@@ -277,10 +277,9 @@ class OIDCRequestValidator(RequestValidator):
         # access token if the client did not specify a scope during the
         # request.
         try:
-            data = loads_jwt(BearerToken.objects.get(refresh_token__token=refresh_token).access_token, verify=False)
+            access_token = BearerToken.objects.get(refresh_token__token=refresh_token).access_token
+            data = loads_jwt(access_token, options={'verify_signature': False})
             return data['scope'].split()
-        except ExpiredSignatureError as e:
-            logger.warning('confirm_scopes Error: %s' % e)
         except Exception as e:
             logger.error('confirm_scopes Error: %s' % e)
         return []

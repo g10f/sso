@@ -29,21 +29,26 @@ def make_jwt(payload, max_age=MAX_AGE, algorithm="RS256"):
     return encode(payload, key=key, algorithm=algorithm, headers={"kid": kid})
 
 
-def loads_jwt(jwt, algorithm="RS256", verify=True, options=None):
+def loads_jwt(jwt, algorithm="RS256", options=None):
     _algorythm_keys = {'RS256': 'public_key', 'HS256': 'SECRET_KEY'}
+
     if options is None:
         options = {"verify_aud": False, "require": ["exp", "iat"], "verify_exp": True, "verify_iat": True}
+
+    if options.get('verify_signature') is False:
+        # when not verifing signature we dont need a key and algorithms
+        return decode(jwt, options=options)
 
     header = get_unverified_header(jwt)
     if 'kid' in header:
         key = settings.SIGNING[algorithm]['keys'][header['kid']][_algorythm_keys[algorithm]]
-        return decode(jwt, algorithms=[algorithm], key=key, verify=verify, options=options)
+        return decode(jwt, algorithms=[algorithm], key=key, options=options)
 
     # else iterate over all keys
     for value in settings.SIGNING[algorithm]['keys'].values():
         try:
             key = value[_algorythm_keys[algorithm]]
-            return decode(jwt, algorithms=[algorithm], key=key, verify=verify, options=options)
+            return decode(jwt, algorithms=[algorithm], key=key, options=options)
         except InvalidSignatureError as e:
             logger.debug(e)
 
