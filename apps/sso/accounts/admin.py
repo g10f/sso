@@ -411,11 +411,9 @@ class UserAdmin(VersionAdmin, AdminImageMixin, DjangoUserAdmin):
     list_filter = (SuperuserFilter, 'is_staff', 'is_center', 'is_service', 'is_active', LoggedInFilter, 'groups',
                    ApplicationAdminApplicationFilter, RoleProfileAdminRoleProfileFilter, UserAssociatedSystemFilter,
                    UserRegionListFilter, RoleProfilesFilter, ExcludeRoleProfilesFilter, ApplicationRolesFilter)
-    # ,UserOrganisationsListFilter, CreatedByUserFilter, LastModifiedUserFilter
     filter_horizontal = DjangoUserAdmin.filter_horizontal + (
         'admin_associations', 'admin_organisation_countries', 'admin_regions', 'groups', 'application_roles',
-        'role_profiles', # 'organisations',
-        'app_admin_organisation_countries', 'app_admin_regions')
+        'role_profiles', 'app_admin_organisation_countries', 'app_admin_regions')
     ordering = ['-last_login', '-first_name', '-last_name']
     actions = DjangoUserAdmin.actions + ['mark_info_mail']
     inlines = [MembershipInline, UserEmailInline, PhoneNumberInline, AddressInline, UserAssociatedSystemInline,
