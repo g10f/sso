@@ -6,7 +6,7 @@ from django.forms.models import model_to_dict
 from django.http import HttpResponse, Http404
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_str
-from django.utils.http import is_safe_url
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.vary import vary_on_headers
 from django.views.generic.detail import BaseDetailView
@@ -55,7 +55,7 @@ class PermissionMixin(object):
     def is_referer_allowed(self):
         # check the referer if cookie based browser authentication is used
         if 'HTTP_REFERER' in self.request.META and is_browser_client(self.request):
-            return is_safe_url(self.request.META['HTTP_REFERER'], allowed_hosts=allowed_hosts())
+            return url_has_allowed_host_and_scheme(self.request.META['HTTP_REFERER'], allowed_hosts=allowed_hosts())
         else:
             return True
 

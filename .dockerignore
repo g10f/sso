@@ -1,0 +1,15 @@
+**/__pycache__
+/certs
+/secret
+/htdocs
+/temp
+/logs
+/data
+/docs
+/venv
+/scripts
+/apps/sso/settings/local_*.py
+start.sh
+local.pth
+.git
+.idea
