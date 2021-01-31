@@ -2,15 +2,15 @@ import base64
 import logging
 from uuid import UUID
 
-from jwt import InvalidTokenError, ExpiredSignatureError
+from jwt import InvalidTokenError
+from oauthlib.oauth2 import FatalClientError
+from oauthlib.openid.connect.core.request_validator import RequestValidator
 
 from django.contrib.auth import authenticate, get_user_model
 from django.core import signing
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.utils import timezone
 from django.utils.encoding import force_bytes
-from oauthlib.oauth2 import FatalClientError
-from oauthlib.openid.connect.core.request_validator import RequestValidator
 from .crypt import loads_jwt
 from .models import BearerToken, RefreshToken, AuthorizationCode, Client, check_redirect_uri, CONFIDENTIAL_CLIENTS, \
     CLIENT_RESPONSE_TYPES

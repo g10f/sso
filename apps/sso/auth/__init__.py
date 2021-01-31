@@ -13,7 +13,8 @@ default_app_config = 'sso.auth.apps.AuthConfig'
 SESSION_AUTH_DATE = 'iat'
 DEVICE_KEY = 'dev'
 SESSION_KEY = 'sub'
-HASH_SESSION_KEY = 'au_hash'  # shorter version of django _auth_user_hash
+# shorter version of django _auth_user_hash
+HASH_SESSION_KEY = 'au_hash'
 
 
 def _get_user_session_key(request):
@@ -46,8 +47,8 @@ def auth_login(request, user, backend=None):
     device_id = getattr(user, '_auth_device_id', None)
 
     if SESSION_KEY in request.session:
-        if _get_user_session_key(request) != _get_user_key(user) or \
-            (session_auth_hash and request.session.get(HASH_SESSION_KEY) != session_auth_hash):
+        if _get_user_session_key(request) != _get_user_key(user) or (
+                session_auth_hash and not request.session.get(HASH_SESSION_KEY) != session_auth_hash):
             # To avoid reusing another user's session, create a new, empty
             # session if the existing session corresponds to a different
             # authenticated user.
@@ -96,7 +97,15 @@ def is_otp_login(user, is_two_factor_required):
     return None
 
 
-def get_session_auth_hash(user, secret=None, client=None):
+def verify_session_auth_hash(data, user, client=None):
+    session_hash = data.get(HASH_SESSION_KEY)
+    if session_hash:
+        auth_hash = get_session_auth_hash(user, client)
+        return constant_time_compare(session_hash, auth_hash)
+    return False
+
+
+def get_session_auth_hash(user, client=None):
     # Returns an HMAC of the password and client_secret field.
     if user is None:
         logger.debug("get_session_auth_hash with user == None")
@@ -109,7 +118,9 @@ def get_session_auth_hash(user, secret=None, client=None):
         data += "0"
     if client is not None:
         data += client.client_secret
-    return salted_hmac(key_salt, data, secret=secret, algorithm=settings.DEFAULT_HASHING_ALGORITHM).hexdigest()
+
+    auth_hash = salted_hmac(key_salt, data, algorithm=settings.DEFAULT_HASHING_ALGORITHM).hexdigest()
+    return auth_hash[:10]
 
 
 def update_session_auth_hash(request, user):
@@ -141,16 +152,9 @@ def get_user(request, client=None):
         if backend_path in settings.AUTHENTICATION_BACKENDS:
             backend = load_backend(backend_path)
             user = backend.get_user(user_id)
+
             # Verify the session
-            session_hash = request.session.get(HASH_SESSION_KEY)
-            session_hash_verified = False
-            if session_hash:
-                # Try all SECRET_KEY values
-                for val in settings.SIGNING['HS256']['keys'].values():
-                    auth_hash = get_session_auth_hash(user, val['SECRET_KEY'], client)
-                    session_hash_verified = constant_time_compare(session_hash, auth_hash)
-                    if session_hash_verified:
-                        break
+            session_hash_verified = verify_session_auth_hash(request.session, user, client)
             if not session_hash_verified:
                 request.session.flush()
                 user = None

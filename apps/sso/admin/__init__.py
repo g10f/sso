@@ -20,6 +20,8 @@ from sso.accounts.admin import ApplicationAdmin, ApplicationAdminAdmin, Applicat
 from sso.auth import admin as sso_auth_admin
 from sso.auth import models as sso_auth_models
 from sso.auth.utils import is_recent_auth_time
+from sso.components.admin import ComponentAdmin
+from sso.components.models import Component
 from sso.emails.admin import EmailAdmin, EmailAliasAdmin, EmailForwardAdmin, GroupEmailAdmin, GroupEmailManagerAdmin
 from sso.emails.models import Email, EmailForward, EmailAlias, GroupEmail, GroupEmailManager
 from sso.oauth2.admin import ClientAdmin, AuthorizationCodeAdmin, BearerTokenAdmin, RefreshTokenAdmin
@@ -120,3 +122,5 @@ sso_admin_site.register(sso_auth_models.Device, sso_auth_admin.DeviceAdmin)
 sso_admin_site.register(sso_auth_models.TwilioSMSDevice, sso_auth_admin.TwilioSMSDeviceAdmin)
 sso_admin_site.register(sso_auth_models.TOTPDevice, sso_auth_admin.TOTPDeviceAdmin)
 sso_admin_site.register(sso_auth_models.U2FDevice, sso_auth_admin.U2FDeviceAdmin)
+
+sso_admin_site.register(Component, ComponentAdmin)
