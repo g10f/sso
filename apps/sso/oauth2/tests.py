@@ -3,6 +3,7 @@ import hashlib
 from time import sleep
 from urllib.parse import urlsplit
 
+from django.conf import settings
 from django.http import QueryDict, SimpleCookie
 from django.test import TestCase
 from django.urls import reverse
@@ -172,7 +173,7 @@ class OAuth2Tests(OAuth2BaseTestCase):
         """
         fragment_dict = self.login_and_get_implicit_id_token()
         self.assertIn('access_token', fragment_dict)
-        self.assertEqual(fragment_dict['expires_in'], '3600')
+        self.assertEqual(fragment_dict['expires_in'], str(settings.SSO_ACCESS_TOKEN_AGE))
         self.assertEqual(fragment_dict['token_type'], 'Bearer')
         self.assertEqual(fragment_dict['scope'], 'openid profile email')
         self.assertEqual(fragment_dict['state'], self._state)
