@@ -67,6 +67,9 @@ SSO_DEFAULT_IDTOKEN_FINALIZER = 'sso.oauth2.oidc_token.default_idtoken_finalizer
 SSO_DEFAULT_TOKEN_GENERATOR = 'sso.oauth2.oidc_token.default_token_generator'
 SSO_TEST_USER_EXTRA_ATTRIBUTES = []
 SSO_USER_RECOVERY_PERIOD_MINUTES = 60 * 24 * 30  # 30 days
+SSO_ACCESS_TOKEN_AGE = 60 * 60  # 1 hour
+SSO_ID_TOKEN_AGE = 60 * 5  # 5 minutes
+SSO_SIGNING_KEYS_VALIDITY_PERIOD = 60 * 60 * 24 * 30  # 30 days
 SSO_OIDC_SESSION_COOKIE_NAME = 'oidcsession'
 OTP_DEVICES = [
     'sso_auth.TOTPDevice',
@@ -224,6 +227,7 @@ INSTALLED_APPS = [
     'sso.oauth2',
     'sso.api',
     'sso.access_requests',
+    'sso.components'
 ]
 
 DEFAULT_AUTHENTICATION_BACKEND = 'sso.auth.backends.EmailBackend'
@@ -279,62 +283,9 @@ AUTH_PASSWORD_VALIDATORS = [{
 
 # overwrite this if integration with other associations is required
 SSO_DEFAULT_ASSOCIATION_UUID = UUID('bad2e6edff274f2f900ff3dbb26e38ce')
-kid1 = '25e96efa6c654585b3f12986b355e42f'
-SIGNING = {
-    'HS256': {
-        'active': kid1,
-        'keys': {
-            kid1: {
-                'SECRET_KEY': '$20e%(in^nv_-&syxvx4$1%()nfx$dx@)omf)0i-%je&w!((^e',
-            }
-        }
-    },
-    'RS256': {
-        'active': kid1,
-        'keys': {
-            kid1: {
-                'public_key': """-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu8TOBiOu0mR499t8W+N6
-Y85zNl+puP+GSWzgoIclYDKrWCFZWVp164gHpShB3dp2dH9wpDH0fAh7AackrOiC
-temis3bTpCSbR7vJbKck3OBDgdMSvefGMwgOEvvptouEAKBSMqpAoASYpRWPC1f5
-W7K584+UOUMcLr/vHf2WFZMZCgbaTENAedbdUZZJplrz5rL5FTmYzWRzwmghI6SA
-FjV/SE85zjMJVtsGCCQF8fZZrcdZ6KJNNWOm2T7xIb/OqKvPhsqwRP8RVIIREoM7
-1PklpRtoLlbZ9LR/wKN6R4MrlZBtZDRKuW8mlnhEHhnj/ErvDI/K1zsDpMupWUUP
-MwIDAQAB
------END PUBLIC KEY-----
-""",
-                'SECRET_KEY': """-----BEGIN RSA PRIVATE KEY-----
-MIIEogIBAAKCAQEAu8TOBiOu0mR499t8W+N6Y85zNl+puP+GSWzgoIclYDKrWCFZ
-WVp164gHpShB3dp2dH9wpDH0fAh7AackrOiCtemis3bTpCSbR7vJbKck3OBDgdMS
-vefGMwgOEvvptouEAKBSMqpAoASYpRWPC1f5W7K584+UOUMcLr/vHf2WFZMZCgba
-TENAedbdUZZJplrz5rL5FTmYzWRzwmghI6SAFjV/SE85zjMJVtsGCCQF8fZZrcdZ
-6KJNNWOm2T7xIb/OqKvPhsqwRP8RVIIREoM71PklpRtoLlbZ9LR/wKN6R4MrlZBt
-ZDRKuW8mlnhEHhnj/ErvDI/K1zsDpMupWUUPMwIDAQABAoIBACW2ipbLFfLmATHv
-IJQoJU3killyb1lb4THgL2Guo0AmDSofUJ3UwHh1EuwGIOyZU09kxVAFRJCg92vG
-kWQ1MwOskGQxSqLeQ13uBq/PBmVimcx6g3onEjTvujvv4uoqLXIewUOx1FcPdUU7
-BkcF/WyAgj68KM4zf3aYUEOaykk8sR+dIFR1+V6VlHugJyNo+NZdyJHqW/zj2Vxw
-DcoOZfe5+hZc3bWAcqFKIjcIRXV5oOKWvJ0Obo3CftFeWSSXd3R4+KT53Bo6obqx
-uFtIKcE+hIa2CTxWUNbK2Mia/5yZyicVkeZWb2lCUoj9rMbiVAsxn/C51aMaI1m4
-G2pcN1ECgYEA4c2SmILTNibKrjV2C4gm5RGGo3va/09qMextC37oCR97RkcIxOHp
-caMOJkAbbNJQdAprM5it4/33a2J86LuYKA2iNYWyGAb5gNo319nQZ23YGSjQIqpx
-XPwzBjnvwmAALibIzm093e4iVfH4+V71/ZpUvk0szMup5deKy8W6lisCgYEA1OEe
-jHoZ+/Xo8S6W8O+BZk4mYmbr7vGaD2t+EMKCFHlxCrENHw0JHk9pdpnVhFaRmvOr
-g84YtZs2O216UQBUk2lCuCt74KWq73UllObFhNnKuLdx/pRWz5Xteu/nJ8KcMzDS
-iCdJFfZ2G6sp+eN3yFMcCNUiapuRTVYpXoKvrxkCgYBEtlDg1ha9yMoufxg/5Bup
-405sW1lGDf2L2Z1JPUIQ3KKfvSf++ZwXN34rx6BQ2iMfXLhIiDKKSZNL+zl1fPiN
-X7C3xspuI1kzi7QonCCeCMAUz+WeVu2OVTSVtXWvWZVUdfrvTjDgYwHR04NnJy2G
-Ebut+UAjxeoahh+3aKEh5wKBgHJn7fgHIvHTTfZYWIxx2zQ1KdHWiFOpCmfhGCY/
-spL4VTUuw+N9KPpeKUqxEBwIPkZtUC8M0yC+op27j3H64Hk8p7u8ut2Xi08XwTPN
-9jcYqScuh5gO9rynUbKxPaSTpUipo2vC2TdxdjYWff+rLNO/PqDMkquCoctTU/ZT
-+8D5AoGABn8e+q6jbHsy0dJzKIoUqJ81RDVYhtc7yWZt0pA2IbSjWpdXCNNxUEuq
-NcWSqklhLQ5S932UzPFw3iDaDdR3/6DwG7wi8mZiVSWlBbLHIOMMzKvszVfJvDcI
-LLdXzhLAb/qsleh83t/tLENwOIF5PnaFihbYJ7i4THgYqmYeN+o=
------END RSA PRIVATE KEY-----
-"""
-            }
-        }
-    }
-}
+
+# overwrite this in local_settings.py
+SECRET_KEY = '$20e%(in^nv_-&syxvx4$1%()nfx$dx@)omf)0i-%je&w!((^e'
 
 LOGGING = {
     'version': 1,
@@ -374,17 +325,18 @@ LOGGING = {
             'level': 'INFO',
             'propagate': False,
         },
+        'django.db.backends': {
+            'handlers': ['console', 'mail_admins'],
+            'level': 'INFO',
+            'propagate': False,
+        },
         'sso': {
             'handlers': ['console', 'mail_admins'],
             'level': 'INFO',
             'propagate': False,
         },
-        'sorl': {
-            'level': 'INFO',
-        },
-        'oauthlib': {
-            'level': 'INFO',
-        }
+
+
     },
     'root': {
         'level': 'INFO',

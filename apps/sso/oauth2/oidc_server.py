@@ -9,6 +9,7 @@ from oauthlib.openid.connect.core.grant_types import ImplicitGrant
 from oauthlib.openid.connect.core.grant_types.dispatchers import AuthorizationCodeGrantDispatcher, \
     ImplicitTokenGrantDispatcher, AuthorizationTokenGrantDispatcher
 
+from django.conf import settings
 from .oidc_grants import OAuth2AuthorizationCodeGrantEx, AuthorizationCodeGrantEx, HybridGrantEx, RefreshTokenGrantEx
 from .oidc_request_validator import OIDCRequestValidator
 from .oidc_token import get_token_generator
@@ -69,5 +70,5 @@ class Server(AuthorizationEndpoint, IntrospectEndpoint, TokenEndpoint, Revocatio
 
 
 oidc_request_validator = OIDCRequestValidator()
-oidc_server = Server(oidc_request_validator, token_generator=get_token_generator(),
-                     refresh_token_generator=tokens.random_token_generator)
+oidc_server = Server(oidc_request_validator, token_expires_in=getattr(settings, 'SSO_ACCESS_TOKEN_AGE', 3600),
+                     token_generator=get_token_generator(), refresh_token_generator=tokens.random_token_generator)
