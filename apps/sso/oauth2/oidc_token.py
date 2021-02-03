@@ -1,26 +1,25 @@
 import calendar
 import logging
+import time
 from functools import lru_cache
 from urllib.parse import urlsplit
-
-import time
 
 from django.conf import settings
 from django.utils.crypto import get_random_string
 from django.utils.encoding import force_str
 from django.utils.module_loading import import_string
 from sso.auth import get_session_auth_hash, HASH_SESSION_KEY
-from .crypt import make_jwt, MAX_AGE
+from .crypt import make_jwt
 
 logger = logging.getLogger(__name__)
 
 
 def get_iss_from_absolute_uri(abs_uri):
-    (scheme, netloc, path, query, fragment) = urlsplit(abs_uri)  # @UnusedVariable
-    return "%s://%s" % (scheme, netloc)
+    r = urlsplit(abs_uri)
+    return f"{r.scheme}://{r.netloc}"
 
 
-def get_token_claim_set(request, max_age=MAX_AGE):
+def get_token_claim_set(request, max_age=settings.SSO_ACCESS_TOKEN_AGE):
     user = request.user
     claim_set = {
         'jti': get_random_string(12),
@@ -42,12 +41,12 @@ def get_token_claim_set(request, max_age=MAX_AGE):
     return claim_set
 
 
-def default_token_generator(request, max_age=MAX_AGE):
+def default_token_generator(request, max_age=settings.SSO_ACCESS_TOKEN_AGE):
     claim_set = get_token_claim_set(request, max_age)
     return make_jwt(claim_set)
 
 
-def get_idtoken_claim_set(request, max_age=MAX_AGE):
+def get_idtoken_claim_set(request, max_age=settings.SSO_ID_TOKEN_AGE):
     """
     The generated id_token contains additionally email, name and roles
     """

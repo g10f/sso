@@ -1,6 +1,6 @@
 import logging
-
 import time
+
 from jwt import InvalidTokenError
 
 from django.conf import settings
@@ -12,12 +12,11 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import SuspiciousOperation
 from django.urls import reverse
 from django.utils.cache import patch_vary_headers
-from django.utils.crypto import constant_time_compare
 from django.utils.deprecation import MiddlewareMixin
 from django.utils.functional import SimpleLazyObject, empty
 from django.utils.http import http_date
 from sso import auth as sso_auth
-from sso.auth import get_session_auth_hash
+from sso.auth import verify_session_auth_hash
 from .crypt import loads_jwt
 from .models import Client
 from .views import get_oidc_session_state
@@ -51,16 +50,14 @@ def get_auth_data_from_token(access_token):
         data = loads_jwt(access_token)
         client = Client.objects.get(uuid=data['aud'])
 
-        session_hash = data.get(sso_auth.HASH_SESSION_KEY)
         user = get_user_model().objects.get(uuid=data['sub'])
-        session_hash_verified = session_hash and \
-                                constant_time_compare(session_hash, get_session_auth_hash(user, client))
+        session_hash_verified = verify_session_auth_hash(data, user, client)
 
         if not session_hash_verified:
             logger.warning('session_ hash verification failed. jwt data: %s', data)
             return AnonymousUser(), None, set()
         scopes = set()
-        if data.get('scope'):
+        if 'scope' in data:
             scopes = set(data['scope'].split())
     except (ObjectDoesNotExist, InvalidTokenError, ValueError) as e:
         logger.warning(e)

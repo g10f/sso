@@ -1,15 +1,9 @@
 import json
 import logging
-from datetime import timedelta
 from urllib.parse import urlparse, urlunparse, urlsplit, urlunsplit
 
-from cryptography import x509
-from cryptography.hazmat.primitives import hashes, serialization
-from cryptography.x509 import OID_COMMON_NAME
 from jwt import InvalidTokenError
 from jwt.algorithms import RSAAlgorithm
-from oauthlib import oauth2
-from oauthlib.common import urlencode, urlencoded, quote
 
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
@@ -21,13 +15,14 @@ from django.urls import reverse
 from django.utils.crypto import salted_hmac
 from django.utils.decorators import method_decorator
 from django.utils.encoding import iri_to_uri, force_str
-from django.utils.timezone import now
 from django.views import View
 from django.views.decorators.cache import never_cache, cache_page, cache_control
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.vary import vary_on_headers
 from django.views.generic import TemplateView
+from oauthlib import oauth2
+from oauthlib.common import urlencode, urlencoded, quote
 from sso.api.response import JsonHttpResponse, same_origin
 from sso.api.views.generic import PreflightMixin
 from sso.auth.utils import is_recent_auth_time
@@ -36,6 +31,7 @@ from sso.middleware import revision_exempt
 from sso.utils.http import get_request_param
 from sso.utils.url import get_base_url
 from .crypt import loads_jwt
+from .keys import get_default_cert, get_public_keys
 from .models import Client
 from .oidc_server import oidc_server
 
@@ -142,8 +138,6 @@ class OpenidConfigurationView(PreflightMixin, View):
         return JsonHttpResponse(configuration, request, allow_jsonp=True, public_cors=True)
 
 
-@method_decorator(cache_page(60 * 5), name='dispatch')
-@method_decorator(vary_on_headers('Origin', 'Accept-Language'), name='dispatch')
 class JwksView(PreflightMixin, View):
     http_method_names = ['get', 'options']
 
@@ -151,38 +145,30 @@ class JwksView(PreflightMixin, View):
         """
         jwks_uri view (http://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata)
         """
-        algorithm = 'RS256'
         rsa256 = RSAAlgorithm(RSAAlgorithm.SHA256)
         keys = []
-        for kid, value in settings.SIGNING[algorithm]['keys'].items():
-            key_obj = rsa256.prepare_key(value['public_key'])
+        for pub_key in get_public_keys():
+            key_obj = rsa256.prepare_key(pub_key.value)
             key = json.loads(RSAAlgorithm.to_jwk(key_obj))
-            key["kid"] = kid
-            key["alg"] = algorithm
+            key["kid"] = pub_key.component.uuid.hex
+            key["alg"] = pub_key.component.name
             key["use"] = "sig"
             keys.append(key)
         data = {'keys': keys}
         return JsonHttpResponse(data, request, allow_jsonp=True, public_cors=True)
 
 
-@method_decorator(cache_page(60 * 5), name='dispatch')
-@method_decorator(vary_on_headers('Origin', 'Accept-Language'), name='dispatch')
 class CertsView(PreflightMixin, View):
     http_method_names = ['get', 'options']
 
     def get(self, request, *args, **kwargs):
-        subject = issuer = x509.Name([x509.NameAttribute(OID_COMMON_NAME, settings.SSO_DOMAIN)])
-        cert_builder = x509.CertificateBuilder().subject_name(subject).issuer_name(issuer)
-        cert_builder = cert_builder.not_valid_before(now()).not_valid_after(now() + timedelta(days=30))
-        algorithm = 'RS256'
-        rsa256 = RSAAlgorithm(RSAAlgorithm.SHA256)
         certs = {}
-        for kid, value in settings.SIGNING[algorithm]['keys'].items():
-            if kid == settings.SIGNING[algorithm]['active']:
-                key_obj = rsa256.prepare_key(value['SECRET_KEY'])
-                cert = cert_builder.serial_number(int(kid, 16)).public_key(key_obj.public_key())\
-                    .sign(key_obj, hashes.SHA256())
-                certs[kid] = force_str(cert.public_bytes(serialization.Encoding.PEM))
+        try:
+            cert_obj = get_default_cert()
+            certs[cert_obj.component.uuid.hex] = cert_obj.value
+        except IndexError:
+            logger.error("No certs available")
+
         return JsonHttpResponse(certs, request, allow_jsonp=True, public_cors=True)
 
 
