@@ -35,14 +35,14 @@ def loads_jwt(jwt, algorithm="RS256", options=None):
     if options is None:
         options = {"verify_aud": False, "require": ["exp", "iat"], "verify_exp": True, "verify_iat": True}
 
+    if options.get('verify_signature') is False:
+        # when not verifing signature we dont need a key and algorithms
+        return decode(jwt, options=options)
+
     header = get_unverified_header(jwt)
     if 'kid' not in header:
         logger.info(f"InvalidSignatureError for {jwt}")
         raise InvalidSignatureError(jwt)
-
-    if options.get('verify_signature') is False:
-        # when not verifing signature we dont need a key and algorithms
-        return decode(jwt, options=options)
 
     kid = header['kid']
     key = get_decoding_key_by_kid(kid, algorithm)
