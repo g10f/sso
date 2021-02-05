@@ -3,14 +3,14 @@ import logging
 from uuid import UUID
 
 from jwt import InvalidTokenError
-from oauthlib.oauth2 import FatalClientError
-from oauthlib.openid.connect.core.request_validator import RequestValidator
 
 from django.contrib.auth import authenticate, get_user_model
 from django.core import signing
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.utils import timezone
 from django.utils.encoding import force_bytes
+from oauthlib.oauth2 import FatalClientError
+from oauthlib.openid.connect.core.request_validator import RequestValidator
 from .crypt import loads_jwt
 from .models import BearerToken, RefreshToken, AuthorizationCode, Client, check_redirect_uri, CONFIDENTIAL_CLIENTS, \
     CLIENT_RESPONSE_TYPES
@@ -313,18 +313,22 @@ class OIDCRequestValidator(RequestValidator):
         return get_idtoken_finalizer()(id_token, token, token_handler, request)
 
     def validate_silent_authorization(self, request):
-        # We have no consent dialog
-        raise True
+        # we have not consent required
+        return True
 
     def validate_silent_login(self, request):
-        # Todo: move logic with 'none' in prompt from authorize and TEST
-        raise NotImplementedError('Subclasses must implement this method.')
+        # We have no option for users to deny silent login
+        return True
 
     def validate_user_match(self, id_token_hint, scopes, claims, request):
-        #  TODO: Test
         if id_token_hint:
-            if request.user is not None and request.user.uuid == id_token_hint:
-                return True
+            try:
+                # ID Token can be expired
+                id_token = loads_jwt(id_token_hint, options={'verify_exp': False, 'verify_aud': False})
+                if id_token['sub'] == request.user.uuid.hex:
+                    return True
+            except InvalidTokenError as e:
+                logger.warning(e)
             return False
         return True
 
