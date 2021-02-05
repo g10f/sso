@@ -22,7 +22,11 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.vary import vary_on_headers
 from django.views.generic import TemplateView
 from oauthlib import oauth2
+from oauthlib.common import Request
 from oauthlib.common import urlencode, urlencoded, quote
+from oauthlib.oauth2.rfc6749.utils import scope_to_list
+from oauthlib.openid.connect.core.exceptions import LoginRequired
+from oauthlib.openid.connect.core.grant_types.exceptions import OIDCNoPrompt
 from sso.api.response import JsonHttpResponse, same_origin
 from sso.api.views.generic import PreflightMixin
 from sso.auth.utils import is_recent_auth_time
@@ -195,11 +199,6 @@ def session_init(request):
     return Http404()
 
 
-class LoginRequiredError(oauth2.OAuth2Error):
-    error = 'login_required'
-    description = 'The End User is currently not already authenticated.'
-
-
 def redirect_to_login(request, redirect_field_name=REDIRECT_FIELD_NAME, two_factor=False):  # @ReservedAssignment
     """
     Redirects the user to the login page, passing the given 'next' page
@@ -247,7 +246,7 @@ def get_acr_claim(request):
         return None
 
 
-def is_login_required(request, client_state):
+def should_show_login_form(request):
     two_factor = True if get_acr_claim(request) else False
 
     user = request.user
@@ -263,12 +262,24 @@ def is_login_required(request, client_state):
         return True, two_factor
 
     user_has_device = user.device_set.filter(confirmed=True).exists()
+    state = get_request_param(request, 'state')
     if two_factor and not user_has_device:
-        raise TwoFactorRequiredError(state=client_state)
+        # TODO: catch error
+        raise TwoFactorRequiredError(state=state)
     if two_factor and not user.is_verified:
         return True, two_factor
 
     return False, two_factor
+
+
+def validate_and_redirect_to_login(request, two_factor, uri, http_method='GET', body=None, headers=None):
+    try:
+        oidc_server.validate_authorization_request(uri, http_method, body, headers)
+        return redirect_to_login(request, two_factor=two_factor)
+    except OIDCNoPrompt:
+        oauth_request = Request(uri, http_method=http_method, body=body, headers=headers)
+        msg = "User is not logged in."
+        raise LoginRequired(request=oauth_request, description=msg)
 
 
 @revision_exempt
@@ -276,50 +287,31 @@ def is_login_required(request, client_state):
 @xframe_options_exempt
 def authorize(request):
     uri, http_method, body, headers = extract_params(request)
-    error_uri = reverse('oauth2:oauth2_error')
-    redirect_uri = None
     try:
-        scopes, credentials = oidc_server.validate_authorization_request(uri, http_method, body, headers)
-        credentials['user'] = request.user
-        credentials['session_state'] = get_oidc_session_state(request)
-        credentials['client'] = credentials['request'].client
-        redirect_uri = credentials.get('redirect_uri')
-        prompt = get_request_param(request, 'prompt', '').split()
-
-        # check if the user must login
-        login_req, two_factor = is_login_required(request, credentials.get('state'))
-
-        if 'none' in prompt:
-            if login_req:
-                raise LoginRequiredError(state=credentials.get('state'))
-            else:
-                id_token = get_request_param(request, 'id_token_hint', '')
-                try:
-                    parsed = loads_jwt(id_token)
-                    if parsed['sub'] != request.user.uuid.hex:
-                        raise LoginRequiredError(state=credentials.get('state'))
-                except InvalidTokenError as e:  # maybe Token used too late
-                    logger.exception(e)
-                    raise LoginRequiredError(state=credentials.get('state'))
+        login_req, two_factor = should_show_login_form(request)
 
         if login_req:
-            return redirect_to_login(request, two_factor=two_factor)
+            return validate_and_redirect_to_login(request, two_factor, uri, http_method, body, headers)
+        else:
+            oauth_request = Request(uri, http_method=http_method, body=body, headers=headers)
+            scopes = scope_to_list(oauth_request.scope)
+            credentials = {
+                'user': request.user,
+                'session_state': get_oidc_session_state(request),
+            }
+            headers, body, status = oidc_server.create_authorization_response(
+                uri, http_method, body, headers, scopes, credentials)
+            return HttpOAuth2ResponseRedirect(headers['Location'])
 
-        # if we are here, the user is already logged in does not need to login again
-        headers, body, status = oidc_server.create_authorization_response(uri, http_method, body, headers, scopes,
-                                                                          credentials)
-        return HttpOAuth2ResponseRedirect(headers['Location'])
     except oauth2.FatalClientError as e:
-        logger.warning('Fatal client error, redirecting to error page.')
-        return HttpOAuth2ResponseRedirect(e.in_uri(error_uri))
+        logger.warning(f'Fatal client error, redirecting to error page. {e}')
+        error_uri = reverse('oauth2:oauth2_error')
+        return HttpResponseRedirect(e.in_uri(error_uri))
     except oauth2.OAuth2Error as e:
-        logger.warning('Client error, redirecting back to client.')
-        if not redirect_uri:
-            if getattr(e, 'redirect_uri'):
-                redirect_uri = e.redirect_uri
-            else:
-                redirect_uri = error_uri
-        return HttpOAuth2ResponseRedirect(e.in_uri(redirect_uri))
+        # Less grave errors will be reported back to client
+        logger.warning(f'OAuth2Error, redirecting to error page. {e}')
+        redirect_uri = get_request_param(request, 'redirect_uri', reverse('oauth2:oauth2_error'))
+        return HttpResponseRedirect(e.in_uri(redirect_uri))
 
 
 def token(request):
