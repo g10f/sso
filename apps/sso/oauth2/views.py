@@ -299,7 +299,7 @@ def authorize(request):
                 'user': request.user,
                 'session_state': get_oidc_session_state(request),
             }
-            headers, body, status = oidc_server.create_authorization_response(
+            headers, _, _ = oidc_server.create_authorization_response(
                 uri, http_method, body, headers, scopes, credentials)
             return HttpOAuth2ResponseRedirect(headers['Location'])
 
