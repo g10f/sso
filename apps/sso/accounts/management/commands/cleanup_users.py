@@ -39,9 +39,10 @@ def delete_deactivated_users():
 
         count = 0
         for user in User.objects.filter(q):
+            logger.debug(f"Deleting {user}")
             user.delete()
             count += 1
-        logger.debug("Deleted %s user(s)" % count)
+        logger.debug(f"Deleted {count} user(s)")
 
 
 def check_validation():
@@ -54,10 +55,10 @@ def check_validation():
         return
 
     # 1. Assign Guest Profile to expired user accounts
-    has_already_guest_status = Q(application_roles=None) & Q(count_profiles=1) & Q(role_profiles=guest_profile)
-    expired_users = User.objects.annotate(count_profiles=Count('role_profiles')). \
-        filter(valid_until__lt=now()). \
-        exclude(has_already_guest_status)
+    guest_users = User.objects.annotate(count_profiles=Count('role_profiles')).filter(
+        Q(application_roles=None) & Q(role_profiles=guest_profile) & Q(count_profiles=1))
+
+    expired_users = User.objects.filter(valid_until__lt=now()).exclude(pk__in=guest_users)
     if not settings.SSO_VALIDATION_PERIOD_IS_ACTIVE_FOR_ALL:
         expired_users = expired_users.filter(organisations__uses_user_activation=True)
 
@@ -72,8 +73,7 @@ def check_validation():
             logger.debug("%s" % expired_user)
 
     # 2. user with valid_until__isnull=True and a organisation which uses user activation will expire in 30 days
-    new_users = User.objects.annotate(count_profiles=Count('role_profiles')) \
-        .filter(is_active=True, valid_until__isnull=True, is_service=False, is_center=False)
+    new_users = User.objects.filter(is_active=True, valid_until__isnull=True, is_service=False, is_center=False)
     if not settings.SSO_VALIDATION_PERIOD_IS_ACTIVE_FOR_ALL:
         new_users = new_users.filter(organisations__uses_user_activation=True)
 
