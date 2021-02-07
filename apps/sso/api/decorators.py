@@ -43,7 +43,7 @@ def catch_errors(view_func):
         try:
             return view_func(request, *args, **kwargs)
         except PermissionDenied as e:
-            logger.warning('PermissionDenied caught while processing request, %s.' % e)
+            logger.debug('PermissionDenied caught while processing request, %s.' % e)
             return HttpApiResponseNotAuthorized(error_description=force_str(e), request=request)
         except (Http404, ObjectDoesNotExist) as e:
             logger.warning('ObjectDoesNotExist caught while processing request, %s.' % e)

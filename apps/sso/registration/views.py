@@ -235,7 +235,8 @@ def update_user_registration(request, pk, template='registration/change_user_reg
     usernote_set, accessible_created_by_users = \
         get_usernotes_and_accessible_created_by_users(registrationprofile.user, request.user)
 
-    data = {'form': registrationprofile_form, 'app_roles_by_profile': app_roles_by_profile,
+    data = {'form': registrationprofile_form,
+            'app_roles_by_profile': app_roles_by_profile,
             'usernotes': usernote_set,
             'editable_created_by_users': accessible_created_by_users,
             'user_note_redirect_uri': reverse('registration:update_user_registration', args=[pk]),

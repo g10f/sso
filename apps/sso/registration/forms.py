@@ -63,11 +63,13 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
                                             widget=bootstrap.TextInput(attrs={'disabled': ''}))
     organisations = forms.ModelChoiceField(queryset=None, label=_("Organisation"), widget=bootstrap.Select2(),
                                            required=settings.SSO_ORGANISATION_REQUIRED)
-    application_roles = forms.ModelMultipleChoiceField(queryset=None, required=False,
-                                                       widget=bootstrap.CheckboxSelectMultiple,
-                                                       label=_("Application roles"),
-                                                       help_text=_(
-                                                           '* Application roles which are included by role profiles'))
+    application_roles = forms.ModelMultipleChoiceField(
+        queryset=None,
+        required=False,
+        widget=bootstrap.FilteredSelectMultiple(_("Application roles"), False),
+        label=_("Additional application roles"),
+        help_text=_("* You don't need to select the application roles which are already included by "
+                    "the role profiles."))
     check_back = forms.BooleanField(label=_("Check back"),
                                     help_text=_('Designates if there are open questions to check.'), required=False)
     is_access_denied = forms.BooleanField(label=_("Access denied"),
