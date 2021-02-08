@@ -335,8 +335,6 @@ LOGGING = {
             'level': 'INFO',
             'propagate': False,
         },
-
-
     },
     'root': {
         'level': 'INFO',
