@@ -70,7 +70,7 @@ def check_validation():
             expired_user.application_roles.clear()
             expired_user.role_profiles.set([guest_profile])
             expired_user.update_last_modified()
-            logger.debug("%s" % expired_user)
+            logger.debug(f"{expired_user} expired since {expired_user.valid_until:%Y-%m-%d}.")
 
     # 2. user with valid_until__isnull=True and a organisation which uses user activation will expire in 30 days
     new_users = User.objects.filter(is_active=True, valid_until__isnull=True, is_service=False, is_center=False)
