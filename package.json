@@ -1,0 +1,9 @@
+{
+  "name": "",
+  "dependencies": {
+    "bootstrap": "^5.0.0-beta2"
+  },
+  "scripts": {
+    "build-css": "node-sass node_modules/ -o node_modules/ --include-path node_modules/",
+}
+}
