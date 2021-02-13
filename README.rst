@@ -62,7 +62,7 @@ Changelog
 3.0.1
  - django 3.1 compatibility
  - automatically create and change the signature keys with:
-   `./mananage.py rotate_signing_keys`
+   `./manage.py rotate_signing_keys`
  - new settings with the following defaults
      `SSO_ACCESS_TOKEN_AGE = 60 * 60  # 1 hour`
 
