@@ -8,7 +8,7 @@ The user and organisation data are exposed via a JSONLD/Hydra Api. Api entry poi
 Prepare a development environment
 ----------------------------------
 
-#) Get python >= 3.5
+#) Get python >= 3.6
 #) Create virtualenv for sso:  ``python3 -m venv /venv/sso``
 #) Activate the virtual environment ``source /venv/sso/bin/activate``
 #) Update the Python package manager ``pip install -U pip``
@@ -50,8 +50,6 @@ Changelog
 1.3.1:
  - User Organisations are stored through exlicit membership class/table
 
-2.0.2
-
 2.1.0
  - django 2.2 compatibility
  - oauthlib>=3
@@ -60,3 +58,14 @@ Changelog
  - Key value table to store arbitrary user attributes. The UI/forms can be overwritten by settings.
  - new select box for administration of user applicationroles
  - support post_logout_redirect_uri of OIDC spec
+
+3.0.1
+ - django 3.1 compatibility
+ - automatically create and change the signature keys with:
+   `./mananage.py rotate_signing_keys`
+ - new settings with the following defaults
+     `SSO_ACCESS_TOKEN_AGE = 60 * 60  # 1 hour`
+
+     `SSO_ID_TOKEN_AGE = 60 * 5  # 5 minutes`
+
+     `SSO_SIGNING_KEYS_VALIDITY_PERIOD = 60 * 60 * 24 * 30  # 30 days`

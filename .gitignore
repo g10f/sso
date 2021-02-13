@@ -2,17 +2,18 @@
 # $GIT_DIR/info/exclude or the core.excludesFile configuration variable as
 # described in https://git-scm.com/docs/gitignore
 
+*.egg-info
+*.pot
 *.py[co]
-/certs
-/secret
-/htdocs
-/temp
-/logs
-/data
-/docs
-/scripts/data
-/apps/sso/settings/local_*.py
-/apps/gunicorn.conf
+__pycache__
+node_modules/
+secret
+htdocs
+temp
+logs
+data
+docs
+scripts/data
+apps/sso/settings/local_*.py
 start.sh
-local_fabconfig.py
 local.pth

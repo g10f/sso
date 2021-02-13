@@ -121,6 +121,9 @@ class OrganisationChange(AbstractBaseModel):
     objects = OrganisationChangeManager()
     open = OpenOrganisationChangeManager()
 
+    def __str__(self):
+        return f'{self.user} -> {self.organisation}'
+
     def cancel(self, user):
         self.status = 'c'
         self.completed_by_user = user

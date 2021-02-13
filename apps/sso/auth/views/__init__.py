@@ -249,7 +249,6 @@ def logout(request, next_page=None,
         return HttpPostLogoutRedirect(redirect_to=redirect_to, allowed_schemes=allowed_schemes)
     else:
         # deprecated logic
-        # TODO: remove
         redirect_uris = [redirect_field_name, REDIRECT_URI_FIELD_NAME, OIDC_LOGOUT_REDIRECT_FIELD_NAME]
         redirect_to = get_safe_redirect_uri(request, allowed_hosts(), redirect_uris)
         if redirect_to:
