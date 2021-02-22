@@ -4,6 +4,7 @@ import re
 import uuid
 from io import BytesIO
 from mimetypes import guess_extension
+from os.path import splitext
 
 from PIL import Image
 from django.core.files.uploadedfile import InMemoryUploadedFile
@@ -82,6 +83,9 @@ def clean_picture(picture, max_upload_size):
                 file_ext = '.jpg'
             else:
                 file_ext = guess_extension(picture.content_type)
+            if file_ext is None:
+                # keep the original extension
+                file_ext = splitext(picture.name)[1].lower()
             picture.name = "%s%s" % (
                 get_random_string(7, allowed_chars='abcdefghijklmnopqrstuvwxyz0123456789'), file_ext)
             try:
