@@ -1,10 +1,8 @@
 <div class="form-group">
-    <label class="control-label">{{ field.label }}</label>
-    <div class="dwbn-form-control">
-        <p class="form-control-static">
-            <span data-toggle="tooltip"
-                  title="{{ field.help_text }}"
-                  class="glyphicon glyphicon-{% if field.value %}check{% else %}unchecked{% endif %}"></span>
-        </p>
-    </div>
+  <label class="col-form-label">{{ field.label }}</label>
+  <div class="g10f-form-control">
+    <p class="form-control-static">
+      <span data-bs-toggle="tooltip" title="{{ field.help_text }}" class="bi bi-{% if field.value %}check-{% endif %}square"></span>
+    </p>
+  </div>
 </div>

@@ -6,67 +6,75 @@
 {% block nav_organisations_organisation_list_class %}active{% endblock %}
 
 {% block breadcrumb %}
-    <ol class="breadcrumb">
-        <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-        <li class="active">{% trans 'Organisations' %}</li>
-    </ol>
+  <ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+    <li class="active">{% trans 'Organisations' %}</li>
+  </ol>
 {% endblock breadcrumb %}
 
 {% block navbar %}{% include 'include/global_navigation.html' with active_navigation="organisations" %}{% endblock navbar %}
 
 {% block content %}
-    <div class="row">
-        <div class="col-sm-12">
-            {% if messages %}{% for message in messages %}
-                <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
-            {% endif %}
-        </div>
-    </div><!-- /.row -->
-
-    <div class="row dwbn-filter-row">
-        <div class="col-sm-3">
-            {% include 'include/_search_form.html' %}
-        </div>
-
-        <div class="col-sm-9">
-            {% for filter in filters %}{% if filter %}
-                {% include filter.template_name with filter=filter %}
-            {% endif %}{% endfor %}
-            <button type="button" class="btn btn-default geo-location {% if cl.params.latlng %}active{% endif %}" data-href="{% query_string cl 'latlng' '' %}"><span
-                    class="glyphicon glyphicon-globe"></span> {% trans 'Distance' %}</button>
-            <a class="btn btn-default pull-right" href="{% url 'organisations:organisation_list_csv' %}{{ cl.get_query_string }}" role="button" title="{% trans 'Download' %}"><span
-                    class="glyphicon glyphicon-download-alt" aria-hidden="true"></span></a>
-        </div>
-        <!-- /.col-sm-9 -->
+  <div class="row">
+    <div class="col-sm-12">
+      {% if messages %}{% for message in messages %}
+        <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
+      {% endif %}
     </div>
+  </div>
 
-    <main>
-        <div class="col-sm-12 table-responsive">
-            <table class="table table-bordered table-striped">
-                {% include "include/table_header.html" %}
-                <tbody>
-                {% for object in object_list %}
-                    <tr>
-                        <td><a href="{% url 'organisations:organisation_detail' object.uuid.hex %}">{{ object.name }}</a></td>
-                        {% with object.organisationpicture_set.first.picture as picture %}
-                        <td>
-                            {% if picture %}<a href="{{ picture.url }}">{% thumbnail picture "30x30" crop="center" as im %}
-                                <img class="dwbn-icon-user" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="">{% endthumbnail %}</a>{% endif %}
-                        </td>
-                        {% endwith %}
-                        <td>{{ object.email|default_if_none:"" }}</td>
-                        <td>{% if object.google_maps_url %}<a href="{{ object.google_maps_url }}"><span class="glyphicon glyphicon-map-marker"></span> {{ object.get_coordinates_type_display }}</a>{% endif %}</td>
-                        <td>{{ object.organisationaddress_set.first.country.iso2_code }}</td>
-                        <td>{{ object.founded|date:"Y-m-d" }}</td>
-                        <td>{% if object.is_active %}<span class="glyphicon glyphicon-check"></span>{% else %}<span class="glyphicon glyphicon-unchecked"></span>{% endif %}</td>
-                        <td>{%  if object.is_live %}<span class="glyphicon glyphicon-check"></span>{% else %}<span class="glyphicon glyphicon-unchecked"></span>{% endif %}</td>
-                        {% if cl.params.latlng %}
-                            <td>{% if object.distance %}{{ object.distance.km|floatformat }} km{% endif %}</td>{% endif %}
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-            {% if is_paginated %}{% pagination page_obj cl %}{% endif %}
-        </div>
-    </main>
+  <div class="g10f-filter-row">
+    <ul class="nav">
+      <li class="nav-item">{% include 'include/_search_form.html' %}</li>
+      {% for filter in filters %}{% if filter %}
+        <li class="nav-item">{% include filter.template_name with filter=filter %}</li>
+      {% endif %}{% endfor %}
+      <li class="nav-item">
+        <button type="button" class="btn btn-secondary geo-location {% if cl.params.latlng %}active{% endif %}" data-href="{% query_string cl 'latlng' '' %}">
+          <i class="bi bi-globe"></i> {% trans 'Distance' %}</button>
+      </li>
+      <li class="nav-item">
+        <a class="btn btn-secondary" href="{% url 'organisations:organisation_list_csv' %}{{ cl.get_query_string }}" role="button"
+           title="{% trans 'Download' %}">
+          <i class="bi bi-download"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <main>
+    <section>
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          {% include "include/table_header.html" %}
+          <tbody>
+          {% for object in object_list %}
+            <tr>
+              <td><a href="{% url 'organisations:organisation_detail' object.uuid.hex %}">{{ object.name }}</a></td>
+              {% with object.organisationpicture_set.first.picture as picture %}
+                <td>
+                  {% if picture %}<a href="{{ picture.url }}">{% thumbnail picture "30x30" crop="center" as im %}
+                    <img class="g10f-icon-user" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="">{% endthumbnail %}</a>{% endif %}
+                </td>
+              {% endwith %}
+              <td>{{ object.email|default_if_none:"" }}</td>
+              <td>{% if object.google_maps_url %}
+                <a href="{{ object.google_maps_url }}"><i class="bi bi-geo"></i> {{ object.get_coordinates_type_display }}
+                </a>{% endif %}</td>
+              <td>{{ object.organisationaddress_set.first.country.iso2_code }}</td>
+              <td>{{ object.founded|date:"Y-m-d" }}</td>
+              <td>{% if object.is_active %}<i class="bi bi-check2"></i>{% endif %}
+              </td>
+              <td>{% if object.is_live %}<i class="bi bi-check2"></i>{% endif %}
+              </td>
+              {% if cl.params.latlng %}
+                <td>{% if object.distance %}{{ object.distance.km|floatformat }} km{% endif %}</td>{% endif %}
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        {% if is_paginated %}{% pagination page_obj cl %}{% endif %}
+      </div>
+    </section>
+  </main>
 {% endblock content %}

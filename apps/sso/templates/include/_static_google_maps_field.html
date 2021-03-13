@@ -1,9 +1,9 @@
 {% load i18n %}
 {% if field.value %}
-<div class="form-group">
-  <label class="control-label">{{ field.label }}</label> 
-  <div class="dwbn-form-control">
-       <p class="form-control-static">{% if field.value %}<a href="{{ field.value }}">{% trans 'Google Maps' %} <span class="glyphicon glyphicon-map-marker"></span></a>{% endif %}</p>
+  <div class="form-group">
+    <label class="col-form-label">{{ field.label }}</label>
+    <div class="g10f-form-control">
+      <p class="form-control-static">{% if field.value %}<a href="{{ field.value }}"><i class="bi bi-geo"></i> {% trans 'Google Maps' %}</a>{% endif %}</p>
+    </div>
   </div>
-</div>
 {% endif %}

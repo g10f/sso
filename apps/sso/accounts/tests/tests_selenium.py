@@ -407,8 +407,9 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         for org in allowed_orgs:
             organisation.select_by_value(str(org.pk))
 
-        self.selenium.find_element_by_xpath('//a[@href="#app_roles"]').click()
-        self.selenium.find_element_by_id("id_application_roles_0").click()
+        self.selenium.find_element_by_xpath('//a[@href="#tab_application_roles"]').click()
+        self.selenium.find_element_by_xpath('//select[@id="id_application_roles_from"]/option[1]').click()
+        self.selenium.find_element_by_id("id_application_roles_add_link").click()
 
         self.selenium.find_element_by_tag_name("form").submit()
 

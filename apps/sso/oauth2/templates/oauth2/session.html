@@ -19,8 +19,7 @@
 
     function checkState(clientId, origin, sessionState, callback) {
         var cookie = getCookie();
-
-        var checkCookie = function() {
+        var checkCookie = function () {
             if (clientId === init.clientId && origin === init.origin) {
                 if (sessionState === cookie) {
                     callback('unchanged');
@@ -34,13 +33,10 @@
 
         if (!init) {
             var req = new XMLHttpRequest();
-
             var url = location.href.split("?")[0] + "init/";
             url += "?client_id=" + encodeURIComponent(clientId);
             url += "&origin=" + encodeURIComponent(origin);
-
             req.open('GET', url, true);
-
             req.onreadystatechange = function () {
                 if (req.readyState === 4) {
                     if (req.status === 204 || req.status === 1223) {
@@ -62,9 +58,8 @@
                     }
                 }
             };
-
             req.send();
-        } else  if (!cookie) {
+        } else if (!cookie) {
             if (sessionState != '') {
                 callback('changed');
             } else {
@@ -75,26 +70,22 @@
         }
     }
 
-    function getCookie()
-    {
+    function getCookie() {
         let session_cookie_name = document.body.getAttribute("data-session_cookie_name");
         return getCookieByName(session_cookie_name);
     }
 
-    function getCookieByName(name)
-    {
+    function getCookieByName(name) {
         name = name + '=';
         var ca = document.cookie.split(';');
-        for(var i=0; i<ca.length; i++)
-        {
+        for (var i = 0; i < ca.length; i++) {
             var c = ca[i].trim();
-            if (c.indexOf(name)===0) return c.substring(name.length,c.length);
+            if (c.indexOf(name) === 0) return c.substring(name.length, c.length);
         }
         return null;
     }
 
-    function receiveMessage(event)
-    {
+    function receiveMessage(event) {
         if (typeof event.data !== 'string') {
             return
         }
@@ -108,7 +99,7 @@
         var clientId = data[0];
         var sessionState = data[1];
 
-        checkState(clientId, event.origin, sessionState, function(result) {
+        checkState(clientId, event.origin, sessionState, function (result) {
             event.source.postMessage(result, origin);
         });
     }

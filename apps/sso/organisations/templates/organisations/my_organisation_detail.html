@@ -2,10 +2,12 @@
 {% load i18n static %}
 
 {% block breadcrumb %}
-<ol class="breadcrumb">
+  <ol class="breadcrumb">
     <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
     <li class="active">{% trans 'My Organisation' %}</li>
-</ol> 
+  </ol>
 {% endblock breadcrumb %}
 
-{% block left_content %}{% include 'include/_navigation.html' with active_navigation="my_organisation" %}{% endblock left_content %}
+{% block left_content %}
+  {% include 'include/_navigation.html' with active_navigation="my_organisation" %}
+{% endblock left_content %}

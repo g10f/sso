@@ -1,17 +1,16 @@
 {% load i18n %}
 <div class="form-group {% if field.errors %}error{% endif %}">
-    <label class="control-label" for="id_{{ field.html_name }}">{{ field.label }}</label>    
-    <div class="dwbn-form-control">
-        {% if field.value %}
-        <div class="input-group">
-	        {{ field }}
-            <span class="input-group-btn">
-                <a href="mailto:{{ field.value.primary_email }}" target="_blank" class="btn btn-default" type="button">
-                    <i class="glyphicon glyphicon-envelope" title="{% trans 'Send email' %}"></i>
-                </a>
-            </span>
-        </div>
-        {% else %}{{ field }}{% endif %}
-        {% if field.help_text or field.errors %}<span class="help-block">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
-    </div>
+  <label class="col-form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+  <div class="g10f-form-control">
+    {% if field.value %}
+      <div class="input-group">
+        {{ field }}
+        <a href="mailto:{{ field.value.primary_email }}" target="_blank" class="btn btn-primary" title="{% trans 'Send email' %}" role="button">
+          <i class="bi bi-envelope"></i>
+        </a>
+      </div>
+    {% else %}{{ field }}{% endif %}
+    {% if field.help_text or field.errors %}
+      <span class="form-text">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
+  </div>
 </div>

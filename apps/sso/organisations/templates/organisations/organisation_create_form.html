@@ -1,22 +1,19 @@
 {% extends "organisations/organisation_form.html" %}
-{% load i18n %}
+{% load i18n static %}
 
 {% block title %}{% trans 'Add Organisation' %}{% endblock %}
-
-{% block extrascript %}{{ form.media }}{% endblock extrascript %}
 
 {% block left_content %}{% include 'include/_navigation.html' with active_navigation="organisation_create" %}{% endblock left_content %}
 
 {% block breadcrumb %}
-    <ol class="breadcrumb">
-        <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-        <li><a href="{% url 'organisations:organisation_list' %}">{% trans 'Organisations' %}</a></li>
-        <li class="active">{% trans 'Add Organisation' %}</li>
-    </ol>
+  <ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+    <li><a href="{% url 'organisations:organisation_list' %}">{% trans 'Organisations' %}</a></li>
+    <li class="active">{% trans 'Add Organisation' %}</li>
+  </ol>
 {% endblock breadcrumb %}
 
-
 {% block submit_group %}
-    {% if redirect_uri %}<a class="btn btn-default" href="{{ redirect_uri }}">{% trans 'Back' %}</a>{% endif %}
-    <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
+  {% if redirect_uri %}<a class="btn btn-secondary" href="{{ redirect_uri }}">{% trans 'Back' %}</a>{% endif %}
+  <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
 {% endblock %}

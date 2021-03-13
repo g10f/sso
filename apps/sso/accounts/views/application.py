@@ -4,8 +4,6 @@ from datetime import timedelta
 from functools import lru_cache
 from urllib.parse import urlunsplit
 
-from django.utils.module_loading import import_string
-
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
@@ -20,13 +18,13 @@ from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_str
 from django.utils.html import format_html
+from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import DeleteView
-
 from l10n.models import Country
 from sso.accounts.email import send_account_created_email
-from sso.accounts.forms import UserAddForm, UserProfileForm, UserEmailForm, AppAdminUserProfileForm, CenterProfileForm
-from sso.accounts.models import User, UserEmail
+from sso.accounts.forms import UserEmailForm, AppAdminUserProfileForm, CenterProfileForm
+from sso.accounts.models import User, UserEmail, RoleProfile
 from sso.auth.decorators import admin_login_required
 from sso.forms.helpers import ChangedDataList, log_change, ErrorList, get_media_errors_and_active_form
 from sso.oauth2.models import allowed_hosts
@@ -582,9 +580,7 @@ def app_admin_update_user(request, uuid, template='accounts/application/app_admi
 
             msg_dict = {'name': force_str(get_user_model()._meta.verbose_name), 'obj': force_str(user)}
             if "_continue" in request.POST:
-                msg = format_html(
-                    _('The {name} "{obj}" was changed successfully. You may edit it again below.'),
-                    **msg_dict)
+                msg = format_html(_('The {name} "{obj}" was changed successfully. You may edit it again below.'), **msg_dict)
                 success_url = reverse('accounts:app_admin_update_user', args=[user.uuid.hex])
             else:
                 msg = format_html(_('The {name} "{obj}" was changed successfully.'), **msg_dict)
@@ -596,17 +592,44 @@ def app_admin_update_user(request, uuid, template='accounts/application/app_admi
         form = AppAdminUserProfileForm(instance=user, request=request)
 
     media = form.media
-
     errors = ErrorList(form, [])
-    active = ''
 
-    # get the role profiles where the administrable application_roles also appear, excluding
-    # the role profiles the current user has admin rights for
-    application_roles = request.user.get_administrable_app_admin_application_roles()
-    pks = request.user.get_administrable_app_admin_role_profiles().values_list('pk', flat=True)
-    role_profiles = user.role_profiles.filter(application_roles__in=application_roles).exclude(pk__in=pks).distinct()
-    context = {'form': form, 'errors': errors, 'media': media, 'active': active,
-               'role_profiles': role_profiles,
-               'application_roles': application_roles,
-               'title': _('Change user roles')}
+    context = {'form': form, 'errors': errors, 'media': media, 'title': _('Change user roles')}
     return render(request, template, context)
+
+
+class RoleProfileListView(ListView):
+    template_name = 'accounts/application/roleprofile_list.html'
+    model = RoleProfile
+
+    @property
+    def list_display(self):
+        return ['name', 'order']
+
+    @method_decorator(admin_login_required)
+    @method_decorator(user_passes_test(lambda u: u.is_user_admin))
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_queryset(self):
+        self.cl = main.ChangeList(self.request, self.model, self.list_display, default_ordering=[OrderByWithNulls(F('order'), descending=True)])
+        qs = self.request.user.get_administrable_role_profiles()
+        # Set ordering.
+        ordering = self.cl.get_ordering(self.request, qs)
+        qs = qs.order_by(*ordering).distinct()
+        return qs
+
+    def get_context_data(self, **kwargs):
+        headers = list(self.cl.result_headers())
+        num_sorted_fields = 0
+        for h in headers:
+            if h['sortable'] and h['sorted']:
+                num_sorted_fields += 1
+
+        context = {
+            'result_headers': headers,
+            'num_sorted_fields': num_sorted_fields,
+            'cl': self.cl,
+        }
+        context.update(kwargs)
+        return super().get_context_data(**context)

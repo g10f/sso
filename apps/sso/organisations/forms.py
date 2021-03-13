@@ -187,7 +187,7 @@ class OrganisationEmailAdminForm(OrganisationBaseForm):
         """
         email_value = self.cleaned_data['email_value']
         if SSO_ORGANISATION_EMAIL_DOMAIN and (
-            email_value[-len(SSO_ORGANISATION_EMAIL_DOMAIN):] != SSO_ORGANISATION_EMAIL_DOMAIN):
+                email_value[-len(SSO_ORGANISATION_EMAIL_DOMAIN):] != SSO_ORGANISATION_EMAIL_DOMAIN):
             msg = _('The email address of the center must be ending with %(domain)s') % {
                 'domain': SSO_ORGANISATION_EMAIL_DOMAIN}
             raise ValidationError(msg)
@@ -232,7 +232,7 @@ class OrganisationAssociationAdminForm(OrganisationEmailAdminForm):
     class Meta(OrganisationBaseForm.Meta):
         fields = OrganisationBaseForm.Meta.fields + (
             'association', 'admin_region', 'organisation_country', 'name', 'center_type',
-            'is_active')  # , 'can_publish')
+            'is_active')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

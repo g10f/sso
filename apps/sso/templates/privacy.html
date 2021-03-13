@@ -1,32 +1,30 @@
 {% extends "base_site.html" %}
 {% load i18n %}
 
-
 {% block title %}{{ brand }} | {% trans 'Privacy' %}{% endblock %}
 
 {% block breadcrumb %}
-    <ol class="breadcrumb">
-        <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-        <li class="active">{% trans 'Privacy' %}</li>
-    </ol>
+  <ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+    <li class="active">{% trans 'Privacy' %}</li>
+  </ol>
 {% endblock breadcrumb %}
 
-
 {% block right_content %}
-    <h1>{% trans 'Privacy' %}</h1>
+  <h1 class="h3">{% trans 'Privacy' %}</h1>
+  <p>
+    {% blocktrans trimmed %}
+      Your data will be stored and used by us for the provision of {{ brand }} services.
+      Under no circumstances will we give your information to third parties!
+    {% endblocktrans %}
+  </p>
+  {% if data_protection_uri %}
     <p>
-        {% blocktrans trimmed %}
-            Your data will be stored and used by us for the provision of {{ brand }} services.
-            Under no circumstances will we give your information to third parties!
-        {% endblocktrans %}
+      {% blocktrans trimmed %}
+        Our data protection declaration can be found on the Website
+        <a href="{{ data_protection_uri }}">{{ data_protection_uri }}</a>.
+      {% endblocktrans %}
     </p>
-    {% if data_protection_uri %}
-        <p>
-            {% blocktrans trimmed %}
-                Our data protection declaration can be found on the Website
-                <a href="{{ data_protection_uri }}">{{ data_protection_uri }}</a>.
-            {% endblocktrans %}
-        </p>
-    {% endif %}
+  {% endif %}
 
 {% endblock right_content %}

@@ -4,90 +4,84 @@
 {% block title %}{% trans 'Country Details' %}{% endblock %}
 
 {% block breadcrumb %}
-    <ol class="breadcrumb">
-        <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-        <li><a href="{% url 'organisations:organisationcountry_list' %}">{% trans 'Countries' %}</a></li>
-        <li class="active">{% trans 'Country Details' %}</li>
-    </ol>
+  <ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+    <li><a href="{% url 'organisations:organisationcountry_list' %}">{% trans 'Countries' %}</a></li>
+    <li class="active">{% trans 'Country Details' %}</li>
+  </ol>
 {% endblock breadcrumb %}
 
 
 {% block form %}
 
-    {% block message %}{% endblock %}
+  {% block message %}{% endblock %}
 
-    <h3>{{ object.country }}</h3>
+  <h1>{{ object.country }}</h1>
 
-    {% if messages %}{% for message in messages %}
-        <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
-    {% endif %}
+  {% if messages %}{% for message in messages %}
+    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
+  {% endif %}
 
+  <div class="row">
+    <div class="col-4">{% trans 'Country' %}:</div>
+    <div class="col-8">{{ object.country }}</div>
+  </div>
+  <div class="row">
+    <div class="col-4">{% trans 'Homepage' %}:</div>
+    <div class="col-8"><a href="{{ object.homepage }}">{{ object.homepage }}</a></div>
+  </div>
+  <div class="row">
+    <div class="col-4">{% trans 'Active' %}:</div>
+    <div class="col-8"><i class="bi bi-{% if object.is_active %}check-{% endif %}square"></i></div>
+  </div>
+
+  <div class="row">
+    <div class="col-4">{% trans 'Email address' %}:</div>
+    <div class="col-8">{{ object.email|default_if_none:"" }}</div>
+  </div>
+
+  <div class="row">
+    <div class="col-4">{% trans 'Organisations' %}:</div>
+    <div class="col-8"><a href="{% url 'organisations:organisation_list' %}?country={{ object.country.pk }}">{% trans 'Organisations' %}</a></div>
+  </div>
+
+  {% if perms.organisations.change_organisationcountry and has_country_access %}
+    {% for emailforward in  object.email.emailforward_set.all %}
+      <div class="row">
+        <div class="col-4">{% trans 'Email forwarding address' %}:</div>
+        <div class="col-8">{{ emailforward }}</div>
+      </div>
+    {% endfor %}
+    {% for emailalias in  object.email.emailalias_set.all %}
+      <div class="row">
+        <div class="col-4">{% trans 'Email alias address' %}:</div>
+        <div class="col-8">{{ emailalias }}</div>
+      </div>
+    {% endfor %}
 
     <div class="row">
-        <div class="dwbn-label">{% trans 'Country' %}:</div>
-        <div class="dwbn-content">{{ object.country }}</div>
+      <div class="col-4">{% trans 'Country Groups' %}:</div>
+      <div class="col-8">
+        <ul>
+          {% for group in object.country_groups.all %}
+            <li>{{ group }}</li>
+          {% endfor %}
+        </ul>
+      </div>
     </div>
-    <div class="row">
-        <div class="dwbn-label">{% trans 'Homepage' %}:</div>
-        <div class="dwbn-content"><a href="{{ object.homepage }}">{{ object.homepage }}</a></div>
+  {% endif %}
+
+  <br>
+
+  <div class="form-group">
+    <div class="g10f-form-control_lg">
+      {% block submit_group %}
+        {% if perms.organisations.change_organisationcountry and has_country_access %}
+          <a class="btn btn-primary" href="{% url 'organisations:organisationcountry_update' object.uuid.hex %}">{% trans 'Update' %}</a>
+        {% endif %}
+      {% endblock %}
     </div>
-    <div class="row">
-        <div class="dwbn-label">{% trans 'Active' %}:</div>
-        <div class="dwbn-content"><span
-                class="glyphicon glyphicon-{% if object.is_active %}ok-sign{% else %}minus-sign{% endif %}"></span>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="dwbn-label">{% trans 'Email address' %}:</div>
-        <div class="dwbn-content">{{ object.email|default_if_none:"" }}</div>
-    </div>
-
-    <div class="row">
-        <div class="dwbn-label">{% trans 'Organisations' %}:</div>
-        <div class="dwbn-content"><a href="{% url 'organisations:organisation_list'  %}?country={{ object.country.pk }}">{% trans 'Organisations' %}</a></div>
-    </div>
-
-    {% if perms.organisations.change_organisationcountry and has_country_access %}
-        {% for emailforward in  object.email.emailforward_set.all %}
-            <div class="row">
-                <div class="dwbn-label">{% trans 'Email forwarding address' %}:</div>
-                <div class="dwbn-content">{{ emailforward }}</div>
-            </div>
-        {% endfor %}
-        {% for emailalias in  object.email.emailalias_set.all %}
-            <div class="row">
-                <div class="dwbn-label">{% trans 'Email alias address' %}:</div>
-                <div class="dwbn-content">{{ emailalias }}</div>
-            </div>
-        {% endfor %}
-
-        <div class="row">
-            <div class="dwbn-label">{% trans 'Country Groups' %}:</div>
-            <div class="dwbn-content">
-                <ul>
-                    {% for group in object.country_groups.all %}
-                        <li>{{ group }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-    {% endif %}
-
-    <br>
-
-    <div class="form-group">
-        <div class="dwbn-form-control_lg">
-            {% block submit_group %}
-
-                {% if perms.organisations.change_organisationcountry and has_country_access %}
-                    <a class="btn btn-primary"
-                       href="{% url 'organisations:organisationcountry_update' object.uuid.hex %}">{% trans 'Update' %}</a>
-                {% endif %}
-
-            {% endblock %}
-        </div>
-    </div>
+  </div>
 
 {% endblock %}
 

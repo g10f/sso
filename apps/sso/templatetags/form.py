@@ -13,10 +13,4 @@ def selected_choice(form, field_name):
         logger.warning(f'key for field "{field_name}" is None')
         return ''
 
-    return next(map(lambda choice: choice[1],
-                    filter(lambda choice: str(choice[0]) == key, form.fields[field_name].choices)), '')
-
-
-@register.filter
-def by_key(dictionary, key):
-    return dictionary.get(key, None)
+    return next(map(lambda choice: choice[1], filter(lambda choice: str(choice[0]) == key, form.fields[field_name].choices)), '')

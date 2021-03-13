@@ -1,6 +1,6 @@
 {% load list %}
 {% if filter.value %}
-<a type="button" class="btn btn-default active"  href="{% query_string cl filter.param_name '' %}">{{ filter.select_text }}</a>
+  <a type="button" class="btn btn-secondary active" href="{% query_string cl filter.param_name '' %}">{{ filter.select_text }}</a>
 {% else %}
-<a type="button" class="btn btn-default" href="{% query_string cl filter.param_name '1' filter.remove %}">{{ filter.select_text }}</a>
-{% endif %}        
+  <a type="button" class="btn btn-secondary" href="{% query_string cl filter.param_name '1' filter.remove %}">{{ filter.select_text }}</a>
+{% endif %}

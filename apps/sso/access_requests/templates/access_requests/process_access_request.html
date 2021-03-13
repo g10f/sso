@@ -4,10 +4,10 @@
 {% block title %}{% trans 'Process extended access' %}{% endblock %}
 
 {% block breadcrumb %}
-    <ol class="breadcrumb">
-        <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-        <li><a href="{% url 'access_requests:extend_access_list' %}">{% trans 'Request extended access list' %}</a></li>
-        <li><a href="{% url 'access_requests:extend_access_accept' form.instance.pk %}">{{ form.instance.user }}</a></li>
-        <li class="active">{{ action_breadcrumb }}</li>
-    </ol>
+  <ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+    <li><a href="{% url 'access_requests:extend_access_list' %}">{% trans 'Request extended access list' %}</a></li>
+    <li><a href="{% url 'access_requests:extend_access_accept' form.instance.pk %}">{{ form.instance.user }}</a></li>
+    <li class="active">{{ action_breadcrumb }}</li>
+  </ol>
 {% endblock breadcrumb %}

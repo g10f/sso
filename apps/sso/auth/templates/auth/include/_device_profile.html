@@ -1,0 +1,12 @@
+{% load i18n static %}
+<div class="card mb-3 {% if is_primary_device %}border-primary{% else %}border-secondary{% endif %}">
+  <div class="card-header {% if is_primary_device %}bg-primary text-white{% else %}bg-secondary text-white{% endif %}">
+    {% block device_header %}{% endblock %}
+  </div>
+  <div class="card-body">
+    {% block device_body %}{% endblock %}
+  </div>
+  <div class="card-footer">
+    {% block device_footer %}{% endblock %}
+  </div>
+</div>

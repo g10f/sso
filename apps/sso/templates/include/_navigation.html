@@ -1,101 +1,112 @@
 {% load i18n %}
-<nav class="list-group">
-    {% if user.is_staff %}
-        <a class="list-group-item" href="{% url 'admin:index' %}">
-            <i class="glyphicon glyphicon-wrench"></i> {% trans 'Administration' %}</a>
-    {% endif %}
+<div class="list-group mb-3">
+  {% if user.is_staff %}
+    <a class="list-group-item list-group-item-action" href="{% url 'admin:index' %}">
+      <i class="bi bi-wrench"></i> {% trans 'Administration' %}</a>
+  {% endif %}
 
-    {% if email_management and user.is_groupemail_admin %}
-        <a class="list-group-item" href="{% url 'emails:groupemail_list' %}">
-            <i class="glyphicon glyphicon-list"></i> {% trans 'Emails' %}</a>
-    {% endif %}
+  {% if email_management and user.is_groupemail_admin %}
+    <a class="list-group-item list-group-item-action" href="{% url 'emails:groupemail_list' %}"> <i class="bi bi-list-task"></i> {% trans 'Emails' %}</a>
+  {% endif %}
 
-    {% if country_management and user.is_authenticated %}
-        <a class="list-group-item" href="{% url 'organisations:organisationcountry_list' %}">
-            <i class="glyphicon glyphicon-list"></i> {% trans 'Countries' %}</a>
-    {% endif %}
+  {% if country_management and user.is_authenticated %}
+    <a class="list-group-item list-group-item-action" href="{% url 'organisations:organisationcountry_list' %}"> <i
+        class="bi bi-list-task"></i> {% trans 'Countries' %}</a>
+  {% endif %}
 
-    {% if region_management and perms.organisations.change_adminregion %}
-        <a class="list-group-item" href="{% url 'organisations:adminregion_list' %}">
-            <i class="glyphicon glyphicon-list"></i> {% trans 'Regions' %}</a>
-    {% endif %}
+  {% if region_management and perms.organisations.change_adminregion %}
+    <a class="list-group-item list-group-item-action" href="{% url 'organisations:adminregion_list' %}"> <i class="bi bi-list-task"></i> {% trans 'Regions' %}
+    </a>
+  {% endif %}
 
-    {% if user.is_authenticated %}
-        <a class="list-group-item" href="{% url 'organisations:organisation_list' %}">
-            <i class="glyphicon glyphicon-list"></i> {% trans 'Organisations' %}</a>
-    {% endif %}
+  {% if user.is_authenticated %}
+    <a class="list-group-item list-group-item-action" href="{% url 'organisations:organisation_list' %}"> <i
+        class="bi bi-list-task"></i> {% trans 'Organisations' %}</a>
+  {% endif %}
 
-    {% with count_of_registrationprofiles=user.get_count_of_registrationprofiles %}
-        {% if perms.registration.change_registrationprofile %}
-            {% if registration_open or count_of_registrationprofiles > 0 %}
-                <a class="list-group-item" href="{% url 'registration:user_registration_list' %}">
-                    <i class="glyphicon glyphicon-list"></i> {% trans 'Registrations' %}<span class="badge">{{ count_of_registrationprofiles }}</span></a>
-            {% endif %}
+  {% with count_of_registrationprofiles=user.get_count_of_registrationprofiles %}
+    {% if perms.registration.change_registrationprofile %}
+      {% if registration_open or count_of_registrationprofiles > 0 %}
+        <a class="list-group-item list-group-item-action" href="{% url 'registration:user_registration_list' %}">
+          <i class="bi bi-people"></i> {% trans 'Registrations' %} <span class="badge bg-primary rounded-pill">{{ count_of_registrationprofiles }}</span></a>
+      {% endif %}
+    {% endif %}
+  {% endwith %}
+
+  {% if user.is_user_admin %}
+    <a class="list-group-item list-group-item-action" href="{% url 'accounts:user_list' %}">
+      <i class="bi bi-people"></i> {% trans 'Users' %}</a>
+  {% endif %}
+
+  {% if user.is_app_admin %}
+    <a class="list-group-item list-group-item-action" href="{% url 'accounts:app_admin_user_list' %}">
+      <i class="bi bi-people"></i> {% trans 'User Roles' %}</a>
+  {% endif %}
+
+  {% if perms.accounts.change_user %}
+    <a class="list-group-item list-group-item-action" href="{% url 'accounts:organisationchange_list' %}">
+      <i class="bi bi-arrow-left-right"></i> {% trans 'Organisation Changes' %} <span
+        class="badge bg-primary rounded-pill">{{ user.get_count_of_organisationchanges }}</span></a>
+  {% endif %}
+
+  {% if sso_access_requests_is_installed and perms.accounts.change_user %}
+    <a class="list-group-item list-group-item-action" href="{% url 'access_requests:extend_access_list' %}">
+      <i class="bi bi-folder-plus"></i> {% trans 'Access Requests' %} <span
+        class="badge bg-primary rounded-pill">{{ user.get_count_of_extend_access }}</span></a>
+  {% endif %}
+
+  {% if email_management and perms.emails.add_groupemail %}
+    <a class="list-group-item list-group-item-action {% if active_navigation == "groupemail_create" %}active{% endif %}"
+       href="{% url 'emails:groupemail_create' %}">
+      <i class="bi bi-plus"></i> {% trans 'Add Email' %}</a>
+  {% endif %}
+
+  {% if country_management and perms.organisations.add_organisationcountry and user.get_administrable_associations %}
+    <a class="list-group-item list-group-item-action {% if active_navigation == "organisationcountry_create" %}active{% endif %}"
+       href="{% url 'organisations:organisationcountry_create' %}">
+      <i class="bi bi-plus"></i> {% trans 'Add Country' %}</a>
+  {% endif %}
+
+  {% if region_management and perms.organisations.add_adminregion %}
+    <a class="list-group-item list-group-item-action {% if active_navigation == "adminregion_create" %}active{% endif %}"
+       href="{% url 'organisations:adminregion_create' %}">
+      <i class="bi bi-plus"></i> {% trans 'Add Region' %}</a>
+  {% endif %}
+
+  {% if perms.organisations.add_organisation %}
+    <a class="list-group-item list-group-item-action {% if active_navigation == "organisation_create" %}active{% endif %}"
+       href="{% url 'organisations:organisation_create' %}">
+      <i class="bi bi-plus"></i> {% trans 'Add Organisation' %}</a>
+  {% endif %}
+
+  {% if perms.accounts.change_user and perms.accounts.add_user %}
+    <a class="list-group-item list-group-item-action {% if active_navigation == "add_user" %}active{% endif %}" href="{% url 'accounts:add_user' %}">
+      <i class="bi bi-person-plus"></i> {% trans 'Add User' %}</a>
+  {% endif %}
+
+  {% if user.is_authenticated %}
+    {% if user.organisations.exists %}
+      <a class="list-group-item list-group-item-action {% if active_navigation == "my_organisation" %}active{% endif %}"
+         href="{% url 'organisations:my_organisation_detail' %}"><i class="bi bi-house"></i> {% trans 'My Organisation' %}</a>
+    {% endif %}
+    <a class="list-group-item list-group-item-action {% if active_navigation == "profile" %}active{% endif %}" href="{% url 'accounts:profile' %}"><i
+        class="bi bi-person"></i> {% trans 'My Account' %}</a>
+    {% if not user.is_center %}
+      <a class="list-group-item list-group-item-action {% if active_navigation == "emails" %}active{% endif %}" href="{% url 'accounts:emails' %}"><i
+          class="bi bi-envelope"></i> {% trans 'My Email Addresses' %}</a>
+    {% endif %}
+    <a class="list-group-item list-group-item-action {% if active_navigation == "password_change" %}active{% endif %}"
+       href="{% url 'accounts:password_change' %}"><i class="bi bi-lock"></i> {% trans 'Change my password' %}</a>
+    {% if device_classes %}
+      {% if admin_only_2f %}
+        {% if user.is_user_admin or user.is_organisation_admin or user.is_staff %}
+          <a class="list-group-item list-group-item-action {% if active_navigation == "auth_profile" %}active{% endif %}" href="{% url 'auth:profile' %}"><i
+              class="bi bi-shield-lock"></i> {% trans 'Security' %}</a>
         {% endif %}
-    {% endwith %}
-
-    {% if user.is_user_admin %}
-        <a class="list-group-item" href="{% url 'accounts:user_list' %}">
-            <i class="glyphicon glyphicon-list"></i> {% trans 'Users' %}</a>
+      {% else %}
+        <a class="list-group-item list-group-item-action {% if active_navigation == "auth_profile" %}active{% endif %}" href="{% url 'auth:profile' %}"><i
+            class="bi bi-shield-lock"></i> {% trans 'Security' %}</a>
+      {% endif %}
     {% endif %}
-
-    {% if user.is_app_admin %}
-        <a class="list-group-item" href="{% url 'accounts:app_admin_user_list' %}">
-            <i class="glyphicon glyphicon-list"></i> {% trans 'User Roles' %}</a>
-    {% endif %}
-
-    {% if perms.accounts.change_user %}
-        <a class="list-group-item" href="{% url 'accounts:organisationchange_list' %}">
-            <i class="glyphicon glyphicon-list"></i> {% trans 'Organisation Changes' %} <span class="badge">{{ user.get_count_of_organisationchanges }}</span></a>
-    {% endif %}
-
-    {% if sso_access_requests_is_installed and perms.accounts.change_user %}
-        <a class="list-group-item" href="{% url 'access_requests:extend_access_list' %}">
-            <i class="glyphicon glyphicon-list"></i> {% trans 'Access Requests' %} <span class="badge">{{ user.get_count_of_extend_access }}</span></a>
-    {% endif %}
-
-    {% if email_management and perms.emails.add_groupemail %}
-        <a class="list-group-item {% if active_navigation == "groupemail_create" %}active{% endif %}" href="{% url 'emails:groupemail_create' %}">
-            <i class="glyphicon glyphicon-plus-sign"></i> {% trans 'Add Email' %}</a>
-    {% endif %}
-
-    {% if country_management and perms.organisations.add_organisationcountry and user.get_administrable_associations %}
-        <a class="list-group-item {% if active_navigation == "organisationcountry_create" %}active{% endif %}" href="{% url 'organisations:organisationcountry_create' %}">
-            <i class="glyphicon glyphicon-plus-sign"></i> {% trans 'Add Country' %}</a>
-    {% endif %}
-
-    {% if region_management and perms.organisations.add_adminregion %}
-        <a class="list-group-item {% if active_navigation == "adminregion_create" %}active{% endif %}" href="{% url 'organisations:adminregion_create' %}">
-            <i class="glyphicon glyphicon-plus-sign"></i> {% trans 'Add Region' %}</a>
-    {% endif %}
-
-    {% if perms.organisations.add_organisation %}
-        <a class="list-group-item {% if active_navigation == "organisation_create" %}active{% endif %}" href="{% url 'organisations:organisation_create' %}">
-            <i class="glyphicon glyphicon-plus-sign"></i> {% trans 'Add Organisation' %}</a>
-    {% endif %}
-
-    {% if perms.accounts.change_user and perms.accounts.add_user %}
-        <a class="list-group-item {% if active_navigation == "add_user" %}active{% endif %}" href="{% url 'accounts:add_user' %}">
-            <i class="glyphicon glyphicon-plus-sign"></i> {% trans 'Add User' %}</a>
-    {% endif %}
-
-    {% if user.is_authenticated %}
-        {% if user.organisations.exists %}
-            <a class="list-group-item {% if active_navigation == "my_organisation" %}active{% endif %}" href="{% url 'organisations:my_organisation_detail' %}"><i class="glyphicon glyphicon-home"></i> {% trans 'My Organisation' %}</a>
-        {% endif %}
-        <a class="list-group-item {% if active_navigation == "profile" %}active{% endif %}" href="{% url 'accounts:profile' %}"><i class="glyphicon glyphicon-user"></i> {% trans 'My Account' %}</a>
-        {% if not user.is_center %}
-            <a class="list-group-item {% if active_navigation == "emails" %}active{% endif %}" href="{% url 'accounts:emails' %}"><i class="glyphicon glyphicon-envelope"></i> {% trans 'My Email Addresses' %}</a>
-        {% endif %}
-        <a class="list-group-item {% if active_navigation == "password_change" %}active{% endif %}" href="{% url 'accounts:password_change' %}"><i class="glyphicon glyphicon-edit"></i> {% trans 'Change my password' %}</a>
-        {% if device_classes %}
-            {% if admin_only_2f %}
-                {% if user.is_user_admin or user.is_organisation_admin or user.is_staff %}
-                    <a class="list-group-item {% if active_navigation == "auth_profile" %}active{% endif %}" href="{% url 'auth:profile' %}"><i class="glyphicon glyphicon-lock"></i> {% trans 'Security' %}</a>
-                {% endif %}
-            {% else %}
-                <a class="list-group-item {% if active_navigation == "auth_profile" %}active{% endif %}" href="{% url 'auth:profile' %}"><i class="glyphicon glyphicon-lock"></i> {% trans 'Security' %}</a>
-            {% endif %}
-        {% endif %}
-    {% endif %}
-</nav>
+  {% endif %}
+</div>

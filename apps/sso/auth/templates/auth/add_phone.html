@@ -5,45 +5,37 @@
 
 
 {% block breadcrumb %}
-    <ol class="breadcrumb">
-        <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-        <li><a href="{% url 'auth:profile' %}">{% trans 'Security' %}</a></li>
-        <li class="active">{% trans 'SMS Setup' %}</li>
-    </ol>
+  <ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+    <li><a href="{% url 'auth:profile' %}">{% trans 'Security' %}</a></li>
+    <li class="active">{% trans 'SMS Setup' %}</li>
+  </ol>
 {% endblock breadcrumb %}
 
 {% block left_content %}{% include 'include/_navigation.html' with active_navigation="auth_profile" %}{% endblock left_content %}
 
 {% block right_content %}
-     <form class="form-horizontal" action="" method="post">{% csrf_token %}
-        <h3>{% trans 'Add Phone' %}</h3>
-        <p>{% trans "Please enter your phone number." %}</p>
+  <form class="form-horizontal" action="" method="post">
+    <h1>{% trans 'Add Phone' %}</h1>
+    <p>{% trans "Please enter your phone number." %}</p>
+    {% include 'include/_form_boilerplate.html' %}
 
-        {% if form.errors %}
-            <div class="alert alert-danger">
-                {% for key, errors in form.errors.items %}
-                    {% for error in errors %}{{ error }}<br>{% endfor %}
-                {% endfor %}
-            </div>
-        {% endif %}
-
-        {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
-
-        {% for field in form.visible_fields %}
-            <div class="form-group {% if field.errors %}has-error{% endif %} {% if field.is_hidden %}dwbn-ab{% endif %}">
-                <label class="control-label" for="id_{{ field.html_name }}">{{ field.label }}{% if field.field.required %}*{% endif %}</label>
-                <div class="dwbn-form-control">
-                    {{ field }}{% if field.help_text or field.errors %}<span class="help-block">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
-                </div>
-            </div>
-        {% endfor %}
-
-        <div class="form-group">
-            <div class="dwbn-form-submit">
-                <button type="submit" class="btn btn-primary">{% trans 'Submit' %}</button>
-            </div>
+    {% for field in form.visible_fields %}
+      <div class="form-group {% if field.errors %}has-error{% endif %} {% if field.is_hidden %}dwbn-ab{% endif %}">
+        <label class="col-form-label" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}*{% endif %}</label>
+        <div class="g10f-form-control">
+          {{ field }}{% if field.help_text or field.errors %}
+            <div class="form-text">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</div>{% endif %}
         </div>
+      </div>
+    {% endfor %}
 
-    </form>
+    <div class="form-group">
+      <div class="g10f-form-submit">
+        <button type="submit" class="btn btn-primary">{% trans 'Submit' %}</button>
+      </div>
+    </div>
+
+  </form>
 
 {% endblock right_content %}

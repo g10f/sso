@@ -2,9 +2,7 @@ from django import forms
 from django.contrib.gis import forms as gis_forms
 from django.forms import widgets
 from django.utils.html import format_html
-from django.utils.safestring import mark_safe
 from django.utils.translation import gettext as _
-from sorl.thumbnail.shortcuts import get_thumbnail
 
 
 def add_class_to_css_class(classes, new_class):
@@ -42,7 +40,7 @@ class ReadOnlyWidget(forms.Widget):
 
     def __init__(self, attrs=None, **kwargs):
         # add form-control class
-        new_attrs = add_class_to_attr(attrs, 'form-control-static')
+        new_attrs = add_class_to_attr(attrs, 'form-control-plaintext')
         super().__init__(new_attrs, **kwargs)
 
 
@@ -72,26 +70,13 @@ class ReadOnlyYesNoField(ReadOnlyField):
 
 class ImageWidget(forms.ClearableFileInput):
     """
-    An ImageField Widget for django.contrib.admin that shows a thumbnailed
-    image as well as a link to the current one if it has one.
+    An ImageField Widget a thumbnailed image as well as a link to the current one if it has one.
     """
-    template_with_initial = '<div>%(clear_template)s<br />%(input_text)s: %(input)s</div>'
-    template_with_clear = '<div class="checkbox"><label>%(clear)s %(clear_checkbox_label)s </label></div>'
 
-    def render(self, name, value, attrs=None, renderer=None):
-        output = super().render(name, value, attrs, renderer)
-        if value and hasattr(value, 'url'):
-            try:
-                mini = get_thumbnail(value, '240x240', crop='center')
-            except Exception:
-                pass
-            else:
-                output = (
-                             '<div><a href="%s">'
-                             '<img class="img-thumbnail" src="%s" alt="%s"></a></div>%s'
-                         ) % (value.url, mini.url, name, output)
-
-        return mark_safe(output)
+    def __init__(self, attrs=None, **kwargs):
+        # add form-control class
+        new_attrs = add_class_to_attr(attrs, 'form-control')
+        super().__init__(new_attrs, **kwargs)
 
 
 class CheckboxSelectMultiple(forms.widgets.CheckboxSelectMultiple):
@@ -133,9 +118,9 @@ class Select(Widget, forms.Select):
 class Select2(Widget, forms.Select):
     class Media:
         css = {
-            'all': ('css/select2.min.css', 'css/select2-bootstrap.css')
+            'all': ('css/select2-4.0.13.min.css', 'css/select2-bootstrap4.css')
         }
-        js = ('js/vendor/select2.min.js',)
+        js = ('js/vendor/select2-4.0.13.min.js',)
 
     def __init__(self, attrs=None, **kwargs):
         # add select2 class
@@ -164,7 +149,9 @@ class SelectMultipleWithCurrently(SelectMultiple):
 
 
 class CheckboxInput(forms.CheckboxInput):
-    template_name = 'bootstrap/forms/widgets/checkbox.html'
+    # overridden 'django/forms/widgets/checkbox.html' template
+    # template_name = 'bootstrap/forms/widgets/checkbox.html'
+    pass
 
 
 class SelectDateWidget(widgets.SelectDateWidget):
@@ -194,26 +181,23 @@ class FilteredSelectMultiple(forms.SelectMultiple):
     catalog has been loaded in the page
     copy from django admin
     """
+
     @property
     def media(self):
-        js = [
-            'core.js',
-            'SelectBox.js',
-            'SelectFilter2.0.1.js',
-        ]
-        return forms.Media(js=["js/vendor/%s" % path for path in js])
+        js = (
+            'vendor/core.js',
+            'vendor/SelectBox.js',
+            'vendor/SelectFilter2.0.2.js',
+            'formsets-1.3.js'
+        )
+        return forms.Media(js=["js/%s" % path for path in js])
 
-    def __init__(self, verbose_name, is_stacked, attrs=None, choices=()):
+    def __init__(self, verbose_name, attrs=None, choices=()):
         new_attrs = add_class_to_attr(attrs, 'form-control')
-        self.verbose_name = verbose_name
-        self.is_stacked = is_stacked
+        new_attrs = add_class_to_attr(new_attrs, 'selectfilter')
+        new_attrs['data-field-name'] = verbose_name
         super().__init__(new_attrs, choices)
 
     def get_context(self, name, value, attrs):
         context = super().get_context(name, value, attrs)
-        context['widget']['attrs']['class'] = 'selectfilter'
-        if self.is_stacked:
-            context['widget']['attrs']['class'] += 'stacked'
-        context['widget']['attrs']['data-field-name'] = self.verbose_name
-        context['widget']['attrs']['data-is-stacked'] = int(self.is_stacked)
         return context

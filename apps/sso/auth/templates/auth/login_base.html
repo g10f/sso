@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block style %}
+  <link rel="stylesheet" href="{% static stylesheet %}">
+  {% comment %}
+  {% if display != 'popup' %}
+    <link rel="stylesheet" href="{% static "css/bootstrap-icons-5.0.0.css" %}">
+  {% endif %}
+  {% endcomment %}
+{% endblock style %}
+
+{% block script %}
+  {% comment %}
+  {% if display != 'popup' %}
+  <script type="text/javascript" src="{% static "js/vendor/bs5/beta2/bootstrap.bundle.min.js" %}"></script>
+  {% endif %}
+{% endcomment %}
+{% endblock %}
+
+{% block htmlclass %}sign-in{% endblock %}
+
+{% block title %}{% trans 'Sign in' %}{% endblock %}
+
+{% block body %}
+  {% comment %}
+  {% if display != 'popup' %}
+    {% block navbar %}{{ block.super }}{% endblock navbar %}
+  {% endif %}
+  {% endcomment %}
+
+  <div class="{% block containerclass %}{{ block.super }}{% endblock %}">
+    <main>
+      <section>
+        {% block content %}{% endblock %}
+      </section>
+    </main>
+  </div>
+
+  {% comment %}
+  {% if display != 'popup' %}
+    {% block footer %}{{ block.super }}{% endblock %}
+  {% endif %}
+  {% endcomment %}
+{% endblock body %}

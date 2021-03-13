@@ -1,72 +1,36 @@
-{% extends "base.html" %}
-{% load i18n static %}
-
-{% block title %}{% trans 'Log in' %}{% endblock %}
-
-{% block bodyclass %}dwbn-{{ display }}{% endblock %}
+{% extends "auth/login_base.html" %}
+{% load i18n %}
 
 {% block content %}
-    <form class="dwbn-form-signin" action="" method="post">{% csrf_token %}
+  <div class="sign-in-form">
+    <form class="d-grid gap-2" method="post">
+      <h1 class="h3 text-center">{% blocktrans %}{{ brand }} 2-step verification{% endblocktrans %}</h1>
+      <input type="submit" class="hidden"/> {# to enable submit when pressing enter in the edit field #}
+      {% include 'include/_form_boilerplate.html' %}
 
-        <h3 class="dwbn-form-signin-heading">{% trans 'Enter your token' %}</h3>
-        <input type="submit" class="hidden"/> {# to enable submit when pressing enter in the edit field #}
-
-        {% if messages %}{% for message in messages %}
-            <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
-        {% endif %}
-
-        <div class="media">
-            <div class="media-left media-middle">
-                <img class="media-object" src="{% static device.image %}" alt="{{ device }}">
-            </div>
-            <div class="media-body">{{ device.login_text }}
-                <br><br>
-                {% if device.twiliosmsdevice %}
-                    <button class="btn btn-default btn-xs" type="submit" name="resend_token" value=1">{% trans 'Resend Token' %}</button>
-                {% endif %}
-            </div>
+      <div class="text-center">{{ device.login_text }}</div>
+      {% if device.twiliosmsdevice %}
+        <button class="btn btn-lg btn-default" type="submit" name="resend_token" value=1">{% trans 'Resend Token' %}</button>
+      {% endif %}
+      {{ form.otp_token }}
+      {% if form.errors %}
+        <div class="alert alert-danger">
+          {% for key, errors in form.errors.items %}{% for error in errors %}{{ error }}<br>{% endfor %}{% endfor %}
         </div>
-        <br>
-
-        <div class="{% if form.otp_token.errors %}has-error{% endif %}">{{ form.otp_token }}</div>
-
-        {% if form.errors %}
-            <div class="alert alert-danger">
-                {% for key, errors in form.errors.items %}
-                    {% for error in errors %}{{ error }}<br>{% endfor %}
-                {% endfor %}
-            </div>
-        {% endif %}
-
-        <div class="form-group">
-            <button class="btn btn-lg btn-primary btn-block" type="submit">{% trans 'Submit' %}</button>
-        </div>
-
+      {% endif %}
+      <button class="btn btn-lg btn-brand" type="submit">{% trans 'Submit' %}</button>
     </form>
 
-    <div class="dwbn-form-signin">
-        {% if other_devices %}
+    {% if other_devices %}
+      <div class="text-center pt-2">{% trans "Alternatively, use one of your backup devices:" %}</div>
+      {% for other in other_devices %}
+        <form class="d-grid" action="{{ other.url }}" method="post">{% csrf_token %}
+          <button class="btn btn-lg btn-default" type="submit" name="resend_token" value=1">{{ other.device.default_name }}</button>
+        </form>
+      {% endfor %}
+    {% endif %}
 
-            {% trans "Alternatively, use one of your backup devices:" %}
-            {% for other in other_devices %}
-                <form class="" action="{{ other.url }}" method="post">{% csrf_token %}
-                    <button class="btn-link" type="submit" name="resend_token" value=1">{{ other.device.default_name }}</button>
-                </form>
-            {% endfor %}
-        {% endif %}
+    <div class="py-2 text-center">{% if cancel_url %}<a class="link-danger" href="{{ cancel_url }}">{% trans 'Cancel' %}</a>{% endif %}</div>
+  </div>
 
-        {% if backup_tokens %}
-            <p>{% trans "As a last resort, you can use a backup token:" %}</p>
-            <p>
-                <button name="wizard_goto_step" type="submit" value="backup" class="btn btn-default btn-block">{% trans "Use Backup Token" %}</button>
-            </p>
-        {% endif %}
-        {% if cancel_url %}
-
-            <div class="cancel">
-                <a class="" href="{{ cancel_url }}">{% trans 'Cancel' %}</a>
-            </div>
-        {% endif %}
-
-    </div>
 {% endblock %}

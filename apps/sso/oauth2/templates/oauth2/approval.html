@@ -4,17 +4,16 @@
 {% block title %}Success code={{ code }}{% endblock %}
 
 {% block breadcrumb %}
-<ol class="breadcrumb">
+  <ol class="breadcrumb">
     <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
     <li class="active">{% trans 'Authorization' %}</li>
-</ol> 
+  </ol>
 {% endblock breadcrumb %}
 
 {% block content %}
-<h3>{% trans 'Authorization code' %}</h3>
-<p>{% trans 'Please copy the code and enter it in to your application: ' %}</p> 
-<input id="code" class="form-control" type="text" readonly  value="{{ code }}" onclick="this.focus();this.select();"><br>
-<input id="state" class="hidden" type="text" readonly="readonly" value="{{ state }}" onclick="this.focus();this.select();">
+  <h1>{% trans 'Authorization code' %}</h1>
+  <p>{% trans 'Please copy the code and enter it in to your application: ' %}</p>
+  <input id="code" class="form-control" type="text" readonly value="{{ code }}" onclick="this.focus();this.select();"><br>
+  <input id="state" class="hidden" type="text" readonly="readonly" value="{{ state }}" onclick="this.focus();this.select();">
 
 {% endblock %}
-

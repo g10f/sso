@@ -4,24 +4,24 @@
 {% block title %}{% trans 'Delete Organisation' %}{% endblock %}
 
 {% block breadcrumb %}
-<ol class="breadcrumb">
+  <ol class="breadcrumb">
     <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
     <li><a href="{% url 'organisations:organisation_list' %}">{% trans 'Organisations' %}</a></li>
     <li class="active">{% trans 'Delete Organisation' %}</li>
-</ol> 
+  </ol>
 {% endblock breadcrumb %}
 
 
 {% block message %}
-<div class="alert alert-danger">
-{% trans "Please confirm deleting this organisation" %}
-</div>
+  <div class="alert alert-danger">
+    {% trans "Please confirm deleting this organisation" %}
+  </div>
 {% endblock %}
 
 
 {% block submit_group %}
-<form class="form-horizontal" method="post">{% csrf_token %}  
-	<button type="submit" class="btn btn-danger">{% trans 'Confirm Delete Organisation' %}</button>
-	<a class="btn btn-primary" href="{% url 'organisations:organisation_detail' object.uuid.hex %}">{% trans 'Cancel' %}</a>
-</form>
+  <form class="form-horizontal" method="post">{% csrf_token %}
+    <button type="submit" class="btn btn-danger">{% trans 'Confirm Delete Organisation' %}</button>
+    <a class="btn btn-primary" href="{% url 'organisations:organisation_detail' object.uuid.hex %}">{% trans 'Cancel' %}</a>
+  </form>
 {% endblock %}

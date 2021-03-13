@@ -5,266 +5,258 @@
 {% block title %}{% trans 'Organisation Details' %}{% endblock %}
 
 {% block breadcrumb %}
-    <ol class="breadcrumb">
-        <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-        <li><a href="{% url 'organisations:organisation_list' %}">{% trans 'Organisations' %}</a></li>
-        <li class="active">{{ object.name }}</li>
-    </ol>
+  <ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+    <li><a href="{% url 'organisations:organisation_list' %}">{% trans 'Organisations' %}</a></li>
+    <li class="active">{{ object.name }}</li>
+  </ol>
 {% endblock breadcrumb %}
 
 
 {% block form %}
 
-    {% block message %}{% endblock %}
+  {% block message %}{% endblock %}
 
-    <h3>{{ object.get_center_type_display }} {{ object.name }}</h3>
+  <h1>{{ object.get_center_type_display }} {{ object.name }}</h1>
 
-    {% if messages %}{% for message in messages %}
-        <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
-    {% endif %}
+  {% if messages %}{% for message in messages %}
+    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
+  {% endif %}
+  <div class="row">
+    {% for org_pic in object.organisationpicture_set.all %}
+      <div class="col-sm-6 col-lg-5 col-xl-4">
+        <figure class="text-center">
+          <a href="{{ org_pic.picture.url }}">{% thumbnail org_pic.picture "240x240" crop="center" as im %}
+            <img class="img-fluid rounded" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}"
+                 alt="">{% endthumbnail %}</a>
+          <figcaption class="figure-caption">{% if org_pic.title %}
+            <div class="fs-6">{{ org_pic.title }}</div>{% endif %}{{ org_pic.description }}</figcaption>
+        </figure>
+      </div>
+    {% endfor %}
+  </div>
+  {% if object.name_native %}
     <div class="row">
-        {% for org_pic in object.organisationpicture_set.all %}
-            <div class="col-sm-6 col-md-4">
-                <div class="thumbnail">
-                    <a href="{{ org_pic.picture.url }}">{% thumbnail org_pic.picture "240x240" crop="center" as im %}
-                        <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}"
-                             alt="">{% endthumbnail %}</a>
-                    <h4>{{ org_pic.title }}</h4>
-                    <p>{{ org_pic.description }}</p>
-                </div>
-            </div>
+      <div class="col-4">{% trans 'Name in native language' %}:</div>
+      <div class="col-8">{{ object.name_native }}</div>
+    </div>
+  {% endif %}
+
+  {% if multiple_associations and object.association %}
+    <div class="row">
+      <div class="col-4">{% trans 'Association' %}:</div>
+      <div class="col-8">
+        {% if object.association.homepage %}
+          <a href="{{ object.association.homepage }}">{{ object.association }}</a> {% else %}
+          {{ object.association }}{% endif %}
+      </div>
+    </div>
+  {% endif %}
+
+  {% if object.organisation_country %}
+    <div class="row">
+      <div class="col-4">{% trans 'Country' %}:</div>
+      <div class="col-8">
+        {% if object.organisation_country.homepage %}
+          <a href="{{ object.organisation_country.homepage }}">{{ object.organisation_country }}</a> {% else %}
+          {{ object.organisation_country }}{% endif %}
+      </div>
+    </div>
+  {% endif %}
+
+  {% if object.admin_region %}
+    <div class="row">
+      <div class="col-4">{% trans 'Region' %}:</div>
+      <div class="col-8">
+        {% if object.admin_region.homepage %}
+          <a href="{{ object.admin_region.homepage }}">{{ object.admin_region }}</a> {% else %}
+          {{ object.admin_region }}{% endif %}
+      </div>
+    </div>
+  {% endif %}
+
+  <div class="row">
+    <div class="col-4">{% trans 'Homepage' %}:</div>
+    <div class="col-8"><a href="{{ object.homepage }}">{{ object.homepage }}</a></div>
+  </div>
+  {% if object.source_urls %}
+    <div class="row">
+      <div class="col-4">{% trans 'Source URLs' %}:</div>
+      <div class="col-8">
+        {% for url in object.source_urls %}{% if not forloop.first %}<br>{% endif %}
+          <a href="{{ url }}">{{ url }}</a>
         {% endfor %}
+      </div>
     </div>
-    {% if object.name_native %}
-        <div class="row">
-            <div class="dwbn-label">{% trans 'Name in native language' %}:</div>
-            <div class="dwbn-content">{{ object.name_native }}</div>
-        </div>
-    {% endif %}
-
-    {% if multiple_associations and object.association %}
-        <div class="row">
-            <div class="dwbn-label">{% trans 'Association' %}:</div>
-            <div class="dwbn-content">
-                {% if object.association.homepage %}
-                    <a href="{{ object.association.homepage }}">{{ object.association }}</a> {% else %}
-                    {{ object.association }}{% endif %}
-            </div>
-        </div>
-    {% endif %}
-
-    {% if object.organisation_country %}
-        <div class="row">
-            <div class="dwbn-label">{% trans 'Country' %}:</div>
-            <div class="dwbn-content">
-                {% if object.organisation_country.homepage %}
-                    <a href="{{ object.organisation_country.homepage }}">{{ object.organisation_country }}</a> {% else %}
-                    {{ object.organisation_country }}{% endif %}
-            </div>
-        </div>
-    {% endif %}
-
-    {% if object.admin_region %}
-        <div class="row">
-            <div class="dwbn-label">{% trans 'Region' %}:</div>
-            <div class="dwbn-content">
-                {% if object.admin_region.homepage %}
-                    <a href="{{ object.admin_region.homepage }}">{{ object.admin_region }}</a> {% else %}
-                    {{ object.admin_region }}{% endif %}
-            </div>
-        </div>
-    {% endif %}
-
+  {% endif %}
+  {% if object.google_plus_page %}
     <div class="row">
-        <div class="dwbn-label">{% trans 'Homepage' %}:</div>
-        <div class="dwbn-content"><a href="{{ object.homepage }}">{{ object.homepage }}</a></div>
+      <div class="col-4">{% trans 'Google+ page' %}:</div>
+      <div class="col-8"><a href="{{ object.google_plus_page }}">{% trans 'Google+ page' %}</a></div>
     </div>
-    {% if object.source_urls %}
-        <div class="row">
-            <div class="dwbn-label">{% trans 'Source URLs' %}:</div>
-            <div class="dwbn-content">
-                {% for url in object.source_urls %}{% if not forloop.first %}<br>{% endif %}
-                    <a href="{{ url }}">{{ url }}</a>
-                {% endfor %}
-            </div>
-        </div>
-    {% endif %}
-    {% if object.google_plus_page %}
-        <div class="row">
-            <div class="dwbn-label">{% trans 'Google+ page' %}:</div>
-            <div class="dwbn-content"><a href="{{ object.google_plus_page }}">{% trans 'Google+ page' %}</a></div>
-        </div>
-    {% endif %}
-    {% if object.facebook_page %}
-        <div class="row">
-            <div class="dwbn-label">{% trans 'Facebook page' %}:</div>
-            <div class="dwbn-content"><a href="{{ object.facebook_page }}">{% trans 'Facebook page' %}</a></div>
-        </div>
-    {% endif %}
-    {% if object.twitter_page %}
-        <div class="row">
-            <div class="dwbn-label">{% trans 'Twitter page' %}:</div>
-            <div class="dwbn-content"><a href="{{ object.twitter_page }}">{% trans 'Twitter page' %}</a></div>
-        </div>
-    {% endif %}
-    {% if object.local_datetime %}
-        <div class="row">
-            <div class="dwbn-label">{% trans 'Local date and time' %}:</div>
-            <div class="dwbn-content">{{ object.local_datetime }}</div>
-        </div>
-    {% endif %}
-    {% if object.google_maps_url %}
-        <div class="row">
-            <div class="dwbn-label">{% trans 'Google Maps' %}:</div>
-            <div class="dwbn-content"><a href="{{ object.google_maps_url }}">{% trans 'Google Maps' %}
-                ({{ object.get_coordinates_type_display }}) <span class="glyphicon glyphicon-map-marker"></span></a>
-            </div>
-        </div>
-    {% endif %}
-    {% if object.founded %}
-        <div class="row">
-            <div class="dwbn-label">{% trans 'Founded' %}:</div>
-            <div class="dwbn-content">{{ object.founded }}</div>
-        </div>{% endif %}
-    {% if object.email %}
-        <div class="row">
-            <div class="dwbn-label">{% trans 'Email address' %}:</div>
-            <div class="dwbn-content"><a href="mailto:{{ object.email }}">{{ object.email }}</a></div>
-        </div>
-        {% if perms.organisations.change_organisation and has_organisation_access %}
-            {% for emailforward in  object.email.emailforward_set.all %}
-                <div class="row">
-                    <div class="dwbn-label">{% trans 'Email forwarding address' %}:</div>
-                    <div class="dwbn-content">{{ emailforward }}</div>
-                </div>
-            {% endfor %}
-            {% for emailalias in  object.email.emailalias_set.all %}
-                <div class="row">
-                    <div class="dwbn-label">{% trans 'Email alias address' %}:</div>
-                    <div class="dwbn-content">{{ emailalias }}</div>
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endif %}
-
-    {% if perms.organisations.change_organisation %}
-        {% if object.country.organisationcountry.country_groups.exists %}
-            <div class="row">
-                <div class="dwbn-label">{% trans 'Country groups' %}:</div>
-                <div class="dwbn-content">
-                    {% for country_group in object.country.organisationcountry.country_groups.all %}
-                        {% if country_group.homepage %}
-                            <a href="{{ country_group.homepage }}">{{ country_group }}</a>{% else %}
-                            {{ country_group }}{% endif %}{% if not forloop.last %}, {% endif %}
-                    {% endfor %}
-                </div>
-            </div>
-        {% endif %}
-    {% endif %}
-
-    {% if perms.organisations.change_organisation %}
-        <div class="row">
-            <div class="dwbn-label">{% trans 'Active' %}:</div>
-            <div class="dwbn-content">
-            <span data-toggle="tooltip"
-                  title="{% trans 'Designates whether this organisation should be treated as active. Unselect this instead of deleting the organisation.' %}"
-                  class="glyphicon glyphicon-{% if object.is_active %}check{% else %}unchecked{% endif %}"></span></div>
-        </div>
-        <div class="row">
-            <div class="dwbn-label">{% trans 'Private' %}:</div>
-            <div class="dwbn-content">
-            <span data-toggle="tooltip"
-                  title="{% trans 'Designates whether this organisation data should be treated as private and only a telephone number should be displayed on public sites.' %}"
-                  class="glyphicon glyphicon-{% if object.is_private %}check{% else %}unchecked{% endif %}"></span>
-            </div>
-        </div>
-        <div class="row">
-            <div class="dwbn-label">{% trans 'Live' %}:</div>
-            <div class="dwbn-content">
-            <span data-toggle="tooltip" title="{% trans 'Designates whether this organisation is live or prelive.' %}"
-                  class="glyphicon glyphicon-{% if object.is_live %}check{% else %}unchecked{% endif %}"></span></div>
-        </div>
-        {% if organisation.transregional_measure_distance != None %}
-            <div class="row">
-                <div class="dwbn-label">
-                    {% trans 'Transregional distance' %}:
-                </div>
-                <div class="dwbn-content">
-                    <span data-toggle="tooltip" data-placement="right" title="{% trans 'Distance used for calculations of transregional events [km].' %}">
-                        {{ organisation.transregional_measure_distance.km|floatformat }} km</span>
-                </div>
-            </div>
-        {% endif %}
-    {% endif %}
-
-    {% for address in object.organisationaddress_set.all %}
-        <h4>{{ address.get_address_type_display }}</h4>
-        <div class="row">
-            <div class="dwbn-label">{% trans 'Addressee' %}:</div>
-            <div class="dwbn-content">{{ address.addressee }}</div>
-        </div>
-        <div class="row">
-            <div class="dwbn-label">{% trans 'Street Address' %}:</div>
-            <div class="dwbn-content">{{ address.street_address|linebreaksbr }}</div>
-        </div>
-        <div class="row">
-            <div class="dwbn-label">{% trans 'City' %}:</div>
-            <div class="dwbn-content">{{ address.city }}</div>
-        </div>
-        <div class="row">
-            <div class="dwbn-label">{% trans 'Postal Code' %}:</div>
-            <div class="dwbn-content">{{ address.postal_code }}</div>
-        </div>
-        {% if state %}
-            <div class="row">
-                <div class="dwbn-label">{% trans 'state' %}:</div>
-                <div class="dwbn-content">{{ address.state }}</div>
-            </div>{% endif %}
-    {% endfor %}
-
-    {% if object.organisationphonenumber_set.all %}
-        <h4>{% trans 'Phone Numbers' %}</h4>
-        {% for phone_number in object.organisationphonenumber_set.all %}
-            <div class="row">
-                <div class="dwbn-label">{{ phone_number.get_phone_type_display }} {% trans 'Phone' %}:</div>
-                <div class="dwbn-content">{{ phone_number }}</div>
-            </div>
-        {% endfor %}{% endif %}
-
-    <h4>{% trans 'Nearest Organisations' %} {% if organisation.neighbour_distance != None %}(<
-        {{ organisation.neighbour_measure_distance.km|floatformat }} km){% endif %}</h4>
-    {% for organisation in object.get_near_organisations %}
-        <div class="row">
-            <div class="dwbn-label"><a
-                href="{% url 'organisations:organisation_detail' organisation.uuid.hex %}">{{ organisation.name }}:</a>
-            </div>
-            <div class="dwbn-content">{{ organisation.distance.km|floatformat }} km</div>
-        </div>
-    {% endfor %}
-
-    <br>
-
-    <div class="form-group">
-        <div class="dwbn-form-control_lg">
-            {% block submit_group %}
-
-                {% if has_organisation_access %}
-                    {% if perms.organisations.delete_organisation %}
-                        <a class="btn btn-default"
-                           href="{% url 'organisations:organisation_delete' object.uuid.hex %}">{% trans 'Delete' %}</a>
-                    {% endif %}
-
-                    {% if perms.organisations.change_organisation %}
-                        <a class="btn btn-default"
-                           href="{% url 'organisations:organisation_picture_update' object.uuid.hex %}">{% trans 'Update Pictures' %}</a>
-                        <a class="btn btn-primary"
-                           href="{% url 'organisations:organisation_update' object.uuid.hex %}">{% trans 'Update' %}</a>
-                    {% endif %}
-                {% endif %}
-
-            {% endblock %}
-        </div>
+  {% endif %}
+  {% if object.facebook_page %}
+    <div class="row">
+      <div class="col-4">{% trans 'Facebook page' %}:</div>
+      <div class="col-8"><a href="{{ object.facebook_page }}">{% trans 'Facebook page' %}</a></div>
     </div>
+  {% endif %}
+  {% if object.twitter_page %}
+    <div class="row">
+      <div class="col-4">{% trans 'Twitter page' %}:</div>
+      <div class="col-8"><a href="{{ object.twitter_page }}">{% trans 'Twitter page' %}</a></div>
+    </div>
+  {% endif %}
+  {% if object.local_datetime %}
+    <div class="row">
+      <div class="col-4">{% trans 'Local date and time' %}:</div>
+      <div class="col-8">{{ object.local_datetime }}</div>
+    </div>
+  {% endif %}
+  {% if object.google_maps_url %}
+    <div class="row">
+      <div class="col-4">{% trans 'Google Maps' %}:</div>
+      <div class="col-8"><a href="{{ object.google_maps_url }}"><i class="bi bi-geo"></i> {% trans 'Google Maps' %}
+        ({{ object.get_coordinates_type_display }})</a>
+      </div>
+    </div>
+  {% endif %}
+  {% if object.founded %}
+    <div class="row">
+      <div class="col-4">{% trans 'Founded' %}:</div>
+      <div class="col-8">{{ object.founded }}</div>
+    </div>{% endif %}
+  {% if object.email %}
+    <div class="row">
+      <div class="col-4">{% trans 'Email address' %}:</div>
+      <div class="col-8"><a href="mailto:{{ object.email }}">{{ object.email }}</a></div>
+    </div>
+    {% if perms.organisations.change_organisation and has_organisation_access %}
+      {% for emailforward in  object.email.emailforward_set.all %}
+        <div class="row">
+          <div class="col-4">{% trans 'Email forwarding address' %}:</div>
+          <div class="col-8">{{ emailforward }}</div>
+        </div>
+      {% endfor %}
+      {% for emailalias in  object.email.emailalias_set.all %}
+        <div class="row">
+          <div class="col-4">{% trans 'Email alias address' %}:</div>
+          <div class="col-8">{{ emailalias }}</div>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endif %}
+
+  {% if perms.organisations.change_organisation %}
+    {% if object.country.organisationcountry.country_groups.exists %}
+      <div class="row">
+        <div class="col-4">{% trans 'Country groups' %}:</div>
+        <div class="col-8">
+          {% for country_group in object.country.organisationcountry.country_groups.all %}
+            {% if country_group.homepage %}
+              <a href="{{ country_group.homepage }}">{{ country_group }}</a>{% else %}
+              {{ country_group }}{% endif %}{% if not forloop.last %}, {% endif %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  {% endif %}
+
+  {% if perms.organisations.change_organisation %}
+    <div class="row">
+      <div class="col-4">{% trans 'Active' %}:</div>
+      <div class="col-8">
+        <i data-bs-toggle="tooltip"
+           title="{% trans 'Designates whether this organisation should be treated as active. Unselect this instead of deleting the organisation.' %}"
+           class="bi bi-{% if object.is_active %}check-{% endif %}square"></i></div>
+    </div>
+    <div class="row">
+      <div class="col-4">{% trans 'Private' %}:</div>
+      <div class="col-8">
+        <i data-bs-toggle="tooltip"
+           title="{% trans 'Designates whether this organisation data should be treated as private and only a telephone number should be displayed on public sites.' %}"
+           class="bi bi-{% if object.is_private %}check-{% endif %}square"></i>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-4">{% trans 'Live' %}:</div>
+      <div class="col-8">
+        <i data-bs-toggle="tooltip" title="{% trans 'Designates whether this organisation is live or prelive.' %}"
+           class="bi bi-{% if object.is_live %}check-{% endif %}square"></i></div>
+    </div>
+    {% if organisation.transregional_measure_distance != None %}
+      <div class="row">
+        <div class="col-4">
+          {% trans 'Transregional distance' %}:
+        </div>
+        <div class="col-8">
+          <span data-bs-toggle="tooltip" data-placement="right" title="{% trans 'Distance used for calculations of transregional events [km].' %}">
+            {{ organisation.transregional_measure_distance.km|floatformat }} km</span>
+        </div>
+      </div>
+    {% endif %}
+  {% endif %}
+
+  {% for address in object.organisationaddress_set.all %}
+    <h2>{{ address.get_address_type_display }}</h2>
+    <div class="row">
+      <div class="col-4">{% trans 'Addressee' %}:</div>
+      <div class="col-8">{{ address.addressee }}</div>
+    </div>
+    <div class="row">
+      <div class="col-4">{% trans 'Street Address' %}:</div>
+      <div class="col-8">{{ address.street_address|linebreaksbr }}</div>
+    </div>
+    <div class="row">
+      <div class="col-4">{% trans 'City' %}:</div>
+      <div class="col-8">{{ address.city }}</div>
+    </div>
+    <div class="row">
+      <div class="col-4">{% trans 'Postal Code' %}:</div>
+      <div class="col-8">{{ address.postal_code }}</div>
+    </div>
+    {% if state %}
+      <div class="row">
+        <div class="col-4">{% trans 'state' %}:</div>
+        <div class="col-8">{{ address.state }}</div>
+      </div>{% endif %}
+  {% endfor %}
+
+  {% if object.organisationphonenumber_set.all %}
+    <h2>{% trans 'Phone Numbers' %}</h2>
+    {% for phone_number in object.organisationphonenumber_set.all %}
+      <div class="row">
+        <div class="col-4">{{ phone_number.get_phone_type_display }} {% trans 'Phone' %}:</div>
+        <div class="col-8">{{ phone_number }}</div>
+      </div>
+    {% endfor %}{% endif %}
+
+  <h2>{% trans 'Nearest Organisations' %} {% if organisation.neighbour_distance != None %}(<
+    {{ organisation.neighbour_measure_distance.km|floatformat }} km){% endif %}</h2>
+  {% for organisation in object.get_near_organisations %}
+    <div class="row">
+      <div class="col-4"><a href="{% url 'organisations:organisation_detail' organisation.uuid.hex %}">{{ organisation.name }}:</a>
+      </div>
+      <div class="col-8">{{ organisation.distance.km|floatformat }} km</div>
+    </div>
+  {% endfor %}
+
+  <br>
+
+  <div class="row">
+    <div class="g10f-form-control_lg">
+      {% block submit_group %}
+        {% if has_organisation_access %}
+          {% if perms.organisations.delete_organisation %}
+            <a class="btn btn-secondary" href="{% url 'organisations:organisation_delete' object.uuid.hex %}">{% trans 'Delete' %}</a>
+          {% endif %}
+          {% if perms.organisations.change_organisation %}
+            <a class="btn btn-secondary" href="{% url 'organisations:organisation_picture_update' object.uuid.hex %}">{% trans 'Update Pictures' %}</a>
+            <a class="btn btn-primary" href="{% url 'organisations:organisation_update' object.uuid.hex %}">{% trans 'Update' %}</a>
+          {% endif %}
+        {% endif %}
+      {% endblock %}
+    </div>
+  </div>
 
 {% endblock %}
-

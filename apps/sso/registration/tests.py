@@ -95,7 +95,7 @@ class RegistrationTest(TestCase):
             data[user_extra_attribute['name']] = user_extra_attribute['value']
 
         response = self.client.post(reverse('registration:registration_register'), data=data)
-        self.assertNotContains(response, 'has-error')
+        self.assertNotContains(response, 'is-invalid')
 
         # captcha is only displayed once.
         # the second time a signed value is used

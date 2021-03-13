@@ -1,121 +1,88 @@
 {% extends "base_form.html" %}
 {% load i18n static %}
 
-{% block extrascript %}
-    {{ media }}
-    <script src="{% static "js/formsets-1.2.js" %}"></script>
-    <script src="{% url 'jsi18n' %}"></script>
-{% endblock extrascript %}
-
 {% block breadcrumb %}
-    <ol class="breadcrumb">
-        <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-        <li><a href="{% url 'registration:user_registration_list' %}">{% trans 'User Registration List' %}</a></li>
-        <li class="active">{% trans 'Edit User Registration' %}</li>
-    </ol>
+  <ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+    <li><a href="{% url 'registration:user_registration_list' %}">{% trans 'User Registration List' %}</a></li>
+    <li class="active">{% trans 'Edit User Registration' %}</li>
+  </ol>
 {% endblock breadcrumb %}
 
 {% block form %}
-    <form class="form-horizontal" data-active="" method="post">{% csrf_token %}
-        {# Include the hidden fields in the form #}
-        {% for hidden in form.hidden_fields %}
-            {{ hidden }}
-        {% endfor %}
+  <form class="form-horizontal" data-active="" method="post">
+    <h1>{% trans 'User Registration' %} - {{ form.user.first_name }} {{ form.user.last_name }}</h1>
+    {% include 'include/_form_boilerplate.html' %}
+    {% if form.user.is_active %}
+      <div class="alert">{% trans 'The user was already activated' %}</div>{% endif %}
 
-        <div class="">
-            <h3>{% trans 'User Registration' %} - {{ form.user.first_name }} {{ form.user.last_name }}</h3>
+    {% translate 'User Registration' as base_title %}
+    {% include 'bootstrap/forms/nav-tabs.html' with tab1=form.notes tab2=form.role_profiles tab3=form.application_roles %}
 
-            {% if messages %}{% for message in messages %}
-                <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>
-            {% endfor %}
-            {% endif %}
+    <div class="tab-content">
+      <div class="tab-pane" role="tabpanel" id="base">
+        {% include 'include/_static_picture_field.html' with field=form.user.picture %}
+        {% include 'include/_field.html' with field=form.username %}
+        {% include 'include/_field.html' with field=form.first_name %}
+        {% include 'include/_field.html' with field=form.last_name %}
+        {% include 'include/_field.html' with field=form.organisations %}
+        {% include 'include/_email_field.html' with field=form.email %}
+        {% include 'include/_field.html' with field=form.date_registered %}
+        {% include 'include/_field.html' with field=form.country %}
+        {% include 'include/_field.html' with field=form.city %}
+        {% include 'include/_field.html' with field=form.language %}
+        {% include 'include/_field.html' with field=form.timezone %}
+        {% include 'include/_field.html' with field=form.gender %}
+        {% include 'include/_field.html' with field=form.dob %}
+        {% include 'include/_field.html' with field=form.about_me %}
+        <div class="form-text">{% trans 'A person who already has an account and can recommend the user.' %}</div>
+        {% include 'registration/include/_user_search_field.html' with field=form.known_person1_first_name %}
+        {% include 'registration/include/_user_search_field.html' with field=form.known_person1_last_name %}
+        <div class="form-text">{% trans 'A second person who already has an account and can recommend the user.' %}</div>
+        {% include 'registration/include/_user_search_field.html' with field=form.known_person2_first_name %}
+        {% include 'registration/include/_user_search_field.html' with field=form.known_person2_last_name %}
+        {% include 'include/_user_field.html' with field=form.last_modified_by_user %}
 
-            {% if form.errors %}
-                <div class="alert alert-danger">
-                    {% if form.errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}
-                        {% trans "Please correct the errors below." %}{% endif %}
-                </div>
-            {% endif %}
+        <span class="user-extra-form-fields">
+          {% block user-extra-form-fields %}{% endblock %}
+        </span>
 
-            {% if form.user.is_active %}
-                <div class="alert">{% trans 'The user was already activated' %}</div>
-            {% endif %}
+        <div class="form-text">{% trans 'Registration processing information' %}</div>
+        {% include 'include/_static_yesno_field.html' with field=form.check_back %}
+        {% include 'include/_static_yesno_field.html' with field=form.is_access_denied %}
+      </div>
+
+      <div class="tab-pane" role="tabpanel" id="tab_role_profiles">
+        {% include 'include/_select_filter2_field.html' with field=form.role_profiles %}
+      </div>
+
+      <div class="tab-pane" role="tabpanel" id="tab_application_roles">
+        {% include 'include/_select_filter2_field.html' with field=form.application_roles %}
+      </div>
+
+      <div class="tab-pane" role="tabpanel" id="tab_notes">
+        {% include 'include/_usernote_field.html' with field=form.notes redirect_uri=user_note_redirect_uri %}
+      </div>
+    </div>
+
+    {% if not form.user.is_active %}
+      <div class="form-group">
+        <div class="g10f-form-control_lg">
+          <button name="action" value="activate" class="btn btn-primary">{% trans 'Save and activate' %}</button>
+          <button name="action" value="save" class="btn btn-secondary">{% trans 'Save' %}</button>
+          <button class="btn btn-secondary" name="action" value="continue">{% trans 'Save and continue editing' %}</button>
+          {% if not instance.check_back %}
+            <button class="btn btn-secondary" name="action" value="check_back">{% trans 'Save and mark for check back' %}</button>
+          {% endif %}
+          {% if perms.registration.delete_registrationprofile %}
+            <a class="btn btn-danger" href="{% url 'registration:delete_user_registration' form.user.pk %}">{% trans 'Delete' %}</a>
+          {% endif %}
+          {% if not instance.is_access_denied %}
+            <button name="action" value="deny" class="btn btn-danger">{% trans 'Save and deny' %}</button>
+          {% endif %}
         </div>
+      </div>
+    {% endif %}
 
-        <ul class="nav nav-tabs dwbn-nav-tabs" id="myTab">
-            <li class="{% if not active or active == "object" %}active{% endif %}">
-                <a data-toggle="tab"
-                   href="#object">{% trans 'User Registration' %}</a>
-            </li>
-            <li><a data-toggle="tab" href="#app_roles">{{ form.application_roles.label }}</a></li>
-            <li><a data-toggle="tab" href="#notes">{{ form.notes.label }}</a></li>
-        </ul>
-
-        <div class="tab-content">
-            <div class="tab-pane {% if not active or active == "object" %}active{% endif %}" id="object">
-                {% include 'include/_static_picture_field.html' with field=form.user.picture %}
-                {% include 'include/_field.html' with field=form.username %}
-                {% include 'include/_field.html' with field=form.first_name %}
-                {% include 'include/_field.html' with field=form.last_name %}
-                {% include 'include/_field.html' with field=form.organisations %}
-                {% include 'include/_email_field.html' with field=form.email %}
-                {% include 'include/_field.html' with field=form.date_registered%}
-                {% include 'include/_field.html' with field=form.country %}
-                {% include 'include/_field.html' with field=form.city %}
-                {% include 'include/_field.html' with field=form.language %}
-                {% include 'include/_field.html' with field=form.timezone %}
-                {% include 'include/_field.html' with field=form.gender %}
-                {% include 'include/_field.html' with field=form.dob %}
-                {% include 'include/_field.html' with field=form.about_me %}
-                <span class="help-block">{% trans 'A person who already has an account and can recommend the user.' %}</span>
-                {% include 'registration/include/_user_search_field.html' with field=form.known_person1_first_name %}
-                {% include 'registration/include/_user_search_field.html' with field=form.known_person1_last_name %}
-                <span class="help-block">{% trans 'A second person who already has an account and can recommend the user.' %}</span>
-                {% include 'registration/include/_user_search_field.html' with field=form.known_person2_first_name %}
-                {% include 'registration/include/_user_search_field.html' with field=form.known_person2_last_name %}
-                {% include 'include/_user_field.html' with field=form.last_modified_by_user %}
-
-                <span class="user-extra-form-fields">
-                    {% block user-extra-form-fields %}{% endblock  %}
-                </span>
-
-                {% include 'accounts/includes/_profiles_field.html' with field=form.role_profiles %}
-                <span class="help-block">{% trans 'Registration processing information' %}</span>
-                {% include 'include/_static_yesno_field.html' with field=form.check_back %}
-                {% include 'include/_static_yesno_field.html' with field=form.is_access_denied %}
-            </div>
-
-            <div class="tab-pane" id="app_roles">
-                {% include 'accounts/includes/_app_roles_field.html' with field=form.application_roles %}
-            </div>
-
-            <div class="tab-pane" id="notes">
-                {% include 'include/_usernote_field.html' with field=form.notes redirect_uri=user_note_redirect_uri%}
-            </div>
-        </div>
-
-
-        {% if not form.user.is_active %}
-            <div class="form-group">
-                <div class="dwbn-form-control_lg">
-                    {% if perms.registration.delete_registrationprofile %}
-                        <a class="btn btn-default"
-                           href="{% url 'registration:delete_user_registration' form.user.pk %}">{% trans 'Delete' %}</a>
-                    {% endif %}
-                    <button name="action" value="save" class="btn btn-default">{% trans 'Save' %}</button>
-                    <button class="btn btn-default"
-                            name="action" value="continue">{% trans 'Save and continue editing' %}</button>
-                    {% if not instance.is_access_denied %}
-                        <button name="action" value="deny" class="btn btn-default">{% trans 'Save and deny' %}</button>
-                    {% endif %}
-                    {% if not instance.check_back %}
-                        <button class="btn btn-default"
-                                name="action" value="check_back">{% trans 'Save and mark for check back' %}</button>
-                    {% endif %}
-                    <button name="action" value="activate" class="btn btn-primary">{% trans 'Save and activate' %}</button>
-                </div>
-            </div>
-        {% endif %}
-
-    </form>
+  </form>
 {% endblock %}

@@ -4,16 +4,14 @@
 {% block title %}{{ brand }} | {% trans 'Contact Information' %}{% endblock %}
 
 {% block breadcrumb %}
-<ol class="breadcrumb">
+  <ol class="breadcrumb">
     <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
     <li class="active">{% trans 'Feedback' %}</li>
-</ol> 
+  </ol>
 {% endblock breadcrumb %}
 
 
 {% block form %}
-<h1>{% trans 'Feedback' %}</h1>
-<p>{% trans "Thank you for your message." %}</p>
-
-
+  <h1>{% trans 'Feedback' %}</h1>
+  <p>{% trans "Thank you for your message." %}</p>
 {% endblock %}

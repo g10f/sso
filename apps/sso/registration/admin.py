@@ -1,6 +1,5 @@
 from django.contrib import admin
 from django.contrib.admin import SimpleListFilter
-from django.contrib.auth import get_user_model
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 from django.utils.translation import ngettext
@@ -90,28 +89,25 @@ class RegistrationAdmin(admin.ModelAdmin):
         return obj.user.primary_email()
 
     def user_message(self, request, changecount, action_result_text=_('changed successfully')):
-        if changecount:
-            opts = self.model._meta
-            if changecount == 1:
-                name = force_str(opts.verbose_name)
-            else:
-                name = force_str(opts.verbose_name_plural)
+        opts = self.model._meta
+        if changecount == 1:
+            name = force_str(opts.verbose_name)
+        else:
+            name = force_str(opts.verbose_name_plural)
 
-            msg = ngettext("%(count)s %(name)s was %(action_result_text)s.",
-                            "%(count)s %(name)s were %(action_result_text)s.",
-                            changecount) % {'count': changecount,
-                                            'name': name,
-                                            'action_result_text': action_result_text}
-            self.message_user(request, msg)
+        msg = ngettext("%(count)s %(name)s was %(action_result_text)s.",
+                       "%(count)s %(name)s were %(action_result_text)s.",
+                       changecount) % {'count': changecount,
+                                       'name': name,
+                                       'action_result_text': action_result_text}
+        self.message_user(request, msg)
 
     def activate(self, request, queryset):
-        users = get_user_model().objects.filter(is_active=False, registrationprofile__in=queryset)
         changecount = 0
-        for user in users:
-            user.is_active = True
-            user.save()
+        for registrationprofile in queryset.filter(user__is_active=False):
+            registrationprofile.process('activate', request.user)
+            send_set_password_email(registrationprofile.user, request, reply_to=[request.user.primary_email().email])
             changecount += 1
-            send_set_password_email(user, request)
 
         self.user_message(request, changecount, _('activated'))
 
@@ -155,6 +151,7 @@ class RegistrationAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         obj.save()
         if "_activate" in request.POST:
-            self.activate(request, [obj])
+            obj.process('activate', request.user)
+            send_set_password_email(obj.user, request, reply_to=[request.user.primary_email().email])
 
 # admin.site.register(RegistrationProfile, RegistrationAdmin)

@@ -3,41 +3,38 @@
 
 {% block title %}{% trans 'Organisation Change Details' %}{% endblock %}
 
-{% block extrascript %}{{ media }}{% endblock extrascript %}
-
-
 {% block breadcrumb %}
-    <ol class="breadcrumb">
-        <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-        <li><a href="{% url 'accounts:profile' %}">{% trans 'My Account' %}</a></li>
-        <li class="active">{% trans 'Update My Organisation' %}</li>
-    </ol>
+  <ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+    <li><a href="{% url 'accounts:profile' %}">{% trans 'My Account' %}</a></li>
+    <li class="active">{% trans 'Update My Organisation' %}</li>
+  </ol>
 {% endblock breadcrumb %}
 
 {% block form %}
 
-    {% block message %}{% endblock %}
+  {% block message %}{% endblock %}
 
-    <h3>{% trans 'Update My Organisation' %}</h3>
+  <h1>{% trans 'Update My Organisation' %}</h1>
 
-    {% if messages %}{% for message in messages %}
-        <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
-    {% endif %}
+  {% if messages %}{% for message in messages %}
+    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
+  {% endif %}
 
-    <div class="alert alert-info">
-    {% blocktrans with name=object.organisation.name %}Please contact the user administrator at your organisation {{ name }} to complete the change.{% endblocktrans %}
+  <div class="alert alert-info">
+    {% blocktrans with name=object.organisation.name %}Please contact the user administrator at your organisation {{ name }} to complete the
+      change.{% endblocktrans %}
+  </div>
+
+  <br>
+
+  <div class="form-group">
+    <div class="g10f-form-control_lg">
+      {% block submit_group %}
+        {% if redirect_uri %}<a class="btn btn-secondary" href="{{ redirect_uri }}">{% trans 'Back' %}</a>{% endif %}
+        <a class="btn btn-secondary" href="{{ update_url }}" role="button">{% trans 'Update organisation change' %}</a>
+      {% endblock %}
     </div>
-
-    <br>
-
-
-    <div class="form-group">
-        <div class="dwbn-form-control_lg">
-            {% block submit_group %}
-                {% if redirect_uri %}<a class="btn btn-default" href="{{ redirect_uri }}">{% trans 'Back' %}</a>{% endif %}
-                <a class="btn btn-default" href="{{ update_url }}" role="button">{% trans 'Update organisation change' %}</a>
-            {% endblock %}
-        </div>
-    </div>
+  </div>
 
 {% endblock %}

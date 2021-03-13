@@ -1,19 +1,17 @@
 {% load i18n %}
 <div class="row form-group {% if field.errors %}error{% endif %}">
-  <label class="col-sm-3 control-label" for="id_{{ field.html_name }}">
-    {{ field.label }} 
-  </label>    
+  <label class="col-sm-3 control-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
   <div class="col-sm-9">
     {% if field.value %}
-    <div class="input-group">
+      <div class="input-group">
         {{ field }}
-            <span class="input-group-btn">
-                <a href="{% url 'accounts:user_list' %}?q={{ field.value }}" class="btn btn-default" type="button"> <i class="glyphicon glyphicon-search" title="{% trans 'Find user' %}"></i></a>
-            </span>
-    </div>
+        <a href="{% url 'accounts:user_list' %}?q={{ field.value }}" class="btn btn-secondary" type="button"><i class="bi bi-search"></i></a>
+      </div>
     {% else %}
-        {{ field }}{% if field.help_text or field.errors %}<span class="help-block">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
+      {{ field }}{% if field.help_text or field.errors %}
+        <div class="form-text">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</div>{% endif %}
     {% endif %}
-    {% if field.help_text or field.errors %}<span class="help-inline">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
+    {% if field.help_text or field.errors %}
+      <span class="form-text">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
   </div>
 </div>

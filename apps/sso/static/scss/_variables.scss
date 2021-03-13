@@ -1,0 +1,34 @@
+// scss-docs-start form-validation-states
+
+
+$g10f-form-validation-states: (
+        "success": (
+                "color": $form-feedback-valid-color,
+                "icon": $form-feedback-icon-valid
+        ),
+        "error": (
+                "color": $form-feedback-invalid-color,
+                "icon": $form-feedback-icon-invalid
+        )
+);
+
+
+
+$colors: map-merge((
+        "brand": $brand,
+),
+        $colors
+);
+
+
+$theme-colors: map-merge(
+                (
+                        "primary": $primary,
+                        "error": $danger,
+                        "brand": $brand,
+                        "brand-light": $brand-light,
+                        "default": $gray-300,
+                ),
+                $theme-colors,
+);
+

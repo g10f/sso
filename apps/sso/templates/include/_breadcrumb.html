@@ -1,0 +1,12 @@
+{% load i18n %}
+{% if breadcrumbs %}
+  <ol class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+      {% if forloop.last %}
+        <li class="active">{% trans breadcrumb.titel %}</li>
+      {% else %}
+        <li><a href="{% url breadcrumb.url %}">{% trans breadcrumb.titel %}</a></li>
+      {% endif %}
+    {% endfor %}
+  </ol>
+{% endif %}

@@ -7,7 +7,7 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import FormView
 from sso.auth.forms.profile import TOTPDeviceForm, ProfileForm, PhoneSetupForm, AddPhoneForm, AddU2FForm
-from sso.auth.models import TwilioSMSDevice, U2FDevice
+from sso.auth.models import TwilioSMSDevice, U2FDevice, Profile
 from sso.auth.utils import class_view_decorator, default_device, random_hex, get_device_classes
 from u2flib_server import u2f
 
@@ -40,9 +40,12 @@ class AddU2FView(FormView):
         u2f_response = form.cleaned_data['u2f_response']
         u2f_request = form.cleaned_data['u2f_request']
         device, attestation_cert = u2f.complete_registration(u2f_request, u2f_response)
-        U2FDevice.objects.create(user=self.request.user, public_key=device['publicKey'], key_handle=device['keyHandle'],
+        device = U2FDevice.objects.create(user=self.request.user, public_key=device['publicKey'], key_handle=device['keyHandle'],
                                  app_id=device['appId'], version=device['version'], confirmed=True)
-        # messages.success(self.request, 'U2F device added.')
+
+        if not hasattr(self.request.user, 'sso_auth_profile'):
+            Profile.objects.create(user=self.request.user, default_device=device, is_otp_enabled=True)
+
         return super().form_valid(form)
 
     def get_initial(self):

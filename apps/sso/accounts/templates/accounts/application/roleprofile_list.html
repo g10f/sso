@@ -1,0 +1,37 @@
+{% extends 'base_list.html' %}
+{% load i18n static %}
+
+
+{% block title %}{% trans 'role profiles' %}{% endblock %}
+
+{% block nav_accounts_user_list_class %}active{% endblock %}
+
+{% block breadcrumb %}
+  <ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+    <li class="active">{% trans 'role profiles' %}</li>
+  </ol>
+{% endblock breadcrumb %}
+
+{% block navbar %}{% include 'include/global_navigation.html' with active_navigation="users" %}{% endblock navbar %}
+
+{% block right_content %}
+  <div class="row">
+    <div class="col-sm-12">
+      {% if messages %}{% for message in messages %}
+        <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>
+      {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+
+  <h1>{% translate 'role profiles' %}</h1>
+  {% for obj in object_list %}
+    <h2>{{ obj.name }}</h2>
+    <ul>
+      {% for application_role in obj.application_roles.all %}
+        <li>{{ application_role }}</li>
+      {% endfor %}
+    </ul>
+  {% endfor %}
+{% endblock right_content %}

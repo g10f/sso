@@ -1,0 +1,12 @@
+
+footer {
+  > div {
+    > ul {
+      margin-top: 1rem;
+      > li {
+        display: inline;
+        padding: 0 2px;
+      }
+    }
+  }
+}
