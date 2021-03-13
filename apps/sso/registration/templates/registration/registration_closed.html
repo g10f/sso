@@ -5,10 +5,8 @@
 
 {% block form %}
   <h1>{% trans 'Registration closed' %}</h1>
-
-  {% url 'registration:registration_register' as registration_register_url %} 
-  
+  {% url 'registration:registration_register' as registration_register_url %}
   <p>
-  {% blocktrans %}Please try <a href="{{ registration_register_url }}">registering again</a> later.{% endblocktrans %}
+    {% blocktrans %}Please try <a href="{{ registration_register_url }}">registering again</a> later.{% endblocktrans %}
   </p>
 {% endblock %}

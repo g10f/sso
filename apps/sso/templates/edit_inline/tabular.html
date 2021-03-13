@@ -2,68 +2,70 @@
 <div class="inline-group" id="{{ formset.prefix }}-group"
      data-formset-type="tabular" data-formset-prefix="{{ formset.prefix }}" data-static-prefix="{% static "/" %}" data-delete-text="{% trans "Remove" %}"
      data-add-text="{% blocktrans with verbose_name=formset.form.opts.verbose_name|title %}Add another {{ verbose_name }}{% endblocktrans %}">
-    <div class="tabular inline-related{% if forloop.last %} last-related{% endif %}">
-        {{ formset.management_form }}
-        {% if  formset.non_form_errors %}
-            <div class="alert alert-danger">
-                {% if formset.non_field_errors|length == 1 %}{{ formset.non_field_errors.0 }}{% else %}{{ formset.non_field_errors }}{% endif %}
-            </div>{% endif %}
-        <table class="table table-condensed">
-            <thead>
-            <tr>
-                <th class="hidden"></th>
-                {% for key, field in formset.form.base_fields.items %}
-                    {% if not field.widget.is_hidden %}
-                        <th{% if field.required %} class="required"{% endif %}>{{ field.label }}
-                            {% if field.help_text %}&nbsp; <i class="glyphicon glyphicon-question-sign" title="{{ field.help_text|striptags }}"></i>{% endif %}
-                        </th>
-                    {% endif %}
-                {% endfor %}
-                {% if formset.can_delete %}
-                    <th>{% trans "Delete?" %}</th>{% endif %}
-            </tr>
-            </thead>
-            <tbody>
-            {% block formset_extra_rows %}{% endblock %}
-            {% for form in formset.forms %}
-                {% if form.non_field_errors %}
-                    <tr class="text-danger">
-                        <td colspan="{{ form.visible_fields|length|add:"1" }}">
-                            <div>{% if form.non_field_errors|length == 1 %}{{ form.non_field_errors.0 }}{% else %}{{ form.non_field_errors }}{% endif %}</div>
-                        </td>
-                    </tr>
+  <div class="tabular inline-related{% if forloop.last %} last-related{% endif %}">
+    {{ formset.management_form }}
+    {% if  formset.non_form_errors %}
+      <div class="alert alert-danger">
+        {% if formset.non_field_errors|length == 1 %}{{ formset.non_field_errors.0 }}{% else %}{{ formset.non_field_errors }}{% endif %}
+      </div>{% endif %}
+    <table class="table table-condensed">
+      <thead>
+      <tr>
+        <th class="hidden"></th>
+        {% for key, field in formset.form.base_fields.items %}
+          {% if not field.widget.is_hidden %}
+            <th{% if field.required %} class="required"{% endif %}>{{ field.label }}
+              {% if field.help_text %}&nbsp; <i class="bi bi-info-circle" data-bs-toggle="tooltip" title="{{ field.help_text|striptags }}"></i>{% endif %}
+            </th>
+          {% endif %}
+        {% endfor %}
+        {% if formset.can_delete %}
+          <th>{% trans "Delete?" %}</th>{% endif %}
+      </tr>
+      </thead>
+      <tbody>
+      {% block formset_extra_rows %}{% endblock %}
+      {% for form in formset.forms %}
+        {% if form.non_field_errors %}
+          <tr class="text-danger">
+            <td colspan="{{ form.visible_fields|length|add:"1" }}">
+              <div>{% if form.non_field_errors|length == 1 %}{{ form.non_field_errors.0 }}{% else %}{{ form.non_field_errors }}{% endif %}</div>
+            </td>
+          </tr>
+        {% endif %}
+        <tr class="tabular
+            {% cycle ' row1' ' row2' %}{% if field.errors or form.non_field_errors %} danger{% endif %}{% if form.fields.id.initial %} has_original{% endif %}{% if forloop.last %} empty-form{% endif %}"
+            id="{{ formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
+          <td class="original hidden">
+            {% spaceless %}
+              {% for field in form %}
+                {% if field.is_hidden %} {{ field }} {% endif %}
+              {% endfor %}
+            {% endspaceless %}
+          </td>
+          {% for field in form.visible_fields %}
+            {% if field.name != "DELETE" %}
+              <td{% if field.name %} class="field-{{ field.name }}{% if field.errors %} has-error{% endif %}"{% endif %}>
+                {% if field.is_readonly %}
+                  <p>{{ field.contents }}</p>
+                {% else %}
+                  <div class="g10f-form-control">{{ field }}
+                    {% if field.help_text or field.errors %}
+                      <div class="form-text">{% for error in field.errors %}{{ error }} {% endfor %}</div>{% endif %}
+                  </div>
                 {% endif %}
-                <tr class="tabular{% cycle ' row1' ' row2' %}{% if field.errors or form.non_field_errors %} danger{% endif %}{% if form.fields.id.initial %} has_original{% endif %}{% if forloop.last %} empty-form{% endif %}"
-                    id="{{ formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
-                    <td class="original hidden">
-                        {% spaceless %}
-                            {% for field in form %}
-                                {% if field.is_hidden %} {{ field }} {% endif %}
-                            {% endfor %}
-                        {% endspaceless %}
-                    </td>
-                    {% for field in form.visible_fields %}
-                        {% if field.name != "DELETE" %}
-                            <td{% if field.name %} class="field-{{ field.name }}{% if field.errors %} has-error{% endif %}"{% endif %}>
-                                {% if field.is_readonly %}
-                                    <p>{{ field.contents }}</p>
-                                {% else %}
-                                    <div class="dwbn-form-control">{{ field }}
-                                        {% if field.help_text or field.errors %}<span class="help-block">{% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
-                                    </div>
-                                {% endif %}
-                            </td>
-                        {% endif %}
-                    {% endfor %}
-                    {% if formset.can_delete %}
-                        <td class="delete">{% if form.fields.id.initial %}
-                            <div class="dwbn-form-control">
-                                <div class="checkbox">{{ form.DELETE }}</div>
-                            </div>{% endif %}</td>
-                    {% endif %}
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
+              </td>
+            {% endif %}
+          {% endfor %}
+          {% if formset.can_delete %}
+            <td class="delete">{% if form.fields.id.initial %}
+              <div class="g10f-form-control">
+                <div class="checkbox">{{ form.DELETE }}</div>
+              </div>{% endif %}</td>
+          {% endif %}
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>

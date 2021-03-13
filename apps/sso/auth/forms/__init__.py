@@ -1,6 +1,8 @@
 import json
 from datetime import timedelta
 
+from u2flib_server import u2f
+
 from django import forms
 from django.conf import settings
 from django.contrib.auth.forms import AuthenticationForm
@@ -10,7 +12,6 @@ from django.utils.translation import gettext_lazy as _
 from sso.auth.utils import totp_digits, match_token
 from sso.forms import bootstrap
 from sso.utils.translation import string_format
-from u2flib_server import u2f
 
 
 class EmailAuthenticationForm(AuthenticationForm):
@@ -18,15 +19,24 @@ class EmailAuthenticationForm(AuthenticationForm):
         max_length=75,
         error_messages={'required': _('Please enter your Email address or Username.')},
         label=_("Email address or Username"),
-        widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('Email address or Username')), 'autofocus': ''}))
+        widget=bootstrap.TextInput(attrs={
+            'placeholder': capfirst(_('Email address or Username')),
+            'autofocus': True,
+            'class': 'form-control-lg',
+            'autocomplete': 'username'}))
     password = forms.CharField(
         label=_("Password"),
         error_messages={'required': _('Please enter your Password.')},
-        widget=bootstrap.PasswordInput(attrs={'placeholder': capfirst(_('Password'))}))
+        widget=bootstrap.PasswordInput(attrs={
+            'placeholder': capfirst(_('Password')),
+            'class': 'form-control-lg',
+            'autocomplete': 'current-password'
+        }))
     remember_me = forms.BooleanField(label=_('Remember me'),
-                                     help_text=string_format(_('Stay logged in for %(days)d days'), {
-                                         'days': timedelta(seconds=settings.SESSION_COOKIE_AGE).days}),
-                                     required=False)
+                                     help_text=string_format(_('Stay logged in for %(days)d days'),
+                                                             {'days': timedelta(seconds=settings.SESSION_COOKIE_AGE).days}),
+                                     required=False,
+                                     widget=bootstrap.CheckboxInput())
     error_messages = {
         'invalid_login': _("Please enter a correct %(username)s and password. "
                            "Note that both fields may be case-sensitive."),
@@ -41,29 +51,6 @@ class EmailAuthenticationForm(AuthenticationForm):
         if data and data != data.strip():
             raise forms.ValidationError(self.error_messages['whitespaces'], code='whitespaces')
         return data
-
-    """
-    def confirm_login_allowed(self, user):
-        super().confirm_login_allowed(user)
-
-        # check if the activation is not expired
-        validate = False
-        if settings.SSO_VALIDATION_PERIOD_IS_ACTIVE:
-            if settings.SSO_VALIDATION_PERIOD_IS_ACTIVE_FOR_ALL:
-                validate = True
-            else:
-                for organisation in user.organisations.all().only('uses_user_activation', 'name'):
-                    if organisation.uses_user_activation:
-                        validate = True
-                        break
-        if validate:
-            if user.valid_until is not None and user.valid_until < now():
-                msg = ", ".join([o.name for o in user.organisations.all()])
-                raise forms.ValidationError(
-                    self.error_messages['expired'] % msg,
-                    code='expired',
-                )
-    """
 
 
 class U2FForm(forms.Form):
@@ -93,7 +80,11 @@ class U2FForm(forms.Form):
 
 class AuthenticationTokenForm(forms.Form):
     otp_token = forms.IntegerField(label=_("Token"), min_value=1, max_value=int('9' * totp_digits()),
-                                   widget=bootstrap.TextInput(attrs={'autofocus': '', 'autocomplete': 'off'}))
+                                   widget=bootstrap.TextInput(attrs={
+                                       'autofocus': True,
+                                       'autocomplete': 'one-time-code',
+                                       'class': 'form-control-lg'
+                                   }))
 
     def __init__(self, device=None, **kwargs):
         self.user = kwargs.pop('user')
@@ -107,7 +98,7 @@ class AuthenticationTokenForm(forms.Form):
         token = self.cleaned_data.get('otp_token')
         device = self._verify_token(token)
         if device is None:
-            raise forms.ValidationError(_('token don\'t match'))
+            raise forms.ValidationError(_('One-time code does not match.'))
 
         return self.cleaned_data
 

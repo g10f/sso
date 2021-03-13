@@ -1,10 +1,15 @@
 {% extends "base_site.html" %}
-{% load i18n %}
+
+{% block extrascript %}
+  {{ media }}
+  {{ form.media }}
+  <script src="{% url 'jsi18n' %}"></script>
+{% endblock extrascript %}
 
 {% block content %}
-<main role="main">
-    <div class="dwbn-centered">
-        {% block form %}{% endblock %}
-    </div>
-</main>
+  <main role="main">
+    <section>
+      <div class="g10f-centered">{% block form %}{% endblock %}</div>
+    </section>
+  </main>
 {% endblock %}

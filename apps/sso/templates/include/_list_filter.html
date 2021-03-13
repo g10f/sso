@@ -1,7 +1,7 @@
 {% load i18n list %}
 {% if filter.list and filter.list|length > 0 %}
 <div class="btn-group">
-    <button type="button" class="btn btn-default dropdown-toggle {% if filter.selected %}active{% endif %}" data-toggle="dropdown">
+    <button type="button" class="btn btn-secondary dropdown-toggle {% if filter.selected %}active{% endif %}" data-bs-toggle="dropdown">
         {% if filter.selected %}{{ filter.selected }}{% else %}{{ filter.select_text }}{% endif %}
         <span class="caret"></span>
     </button>

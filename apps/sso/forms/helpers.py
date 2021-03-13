@@ -18,6 +18,7 @@ from django.utils.translation import gettext as _
 
 logger = logging.getLogger(__name__)
 
+BASE_FORM_ID = 'base'
 
 def clean_base64_picture(base64_picture, max_upload_size=5242880):
     from django.template.defaultfilters import filesizeformat
@@ -94,7 +95,7 @@ def get_media_errors_and_active_form(form, formsets=None):
     active = ''
     if errors:
         if not form.is_valid():
-            active = 'object'
+            active = BASE_FORM_ID
         else:  # set the first formset with an error as active
             for formset in formsets:
                 if not formset.is_valid():

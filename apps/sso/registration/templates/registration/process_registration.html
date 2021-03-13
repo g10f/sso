@@ -4,48 +4,32 @@
 {% block title %}{{ brand }} | {% trans 'Activate user' %}{% endblock %}
 
 {% block breadcrumb %}
-    <ol class="breadcrumb">
-        <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-        <li><a href="{% url 'registration:user_registration_list' %}">{% trans 'User Registration List' %}</a></li>
-        <li><a href="{% url 'registration:update_user_registration' form.instance.pk %}">{{ form.instance }}</a></li>
-        <li class="active">{{ action_breadcrumb }}</li>
-    </ol>
+  <ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+    <li><a href="{% url 'registration:user_registration_list' %}">{% trans 'User Registration List' %}</a></li>
+    <li><a href="{% url 'registration:update_user_registration' form.instance.pk %}">{{ form.instance }}</a></li>
+    <li class="active">{{ action_breadcrumb }}</li>
+  </ol>
 {% endblock breadcrumb %}
 
 {% block form %}
-    <form role="form" class="form-horizontal" method="post">{% csrf_token %}
+  <form role="form" class="form-horizontal" method="post">
+    {% with fullname=form.instance.user.get_full_name picture=form.instance.user.picture %}
+      <h3>{% blocktrans %}Email Message to {{ fullname }}{% endblocktrans %}
+        {% if picture %}{% thumbnail picture "60x60" crop="center" as im %}
+          <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+        {% endthumbnail %}{% endif %}
+      </h3>
+    {% endwith %}
+    {% include 'include/_form_boilerplate.html' %}
 
-        {% block messages %}
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-        {% endblock messages %}
-        {% with fullname=form.instance.user.get_full_name picture=form.instance.user.picture %}
-            <h3>{% blocktrans %}Email Message to {{ fullname }}{% endblocktrans %}
-                {% if picture %}{% thumbnail picture "60x60" crop="center" as im %}
-                    <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
-                {% endthumbnail %}{% endif %}
-            </h3>
-        {% endwith %}
-        {% if form.errors %}
-            <div class="alert alert-danger">
-                {% if form.errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}
-                    {% trans "Please correct the errors below." %}{% endif %}
-            </div>
-        {% endif %}
-
-        {% include 'include/_form_snippet.html' %}
-        <div class="form-group">
-            <div class="dwbn-form-submit">
-                <button class="btn btn-primary">{{ action_txt }}</button>
-                {% trans 'or' %}
-                <a class="btn btn-default"
-                   href="{% url 'registration:update_user_registration' form.instance.pk %}">{% trans 'Cancel' %}</a>
-            </div>
-        </div>
-    </form>
+    {% include 'include/_form_snippet.html' %}
+    <div class="form-group">
+      <div class="g10f-form-submit">
+        <button class="btn btn-primary">{{ action_txt }}</button>
+        {% trans 'or' %}
+        <a class="btn btn-secondary" href="{% url 'registration:update_user_registration' form.instance.pk %}">{% trans 'Cancel' %}</a>
+      </div>
+    </div>
+  </form>
 {% endblock %}

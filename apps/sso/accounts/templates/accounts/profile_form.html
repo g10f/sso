@@ -3,95 +3,53 @@
 
 {% block title %}{% trans 'Profile' %}{% endblock %}
 
-{% block extrascript %}
-    {{ media }}
-    <script src="{% static "js/formsets-1.2.js" %}"></script>
-{% endblock extrascript %}
-
 {% block navbar %}{% include 'include/global_navigation.html' with active_navigation="profile" %}{% endblock navbar %}
+
 {% block left_content %}
-    {% include 'include/_navigation.html' with active_navigation="profile" %}{% endblock left_content %}
+  {% include 'include/_navigation.html' with active_navigation="profile" %}
+{% endblock left_content %}
 
 {% block breadcrumb %}
-    <ol class="breadcrumb">
-        <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-        <li class="active">{% trans 'My Account' %}</li>
-    </ol>
+  <ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+    <li class="active">{% trans 'My Account' %}</li>
+  </ol>
 {% endblock breadcrumb %}
 
 {% block form %}
-    <form enctype="multipart/form-data" class="form-horizontal" method="post"
-          data-active="{{ active }}">{% csrf_token %}
-        <div class="">
-            <h3>{% trans 'My account' %}</h3>
-            {% if messages %}{% for message in messages %}
-                <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>
-            {% endfor %}
-            {% endif %}
+  <form enctype="multipart/form-data" class="form-horizontal" method="post">
+    <h1>{% trans 'My account' %}</h1>
+    {% include 'include/_form_boilerplate.html' %}
+    {% translate 'Profile' as base_title %}
+    {% include 'bootstrap/forms/nav-tabs.html' %}
 
-            {% if errors %}
-                <div class="alert alert-danger">
-                    {% if errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}
-                        {% trans "Please correct the errors below." %}{% endif %}
-                </div>
-            {% endif %}
+    <div class="tab-content">
+      <div class="tab-pane" role="tabpanel" id="base">
+        {% include 'include/_picture_field.html' with field=form.picture %}
+        {% include 'include/_field.html' with field=form.username %}
+        {% include 'accounts/includes/_organisation_field.html' with field=form.organisation %}
+        {% include 'include/_field.html' with field=form.first_name %}
+        {% include 'include/_field.html' with field=form.last_name %}
+        {% include 'include/_field.html' with field=form.gender %}
+        {% include 'include/_field.html' with field=form.dob %}
+        {% include 'include/_field.html' with field=form.homepage %}
+        {% include 'include/_field.html' with field=form.language %}
+        {% include 'include/_field.html' with field=form.timezone %}
+      </div>
+
+      {% for formset in formsets %}
+        <div class="tab-pane" role="tabpanel" id="{{ formset.prefix }}">{% include formset.form.template %}</div>
+      {% endfor %}
+
+      <div class="form-group">
+        <div class="g10f-form-submit">
+          {% if redirect_uri %}
+            <a class="btn btn-secondary" href="{{ redirect_uri }}">{% trans 'Back' %}</a>{% endif %}
+          <a class="btn btn-secondary" href="{% url 'accounts:delete_profile' %}">{% trans 'Delete' %}</a>
+          <button type="submit" class="btn btn-secondary" name="_continue">{% trans 'Save and continue editing' %}</button>
+          <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
         </div>
-
-        {# hidden field #}
-        {% for hidden in form.hidden_fields %}
-            {{ hidden }}
-        {% endfor %}
-
-        <ul class="nav nav-tabs dwbn-nav-tabs" id="myTab">
-            <li class="{% if not active or active == "object" %}active{% endif %}">
-                <a data-toggle="tab"
-                   href="#object">{% trans "Profile" %}</a>
-            </li>
-            {% for formset in formsets %}
-                <li class="{% if active == formset.prefix %}active{% endif %}">
-                    <a data-toggle="tab"
-                       href="#{{ formset.prefix }}">{{ formset.form.opts.verbose_name_plural|title }}</a>
-                </li>
-            {% endfor %}
-        </ul>
-
-        <div class="tab-content">
-            <div class="tab-pane {% if not active or active == "object" %}active{% endif %}" id="object">
-                {% include 'include/_picture_field.html' with field=form.picture %}
-                {% include 'include/_field.html' with field=form.username %}
-                {% comment %}
-                {% if is_validation_period_active %}
-                    {% include 'include/_static_field.html' with field=form.valid_until %}
-                {% endif %}
-                {% endcomment %}
-                {% include 'accounts/includes/_organisation_field.html' with field=form.organisation %}
-                {% include 'include/_field.html' with field=form.first_name %}
-                {% include 'include/_field.html' with field=form.last_name %}
-                {% include 'include/_field.html' with field=form.gender %}
-                {% include 'include/_field.html' with field=form.dob %}
-                {% include 'include/_field.html' with field=form.homepage %}
-                {% include 'include/_field.html' with field=form.language %}
-                {% include 'include/_field.html' with field=form.timezone %}
-            </div>
-
-            {% for formset in formsets %}
-                <div class="tab-pane {% if active == formset.prefix %}active{% endif %}" id="{{ formset.prefix }}">
-                    {% include formset.form.template %}
-                </div>
-            {% endfor %}
-
-        </div>
-        <!-- /.tab-content -->
-        <div class="form-group">
-            <div class="dwbn-form-submit">
-                {% if redirect_uri %}
-                    <a class="btn btn-default" href="{{ redirect_uri }}">{% trans 'Back' %}</a>{% endif %}
-                <a class="btn btn-default" href="{% url 'accounts:delete_profile' %}">{% trans 'Delete' %}</a>
-                <button type="submit" class="btn btn-default"
-                        name="_continue">{% trans 'Save and continue editing' %}</button>
-                <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
-            </div>
-        </div>
-    </form>
-
+      </div>
+    </div>
+  </form>
 {% endblock %}

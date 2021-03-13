@@ -42,11 +42,11 @@ def paginator_number(page, i, cl):
     Generates an individual page index link in a paginated list.
     """
     if i == DOT:
-        return format_html('<li class="disabled"><a href="#">&hellip;</a></li>')
+        return format_html('<li class="page-item disabled"><a class="page-link" href="#">&hellip;</a></li>')
     elif i == page.number:
-        return format_html('<li class="active"><a href="#">{0}</a></li>', i)
+        return format_html('<li class="page-item active"><a class="page-link" href="#">{0}</a></li>', i)
     else:
-        return format_html('<li class=""><a href="{0}" >{1}</a></li>', cl.get_query_string({PAGE_VAR: i}), i)
+        return format_html('<li class="page-item"><a class="page-link" href="{0}" >{1}</a></li>', cl.get_query_string({PAGE_VAR: i}), i)
 
 
 @register.inclusion_tag('include/pagination.html')

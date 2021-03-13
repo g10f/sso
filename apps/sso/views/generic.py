@@ -9,7 +9,7 @@ from django.utils.encoding import force_str
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from django.views import generic
-from sso.forms.helpers import ErrorList
+from sso.forms.helpers import ErrorList, BASE_FORM_ID
 from sso.views import main
 
 logger = logging.getLogger(__name__)
@@ -190,7 +190,7 @@ class FormsetsUpdateView(generic.UpdateView):
 
     @property
     def media(self):
-        js = ['js/formsets-1.2.js']
+        js = ['js/formsets-1.3.js']
         return forms.Media(js=js)
 
     @property
@@ -227,9 +227,10 @@ class FormsetsUpdateView(generic.UpdateView):
             if not form.is_valid():
                 try:
                     # Hack to activate the correct tab in the HTML view
+                    # TODO: where is this set
                     active = errors[0].data[0].params['active']
-                except Exception:
-                    active = 'object'
+                except Exception as e:
+                    active = BASE_FORM_ID
             else:  # set the first formset with an error as active
                 for formset in formsets:
                     if not formset.is_valid():

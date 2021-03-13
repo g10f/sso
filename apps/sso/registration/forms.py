@@ -66,17 +66,19 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
     application_roles = forms.ModelMultipleChoiceField(
         queryset=None,
         required=False,
-        widget=bootstrap.FilteredSelectMultiple(_("Application roles"), False),
+        widget=bootstrap.FilteredSelectMultiple(_("Application roles")),
         label=_("Additional application roles"),
-        help_text=_("* You don't need to select the application roles which are already included by "
-                    "the role profiles."))
+        help_text=mixins.UserRolesMixin.application_roles_help)
     check_back = forms.BooleanField(label=_("Check back"),
                                     help_text=_('Designates if there are open questions to check.'), required=False)
     is_access_denied = forms.BooleanField(label=_("Access denied"),
                                           help_text=_('Designates if access is denied to the user.'), required=False)
-    role_profiles = forms.MultipleChoiceField(required=False, widget=bootstrap.CheckboxSelectMultiple(),
-                                              label=_("Role profiles"),
-                                              help_text=_('Groups of application roles that are assigned together.'))
+
+    role_profiles = forms.MultipleChoiceField(
+        required=False,
+        widget=bootstrap.FilteredSelectMultiple(_("Role profiles")),
+        label=_("Role profiles"),
+        help_text=mixins.UserRolesMixin.role_profiles_help)
 
     def clean_username(self):
         username = self.cleaned_data["username"]
@@ -129,10 +131,6 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
         # self.fields['role_profiles'].queryset = current_user.get_administrable_role_profiles()
         self.fields['role_profiles'].choices = [(role_profile.id, role_profile) for role_profile in
                                                 current_user.get_administrable_role_profiles()]
-        # add custom data
-        self.fields['role_profiles'].dictionary = {role_profile.id: role_profile for role_profile in
-                                                   current_user.get_administrable_role_profiles()}
-
         self.fields['organisations'].queryset = current_user.get_administrable_user_organisations()
 
     def save(self):

@@ -1,5 +1,6 @@
 from django.template import loader
 from django.utils.functional import lazy
+from django.utils.safestring import mark_safe
 from django.utils.translation import get_language, activate
 
 
@@ -31,3 +32,6 @@ def i18n_email_msg_and_subj(context, email_template_name, subject_template_name,
             activate(cur_language)
     else:
         return msg_and_subject()
+
+
+mark_safe_lazy = lazy(mark_safe, str)

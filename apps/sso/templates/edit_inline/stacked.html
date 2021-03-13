@@ -1,30 +1,32 @@
 {% load i18n static %}
 
-<div class="inline-group" id="{{ formset.prefix }}-group" 
-	data-formset-type="stacked" data-formset-prefix="{{ formset.prefix }}" data-static-prefix="{% static "/" %}" data-delete-text="{% trans "Remove" %}" 
-	data-add-text="{% blocktrans with verbose_name=formset.form.opts.verbose_name|title %}Add another {{ verbose_name }}{% endblocktrans %}">
-	{{ formset.management_form }}
-	{{ formset.non_form_errors }}
+<div class="inline-group" id="{{ formset.prefix }}-group"
+     data-formset-type="stacked" data-formset-prefix="{{ formset.prefix }}" data-static-prefix="{% static "/" %}" data-delete-text="{% trans "Remove" %}"
+     data-add-text="{% blocktrans with verbose_name=formset.form.opts.verbose_name|title %}Add another {{ verbose_name }}{% endblocktrans %}">
+  {{ formset.management_form }}
+  {{ formset.non_form_errors }}
 
-	{% for inline_form in formset.forms %}
-	<div class="inline-related{% if forloop.last %} empty-form last-related{% endif %}" id="{{ formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
+  {% for inline_form in formset.forms %}
+    <div class="inline-related{% if forloop.last %} empty-form last-related{% endif %}"
+         id="{{ formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
       <div>
-        <strong>{{ formset.form.opts.verbose_name|title }}:&nbsp;<span class="inline_label">{% if inline_form.original %}{{ inline_form.original }}{% else %}#{{ forloop.counter }}{% endif %}</span></strong>
-	    {% if formset.can_delete and inline_form.fields.id.initial %}
-    	<div class="delete">
-	    	<div>{{ inline_form.DELETE.label_tag }}&nbsp;</div>
-	    	<div>{{ inline_form.DELETE  }}</div>
-    	</div>
-	    {% endif %}
-	  </div>
-      {% if inline_form.non_field_errors %}
-      <div class="alert alert-danger">
-          {% if inline_form.non_field_errors|length == 1 %}{{ inline_form.non_field_errors.0 }}{% else %}{{ inline_form.non_field_errors }}{% endif %}
+        <strong>{{ formset.form.opts.verbose_name|title }}:&nbsp;<span class="inline_label">{% if inline_form.original %}{{ inline_form.original }}{% else %}#
+          {{ forloop.counter }}{% endif %}</span></strong>
+        {% if formset.can_delete and inline_form.fields.id.initial %}
+          <div class="delete">
+            <div>{{ inline_form.DELETE.label_tag }}&nbsp;</div>
+            <div>{{ inline_form.DELETE }}</div>
+          </div>
+        {% endif %}
       </div>
+      {% if inline_form.non_field_errors %}
+        <div class="alert alert-danger">
+          {% if inline_form.non_field_errors|length == 1 %}{{ inline_form.non_field_errors.0 }}{% else %}{{ inline_form.non_field_errors }}{% endif %}
+        </div>
       {% endif %}
-	  {% include "include/fieldset.html" %}
-	  {% if inline_form.has_auto_field %}{{ inline_form.pk_field.field }}{% endif %}
-	  {{ inline_form.fk_field.field }}
-	</div>
-	{% endfor %}
+      {% include "include/fieldset.html" %}
+      {% if inline_form.has_auto_field %}{{ inline_form.pk_field.field }}{% endif %}
+      {{ inline_form.fk_field.field }}
+    </div>
+  {% endfor %}
 </div>

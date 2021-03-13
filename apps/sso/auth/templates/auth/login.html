@@ -1,69 +1,49 @@
-{% extends "base.html" %}
-{% load i18n static %}
-
-{% block title %}{% trans 'Log in' %}{% endblock %}
-
-{% block bodyclass %}dwbn-{{ display }}{% endblock %}
+{% extends "auth/login_base.html" %}
+{% load i18n %}
 
 {% block content %}
-<form class="dwbn-form-signin" method="post" id="login-form">{% csrf_token %}
-
+  <form class="sign-in-form" method="post" id="login-form">
     {% block form-signin-heading %}
-    <h3 class="dwbn-form-signin-heading">{% blocktrans %}Log in with your {{ brand }} account{% endblocktrans %}</h3>
+      <h1 class="text-center">{% blocktrans %}Log in with your {{ brand }} account{% endblocktrans %}</h1>
     {% endblock %}
 
-    {% if messages %}{% for message in messages %}
-        <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
-    {% endif %}
+    {% include 'include/_form_boilerplate.html' %}
 
     {% block login_message %}{% endblock %}
-	
-    <div class="{% if form.username.errors %}has-error{% endif %}">{{ form.username }}</div>
-    <div class="{% if form.password.errors %}has-error{% endif %}">{{ form.password }}</div>
 
-	{% block extra_fields %}{% endblock %}
-  
-    {% if form.errors %}
-    <div class="alert alert-danger">
-		{% for key, errors in form.errors.items %} 
-		  {% for error in errors %}{{ error }}<br>{% endfor %}
-		{% endfor %}
+    {{ form.username }}
+    {{ form.password }}
+
+    {% block extra_fields %}{% endblock %}
+
+    <button class="btn btn-lg btn-brand" type="submit">{% trans 'Log in' %}</button>
+
+    <div class="form-check mx-auto" title="{{ form.remember_me.help_text }}">
+      {{ form.remember_me }}
+      <label class="form-check-label" for="{{ form.remember_me.id_for_label }}">
+        {{ form.remember_me.label }}
+      </label>
     </div>
+
+    {% url 'accounts:password_reset' as password_reset_url %}
+    {% if password_reset_url %}
+      <a class="btn btn-lg btn-light" target="_blank" href="{{ password_reset_url }}">{% trans 'Forgotten your password?' %}</a>
     {% endif %}
 
-    <div class="form-group">
-       <button class="btn btn-lg btn-primary btn-block" type="submit">{% trans 'Log in' %}</button>
-    </div>
-   
-    <div class="checkbox">
-        <label title="{{ form.remember_me.help_text }}" for="id_{{ form.remember_me.html_name }}">
-            {{ form.remember_me }}
-            {{ form.remember_me.label }}
-        </label>
-    </div>
+    {% if display != 'popup' %}
+      <div class="py-2 text-center">
+        {% if registration_open %}
+          {% url 'registration:registration_register' as registration_register_url %}
+          {% if registration_register_url and registration_open %}
+            {% blocktrans %}New at {{ site_name }}? <a href="{{ registration_register_url }}">Register</a>{% endblocktrans %}
+          {% endif %}
+        {% endif %}
 
-    <div class="form-group">
-       {% url 'accounts:password_reset' as password_reset_url %}
-       {% if password_reset_url %}
-       <div class="password-reset-link">
-         <a target="_blank" href="{{ password_reset_url }}">{% trans 'Forgotten your password?' %}</a>
-       </div>
-       {% endif %}
-       
-       {% if registration_open %}
-       {% url 'registration:registration_register' as registration_register_url %}
-       {% if registration_register_url and registration_open %}
-       <div class="registration_link">
-           {% blocktrans %}New at {{ site_name }}? <a href="{{ registration_register_url }}">Register</a>{% endblocktrans %}.
-       </div>
-       {% endif %}
-       {% endif %}
+        {% if cancel_url %}
+          {% translate 'or' %} <a class="link-danger" href="{{ cancel_url }}">{% trans 'Cancel' %}</a>
+        {% endif %}
+      </div>
+    {% endif %}
 
-       {% if cancel_url %}
-       <div class="cancel">
-       <a class="" href="{{ cancel_url }}">{% trans 'Cancel' %}</a>
-       </div>
-       {% endif %}
-   </div>
-</form>
-{% endblock content %}
+  </form>
+{% endblock %}

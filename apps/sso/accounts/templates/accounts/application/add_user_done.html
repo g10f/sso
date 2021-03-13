@@ -6,68 +6,70 @@
 {% block left_content %}{% include 'include/_navigation.html' with active_navigation="add_user" %}{% endblock left_content %}
 
 {% block breadcrumb %}
-    <ol class="breadcrumb">
-        <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-        <li><a href="{% url 'accounts:user_list' %}">{% trans 'User List' %}</a></li>
-        <li class="active">{% trans 'Add User' %}</li>
-    </ol>
+  <ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+    <li><a href="{% url 'accounts:user_list' %}">{% trans 'User List' %}</a></li>
+    <li class="active">{% trans 'Add User' %}</li>
+  </ol>
 {% endblock breadcrumb %}
 
 
 {% block form %}
-    <h1>{% trans 'User added successfully' %}</h1>
-    <div class="alert alert-success">
-        <strong>{% trans 'A new User was created.' %}</strong><br>
-        {% trans 'The new user got an email with instructions for setting a password.' %}<br>
-    </div>
+  <h1>{% trans 'User added successfully' %}</h1>
+  <div class="alert alert-success">
+    <strong>{% trans 'A new User was created.' %}</strong><br>
+    {% trans 'The new user got an email with instructions for setting a password.' %}<br>
+  </div>
 
-    <table class="table">
-        <tbody>
-        <tr>
-            <th>{% trans 'Name' %}:</th>
-            <td>{{ new_user.username }}</td>
-        </tr>
-        <tr>
-            <th>{% trans 'First name' %}:</th>
-            <td>{{ new_user.first_name }}</td>
-        </tr>
-        <tr>
-            <th>{% trans 'Last name' %}:</th>
-            <td>{{ new_user.last_name }}</td>
-        </tr>
-        <tr>
-            <th>{% trans 'Email' %}:</th>
-            <td>{{ new_user.primary_email }}</td>
-        </tr>
-        <tr>
-            <th>{% trans 'Organisations' %}:</th>
-            <td>{% for organisation in new_user.organisations.all %}{{ organisation }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
-        </tr>
+  <table class="table">
+    <tbody>
+    <tr>
+      <th>{% trans 'Name' %}:</th>
+      <td>{{ new_user.username }}</td>
+    </tr>
+    <tr>
+      <th>{% trans 'First name' %}:</th>
+      <td>{{ new_user.first_name }}</td>
+    </tr>
+    <tr>
+      <th>{% trans 'Last name' %}:</th>
+      <td>{{ new_user.last_name }}</td>
+    </tr>
+    <tr>
+      <th>{% trans 'Email' %}:</th>
+      <td>{{ new_user.primary_email }}</td>
+    </tr>
+    <tr>
+      <th>{% trans 'Organisations' %}:</th>
+      <td>{% for organisation in new_user.organisations.all %}{{ organisation }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+    </tr>
 
-        {% block user-extra-form-fields %}{% endblock  %}
+    {% block user-extra-form-fields %}{% endblock %}
 
-        {% for role_profile in new_user.role_profiles.all %}
-            <tr>
-                <th>{% if forloop.first %}{% trans 'Role profiles' %}: {% endif %}</th>
-                <td>{{ role_profile }}</td>
-            </tr>
-        {% endfor %}
-        {% for application_role in new_user.application_roles.all %}
-            <tr>
-                <th>{% if forloop.first %}{% trans 'Application roles' %}: {% endif %}</th>
-                <td>{{ application_role }}</td>
-            </tr>
-        {% endfor %}
-        {% if new_user.usernote_set.all %}
-        <tr>
-            <th>{% trans 'Notes' %}:</th>
-            <td>{{ new_user.usernote_set.all.0.note }}</td>
-        </tr>
-        {% endif %}
-        </tbody>
-    </table>
-    {% if redirect_uri %}<a class="btn btn-default" href="{{ redirect_uri }}">{% trans 'Back' %}</a>{% endif %}
-    <a class="btn btn-default" href="{% url 'accounts:update_user' new_user.uuid.hex %}{% if redirect_uri %}?redirect_uri={{ redirect_uri }}{% endif %}">{% trans 'Edit user' %}</a>
-    <a class="btn btn-primary" href="{% url 'accounts:add_user' %}{% if redirect_uri %}?redirect_uri={{ redirect_uri }}{% endif %}">{% trans 'Add another user' %}</a>
+    {% for role_profile in new_user.role_profiles.all %}
+      <tr>
+        <th>{% if forloop.first %}{% trans 'Role profiles' %}: {% endif %}</th>
+        <td>{{ role_profile }}</td>
+      </tr>
+    {% endfor %}
+    {% for application_role in new_user.application_roles.all %}
+      <tr>
+        <th>{% if forloop.first %}{% trans 'Application roles' %}: {% endif %}</th>
+        <td>{{ application_role }}</td>
+      </tr>
+    {% endfor %}
+    {% if new_user.usernote_set.all %}
+      <tr>
+        <th>{% trans 'Notes' %}:</th>
+        <td>{{ new_user.usernote_set.all.0.note }}</td>
+      </tr>
+    {% endif %}
+    </tbody>
+  </table>
+  {% if redirect_uri %}<a class="btn btn-secondary" href="{{ redirect_uri }}">{% trans 'Back' %}</a>{% endif %}
+  <a class="btn btn-secondary"
+     href="{% url 'accounts:update_user' new_user.uuid.hex %}{% if redirect_uri %}?redirect_uri={{ redirect_uri }}{% endif %}">{% trans 'Edit user' %}</a>
+  <a class="btn btn-primary"
+     href="{% url 'accounts:add_user' %}{% if redirect_uri %}?redirect_uri={{ redirect_uri }}{% endif %}">{% trans 'Add another user' %}</a>
 {% endblock %}
 

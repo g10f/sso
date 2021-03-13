@@ -45,4 +45,5 @@ urlpatterns = [
     path('organisation_change/<int:pk>/accept/', organisation.OrganisationChangeAcceptView.as_view(),
          name='organisationchange_accept'),
     path('messages/<uuid:uuid>/', onetimemessage.OneTimeMessageView.as_view(), name="view_message"),
+    path('roleprofiles/', application.RoleProfileListView.as_view(), name='roleprofile_list'),
 ]

@@ -2,47 +2,54 @@
 {% load i18n %}
 {% block nav_home_class %}active{% endblock %}
 
-
-{% block left_content %}
-    {% if user.is_authenticated %}{{ block.super }}{% endif %}
-{% endblock %}
-
 {% block breadcrumb %}
-    {% if user.is_authenticated %}
-        <ol class="breadcrumb">
-            <li class="active">{% trans 'Home' %}</li>
-        </ol>
-    {% endif %}
+  {% if user.is_authenticated %}
+    <ol class="breadcrumb">
+      <li class="active">{% trans 'Home' %}</li>
+    </ol>
+  {% endif %}
 {% endblock breadcrumb %}
 
-{% block right_content %}
-    {% if messages %}{% for message in messages %}
-        <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
-    {% endif %}
+{% block content %}
+  <main>
     {% if user.is_authenticated %}
+      <aside>
+        {% block left_content %}{{ block.super }}{% endblock left_content %}
+      </aside>
+      <section>
+        {% if messages %}{% for message in messages %}
+          <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
         {% trans 'Welcome,' %}
         <strong>{% filter force_escape %}{% firstof user.get_full_name user.username %}{% endfilter %}</strong>.
         {% if apps %}
-            <h3>{% trans 'Applications' %}</h3>
+          <section class="py-4 container">
+            <h1>{% trans 'My applications' %}</h1>
             <ul>
-                {% for app in user.get_apps %}
-                    {% if app.url and not app.is_internal %}
-                        <li><a href="{{ app.url }}">{{ app.title }}</a></li>{% endif %}
-                {% endfor %}
+              {% for app in user.get_apps %}
+                {% if app.url and not app.is_internal %}
+                  <li><a href="{{ app.url }}">{{ app.title }}</a></li>{% endif %}
+              {% endfor %}
             </ul>
+          </section>
         {% endif %}
+      </section>
     {% else %}
-        <h3>{% blocktrans %}One account. All of {{ site_name }}.{% endblocktrans %}</h3>
-        <p>
-            {% blocktrans %}<a href="{{ login_url }}">Sign in with your {{ brand }} Account</a> and use all {{ site_name }} services.{% endblocktrans %}
-        </p>
+      <section class="py-5 text-center">
+        <div class="mx-auto mb-3" style="max-width: 550px;">
+          <h1>{% blocktrans %}One account. All of {{ site_name }}.{% endblocktrans %}</h1>
+        </div>
 
-        {% url 'registration:registration_register' as registration_register_url %}
-        {% if registration_register_url and registration_open %}
-        <p>
-        {% blocktrans %}New at {{ site_name }}? <a href="{{ registration_register_url }}">Register</a>{% endblocktrans %}.
-        </p>
-        {% endif %}
+        <div class="sign-in-form">
+          {% url 'registration:registration_register' as registration_register_url %}
+          <a class="btn btn-lg btn-brand" href="{{ login_url }}">{% trans 'Log in' %}</a>
+          {% if registration_register_url and registration_open %}
+            {% blocktrans %}New at {{ site_name }}?{% endblocktrans %}
+            <a class="btn btn-lg btn-default" href="{{ registration_register_url }}">{% trans 'Register' %}</a>
+          {% endif %}
+        </div>
+      </section>
     {% endif %}
-
-{% endblock right_content %}
+  </main>
+{% endblock content %}

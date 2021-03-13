@@ -1,6 +1,16 @@
 {% extends "base_site.html" %}
 {% load i18n %}
 
+{% block extrascript %}
+  {% if media and form.media %}
+    {{ media|add:form.media }}
+  {% else %}
+    {{ media }}
+    {{ form.media }}
+  {% endif %}
+  <script src="{% url 'jsi18n' %}"></script>
+{% endblock extrascript %}
+
 {% block right_content %}
-{% block form %}{% endblock %}
+  {% block form %}{% endblock %}
 {% endblock %}

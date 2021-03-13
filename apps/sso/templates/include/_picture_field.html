@@ -1,7 +1,7 @@
-{% load thumbnail %}
 <div class="form-group  {% if field.errors %}has-error{% endif %}">
-  <label class="control-label" for="id_{{ field.html_name }}">{{ field.label }}{% if field.field.required %}*{% endif %}</label>
-  <div class="dwbn-form-control">
-      {{ field }}{% if field.help_text or field.errors %}<span class="help-block">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</span>{% endif %}
+  <label class="col-form-label" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}*{% endif %}</label>
+  <div class="g10f-form-control">
+    {{ field }}{% if field.help_text or field.errors %}
+      <div class="form-text">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</div>{% endif %}
   </div>
 </div>

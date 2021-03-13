@@ -1,10 +1,4 @@
 // same as alert-danger for fit with django message.tags
-$theme-colors: map-merge(
-  (
-    "error":     $danger,
-  ),
-  $theme-colors
-);
 
 html {
   overflow-y: scroll;
@@ -18,43 +12,48 @@ main {
   @include make-row();
 }
 
-main aside {
+aside {
   @include make-col-ready();
-  @include media-breakpoint-up(sm) {
+  @include media-breakpoint-up(md) {
+    @include make-col(5);
+  }
+  @include media-breakpoint-up(lg) {
     @include make-col(4);
   }
-  @include media-breakpoint-up(md) {
+  @include media-breakpoint-up(xl) {
     @include make-col(3);
   }
 }
 
-main section {
+section {
   @include make-col-ready();
-  @include media-breakpoint-up(sm) {
+  @include media-breakpoint-up(md) {
+    @include make-col(12);
+  }
+}
+
+aside + section {
+  @include make-col-ready();
+  @include media-breakpoint-up(md) {
+    @include make-col(7);
+  }
+  @include media-breakpoint-up(lg) {
     @include make-col(8);
   }
-  @include media-breakpoint-up(md) {
+  @include media-breakpoint-up(xl) {
     @include make-col(9);
   }
-
 }
 
-.dwbn-label {
-  @include make-col-ready();
-  @include media-breakpoint-up(xs) {
-    @include make-col(4);
-  }
+.list-group-item > .badge {
+  float: right;
 }
 
-.dwbn-content {
-  @include make-col-ready();
-
-  @include media-breakpoint-up(xs) {
-    @include make-col(8);
-  }
-}
 
 div.form-group {
+  margin-bottom: 1rem;
+  @include make-row();
+
   > label {
     @include make-col-ready();
     @include media-breakpoint-up(sm) {
@@ -62,21 +61,21 @@ div.form-group {
     }
   }
 
-  > .dwbn-form-control {
+  > .g10f-form-control {
     @include make-col-ready();
     @include media-breakpoint-up(sm) {
       @include make-col(9);
     }
   }
 
-  > .dwbn-form-control_lg {
+  > .g10f-form-control_lg {
     @include make-col-ready();
     @include media-breakpoint-up(sm) {
       @include make-col(12);
     }
   }
 
-  > .dwbn-form-submit {
+  > .g10f-form-submit {
     @include make-col-ready();
     @include media-breakpoint-up(sm) {
       @include make-col-offset(3);
@@ -85,49 +84,67 @@ div.form-group {
   }
 }
 
-// bootstrap indent the labels to position radios/checkboxes as hanging controls.
-// we have the label as seperate element and not the checkbox inside a label
-.dwbn-form-control div.checkbox > input[type="checkbox"] {
-  margin-left: 0;
-}
 
 noscript div {
   margin-top: -20px;
 }
 
-// hide element if javascript is not enabled
-html.no-js .no-js-hide {
+.pull-right {
+  float: right !important;
+}
+
+.hidden {
   @include visually-hidden();
 }
 
 // hidden honey pot field in the registration form
-.dwbn-honeypot {
+.g10f-honeypot {
   @include visually-hidden();
 }
 
 // filter row in the list view
-.dwbn-filter-row {
-  margin-bottom: 15px;
-}
+.g10f-filter-row {
+  margin-bottom: .5rem;
 
-.dwbn-nav-tabs {
-  margin-bottom: 20px;
+  .nav-item {
+    margin-right: .25rem;
+    margin-bottom: .25rem;
+  }
 }
 
 // thumbnail in the global navigation bar
-.dwbn-icon-user {
+.g10f-icon-user {
   margin-top: -10px;
   margin-bottom: -9px;
 }
 
-.dwbn-centered {
+.g10f-centered {
+  margin-right: auto;
+  margin-left: auto;
+
   @include make-col-ready();
   @include media-breakpoint-up(md) {
-    @include make-col-offset(1);
     @include make-col(10);
   }
   @include media-breakpoint-up(lg) {
-    @include make-col-offset(2);
     @include make-col(8);
+  }
+}
+
+.breadcrumb > li {
+  // The separator between breadcrumbs (by default, a forward-slash: "/")
+  + li {
+    padding-left: $breadcrumb-item-padding-x;
+
+    &::before {
+      float: left; // Suppress inline spacings and underlining of the separator
+      padding-right: $breadcrumb-item-padding-x;
+      color: $breadcrumb-divider-color;
+      content: var(--#{$variable-prefix}breadcrumb-divider, escape-svg($breadcrumb-divider)) #{"/* rtl:"} var(--#{$variable-prefix}breadcrumb-divider, escape-svg($breadcrumb-divider-flipped)) #{"*/"};
+    }
+  }
+
+  &.active {
+    color: $breadcrumb-active-color;
   }
 }

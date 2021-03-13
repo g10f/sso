@@ -1,1 +1,1 @@
-<p {% include "django/forms/widgets/attrs.html" %} >{% if widget.value != None %}{{ widget.value }}{% endif %}</p>
+<input type="text" readonly {% include "django/forms/widgets/attrs.html" %} value="{{ widget.value | default_if_none:'' }}">

@@ -1,10 +1,6 @@
 {% extends "centered_form.html" %}
 {% load i18n static thumbnail %}
 
-{% block extrascript %}
-    {{ form.media }}
-{% endblock extrascript %}
-
 {% block title %}{% trans 'Request extended access' %}{% endblock %}
 
 {% block form %}
@@ -58,10 +54,10 @@
                 {% block submit_group %}
                     <button type="submit" class="btn btn-primary">{% trans 'Request extended access' %}</button>
                     {% if redirect_uri %}
-                        <a class="btn btn-default" href="{{ redirect_uri }}">{% trans 'Back' %}</a>
+                        <a class="btn btn-secondary" href="{{ redirect_uri }}">{% trans 'Back' %}</a>
                     {% endif %}
                     {% if form.instance.pk %}
-                        <button type="submit" class="btn btn-default"
+                        <button type="submit" class="btn btn-secondary"
                                 name="_cancel">{% trans 'Cancel extended access' %}</button>{% endif %}
                 {% endblock %}
             </div>

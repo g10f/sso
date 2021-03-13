@@ -216,7 +216,7 @@ class TokenView(FormView):
 
 @never_cache
 def logout(request, next_page=None,
-           template_name='accounts/logged_out.html',
+           template_name='auth/logged_out.html',
            redirect_field_name=REDIRECT_FIELD_NAME,
            current_app=None, extra_context=None):
     """

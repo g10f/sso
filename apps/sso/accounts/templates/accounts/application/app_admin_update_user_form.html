@@ -4,88 +4,43 @@
 
 {% block title %}{% trans 'Change User' %}{% endblock %}
 
-{% block extrascript %}
-    {{ media }}
-    <script src="{% static "js/formsets-1.2.js" %}"></script>
-{% endblock extrascript %}
-
 {% block breadcrumb %}
-    <ol class="breadcrumb">
-        <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-        <li><a href="{% url 'accounts:app_admin_user_list' %}">{% trans 'User Roles' %}</a></li>
-        <li class="active">{% trans 'Change User' %}</li>
-    </ol>
+  <ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
+    <li><a href="{% url 'accounts:app_admin_user_list' %}">{% trans 'User Roles' %}</a></li>
+    <li class="active">{% trans 'Change User' %}</li>
+  </ol>
 {% endblock breadcrumb %}
 
 {% block form %}
-    <form class="form-horizontal" method="post" data-active="{{ active }}">{% csrf_token %}
-        {# Include the hidden fields in the form #}
-        {% for hidden in form.hidden_fields %}
-            {{ hidden }}
-        {% endfor %}
+  <form class="form-horizontal" method="post">
+    <h1>{{ title }} - {{ form.user.first_name }} {{ form.user.last_name }}</h1>
+    {% include 'include/_form_boilerplate.html' %}
 
-        <div class="">
-            <h3>{{ title }} - {{ form.user.first_name }} {{ form.user.last_name }}</h3>
+    <div class="form-group">
+      <label class="col-form-label">{% trans 'picture' %}</label>
 
-            {% if messages %}{% for message in messages %}
-                <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>
-            {% endfor %}
-            {% endif %}
+      <div class="g10f-form-control">
+        {% thumbnail form.user.picture "240x240" crop="center" as im %}
+          <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">{% endthumbnail %}
+      </div>
+    </div>
 
-            {% if errors %}
-                <div class="alert alert-danger">
-                    {% if errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}
-                        {% trans "Please correct the errors below." %}{% endif %}
-                </div>
-            {% endif %}
-        </div>
+    {% include 'include/_field.html' with field=form.username %}
+    {% include 'include/_field.html' with field=form.first_name %}
+    {% include 'include/_field.html' with field=form.last_name %}
+    {% include 'include/_field.html' with field=form.email %}
+    {% include 'include/_field.html' with field=form.organisations %}
+    {% include 'include/_field.html' with field=form.is_active %}
+    {% include 'include/_select_filter2_field.html' with field=form.role_profiles %}
+    {% include 'include/_select_filter2_field.html' with field=form.application_roles %}
 
-        <div class="form-group">
-            <label class="control-label">{% trans 'picture' %}</label>
+    <div class="form-group">
+      <div class="g10f-form-control_lg">
+        <button type="submit" class="btn btn-secondary" name="_continue">{% trans 'Save and continue editing' %}</button>
+        <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
+      </div>
+    </div>
 
-            <div class="dwbn-form-control">
-                {% thumbnail form.user.picture "240x240" crop="center" as im %}
-                    <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">{% endthumbnail %}
-            </div>
-        </div>
-
-        {% include 'include/_field.html' with field=form.username %}
-        {% include 'include/_field.html' with field=form.first_name %}
-        {% include 'include/_field.html' with field=form.last_name %}
-        {% include 'include/_field.html' with field=form.email %}
-        {% include 'include/_field.html' with field=form.organisations %}
-        {% include 'include/_field.html' with field=form.is_active %}
-        {% include 'accounts/includes/_profiles_field.html' with field=form.role_profiles %}
-        {% include 'include/_field.html' with field=form.application_roles %}
-
-        {% if role_profiles %}
-            <div class="form-group">
-                <label class="control-label">{% trans 'Related role profiles' %}</label>
-                <div class="dwbn-form-control">
-                    {% for role_profile in role_profiles %}
-                        <p class="form-control-static"><span data-toggle="tooltip" class="glyphicon glyphicon-check"></span>&nbsp;&nbsp;{{ role_profile }}</p>
-                        <div class="row help-block">
-                            <ul>
-                                {% for app_role in role_profile.application_roles.all %}
-                                    {% if app_role in application_roles %}
-                                        <li>{{ app_role }}</li>
-                                    {% endif %}
-                                {% endfor %}
-                            </ul>
-                        </div>
-
-                    {% endfor %}
-                </div>
-            </div>
-        {% endif %}
-
-
-        <div class="form-group">
-            <div class="dwbn-form-control_lg">
-                <button type="submit" class="btn btn-default" name="_continue">{% trans 'Save and continue editing' %}</button>
-                <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
-            </div>
-        </div>
-
-    </form>
+  </form>
 {% endblock %}

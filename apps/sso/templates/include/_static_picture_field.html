@@ -1,11 +1,10 @@
 {% load i18n thumbnail %}
 <div class="form-group">
-    <label class="control-label">{% trans 'picture' %}</label>
-
-    <div class="dwbn-form-control">
-        {% if field %}
-            {% thumbnail field "240x240" crop="center" as im %}
-                <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">{% endthumbnail %}
-        {% endif %}
-    </div>
+  <label class="col-form-label">{% trans 'picture' %}</label>
+  <div class="g10f-form-control">
+    {% if field %}
+      {% thumbnail field "240x240" crop="center" as im %}
+        <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="{{ field.name }}">{% endthumbnail %}
+    {% endif %}
+  </div>
 </div>

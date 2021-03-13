@@ -60,7 +60,7 @@ phone_number_validator = RegexValidator(
 
 class AddPhoneForm(forms.Form):
     number = forms.CharField(label=_('Phone number'), validators=[phone_number_validator],
-                             widget=bootstrap.TextInput(attrs={'autofocus': ''}))
+                             widget=bootstrap.TextInput(attrs={'autofocus': True}))
     key = forms.CharField(label=_('Key'), widget=forms.HiddenInput())
 
     def __init__(self, user, **kwargs):
@@ -80,7 +80,7 @@ class AddPhoneForm(forms.Form):
 
 class PhoneSetupForm(forms.Form):
     token = forms.IntegerField(label=_("Token"), min_value=0, max_value=int('9' * totp_digits()),
-                               widget=bootstrap.TextInput(attrs={'autofocus': ''}))
+                               widget=bootstrap.TextInput(attrs={'autofocus': True}))
 
     error_messages = {
         'invalid_token': _('Invalid token value: %(token)s.'),
@@ -104,8 +104,8 @@ class PhoneSetupForm(forms.Form):
 
 
 class TOTPDeviceForm(forms.Form):
-    token = forms.IntegerField(label=_("Token"), min_value=0, max_value=int('9' * totp_digits()),
-                               widget=bootstrap.TextInput(attrs={'autofocus': ''}))
+    token = forms.IntegerField(label=_("One-time code"), min_value=0, max_value=int('9' * totp_digits()),
+                               widget=bootstrap.TextInput(attrs={'autofocus': True}))
     key = forms.CharField(label=_('Key'), widget=forms.HiddenInput())
 
     error_messages = {
@@ -128,22 +128,23 @@ class TOTPDeviceForm(forms.Form):
 
     def clean(self):
         cd = super().clean()
-        token = cd.get("token")
-        defaults = {
-            'key': cd['key'],
-            'digits': self.digits,
-            'tolerance': 2,
-        }
+        if 'token' in cd:
+            token = cd.get("token")
+            defaults = {
+                'key': cd['key'],
+                'digits': self.digits,
+                'tolerance': 2,
+            }
 
-        totp_device, created = TOTPDevice.objects.get_or_create(user=self.user, defaults=defaults)
-        if not created:
-            totp_device.key = cd['key']
-            totp_device.last_t = -1  # reset value of the latest verified token
+            totp_device, created = TOTPDevice.objects.get_or_create(user=self.user, defaults=defaults)
+            if not created:
+                totp_device.key = cd['key']
+                totp_device.last_t = -1  # reset value of the latest verified token
 
-        self.device = totp_device
+            self.device = totp_device
 
-        if not self.device.verify_token(token):  # does an database update
-            raise forms.ValidationError(self.error_messages['invalid_token'], params={'token': token})
+            if not self.device.verify_token(token):  # does an database update
+                raise forms.ValidationError(self.error_messages['invalid_token'], params={'token': token})
 
     def save(self):
         self.device.confirmed = True

@@ -1,0 +1,16 @@
+<ul class="nav nav-tabs mb-3" role="tablist" id="myTab" data-active="{{ active }}">
+  <li class="nav-item" role="presentation"><a class="nav-link" data-bs-toggle="tab" href="#base" role="tab">{{ base_title }}</a></li>
+  {% for formset in formsets %}
+    <li class="nav-item" role="presentation"><a class="nav-link" data-bs-toggle="tab" role="tab" href="#{{ formset.prefix }}">{{ formset.form.opts.verbose_name_plural|title }}</a></li>
+  {% endfor %}
+
+  {% if tab1 %}
+    <li class="nav-item" role="presentation"><a class="nav-link" data-bs-toggle="tab" href="#tab_{{ tab1.name }}" role="tab">{{ tab1.label | title }}</a></li>
+  {% endif %}
+  {% if tab2 %}
+    <li class="nav-item" role="presentation"><a class="nav-link" data-bs-toggle="tab" href="#tab_{{ tab2.name }}" role="tab">{{ tab2.label | title }}</a></li>
+  {% endif %}
+  {% if tab3 %}
+    <li class="nav-item" role="presentation"><a class="nav-link" data-bs-toggle="tab" href="#tab_{{ tab3.name }}" role="tab">{{ tab3.label | title }}</a></li>
+  {% endif %}
+</ul>

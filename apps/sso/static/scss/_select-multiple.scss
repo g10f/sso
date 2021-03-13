@@ -1,0 +1,245 @@
+// SELECTOR (FILTER INTERFACE)
+.selector-available > div, .selector-chosen > div {
+  border: 1px solid #ccc;
+  border-radius: 4px 4px 0 0;
+}
+
+.selector .selector-filter {
+  background: white;
+  border: 1px solid #ccc;
+  padding: .5rem;
+  color: #999;
+  font-size: 10px;
+  margin: 0;
+  text-align: left;
+}
+
+.selector .selector-filter label,
+.inline-group .aligned .selector .selector-filter label {
+  float: left;
+  margin: 7px 0 0;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  overflow: hidden;
+  line-height: 1;
+}
+
+.selector-chooser {
+  display: flex;
+  justify-content: center;
+  /*  @include media-breakpoint-up(md) {
+      margin: 10rem 5px 0 5px;
+    }*/
+
+  @include media-breakpoint-up(md) {
+    float: left;
+    width: 8%;
+    margin-top: 10rem;
+  }
+  @include media-breakpoint-up(lg) {
+    width: 6%;
+  }
+}
+
+.selector-chooser .selector-add, .selector-chooser .selector-remove {
+  &::before {
+    display: inline-block;
+    font-family: bootstrap-icons !important;
+    font-style: normal;
+    font-weight: normal !important;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    vertical-align: text-bottom;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+
+.selector-add {
+  &::before {
+    content: "\f229";
+  }
+
+  @include media-breakpoint-up(md) {
+    &::before {
+      content: "\f231";
+    }
+  }
+}
+
+.selector-remove {
+  &::before {
+    content: "\f235";
+  }
+
+  @include media-breakpoint-up(md) {
+    &::before {
+      content: "\f22d";
+    }
+  }
+}
+
+.selector .selector-chooser ul {
+  background-color: $gray-300;
+  border-radius: 15px;
+  padding: 2px;
+  display: block;
+  @include media-breakpoint-down(md) {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+  @include media-breakpoint-up(md) {
+    text-align: center;
+    max-width: 1.75rem;
+  }
+  @include media-breakpoint-up(lg) {
+    max-width: 2rem;
+  }
+}
+
+.selector-chooser li {
+  margin: 0;
+  padding: .375rem;
+  list-style-type: none;
+  display: inline;
+  @include media-breakpoint-up(md) {
+    padding: .25rem;
+    display: inline-block;
+  }
+  @include media-breakpoint-up(lg) {
+    padding: .375rem;
+  }
+}
+
+.selector select {
+  margin: 0 0 10px;
+  border-radius: 0 0 4px 4px;
+}
+
+.selector-add, .selector-remove {
+  overflow: hidden;
+  opacity: 0.4;
+}
+
+.active.selector-add, .active.selector-remove {
+  opacity: 1;
+}
+
+.active.selector-add:hover, .active.selector-remove:hover {
+  cursor: pointer;
+}
+
+a.selector-chooseall, a.selector-clearall {
+  font-weight: bold;
+  text-decoration: none;
+  opacity: 0.4;
+}
+
+a.active.selector-chooseall, a.active.selector-clearall {
+  opacity: 1;
+}
+
+a.active.selector-chooseall:hover, a.active.selector-clearall:hover {
+  cursor: pointer;
+}
+
+.selector .help-icon {
+  display: inline-block;
+  vertical-align: middle;
+  margin: -2px 0 0 2px;
+  width: 13px;
+  height: 13px;
+}
+
+.selector .selector-chosen .help-icon {
+}
+
+.selector .search-label-icon {
+  display: inline-block;
+  height: 18px;
+  width: 18px;
+}
+
+// SELECTOR (FILTER INTERFACE)
+.selector .selector-filter {
+  border: 0 solid #ccc;
+  padding: 4px 0 4px 0;
+}
+
+.selector .selector-filter label {
+  display: none;
+}
+
+.selector select {
+  height: 17.2em;
+  width: 100%; /* fix offscreen scroll-bar on selector-chosen */
+  border: 1px #ccc solid;
+}
+
+// fix offscreen scroll-bar on selector-chosen
+.selector-available, .selector-chosen {
+  position: relative;
+  min-height: 1px;
+  text-align: center;
+  @include media-breakpoint-up(md) {
+    float: left;
+    width: 46%;
+  }
+  @include media-breakpoint-up(lg) {
+    width: 47%;
+  }
+}
+
+// selector object list
+.selector > .selector-available > select, .selector > .selector-chosen > select {
+  padding: 0;
+}
+
+// selector object list items
+.selector > .selector-available > select > option, .selector > .selector-chosen > select > option {
+  padding: 0.5rem 1rem;
+  border-bottom-width: 1px;
+  border-bottom-color: rgba(211, 211, 211, 0.35);
+  border-bottom-style: solid
+}
+
+// selector field title
+.selector > .selector-chosen > div {
+  padding: 9px 0 10px 10px;
+}
+
+.selector > .selector-available > div {
+  padding: 9px 0 6px 10px;
+}
+
+.selector > .selector-available > div, .selector > .selector-chosen > div {
+  text-align: left;
+  background: rgba(211, 211, 211, 0.2);
+  color: #777;
+  border: 1px solid #ccc;
+  border-bottom: none;
+  font-size: 100%;
+  font-weight: 600;
+  margin: 0;
+  border-radius: 4px 4px 0 0;
+}
+
+// selector filter box bootstrapping
+.selector .selector-available p {
+  background: rgba(211, 211, 211, 0.2);
+  border-left: 1px solid #ccc;
+  border-right: 1px solid #ccc;
+  padding: 5px;
+}
+
+// selector chooseall and clearall button spacing
+a.selector-chooseall {
+  padding: 0 20px 3px 0;
+}
+
+a.selector-clearall {
+  padding: 0 0 3px 20px;
+}
