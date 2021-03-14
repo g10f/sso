@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-14 15:57+0100\n"
+"POT-Creation-Date: 2021-03-14 16:06+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1474,7 +1474,7 @@ msgstr ""
 msgid "Confirm"
 msgstr ""
 
-msgid "Get one-time codes via Token Generator App"
+msgid "Use one-time codes via Token Generator App"
 msgstr ""
 
 msgid "Change Authenticator App"
@@ -1484,6 +1484,9 @@ msgid "Add Authenticator App"
 msgstr ""
 
 msgid "Login with your U2F Device"
+msgstr ""
+
+msgid "Add U2F Device"
 msgstr ""
 
 msgid "Thanks for spending some quality time with the Web site today."
@@ -1533,9 +1536,6 @@ msgid "Alternatively, use one of your backup devices:"
 msgstr ""
 
 msgid "Token Generator Setup"
-msgstr ""
-
-msgid "Add U2F Device"
 msgstr ""
 
 msgid "U2F Device Setup"
