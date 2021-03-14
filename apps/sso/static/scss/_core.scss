@@ -149,8 +149,9 @@ noscript div {
   }
 }
 
-// table header
+// table sorting header
 .sortpriority {
+  font-weight: $font-weight-normal;
   font-size: $font-size-sm;
 }
 
