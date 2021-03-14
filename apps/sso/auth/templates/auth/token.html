@@ -4,7 +4,7 @@
 {% block content %}
   <div class="sign-in-form">
     <form class="d-grid gap-2" method="post">
-      <h1 class="h3 text-center">{% blocktrans %}{{ brand }} 2-step verification{% endblocktrans %}</h1>
+      <h1 class="text-center">{% blocktrans %}{{ brand }} 2-step verification{% endblocktrans %}</h1>
       <input type="submit" class="hidden"/> {# to enable submit when pressing enter in the edit field #}
       {% include 'include/_form_boilerplate.html' %}
 
@@ -13,11 +13,6 @@
         <button class="btn btn-lg btn-default" type="submit" name="resend_token" value=1">{% trans 'Resend Token' %}</button>
       {% endif %}
       {{ form.otp_token }}
-      {% if form.errors %}
-        <div class="alert alert-danger">
-          {% for key, errors in form.errors.items %}{% for error in errors %}{{ error }}<br>{% endfor %}{% endfor %}
-        </div>
-      {% endif %}
       <button class="btn btn-lg btn-brand" type="submit">{% trans 'Submit' %}</button>
     </form>
 
