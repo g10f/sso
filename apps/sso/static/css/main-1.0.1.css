@@ -240,6 +240,7 @@ noscript div {
 }
 
 .sortpriority {
+  font-weight: 400;
   font-size: 0.765625rem;
 }
 

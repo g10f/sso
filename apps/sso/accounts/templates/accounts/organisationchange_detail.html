@@ -22,7 +22,7 @@
   {% endif %}
 
   <div class="alert alert-info">
-    {% blocktrans with name=object.organisation.name %}Please contact the user administrator at your organisation {{ name }} to complete the
+    {% blocktrans trimmed with name=object.organisation.name %}Please contact the user administrator at your organisation {{ name }} to complete the
       change.{% endblocktrans %}
   </div>
 
