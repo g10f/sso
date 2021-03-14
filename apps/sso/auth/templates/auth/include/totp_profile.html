@@ -1,7 +1,7 @@
 {% load i18n static %}
 
 <div class="card mb-3 {% if default_device.totpdevice %}border-primary{% else %}border-secondary{% endif %}">
-  <div class="card-header {% if default_device.totpdevice %}bg-primary text-white{% else %}bg-secondary{% endif %}">
+  <div class="card-header {% if default_device.totpdevice %}bg-primary text-white{% else %}bg-secondary text-white{% endif %}">
     {% trans 'Use one-time codes via Token Generator App' %}
   </div>
   <div class="card-body">
