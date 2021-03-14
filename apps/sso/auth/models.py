@@ -126,8 +126,8 @@ class U2FDevice(Device):
 
     @property
     def login_text(self):
-        return _('Please touch the flashing U2F device now. \
-        You may be prompted to allow the site permission to access your security keys. After granting permission, the device will start to blink.')
+        return _('Please touch the flashing U2F device now. '
+                 'You may be prompted to allow the site permission to access your security keys. After granting permission, the device will start to blink.')
 
     @property
     def default_name(self):
