@@ -27,7 +27,7 @@
 
     {% url 'accounts:password_reset' as password_reset_url %}
     {% if password_reset_url %}
-      <a class="btn btn-lg btn-light" target="_blank" href="{{ password_reset_url }}">{% trans 'Forgotten your password?' %}</a>
+      <a class="btn btn-lg btn-outline-secondary" target="_blank" href="{{ password_reset_url }}">{% trans 'Forgotten your password?' %}</a>
     {% endif %}
 
     {% if display != 'popup' %}
