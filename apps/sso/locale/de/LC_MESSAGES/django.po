@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-14 15:57+0100\n"
+"POT-Creation-Date: 2021-03-14 16:06+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1561,22 +1561,25 @@ msgid "Get your codes via SMS"
 msgstr ""
 
 msgid "Set as default"
-msgstr ""
+msgstr "Als Standard einstellen"
 
 msgid "Confirm"
 msgstr "Bestätigen"
 
-msgid "Get one-time codes via Token Generator App"
-msgstr ""
+msgid "Use one-time codes via Token Generator App"
+msgstr "Einmaltoken über eine Authenticator-App verwenden"
 
 msgid "Change Authenticator App"
-msgstr ""
+msgstr "Authenticator-App wechseln"
 
 msgid "Add Authenticator App"
-msgstr ""
+msgstr "Authenticator-App hinzufügen"
 
 msgid "Login with your U2F Device"
 msgstr "Mit Deinem U2F-Gerät anmelden"
+
+msgid "Add U2F Device"
+msgstr "U2F Gerät hinzufügen"
 
 msgid "Thanks for spending some quality time with the Web site today."
 msgstr "Vielen Dank, dass Du hier ein paar nette Minuten verbracht hast."
@@ -1605,7 +1608,7 @@ msgstr ""
 "\">Registrieren</a>"
 
 msgid "Sign in"
-msgstr ""
+msgstr "Anmelden"
 
 msgid "Confirm Phone"
 msgstr "Telefonnummer Bestätigen"
@@ -1614,13 +1617,13 @@ msgid "Resend Token"
 msgstr ""
 
 msgid "Setup 2-step verification"
-msgstr ""
+msgstr "2-Faktor Authentifizierung einrichten"
 
 msgid "Disable 2-step verification"
-msgstr ""
+msgstr "2-Faktor Authentifizierung deaktivieren"
 
 msgid "Enable 2-step verification"
-msgstr ""
+msgstr "2-Faktor Authentifizierung aktivieren"
 
 #, python-format
 msgid "%(brand)s 2-step verification"
@@ -1631,9 +1634,6 @@ msgstr "Oder benutze eines Deiner Backup-Geräte:"
 
 msgid "Token Generator Setup"
 msgstr ""
-
-msgid "Add U2F Device"
-msgstr "U2F Gerät hinzufügen"
 
 msgid "U2F Device Setup"
 msgstr "U2F Gerät Setup"
@@ -2959,6 +2959,7 @@ msgstr "Suchtext"
 msgid "2 factor logged in"
 msgstr ""
 
+#, python-format
 msgid ""
 "Please activate JavaScript to enable all features. <a href=\"%(url)s\" "
 "target=\"_blank\">Read this page for more help</a>"
