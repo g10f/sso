@@ -1,6 +1,4 @@
 // scss-docs-start form-validation-states
-
-
 $g10f-form-validation-states: (
         "success": (
                 "color": $form-feedback-valid-color,
@@ -12,14 +10,11 @@ $g10f-form-validation-states: (
         )
 );
 
-
-
 $colors: map-merge((
         "brand": $brand,
 ),
         $colors
 );
-
 
 $theme-colors: map-merge(
                 (
@@ -31,4 +26,3 @@ $theme-colors: map-merge(
                 ),
                 $theme-colors,
 );
-

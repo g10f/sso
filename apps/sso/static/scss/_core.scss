@@ -148,3 +148,65 @@ noscript div {
     color: $breadcrumb-active-color;
   }
 }
+
+// table header
+.sortpriority {
+  font-size: $font-size-sm;
+}
+
+//
+// stacked forms
+//
+.empty-form {
+  display: none;
+}
+
+.inline-related {
+  div.delete {
+    float: right;
+
+    div {
+      float: left;
+    }
+
+    label {
+      display: inline;
+    }
+  }
+}
+
+.inline-group {
+  .add-row {
+    height: $input-height;
+
+    a {
+      float: right;
+    }
+  }
+}
+
+.inline-deletelink {
+  border: 0 none;
+  float: right;
+  height: 15px;
+  outline: 0 none;
+}
+
+// ol widget
+.clear_features {
+  margin-top: .5rem;
+}
+
+// footer
+footer {
+  > div {
+    > ul {
+      margin-top: 1rem;
+
+      > li {
+        display: inline;
+        padding: 0 2px;
+      }
+    }
+  }
+}

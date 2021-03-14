@@ -239,6 +239,10 @@ noscript div {
   color: #6c757d;
 }
 
+.sortpriority {
+  font-size: 0.765625rem;
+}
+
 .empty-form {
   display: none;
 }
@@ -269,10 +273,6 @@ noscript div {
 
 .clear_features {
   margin-top: 0.5rem;
-}
-
-.sortpriority {
-  font-size: 0.765625rem;
 }
 
 footer > div > ul {
