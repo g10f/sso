@@ -1,26 +1,26 @@
 {% extends "base_form.html" %}
 {% load i18n static %}
 
-{% block title %}{% trans 'Accept Organisation Change' %}{% endblock %}
+{% block title %}{% translate 'Accept Organisation Change' %}{% endblock %}
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'accounts:organisationchange_list' %}">{% trans 'Organisation Changes' %}</a></li>
-    <li class="active">{% trans 'Accept Organisation Change' %}</li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li><a href="{% url 'accounts:organisationchange_list' %}">{% translate 'Organisation Changes' %}</a></li>
+    <li class="active">{% translate 'Accept Organisation Change' %}</li>
   </ol>
 {% endblock breadcrumb %}
 
 {% block form %}
   <form class="form-horizontal" method="post">
-    <h1>{% trans 'Process Organisation Change' %}</h1>
+    <h1>{% translate 'Process Organisation Change' %}</h1>
     <p>
       {% if organisationchange.is_open %}
-        {% trans "Please accept or deny the organisation change request." %}
+        {% translate "Please accept or deny the organisation change request." %}
       {% else %}
         <div class="alert alert-info">
-          {% blocktrans trimmed with status=organisationchange.get_status_display user=organisationchange.completed_by_user.get_full_name %}The organisation
-            change was already {{ status }} by {{ user }}.{% endblocktrans %}</div>
+          {% blocktranslate trimmed with status=organisationchange.get_status_display user=organisationchange.completed_by_user.get_full_name %}The organisation
+            change was already {{ status }} by {{ user }}.{% endblocktranslate %}</div>
       {% endif %}
     </p>
 
@@ -28,40 +28,40 @@
     {% include 'include/_static_picture_field.html' with field=organisationchange.user.picture %}
 
     <div class="form-group">
-      <label class="col-form-label">{% trans 'First name' %}</label>
+      <label class="col-form-label">{% translate 'First name' %}</label>
       <div class="g10f-form-control"><p class="form-control-static">{{ organisationchange.user.first_name }}</p>
       </div>
     </div>
 
     <div class="form-group">
-      <label class="col-form-label">{% trans 'Last name' %}</label>
+      <label class="col-form-label">{% translate 'Last name' %}</label>
       <div class="g10f-form-control"><p class="form-control-static">{{ organisationchange.user.last_name }}</p>
       </div>
     </div>
 
     <div class="form-group">
-      <label class="col-form-label">{% trans 'Email address' %}</label>
+      <label class="col-form-label">{% translate 'Email address' %}</label>
       <div class="g10f-form-control"><p class="form-control-static">{{ organisationchange.user.primary_email }}</p></div>
     </div>
 
     <div class="form-group">
-      <label class="col-form-label">{% trans 'Phone number' %}</label>
+      <label class="col-form-label">{% translate 'Phone number' %}</label>
       <div class="g10f-form-control"><p class="form-control-static">{{ organisationchange.user.primary_phone }}</p></div>
     </div>
 
     <div class="form-group">
-      <label class="col-form-label">{% trans 'Previous organisation' %}</label>
+      <label class="col-form-label">{% translate 'Previous organisation' %}</label>
       <div class="g10f-form-control"><p class="form-control-static">{{ organisationchange.original_organisation|default_if_none:"" }}</p>
       </div>
     </div>
 
     <div class="form-group">
-      <label class="col-form-label">{% trans 'New organisation' %}</label>
+      <label class="col-form-label">{% translate 'New organisation' %}</label>
       <div class="g10f-form-control"><p class="form-control-static">{{ organisationchange.organisation }}</p>
       </div>
     </div>
     <div class="form-group">
-      <label class="col-form-label">{% trans 'Message' %}</label>
+      <label class="col-form-label">{% translate 'Message' %}</label>
       <div class="g10f-form-control"><p class="form-control-static">{{ organisationchange.message }}</p></div>
     </div>
 
@@ -69,8 +69,8 @@
       <div class="form-group">
         <div class="g10f-form-control_lg">
           {% block submit_group %}
-            <button type="submit" class="btn btn-secondary" name="_delete">{% trans 'Deny change' %}</button>
-            <button type="submit" class="btn btn-primary">{% trans 'Accept change' %}</button>
+            <button type="submit" class="btn btn-secondary" name="_delete">{% translate 'Deny change' %}</button>
+            <button type="submit" class="btn btn-primary">{% translate 'Accept change' %}</button>
           {% endblock submit_group %}
         </div>
       </div>

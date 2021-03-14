@@ -1,12 +1,12 @@
 {% extends "centered_form.html" %}
 {% load i18n thumbnail %}
 
-{% block title %}{{ brand }} | {% trans 'Activate user' %}{% endblock %}
+{% block title %}{{ brand }} | {% translate 'Activate user' %}{% endblock %}
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'registration:user_registration_list' %}">{% trans 'User Registration List' %}</a></li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li><a href="{% url 'registration:user_registration_list' %}">{% translate 'User Registration List' %}</a></li>
     <li><a href="{% url 'registration:update_user_registration' form.instance.pk %}">{{ form.instance }}</a></li>
     <li class="active">{{ action_breadcrumb }}</li>
   </ol>
@@ -15,7 +15,7 @@
 {% block form %}
   <form role="form" class="form-horizontal" method="post">
     {% with fullname=form.instance.user.get_full_name picture=form.instance.user.picture %}
-      <h3>{% blocktrans %}Email Message to {{ fullname }}{% endblocktrans %}
+      <h3>{% blocktranslate %}Email Message to {{ fullname }}{% endblocktranslate %}
         {% if picture %}{% thumbnail picture "60x60" crop="center" as im %}
           <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
         {% endthumbnail %}{% endif %}
@@ -27,8 +27,8 @@
     <div class="form-group">
       <div class="g10f-form-submit">
         <button class="btn btn-primary">{{ action_txt }}</button>
-        {% trans 'or' %}
-        <a class="btn btn-secondary" href="{% url 'registration:update_user_registration' form.instance.pk %}">{% trans 'Cancel' %}</a>
+        {% translate 'or' %}
+        <a class="btn btn-secondary" href="{% url 'registration:update_user_registration' form.instance.pk %}">{% translate 'Cancel' %}</a>
       </div>
     </div>
   </form>

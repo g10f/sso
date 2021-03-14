@@ -8,10 +8,10 @@
 
 {% block breadcrumbs %}
     <div class="breadcrumbs">
-        <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+        <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
         &rsaquo; <a href="{% url 'admin:app_list' app_label=app_label %}">{{ app_label|capfirst|escape }}</a>
         &rsaquo; <a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
-        &rsaquo; {% trans 'Send information mail to selected users' %}
+        &rsaquo; {% translate 'Send information mail to selected users' %}
     </div>
 {% endblock %}
 
@@ -27,24 +27,24 @@
             <fieldset class="module aligned wide">
                 <div class="form-row">
                     <div>
-                        <label for="id_reply_to">{% trans 'reply to email' %}</label>
+                        <label for="id_reply_to">{% translate 'reply to email' %}</label>
                         <input type="text" class="vTextField" name="reply_to" id="id_reply_to"/>
                     </div>
                 </div>
                 <div class="form-row">
                     <div>
-                        <label for="id_subject">{% trans 'subject' %}</label>
+                        <label for="id_subject">{% translate 'subject' %}</label>
                         <input class="vTextField" type="text" name="subject" id="id_subject"/>
                     </div>
                 </div>
                 <div class="form-row">
                     <div>
-                        <label for="id_body">{% trans 'body' %}</label>
+                        <label for="id_body">{% translate 'body' %}</label>
                         <textarea class="vLargeTextField" rows="30" cols="80" name="body" id="id_body"></textarea>
                     </div>
                 </div>
             </fieldset>
-            <input type="submit" class="default">{% trans "Send mail" %}</input>
+            <input type="submit" class="default">{% translate "Send mail" %}</input>
         </div>
     </form>
 {% endblock %}

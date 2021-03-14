@@ -3,9 +3,9 @@
   <ol class="breadcrumb">
     {% for breadcrumb in breadcrumbs %}
       {% if forloop.last %}
-        <li class="active">{% trans breadcrumb.titel %}</li>
+        <li class="active">{% translate breadcrumb.titel %}</li>
       {% else %}
-        <li><a href="{% url breadcrumb.url %}">{% trans breadcrumb.titel %}</a></li>
+        <li><a href="{% url breadcrumb.url %}">{% translate breadcrumb.titel %}</a></li>
       {% endif %}
     {% endfor %}
   </ol>

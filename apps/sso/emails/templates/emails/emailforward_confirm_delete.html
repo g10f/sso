@@ -1,14 +1,14 @@
 {% extends "base_form.html" %}
 {% load i18n static %}
 
-{% block title %}{% trans 'Delete email fowarding' %}{% endblock %}
+{% block title %}{% translate 'Delete email fowarding' %}{% endblock %}
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'emails:groupemail_list' %}">{% trans 'Emails' %}</a></li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li><a href="{% url 'emails:groupemail_list' %}">{% translate 'Emails' %}</a></li>
     <li><a href="{% url 'emails:groupemail_detail' uuid %}">{{ object.email.groupemail_set.first.name }}</a></li>
-    <li class="active">{% trans 'Delete email forwarding' %}</li>
+    <li class="active">{% translate 'Delete email forwarding' %}</li>
   </ol>
 {% endblock breadcrumb %}
 
@@ -17,20 +17,20 @@
 
   {% block message %}
     <div class="alert alert-danger">
-      {% trans "Please confirm deleting this email fowarding" %}
+      {% translate "Please confirm deleting this email fowarding" %}
     </div>
   {% endblock %}
 
   <div class="row">
-    <div class="col-4">{% trans 'Email forwarding address' %}:</div>
+    <div class="col-4">{% translate 'Email forwarding address' %}:</div>
     <div class="col-8">{{ object }}</div>
   </div>
   <br>
 
   {% block submit_group %}
     <form class="form-horizontal" method="post">{% csrf_token %}
-      <button type="submit" class="btn btn-danger">{% trans 'Confirm Delete email fowarding' %}</button>
-      <a class="btn btn-primary" href="{% url 'emails:groupemail_detail' uuid %}">{% trans 'Cancel' %}</a>
+      <button type="submit" class="btn btn-danger">{% translate 'Confirm Delete email fowarding' %}</button>
+      <a class="btn btn-primary" href="{% url 'emails:groupemail_detail' uuid %}">{% translate 'Cancel' %}</a>
     </form>
   {% endblock %}
 

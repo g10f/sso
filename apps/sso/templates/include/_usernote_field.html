@@ -2,10 +2,10 @@
 <table class="table table-bordered table-striped">
   <thead>
   <tr>
-    <th scope="col">{% trans 'last modified' %}</th>
-    <th scope="col">{% trans 'created by' %}</th>
-    <th scope="col">{% trans 'Note' %}</th>
-    <th scope="col">{% trans 'Action' %}</th>
+    <th scope="col">{% translate 'last modified' %}</th>
+    <th scope="col">{% translate 'created by' %}</th>
+    <th scope="col">{% translate 'Note' %}</th>
+    <th scope="col">{% translate 'Action' %}</th>
   </tr>
   </thead>
   <tbody>
@@ -22,7 +22,7 @@
       <td>{% if usernote.created_by_user == request.user %}
         <a class="btn btn-secondary"
            href="{% url 'accounts:delete_user_note' usernote.uuid.hex %}{% if redirect_uri %}?redirect_uri={{ redirect_uri }}{% endif %}">
-          {% trans 'Delete' %}</a>{% endif %}</td>
+          {% translate 'Delete' %}</a>{% endif %}</td>
     </tr>
   {% endfor %}
   </tbody>

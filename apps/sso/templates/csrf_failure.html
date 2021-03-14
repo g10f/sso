@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>{% trans 'Forbidden' %} :(</title>
+  <title>{% translate 'Forbidden' %} :(</title>
   <style>
       ::-moz-selection {
           background: #fe57a1;
@@ -73,26 +73,26 @@
 </head>
 <body>
 <div class="container">
-  <h1>{% trans 'Forbidden' %} <span>:(</span></h1>
+  <h1>{% translate 'Forbidden' %} <span>:(</span></h1>
   <p>{{ main }}</p>
   {% if no_referer %}
     <p>
-      {% trans "You are seeing this message because this HTTPS site requires a 'Referer header' to be sent by your Web browser, but none was sent. This header is required for security reasons, to ensure that your browser is not being hijacked by third parties." %}
+      {% translate "You are seeing this message because this HTTPS site requires a 'Referer header' to be sent by your Web browser, but none was sent. This header is required for security reasons, to ensure that your browser is not being hijacked by third parties." %}
     </p>
     <p>
-      {% trans "If you have configured your browser to disable 'Referer' headers, please re-enable them, at least for this site, or for HTTPS connections, or for 'same-origin' requests." %}
+      {% translate "If you have configured your browser to disable 'Referer' headers, please re-enable them, at least for this site, or for HTTPS connections, or for 'same-origin' requests." %}
     </p>
   {% endif %}
   {% if no_cookie %}
     <p>
-      {% trans "You are seeing this message because this site requires a CSRF cookie when submitting forms. This cookie is required for security reasons, to ensure that your browser is not being hijacked by third parties." %}
+      {% translate "You are seeing this message because this site requires a CSRF cookie when submitting forms. This cookie is required for security reasons, to ensure that your browser is not being hijacked by third parties." %}
     </p>
     <p>
-      {% trans "If you have configured your browser to disable cookies, please re-enable them, at least for this site, or for 'same-origin' requests." %}
+      {% translate "If you have configured your browser to disable cookies, please re-enable them, at least for this site, or for 'same-origin' requests." %}
     </p>
   {% endif %}
 
-  <p><a href="{{ request.path }}">{% trans "Try again" %}</a></p>
+  <p><a href="{{ request.path }}">{% translate "Try again" %}</a></p>
 
 </div>
 </body>

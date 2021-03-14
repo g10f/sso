@@ -1,19 +1,19 @@
 {% extends "base_form.html" %}
 {% load i18n static %}
 
-{% block title %}{% trans 'Organisation Change Details' %}{% endblock %}
+{% block title %}{% translate 'Organisation Change Details' %}{% endblock %}
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'accounts:profile' %}">{% trans 'My Account' %}</a></li>
-    <li class="active">{% trans 'Update My Organisation' %}</li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li><a href="{% url 'accounts:profile' %}">{% translate 'My Account' %}</a></li>
+    <li class="active">{% translate 'Update My Organisation' %}</li>
   </ol>
 {% endblock breadcrumb %}
 
 {% block form %}
   <form class="form-horizontal" method="post">
-    <h1>{% trans 'Update My Organisation' %}</h1>
+    <h1>{% translate 'Update My Organisation' %}</h1>
     {% include 'include/_form_boilerplate.html' %}
 
     {% include 'include/_field.html' with field=form.organisation %}
@@ -22,10 +22,10 @@
     <div class="form-group">
       <div class="g10f-form-submit">
         {% block submit_group %}
-          {% if redirect_uri %}<a class="btn btn-secondary" href="{{ redirect_uri }}">{% trans 'Back' %}</a>{% endif %}
-          {% if form.instance.pk %}<button type="submit" class="btn btn-secondary" name="_cancel">{% trans 'Cancel change of organisation' %}</button>{% endif %}
-          <button type="submit" class="btn btn-secondary" name="_continue">{% trans 'Save and continue editing' %}</button>
-          <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
+          {% if redirect_uri %}<a class="btn btn-secondary" href="{{ redirect_uri }}">{% translate 'Back' %}</a>{% endif %}
+          {% if form.instance.pk %}<button type="submit" class="btn btn-secondary" name="_cancel">{% translate 'Cancel change of organisation' %}</button>{% endif %}
+          <button type="submit" class="btn btn-secondary" name="_continue">{% translate 'Save and continue editing' %}</button>
+          <button type="submit" class="btn btn-primary">{% translate 'Save' %}</button>
         {% endblock submit_group %}
       </div>
     </div>

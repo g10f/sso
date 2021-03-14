@@ -1,14 +1,14 @@
 {% extends 'base_list.html' %}
 {% load i18n list static tz thumbnail %}
 
-{% block title %}{% trans 'users' %}{% endblock %}
+{% block title %}{% translate 'users' %}{% endblock %}
 
 {% block nav_registration_user_list_class %}active{% endblock %}
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li class="active">{% trans 'User Registration List' %}</li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li class="active">{% translate 'User Registration List' %}</li>
   </ol>
 {% endblock breadcrumb %}
 

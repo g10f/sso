@@ -2,20 +2,20 @@
 {% load i18n static %}
 {% load thumbnail %}
 
-{% block title %}{% trans 'Email Update' %}{% endblock %}
+{% block title %}{% translate 'Email Update' %}{% endblock %}
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'emails:groupemail_list' %}">{% trans 'Emails' %}</a></li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li><a href="{% url 'emails:groupemail_list' %}">{% translate 'Emails' %}</a></li>
     <li><a href="{% url 'emails:groupemail_detail' object.uuid.hex %}">{{ object.name }}</a></li>
-    <li class="active">{% trans 'Update Email' %}</li>
+    <li class="active">{% translate 'Update Email' %}</li>
   </ol>
 {% endblock breadcrumb %}
 
 {% block form %}
   <form class="form-horizontal" method="post" data-active="{{ active }}">
-    <h1>{{ object.name }} {% trans 'Email' %}</h1>
+    <h1>{{ object.name }} {% translate 'Email' %}</h1>
     {% include 'include/_form_boilerplate.html' %}
     {% translate 'Email Data' as base_title %}
     {% include 'bootstrap/forms/nav-tabs.html' %}
@@ -37,8 +37,8 @@
     <div class="form-group">
       <div class="g10f-form-submit">
         {% block submit_group %}
-          <button type="submit" class="btn btn-secondary" name="_continue">{% trans 'Save and continue editing' %}</button>
-          <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
+          <button type="submit" class="btn btn-secondary" name="_continue">{% translate 'Save and continue editing' %}</button>
+          <button type="submit" class="btn btn-primary">{% translate 'Save' %}</button>
         {% endblock submit_group %}
       </div>
     </div>

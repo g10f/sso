@@ -1,48 +1,48 @@
 {% extends "base_form.html" %}
 {% load i18n %}
 
-{% block title %}{% trans 'Delete User' %}{% endblock %}
+{% block title %}{% translate 'Delete User' %}{% endblock %}
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'accounts:user_list' %}">{% trans 'User List' %}</a></li>
-    <li><a href="{% url 'accounts:update_user' usernote.user.uuid %}{{ usernotes_tab }}">{% trans 'Change User' %}</a></li>
-    <li class="active">{% trans 'User Note' %}</li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li><a href="{% url 'accounts:user_list' %}">{% translate 'User List' %}</a></li>
+    <li><a href="{% url 'accounts:update_user' usernote.user.uuid %}{{ usernotes_tab }}">{% translate 'Change User' %}</a></li>
+    <li class="active">{% translate 'User Note' %}</li>
   </ol>
 {% endblock breadcrumb %}
 
 {% block form %}
   <form class="form-horizontal" method="post">
-    <h1>{% trans 'Delete User Note' %}</h1>
+    <h1>{% translate 'Delete User Note' %}</h1>
 
     {% include 'include/_form_boilerplate.html' %}
 
     <div class="form-group">
-      <label class="col-form-label">{% trans 'username' %}</label>
+      <label class="col-form-label">{% translate 'username' %}</label>
       <div class="g10f-form-control"><p class="form-control-static">{{ object.user }}</p></div>
     </div>
 
     <div class="form-group">
-      <label class="col-form-label">{% trans 'Created by' %}</label>
+      <label class="col-form-label">{% translate 'Created by' %}</label>
       <div class="g10f-form-control"><p class="form-control-static">{{ object.created_by_user }}</p></div>
     </div>
 
     <div class="form-group">
-      <label class="col-form-label">{% trans 'Note' %}</label>
+      <label class="col-form-label">{% translate 'Note' %}</label>
       <div class="g10f-form-control"><p class="form-control-static">{{ object.note }}</p></div>
     </div>
 
     <div class="form-group">
-      <label class="col-form-label">{% trans 'last modified' %}</label>
+      <label class="col-form-label">{% translate 'last modified' %}</label>
       <div class="g10f-form-control"><p class="form-control-static">{{ object.last_modified }}</p></div>
     </div>
 
     <div class="form-group">
       <div class="g10f-form-control_lg">
-        <button type="submit" class="btn btn-danger">{% trans 'Confirm Delete' %}</button>
-        {% if cancel_url %}&nbsp;{% trans 'or' %}&nbsp;
-          <a class="btn btn-secondary" href="{{ cancel_url }}{{ usernotes_tab }}">{% trans 'Cancel' %}</a>{% endif %}
+        <button type="submit" class="btn btn-danger">{% translate 'Confirm Delete' %}</button>
+        {% if cancel_url %}&nbsp;{% translate 'or' %}&nbsp;
+          <a class="btn btn-secondary" href="{{ cancel_url }}{{ usernotes_tab }}">{% translate 'Cancel' %}</a>{% endif %}
       </div>
     </div>
   </form>

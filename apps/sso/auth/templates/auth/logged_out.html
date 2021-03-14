@@ -5,12 +5,12 @@
   <main>
     <section class="py-5 text-center container-lg">
       <div class="d-grid gap-2 col-md-9 col-lg-8 col-xl-7 mx-auto">
-        <h1>{% trans "Thanks for spending some quality time with the Web site today." %}</h1>
+        <h1>{% translate "Thanks for spending some quality time with the Web site today." %}</h1>
         <div class="alert alert-info">
-          {% blocktrans trimmed %}To protect your privacy:<br>If you are using a shared/public computer, please close all open browser windows and start a new session
-            by opening a new browser window.{% endblocktrans %}
+          {% blocktranslate trimmed %}To protect your privacy:<br>If you are using a shared/public computer, please close all open browser windows and start a new session
+            by opening a new browser window.{% endblocktranslate %}
         </div>
-        <p><a class="btn btn-success" href="{% url 'auth:login' %}">{% trans 'Log in again' %}</a></p>
+        <p><a class="btn btn-success" href="{% url 'auth:login' %}">{% translate 'Log in again' %}</a></p>
       </div>
     </section>
   </main>

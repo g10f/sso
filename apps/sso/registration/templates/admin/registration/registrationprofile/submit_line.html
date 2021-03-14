@@ -6,7 +6,7 @@
       {% url opts|admin_urlname:'delete' original.pk|admin_urlquote as delete_url %}
       <p class="deletelink-box"><a href="{% add_preserved_filters delete_url %}" class="deletelink">{% translate "Delete" %}</a></p>
     {% endif %}
-    {% if not original.user.is_active %}<input type="submit" name="_activate" value="{% trans 'Save and activate account' %}">{% endif %}
+    {% if not original.user.is_active %}<input type="submit" name="_activate" value="{% translate 'Save and activate account' %}">{% endif %}
     {% if show_save_as_new %}<input type="submit" value="{% translate 'Save as new' %}" name="_saveasnew">{% endif %}
     {% if show_save_and_add_another %}<input type="submit" value="{% translate 'Save and add another' %}" name="_addanother">{% endif %}
     {% if show_save_and_continue %}

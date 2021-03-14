@@ -1,7 +1,7 @@
 {% load i18n static %}
 <div class="inline-group" id="{{ formset.prefix }}-group"
-     data-formset-type="tabular" data-formset-prefix="{{ formset.prefix }}" data-static-prefix="{% static "/" %}" data-delete-text="{% trans "Remove" %}"
-     data-add-text="{% blocktrans with verbose_name=formset.form.opts.verbose_name|title %}Add another {{ verbose_name }}{% endblocktrans %}">
+     data-formset-type="tabular" data-formset-prefix="{{ formset.prefix }}" data-static-prefix="{% static "/" %}" data-delete-text="{% translate "Remove" %}"
+     data-add-text="{% blocktranslate with verbose_name=formset.form.opts.verbose_name|title %}Add another {{ verbose_name }}{% endblocktranslate %}">
   <div class="tabular inline-related{% if forloop.last %} last-related{% endif %}">
     {{ formset.management_form }}
     {% if  formset.non_form_errors %}
@@ -20,7 +20,7 @@
           {% endif %}
         {% endfor %}
         {% if formset.can_delete %}
-          <th>{% trans "Delete?" %}</th>{% endif %}
+          <th>{% translate "Delete?" %}</th>{% endif %}
       </tr>
       </thead>
       <tbody>

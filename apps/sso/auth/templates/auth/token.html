@@ -4,20 +4,20 @@
 {% block content %}
   <div class="sign-in-form">
     <form class="d-grid gap-2" method="post">
-      <h1 class="text-center">{% blocktrans %}{{ brand }} 2-step verification{% endblocktrans %}</h1>
+      <h1 class="text-center">{% blocktranslate %}{{ brand }} 2-step verification{% endblocktranslate %}</h1>
       <input type="submit" class="hidden"/> {# to enable submit when pressing enter in the edit field #}
       {% include 'include/_form_boilerplate.html' %}
 
       <div class="text-center">{{ device.login_text }}</div>
       {% if device.twiliosmsdevice %}
-        <button class="btn btn-lg btn-default" type="submit" name="resend_token" value=1">{% trans 'Resend Token' %}</button>
+        <button class="btn btn-lg btn-default" type="submit" name="resend_token" value=1">{% translate 'Resend Token' %}</button>
       {% endif %}
       {{ form.otp_token }}
-      <button class="btn btn-lg btn-brand" type="submit">{% trans 'Submit' %}</button>
+      <button class="btn btn-lg btn-brand" type="submit">{% translate 'Submit' %}</button>
     </form>
 
     {% if other_devices %}
-      <div class="text-center pt-2">{% trans "Alternatively, use one of your backup devices:" %}</div>
+      <div class="text-center pt-2">{% translate "Alternatively, use one of your backup devices:" %}</div>
       {% for other in other_devices %}
         <form class="d-grid" action="{{ other.url }}" method="post">{% csrf_token %}
           <button class="btn btn-lg btn-default" type="submit" name="resend_token" value=1">{{ other.device.default_name }}</button>
@@ -25,7 +25,7 @@
       {% endfor %}
     {% endif %}
 
-    <div class="py-2 text-center">{% if cancel_url %}<a class="link-danger" href="{{ cancel_url }}">{% trans 'Cancel' %}</a>{% endif %}</div>
+    <div class="py-2 text-center">{% if cancel_url %}<a class="link-danger" href="{{ cancel_url }}">{% translate 'Cancel' %}</a>{% endif %}</div>
   </div>
 
 {% endblock %}

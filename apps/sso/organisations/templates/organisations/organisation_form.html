@@ -1,14 +1,14 @@
 {% extends "base_form.html" %}
 {% load i18n static %}
 
-{% block title %}{% trans 'Organisation Details' %}{% endblock %}
+{% block title %}{% translate 'Organisation Details' %}{% endblock %}
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'organisations:organisation_list' %}">{% trans 'Organisations' %}</a></li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li><a href="{% url 'organisations:organisation_list' %}">{% translate 'Organisations' %}</a></li>
     <li><a href="{% url 'organisations:organisation_detail' object.uuid.hex %}">{{ object.name }}</a></li>
-    <li class="active">{% trans 'Update Organisation' %}</li>
+    <li class="active">{% translate 'Update Organisation' %}</li>
   </ol>
 {% endblock breadcrumb %}
 
@@ -59,13 +59,13 @@
       <div class="g10f-form-submit">
         {% block submit_group %}
           {% if redirect_uri %}
-            <a class="btn btn-secondary" href="{{ redirect_uri }}">{% trans 'Back' %}</a>{% endif %}
+            <a class="btn btn-secondary" href="{{ redirect_uri }}">{% translate 'Back' %}</a>{% endif %}
           {% if perms.organisations.delete_organisation %}
             <a class="btn btn-secondary" href="{% url 'organisations:organisation_delete' object.uuid.hex %}">
-              {% trans 'Delete Organisation' %}</a>
+              {% translate 'Delete Organisation' %}</a>
           {% endif %}
-          <button type="submit" class="btn btn-secondary" name="_continue">{% trans 'Save and continue editing' %}</button>
-          <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
+          <button type="submit" class="btn btn-secondary" name="_continue">{% translate 'Save and continue editing' %}</button>
+          <button type="submit" class="btn btn-primary">{% translate 'Save' %}</button>
         {% endblock submit_group %}
       </div>
     </div>

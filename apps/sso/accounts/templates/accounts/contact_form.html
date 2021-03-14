@@ -1,24 +1,24 @@
 {% extends "centered_form.html" %}
 {% load i18n %}
 
-{% block title %}{{ brand }} | {% trans 'Contact Information' %}{% endblock %}
+{% block title %}{{ brand }} | {% translate 'Contact Information' %}{% endblock %}
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li class="active">{% trans 'Feedback' %}</li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li class="active">{% translate 'Feedback' %}</li>
   </ol>
 {% endblock breadcrumb %}
 
 {% block form %}
   <form role="form" class="form-horizontal" method="post">
-    <h1>{% trans 'Feedback' %}</h1>
+    <h1>{% translate 'Feedback' %}</h1>
     {% include 'include/_form_boilerplate.html' %}
     {% include 'include/_form_snippet.html' %}
 
     <div class="form-group">
       <div class="g10f-form-submit">
-        <button type="submit" class="btn btn-primary">{% trans 'Send' %}</button>
+        <button type="submit" class="btn btn-primary">{% translate 'Send' %}</button>
       </div>
     </div>
   </form>

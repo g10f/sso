@@ -2,13 +2,13 @@
 {% load i18n static %}
 {% load thumbnail %}
 
-{% block title %}{% trans 'Change User' %}{% endblock %}
+{% block title %}{% translate 'Change User' %}{% endblock %}
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'accounts:user_list' %}">{% trans 'User List' %}</a></li>
-    <li class="active">{% trans 'Change User' %}</li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li><a href="{% url 'accounts:user_list' %}">{% translate 'User List' %}</a></li>
+    <li class="active">{% translate 'Change User' %}</li>
   </ol>
 {% endblock breadcrumb %}
 
@@ -46,24 +46,24 @@
     <div class="form-group">
       <div class="g10f-form-control_lg">
         {% if form.user.is_active %}
-          <button type="submit" class="btn btn-secondary" name="_deactivate">{% trans 'Block User' %}</button>
+          <button type="submit" class="btn btn-secondary" name="_deactivate">{% translate 'Block User' %}</button>
         {% else %}
-          <button type="submit" class="btn btn-success" name="_activate">{% trans 'Activate User' %}</button>
+          <button type="submit" class="btn btn-success" name="_activate">{% translate 'Activate User' %}</button>
         {% endif %}
         {% if perms.accounts.delete_user and not form.user.is_active %}
-          <a class="btn btn-secondary" href="{% url 'accounts:delete_user' form.user.uuid.hex %}">{% trans 'Delete User' %}</a>
+          <a class="btn btn-secondary" href="{% url 'accounts:delete_user' form.user.uuid.hex %}">{% translate 'Delete User' %}</a>
         {% endif %}
         {% if perms.accounts.add_user %}
-          <button type="submit" class="btn btn-secondary" name="_addanother">{% trans 'Save and add another' %}</button>
+          <button type="submit" class="btn btn-secondary" name="_addanother">{% translate 'Save and add another' %}</button>
         {% endif %}
         {% if not logged_in %}
-          <button type="submit" class="btn btn-secondary" name="_resend_invitation">{% trans 'Save and resend Invitation Mail' %}</button>
+          <button type="submit" class="btn btn-secondary" name="_resend_invitation">{% translate 'Save and resend Invitation Mail' %}</button>
         {% endif %}
-        <button type="submit" class="btn btn-secondary" name="_continue">{% trans 'Save and continue editing' %}</button>
+        <button type="submit" class="btn btn-secondary" name="_continue">{% translate 'Save and continue editing' %}</button>
         {% if is_validation_period_active %}
-          <button type="submit" class="btn btn-secondary" name="_extend_validity">{% trans 'Save and extend validity' %}</button>
+          <button type="submit" class="btn btn-secondary" name="_extend_validity">{% translate 'Save and extend validity' %}</button>
         {% endif %}
-        <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
+        <button type="submit" class="btn btn-primary">{% translate 'Save' %}</button>
       </div>
     </div>
 

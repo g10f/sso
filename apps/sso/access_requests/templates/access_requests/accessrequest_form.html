@@ -1,67 +1,53 @@
 {% extends "centered_form.html" %}
 {% load i18n static thumbnail %}
 
-{% block title %}{% trans 'Request extended access' %}{% endblock %}
+{% block title %}{% translate 'Request extended access' %}{% endblock %}
 
 {% block form %}
-    <h3>{% blocktrans %}Request extended access to {{ site_name }}{% endblocktrans %}</h3>
-    <form class="form-horizontal" method="post">{% csrf_token %}
-        {% with application=form.initial.application %}
-        {# Include the hidden fields in the form #}
-        {% for hidden in form.hidden_fields %}
-            {{ hidden }}
-        {% endfor %}
+  <form class="form-horizontal" method="post">
+  <h1>{% blocktranslate %}Request extended access to {{ site_name }}{% endblocktranslate %}</h1>
+    {% include 'include/_form_boilerplate.html' %}
 
-        {% if form.errors %}
-            <div class="alert alert-danger">
-                {% if form.errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}
-                    {% trans "Please correct the errors below." %}{% endif %}
-            </div>
-        {% endif %}
+    <p>{% blocktranslate with first_name=user.first_name %}Dear {{ first_name }}.{% endblocktranslate %}</p>
 
-        {% if messages %}{% for message in messages %}
-            <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
-        {% endif %}
-
-        <p>{% blocktrans with first_name=user.first_name %}Dear {{ first_name }}.{% endblocktrans %}</p>
-
-        {% if not application %}
-        <p>{% blocktrans trimmed %}You tried to access a {{ site_name }} application, with restricted access.
-            If you can not access by mistake, you can apply for access to the administrators.{% endblocktrans %}
+    {% with application=form.initial.application %}
+      {% if not application %}
+        <p>{% blocktranslate trimmed %}You tried to access a {{ site_name }} application, with restricted access.
+          If you can not access by mistake, you can apply for access to the administrators.{% endblocktranslate %}
         </p>
-        {% else %}
-        <p>{% blocktrans trimmed %}You tried to access the {{ application }} application, with restricted access.
-            If you can not access by mistake, you can apply for access to the administrators.{% endblocktrans %}
+      {% else %}
+        <p>{% blocktranslate trimmed %}You tried to access the {{ application }} application, with restricted access.
+          If you can not access by mistake, you can apply for access to the administrators.{% endblocktranslate %}
         </p>
-        {% endif %}
-        <div class="row">
-            <div class="col-sm-6">
-                {% for admin in admins %}
-                    {% if not forloop.counter|divisibleby:"2" %}
-                        {% include 'access_requests/_admin.html' %}{% endif %}{% endfor %}</div>
-            <div class="col-sm-6">
-                {% for admin in admins %}
-                    {% if forloop.counter|divisibleby:"2" %}
-                        {% include 'access_requests/_admin.html' %}{% endif %}{% endfor %}</div>
-        </div>
-        <hr>
-        {% include 'include/_base64_picture_field.html' with field=form.base64_picture %}
-        {% include 'include/_field.html' with field=form.organisation %}
-        {% include 'include/_field.html' with field=form.message %}
+      {% endif %}
+      <div class="row">
+        <div class="col-sm-6">
+          {% for admin in admins %}
+            {% if not forloop.counter|divisibleby:"2" %}
+              {% include 'access_requests/_admin.html' %}{% endif %}{% endfor %}</div>
+        <div class="col-sm-6">
+          {% for admin in admins %}
+            {% if forloop.counter|divisibleby:"2" %}
+              {% include 'access_requests/_admin.html' %}{% endif %}{% endfor %}</div>
+      </div>
+      <hr>
+      {% include 'include/_base64_picture_field.html' with field=form.base64_picture %}
+      {% include 'include/_field.html' with field=form.organisation %}
+      {% include 'include/_field.html' with field=form.message %}
 
-        <div class="form-group">
-            <div class="col-sm-offset-3 col-sm-9">
-                {% block submit_group %}
-                    <button type="submit" class="btn btn-primary">{% trans 'Request extended access' %}</button>
-                    {% if redirect_uri %}
-                        <a class="btn btn-secondary" href="{{ redirect_uri }}">{% trans 'Back' %}</a>
-                    {% endif %}
-                    {% if form.instance.pk %}
-                        <button type="submit" class="btn btn-secondary"
-                                name="_cancel">{% trans 'Cancel extended access' %}</button>{% endif %}
-                {% endblock %}
-            </div>
+      <div class="form-group">
+        <div class="col-sm-offset-3 col-sm-9">
+          {% block submit_group %}
+            <button type="submit" class="btn btn-primary">{% translate 'Request extended access' %}</button>
+            {% if redirect_uri %}
+              <a class="btn btn-secondary" href="{{ redirect_uri }}">{% translate 'Back' %}</a>
+            {% endif %}
+            {% if form.instance.pk %}
+              <button type="submit" class="btn btn-secondary"
+                      name="_cancel">{% translate 'Cancel extended access' %}</button>{% endif %}
+          {% endblock %}
         </div>
-        {% endwith %}
-    </form>
+      </div>
+    {% endwith %}
+  </form>
 {% endblock %}

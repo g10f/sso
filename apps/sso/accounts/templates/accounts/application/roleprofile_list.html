@@ -2,14 +2,14 @@
 {% load i18n static %}
 
 
-{% block title %}{% trans 'role profiles' %}{% endblock %}
+{% block title %}{% translate 'role profiles' %}{% endblock %}
 
 {% block nav_accounts_user_list_class %}active{% endblock %}
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li class="active">{% trans 'role profiles' %}</li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li class="active">{% translate 'role profiles' %}</li>
   </ol>
 {% endblock breadcrumb %}
 

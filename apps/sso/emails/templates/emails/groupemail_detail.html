@@ -1,12 +1,12 @@
 {% extends "base_form.html" %}
 {% load i18n static %}
 
-{% block title %}{% trans 'Email Details' %}{% endblock %}
+{% block title %}{% translate 'Email Details' %}{% endblock %}
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'emails:groupemail_list' %}">{% trans 'Emails' %}</a></li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li><a href="{% url 'emails:groupemail_list' %}">{% translate 'Emails' %}</a></li>
     <li class="active">{{ object.name }}</li>
   </ol>
 {% endblock breadcrumb %}
@@ -16,34 +16,34 @@
 
   {% block message %}{% endblock %}
 
-  <h1>{% trans 'Email' %}</h1>
+  <h1>{% translate 'Email' %}</h1>
 
   {% if messages %}{% for message in messages %}
     <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
   {% endif %}
 
   <div class="row">
-    <div class="col-4">{% trans 'Name' %}:</div>
+    <div class="col-4">{% translate 'Name' %}:</div>
     <div class="col-8">{{ object.name }}</div>
   </div>
   <div class="row">
-    <div class="col-4">{% trans 'Homepage' %}:</div>
+    <div class="col-4">{% translate 'Homepage' %}:</div>
     <div class="col-8"><a href="{{ object.homepage }}">{{ object.homepage }}</a></div>
   </div>
   <div class="row">
-    <div class="col-4">{% trans 'Active' %}:</div>
+    <div class="col-4">{% translate 'Active' %}:</div>
     <div class="col-8"><i class="bi bi-{% if object.email.is_active %}check-{% endif %}square"></i>
     </div>
   </div>
 
   <div class="row">
-    <div class="col-4">{% trans 'Email address' %}:</div>
+    <div class="col-4">{% translate 'Email address' %}:</div>
     <div class="col-8">{{ object.email|default_if_none:"" }}</div>
   </div>
   {% if has_groupmail_access %}
     {% for emailalias in  object.email.emailalias_set.all %}
       <div class="row">
-        <div class="col-4">{% trans 'Email alias address' %}:</div>
+        <div class="col-4">{% translate 'Email alias address' %}:</div>
         <div class="col-8">{{ emailalias }}</div>
       </div>
     {% endfor %}
@@ -54,24 +54,24 @@
       {% block submit_group %}
 
         {% if perms.emails.change_groupemail %}
-          <a class="btn btn-secondary" href="{% url 'emails:groupemail_update' object.uuid.hex %}">{% trans 'Update' %}</a>
+          <a class="btn btn-secondary" href="{% url 'emails:groupemail_update' object.uuid.hex %}">{% translate 'Update' %}</a>
         {% endif %}
         {% if has_groupmail_access %}
           <a class="btn btn-primary" href="{% url 'emails:emailforward_create' object.uuid.hex %}"> <i
-              class="bi bi-plus-circle"></i> {% trans 'Add email forwarding' %}</a>
+              class="bi bi-plus-circle"></i> {% translate 'Add email forwarding' %}</a>
         {% endif %}
       {% endblock %}
     </div>
   </div>
   {% if has_groupmail_access %}
     <br><br>
-    <h4>{% trans 'Email forwardings' %}</h4>
+    <h4>{% translate 'Email forwardings' %}</h4>
 
     <table class="table table-condensed">
       <thead>
       <tr>
-        <th scope="col">{% trans 'Email forwarding' %}</th>
-        <th scope="col">{% trans 'Action' %}</th>
+        <th scope="col">{% translate 'Email forwarding' %}</th>
+        <th scope="col">{% translate 'Action' %}</th>
       </tr>
       </thead>
 
@@ -81,8 +81,8 @@
           <td>{{ email.forward|default_if_none:"" }}</td>
           <td><a class="btn btn-secondary"
                  href="{% url 'emails:emailforward_confirm_delete' object.uuid.hex email.pk %}"
-                 title="{% trans 'Delete' %}"><i
-              class="bi bi-trash"></i> {% trans 'Delete' %}</a></td>
+                 title="{% translate 'Delete' %}"><i
+              class="bi bi-trash"></i> {% translate 'Delete' %}</a></td>
         </tr>
       {% endfor %}
       </tbody>

@@ -6,9 +6,9 @@
     <p class="form-control-static">{{ field.value|default:"---" }}</p>
     {% if user.organisationchange_set.open %}
       <a class="btn btn-warning" href="{% url 'accounts:organisationchange_me' %}" role="button">
-        {% blocktrans with name=user.organisationchange_set.open.organisation.name %}Update change of organisation to {{ name }}{% endblocktrans %}</a>
+        {% blocktranslate with name=user.organisationchange_set.open.organisation.name %}Update change of organisation to {{ name }}{% endblocktranslate %}</a>
     {% else %}
-      <a class="btn btn-secondary" href="{% url 'accounts:organisationchange_me' %}" role="button">{% trans 'Change my organisation' %}</a>
+      <a class="btn btn-secondary" href="{% url 'accounts:organisationchange_me' %}" role="button">{% translate 'Change my organisation' %}</a>
     {% endif %}
   </div>
 </div>

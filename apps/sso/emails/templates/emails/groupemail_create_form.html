@@ -1,18 +1,18 @@
 {% extends "emails/groupemail_form.html" %}
 {% load i18n static %}
 
-{% block title %}{% trans 'Add Email' %}{% endblock %}
+{% block title %}{% translate 'Add Email' %}{% endblock %}
 
 {% block left_content %}{% include 'include/_navigation.html' with active_navigation="groupemail_create" %}{% endblock left_content %}
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'emails:groupemail_list' %}">{% trans 'Emails' %}</a></li>
-    <li class="active">{% trans 'Add Email' %}</li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li><a href="{% url 'emails:groupemail_list' %}">{% translate 'Emails' %}</a></li>
+    <li class="active">{% translate 'Add Email' %}</li>
   </ol>
 {% endblock breadcrumb %}
 
 {% block submit_group %}
-  <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
+  <button type="submit" class="btn btn-primary">{% translate 'Save' %}</button>
 {% endblock %}

@@ -1,13 +1,13 @@
 {% extends "base_form.html" %}
 {% load i18n static %}
 
-{% block title %}{% trans 'Country Details' %}{% endblock %}
+{% block title %}{% translate 'Country Details' %}{% endblock %}
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'organisations:organisationcountry_list' %}">{% trans 'Countries' %}</a></li>
-    <li class="active">{% trans 'Update Country' %}</li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li><a href="{% url 'organisations:organisationcountry_list' %}">{% translate 'Countries' %}</a></li>
+    <li class="active">{% translate 'Update Country' %}</li>
   </ol>
 {% endblock breadcrumb %}
 
@@ -40,8 +40,8 @@
     <div class="form-group">
       <div class="g10f-form-submit">
         {% block submit_group %}
-          <button type="submit" class="btn btn-secondary" name="_continue">{% trans 'Save and continue editing' %}</button>
-          <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
+          <button type="submit" class="btn btn-secondary" name="_continue">{% translate 'Save and continue editing' %}</button>
+          <button type="submit" class="btn btn-primary">{% translate 'Save' %}</button>
         {% endblock submit_group %}
       </div>
     </div>

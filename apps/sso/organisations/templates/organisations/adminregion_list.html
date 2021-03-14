@@ -1,14 +1,14 @@
 {% extends 'base_list.html' %}
 {% load i18n list tz static %}
 
-{% block title %}{% trans 'Regions' %}{% endblock %}
+{% block title %}{% translate 'Regions' %}{% endblock %}
 
 {% block nav_organisations_region_list_class %}active{% endblock %}
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li class="active">{% trans 'Regions' %}</li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li class="active">{% translate 'Regions' %}</li>
   </ol>
 {% endblock breadcrumb %}
 

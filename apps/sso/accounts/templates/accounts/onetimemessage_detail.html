@@ -2,20 +2,20 @@
 {% load i18n %}
 
 
-{% block title %}{{ brand }} | {% trans 'One Time Message' %}{% endblock %}
+{% block title %}{{ brand }} | {% translate 'One Time Message' %}{% endblock %}
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li class="active">{% trans 'One Time Message' %}</li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li class="active">{% translate 'One Time Message' %}</li>
   </ol>
 {% endblock breadcrumb %}
 
 
 {% block right_content %}
-  <h1>{% trans 'One Time Message' %}</h1>
+  <h1>{% translate 'One Time Message' %}</h1>
   <div class="alert alert-danger" role="alert">
-    {% blocktrans %}Please note, that the following personal message is displayed only once.{% endblocktrans %}
+    {% blocktranslate %}Please note, that the following personal message is displayed only once.{% endblocktranslate %}
   </div>
 
   <h1>{{ object.title }}</h1>

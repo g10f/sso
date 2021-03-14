@@ -1,14 +1,14 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}{% trans 'Add Phone' %}{% endblock %}
+{% block title %}{% translate 'Add Phone' %}{% endblock %}
 
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'auth:profile' %}">{% trans 'Security' %}</a></li>
-    <li class="active">{% trans 'SMS Setup' %}</li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li><a href="{% url 'auth:profile' %}">{% translate 'Security' %}</a></li>
+    <li class="active">{% translate 'SMS Setup' %}</li>
   </ol>
 {% endblock breadcrumb %}
 
@@ -16,8 +16,8 @@
 
 {% block right_content %}
   <form class="form-horizontal" action="" method="post">
-    <h1>{% trans 'Add Phone' %}</h1>
-    <p>{% trans "Please enter your phone number." %}</p>
+    <h1>{% translate 'Add Phone' %}</h1>
+    <p>{% translate "Please enter your phone number." %}</p>
     {% include 'include/_form_boilerplate.html' %}
 
     {% for field in form.visible_fields %}
@@ -32,7 +32,7 @@
 
     <div class="form-group">
       <div class="g10f-form-submit">
-        <button type="submit" class="btn btn-primary">{% trans 'Submit' %}</button>
+        <button type="submit" class="btn btn-primary">{% translate 'Submit' %}</button>
       </div>
     </div>
 
