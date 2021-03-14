@@ -2,10 +2,10 @@
 
 {% load i18n static %}
 
-{% block title %}{% trans 'Registration preview' %}{% endblock %}
+{% block title %}{% translate 'Registration preview' %}{% endblock %}
 
 {% block form %}
-  <h3>{% trans 'Preview your registration' %}</h3>
+  <h3>{% translate 'Preview your registration' %}</h3>
 
   <form class="form-horizontal" method="post">{% csrf_token %}
 
@@ -24,10 +24,10 @@
 
     {% block user-extra-form-fields %}{% endblock %}
 
-    <div class="form-text">{% trans 'A person who already has an account and can recommend you.' %}</div>
+    <div class="form-text">{% translate 'A person who already has an account and can recommend you.' %}</div>
     {% include 'include/_static_field.html' with field=form.known_person1_first_name %}
     {% include 'include/_static_field.html' with field=form.known_person1_last_name %}
-    <div class="form-text">{% trans 'A second person who already has an account and can recommend you.' %}</div>
+    <div class="form-text">{% translate 'A second person who already has an account and can recommend you.' %}</div>
     {% include 'include/_static_field.html' with field=form.known_person2_first_name %}
     {% include 'include/_static_field.html' with field=form.known_person2_last_name %}
 
@@ -38,8 +38,8 @@
 
     <div class="form-group">
       <div class="col-sm-offset-3 col-sm-9">
-        <button type="submit" class="btn btn-secondary" name="_edit_again" value="1">{% trans 'Edit it again' %}</button>
-        <button type="submit" class="btn btn-primary">{% trans 'Submit' %}</button>
+        <button type="submit" class="btn btn-secondary" name="_edit_again" value="1">{% translate 'Edit it again' %}</button>
+        <button type="submit" class="btn btn-primary">{% translate 'Submit' %}</button>
       </div>
     </div>
   </form>

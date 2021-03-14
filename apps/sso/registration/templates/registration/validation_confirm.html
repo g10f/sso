@@ -1,25 +1,25 @@
 {% extends "centered_form.html" %}
 {% load i18n %}
 
-{% block title %}{% trans 'Confirm Registration' %}{% endblock %}
+{% block title %}{% translate 'Confirm Registration' %}{% endblock %}
 
 {% block form %}
 
   {% if validlink %}
     <form class="form-horizontal" method="post">
-      <h1>{% trans 'Confirm Registration' %}</h1>
-      <p> {% blocktrans %}If you registered a new account with the email <b>{{ email }}</b>, please confirm your registration.{% endblocktrans %}</p>
+      <h1>{% translate 'Confirm Registration' %}</h1>
+      <p> {% blocktranslate %}If you registered a new account with the email <b>{{ email }}</b>, please confirm your registration.{% endblocktranslate %}</p>
       {% include 'include/_form_boilerplate.html' %}
       {% include 'include/_form_snippet.html' %}
       <div class="form-group">
         <div class="g10f-form-control_lg">
-          <button type="submit" class="btn btn-primary">{% trans 'Confirm' %}</button>
+          <button type="submit" class="btn btn-primary">{% translate 'Confirm' %}</button>
         </div>
       </div>
     </form>
   {% else %}
-    <h1>{% trans 'Confirm Registration failed' %}</h1>
-    <p>{% trans "The validation link was invalid, possibly because it had expired." %}</p>
+    <h1>{% translate 'Confirm Registration failed' %}</h1>
+    <p>{% translate "The validation link was invalid, possibly because it had expired." %}</p>
   {% endif %}
 
 {% endblock %}

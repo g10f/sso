@@ -2,7 +2,7 @@
 
 <div class="card mb-3 {% if default_device.totpdevice %}border-primary{% else %}border-secondary{% endif %}">
   <div class="card-header {% if default_device.totpdevice %}bg-primary text-white{% else %}bg-secondary text-white{% endif %}">
-    {% trans 'Use one-time codes via Token Generator App' %}
+    {% translate 'Use one-time codes via Token Generator App' %}
   </div>
   <div class="card-body">
 
@@ -16,9 +16,9 @@
         </div>
 
         <div class="col-sm-7">
-          <button class="btn btn-danger" type="submit" name="delete" value="{{ device.device_ptr.id }}">{% trans 'Delete' %}</button>
+          <button class="btn btn-danger" type="submit" name="delete" value="{{ device.device_ptr.id }}">{% translate 'Delete' %}</button>
           {% if not default_device.totpdevice %}
-            <button class="btn btn-primary" type="submit" name="default" value="{{ device.device_ptr.id }}">{% trans 'Set as default' %}</button>
+            <button class="btn btn-primary" type="submit" name="default" value="{{ device.device_ptr.id }}">{% translate 'Set as default' %}</button>
           {% endif %}
         </div>
       </div>

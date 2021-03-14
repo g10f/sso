@@ -14,9 +14,9 @@
 {% block content %}
   <div class="sign-in-form">
     <form class="d-grid" method="post" id="u2f_sign_form">{% csrf_token %}
-      <button class="hidden" type="submit" class="btn btn-primary">{% trans 'Submit' %}</button>
+      <button class="hidden" type="submit" class="btn btn-primary">{% translate 'Submit' %}</button>
 
-      <h1 class="h3 text-center">{% trans 'Connect your U2F device' %}</h1>
+      <h1 class="h3 text-center">{% translate 'Connect your U2F device' %}</h1>
 
       {% if messages %}{% for message in messages %}
         <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
@@ -25,7 +25,7 @@
       <div class="alert alert-primary" id="u2f-login-text" role="alert">{{ device.login_text }}</div>
 
       <div class="alert alert-danger browser-not-supported">
-        {% trans 'Your current browser is not yet supported.' %}
+        {% translate 'Your current browser is not yet supported.' %}
       </div>
 
       <div id="u2f-status"></div>
@@ -54,7 +54,7 @@
     </form>
 
     {% if other_devices %}
-      <div class="text-center pt-2">{% trans "Alternatively, use one of your backup devices:" %}</div>
+      <div class="text-center pt-2">{% translate "Alternatively, use one of your backup devices:" %}</div>
       {% for other in other_devices %}
         <form class="d-grid" action="{{ other.url }}" method="post">{% csrf_token %}
           <button class="btn btn-lg btn-default" type="submit" name="resend_token" value=1">{{ other.device.default_name }}</button>
@@ -62,7 +62,7 @@
       {% endfor %}
     {% endif %}
 
-    <div class="py-2 text-center">{% if cancel_url %}<a class="link-danger" href="{{ cancel_url }}">{% trans 'Cancel' %}</a>{% endif %}</div>
+    <div class="py-2 text-center">{% if cancel_url %}<a class="link-danger" href="{{ cancel_url }}">{% translate 'Cancel' %}</a>{% endif %}</div>
   </div>
 {% endblock content %}
 

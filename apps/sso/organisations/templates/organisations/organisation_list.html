@@ -1,14 +1,14 @@
 {% extends 'base_list.html' %}
 {% load i18n list tz static thumbnail %}
 
-{% block title %}{% trans 'Organisations' %}{% endblock %}
+{% block title %}{% translate 'Organisations' %}{% endblock %}
 
 {% block nav_organisations_organisation_list_class %}active{% endblock %}
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li class="active">{% trans 'Organisations' %}</li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li class="active">{% translate 'Organisations' %}</li>
   </ol>
 {% endblock breadcrumb %}
 
@@ -31,11 +31,11 @@
       {% endif %}{% endfor %}
       <li class="nav-item">
         <button type="button" class="btn btn-secondary geo-location {% if cl.params.latlng %}active{% endif %}" data-href="{% query_string cl 'latlng' '' %}">
-          <i class="bi bi-globe"></i> {% trans 'Distance' %}</button>
+          <i class="bi bi-globe"></i> {% translate 'Distance' %}</button>
       </li>
       <li class="nav-item">
         <a class="btn btn-secondary" href="{% url 'organisations:organisation_list_csv' %}{{ cl.get_query_string }}" role="button"
-           title="{% trans 'Download' %}">
+           title="{% translate 'Download' %}">
           <i class="bi bi-download"></i>
         </a>
       </li>

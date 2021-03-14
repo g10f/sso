@@ -1,6 +1,6 @@
 {% load i18n static %}
 <div class="card mb-3 {% if default_device.twiliosmsdevice %}border-primary{% else %}border-secondary{% endif %}">
-  <div class="card-header">{% trans 'Get your codes via SMS' %}</div>
+  <div class="card-header">{% translate 'Get your codes via SMS' %}</div>
   <div class="card-body">
     <div class="media">
       <div class="media-left media-middle"><img class="media-object" src="{% static 'img/sms.png' %}" alt="{{ device }}"></div>
@@ -17,12 +17,12 @@
               <td>
                 {% if device.confirmed %}
                   {% if device.device_ptr != default_device %}
-                    <button class="btn btn-secondary" type="submit" name="default" value="{{ device.device_ptr.id }}">{% trans 'Set as default' %}</button>
+                    <button class="btn btn-secondary" type="submit" name="default" value="{{ device.device_ptr.id }}">{% translate 'Set as default' %}</button>
                   {% endif %}
                 {% else %}
-                  <a class="btn btn-success btn" href="{% url 'auth:phone_setup' device.device_ptr.id %}">{% trans 'Confirm' %}</a>
+                  <a class="btn btn-success btn" href="{% url 'auth:phone_setup' device.device_ptr.id %}">{% translate 'Confirm' %}</a>
                 {% endif %}
-                <button class="btn btn-danger btn" type="submit" name="delete" value="{{ device.device_ptr.id }}">{% trans 'Delete' %}</button>
+                <button class="btn btn-danger btn" type="submit" name="delete" value="{{ device.device_ptr.id }}">{% translate 'Delete' %}</button>
               </td>
             </tr>
           {% endfor %}

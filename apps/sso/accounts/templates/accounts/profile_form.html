@@ -1,7 +1,7 @@
 {% extends "base_form.html" %}
 {% load i18n static %}
 
-{% block title %}{% trans 'Profile' %}{% endblock %}
+{% block title %}{% translate 'Profile' %}{% endblock %}
 
 {% block navbar %}{% include 'include/global_navigation.html' with active_navigation="profile" %}{% endblock navbar %}
 
@@ -11,14 +11,14 @@
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li class="active">{% trans 'My Account' %}</li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li class="active">{% translate 'My Account' %}</li>
   </ol>
 {% endblock breadcrumb %}
 
 {% block form %}
   <form enctype="multipart/form-data" class="form-horizontal" method="post">
-    <h1>{% trans 'My account' %}</h1>
+    <h1>{% translate 'My account' %}</h1>
     {% include 'include/_form_boilerplate.html' %}
     {% translate 'Profile' as base_title %}
     {% include 'bootstrap/forms/nav-tabs.html' %}
@@ -44,10 +44,10 @@
       <div class="form-group">
         <div class="g10f-form-submit">
           {% if redirect_uri %}
-            <a class="btn btn-secondary" href="{{ redirect_uri }}">{% trans 'Back' %}</a>{% endif %}
-          <a class="btn btn-secondary" href="{% url 'accounts:delete_profile' %}">{% trans 'Delete' %}</a>
-          <button type="submit" class="btn btn-secondary" name="_continue">{% trans 'Save and continue editing' %}</button>
-          <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
+            <a class="btn btn-secondary" href="{{ redirect_uri }}">{% translate 'Back' %}</a>{% endif %}
+          <a class="btn btn-secondary" href="{% url 'accounts:delete_profile' %}">{% translate 'Delete' %}</a>
+          <button type="submit" class="btn btn-secondary" name="_continue">{% translate 'Save and continue editing' %}</button>
+          <button type="submit" class="btn btn-primary">{% translate 'Save' %}</button>
         </div>
       </div>
     </div>

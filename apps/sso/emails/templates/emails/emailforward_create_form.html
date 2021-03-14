@@ -2,27 +2,27 @@
 {% load i18n static %}
 {% load thumbnail %}
 
-{% block title %}{% trans 'Add email forwarding' %}{% endblock %}
+{% block title %}{% translate 'Add email forwarding' %}{% endblock %}
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'emails:groupemail_list' %}">{% trans 'Emails' %}</a></li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li><a href="{% url 'emails:groupemail_list' %}">{% translate 'Emails' %}</a></li>
     <li><a href="{% url 'emails:groupemail_detail' uuid %}">{{ form.initial.email.groupemail.name }}</a></li>
-    <li class="active">{% trans 'Add email forwarding' %}</li>
+    <li class="active">{% translate 'Add email forwarding' %}</li>
   </ol>
 {% endblock breadcrumb %}
 
 {% block form %}
   <form class="form-horizontal" method="post" data-active="{{ active }}">
-    <h1>{% trans 'email forwarding' %}</h1>
+    <h1>{% translate 'email forwarding' %}</h1>
     {% include 'include/_form_boilerplate.html' %}
     {% include 'include/_field.html' with field=form.forward %}
 
     <div class="form-group">
       <div class="g10f-form-submit">
         {% block submit_group %}
-          <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
+          <button type="submit" class="btn btn-primary">{% translate 'Save' %}</button>
         {% endblock submit_group %}
       </div>
     </div>

@@ -1,6 +1,6 @@
 {% load i18n thumbnail %}
 <div class="form-group">
-  <label class="col-form-label">{% trans 'picture' %}</label>
+  <label class="col-form-label">{% translate 'picture' %}</label>
   <div class="g10f-form-control">
     {% if field %}
       {% thumbnail field "240x240" crop="center" as im %}

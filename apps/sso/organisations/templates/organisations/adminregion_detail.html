@@ -1,13 +1,13 @@
 {% extends "base_form.html" %}
 {% load i18n static %}
 
-{% block title %}{% trans 'Region Details' %}{% endblock %}
+{% block title %}{% translate 'Region Details' %}{% endblock %}
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'organisations:adminregion_list' %}">{% trans 'Regions' %}</a></li>
-    <li class="active">{% trans 'Region Details' %}</li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li><a href="{% url 'organisations:adminregion_list' %}">{% translate 'Regions' %}</a></li>
+    <li class="active">{% translate 'Region Details' %}</li>
   </ol>
 {% endblock breadcrumb %}
 
@@ -22,37 +22,37 @@
   {% endif %}
 
   <div class="row">
-    <div class="col-4">{% trans 'Name' %}:</div>
+    <div class="col-4">{% translate 'Name' %}:</div>
     <div class="col-8">{{ object.name }}</div>
   </div>
   <div class="row">
-    <div class="col-4">{% trans 'Country' %}:</div>
+    <div class="col-4">{% translate 'Country' %}:</div>
     <div class="col-8">{{ object.country }}</div>
   </div>
   <div class="row">
-    <div class="col-4">{% trans 'Homepage' %}:</div>
+    <div class="col-4">{% translate 'Homepage' %}:</div>
     <div class="col-8"><a href="{{ object.homepage }}">{{ object.homepage }}</a></div>
   </div>
   <div class="row">
-    <div class="col-4">{% trans 'Active' %}:</div>
+    <div class="col-4">{% translate 'Active' %}:</div>
     <div class="col-8"><i class="bi bi-{% if object.is_active %}check-{% endif %}square"></i></div>
   </div>
 
   {% if object.email %}
     <div class="row">
-      <div class="col-4">{% trans 'Email address' %}:</div>
+      <div class="col-4">{% translate 'Email address' %}:</div>
       <div class="col-8">{{ object.email }}</div>
     </div>
     {% if perms.organisations.change_adminregion and has_region_access %}
       {% for emailforward in  object.email.emailforward_set.all %}
         <div class="row">
-          <div class="col-4">{% trans 'Email forwarding address' %}:</div>
+          <div class="col-4">{% translate 'Email forwarding address' %}:</div>
           <div class="col-8">{{ emailforward }}</div>
         </div>
       {% endfor %}
       {% for emailalias in  object.email.emailalias_set.all %}
         <div class="row">
-          <div class="col-4">{% trans 'Email alias address' %}:</div>
+          <div class="col-4">{% translate 'Email alias address' %}:</div>
           <div class="col-8">{{ emailalias }}</div>
         </div>
       {% endfor %}
@@ -64,7 +64,7 @@
     <div class="g10f-form-control_lg">
       {% block submit_group %}
         {% if perms.organisations.change_adminregion and has_region_access %}
-          <a class="btn btn-primary" href="{% url 'organisations:adminregion_update' object.uuid.hex %}">{% trans 'Update' %}</a>
+          <a class="btn btn-primary" href="{% url 'organisations:adminregion_update' object.uuid.hex %}">{% translate 'Update' %}</a>
         {% endif %}
       {% endblock %}
     </div>

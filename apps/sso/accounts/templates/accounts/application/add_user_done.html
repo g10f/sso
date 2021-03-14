@@ -1,46 +1,46 @@
 {% extends "base_form.html" %}
 {% load i18n static %}
 
-{% block title %}{% trans 'Add User' %}{% endblock %}
+{% block title %}{% translate 'Add User' %}{% endblock %}
 
 {% block left_content %}{% include 'include/_navigation.html' with active_navigation="add_user" %}{% endblock left_content %}
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'accounts:user_list' %}">{% trans 'User List' %}</a></li>
-    <li class="active">{% trans 'Add User' %}</li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li><a href="{% url 'accounts:user_list' %}">{% translate 'User List' %}</a></li>
+    <li class="active">{% translate 'Add User' %}</li>
   </ol>
 {% endblock breadcrumb %}
 
 
 {% block form %}
-  <h1>{% trans 'User added successfully' %}</h1>
+  <h1>{% translate 'User added successfully' %}</h1>
   <div class="alert alert-success">
-    <strong>{% trans 'A new User was created.' %}</strong><br>
-    {% trans 'The new user got an email with instructions for setting a password.' %}<br>
+    <strong>{% translate 'A new User was created.' %}</strong><br>
+    {% translate 'The new user got an email with instructions for setting a password.' %}<br>
   </div>
 
   <table class="table">
     <tbody>
     <tr>
-      <th>{% trans 'Name' %}:</th>
+      <th>{% translate 'Name' %}:</th>
       <td>{{ new_user.username }}</td>
     </tr>
     <tr>
-      <th>{% trans 'First name' %}:</th>
+      <th>{% translate 'First name' %}:</th>
       <td>{{ new_user.first_name }}</td>
     </tr>
     <tr>
-      <th>{% trans 'Last name' %}:</th>
+      <th>{% translate 'Last name' %}:</th>
       <td>{{ new_user.last_name }}</td>
     </tr>
     <tr>
-      <th>{% trans 'Email' %}:</th>
+      <th>{% translate 'Email' %}:</th>
       <td>{{ new_user.primary_email }}</td>
     </tr>
     <tr>
-      <th>{% trans 'Organisations' %}:</th>
+      <th>{% translate 'Organisations' %}:</th>
       <td>{% for organisation in new_user.organisations.all %}{{ organisation }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
     </tr>
 
@@ -48,28 +48,28 @@
 
     {% for role_profile in new_user.role_profiles.all %}
       <tr>
-        <th>{% if forloop.first %}{% trans 'Role profiles' %}: {% endif %}</th>
+        <th>{% if forloop.first %}{% translate 'Role profiles' %}: {% endif %}</th>
         <td>{{ role_profile }}</td>
       </tr>
     {% endfor %}
     {% for application_role in new_user.application_roles.all %}
       <tr>
-        <th>{% if forloop.first %}{% trans 'Application roles' %}: {% endif %}</th>
+        <th>{% if forloop.first %}{% translate 'Application roles' %}: {% endif %}</th>
         <td>{{ application_role }}</td>
       </tr>
     {% endfor %}
     {% if new_user.usernote_set.all %}
       <tr>
-        <th>{% trans 'Notes' %}:</th>
+        <th>{% translate 'Notes' %}:</th>
         <td>{{ new_user.usernote_set.all.0.note }}</td>
       </tr>
     {% endif %}
     </tbody>
   </table>
-  {% if redirect_uri %}<a class="btn btn-secondary" href="{{ redirect_uri }}">{% trans 'Back' %}</a>{% endif %}
+  {% if redirect_uri %}<a class="btn btn-secondary" href="{{ redirect_uri }}">{% translate 'Back' %}</a>{% endif %}
   <a class="btn btn-secondary"
-     href="{% url 'accounts:update_user' new_user.uuid.hex %}{% if redirect_uri %}?redirect_uri={{ redirect_uri }}{% endif %}">{% trans 'Edit user' %}</a>
+     href="{% url 'accounts:update_user' new_user.uuid.hex %}{% if redirect_uri %}?redirect_uri={{ redirect_uri }}{% endif %}">{% translate 'Edit user' %}</a>
   <a class="btn btn-primary"
-     href="{% url 'accounts:add_user' %}{% if redirect_uri %}?redirect_uri={{ redirect_uri }}{% endif %}">{% trans 'Add another user' %}</a>
+     href="{% url 'accounts:add_user' %}{% if redirect_uri %}?redirect_uri={{ redirect_uri }}{% endif %}">{% translate 'Add another user' %}</a>
 {% endblock %}
 

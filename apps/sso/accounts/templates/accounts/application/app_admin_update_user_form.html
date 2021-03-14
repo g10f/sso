@@ -2,13 +2,13 @@
 {% load i18n static %}
 {% load thumbnail %}
 
-{% block title %}{% trans 'Change User' %}{% endblock %}
+{% block title %}{% translate 'Change User' %}{% endblock %}
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'accounts:app_admin_user_list' %}">{% trans 'User Roles' %}</a></li>
-    <li class="active">{% trans 'Change User' %}</li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li><a href="{% url 'accounts:app_admin_user_list' %}">{% translate 'User Roles' %}</a></li>
+    <li class="active">{% translate 'Change User' %}</li>
   </ol>
 {% endblock breadcrumb %}
 
@@ -18,7 +18,7 @@
     {% include 'include/_form_boilerplate.html' %}
 
     <div class="form-group">
-      <label class="col-form-label">{% trans 'picture' %}</label>
+      <label class="col-form-label">{% translate 'picture' %}</label>
 
       <div class="g10f-form-control">
         {% thumbnail form.user.picture "240x240" crop="center" as im %}
@@ -37,8 +37,8 @@
 
     <div class="form-group">
       <div class="g10f-form-control_lg">
-        <button type="submit" class="btn btn-secondary" name="_continue">{% trans 'Save and continue editing' %}</button>
-        <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
+        <button type="submit" class="btn btn-secondary" name="_continue">{% translate 'Save and continue editing' %}</button>
+        <button type="submit" class="btn btn-primary">{% translate 'Save' %}</button>
       </div>
     </div>
 

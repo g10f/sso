@@ -1,14 +1,14 @@
 {% extends 'base_list.html' %}
 {% load i18n list tz static %}
 
-{% block title %}{% trans 'Request extended access list' %}{% endblock %}
+{% block title %}{% translate 'Request extended access list' %}{% endblock %}
 
 {% block nav_accounts_user_list_class %}active{% endblock %}
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li class="active">{% trans 'Request extended access list' %}</li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li class="active">{% translate 'Request extended access list' %}</li>
   </ol>
 {% endblock breadcrumb %}
 

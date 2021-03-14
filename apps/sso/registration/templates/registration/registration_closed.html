@@ -1,12 +1,12 @@
 {% extends "centered_form.html" %}
 {% load i18n %}
 
-{% block title %}{% trans 'Registration closed' %}{% endblock %}
+{% block title %}{% translate 'Registration closed' %}{% endblock %}
 
 {% block form %}
-  <h1>{% trans 'Registration closed' %}</h1>
+  <h1>{% translate 'Registration closed' %}</h1>
   {% url 'registration:registration_register' as registration_register_url %}
   <p>
-    {% blocktrans %}Please try <a href="{{ registration_register_url }}">registering again</a> later.{% endblocktrans %}
+    {% blocktranslate %}Please try <a href="{{ registration_register_url }}">registering again</a> later.{% endblocktranslate %}
   </p>
 {% endblock %}

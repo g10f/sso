@@ -3,18 +3,18 @@
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'registration:user_registration_list' %}">{% trans 'User Registration List' %}</a></li>
-    <li class="active">{% trans 'Edit User Registration' %}</li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li><a href="{% url 'registration:user_registration_list' %}">{% translate 'User Registration List' %}</a></li>
+    <li class="active">{% translate 'Edit User Registration' %}</li>
   </ol>
 {% endblock breadcrumb %}
 
 {% block form %}
   <form class="form-horizontal" data-active="" method="post">
-    <h1>{% trans 'User Registration' %} - {{ form.user.first_name }} {{ form.user.last_name }}</h1>
+    <h1>{% translate 'User Registration' %} - {{ form.user.first_name }} {{ form.user.last_name }}</h1>
     {% include 'include/_form_boilerplate.html' %}
     {% if form.user.is_active %}
-      <div class="alert">{% trans 'The user was already activated' %}</div>{% endif %}
+      <div class="alert">{% translate 'The user was already activated' %}</div>{% endif %}
 
     {% translate 'User Registration' as base_title %}
     {% include 'bootstrap/forms/nav-tabs.html' with tab1=form.notes tab2=form.role_profiles tab3=form.application_roles %}
@@ -35,10 +35,10 @@
         {% include 'include/_field.html' with field=form.gender %}
         {% include 'include/_field.html' with field=form.dob %}
         {% include 'include/_field.html' with field=form.about_me %}
-        <div class="form-text">{% trans 'A person who already has an account and can recommend the user.' %}</div>
+        <div class="form-text">{% translate 'A person who already has an account and can recommend the user.' %}</div>
         {% include 'registration/include/_user_search_field.html' with field=form.known_person1_first_name %}
         {% include 'registration/include/_user_search_field.html' with field=form.known_person1_last_name %}
-        <div class="form-text">{% trans 'A second person who already has an account and can recommend the user.' %}</div>
+        <div class="form-text">{% translate 'A second person who already has an account and can recommend the user.' %}</div>
         {% include 'registration/include/_user_search_field.html' with field=form.known_person2_first_name %}
         {% include 'registration/include/_user_search_field.html' with field=form.known_person2_last_name %}
         {% include 'include/_user_field.html' with field=form.last_modified_by_user %}
@@ -47,7 +47,7 @@
           {% block user-extra-form-fields %}{% endblock %}
         </span>
 
-        <div class="form-text">{% trans 'Registration processing information' %}</div>
+        <div class="form-text">{% translate 'Registration processing information' %}</div>
         {% include 'include/_static_yesno_field.html' with field=form.check_back %}
         {% include 'include/_static_yesno_field.html' with field=form.is_access_denied %}
       </div>
@@ -68,17 +68,17 @@
     {% if not form.user.is_active %}
       <div class="form-group">
         <div class="g10f-form-control_lg">
-          <button name="action" value="activate" class="btn btn-primary">{% trans 'Save and activate' %}</button>
-          <button name="action" value="save" class="btn btn-secondary">{% trans 'Save' %}</button>
-          <button class="btn btn-secondary" name="action" value="continue">{% trans 'Save and continue editing' %}</button>
+          <button name="action" value="activate" class="btn btn-primary">{% translate 'Save and activate' %}</button>
+          <button name="action" value="save" class="btn btn-secondary">{% translate 'Save' %}</button>
+          <button class="btn btn-secondary" name="action" value="continue">{% translate 'Save and continue editing' %}</button>
           {% if not instance.check_back %}
-            <button class="btn btn-secondary" name="action" value="check_back">{% trans 'Save and mark for check back' %}</button>
+            <button class="btn btn-secondary" name="action" value="check_back">{% translate 'Save and mark for check back' %}</button>
           {% endif %}
           {% if perms.registration.delete_registrationprofile %}
-            <a class="btn btn-danger" href="{% url 'registration:delete_user_registration' form.user.pk %}">{% trans 'Delete' %}</a>
+            <a class="btn btn-danger" href="{% url 'registration:delete_user_registration' form.user.pk %}">{% translate 'Delete' %}</a>
           {% endif %}
           {% if not instance.is_access_denied %}
-            <button name="action" value="deny" class="btn btn-danger">{% trans 'Save and deny' %}</button>
+            <button name="action" value="deny" class="btn btn-danger">{% translate 'Save and deny' %}</button>
           {% endif %}
         </div>
       </div>

@@ -1,7 +1,7 @@
 {% extends "base_form.html" %}
 {% load i18n static %}
 
-{% block title %}{% trans 'Add User' %}{% endblock %}
+{% block title %}{% translate 'Add User' %}{% endblock %}
 
 {% block left_content %}
   {% include 'include/_navigation.html' with active_navigation="add_user" %}
@@ -9,18 +9,18 @@
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'accounts:user_list' %}">{% trans 'User List' %}</a></li>
-    <li class="active">{% trans 'Add User' %}</li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li><a href="{% url 'accounts:user_list' %}">{% translate 'User List' %}</a></li>
+    <li class="active">{% translate 'Add User' %}</li>
   </ol>
 {% endblock breadcrumb %}
 
 {% block form %}
   <form class="form-horizontal" method="post">
-    <h1>{% trans 'Add User' %}</h1>
+    <h1>{% translate 'Add User' %}</h1>
     <p>
-      {% trans "Please enter the user data for the new account." %}<br>
-      {% trans "After the account was created, the new user will receive an email with instructions for setting a password." %}
+      {% translate "Please enter the user data for the new account." %}<br>
+      {% translate "After the account was created, the new user will receive an email with instructions for setting a password." %}
     </p>
 
     {% include 'include/_form_boilerplate.html' %}
@@ -60,8 +60,8 @@
     <div class="form-group">
       <div class="g10f-form-submit">
         {% if redirect_uri %}
-          <a class="btn btn-secondary" href="{{ redirect_uri }}">{% trans 'Back' %}</a>{% endif %}
-        <button type="submit" class="btn btn-primary">{% trans 'Add User and Send Invitation Mail' %}</button>
+          <a class="btn btn-secondary" href="{{ redirect_uri }}">{% translate 'Back' %}</a>{% endif %}
+        <button type="submit" class="btn btn-primary">{% translate 'Add User and Send Invitation Mail' %}</button>
       </div>
     </div>
   </form>

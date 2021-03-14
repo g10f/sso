@@ -7,19 +7,19 @@
   <script src="{% static "js/base64_image-1.0.0.js" %}"></script>
 {% endblock extrascript %}
 
-{% block title %}{% trans 'Register for an account' %}{% endblock %}
+{% block title %}{% translate 'Register for an account' %}{% endblock %}
 
 {% block form %}
   <form class="form-horizontal" method="post">{% csrf_token %}
-    <h1>{% blocktrans %}Sign up for {{ site_name }}{% endblocktrans %}</h1>
+    <h1>{% blocktranslate %}Sign up for {{ site_name }}{% endblocktranslate %}</h1>
 
     {% if "_edit_again" in form.non_field_errors %}
       <div class="alert alert-info">
-        {% trans "You can edit your data here again." %}
+        {% translate "You can edit your data here again." %}
       </div>
     {% elif form.errors %}
       <div class="alert alert-danger">
-        {% if form.errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
+        {% if form.errors|length == 1 %}{% translate "Please correct the error below." %}{% else %}{% translate "Please correct the errors below." %}{% endif %}
       </div>
     {% endif %}
 
@@ -38,10 +38,10 @@
     {% block user-extra-form-fields %}{% endblock %}
 
     {% include 'include/_field.html' with field=form.about_me %}
-    <div class="form-text">{% trans 'Please name a person who already has an account and can recommend you.' %}</div>
+    <div class="form-text">{% translate 'Please name a person who already has an account and can recommend you.' %}</div>
     {% include 'include/_field.html' with field=form.known_person1_first_name %}
     {% include 'include/_field.html' with field=form.known_person1_last_name %}
-    <div class="form-text">{% trans 'Please name a second person who already has an account and can recommend you.' %}</div>
+    <div class="form-text">{% translate 'Please name a second person who already has an account and can recommend you.' %}</div>
     {% include 'include/_field.html' with field=form.known_person2_first_name %}
     {% include 'include/_field.html' with field=form.known_person2_last_name %}
     {% include 'include/_field.html' with field=form.captcha %}
@@ -50,7 +50,7 @@
 
     <div class="form-group">
       <div class="offset-sm-3 g10f-form-control">
-        <button type="submit" class="btn btn-primary">{% trans 'Register' %}</button>
+        <button type="submit" class="btn btn-primary">{% translate 'Register' %}</button>
       </div>
     </div>
 

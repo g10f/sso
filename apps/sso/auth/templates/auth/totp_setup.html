@@ -1,20 +1,20 @@
 {% extends "base_form.html" %}
 {% load i18n %}
 
-{% block title %}{% trans 'Token Generator Setup' %}{% endblock %}
+{% block title %}{% translate 'Token Generator Setup' %}{% endblock %}
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'auth:profile' %}">{% trans 'Security' %}</a></li>
-    <li class="active">{% trans 'Token Generator Setup' %}</li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li><a href="{% url 'auth:profile' %}">{% translate 'Security' %}</a></li>
+    <li class="active">{% translate 'Token Generator Setup' %}</li>
   </ol>
 {% endblock breadcrumb %}
 
 {% block left_content %}{% include 'include/_navigation.html' with active_navigation="auth_profile" %}{% endblock left_content %}
 
 {% block form %}
-  <h1 class="h3">{% trans 'Token Generator Setup' %}</h1>
+  <h1 class="h3">{% translate 'Token Generator Setup' %}</h1>
 
   <form class="form-horizontal" method="post">
     <ol>
@@ -34,7 +34,7 @@
 
     <div class="form-group">
       <div class="g10f-form-submit">
-        <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
+        <button type="submit" class="btn btn-primary">{% translate 'Save' %}</button>
       </div>
     </div>
 

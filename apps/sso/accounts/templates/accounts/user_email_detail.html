@@ -1,30 +1,30 @@
 {% extends "base_form.html" %}
 {% load i18n static %}
 
-{% block title %}{% trans 'Email Details' %}{% endblock %}
+{% block title %}{% translate 'Email Details' %}{% endblock %}
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'accounts:profile' %}">{% trans 'My Account' %}</a></li>
-    <li class="active">{% trans 'Email addresses' %}</li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li><a href="{% url 'accounts:profile' %}">{% translate 'My Account' %}</a></li>
+    <li class="active">{% translate 'Email addresses' %}</li>
   </ol>
 {% endblock breadcrumb %}
 
 {% block left_content %}{% include 'include/_navigation.html' with active_navigation="emails" %}{% endblock left_content %}
 
 {% block form %}
-  <h1>{% trans 'Email addresses' %}</h1>
+  <h1>{% translate 'Email addresses' %}</h1>
 
-  <p>{% trans 'If you would like to add another email address to your account, enter it below. Once you confirm the address, you can login with that email address and make the address to your primary contact email address.' %}</p>
-  <p>{% blocktrans %}You can enter up to {{ max_email_adresses }} email addresses.{% endblocktrans %}</p>
+  <p>{% translate 'If you would like to add another email address to your account, enter it below. Once you confirm the address, you can login with that email address and make the address to your primary contact email address.' %}</p>
+  <p>{% blocktranslate %}You can enter up to {{ max_email_adresses }} email addresses.{% endblocktranslate %}</p>
 
   <form method="post">
     {% include 'include/_form_boilerplate.html' %}
     <table class="table">
       <thead>
       <tr>
-        <th scope="col" colspan="2">{% trans 'Email address' %}</th>
+        <th scope="col" colspan="2">{% translate 'Email address' %}</th>
       </tr>
       </thead>
       <tbody>
@@ -32,23 +32,23 @@
         <tr>
           <td>
             <div class="p-2">{{ email }}
-              {% if email.primary %}<span class="badge rounded-pill bg-primary">{% trans 'primary' %}</span>{% endif %}
-              {% if not email.confirmed %}<span class="badge rounded-pill bg-danger">{% trans 'unconfirmed' %}</span>{% endif %}
+              {% if email.primary %}<span class="badge rounded-pill bg-primary">{% translate 'primary' %}</span>{% endif %}
+              {% if not email.confirmed %}<span class="badge rounded-pill bg-danger">{% translate 'unconfirmed' %}</span>{% endif %}
             </div>
           </td>
           <td>
             {% if not email.primary and email.confirmed %}
               <button name="set_primary" type="submit" class="btn btn-primary" value="{{ email.id }}">
-                {% trans 'Set as primary' %}
+                {% translate 'Set as primary' %}
               </button>{% endif %}
             {% if not email.confirmed %}
               <button name="send_confirmation" type="submit" class="btn btn-secondary" value="{{ email.id }}">
                 <i class="bi bi-envelope"></i>
-                {% trans 'Resend confirmation email' %}
+                {% translate 'Resend confirmation email' %}
               </button>{% endif %}
             {% if not email.primary %}
               <button name="delete" type="submit" class="btn btn-danger" value="{{ email.id }}">
-                <i class="bi bi-trash"></i> {% trans 'Delete' %}
+                <i class="bi bi-trash"></i> {% translate 'Delete' %}
               </button>{% endif %}
           </td>
         </tr>
@@ -64,7 +64,7 @@
             </td>
           {% endwith %}
           <td>
-            <button type="submit" class="btn btn-primary">{% trans 'Add' %}</button>
+            <button type="submit" class="btn btn-primary">{% translate 'Add' %}</button>
           </td>
         </tr>
       {% endif %}
@@ -74,7 +74,7 @@
     {% if redirect_uri %}
       <div class="form-group">
         <div class="g10f-form-control">
-          <a class="btn btn-secondary" href="{{ redirect_uri }}">{% trans 'Back' %}</a>
+          <a class="btn btn-secondary" href="{{ redirect_uri }}">{% translate 'Back' %}</a>
         </div>
       </div>
     {% endif %}

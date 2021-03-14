@@ -13,7 +13,7 @@
       {% endif %}
     {% endblock messages %}
     {% with fullname=form.instance.user.get_full_name picture=form.instance.user.picture %}
-      <h3>{% blocktrans %}Email Message to {{ fullname }}{% endblocktrans %}
+      <h3>{% blocktranslate %}Email Message to {{ fullname }}{% endblocktranslate %}
         {% if picture %}{% thumbnail picture "60x60" crop="center" as im %}
           <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
         {% endthumbnail %}{% endif %}
@@ -21,8 +21,8 @@
     {% endwith %}
     {% if form.errors %}
       <div class="alert alert-danger">
-        {% if form.errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}
-          {% trans "Please correct the errors below." %}{% endif %}
+        {% if form.errors|length == 1 %}{% translate "Please correct the error below." %}{% else %}
+          {% translate "Please correct the errors below." %}{% endif %}
       </div>
     {% endif %}
 
@@ -30,9 +30,9 @@
     <div class="form-group">
       <div class="g10f-form-submit">
         <button class="btn btn-primary">{{ action_txt }}</button>
-        {% trans 'or' %}
+        {% translate 'or' %}
         <a class="btn btn-secondary"
-           href="{{ cancel_url }}">{% trans 'Cancel' %}</a>
+           href="{{ cancel_url }}">{% translate 'Cancel' %}</a>
       </div>
     </div>
   </form>

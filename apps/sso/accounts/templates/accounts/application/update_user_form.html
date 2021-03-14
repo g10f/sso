@@ -2,13 +2,13 @@
 {% load i18n static %}
 {% load thumbnail %}
 
-{% block title %}{% trans 'Change User' %}{% endblock %}
+{% block title %}{% translate 'Change User' %}{% endblock %}
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'accounts:user_list' %}">{% trans 'User List' %}</a></li>
-    <li class="active">{% trans 'Change User' %}</li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li><a href="{% url 'accounts:user_list' %}">{% translate 'User List' %}</a></li>
+    <li class="active">{% translate 'Change User' %}</li>
   </ol>
 {% endblock breadcrumb %}
 
@@ -57,7 +57,7 @@
               <div class="form-group">
                 <label class="col-form-label"></label>
                 <div class="g10f-form-control">
-                  <a href="{% url 'registration:update_user_registration' registrationprofile.pk %}">{% trans 'Registration' %}</a>
+                  <a href="{% url 'registration:update_user_registration' registrationprofile.pk %}">{% translate 'Registration' %}</a>
                 </div>
               </div>
             {% endif %}
@@ -81,36 +81,36 @@
     <div class="form-group">
       <div class="g10f-form-control_lg">
         {% if not form.user.is_active %}
-          <button type="submit" class="btn btn-success" name="_activate">{% trans 'Activate User' %}</button>
+          <button type="submit" class="btn btn-success" name="_activate">{% translate 'Activate User' %}</button>
         {% endif %}
-        <button type="submit" class="btn btn-primary">{% trans 'Save' %}</button>
-        <button type="submit" class="btn btn-secondary" name="_continue">{% trans 'Save and continue editing' %}</button>
+        <button type="submit" class="btn btn-primary">{% translate 'Save' %}</button>
+        <button type="submit" class="btn btn-secondary" name="_continue">{% translate 'Save and continue editing' %}</button>
 
         {% if perms.accounts.add_user %}
-          <button type="submit" class="btn btn-secondary" name="_addanother">{% trans 'Save and add another' %}</button>
+          <button type="submit" class="btn btn-secondary" name="_addanother">{% translate 'Save and add another' %}</button>
         {% endif %}
 
         {% if not logged_in %}
-          <button type="submit" class="btn btn-secondary" name="_resend_invitation">{% trans 'Save and resend Invitation Mail' %}</button>
+          <button type="submit" class="btn btn-secondary" name="_resend_invitation">{% translate 'Save and resend Invitation Mail' %}</button>
         {% endif %}
 
         {% if is_validation_period_active %}
           {% block user-extend-validity-action %}
-            <button type="submit" class="btn btn-secondary" name="_extend_validity">{% trans 'Save and extend validity' %}</button>
+            <button type="submit" class="btn btn-secondary" name="_extend_validity">{% translate 'Save and extend validity' %}</button>
           {% endblock user-extend-validity-action %}
         {% endif %}
 
         {% if form.user.organisations.all %}
           <button type="submit" class="btn btn-danger" name="_remove_org" data-bs-toggle="tooltip" data-placement="top"
-                  title="{% trans "After removing the user from your organisation, only the global admin has access to the user." %}">{% trans 'Remove from organisation' %}</button>
+                  title="{% translate "After removing the user from your organisation, only the global admin has access to the user." %}">{% translate 'Remove from organisation' %}</button>
         {% endif %}
 
         {% if form.user.is_active %}
-          <button type="submit" class="btn btn-danger" name="_deactivate">{% trans 'Block User' %}</button>
+          <button type="submit" class="btn btn-danger" name="_deactivate">{% translate 'Block User' %}</button>
         {% endif %}
 
         {% if perms.accounts.delete_user and not form.user.is_active %}
-          <a class="btn btn-danger" href="{% url 'accounts:delete_user' form.user.uuid.hex %}">{% trans 'Delete User' %}</a>
+          <a class="btn btn-danger" href="{% url 'accounts:delete_user' form.user.uuid.hex %}">{% translate 'Delete User' %}</a>
         {% endif %}
 
       </div>

@@ -1,12 +1,12 @@
 {% extends "centered_form.html" %}
 {% load i18n static %}
 
-{% block title %}{% trans 'Log in' %}{% endblock %}
+{% block title %}{% translate 'Log in' %}{% endblock %}
 
 {% block form %}
   <form class="form-horizontal" method="post" id="login-form">
-    <h1>{% trans 'Profile Update' %}</h1>
-    <p>{% trans "Please update your Userprofile." %}</p>
+    <h1>{% translate 'Profile Update' %}</h1>
+    <p>{% translate "Please update your Userprofile." %}</p>
 
     {% block login_message %}{% endblock %}
 
@@ -23,9 +23,9 @@
 
     {% block extra_fields %}{% endblock %}
 
-    <button class="btn btn-primary" type="submit">{% trans 'Save' %}</button>
+    <button class="btn btn-primary" type="submit">{% translate 'Save' %}</button>
     {% if cancel_url %}
-      &nbsp;{% trans 'or' %}&nbsp; <a class="btn btn-danger" href="{{ cancel_url }}">{% trans 'Cancel' %}</a>
+      &nbsp;{% translate 'or' %}&nbsp; <a class="btn btn-danger" href="{{ cancel_url }}">{% translate 'Cancel' %}</a>
     {% endif %}
   </form>
 

@@ -1,28 +1,28 @@
 {% extends "base_form.html" %}
 {% load i18n %}
 
-{% block title %}{% trans 'Request extended access' %}{% endblock %}
+{% block title %}{% translate 'Request extended access' %}{% endblock %}
 
 {% block breadcrumb %}
-    <ol class="breadcrumb">
-        <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-        <li class="active">{% trans 'Feedback' %}</li>
-    </ol>
+  <ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li class="active">{% translate 'Feedback' %}</li>
+  </ol>
 {% endblock breadcrumb %}
 
 {% block form %}
-    <h3>{% blocktrans %}Request extended access to {{ site_name }}{% endblocktrans %}</h3>
-    <p>{% trans "Thank you for your message." %}</p>
-    {% if edit_uri %}
-        <p><a class="btn btn-secondary" href="{{ edit_uri }}">
-            {% if object %}
-                {% trans 'Change my message' %}
-            {% else %}
-                {% trans 'Request extended access' %}
-            {% endif %}
-        </a></p>
-    {% endif %}
-    {% if redirect_uri %}
-        <a class="btn btn-secondary" href="{{ redirect_uri }}">{% trans 'Back' %}</a>
-    {% endif %}
+  <h1>{% blocktranslate %}Request extended access to {{ site_name }}{% endblocktranslate %}</h1>
+  <p>{% translate "Thank you for your message." %}</p>
+  {% if edit_uri %}
+    <p><a class="btn btn-secondary" href="{{ edit_uri }}">
+      {% if object %}
+        {% translate 'Change my message' %}
+      {% else %}
+        {% translate 'Request extended access' %}
+      {% endif %}
+    </a></p>
+  {% endif %}
+  {% if redirect_uri %}
+    <a class="btn btn-secondary" href="{{ redirect_uri }}">{% translate 'Back' %}</a>
+  {% endif %}
 {% endblock %}

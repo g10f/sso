@@ -2,14 +2,14 @@
 {% load i18n list tz static thumbnail accounts cache %}
 {% get_current_language as LANGUAGE_CODE %}
 
-{% block title %}{% trans 'User List' %}{% endblock %}
+{% block title %}{% translate 'User List' %}{% endblock %}
 
 {% block nav_accounts_user_list_class %}active{% endblock %}
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li class="active">{% trans 'User List' %}</li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li class="active">{% translate 'User List' %}</li>
   </ol>
 {% endblock breadcrumb %}
 

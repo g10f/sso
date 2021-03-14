@@ -1,29 +1,29 @@
 {% extends "base_form.html" %}
 {% load i18n static %}
 
-{% block title %}{% trans 'Profile' %}{% endblock %}
+{% block title %}{% translate 'Profile' %}{% endblock %}
 
 {% block left_content %}{% include 'include/_navigation.html' with active_navigation="profile" %}{% endblock left_content %}
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li class="active">{% trans 'User profile' %}</li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li class="active">{% translate 'User profile' %}</li>
   </ol>
 {% endblock breadcrumb %}
 
 
 {% block form %}
   <form class="form-horizontal" method="post">
-    <h1>{% trans 'Delete Profile' %}</h1>
-    <p>{% trans "Do you want to delete your account?" %}</p>
+    <h1>{% translate 'Delete Profile' %}</h1>
+    <p>{% translate "Do you want to delete your account?" %}</p>
 
     {% include 'include/_form_boilerplate.html' %}
 
     <div class="form-group">
       <div class="g10f-form-control_lg">
-        <button type="submit" class="btn btn-danger">{% trans 'Delete' %}</button>
-        &nbsp;{% trans 'or' %}&nbsp; <a class="btn btn-secondary" href="{% url 'accounts:profile' %}">{% trans 'Cancel' %}</a>
+        <button type="submit" class="btn btn-danger">{% translate 'Delete' %}</button>
+        &nbsp;{% translate 'or' %}&nbsp; <a class="btn btn-secondary" href="{% url 'accounts:profile' %}">{% translate 'Cancel' %}</a>
       </div>
     </div>
 

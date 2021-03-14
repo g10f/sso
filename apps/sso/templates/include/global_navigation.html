@@ -27,7 +27,7 @@
               {% endfor %}
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  {% trans 'More' %}
+                  {% translate 'More' %}
                 </a>
                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                   {% for app in user_apps|slice:"3:" %}
@@ -51,13 +51,13 @@
                 <i class="bi bi-person"></i>
               {% endif %}
               {{ user.first_name }}
-              {% if user.is_verified %}<sup><i class="bi bi-asterisk" title="{% trans '2 factor logged in' %}"></i></sup>{% endif %}
+              {% if user.is_verified %}<sup><i class="bi bi-asterisk" title="{% translate '2 factor logged in' %}"></i></sup>{% endif %}
             </a></li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'auth:logout' %}"><i class="bi bi-box-arrow-left"></i> {% trans 'Log out' %}</a></li>
+            <a class="nav-link" href="{% url 'auth:logout' %}"><i class="bi bi-box-arrow-left"></i> {% translate 'Log out' %}</a></li>
         {% else %}
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'auth:login' %}"><i class="bi bi-box-arrow-in-right"></i> {% trans 'Log in' %}</a></li>
+            <a class="nav-link" href="{% url 'auth:login' %}"><i class="bi bi-box-arrow-in-right"></i> {% translate 'Log in' %}</a></li>
         {% endif %}
       </ul>
     </div>
@@ -65,7 +65,7 @@
 </nav>
 <noscript>
   <div class="alert alert-warning">
-    {% blocktrans trimmed with "http://enable-javascript.com/" as url %}Please activate JavaScript to enable all features.
-      <a href="{{ url }}" target="_blank">Read this page for more help</a>{% endblocktrans %}
+    {% blocktranslate trimmed with "http://enable-javascript.com/" as url %}Please activate JavaScript to enable all features.
+      <a href="{{ url }}" target="_blank">Read this page for more help</a>{% endblocktranslate %}
   </div>
 </noscript>

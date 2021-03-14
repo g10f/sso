@@ -1,13 +1,13 @@
 {% extends "base_form.html" %}
 {% load i18n static %}
 
-{% block title %}{% trans 'Country Details' %}{% endblock %}
+{% block title %}{% translate 'Country Details' %}{% endblock %}
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'organisations:organisationcountry_list' %}">{% trans 'Countries' %}</a></li>
-    <li class="active">{% trans 'Country Details' %}</li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li><a href="{% url 'organisations:organisationcountry_list' %}">{% translate 'Countries' %}</a></li>
+    <li class="active">{% translate 'Country Details' %}</li>
   </ol>
 {% endblock breadcrumb %}
 
@@ -23,44 +23,44 @@
   {% endif %}
 
   <div class="row">
-    <div class="col-4">{% trans 'Country' %}:</div>
+    <div class="col-4">{% translate 'Country' %}:</div>
     <div class="col-8">{{ object.country }}</div>
   </div>
   <div class="row">
-    <div class="col-4">{% trans 'Homepage' %}:</div>
+    <div class="col-4">{% translate 'Homepage' %}:</div>
     <div class="col-8"><a href="{{ object.homepage }}">{{ object.homepage }}</a></div>
   </div>
   <div class="row">
-    <div class="col-4">{% trans 'Active' %}:</div>
+    <div class="col-4">{% translate 'Active' %}:</div>
     <div class="col-8"><i class="bi bi-{% if object.is_active %}check-{% endif %}square"></i></div>
   </div>
 
   <div class="row">
-    <div class="col-4">{% trans 'Email address' %}:</div>
+    <div class="col-4">{% translate 'Email address' %}:</div>
     <div class="col-8">{{ object.email|default_if_none:"" }}</div>
   </div>
 
   <div class="row">
-    <div class="col-4">{% trans 'Organisations' %}:</div>
-    <div class="col-8"><a href="{% url 'organisations:organisation_list' %}?country={{ object.country.pk }}">{% trans 'Organisations' %}</a></div>
+    <div class="col-4">{% translate 'Organisations' %}:</div>
+    <div class="col-8"><a href="{% url 'organisations:organisation_list' %}?country={{ object.country.pk }}">{% translate 'Organisations' %}</a></div>
   </div>
 
   {% if perms.organisations.change_organisationcountry and has_country_access %}
     {% for emailforward in  object.email.emailforward_set.all %}
       <div class="row">
-        <div class="col-4">{% trans 'Email forwarding address' %}:</div>
+        <div class="col-4">{% translate 'Email forwarding address' %}:</div>
         <div class="col-8">{{ emailforward }}</div>
       </div>
     {% endfor %}
     {% for emailalias in  object.email.emailalias_set.all %}
       <div class="row">
-        <div class="col-4">{% trans 'Email alias address' %}:</div>
+        <div class="col-4">{% translate 'Email alias address' %}:</div>
         <div class="col-8">{{ emailalias }}</div>
       </div>
     {% endfor %}
 
     <div class="row">
-      <div class="col-4">{% trans 'Country Groups' %}:</div>
+      <div class="col-4">{% translate 'Country Groups' %}:</div>
       <div class="col-8">
         <ul>
           {% for group in object.country_groups.all %}
@@ -77,7 +77,7 @@
     <div class="g10f-form-control_lg">
       {% block submit_group %}
         {% if perms.organisations.change_organisationcountry and has_country_access %}
-          <a class="btn btn-primary" href="{% url 'organisations:organisationcountry_update' object.uuid.hex %}">{% trans 'Update' %}</a>
+          <a class="btn btn-primary" href="{% url 'organisations:organisationcountry_update' object.uuid.hex %}">{% translate 'Update' %}</a>
         {% endif %}
       {% endblock %}
     </div>

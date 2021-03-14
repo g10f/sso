@@ -1,27 +1,27 @@
 {% extends "organisations/organisation_detail.html" %}
 {% load i18n %}
 
-{% block title %}{% trans 'Delete Organisation' %}{% endblock %}
+{% block title %}{% translate 'Delete Organisation' %}{% endblock %}
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li><a href="{% url 'organisations:organisation_list' %}">{% trans 'Organisations' %}</a></li>
-    <li class="active">{% trans 'Delete Organisation' %}</li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li><a href="{% url 'organisations:organisation_list' %}">{% translate 'Organisations' %}</a></li>
+    <li class="active">{% translate 'Delete Organisation' %}</li>
   </ol>
 {% endblock breadcrumb %}
 
 
 {% block message %}
   <div class="alert alert-danger">
-    {% trans "Please confirm deleting this organisation" %}
+    {% translate "Please confirm deleting this organisation" %}
   </div>
 {% endblock %}
 
 
 {% block submit_group %}
   <form class="form-horizontal" method="post">{% csrf_token %}
-    <button type="submit" class="btn btn-danger">{% trans 'Confirm Delete Organisation' %}</button>
-    <a class="btn btn-primary" href="{% url 'organisations:organisation_detail' object.uuid.hex %}">{% trans 'Cancel' %}</a>
+    <button type="submit" class="btn btn-danger">{% translate 'Confirm Delete Organisation' %}</button>
+    <a class="btn btn-primary" href="{% url 'organisations:organisation_detail' object.uuid.hex %}">{% translate 'Cancel' %}</a>
   </form>
 {% endblock %}

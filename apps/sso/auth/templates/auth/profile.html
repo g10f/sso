@@ -1,12 +1,12 @@
 {% extends "base.html" %}
 {% load i18n static %}
 
-{% block title %}{% trans 'Security' %}{% endblock %}
+{% block title %}{% translate 'Security' %}{% endblock %}
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
-    <li><a href="{% url 'home' %}">{% trans 'Home' %}</a></li>
-    <li class="active">{% trans 'Security' %}</li>
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li class="active">{% translate 'Security' %}</li>
   </ol>
 {% endblock breadcrumb %}
 
@@ -31,9 +31,9 @@
 
     {% if default_device %}
     {% if user.sso_auth_profile.is_otp_enabled %}
-      <button class="btn btn-danger" type="submit" name="is_otp_enabled" value="3">{% trans "Disable 2-step verification" %}</button>
+      <button class="btn btn-danger" type="submit" name="is_otp_enabled" value="3">{% translate "Disable 2-step verification" %}</button>
     {% else %}
-      <button class="btn btn-primary" type="submit" name="is_otp_enabled" value="2">{% trans "Enable 2-step verification" %}</button>
+      <button class="btn btn-primary" type="submit" name="is_otp_enabled" value="2">{% translate "Enable 2-step verification" %}</button>
     {% endif %}
   {% endif %}
   </form>
