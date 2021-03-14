@@ -118,7 +118,7 @@ class Select(Widget, forms.Select):
 class Select2(Widget, forms.Select):
     class Media:
         css = {
-            'all': ('css/select2-4.0.13.min.css', 'css/select2-bootstrap4.css')
+            'all': ('css/select2-4.0.13.min.css', 'css/select2-bootstrap4.min.css')
         }
         js = ('js/vendor/select2-4.0.13.min.js',)
 
