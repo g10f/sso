@@ -24,15 +24,13 @@
         {% trans 'Welcome,' %}
         <strong>{% filter force_escape %}{% firstof user.get_full_name user.username %}{% endfilter %}</strong>.
         {% if apps %}
-          <section class="py-4 container">
-            <h1>{% trans 'My applications' %}</h1>
-            <ul>
-              {% for app in user.get_apps %}
-                {% if app.url and not app.is_internal %}
-                  <li><a href="{{ app.url }}">{{ app.title }}</a></li>{% endif %}
-              {% endfor %}
-            </ul>
-          </section>
+          <h1>{% trans 'My applications' %}</h1>
+          <ul>
+            {% for app in user.get_apps %}
+              {% if app.url and not app.is_internal %}
+                <li><a href="{{ app.url }}">{{ app.title }}</a></li>{% endif %}
+            {% endfor %}
+          </ul>
         {% endif %}
       </section>
     {% else %}
