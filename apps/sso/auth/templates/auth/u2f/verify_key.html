@@ -16,15 +16,15 @@
     <form class="d-grid" method="post" id="u2f_sign_form">{% csrf_token %}
       <button class="hidden" type="submit" class="btn btn-primary">{% translate 'Submit' %}</button>
 
-      <h1 class="h3 text-center">{% translate 'Connect your U2F device' %}</h1>
+      <h1 class="text-center">{% translate 'Connect your U2F device' %}</h1>
 
       {% if messages %}{% for message in messages %}
-        <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
+        <div class="text-center alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
       {% endif %}
 
-      <div class="alert alert-primary" id="u2f-login-text" role="alert">{{ device.login_text }}</div>
+      <div class="alert alert-primary text-center" id="u2f-login-text" role="alert">{{ device.login_text }}</div>
 
-      <div class="alert alert-danger browser-not-supported">
+      <div class="alert alert-danger browser-not-supported text-center">
         {% translate 'Your current browser is not yet supported.' %}
       </div>
 
