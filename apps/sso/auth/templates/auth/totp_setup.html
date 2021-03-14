@@ -18,15 +18,15 @@
 
   <form class="form-horizontal" method="post">
     <ol>
-      <li>Install an authenticator applications on your mobile, e.g.
+      <li>{% translate 'Install an authenticator applications on your mobile, e.g.' %}
         <ul>
           <li>Free OTP</li>
           <li>Mirosoft Authenticator</li>
           <li>Google Authenticator</li>
         </ul>
       </li>
-      <li>Open the application and scan the barcode. <br><img src="{{ form.qr_code }}" alt="QR Code"/></li>
-      <li>Enter the one-time code provided by the application and click Save to finish the setup.</li>
+      <li>{% blocktranslate trimmed with qr_code=form.qr_code %}Open the application and scan the barcode. <br><img src="{{ qr_code }}" alt="QR Code"/>{% endblocktranslate %}</li>
+      <li>{% translate 'Enter the one-time code provided by the application and click Save to finish the setup.' %}</li>
     </ol>
 
     {% include 'include/_form_boilerplate.html' %}

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-14 16:06+0100\n"
+"POT-Creation-Date: 2021-03-14 16:23+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1536,6 +1536,20 @@ msgid "Alternatively, use one of your backup devices:"
 msgstr ""
 
 msgid "Token Generator Setup"
+msgstr ""
+
+msgid "Install an authenticator applications on your mobile, e.g."
+msgstr ""
+
+#, python-format
+msgid ""
+"Open the application and scan the barcode. <br><img src=\"%(qr_code)s\" alt="
+"\"QR Code\"/>"
+msgstr ""
+
+msgid ""
+"Enter the one-time code provided by the application and click Save to finish "
+"the setup."
 msgstr ""
 
 msgid "U2F Device Setup"
