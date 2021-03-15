@@ -18,12 +18,13 @@
 {% endcomment %}
 {% endblock %}
 
-{% block htmlclass %}h-100{% endblock %}
+{% block htmlclass %}sign-in h-100 {{ display | default_if_none:"" }}{% endblock %}
 
 {% block title %}{% translate 'Sign in' %}{% endblock %}
 
 {% block bodyclass %}d-flex flex-column h-100 pt-0{% endblock %}
 {% block body %}
+
   {% comment %}
   {% if display != 'popup' %}
     {% block navbar %}{{ block.super }}{% endblock navbar %}
@@ -32,9 +33,7 @@
 
   <div class="{% block containerclass %}{{ block.super }}{% endblock %}">
     <main>
-      <section>
-        {% block content %}{% endblock %}
-      </section>
+      <section>{% block content %}{% endblock %}</section>
     </main>
   </div>
 
