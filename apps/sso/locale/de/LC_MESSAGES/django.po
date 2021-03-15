@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-14 16:56+0100\n"
+"POT-Creation-Date: 2021-03-15 12:13+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1594,9 +1594,8 @@ msgstr ""
 msgid "Log in again"
 msgstr ""
 
-#, python-format
-msgid "Log in with your %(brand)s account"
-msgstr "Mit Deinem %(brand)s-Konto anmelden"
+msgid "%(brand)s Login"
+msgstr "%(brand)s Anmeldung"
 
 #, python-format
 msgid ""
@@ -1605,8 +1604,8 @@ msgstr ""
 "Neu bei %(site_name)s? <a href=\"%(registration_register_url)s"
 "\">Registrieren</a>"
 
-msgid "Sign in"
-msgstr "Anmelden"
+msgid "Login"
+msgstr "Anmeldung"
 
 msgid "Confirm Phone"
 msgstr "Telefonnummer Bestätigen"
@@ -3010,6 +3009,12 @@ msgstr ""
 
 msgid "CSRF verification failed. Request aborted."
 msgstr "Die CSRF-Überprüfung ist fehlgeschlagen. Anfrage abgebrochen."
+
+#~ msgid "Sign in"
+#~ msgstr "Anmelden"
+
+#~ msgid "Log in with your %(brand)s account"
+#~ msgstr "Mit Deinem %(brand)s-Konto anmelden"
 
 #~ msgid "Related role profiles"
 #~ msgstr "Zugehörige Rollenprofile"

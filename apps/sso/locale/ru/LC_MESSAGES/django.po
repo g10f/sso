@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-14 16:56+0100\n"
+"POT-Creation-Date: 2021-03-15 12:13+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1498,7 +1498,7 @@ msgid "Log in again"
 msgstr ""
 
 #, python-format
-msgid "Log in with your %(brand)s account"
+msgid "%(brand)s Login"
 msgstr ""
 
 #, python-format
@@ -1506,7 +1506,7 @@ msgid ""
 "New at %(site_name)s? <a href=\"%(registration_register_url)s\">Register</a>"
 msgstr ""
 
-msgid "Sign in"
+msgid "Login"
 msgstr ""
 
 msgid "Confirm Phone"
