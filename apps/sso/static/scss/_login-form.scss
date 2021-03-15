@@ -1,17 +1,27 @@
 //
 // Login Form
 //
-.sign-in-form {
-  display: grid !important;
-  gap: 0.5rem !important;
-  margin-top: 15vh;
-  margin-right: auto !important;
-  margin-left: auto !important;
-  max-width: 380px;
-  @include media-breakpoint-up(md){
-    max-width: 410px;
+.sign-in {
+  section {
+    margin-top: 15vh;
   }
-  @include media-breakpoint-up(lg){
-    max-width: 450px;
+  &.popup {
+    section {
+      margin-bottom: 2rem;
+    }
+  }
+
+  form {
+    display: grid !important;
+    gap: 0.5rem !important;
+    margin-right: auto !important;
+    margin-left: auto !important;
+    max-width: 380px;
+    @include media-breakpoint-up(md) {
+      max-width: 410px;
+    }
+    @include media-breakpoint-up(lg) {
+      max-width: 450px;
+    }
   }
 }
