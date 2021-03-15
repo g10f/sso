@@ -284,6 +284,13 @@ footer > div > ul > li {
   padding: 0 2px;
 }
 
+.sign-in section {
+  margin-top: 10vh;
+}
+.sign-in.popup section {
+  margin-bottom: 2rem;
+}
+
 .sign-in-form {
   display: grid !important;
   gap: 0.5rem !important;
@@ -291,16 +298,15 @@ footer > div > ul > li {
   margin-left: auto !important;
   max-width: 380px;
 }
-
-html.sign-in {
-  height: 80%;
-  min-height: 450px;
+@media (min-width: 768px) {
+  .sign-in-form {
+    max-width: 410px;
+  }
 }
-html.sign-in body {
-  height: 100%;
-  align-items: center;
-  vertical-align: middle;
-  display: flex;
+@media (min-width: 992px) {
+  .sign-in-form {
+    max-width: 450px;
+  }
 }
 
 .has-success .form-text {
@@ -11123,4 +11129,4 @@ textarea.form-control-lg {
   }
 }
 
-/*# sourceMappingURL=main-1.0.2.css.map */
+/*# sourceMappingURL=main-1.0.4.css.map */

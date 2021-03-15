@@ -6,25 +6,18 @@
     {% block form-signin-heading %}
       <h1 class="text-center">{% blocktranslate %}{{ brand }} Login{% endblocktranslate %}</h1>
     {% endblock %}
-
     {% include 'include/_form_boilerplate.html' %}
-
     {% block login_message %}{% endblock %}
-
     {% include 'include/_field_with_floating_label.html' with field=form.username %}
     {% include 'include/_field_with_floating_label.html' with field=form.password %}
-
     {% block extra_fields %}{% endblock %}
-
     <button class="btn btn-lg btn-brand" type="submit">{% translate 'Log in' %}</button>
-
     <div class="form-check mx-auto py-1" title="{{ form.remember_me.help_text }}">
       {{ form.remember_me }}
       <label class="form-check-label" for="{{ form.remember_me.id_for_label }}">
         {{ form.remember_me.label }}
       </label>
     </div>
-
     {% url 'accounts:password_reset' as password_reset_url %}
     {% if password_reset_url %}
       <a class="btn btn-lg btn-outline-secondary" target="_blank" href="{{ password_reset_url }}">{% translate 'Forgotten your password?' %}</a>
@@ -35,12 +28,15 @@
         {% if registration_open %}
           {% url 'registration:registration_register' as registration_register_url %}
           {% if registration_register_url and registration_open %}
-            {% blocktranslate %}New at {{ site_name }}? <a href="{{ registration_register_url }}">Register</a>{% endblocktranslate %}
+            {% blocktranslate %}New at {{ site_name }}?{% endblocktranslate %}<br>
           {% endif %}
         {% endif %}
-
+        {% if registration_register_url and registration_open %}
+          <a href="{{ registration_register_url }}">{% translate 'Register' %}</a>
+          {% if cancel_url %}{% translate 'or' %}{% endif %}
+        {% endif %}
         {% if cancel_url %}
-          {% translate 'or' %} <a class="link-danger" href="{{ cancel_url }}">{% translate 'Cancel' %}</a>
+          <a class="link-danger" href="{{ cancel_url }}">{% translate 'Cancel' %}</a>
         {% endif %}
       </div>
     {% endif %}

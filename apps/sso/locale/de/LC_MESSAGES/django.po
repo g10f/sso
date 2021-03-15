@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-15 12:13+0100\n"
+"POT-Creation-Date: 2021-03-15 21:29+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1594,15 +1594,16 @@ msgstr ""
 msgid "Log in again"
 msgstr ""
 
+#, python-format
 msgid "%(brand)s Login"
-msgstr "%(brand)s Anmeldung"
+msgstr "%(brand)s Login"
 
 #, python-format
-msgid ""
-"New at %(site_name)s? <a href=\"%(registration_register_url)s\">Register</a>"
-msgstr ""
-"Neu bei %(site_name)s? <a href=\"%(registration_register_url)s"
-"\">Registrieren</a>"
+msgid "New at %(site_name)s?"
+msgstr "Neu bei %(site_name)s?"
+
+msgid "Register"
+msgstr "Registrieren"
 
 msgid "Login"
 msgstr "Anmeldung"
@@ -2732,9 +2733,6 @@ msgstr ""
 "Gib bitte eine weitere Person an, die schon ein Konto hat und Dich empfehlen "
 "kann"
 
-msgid "Register"
-msgstr "Registrieren"
-
 msgid "Registration preview"
 msgstr "Vorschau der Registrierungsdaten"
 
@@ -2945,9 +2943,8 @@ msgstr "Meine Anwendungen"
 msgid "One account. All of %(site_name)s."
 msgstr "Einmal anmelden, alle %(site_name)s Services nutzen."
 
-#, python-format
-msgid "New at %(site_name)s?"
-msgstr "Neu bei %(site_name)s?"
+msgid "To login"
+msgstr "Zum Login"
 
 msgid "Send email"
 msgstr "E-Mail Senden"
@@ -3009,6 +3006,13 @@ msgstr ""
 
 msgid "CSRF verification failed. Request aborted."
 msgstr "Die CSRF-Überprüfung ist fehlgeschlagen. Anfrage abgebrochen."
+
+#~ msgid ""
+#~ "New at %(site_name)s? <a href=\"%(registration_register_url)s\">Register</"
+#~ "a>"
+#~ msgstr ""
+#~ "Neu bei %(site_name)s? <a href=\"%(registration_register_url)s"
+#~ "\">Registrieren</a>"
 
 #~ msgid "Sign in"
 #~ msgstr "Anmelden"

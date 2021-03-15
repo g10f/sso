@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-15 12:13+0100\n"
+"POT-Creation-Date: 2021-03-15 21:29+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1500,8 +1500,10 @@ msgid "%(brand)s Login"
 msgstr ""
 
 #, python-format
-msgid ""
-"New at %(site_name)s? <a href=\"%(registration_register_url)s\">Register</a>"
+msgid "New at %(site_name)s?"
+msgstr ""
+
+msgid "Register"
 msgstr ""
 
 msgid "Login"
@@ -2579,9 +2581,6 @@ msgid ""
 "Please name a second person who already has an account and can recommend you."
 msgstr ""
 
-msgid "Register"
-msgstr ""
-
 msgid "Registration preview"
 msgstr ""
 
@@ -2780,8 +2779,7 @@ msgstr ""
 msgid "One account. All of %(site_name)s."
 msgstr ""
 
-#, python-format
-msgid "New at %(site_name)s?"
+msgid "To login"
 msgstr ""
 
 msgid "Send email"

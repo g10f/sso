@@ -35,13 +35,10 @@
       </section>
     {% else %}
       <section class="py-5 text-center">
-        <div class="mx-auto mb-3" style="max-width: 550px;">
-          <h1>{% blocktranslate %}One account. All of {{ site_name }}.{% endblocktranslate %}</h1>
-        </div>
-
         <div class="sign-in-form">
+          <h1>{% blocktranslate %}One account. All of {{ site_name }}.{% endblocktranslate %}</h1>
           {% url 'registration:registration_register' as registration_register_url %}
-          <a class="btn btn-lg btn-brand" href="{{ login_url }}">{% translate 'Log in' %}</a>
+          <a class="btn btn-lg btn-brand" href="{{ login_url }}">{% translate 'To login' %}</a>
           {% if registration_register_url and registration_open %}
             {% blocktranslate %}New at {{ site_name }}?{% endblocktranslate %}
             <a class="btn btn-lg btn-default" href="{{ registration_register_url }}">{% translate 'Register' %}</a>
