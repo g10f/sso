@@ -18,10 +18,11 @@
 {% endcomment %}
 {% endblock %}
 
-{% block htmlclass %}sign-in{% endblock %}
+{% block htmlclass %}h-100{% endblock %}
 
 {% block title %}{% translate 'Sign in' %}{% endblock %}
 
+{% block bodyclass %}d-flex flex-column h-100 pt-0{% endblock %}
 {% block body %}
   {% comment %}
   {% if display != 'popup' %}
@@ -37,9 +38,7 @@
     </main>
   </div>
 
-  {% comment %}
   {% if display != 'popup' %}
     {% block footer %}{{ block.super }}{% endblock %}
   {% endif %}
-  {% endcomment %}
 {% endblock body %}

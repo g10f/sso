@@ -1,26 +1,17 @@
 //
 // Login Form
 //
-
 .sign-in-form {
   display: grid !important;
   gap: 0.5rem !important;
+  margin-top: 15vh;
   margin-right: auto !important;
   margin-left: auto !important;
   max-width: 380px;
-}
-
-// TODO: ??
-html.sign-in {
-  height: 80%;
-  min-height: 450px;
-
-  body {
-    height: 100%;
-    // min-height: 400px;
-    align-items: center;
-    vertical-align: middle;
-    //padding-top: 0;
-    display: flex;
+  @include media-breakpoint-up(md){
+    max-width: 410px;
+  }
+  @include media-breakpoint-up(lg){
+    max-width: 450px;
   }
 }
