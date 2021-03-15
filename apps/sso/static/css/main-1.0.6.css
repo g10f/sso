@@ -285,17 +285,7 @@ footer > div > ul > li {
 }
 
 .sign-in section {
-  margin-top: 2rem;
-}
-@media screen and (min-height: 600px) {
-  .sign-in section {
-    margin-top: 7rem;
-  }
-}
-@media screen and (min-height: 800px) {
-  .sign-in section {
-    margin-top: 12rem;
-  }
+  margin-top: 4rem;
 }
 .sign-in.popup section {
   margin-bottom: 2rem;
@@ -11139,4 +11129,4 @@ textarea.form-control-lg {
   }
 }
 
-/*# sourceMappingURL=main-1.0.4.css.map */
+/*# sourceMappingURL=main-1.0.6.css.map */

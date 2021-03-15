@@ -3,13 +3,7 @@
 //
 .sign-in {
   section {
-    margin-top: 2rem;
-    @media screen and (min-height: 600px) {
-      margin-top: 7rem;
-    }
-    @media screen and (min-height: 800px) {
-      margin-top: 12rem;
-    }
+    margin-top: 4rem;
   }
   &.popup {
     section {
