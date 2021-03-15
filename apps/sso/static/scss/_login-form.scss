@@ -3,25 +3,26 @@
 //
 .sign-in {
   section {
-    margin-top: 15vh;
+    margin-top: 10vh;
   }
+
   &.popup {
     section {
       margin-bottom: 2rem;
     }
   }
+}
 
-  form {
-    display: grid !important;
-    gap: 0.5rem !important;
-    margin-right: auto !important;
-    margin-left: auto !important;
-    max-width: 380px;
-    @include media-breakpoint-up(md) {
-      max-width: 410px;
-    }
-    @include media-breakpoint-up(lg) {
-      max-width: 450px;
-    }
+.sign-in-form {
+  display: grid !important;
+  gap: 0.5rem !important;
+  margin-right: auto !important;
+  margin-left: auto !important;
+  max-width: 380px;
+  @include media-breakpoint-up(md) {
+    max-width: 410px;
+  }
+  @include media-breakpoint-up(lg) {
+    max-width: 450px;
   }
 }
