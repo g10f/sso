@@ -300,7 +300,6 @@ html.sign-in body {
   height: 100%;
   align-items: center;
   vertical-align: middle;
-  padding-top: 0;
   display: flex;
 }
 
@@ -11124,4 +11123,4 @@ textarea.form-control-lg {
   }
 }
 
-/*# sourceMappingURL=main-1.0.1.css.map */
+/*# sourceMappingURL=main-1.0.2.css.map */
