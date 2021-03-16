@@ -18,10 +18,11 @@
 {% endcomment %}
 {% endblock %}
 
-{% block htmlclass %}sign-in h-100 {{ display | default_if_none:"" }}{% endblock %}
 {% block title %}{% translate 'Login' %}{% endblock %}
 
-{% block bodyclass %}d-flex flex-column h-100 pt-0{% endblock %}
+{% block htmlclass %}sign-in h-100 {{ display | default_if_none:"" }}{% endblock %}
+{% block bodyclass %}d-flex flex-column h-100 pt-3{% endblock %}
+
 {% block body %}
   {% comment %}
   {% if display != 'popup' %}

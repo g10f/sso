@@ -12,7 +12,7 @@
       {% if device.twiliosmsdevice %}
         <button class="btn btn-lg btn-default" type="submit" name="resend_token" value=1">{% translate 'Resend Token' %}</button>
       {% endif %}
-      {{ form.otp_token }}
+      {% include 'include/_field_with_floating_label.html' with field=form.otp_token %}
       <button class="btn btn-lg btn-brand" type="submit">{% translate 'Submit' %}</button>
     </form>
 
