@@ -1,5 +1,5 @@
 <!doctype html>{% load static i18n analytics %}
-<html lang="en" class="{% block htmlclass %}{% endblock %}">
+<html lang="en" class="{% block htmlclass %}h-100{% endblock %}">
 <head>
   <meta charset="utf-8">
   <title>{% block title %}{% endblock %}</title>
@@ -23,7 +23,7 @@
   {% endblock script %}
   {% block extrascript %}{% endblock extrascript %}
 </head>
-<body class="{% block bodyclass %}{% endblock %}">
+<body class="{% block bodyclass %}h-100 d-flex flex-column{% endblock %}">
 
 {% with containerclass='container-xxl' %}
   {% block body %}

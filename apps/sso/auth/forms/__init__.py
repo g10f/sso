@@ -7,7 +7,6 @@ from django import forms
 from django.conf import settings
 from django.contrib.auth.forms import AuthenticationForm
 from django.utils import timezone
-from django.utils.text import capfirst
 from django.utils.translation import gettext_lazy as _
 from sso.auth.utils import totp_digits, match_token
 from sso.forms import bootstrap
@@ -20,7 +19,6 @@ class EmailAuthenticationForm(AuthenticationForm):
         error_messages={'required': _('Please enter your Email address or Username.')},
         label=_("Email address or Username"),
         widget=bootstrap.TextInput(attrs={
-            'placeholder': capfirst(_('Email address or Username')),
             'autofocus': True,
             'class': 'form-control-lg',
             'autocomplete': 'username'}))
@@ -28,7 +26,6 @@ class EmailAuthenticationForm(AuthenticationForm):
         label=_("Password"),
         error_messages={'required': _('Please enter your Password.')},
         widget=bootstrap.PasswordInput(attrs={
-            'placeholder': capfirst(_('Password')),
             'class': 'form-control-lg',
             'autocomplete': 'current-password'
         }))
