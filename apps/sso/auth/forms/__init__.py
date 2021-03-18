@@ -7,6 +7,7 @@ from django import forms
 from django.conf import settings
 from django.contrib.auth.forms import AuthenticationForm
 from django.utils import timezone
+from django.utils.text import capfirst
 from django.utils.translation import gettext_lazy as _
 from sso.auth.utils import totp_digits, match_token
 from sso.forms import bootstrap
@@ -14,18 +15,24 @@ from sso.utils.translation import string_format
 
 
 class EmailAuthenticationForm(AuthenticationForm):
+    labels = {
+        'username': capfirst(_("Email address or Username")),
+        'password': capfirst(_("Password"))
+    }
     username = forms.CharField(
         max_length=75,
         error_messages={'required': _('Please enter your Email address or Username.')},
-        label=_("Email address or Username"),
+        label=labels.get('username'),
         widget=bootstrap.TextInput(attrs={
+            'placeholder': labels.get('username'),
             'autofocus': True,
             'class': 'form-control-lg',
             'autocomplete': 'username'}))
     password = forms.CharField(
-        label=_("Password"),
+        label=labels.get('password'),
         error_messages={'required': _('Please enter your Password.')},
         widget=bootstrap.PasswordInput(attrs={
+            'placeholder': labels.get('password'),
             'class': 'form-control-lg',
             'autocomplete': 'current-password'
         }))
@@ -75,8 +82,13 @@ class U2FForm(forms.Form):
 
 
 class AuthenticationTokenForm(forms.Form):
-    otp_token = forms.IntegerField(label=_("Token"), min_value=1, max_value=int('9' * totp_digits()),
+    labels = {
+        'otp_token': capfirst(_("one-time password")),
+    }
+    otp_token = forms.IntegerField(label=labels.get('otp_token'),
+                                   min_value=1, max_value=int('9' * totp_digits()),
                                    widget=bootstrap.TextInput(attrs={
+                                       'placeholder': labels.get('otp_token'),
                                        'autofocus': True,
                                        'autocomplete': 'one-time-code',
                                        'class': 'form-control-lg'

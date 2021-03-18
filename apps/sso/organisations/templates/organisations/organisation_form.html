@@ -14,7 +14,7 @@
 
 {% block form %}
   <form class="form-horizontal" method="post" data-active="{{ active }}">
-    <h1>{{ object.get_center_type_display }} {{ object.name }}</h1>
+    <h1>{% if object %}{{ object.get_center_type_display }} {{ object.name }}{% else %}{% translate 'Create new Organisation' %}{% endif %}</h1>
     {% include 'include/_form_boilerplate.html' %}
     {% translate 'Basis Data' as base_title %}
     {% include 'bootstrap/forms/nav-tabs.html' %}

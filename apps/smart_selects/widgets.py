@@ -99,7 +99,6 @@ class ChainedSelect(Select):
             final_attrs['class'] += ' chained'
         else:
             final_attrs['class'] = 'chained'
-        final_attrs['name'] = name
         final_attrs['data-chainfield'] = chain_field
         final_attrs['data-url'] = url
         final_attrs['data-empty_label'] = empty_label
