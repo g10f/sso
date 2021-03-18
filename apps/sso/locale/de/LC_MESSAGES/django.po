@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-15 21:29+0100\n"
+"POT-Creation-Date: 2021-03-18 09:30+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1421,11 +1421,11 @@ msgstr "Die Organisation fehlt"
 msgid "SSO Auth"
 msgstr ""
 
-msgid "Please enter your Email address or Username."
-msgstr "Bitte trage Deine E-Mail Adresse oder Deinen Benutzernamen ein."
-
 msgid "Email address or Username"
 msgstr "E-Mail Adresse oder Benutzername"
+
+msgid "Please enter your Email address or Username."
+msgstr "Bitte trage Deine E-Mail Adresse oder Deinen Benutzernamen ein."
 
 msgid "Please enter your Password."
 msgstr "Bitte trage Dein Passwort ein."
@@ -1467,8 +1467,8 @@ msgstr ""
 msgid "Challenges"
 msgstr ""
 
-msgid "Token"
-msgstr ""
+msgid "one-time password"
+msgstr "Einmalpasswort"
 
 msgid "User is none"
 msgstr "User nicht initialisiert"
@@ -1485,6 +1485,9 @@ msgid ""
 msgstr ""
 
 msgid "Key"
+msgstr ""
+
+msgid "Token"
 msgstr ""
 
 #, python-format
@@ -2386,6 +2389,9 @@ msgstr "Bilder aktualisieren"
 
 msgid "Update Organisation"
 msgstr "Organisation aktualisieren"
+
+msgid "Create new Organisation"
+msgstr "Neue Organisation anlegen"
 
 msgid "Basis Data"
 msgstr "Basis Daten"

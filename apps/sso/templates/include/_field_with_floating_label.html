@@ -1,7 +1,7 @@
 {% if field %}
   <div class="form-floating {% if field.errors %}has-error{% endif %} {% if field.is_hidden %}g10f-honeypot{% endif %}">
     {{ field }}
-    <label class="col-form-label" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}*{% endif %}</label>
+    <label class="col-form-label" for="{{ field.id_for_label }}">{{ field.label }}{#% if field.field.required %}*{% endif %#}</label>
     {% if field.help_text or field.errors %}
       <div class="form-text">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</div>
     {% endif %}
