@@ -18,12 +18,15 @@
 {% endcomment %}
 {% endblock %}
 
+{% block extrascript %}{% endblock extrascript %}
+
 {% block title %}{% translate 'Login' %}{% endblock %}
 
 {% block htmlclass %}sign-in h-100 {{ display | default_if_none:"" }}{% endblock %}
 {% block bodyclass %}d-flex flex-column h-100 pt-3{% endblock %}
 
 {% block body %}
+  {% block navbar %}{% endblock navbar %}
   {% comment %}
   {% if display != 'popup' %}
     {% block navbar %}{{ block.super }}{% endblock navbar %}

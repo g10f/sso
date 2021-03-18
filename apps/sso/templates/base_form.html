@@ -2,6 +2,7 @@
 {% load i18n %}
 
 {% block extrascript %}
+  {{ block.super }}
   {% if media and form.media %}
     {{ media|add:form.media }}
   {% else %}
