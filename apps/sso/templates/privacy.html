@@ -11,20 +11,22 @@
 {% endblock breadcrumb %}
 
 {% block right_content %}
-  <h1 class="h3">{% translate 'Privacy' %}</h1>
-  <p>
-    {% blocktranslate trimmed %}
-      Your data will be stored and used by us for the provision of {{ brand }} services.
-      Under no circumstances will we give your information to third parties!
-    {% endblocktranslate %}
-  </p>
-  {% if data_protection_uri %}
-    <p>
-      {% blocktranslate trimmed %}
-        Our data protection declaration can be found on the Website
-        <a href="{{ data_protection_uri }}">{{ data_protection_uri }}</a>.
-      {% endblocktranslate %}
-    </p>
-  {% endif %}
-
+      <div class="g10f-centered pt-3">
+        <h1>{% translate 'Privacy' %}</h1>
+        <p>
+          {% blocktranslate trimmed %}
+            Your data will be stored and used by us for the provision of {{ brand }} services.
+            Under no circumstances will we give your information to third parties!
+          {% endblocktranslate %}
+        </p>
+        {% if data_protection_uri %}
+          <p>
+            {% blocktranslate trimmed %}
+              Our data protection declaration can be found on the Website
+              <a href="{{ data_protection_uri }}">{{ data_protection_uri }}</a>.
+            {% endblocktranslate %}
+          </p>
+        {% endif %}
+      </div>
 {% endblock right_content %}
+

@@ -118,16 +118,30 @@ noscript div {
   margin-bottom: -9px;
 }
 
-.g10f-centered {
-  margin-right: auto;
-  margin-left: auto;
+section {
+  .g10f-centered {
+    margin-right: auto;
+    margin-left: auto;
 
-  @include make-col-ready();
-  @include media-breakpoint-up(md) {
-    @include make-col(10);
+    @include make-col-ready();
+    @include media-breakpoint-up(md) {
+      @include make-col(10);
+    }
+    @include media-breakpoint-up(lg) {
+      @include make-col(8);
+    }
   }
-  @include media-breakpoint-up(lg) {
-    @include make-col(8);
+}
+
+aside + section {
+  .g10f-centered {
+    @include make-col-ready();
+    @include media-breakpoint-up(md) {
+      @include make-col(12);
+    }
+    @include media-breakpoint-up(lg) {
+      @include make-col(12);
+    }
   }
 }
 
