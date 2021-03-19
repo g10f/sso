@@ -203,7 +203,7 @@ noscript div {
   margin-bottom: -9px;
 }
 
-.g10f-centered {
+section .g10f-centered {
   margin-right: auto;
   margin-left: auto;
   flex-shrink: 0;
@@ -214,15 +214,36 @@ noscript div {
   margin-top: var(--bs-gutter-y);
 }
 @media (min-width: 768px) {
-  .g10f-centered {
+  section .g10f-centered {
     flex: 0 0 auto;
     width: 83.3333333333%;
   }
 }
 @media (min-width: 992px) {
-  .g10f-centered {
+  section .g10f-centered {
     flex: 0 0 auto;
     width: 66.6666666667%;
+  }
+}
+
+aside + section .g10f-centered {
+  flex-shrink: 0;
+  width: 100%;
+  max-width: 100%;
+  padding-right: calc(var(--bs-gutter-x) / 2);
+  padding-left: calc(var(--bs-gutter-x) / 2);
+  margin-top: var(--bs-gutter-y);
+}
+@media (min-width: 768px) {
+  aside + section .g10f-centered {
+    flex: 0 0 auto;
+    width: 100%;
+  }
+}
+@media (min-width: 992px) {
+  aside + section .g10f-centered {
+    flex: 0 0 auto;
+    width: 100%;
   }
 }
 
@@ -11129,4 +11150,4 @@ textarea.form-control-lg {
   }
 }
 
-/*# sourceMappingURL=main-1.0.6.css.map */
+/*# sourceMappingURL=main-1.0.7.css.map */

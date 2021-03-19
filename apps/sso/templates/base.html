@@ -39,11 +39,13 @@
 
       {% block content %}
         <main class="{% block mainclass %}{% endblock %}">
+        {% if user.is_authenticated %}
           <aside>
             {% block left_content %}{% include 'include/_navigation.html' %}{% endblock left_content %}
           </aside>
+        {% endif %}
           <section>
-            {% block right_content %}<h2>{% translate 'Home' %}</h2>{% endblock %}
+            {% block right_content %}<h1>{% translate 'Home' %}</h1>{% endblock %}
           </section>
         </main>
       {% endblock content %}
