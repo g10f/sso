@@ -1,6 +1,6 @@
 {% load i18n static %}
-<div class="card mb-3 {% if default_device.u2fdevice %}border-primary{% else %}border-secondary{% endif %}">
-  <div class="card-header {% if default_device.u2fdevice %}bg-primary text-white{% else %}bg-secondary text-white{% endif %}">
+<div class="card mb-3">
+  <div class="card-header">
     {% translate 'Login with your U2F Device' %}</div>
   <div class="card-body">
     {% for device in u2fdevice_set %}
