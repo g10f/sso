@@ -583,7 +583,7 @@ class UserSelfRegistrationForm2(UserSelfRegistrationForm):
             self.fields['captcha'] = ReCaptchaField()
 
     def is_captcha_needed(self):
-        max_age = 300
+        max_age = 100
         if self.data and ('state' in self.data):
             try:
                 value = self.signer.unsign(self.data['state'], max_age)
