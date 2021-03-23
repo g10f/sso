@@ -522,13 +522,13 @@ class User(AbstractBaseUser, PermissionsMixin):
             return Organisation.objects.filter(association__is_external=False).prefetch_related(
                 'organisation_country__country', 'email', 'organisationpicture_set')
         elif self.has_perm("organisations.change_organisation"):
-            return Organisation.objects.filter(
+            orgs = Organisation.objects.filter(
                 Q(association__is_external=False)
                 & (Q(user=self) |
                    Q(admin_region__user=self) |
                    Q(organisation_country__user=self) |
-                   Q(association__user=self))) \
-                .prefetch_related('organisation_country__country', 'email', 'organisationpicture_set').distinct()
+                   Q(association__user=self))).distinct()
+            return Organisation.objects.filter(id__in=orgs).prefetch_related('organisation_country__country', 'email', 'organisationpicture_set')
         else:
             return Organisation.objects.none()
 
@@ -613,9 +613,9 @@ class User(AbstractBaseUser, PermissionsMixin):
             return AdminRegion.objects.filter(
                 Q(organisation_country__association__is_external=False)
                 & (
-                    Q(user=self) |
-                    Q(organisation_country__user=self) |
-                    Q(organisation_country__association__user=self))).distinct()
+                        Q(user=self) |
+                        Q(organisation_country__user=self) |
+                        Q(organisation_country__association__user=self))).distinct()
         else:
             return AdminRegion.objects.none()
 
@@ -631,9 +631,9 @@ class User(AbstractBaseUser, PermissionsMixin):
             return OrganisationCountry.objects.filter(
                 Q(association__is_external=False)
                 & (
-                    Q(adminregion__user=self) |
-                    Q(user=self) |
-                    Q(association__user=self))).distinct().prefetch_related('country', 'association')
+                        Q(adminregion__user=self) |
+                        Q(user=self) |
+                        Q(association__user=self))).distinct().prefetch_related('country', 'association')
         else:
             return OrganisationCountry.objects.none()
 
