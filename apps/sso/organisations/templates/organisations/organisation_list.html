@@ -61,7 +61,7 @@
               <td>{% if object.google_maps_url %}
                 <a href="{{ object.google_maps_url }}"><i class="bi bi-geo"></i> {{ object.get_coordinates_type_display }}
                 </a>{% endif %}</td>
-              <td>{{ object.organisationaddress_set.first.country.iso2_code }}</td>
+              <td>{{ object.organisation_country.country.iso2_code }}</td>
               <td>{{ object.founded|date:"Y-m-d" }}</td>
               <td>{% if object.is_active %}<i class="bi bi-check2"></i>{% endif %}
               </td>
