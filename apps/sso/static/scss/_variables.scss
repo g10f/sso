@@ -26,3 +26,6 @@ $theme-colors: map-merge(
                 ),
                 $theme-colors,
 );
+
+$link-decoration:       none;
+$link-hover-decoration: underline;
