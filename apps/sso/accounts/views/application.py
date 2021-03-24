@@ -607,7 +607,7 @@ class RoleProfileListView(ListView):
         return ['name', 'order']
 
     @method_decorator(admin_login_required)
-    @method_decorator(user_passes_test(lambda u: u.is_user_admin))
+    @method_decorator(user_passes_test(lambda u: u.is_user_admin or u.is_app_admin()))
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 
