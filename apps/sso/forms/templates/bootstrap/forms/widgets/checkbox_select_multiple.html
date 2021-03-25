@@ -1,3 +1,1 @@
-{% with id=widget.attrs.id %}<div{% if id %} id="{{ id }}"{% endif %}>{% for group, options, index in widget.optgroups %}{% for option in options %}
-    <div class="checkbox">{% include option.template_name with widget=option %}</div>{% endfor %}{% endfor %}
-</div>{% endwith %}
+{% with id=widget.attrs.id %}<div{% if id %} id="{{ id }}"{% endif %}>{% for group, options, index in widget.optgroups %}{% for option in options %}<div class="form-check">{% include 'bootstrap/forms/widgets/checkbox_option.html' with widget=option %}</div>{% endfor %}{% endfor %}</div>{% endwith %}
