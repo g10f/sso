@@ -26,7 +26,7 @@
     {% include 'include/_form_boilerplate.html' %}
 
     {% translate 'User data' as base_title %}
-    {% include 'bootstrap/forms/nav-tabs.html' with tab1=form.notes tab2=form.application_roles %}
+    {% include 'bootstrap/forms/nav-tabs.html' with tab1=form.notes tab2=form.role_profiles tab3=form.application_roles %}
 
     <div class="tab-content">
       <div class="tab-pane" role="tabpanel" id="base">
@@ -36,9 +36,10 @@
         {% include 'include/_field.html' with field=form.dob %}
         {% include 'include/_field.html' with field=form.organisations %}
         {% include 'include/_email_field.html' with field=form.email %}
-        <span class="user-extra-form-fields">
-            {% block user-extra-form-fields %}{% endblock %}
-          </span>
+        <span class="user-extra-form-fields">{% block user-extra-form-fields %}{% endblock %}</span>
+        {#% include 'include/_select_filter2_field.html' with field=form.role_profiles %#}
+      </div>
+      <div class="tab-pane" role="tabpanel" id="tab_role_profiles">
         {% include 'include/_select_filter2_field.html' with field=form.role_profiles %}
       </div>
       <div class="tab-pane" role="tabpanel" id="tab_application_roles">
