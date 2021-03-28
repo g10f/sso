@@ -343,10 +343,12 @@ class AccountsSeleniumTests(SSOSeleniumTests):
 
         # remove user from all organisations where CenterAdmin has admin rights
         self.login(username='CenterAdmin', password='gsf')
-        self.selenium.get('%s%s' % (
-            self.live_server_url,
-            reverse('accounts:update_user', kwargs={'uuid': 'a8992f0348634f76b0dac2de4e4c83ee'})))
-        self.selenium.find_element_by_xpath('//button[@name="_remove_org"]').click()
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('accounts:update_user', kwargs={'uuid': 'a8992f0348634f76b0dac2de4e4c83ee'})))
+        remove_org_button = self.selenium.find_element_by_xpath('//button[@name="_remove_org"]')
+        # maximize window, because button can not clicked if not visible
+        # doesn't work: ActionChains(self.selenium).move_to_element(remove_org_button).click(remove_org_button).perform()
+        self.selenium.maximize_window()
+        remove_org_button.click()
         self.wait_page_loaded()
         self.selenium.find_element_by_xpath('//div[@class="alert alert-success"]')
 

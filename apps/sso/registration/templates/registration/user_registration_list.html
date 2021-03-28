@@ -49,7 +49,7 @@
             <td>
               {% if registration.user.picture %}
                 <a href="{{ registration.user.picture.url }}">{% thumbnail registration.user.picture "30x30" crop="center" as im %}
-                  <img class="g10f-icon-user" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="">{% endthumbnail %}</a>{% endif %}
+                  <img class="rounded g10f-icon-user" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="">{% endthumbnail %}</a>{% endif %}
             </td>
             <td>{{ registration.user.primary_email }}</td>
             <td>{{ registration.user.organisations.all|join:", " }}</td>

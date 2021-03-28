@@ -4,7 +4,7 @@
   <div class="g10f-form-control">
     {% if field %}
       {% thumbnail field "240x240" crop="center" as im %}
-        <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="{{ field.name }}">{% endthumbnail %}
+        <img class="rounded" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="{{ field.name }}">{% endthumbnail %}
     {% endif %}
   </div>
 </div>
