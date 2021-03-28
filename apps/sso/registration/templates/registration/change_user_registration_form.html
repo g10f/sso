@@ -48,8 +48,9 @@
         </span>
 
         <div class="form-text">{% translate 'Registration processing information' %}</div>
-        {% include 'include/_static_yesno_field.html' with field=form.check_back %}
-        {% include 'include/_static_yesno_field.html' with field=form.is_access_denied %}
+        {% include 'include/_field.html' with field=form.is_stored_permanently %}
+        {% include 'include/_field.html' with field=form.check_back %}
+        {% include 'include/_field.html' with field=form.is_access_denied %}
       </div>
 
       <div class="tab-pane" role="tabpanel" id="tab_role_profiles">

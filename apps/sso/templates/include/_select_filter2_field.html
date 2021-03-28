@@ -4,7 +4,7 @@
     <div class="g10f-form-control_lg">
       {{ field }}
       {% if field.help_text or field.errors %}
-        <div class="form-text mb-3">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</div>
+        <div class="form-text mb-1">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</div>
       {% endif %}
     </div>
   </div>

@@ -54,10 +54,10 @@
               {% with object.organisationpicture_set.first.picture as picture %}
                 <td>
                   {% if picture %}<a href="{{ picture.url }}">{% thumbnail picture "30x30" crop="center" as im %}
-                    <img class="g10f-icon-user" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="">{% endthumbnail %}</a>{% endif %}
+                    <img class="rounded g10f-icon-user" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="">{% endthumbnail %}</a>{% endif %}
                 </td>
               {% endwith %}
-              <td>{{ object.email|default_if_none:"" }}</td>
+              <td>{{ object.email | default_if_none:"" }}</td>
               <td>{% if object.google_maps_url %}
                 <a href="{{ object.google_maps_url }}"><i class="bi bi-geo"></i> {{ object.get_coordinates_type_display }}
                 </a>{% endif %}</td>

@@ -35,45 +35,34 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
     }
 
     username = forms.CharField(label=_("Username"), max_length=30, widget=bootstrap.TextInput())
-    notes = forms.CharField(label=_("Notes"), required=False, max_length=1024,
-                            widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
+    notes = forms.CharField(label=_("Notes"), required=False, max_length=1024, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
     first_name = forms.CharField(label=_('First name'), max_length=30, widget=bootstrap.TextInput())
     last_name = forms.CharField(label=_('Last name'), max_length=30, widget=bootstrap.TextInput())
-    email = forms.EmailField(label=_('Email address'), required=False,
-                             widget=bootstrap.TextInput(attrs={'disabled': ''}))
+    email = forms.EmailField(label=_('Email address'), required=False, widget=bootstrap.TextInput(attrs={'disabled': ''}))
     date_registered = bootstrap.ReadOnlyField(label=_("Date registered"))
     country = bootstrap.ReadOnlyField(label=_("Country"))
     city = bootstrap.ReadOnlyField(label=_("City"))
     language = bootstrap.ReadOnlyField(label=_("Language"))
     timezone = bootstrap.ReadOnlyField(label=_("Timezone"))
-    gender = forms.ChoiceField(label=_('Gender'), required=False, choices=(BLANK_CHOICE_DASH + User.GENDER_CHOICES),
-                               widget=bootstrap.Select())
+    gender = forms.ChoiceField(label=_('Gender'), required=False, choices=(BLANK_CHOICE_DASH + User.GENDER_CHOICES), widget=bootstrap.Select())
     dob = forms.CharField(label=_("Date of birth"), required=False, widget=bootstrap.TextInput(attrs={'disabled': ''}))
-    about_me = forms.CharField(label=_('About me'), required=False,
-                               widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 5, 'readonly': 'readonly'}))
-    known_person1_first_name = forms.CharField(label=_("First name"), max_length=100, required=False,
-                                               widget=bootstrap.TextInput())
-    known_person1_last_name = forms.CharField(label=_("Last name"), max_length=100, required=False,
-                                              widget=bootstrap.TextInput())
-    known_person2_first_name = forms.CharField(label=_("First name"), max_length=100, required=False,
-                                               widget=bootstrap.TextInput())
-    known_person2_last_name = forms.CharField(label=_("Last name"), max_length=100, required=False,
-                                              widget=bootstrap.TextInput())
-    last_modified_by_user = forms.CharField(label=_("Last modified by"), required=False,
-                                            widget=bootstrap.TextInput(attrs={'disabled': ''}))
-    organisations = forms.ModelChoiceField(queryset=None, label=_("Organisation"), widget=bootstrap.Select2(),
-                                           required=settings.SSO_ORGANISATION_REQUIRED)
+    about_me = forms.CharField(label=_('About me'), required=False, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 5, 'readonly': 'readonly'}))
+    known_person1_first_name = forms.CharField(label=_("First name"), max_length=100, required=False, widget=bootstrap.TextInput())
+    known_person1_last_name = forms.CharField(label=_("Last name"), max_length=100, required=False, widget=bootstrap.TextInput())
+    known_person2_first_name = forms.CharField(label=_("First name"), max_length=100, required=False, widget=bootstrap.TextInput())
+    known_person2_last_name = forms.CharField(label=_("Last name"), max_length=100, required=False, widget=bootstrap.TextInput())
+    last_modified_by_user = forms.CharField(label=_("Last modified by"), required=False, widget=bootstrap.TextInput(attrs={'disabled': ''}))
+    organisations = forms.ModelChoiceField(queryset=None, label=_("Organisation"), widget=bootstrap.Select2(), required=settings.SSO_ORGANISATION_REQUIRED)
     application_roles = forms.ModelMultipleChoiceField(
         queryset=None,
         required=False,
         widget=bootstrap.FilteredSelectMultiple(_("Application roles")),
         label=_("Additional application roles"),
         help_text=mixins.UserRolesMixin.application_roles_help)
-    check_back = forms.BooleanField(label=_("Check back"),
-                                    help_text=_('Designates if there are open questions to check.'), required=False)
-    is_access_denied = forms.BooleanField(label=_("Access denied"),
-                                          help_text=_('Designates if access is denied to the user.'), required=False)
-
+    check_back = forms.BooleanField(label=_("Check back"), help_text=_('Designates if there are open questions to check.'), required=False, disabled=True)
+    is_access_denied = forms.BooleanField(label=_("Access denied"), help_text=_('Designates if access is denied to the user.'), required=False, disabled=True)
+    is_stored_permanently = forms.BooleanField(label=_("Store permanantly"),
+                                               help_text=_('Keep stored in database to prevent re-registration of denied user.'), required=False)
     role_profiles = forms.MultipleChoiceField(
         required=False,
         widget=bootstrap.FilteredSelectMultiple(_("Role profiles")),
@@ -148,6 +137,7 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
         self.user.username = cd['username']
         self.user.first_name = cd['first_name']
         self.user.last_name = cd['last_name']
+        self.user.is_stored_permanently = cd['is_stored_permanently']
 
         if cd['notes']:
             UserNote.objects.create_note(user=self.user, notes=[cd['notes']], created_by_user=current_user)

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-23 21:02+0100\n"
+"POT-Creation-Date: 2021-03-28 15:15+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -697,6 +697,12 @@ msgstr "Gültig bis"
 msgid "last ip address"
 msgstr "Letzte IP-Adresse"
 
+msgid "store permanently"
+msgstr "Dauerhaft speichern"
+
+msgid "Do not delete, even if inactive"
+msgstr "Nicht löschen, auch wenn der User deaktiviert wurde"
+
 msgid "users"
 msgstr "Benutzer"
 
@@ -813,14 +819,17 @@ msgstr "Benutzer hinzufügen und E-Mail Einladung senden"
 msgid "Change User"
 msgstr "Benutzer Ändern"
 
-msgid "User Roles"
-msgstr "Benutzer Rollen"
+msgid "Roles"
+msgstr "Rollen"
 
 msgid "Save and continue editing"
 msgstr ""
 
 msgid "Save"
 msgstr "Speichern"
+
+msgid "User Roles"
+msgstr "Benutzer Rollen"
 
 msgid "is"
 msgstr "ist"
@@ -2543,6 +2552,14 @@ msgstr "Zugriff verweigert"
 msgid "Designates if access is denied to the user."
 msgstr "Gibt an, ob dem Benutzer der Zugang verweigert wurde."
 
+msgid "Store permanantly"
+msgstr "Dauerhaft speichern"
+
+msgid "Keep stored in database to prevent re-registration of denied user."
+msgstr ""
+"In der Datenbank dauerhaft speichern, um eine erneute Registrierung des "
+"abgewiesenen Benutzers zu verhindern."
+
 msgid ""
 "If you would like to tell us something about yourself, please do so in this "
 "box."
@@ -2810,6 +2827,18 @@ msgstr "Zugriff nicht verweigert"
 msgid "access denied filter"
 msgstr "\"Zugriff verweigert\" Filter"
 
+msgid "Stored permanently"
+msgstr "Dauerhaft gespeichert"
+
+msgid "Not stored permanently"
+msgstr "Nicht dauerhaft gespeichert"
+
+msgid "store permanently filter"
+msgstr "Dauerhaft Speichern Filter"
+
+msgid "stored permanently"
+msgstr "Dauerhaft gespeichert"
+
 #, python-format
 msgid ""
 "The %(name)s \"%(obj)s\" was saved successfully. You may edit it again below."
@@ -2960,9 +2989,6 @@ msgstr "Registrierungen"
 
 msgid "Users"
 msgstr "Benutzer"
-
-msgid "Roles"
-msgstr "Rollen"
 
 msgid "Access Requests"
 msgstr "Anfragen"

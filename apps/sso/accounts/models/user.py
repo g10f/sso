@@ -1,6 +1,6 @@
+import datetime
 import logging
 import uuid
-import datetime
 
 from sorl import thumbnail
 
@@ -87,43 +87,33 @@ class User(AbstractBaseUser, PermissionsMixin):
             'unique': _("A user with that username already exists."), }, )
     first_name = models.CharField(_('first name'), max_length=30, blank=True)
     last_name = models.CharField(_('last name'), max_length=40, blank=True)
-    is_staff = models.BooleanField(_('staff status'), default=False,
-                                   help_text=_('Designates whether the user can log into this admin site.'))
+    is_staff = models.BooleanField(_('staff status'), default=False, help_text=_('Designates whether the user can log into this admin site.'))
     is_active = models.BooleanField(_('active'), default=True, db_index=True, help_text=_(
         'Designates whether this user should be treated as active. Unselect this instead of deleting accounts.'))
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
-    # extension
-    # nickname = models.CharField(_('nickname'), max_length=30, blank=True)
     uuid = models.UUIDField(unique=True, default=uuid.uuid4, editable=True)
-    organisations = models.ManyToManyField(Organisation, verbose_name=_('organisations'), through=Membership,
-                                           blank=(not settings.SSO_ORGANISATION_REQUIRED))
+    organisations = models.ManyToManyField(Organisation, verbose_name=_('organisations'), through=Membership, blank=(not settings.SSO_ORGANISATION_REQUIRED))
     admin_regions = models.ManyToManyField(AdminRegion, verbose_name=_('admin regions'), blank=True)
-    admin_organisation_countries = models.ManyToManyField(OrganisationCountry, verbose_name=_('admin countries'),
-                                                          blank=True)
+    admin_organisation_countries = models.ManyToManyField(OrganisationCountry, verbose_name=_('admin countries'), blank=True)
     admin_associations = models.ManyToManyField(Association, verbose_name=_('admin associations'), blank=True)
-    app_admin_regions = models.ManyToManyField(AdminRegion, related_name='app_admin_user',
-                                               verbose_name=_('app admin regions'), blank=True)
+    app_admin_regions = models.ManyToManyField(AdminRegion, related_name='app_admin_user', verbose_name=_('app admin regions'), blank=True)
     app_admin_organisation_countries = models.ManyToManyField(OrganisationCountry, related_name='app_admin_user',
                                                               verbose_name=_('app admin countries'), blank=True)
-    app_admin_associations = models.ManyToManyField(Association, related_name='app_admin_user',
-                                                    verbose_name=_('app admin associations'), blank=True)
+    app_admin_associations = models.ManyToManyField(Association, related_name='app_admin_user', verbose_name=_('app admin associations'), blank=True)
     application_roles = models.ManyToManyField(ApplicationRole, verbose_name=_('application roles'), blank=True)
     role_profiles = models.ManyToManyField(RoleProfile, verbose_name=_('role profiles'), blank=True,
                                            help_text=_('Organises a group of application roles that are usually '
                                                        'assigned together.'))
-    last_modified_by_user = CurrentUserField(verbose_name=_('last modified by'), related_name='+',
-                                             on_delete=models.SET_NULL)
+    last_modified_by_user = CurrentUserField(verbose_name=_('last modified by'), related_name='+', on_delete=models.SET_NULL)
     last_modified = models.DateTimeField(_('last modified'), auto_now=True)
-    created_by_user = models.ForeignKey('self', verbose_name=_('created by'), related_name='+', null=True,
-                                        on_delete=models.SET_NULL)
+    created_by_user = models.ForeignKey('self', verbose_name=_('created by'), related_name='+', null=True, on_delete=models.SET_NULL)
     is_center = models.BooleanField(_('organisation'), default=False,
                                     help_text=_('Designates that this user is representing a organisation and not a '
                                                 'private person.'))
     is_service = models.BooleanField(_('service'), default=False,
                                      help_text=_('Designates that this user is representing a service account and '
                                                  'not a person.'))
-    is_subscriber = models.BooleanField(_('subscriber'), default=False,
-                                        help_text=_('Designates whether this user is a newsletter subscriber.'))
+    is_subscriber = models.BooleanField(_('subscriber'), default=False, help_text=_('Designates whether this user is a newsletter subscriber.'))
     picture = thumbnail.ImageField(_('picture'), upload_to=generate_filename, blank=True)  # , storage=MediaStorage())
     gender = models.CharField(_('gender'), max_length=255, choices=GENDER_CHOICES, blank=True)
     dob = models.DateField(_("date of birth"), blank=True, null=True)
@@ -132,6 +122,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     timezone = models.CharField(_('timezone'), blank=True, max_length=254)
     valid_until = models.DateTimeField(_('valid until'), blank=True, null=True)
     last_ip = models.GenericIPAddressField(_('last ip address'), blank=True, null=True)
+    is_stored_permanently = models.BooleanField(_('store permanently'), help_text=_('Do not delete, even if inactive'), default=False)
 
     objects = UserManager()
 
