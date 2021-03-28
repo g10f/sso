@@ -50,7 +50,6 @@ class Migration(migrations.Migration):
                 ('timezone', models.CharField(blank=True, max_length=254, verbose_name='timezone')),
                 ('valid_until', models.DateTimeField(blank=True, null=True, verbose_name='valid until')),
                 ('last_ip', models.GenericIPAddressField(blank=True, null=True, verbose_name='last ip address')),
-                ('is_stored_permanently', models.BooleanField(default=False, help_text='Do not delete, even if inactive', verbose_name='store permanently')),
             ],
             options={
                 'verbose_name': 'user',
