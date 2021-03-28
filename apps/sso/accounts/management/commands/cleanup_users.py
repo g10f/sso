@@ -30,12 +30,11 @@ def delete_deactivated_users():
         activation_expiration_date = RegistrationManager.activation_expiration_date()
         reversion.set_comment("Deleting deactivated accounts in cleanup_users task")
         q = (Q(last_login__isnull=True) | Q(last_login__lte=recovery_expiration_date))
-        q = q & Q(is_active=False) & Q(last_modified__lte=recovery_expiration_date)
+        q = q & Q(is_active=False) & Q(last_modified__lte=recovery_expiration_date) & Q(is_stored_permanently=False)
         q = q & (  # Users who did not registered themselve
                 Q(registrationprofile__isnull=True) |
                 # Users who registered themselve before activation_expiration_date
-                Q(registrationprofile__date_registered__lte=activation_expiration_date) &
-                Q(registrationprofile__is_access_denied=False))
+                Q(registrationprofile__date_registered__lte=activation_expiration_date))
 
         count = 0
         for user in User.objects.filter(q):

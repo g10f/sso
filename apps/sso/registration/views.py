@@ -109,11 +109,27 @@ class IsAccessDeniedFilter(ViewChoicesFilter):
         return {qs_name: True if (value.pk == "1") else False}
 
 
+class IsStoredPermanentlyFilter(ViewChoicesFilter):
+    name = 'user__is_stored_permanently'
+    choices = (('1', _('Stored permanently')), ('2', _('Not stored permanently')))
+    select_text = _('store permanently filter')
+    select_all_text = _("All")
+    # default = '2'
+
+    def map_to_database(self, qs_name, value):
+        return {qs_name: True if (value.pk == "1") else False}
+
+
+class IsStoredPermanentlyHeader(object):
+    verbose_name = _('stored permanently')
+    sortable = True
+    ordering_field = 'user__is_stored_permanently'
+
+
 class UserRegistrationList(ListView):
     template_name = 'registration/user_registration_list.html'
     model = RegistrationProfile
-    list_display = ['user', _('picture'), 'email', 'center', 'date_registered', 'check_back', 'is_access_denied',
-                    'comment']
+    list_display = ['user', _('picture'), 'email', 'center', 'date_registered', 'check_back', 'is_access_denied', IsStoredPermanentlyHeader(), 'comment']
 
     @method_decorator(admin_login_required)
     @method_decorator(permission_required('registration.change_registrationprofile', raise_exception=True))
@@ -138,6 +154,7 @@ class UserRegistrationList(ListView):
         qs = CountryFilter().apply(self, qs)
         qs = CheckBackFilter().apply(self, qs)
         qs = IsAccessDeniedFilter().apply(self, qs)
+        qs = IsStoredPermanentlyFilter().apply(self, qs)
 
         ordering = self.cl.get_ordering(self.request, qs)
         qs = qs.order_by(*ordering)
@@ -164,8 +181,9 @@ class UserRegistrationList(ListView):
         country_filter = CountryFilter().get(self, countries)
         check_back_filter = CheckBackFilter().get(self)
         is_access_denied_filter = IsAccessDeniedFilter().get(self)
+        is_stored_permanently = IsStoredPermanentlyFilter().get(self)
 
-        filters = [country_filter, check_back_filter, is_access_denied_filter]
+        filters = [country_filter, check_back_filter, is_access_denied_filter, is_stored_permanently]
         context = {
             'result_headers': headers,
             'num_sorted_fields': num_sorted_fields,

@@ -17,15 +17,26 @@
     <h1>{{ title }} - {{ form.user.get_full_name }}</h1>
     {% include 'include/_form_boilerplate.html' %}
 
-    <div class="row">
-      <div class="col-lg-5 col-xl-4">
-        {% thumbnail form.user.picture "240x240" crop="center" as im %}
-          <img class="rounded" alt="{{ form.user.get_full_name }}" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">{% endthumbnail %}
-      </div>
-      <div class="col-lg-7 col-xl-8">
-        <div class="row"><div class="col-3">{% translate 'username' %}</div><div class="col-9">{{ form.user.username }}</div></div>
-        <div class="row"><div class="col-3">{% translate 'Email' %}</div><div class="col-9">{{ form.user.primary_email }}</div></div>
-        <div class="row"><div class="col-3">{% translate 'Organisation' %}</div><div class="col-9">{{ form.user.organisations.all | join:", " }}</div></div>
+    <div class="row mb-3">
+      {% if form.user.picture %}
+        <div class="col-lg-5 col-xl-4">
+          {% thumbnail form.user.picture "240x240" crop="center" as im %}
+            <img class="rounded" alt="{{ form.user.get_full_name }}" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">{% endthumbnail %}
+        </div>
+      {% endif %}
+      <div class="{% if form.user.picture %}col-lg-7 col-xl-8{% else %}col-12{% endif %}">
+        <div class="row">
+          <div class="col-3">{% translate 'username' %}</div>
+          <div class="col-9">{{ form.user.username }}</div>
+        </div>
+        <div class="row">
+          <div class="col-3">{% translate 'Email' %}</div>
+          <div class="col-9">{{ form.user.primary_email }}</div>
+        </div>
+        <div class="row">
+          <div class="col-3">{% translate 'Organisation' %}</div>
+          <div class="col-9">{{ form.user.organisations.all | join:", " }}</div>
+        </div>
       </div>
     </div>
     {% include 'include/_select_filter2_field.html' with field=form.role_profiles %}

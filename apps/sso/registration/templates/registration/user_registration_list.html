@@ -56,6 +56,7 @@
             <td>{{ registration.date_registered|utc|date:"Y-m-d H:i" }}</td>
             <td>{% if registration.check_back %}<i class="bi bi-check2"></i>{% endif %}</td>
             <td>{% if registration.is_access_denied %}<i class="bi bi-check2"></i>{% endif %}</td>
+            <td>{% if registration.user.is_stored_permanently %}<i class="bi bi-check2"></i>{% endif %}</td>
             <td>{% include 'include/_comment_field.html' with comment=registration.comment %}</td>
           </tr>
         {% endfor %}

@@ -3,10 +3,9 @@
   <div class="media-left">
     {% if admin.picture %}
       {% thumbnail admin.picture "60x60" crop="center" as im %}
-        <img class="media-object img-thumbnail" src="{{ im.url }}"
-             alt="{{ user.username }}">{% endthumbnail %}
+        <img class="media-object img-thumbnail" src="{{ im.url }}" alt="{{ admin.get_full_name }}">{% endthumbnail %}
     {% else %}
-      <img class="media-object img-thumbnail" style="width: 70px; height: 70px;">
+      <img class="media-object img-thumbnail" src="{% static 'img/person.svg' %}" alt="{{ admin.get_full_name }}" style="width: 70px; height: 70px;">
     {% endif %}
   </div>
   <div class="media-body">

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-23 21:02+0100\n"
+"POT-Creation-Date: 2021-03-28 15:15+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -661,6 +661,12 @@ msgstr ""
 msgid "last ip address"
 msgstr ""
 
+msgid "store permanently"
+msgstr ""
+
+msgid "Do not delete, even if inactive"
+msgstr ""
+
 msgid "users"
 msgstr ""
 
@@ -773,13 +779,16 @@ msgstr ""
 msgid "Change User"
 msgstr ""
 
-msgid "User Roles"
+msgid "Roles"
 msgstr ""
 
 msgid "Save and continue editing"
 msgstr ""
 
 msgid "Save"
+msgstr ""
+
+msgid "User Roles"
 msgstr ""
 
 msgid "is"
@@ -2409,6 +2418,12 @@ msgstr ""
 msgid "Designates if access is denied to the user."
 msgstr ""
 
+msgid "Store permanantly"
+msgstr ""
+
+msgid "Keep stored in database to prevent re-registration of denied user."
+msgstr ""
+
 msgid ""
 "If you would like to tell us something about yourself, please do so in this "
 "box."
@@ -2650,6 +2665,18 @@ msgstr ""
 msgid "access denied filter"
 msgstr ""
 
+msgid "Stored permanently"
+msgstr ""
+
+msgid "Not stored permanently"
+msgstr ""
+
+msgid "store permanently filter"
+msgstr ""
+
+msgid "stored permanently"
+msgstr ""
+
 #, python-format
 msgid ""
 "The %(name)s \"%(obj)s\" was saved successfully. You may edit it again below."
@@ -2797,9 +2824,6 @@ msgid "Registrations"
 msgstr ""
 
 msgid "Users"
-msgstr ""
-
-msgid "Roles"
 msgstr ""
 
 msgid "Access Requests"
