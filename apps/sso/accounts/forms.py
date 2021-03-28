@@ -815,18 +815,6 @@ class CenterProfileForm(mixins.UserRolesMixin, mixins.UserNoteMixin, forms.Form)
 
 
 class AppAdminUserProfileForm(mixins.UserRolesMixin, forms.Form):
-    """
-    Form for application admins and profile admins
-    """
-    error_messages = {
-        'duplicate_username': _("A user with that username already exists."),
-        'duplicate_email': _("A user with that email address already exists."),
-    }
-    username = bootstrap.ReadOnlyField(label=_("Username"))
-    first_name = bootstrap.ReadOnlyField(label=_("First name"))
-    last_name = bootstrap.ReadOnlyField(label=_("Last name"))
-    email = bootstrap.ReadOnlyField(label=_("Email"))
-    organisations = bootstrap.ReadOnlyField(label=_("Organisation"))
     application_roles = forms.ModelMultipleChoiceField(
         queryset=None, required=False,
         widget=bootstrap.FilteredSelectMultiple(_("Application roles")),
@@ -841,8 +829,6 @@ class AppAdminUserProfileForm(mixins.UserRolesMixin, forms.Form):
         self.request = kwargs.pop('request')
         self.user = kwargs.pop('instance')
         user_data = model_to_dict(self.user)
-        user_data['email'] = self.user.primary_email()
-        user_data['organisations'] = ', '.join([str(x) for x in self.user.organisations.all()])
         user_data['role_profiles'] = [str(role_profile.id) for role_profile in self.user.role_profiles.all()]
 
         initial = kwargs.get('initial', {})

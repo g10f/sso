@@ -8,7 +8,7 @@
 {% block breadcrumb %}
   <ol class="breadcrumb">
     <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
-    <li class="active">{% translate 'User Roles' %}</li>
+    <li class="active">{% translate 'Roles' %}</li>
   </ol>
 {% endblock breadcrumb %}
 
@@ -46,7 +46,7 @@
             </td>
             <td>
               {% if user_obj.picture %}<a href="{{ user_obj.picture.url }}">{% thumbnail user_obj.picture "30x30" crop="center" as im %}
-                <img class="g10f-icon-user" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="">{% endthumbnail %}</a>{% endif %}
+                <img class="rounded g10f-icon-user" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="">{% endthumbnail %}</a>{% endif %}
             </td>
             <td>{{ user_obj.last_name }}</td>
             <td>

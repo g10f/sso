@@ -7,31 +7,27 @@
 {% block breadcrumb %}
   <ol class="breadcrumb">
     <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
-    <li><a href="{% url 'accounts:app_admin_user_list' %}">{% translate 'User Roles' %}</a></li>
+    <li><a href="{% url 'accounts:app_admin_user_list' %}">{% translate 'Roles' %}</a></li>
     <li class="active">{% translate 'Change User' %}</li>
   </ol>
 {% endblock breadcrumb %}
 
 {% block form %}
   <form class="form-horizontal" method="post">
-    <h1>{{ title }} - {{ form.user.first_name }} {{ form.user.last_name }}</h1>
+    <h1>{{ title }} - {{ form.user.get_full_name }}</h1>
     {% include 'include/_form_boilerplate.html' %}
 
-    <div class="form-group">
-      <label class="col-form-label">{% translate 'picture' %}</label>
-
-      <div class="g10f-form-control">
+    <div class="row">
+      <div class="col-lg-5 col-xl-4">
         {% thumbnail form.user.picture "240x240" crop="center" as im %}
-          <img src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">{% endthumbnail %}
+          <img class="rounded" alt="{{ form.user.get_full_name }}" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">{% endthumbnail %}
+      </div>
+      <div class="col-lg-7 col-xl-8">
+        <div class="row"><div class="col-3">{% translate 'username' %}</div><div class="col-9">{{ form.user.username }}</div></div>
+        <div class="row"><div class="col-3">{% translate 'Email' %}</div><div class="col-9">{{ form.user.primary_email }}</div></div>
+        <div class="row"><div class="col-3">{% translate 'Organisation' %}</div><div class="col-9">{{ form.user.organisations.all | join:", " }}</div></div>
       </div>
     </div>
-
-    {% include 'include/_field.html' with field=form.username %}
-    {% include 'include/_field.html' with field=form.first_name %}
-    {% include 'include/_field.html' with field=form.last_name %}
-    {% include 'include/_field.html' with field=form.email %}
-    {% include 'include/_field.html' with field=form.organisations %}
-    {% include 'include/_field.html' with field=form.is_active %}
     {% include 'include/_select_filter2_field.html' with field=form.role_profiles %}
     {% include 'include/_select_filter2_field.html' with field=form.application_roles %}
 
