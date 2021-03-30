@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 from uuid import UUID
 
 import sys
@@ -27,7 +27,7 @@ SSO_STYLE_VERSION = '1.1.0.min'
 THUMBNAIL_QUALITY = 100
 THUMBNAIL_FORMAT = 'PNG'
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
 SITE_ID = 1
 DEFAULT_FROM_EMAIL = 'webmaster@g10f.de'
 PASSWORD_RESET_TIMEOUT = 60 * 60 * 24 * 3  # new default in django 3
@@ -142,8 +142,8 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-STATIC_ROOT = os.path.join(os.path.dirname(os.path.abspath(BASE_DIR)), 'htdocs/static')
-MEDIA_ROOT = os.path.join(os.path.dirname(os.path.abspath(BASE_DIR)), 'htdocs/media')
+STATIC_ROOT = BASE_DIR.parent / 'htdocs/static'
+MEDIA_ROOT = BASE_DIR.parent / 'htdocs/media'
 
 MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
