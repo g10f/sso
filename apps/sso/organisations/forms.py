@@ -9,7 +9,7 @@ from l10n.models import Country
 from sso.emails.models import Email, EmailForward, CENTER_EMAIL_TYPE, REGION_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, \
     PERM_EVERYBODY, PERM_DWB
 from sso.forms import bootstrap, BaseForm, BaseTabularInlineForm, BLANK_CHOICE_DASH, BaseStackedInlineForm
-from sso.forms.fields import EmailFieldLower, PointField
+from sso.forms.fields import EmailFieldLower
 from sso.models import clean_picture
 from sso.signals import update_or_create_organisation_account
 from .models import OrganisationPhoneNumber, OrganisationAddress, Organisation, AdminRegion, OrganisationCountry, \
@@ -114,13 +114,9 @@ class OrganisationBaseForm(BaseForm):
             'is_active': bootstrap.CheckboxInput(),
             'is_live': bootstrap.CheckboxInput(),
             'timezone': bootstrap.Select2(),
-            # 'can_publish': bootstrap.CheckboxInput(),
-            'location': bootstrap.OSMWidget(attrs={'display_raw': False}),
+            'location': bootstrap.OSMWidget(),
             'neighbour_distance': bootstrap.TextInput(attrs={'type': 'number', 'step': '0.001'}),
             'transregional_distance': bootstrap.TextInput(attrs={'type': 'number', 'step': '0.001'}),
-        }
-        field_classes = {
-            'location': PointField,
         }
 
     def __init__(self, *args, **kwargs):

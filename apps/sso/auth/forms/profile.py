@@ -1,16 +1,20 @@
 from base64 import b32encode
+
 from binascii import unhexlify
 
 from django import forms
-from django.core.validators import RegexValidator
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
-from sso.auth.models import TwilioSMSDevice, TOTPDevice, Profile, Device
+from sso.auth.models import TOTPDevice, Profile, Device
 from sso.auth.utils import get_qrcode_data_url, totp_digits
 from sso.forms import bootstrap
 
 
-class AddU2FForm(forms.Form):
+class CredentialSetupForm(forms.Form):
+    name = forms.CharField(max_length=255, required=False, widget=bootstrap.TextInput(), help_text="The human-readable name of this device.")
+
+
+class AddU2FForm(CredentialSetupForm):
     u2f_response = forms.CharField(label=_('Response'), widget=forms.HiddenInput())
     u2f_request = forms.CharField(label=_('Request'), widget=forms.HiddenInput())
 
@@ -50,60 +54,7 @@ class ProfileForm(forms.Form):
             Device.objects.filter(user=self.user, id=delete).delete()
 
 
-phone_number_validator = RegexValidator(
-    code='invalid-phone-number',
-    regex=r'^(\+|00)',
-    message=_('Please enter a valid phone number, including your country code '
-              'starting with + or 00.'),
-)
-
-
-class AddPhoneForm(forms.Form):
-    number = forms.CharField(label=_('Phone number'), validators=[phone_number_validator],
-                             widget=bootstrap.TextInput(attrs={'autofocus': True}))
-    key = forms.CharField(label=_('Key'), widget=forms.HiddenInput())
-
-    def __init__(self, user, **kwargs):
-        super().__init__(**kwargs)
-        self.user = user
-
-    def save(self):
-        cd = self.cleaned_data
-        sms_device, created = TwilioSMSDevice.objects.get_or_create(user=self.user, number=cd['number'],
-                                                                    defaults={'key': cd['key']})
-        if not created:
-            sms_device.key = cd['key']
-
-        sms_device.save()
-        return sms_device
-
-
-class PhoneSetupForm(forms.Form):
-    token = forms.IntegerField(label=_("Token"), min_value=0, max_value=int('9' * totp_digits()),
-                               widget=bootstrap.TextInput(attrs={'autofocus': True}))
-
-    error_messages = {
-        'invalid_token': _('Invalid token value: %(token)s.'),
-    }
-
-    def __init__(self, sms_device, **kwargs):
-        super().__init__(**kwargs)
-        self.sms_device = sms_device
-
-    def clean_token(self):
-        token = self.cleaned_data['token']
-        if not self.sms_device.verify_token(token):
-            raise forms.ValidationError(self.error_messages['invalid_token'], params={'token': token})
-        return token
-
-    def save(self):
-        self.sms_device.confirmed = True
-        self.sms_device.save(update_fields=['confirmed'])
-
-        return self.sms_device
-
-
-class TOTPDeviceForm(forms.Form):
+class TOTPDeviceForm(CredentialSetupForm):
     token = forms.IntegerField(label=_("One-time code"), min_value=0, max_value=int('9' * totp_digits()),
                                widget=bootstrap.TextInput(attrs={'autofocus': True}))
     key = forms.CharField(label=_('Key'), widget=forms.HiddenInput())
@@ -148,7 +99,8 @@ class TOTPDeviceForm(forms.Form):
 
     def save(self):
         self.device.confirmed = True
-        self.device.save(update_fields=['confirmed'])
+        self.device.name = self.data['name']
+        self.device.save(update_fields=['confirmed', 'name'])
         if not hasattr(self.user, 'sso_auth_profile'):
             Profile.objects.create(user=self.user, default_device=self.device, is_otp_enabled=True)
 

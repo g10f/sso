@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 {% load i18n %}
 
+{% block script %}
+  {{ block.super }}
+  {% include 'auth/include/u2f_jscript.html' %}
+{% endblock script %}
+
 {% block title %}{% translate 'Add U2F Device' %}{% endblock %}
 
 {% block breadcrumb %}
@@ -15,15 +20,10 @@
 {% block left_content %}{% include 'include/_navigation.html' with active_navigation="auth_profile" %}{% endblock left_content %}
 
 
-{% block extrascript %}{% include 'auth/include/u2f_jscript.html' %}{% endblock extrascript %}
-
-
 {% block right_content %}
 
-  <form method="post" id="u2f_register_form">
-    {% csrf_token %}
-
-    <h1 class="h3">{% translate 'Register U2F device' %}</h1>
+  <form method="post" id="u2f_register_form">{% csrf_token %}
+    <h1>{% translate 'Register U2F device' %}</h1>
 
     <div class="alert alert-info">
       {% blocktranslate trimmed %}
@@ -49,9 +49,8 @@
     {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
 
     {% for field in form.visible_fields %}
-      <div class="form-group {% if field.errors %}has-error{% endif %} {% if field.is_hidden %}dwbn-ab{% endif %}">
+      <div class="form-group {% if field.errors %}has-error{% endif %}" {% if field.is_hidden %}hidden{% endif %}>
         <label class="col-form-label" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}*{% endif %}</label>
-
         <div class="g10f-form-control">
           {{ field }}{% if field.help_text or field.errors %}
             <div class="form-text">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</div>{% endif %}

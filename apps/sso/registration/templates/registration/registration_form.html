@@ -1,11 +1,10 @@
 {% extends "registration/base_registration.html" %}
 {% load i18n static %}
 
-{% block extrascript %}
+{% block script %}
   {{ block.super }}
-  <script src="https://www.google.com/recaptcha/api.js" async defer></script>
   <script src="{% static "js/base64_image-1.0.0.js" %}"></script>
-{% endblock extrascript %}
+{% endblock script %}
 
 {% block title %}{% translate 'Register for an account' %}{% endblock %}
 
