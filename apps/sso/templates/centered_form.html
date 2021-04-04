@@ -1,11 +1,15 @@
 {% extends "base_site.html" %}
 
-{% block extrascript %}
+{% block style %}
   {{ block.super }}
-  {{ media }}
-  {{ form.media }}
+  {% if media %}{{ media.css }}{% else %}{{ form.media.css }}{% endif %}
+{% endblock %}
+
+{% block script %}
+  {{ block.super }}
+  {% if media %}{{ media.js }}{% else %}{{ form.media.js }}{% endif %}
   <script src="{% url 'jsi18n' %}"></script>
-{% endblock extrascript %}
+{% endblock %}
 
 {% block content %}
   <main role="main">

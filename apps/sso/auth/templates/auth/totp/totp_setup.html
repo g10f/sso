@@ -30,7 +30,8 @@
     </ol>
 
     {% include 'include/_form_boilerplate.html' %}
-    {% include 'include/_form_snippet.html' %}
+    {% include 'include/_field.html' with field=form.token %}
+    {% include 'include/_field.html' with field=form.name %}
 
     <div class="form-group">
       <div class="g10f-form-submit">

@@ -1,15 +1,14 @@
 import json
 
-from django.contrib import messages
+from u2flib_server import u2f
+
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.shortcuts import get_current_site
-from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import FormView
-from sso.auth.forms.profile import TOTPDeviceForm, ProfileForm, PhoneSetupForm, AddPhoneForm, AddU2FForm
-from sso.auth.models import TwilioSMSDevice, U2FDevice, Profile
+from sso.auth.forms.profile import TOTPDeviceForm, ProfileForm, AddU2FForm
+from sso.auth.models import U2FDevice, Profile
 from sso.auth.utils import class_view_decorator, default_device, random_hex, get_device_classes
-from u2flib_server import u2f
 
 
 @class_view_decorator(login_required)
@@ -41,7 +40,7 @@ class AddU2FView(FormView):
         u2f_request = form.cleaned_data['u2f_request']
         device, attestation_cert = u2f.complete_registration(u2f_request, u2f_response)
         device = U2FDevice.objects.create(user=self.request.user, public_key=device['publicKey'], key_handle=device['keyHandle'],
-                                 app_id=device['appId'], version=device['version'], confirmed=True)
+                                          app_id=device['appId'], version=device['version'], confirmed=True)
 
         if not hasattr(self.request.user, 'sso_auth_profile'):
             Profile.objects.create(user=self.request.user, default_device=device, is_otp_enabled=True)
@@ -99,7 +98,7 @@ class ProfileView(FormView):
 
 @class_view_decorator(login_required)
 class TOTPSetup(FormView):
-    template_name = 'auth/totp_setup.html'
+    template_name = 'auth/totp/totp_setup.html'
     form_class = TOTPDeviceForm
     success_url = reverse_lazy('auth:profile')
 
@@ -112,60 +111,6 @@ class TOTPSetup(FormView):
         kwargs.update({
             'user': self.request.user,
             'issuer': get_current_site(self.request).name  # TODO ...
-        })
-        return kwargs
-
-    def form_valid(self, form):
-        form.save()
-        return super().form_valid(form)
-
-
-@class_view_decorator(login_required)
-class AddPhoneView(FormView):
-    template_name = 'auth/add_phone.html'
-    form_class = AddPhoneForm
-    success_url = reverse_lazy('auth:phone_setup')
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.initial.update({'key': random_hex(20).decode('ascii')})
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs.update({
-            'user': self.request.user,
-        })
-        return kwargs
-
-    def form_valid(self, form):
-        sms_device = form.save()
-        challenge = sms_device.generate_challenge()
-        messages.add_message(self.request, level=messages.INFO, message=challenge, fail_silently=True)
-        self.success_url = reverse_lazy('auth:phone_setup', kwargs={'sms_device_id': sms_device.pk})
-        return super().form_valid(form)
-
-
-@class_view_decorator(login_required)
-class PhoneSetupView(FormView):
-    template_name = 'auth/phone_setup.html'
-    form_class = PhoneSetupForm
-    success_url = reverse_lazy('auth:profile')
-
-    def post(self, request, *args, **kwargs):
-        if request.POST.get('resend_token'):
-            sms_device = TwilioSMSDevice.objects.get(user=self.request.user, pk=self.kwargs['sms_device_id'])
-            challenge = sms_device.generate_challenge()
-            messages.add_message(self.request, level=messages.INFO, message=challenge, fail_silently=True)
-            return redirect('auth:phone_setup', sms_device.pk)
-
-        return super().post(request, *args, **kwargs)
-
-    def get_form_kwargs(self):
-        sms_device = TwilioSMSDevice.objects.get(user=self.request.user, pk=self.kwargs['sms_device_id'])
-
-        kwargs = super().get_form_kwargs()
-        kwargs.update({
-            'sms_device': sms_device
         })
         return kwargs
 

@@ -119,7 +119,6 @@ sso_admin_site.register(GroupEmailManager, GroupEmailManagerAdmin)
 
 sso_admin_site.register(sso_auth_models.Profile, sso_auth_admin.ProfileAdmin)
 sso_admin_site.register(sso_auth_models.Device, sso_auth_admin.DeviceAdmin)
-sso_admin_site.register(sso_auth_models.TwilioSMSDevice, sso_auth_admin.TwilioSMSDeviceAdmin)
 sso_admin_site.register(sso_auth_models.TOTPDevice, sso_auth_admin.TOTPDeviceAdmin)
 sso_admin_site.register(sso_auth_models.U2FDevice, sso_auth_admin.U2FDeviceAdmin)
 
