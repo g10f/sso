@@ -46,7 +46,7 @@
 
     <div class="form-group">
       <label class="col-form-label">{% translate 'Phone number' %}</label>
-      <div class="g10f-form-control"><p class="form-control-static">{{ organisationchange.user.primary_phone }}</p></div>
+      <div class="g10f-form-control"><p class="form-control-static">{{ organisationchange.user.primary_phone | default_if_none:""}}</p></div>
     </div>
 
     <div class="form-group">
