@@ -99,7 +99,7 @@ class TOTPDeviceForm(CredentialSetupForm):
 
     def save(self):
         self.device.confirmed = True
-        self.device.name = self.data['name']
+        self.device.name = self.cleaned_data['name']
         self.device.save(update_fields=['confirmed', 'name'])
         if not hasattr(self.user, 'sso_auth_profile'):
             Profile.objects.create(user=self.user, default_device=self.device, is_otp_enabled=True)
