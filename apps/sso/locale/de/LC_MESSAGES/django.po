@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-03-28 15:15+0200\n"
+"POT-Creation-Date: 2021-04-05 23:53+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1488,108 +1488,81 @@ msgstr "Einmaltoken passt nicht"
 msgid "Request"
 msgstr ""
 
-msgid ""
-"Please enter a valid phone number, including your country code starting with "
-"+ or 00."
-msgstr ""
+msgid "One-time code"
+msgstr "Einmaltoken"
 
 msgid "Key"
-msgstr ""
-
-msgid "Token"
 msgstr ""
 
 #, python-format
 msgid "Invalid token value: %(token)s."
 msgstr "Ungültiger Token: %(token)s."
 
-msgid "One-time code"
-msgstr "Einmaltoken"
+msgid "The user that this device belongs to."
+msgstr ""
+
+msgid "The human-readable name of this device."
+msgstr "Der Anzeigename des Geräts."
+
+msgid "Is this device ready for use?"
+msgstr ""
 
 msgid "created at"
 msgstr "angelegt am"
 
+msgid "Last time this device was used?"
+msgstr ""
+
 msgid "is otp enabled"
 msgstr ""
 
+#, python-format
 msgid ""
-"Please touch the flashing U2F device now. You may be prompted to allow the "
-"site permission to access your security keys. After granting permission, the "
-"device will start to blink."
+"Please touch the flashing %(name)s U2F device now. You may be prompted to "
+"allow the site permission to access your security keys. After granting "
+"permission, the device will start to blink."
 msgstr ""
-"Bitte berühre jetzt das blinkende U2F-Gerät. Möglicherweise wirst Du dazu "
-"aufgefordert, der Website die Berechtigung zum Zugriff auf den "
+"Bitte berühre jetzt das blinkende %(name)s U2F-Gerät. Möglicherweise wirst "
+"Du dazu aufgefordert, der Website die Berechtigung zum Zugriff auf den "
 "Sicherheitsschlüssel zu geben. Nach Erteilung der Berechtigung beginnt das "
 "Gerät zu blinken."
 
 msgid "U2F Device"
-msgstr ""
-
-msgid "Please enter the one-time code from your authenticator app."
-msgstr "Trage bitte den Einmaltoken aus Deiner Authentifizierungs-App ein."
-
-msgid "Authenticator App"
-msgstr "Authentifizierungs-App"
+msgstr "U2F-Gerät"
 
 #, python-format
-msgid ""
-"We sent you a text message to %(number)s, please enter the token we sent."
-msgstr ""
+msgid "Please enter the one-time code from your %(name)s authenticator."
+msgstr "Trage bitte den Einmaltoken aus Deinem %(name)s Authenticator ein."
 
-#, python-format
-msgid "Phone %(number)s"
-msgstr "Telefonnummer %(number)s"
-
-#, python-format, python-brace-format
-msgid "Your %(brand)s verification code is {token}"
-msgstr ""
-
-#, python-brace-format
-msgid "Sent code {code} by SMS to {number}"
-msgstr ""
-
-#, python-brace-format
-msgid "Sent code by SMS to {number}"
-msgstr ""
-
-msgid "Add Phone"
-msgstr "Telefonnummer hinzufügen"
+msgid "TOTP Authenticator"
+msgstr "TOTP-Authenticator"
 
 msgid "Security"
+msgstr "Sicherheit"
+
+msgid "Setup 2-step verification"
+msgstr "2-Faktor Authentifizierung einrichten"
+
+msgid "Type"
 msgstr ""
 
-msgid "SMS Setup"
-msgstr ""
-
-msgid "Please enter your phone number."
-msgstr "Bitte trage Deine Telefonnummer ein."
-
-msgid "Submit"
-msgstr "Bestätigen"
-
-msgid "Get your codes via SMS"
-msgstr ""
+msgid "default"
+msgstr "Standard"
 
 msgid "Set as default"
 msgstr "Als Standard einstellen"
 
-msgid "Confirm"
-msgstr "Bestätigen"
-
-msgid "Use one-time codes via Token Generator App"
-msgstr "Einmaltoken über eine Authenticator-App verwenden"
-
-msgid "Change Authenticator App"
-msgstr "Authenticator-App wechseln"
-
-msgid "Add Authenticator App"
-msgstr "Authenticator-App hinzufügen"
-
-msgid "Login with your U2F Device"
-msgstr "Mit Deinem U2F-Gerät anmelden"
+msgid "Add TOTP Authenticator"
+msgstr "TOTP-Authenticator hinzufügen"
 
 msgid "Add U2F Device"
 msgstr "U2F Gerät hinzufügen"
+
+msgid "Disable 2-step verification"
+msgstr "2-Faktor Authentifizierung deaktivieren"
+
+msgid "Enable 2-step verification"
+msgstr "2-Faktor Authentifizierung aktivieren"
 
 msgid "Thanks for spending some quality time with the Web site today."
 msgstr "Vielen Dank, dass Du hier ein paar nette Minuten verbracht hast."
@@ -1620,48 +1593,32 @@ msgstr "Registrieren"
 msgid "Login"
 msgstr "Anmeldung"
 
-msgid "Confirm Phone"
-msgstr "Telefonnummer Bestätigen"
-
-msgid "Resend Token"
-msgstr ""
-
-msgid "Setup 2-step verification"
-msgstr "2-Faktor Authentifizierung einrichten"
-
-msgid "Disable 2-step verification"
-msgstr "2-Faktor Authentifizierung deaktivieren"
-
-msgid "Enable 2-step verification"
-msgstr "2-Faktor Authentifizierung aktivieren"
-
-#, python-format
-msgid "%(brand)s 2-step verification"
-msgstr "%(brand)s 2-Faktor Authentifizierung"
-
-msgid "Alternatively, use one of your backup devices:"
-msgstr "Oder benutze eines Deiner Backup-Geräte:"
-
 msgid "Token Generator Setup"
 msgstr ""
 
-msgid "Install an authenticator applications on your mobile, e.g."
-msgstr "Installiere eine Authenticator-App auf deinem Mobilgerät, z.B."
+msgid "TOTP Authenticator Setup"
+msgstr "TOTP-Authenticator Einrichtung"
+
+msgid "Install an TOTP authenticator on your mobile, e.g."
+msgstr "Installiere einen TOTP-Authenticator auf deinem Mobilgerät, z.B."
 
 #, python-format
 msgid ""
-"Open the application and scan the barcode. <br><img src=\"%(qr_code)s\" alt="
-"\"QR Code\"/>"
+"Open the TOTP authenticator and scan the barcode. <br><img src=\"%(qr_code)s"
+"\" alt=\"QR Code\"/>"
 msgstr ""
-"Starte die Authenticator-App und scanne den Barcode. <br><img src="
+"Starte den TOTP-Authenticator und scanne den Barcode. <br><img src="
 "\"%(qr_code)s\" alt=\"QR Code\"/>"
 
 msgid ""
-"Enter the one-time code provided by the application and click Save to finish "
-"the setup."
+"Enter the one-time code provided by the TOTP application and click Save to "
+"finish the setup."
 msgstr ""
-"Gebe den von der Authenticator-App bereitgestellten Einmaltoken ein und "
+"Gebe den von dem TOTP-Authenticator bereitgestellten Einmaltoken ein und "
 "klicke auf Speichern, um die Einrichtung abzuschließen."
+
+msgid "Submit"
+msgstr "Bestätigen"
 
 msgid "U2F Device Setup"
 msgstr "U2F Gerät Setup"
@@ -1669,11 +1626,25 @@ msgstr "U2F Gerät Setup"
 msgid "Register U2F device"
 msgstr "U2F Gerät registrieren"
 
+msgid ""
+"Please touch the flashing U2F device now. You may be prompted to allow the "
+"site permission to access your security keys. After granting permission, the "
+"device will start to blink."
+msgstr ""
+"Bitte berühre jetzt das blinkende U2F-Gerät. Möglicherweise wirst Du dazu "
+"aufgefordert, der Website die Berechtigung zum Zugriff auf den "
+"Sicherheitsschlüssel zu geben. Nach Erteilung der Berechtigung beginnt das "
+"Gerät zu blinken."
+
 msgid "Your current browser is not yet supported."
 msgstr "Dein Browser wird noch nicht unterstützt "
 
-msgid "Connect your U2F device"
-msgstr "Verbinde Dein U2F-Gerät"
+#, python-format
+msgid "%(brand)s 2-step verification"
+msgstr "%(brand)s 2-Faktor Authentifizierung"
+
+msgid "Alternatively, use one of your backup devices:"
+msgstr "Oder benutze eines Deiner Backup-Geräte:"
 
 #, python-format
 msgid "Device error, select another device. (%(error)s)"
@@ -2801,6 +2772,9 @@ msgstr ""
 "Wenn Du einen neues Konto mit der  E-Mail Adresse <b>%(email)s</b> "
 "registriert hast, dann bestätige bitte Deine Registrierung."
 
+msgid "Confirm"
+msgstr "Bestätigen"
+
 msgid "Confirm Registration failed"
 msgstr "Bestätigung der Registrierung fehlgeschlagen"
 
@@ -3041,6 +3015,30 @@ msgstr ""
 
 msgid "CSRF verification failed. Request aborted."
 msgstr "Die CSRF-Überprüfung ist fehlgeschlagen. Anfrage abgebrochen."
+
+#~ msgid "Phone %(number)s"
+#~ msgstr "Telefonnummer %(number)s"
+
+#~ msgid "Add Phone"
+#~ msgstr "Telefonnummer hinzufügen"
+
+#~ msgid "Please enter your phone number."
+#~ msgstr "Bitte trage Deine Telefonnummer ein."
+
+#~ msgid "Use one-time codes via Token Generator App"
+#~ msgstr "Einmaltoken über eine Authenticator-App verwenden"
+
+#~ msgid "Change Authenticator App"
+#~ msgstr "Authenticator-App wechseln"
+
+#~ msgid "Login with your U2F Device"
+#~ msgstr "Mit Deinem U2F-Gerät anmelden"
+
+#~ msgid "Confirm Phone"
+#~ msgstr "Telefonnummer Bestätigen"
+
+#~ msgid "Connect your U2F device"
+#~ msgstr "Verbinde Dein U2F-Gerät"
 
 #~ msgid ""
 #~ "New at %(site_name)s? <a href=\"%(registration_register_url)s\">Register</"

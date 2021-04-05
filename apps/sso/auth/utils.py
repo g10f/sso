@@ -1,6 +1,5 @@
 import base64
 import logging
-from binascii import unhexlify, hexlify
 from functools import lru_cache
 from io import BytesIO
 from os import urandom
@@ -8,6 +7,7 @@ from urllib.parse import quote, urlencode
 
 import qrcode
 import time
+from binascii import unhexlify, hexlify
 
 from django.apps import apps as django_apps
 from django.conf import settings
@@ -15,7 +15,7 @@ from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.core.exceptions import ValidationError
 from django.shortcuts import resolve_url
 from django.utils.decorators import method_decorator
-from django.utils.http import is_safe_url, url_has_allowed_host_and_scheme
+from django.utils.http import url_has_allowed_host_and_scheme
 from sso.auth import SESSION_AUTH_DATE
 from sso.utils.http import get_request_param
 

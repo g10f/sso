@@ -3,7 +3,7 @@
 
 {% block script %}
   {{ block.super }}
-  {% include 'auth/include/u2f_jscript.html' %}
+  {% include 'auth/u2f/_jscript.html' %}
 {% endblock script %}
 
 {% block title %}{% translate 'Add U2F Device' %}{% endblock %}
@@ -11,18 +11,18 @@
 {% block breadcrumb %}
   <ol class="breadcrumb">
     <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
-    <li><a href="{% url 'auth:profile' %}">{% translate 'Security' %}</a></li>
+    <li><a href="{% url 'auth:mfa-detail' %}">{% translate 'Security' %}</a></li>
     <li class="active">{% translate 'U2F Device Setup' %}</li>
   </ol>
 {% endblock breadcrumb %}
 
 
-{% block left_content %}{% include 'include/_navigation.html' with active_navigation="auth_profile" %}{% endblock left_content %}
+{% block left_content %}{% include 'include/_navigation.html' with active_navigation="mfa-detail" %}{% endblock left_content %}
 
 
 {% block right_content %}
 
-  <form method="post" id="u2f_register_form">{% csrf_token %}
+  <form method="post" id="u2f_register_form">
     <h1>{% translate 'Register U2F device' %}</h1>
 
     <div class="alert alert-info">
@@ -38,25 +38,10 @@
 
     <div class="" id="u2f-status"></div>
 
-    {% if form.errors %}
-      <div class="alert alert-danger">
-        {% for key, errors in form.errors.items %}
-          {% for error in errors %}{{ error }}<br>{% endfor %}
-        {% endfor %}
-      </div>
-    {% endif %}
-
     {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
 
-    {% for field in form.visible_fields %}
-      <div class="form-group {% if field.errors %}has-error{% endif %}" {% if field.is_hidden %}hidden{% endif %}>
-        <label class="col-form-label" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}*{% endif %}</label>
-        <div class="g10f-form-control">
-          {{ field }}{% if field.help_text or field.errors %}
-            <div class="form-text">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</div>{% endif %}
-        </div>
-      </div>
-    {% endfor %}
+    {% include 'include/_form_boilerplate.html' %}
+    {% include 'include/_field.html' with field=form.name %}
 
     <div class="form-group hidden">
       <div class="g10f-form-submit">

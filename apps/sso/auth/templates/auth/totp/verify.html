@@ -1,0 +1,12 @@
+{% extends "auth/verify_base.html" %}
+{% load i18n %}
+
+{% block verify-token-form %}
+  <form class="d-grid gap-2" method="post">
+    <input type="submit" class="hidden"/> {# to enable submit when pressing enter in the edit field #}
+    {% include 'include/_form_boilerplate.html' %}
+    <div class="text-center">{{ device.login_text }}</div>
+    {% include 'include/_field_with_floating_label.html' with field=form.otp_token %}
+    <button class="btn btn-lg btn-brand" type="submit">{% translate 'Submit' %}</button>
+  </form>
+{% endblock %}

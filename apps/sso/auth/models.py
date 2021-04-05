@@ -19,11 +19,11 @@ logger = logging.getLogger(__name__)
 
 class Device(AbstractBaseModel):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
-                             help_text="The user that this device belongs to.")
-    name = models.CharField(max_length=255, blank=True, help_text="The human-readable name of this device.")
-    confirmed = models.BooleanField(default=False, help_text="Is this device ready for use?")
+                             help_text=_("The user that this device belongs to."))
+    name = models.CharField(max_length=255, blank=True, help_text=_("The human-readable name of this device."))
+    confirmed = models.BooleanField(default=False, help_text=_("Is this device ready for use?"))
     created_at = models.DateTimeField(_('created at'), default=timezone.now)
-    last_used = models.DateTimeField(null=True, blank=True, help_text="Last time this device was used?")
+    last_used = models.DateTimeField(null=True, blank=True, help_text=_("Last time this device was used?"))
     order = models.IntegerField(default=0, help_text=_('Overwrites the alphabetic order.'))
 
     DEVICES = [cls.split('.')[-1].lower() for cls in settings.OTP_DEVICES]
@@ -100,8 +100,8 @@ class U2FDevice(Device):
         return "%s:%s" % (self.__class__.__name__, self.user_id)
 
     @classmethod
-    def setup_template(cls):
-        return 'auth/include/u2f_profile.html'
+    def detail_template(cls):
+        return 'auth/u2f/detail.html'
 
     def challenges(self):
         u2f_devices = U2FDevice.objects.filter(user=self.user, confirmed=True)
@@ -119,12 +119,12 @@ class U2FDevice(Device):
 
     @property
     def login_form_templates(self):
-        return 'auth/u2f/verify_key.html'
+        return 'auth/u2f/verify.html'
 
     @property
     def login_text(self):
-        return _('Please touch the flashing U2F device now. '
-                 'You may be prompted to allow the site permission to access your security keys. After granting permission, the device will start to blink.')
+        return _('Please touch the flashing %(name)s U2F device now. You may be prompted to allow the site permission to access your security keys. '
+                 'After granting permission, the device will start to blink.') % {'name': self.name}
 
     @property
     def default_name(self):
@@ -205,8 +205,8 @@ class TOTPDevice(Device):
         return "%s:%s" % (self.__class__.__name__, self.user_id)
 
     @classmethod
-    def setup_template(cls):
-        return 'auth/include/totp_profile.html'
+    def detail_template(cls):
+        return 'auth/totp/detail.html'
 
     def challenges(self):
         return None
@@ -221,15 +221,15 @@ class TOTPDevice(Device):
 
     @property
     def login_form_templates(self):
-        return 'auth/token.html'
+        return 'auth/totp/verify.html'
 
     @property
     def login_text(self):
-        return _('Please enter the one-time code from your authenticator app.')
+        return _('Please enter the one-time code from your %(name)s authenticator.') % {'name': self.name}
 
     @property
     def default_name(self):
-        return _('Authenticator App')
+        return _('TOTP Authenticator')
 
     @property
     def bin_key(self):

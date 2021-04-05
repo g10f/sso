@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block title %}{% translate 'Security' %}{% endblock %}
+
+{% block breadcrumb %}
+  <ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li class="active">{% translate 'Security' %}</li>
+  </ol>
+{% endblock breadcrumb %}
+
+{% block left_content %}{% include 'include/_navigation.html' with active_navigation="mfa-detail" %}{% endblock left_content %}
+
+{% block right_content %}
+  <h1>{% translate 'Setup 2-step verification' %}</h1>
+
+  <form method="post">
+    {% include 'include/_form_boilerplate.html' %}
+
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped">
+        <thead>
+        <tr>
+          <th scope="col">{% translate 'Type' %}</th>
+          <th scope="col">{% translate 'Name' %}</th>
+          <th scope="col">{% translate 'Action' %}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for object in user.device_set.all %}
+          <tr>
+            <td>{{ object.get_child.default_name }}
+              {% if object == default_device %}<span class="badge rounded-pill bg-primary">{% translate 'default' %}</span>{% endif %}
+              {% if not object.confirmed %}<span class="badge rounded-pill bg-primary">{% translate 'unconfirmed' %}</span>{% endif %}
+            <td>
+              {{ object.name }}
+            </td>
+            <td>
+              <button class="btn btn-danger" type="submit" name="delete" value="{{ object.id }}">{% translate 'Delete' %}</button>
+              {% if default_device != object %}
+                <button class="btn btn-outline-primary" type="submit" name="default" value="{{ object.id }}">{% translate 'Set as default' %}</button>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <a class="btn btn-primary" type="submit" href="{% url 'auth:totp_add_device' %}">{% translate 'Add TOTP Authenticator' %}</a>
+    <a class="btn btn-primary" href="{% url 'auth:u2f_add_device' %}">{% translate 'Add U2F Device' %}</a>
+    {% if default_device %}
+      {% if user.sso_auth_profile.is_otp_enabled %}
+        <button class="btn btn-danger" type="submit" name="is_otp_enabled" value="3">{% translate "Disable 2-step verification" %}</button>
+      {% else %}
+        <button class="btn btn-primary" type="submit" name="is_otp_enabled" value="2">{% translate "Enable 2-step verification" %}</button>
+      {% endif %}
+    {% endif %}
+  </form>
+{% endblock right_content %}
