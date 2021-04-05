@@ -65,7 +65,7 @@ class RegistrationProfileForm(mixins.UserRolesMixin, forms.Form):
                                                help_text=_('Keep stored in database to prevent re-registration of denied user.'), required=False)
     role_profiles = forms.MultipleChoiceField(
         required=False,
-        widget=bootstrap.FilteredSelectMultiple(_("Role profiles")),
+        widget=bootstrap.CheckboxSelectMultiple(),
         label=_("Role profiles"),
         help_text=mixins.UserRolesMixin.role_profiles_help)
 

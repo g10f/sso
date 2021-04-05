@@ -648,7 +648,7 @@ class UserProfileForm(mixins.UserRolesMixin, mixins.UserNoteMixin, forms.Form):
     notes = forms.CharField(label=_("Notes"), required=False, max_length=1024, widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 10}))
     role_profiles = forms.MultipleChoiceField(
         required=False,
-        widget=bootstrap.FilteredSelectMultiple(_("Role profiles")),
+        widget=bootstrap.CheckboxSelectMultiple(),
         label=_("Role profiles"),
         help_text=mixins.UserRolesMixin.role_profiles_help)
     created_by_user = forms.CharField(label=_("Created by"), required=False, widget=bootstrap.TextInput(attrs={'disabled': ''}))
@@ -761,7 +761,7 @@ class CenterProfileForm(mixins.UserRolesMixin, mixins.UserNoteMixin, forms.Form)
         help_text=mixins.UserRolesMixin.application_roles_help)
     role_profiles = forms.MultipleChoiceField(
         required=False,
-        widget=bootstrap.FilteredSelectMultiple(_("Role profiles")),
+        widget=bootstrap.CheckboxSelectMultiple(),
         label=_("Role profiles"),
         help_text=mixins.UserRolesMixin.role_profiles_help)
 
@@ -821,7 +821,7 @@ class AppAdminUserProfileForm(mixins.UserRolesMixin, forms.Form):
         label=_("Application roles"))
     role_profiles = forms.MultipleChoiceField(
         required=False,
-        widget=bootstrap.FilteredSelectMultiple(_("Role profiles")),
+        widget=bootstrap.CheckboxSelectMultiple(),
         label=_("Role profiles"),
         help_text=mixins.UserRolesMixin.role_profiles_help)
 
