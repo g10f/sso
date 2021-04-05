@@ -11,7 +11,7 @@ from sso.forms import bootstrap
 
 
 class CredentialSetupForm(forms.Form):
-    name = forms.CharField(max_length=255, required=False, widget=bootstrap.TextInput(), help_text="The human-readable name of this device.")
+    name = forms.CharField(max_length=255, required=False, widget=bootstrap.TextInput(), help_text=_("The human-readable name of this device."))
 
 
 class AddU2FForm(CredentialSetupForm):
@@ -55,8 +55,7 @@ class ProfileForm(forms.Form):
 
 
 class TOTPDeviceForm(CredentialSetupForm):
-    token = forms.IntegerField(label=_("One-time code"), min_value=0, max_value=int('9' * totp_digits()),
-                               widget=bootstrap.TextInput(attrs={'autofocus': True}))
+    token = forms.IntegerField(label=_("One-time code"), min_value=0, max_value=int('9' * totp_digits()), widget=bootstrap.TextInput(attrs={'autofocus': True}))
     key = forms.CharField(label=_('Key'), widget=forms.HiddenInput())
 
     error_messages = {
@@ -81,26 +80,15 @@ class TOTPDeviceForm(CredentialSetupForm):
         cd = super().clean()
         if 'token' in cd:
             token = cd.get("token")
-            defaults = {
-                'key': cd['key'],
-                'digits': self.digits,
-                'tolerance': 2,
-            }
+            self.device = TOTPDevice(user=self.user, key=cd['key'], digits=self.digits, tolerance=2)
 
-            totp_device, created = TOTPDevice.objects.get_or_create(user=self.user, defaults=defaults)
-            if not created:
-                totp_device.key = cd['key']
-                totp_device.last_t = -1  # reset value of the latest verified token
-
-            self.device = totp_device
-
-            if not self.device.verify_token(token):  # does an database update
+            if not self.device.verify_token(token):
                 raise forms.ValidationError(self.error_messages['invalid_token'], params={'token': token})
 
     def save(self):
         self.device.confirmed = True
         self.device.name = self.cleaned_data['name']
-        self.device.save(update_fields=['confirmed', 'name'])
+        self.device.save()
         if not hasattr(self.user, 'sso_auth_profile'):
             Profile.objects.create(user=self.user, default_device=self.device, is_otp_enabled=True)
 

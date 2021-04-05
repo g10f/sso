@@ -15,7 +15,7 @@ from sso.auth.utils import class_view_decorator, default_device, random_hex, get
 class AddU2FView(FormView):
     template_name = 'auth/u2f/add_device.html'
     form_class = AddU2FForm
-    success_url = reverse_lazy('auth:profile')
+    success_url = reverse_lazy('auth:mfa-detail')
     u2f_request = None
 
     def get(self, request, *args, **kwargs):
@@ -56,7 +56,7 @@ class AddU2FView(FormView):
 
 
 @class_view_decorator(login_required)
-class ProfileView(FormView):
+class DetailView(FormView):
     """
     View used by users for managing two-factor configuration.
 
@@ -64,9 +64,9 @@ class ProfileView(FormView):
     account. If two-factor is enabled, it also lists the primary verification
     method and backup verification methods.
     """
-    template_name = 'auth/profile.html'
+    template_name = 'auth/detail.html'
     form_class = ProfileForm
-    success_url = reverse_lazy('auth:profile')
+    success_url = reverse_lazy('auth:mfa-detail')
 
     def get_context_data(self, **kwargs):
         kwargs = super().get_context_data(**kwargs)
@@ -98,10 +98,10 @@ class ProfileView(FormView):
 
 
 @class_view_decorator(login_required)
-class TOTPSetup(FormView):
-    template_name = 'auth/totp/totp_setup.html'
+class AddTOTP(FormView):
+    template_name = 'auth/totp/add_device.html'
     form_class = TOTPDeviceForm
-    success_url = reverse_lazy('auth:profile')
+    success_url = reverse_lazy('auth:mfa-detail')
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

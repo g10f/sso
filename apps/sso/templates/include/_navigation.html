@@ -100,11 +100,11 @@
     {% if device_classes %}
       {% if admin_only_2f %}
         {% if user.is_user_admin or user.is_organisation_admin or user.is_staff %}
-          <a class="list-group-item list-group-item-action {% if active_navigation == "auth_profile" %}active{% endif %}" href="{% url 'auth:profile' %}"><i
+          <a class="list-group-item list-group-item-action {% if active_navigation == "mfa-detail" %}active{% endif %}" href="{% url 'auth:mfa-detail' %}"><i
               class="bi bi-shield-lock"></i> {% translate 'Security' %}</a>
         {% endif %}
       {% else %}
-        <a class="list-group-item list-group-item-action {% if active_navigation == "auth_profile" %}active{% endif %}" href="{% url 'auth:profile' %}"><i
+        <a class="list-group-item list-group-item-action {% if active_navigation == "mfa-detail" %}active{% endif %}" href="{% url 'auth:mfa-detail' %}"><i
             class="bi bi-shield-lock"></i> {% translate 'Security' %}</a>
       {% endif %}
     {% endif %}

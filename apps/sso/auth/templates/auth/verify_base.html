@@ -1,0 +1,23 @@
+{% extends "auth/login_base.html" %}
+{% load i18n %}
+
+{% block content %}
+  <div class="sign-in-form">
+      <h1 class="text-center">{% blocktranslate %}{{ brand }} 2-step verification{% endblocktranslate %}</h1>
+
+    {% block verify-token-form %}{% endblock %}
+
+    {% block other-devices %}
+      {% if other_devices %}
+        <div class="text-center pt-2">{% translate "Alternatively, use one of your backup devices:" %}</div>
+        {% for other in other_devices %}
+          <form class="d-grid" action="{{ other.url }}" method="post">{% csrf_token %}
+            <button class="btn btn-lg btn-default" type="submit" name="resend_token" value=1">{{ other.device.name }} {{ other.device.default_name }}</button>
+          </form>
+        {% endfor %}
+      {% endif %}
+
+      <div class="py-2 text-center">{% if cancel_url %}<a class="link-danger" href="{{ cancel_url }}">{% translate 'Cancel' %}</a>{% endif %}</div>
+      </div>
+    {% endblock %}
+{% endblock %}
