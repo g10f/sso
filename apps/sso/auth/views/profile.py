@@ -38,8 +38,9 @@ class AddU2FView(FormView):
     def form_valid(self, form):
         u2f_response = form.cleaned_data['u2f_response']
         u2f_request = form.cleaned_data['u2f_request']
+        name = form.cleaned_data['name']
         device, attestation_cert = u2f.complete_registration(u2f_request, u2f_response)
-        device = U2FDevice.objects.create(user=self.request.user, public_key=device['publicKey'], key_handle=device['keyHandle'],
+        device = U2FDevice.objects.create(name=name, user=self.request.user, public_key=device['publicKey'], key_handle=device['keyHandle'],
                                           app_id=device['appId'], version=device['version'], confirmed=True)
 
         if not hasattr(self.request.user, 'sso_auth_profile'):
