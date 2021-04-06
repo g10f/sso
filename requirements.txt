@@ -1,5 +1,5 @@
 wheel
-django
+django<3.2
 django-formtools
 django-ipware
 django-reversion
