@@ -27,6 +27,7 @@ SSO_STYLE_VERSION = '1.1.0.min'
 THUMBNAIL_QUALITY = 100
 THUMBNAIL_FORMAT = 'PNG'
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 SITE_ID = 1
 DEFAULT_FROM_EMAIL = 'webmaster@g10f.de'
