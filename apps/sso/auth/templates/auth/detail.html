@@ -17,36 +17,37 @@
 
   <form method="post">
     {% include 'include/_form_boilerplate.html' %}
-
-    <div class="table-responsive">
-      <table class="table table-bordered table-striped">
-        <thead>
-        <tr>
-          <th scope="col">{% translate 'Type' %}</th>
-          <th scope="col">{% translate 'Name' %}</th>
-          <th scope="col">{% translate 'Action' %}</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for object in user.device_set.all %}
+    {% if user.device_set.all %}
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+          <thead>
           <tr>
-            <td>{{ object.get_child.default_name }}
-              {% if object == default_device %}<span class="badge rounded-pill bg-primary">{% translate 'default' %}</span>{% endif %}
-              {% if not object.confirmed %}<span class="badge rounded-pill bg-primary">{% translate 'unconfirmed' %}</span>{% endif %}
-            <td>
-              {{ object.name }}
-            </td>
-            <td>
-              <button class="btn btn-danger" type="submit" name="delete" value="{{ object.id }}">{% translate 'Delete' %}</button>
-              {% if default_device != object %}
-                <button class="btn btn-outline-primary" type="submit" name="default" value="{{ object.id }}">{% translate 'Set as default' %}</button>
-              {% endif %}
-            </td>
+            <th scope="col">{% translate 'Type' %}</th>
+            <th scope="col">{% translate 'Name' %}</th>
+            <th scope="col">{% translate 'Action' %}</th>
           </tr>
-        {% endfor %}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+          {% for object in user.device_set.all %}
+            <tr>
+              <td>{{ object.get_child.default_name }}
+                {% if object == default_device %}<span class="badge rounded-pill bg-primary">{% translate 'default' %}</span>{% endif %}
+                {% if not object.confirmed %}<span class="badge rounded-pill bg-primary">{% translate 'unconfirmed' %}</span>{% endif %}
+              <td>
+                {{ object.name }}
+              </td>
+              <td>
+                <button class="btn btn-danger" type="submit" name="delete" value="{{ object.id }}">{% translate 'Delete' %}</button>
+                {% if default_device != object %}
+                  <button class="btn btn-outline-primary" type="submit" name="default" value="{{ object.id }}">{% translate 'Set as default' %}</button>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% endif %}
 
     <a class="btn btn-primary" type="submit" href="{% url 'auth:totp_add_device' %}">{% translate 'Add TOTP Authenticator' %}</a>
     <a class="btn btn-primary" href="{% url 'auth:u2f_add_device' %}">{% translate 'Add U2F Device' %}</a>
