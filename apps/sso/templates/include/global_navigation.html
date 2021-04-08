@@ -45,7 +45,7 @@
             <a class="nav-link" href="{% url 'accounts:profile' %}">
               {% if user.picture %}
                 {% thumbnail user.picture "30x30" crop="center" as im %}
-                  <img class="rounded g10f-icon-user" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="">
+                  <img class="rounded-circle g10f-icon-user" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="">
                 {% endthumbnail %}
               {% else %}
                 <i class="bi bi-person"></i>
