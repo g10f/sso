@@ -1,0 +1,35 @@
+{% load i18n %}
+<ul class="sidebar nav nav-pills flex-column mb-3">
+  {% for item in sidebar %}
+    {% if item.submenue %}
+      <li>
+        <button
+            aria-expanded="{% if item.expanded %}true{% else %}false{% endif %}"
+            class="nav-link link-brand d-flex justify-content-between {% if not item.expanded %}collapsed{% endif %}{% if item.active %} active{% endif %}"
+            data-bs-target="#{{ item.name }}-collapse"
+            data-bs-toggle="collapse">
+          <i class="bi bi-{{ item.icon }}"></i>&nbsp;{{ item.title }}
+        </button>
+        <div class="collapse{% if item.expanded %} show{% endif %}" id="{{ item.name }}-collapse">
+          <ul class="nav flex-column mb-auto">
+            {% for item in item.submenue %}
+              <li>
+                <a class="nav-link{% if item.active %} active{% endif %}{% if item.badge %} d-flex justify-content-between{% endif %}"
+                   href="{{ item.url }}">
+                  <div>{% if item.icon %}<i class="bi bi-{{ item.icon }}"></i>&nbsp;{% endif %}{{ item.title }}</div>
+                  {% if item.badge %}
+                    <span class="badge bg-primary rounded-pill">{{ item.badge }}</span>
+                  {% endif %}
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </li>
+    {% else %}
+      <li><a class="nav-link navbar-light{% if item.active %} active{% endif %}" href="{{ item.url }}">
+        {% if item.icon %}<i class="bi bi-{{ item.icon }}"></i>&nbsp;{% endif %}{{ item.title }}</a>
+      </li>
+    {% endif %}
+  {% endfor %}
+</ul>

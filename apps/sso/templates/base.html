@@ -38,7 +38,7 @@
         <main class="{% block mainclass %}{% endblock %}">
         {% if user.is_authenticated %}
           <aside>
-            {% block left_content %}{% include 'include/_navigation.html' %}{% endblock left_content %}
+            {% block left_content %}{% include 'include/_sidebar.html' %}{% endblock left_content %}
           </aside>
         {% endif %}
           <section>

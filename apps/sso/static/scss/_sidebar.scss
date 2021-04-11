@@ -1,0 +1,59 @@
+.sidebar {
+  background-color: tint-color($brand-light, 95%);
+  border-radius: .25rem;
+
+  ul > li {
+    margin-left: 1.08rem;
+  }
+
+  a {
+    color: $navbar-light-brand-color;
+
+    &:hover,
+    &:focus {
+      color: shade-color($navbar-light-brand-hover-color, 10%);
+    }
+
+    &.active.nav-link {
+      font-weight: bold;
+      color: $navbar-light-brand-hover-color;
+      background: none;
+    }
+  }
+
+  button {
+    width: 100%;
+
+    &:not(.collapsed) {
+      &::after {
+        background-image: escape-svg($sidebar-button-icon);
+        transform: $accordion-icon-transform;
+      }
+    }
+
+    // Accordion icon
+    &::after {
+      flex-shrink: 0;
+      width: $accordion-icon-width;
+      height: $accordion-icon-width;
+      margin-left: auto;
+      content: "";
+      background-image: escape-svg($sidebar-button-icon);
+      background-repeat: no-repeat;
+      background-size: $accordion-icon-width;
+      @include transition($accordion-icon-transition);
+    }
+  }
+
+  button.active {
+    &:not(.collapsed) {
+      &::after {
+        background-image: escape-svg($sidebar-button-active-icon);
+      }
+    }
+
+    &::after {
+      background-image: escape-svg($sidebar-button-active-icon);
+    }
+  }
+}

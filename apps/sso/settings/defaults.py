@@ -22,7 +22,7 @@ else:
 ALLOWED_HOSTS = ['.localhost', '127.0.0.1', '[::1]']
 
 SSO_STYLE = 'main'
-SSO_STYLE_VERSION = '1.1.0.min'
+SSO_STYLE_VERSION = '1.1.1.min'
 
 THUMBNAIL_QUALITY = 100
 THUMBNAIL_FORMAT = 'PNG'

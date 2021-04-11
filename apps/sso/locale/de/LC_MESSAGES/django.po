@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-05 23:53+0200\n"
+"POT-Creation-Date: 2021-04-11 12:06+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1485,6 +1485,9 @@ msgstr "User nicht initialisiert"
 msgid "One-time code does not match."
 msgstr "Einmaltoken passt nicht"
 
+msgid "The human-readable name of this device."
+msgstr "Der Anzeigename des Geräts."
+
 msgid "Request"
 msgstr ""
 
@@ -1500,9 +1503,6 @@ msgstr "Ungültiger Token: %(token)s."
 
 msgid "The user that this device belongs to."
 msgstr ""
-
-msgid "The human-readable name of this device."
-msgstr "Der Anzeigename des Geräts."
 
 msgid "Is this device ready for use?"
 msgstr ""
@@ -2871,6 +2871,30 @@ msgctxt "Organisation Type"
 msgid "Group & Retreat"
 msgstr "Gruppe & Retreat"
 
+msgid "Administration"
+msgstr "Administration"
+
+msgid "E-Mails"
+msgstr "E-Mail Adressen"
+
+msgid "Registrations"
+msgstr "Registrierungen"
+
+msgid "Users"
+msgstr "Benutzer"
+
+msgid "Access Requests"
+msgstr "Anfragen"
+
+msgid "My Email Addresses"
+msgstr "Meine E-Mail Adressen"
+
+msgid "Change password"
+msgstr ""
+
+msgid "Personal Data"
+msgstr "Persönliche Daten"
+
 msgid "Forbidden"
 msgstr "Verboten"
 
@@ -2891,16 +2915,10 @@ msgstr ""
 msgid "Site admin"
 msgstr ""
 
-msgid "Administration"
-msgstr "Administration"
-
 msgid "View site"
 msgstr ""
 
 msgid "Documentation"
-msgstr ""
-
-msgid "Change password"
 msgstr ""
 
 msgid "About us"
@@ -2957,18 +2975,6 @@ msgstr "Zum Login"
 
 msgid "Send email"
 msgstr "E-Mail Senden"
-
-msgid "Registrations"
-msgstr "Registrierungen"
-
-msgid "Users"
-msgstr "Benutzer"
-
-msgid "Access Requests"
-msgstr "Anfragen"
-
-msgid "My Email Addresses"
-msgstr "Meine E-Mail Adressen"
 
 msgid "search text"
 msgstr "Suchtext"
