@@ -11,11 +11,8 @@
   </ol>
 {% endblock breadcrumb %}
 
-{% block left_content %}{% include 'include/_navigation.html' with active_navigation="emails" %}{% endblock left_content %}
-
 {% block form %}
   <h1>{% translate 'Email addresses' %}</h1>
-
   <p>{% translate 'If you would like to add another email address to your account, enter it below. Once you confirm the address, you can login with that email address and make the address to your primary contact email address.' %}</p>
   <p>{% blocktranslate %}You can enter up to {{ max_email_adresses }} email addresses.{% endblocktranslate %}</p>
 

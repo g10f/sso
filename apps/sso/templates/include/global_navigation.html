@@ -48,7 +48,7 @@
                   <img class="rounded-circle g10f-icon-user" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="">
                 {% endthumbnail %}
               {% else %}
-                <i class="bi bi-person"></i>
+                <i class="bi bi-person-circle"></i>
               {% endif %}
               {{ user.first_name }}
               {% if user.is_verified %}<sup><i class="bi bi-asterisk" title="{% translate '2 factor logged in' %}"></i></sup>{% endif %}
