@@ -290,12 +290,12 @@ def profile_with_address_and_phone(request, redirect_uri=None):
         phonenumber_inline_formset = PhoneNumberInlineFormSet(instance=user)
         form = UserSelfProfileForm(instance=user)
 
+    formsets = [address_inline_formset, phonenumber_inline_formset]
+    media, errors, active = get_media_errors_and_active_form(form, formsets)
+
     phonenumber_inline_formset.forms += [phonenumber_inline_formset.empty_form]
     address_inline_formset.forms += [address_inline_formset.empty_form]
 
-    formsets = [address_inline_formset, phonenumber_inline_formset]
-
-    media, errors, active = get_media_errors_and_active_form(form, formsets)
     try:
         user_organisation = user.organisations.first()
     except ObjectDoesNotExist:
