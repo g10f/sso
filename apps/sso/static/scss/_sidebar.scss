@@ -23,6 +23,12 @@
 
   button {
     width: 100%;
+    color: $navbar-light-brand-color;
+
+    &:hover,
+    &:focus {
+      color: shade-color($navbar-light-brand-hover-color, 10%);
+    }
 
     &:not(.collapsed) {
       &::after {
