@@ -127,7 +127,6 @@ def get_default_cert():
                             settings.SSO_SIGNING_KEYS_VALIDITY_PERIOD)
 
 
-"""
 def get_certs():
     algorithm = 'RS256'
 
@@ -140,7 +139,6 @@ def get_certs():
             name='CERTIFICATE').select_related('component').order_by('-component__created_at'))
 
     return cache.get_or_set(_CACHE_KEY_SIGNING_CERTS, _get_certs, settings.SSO_SIGNING_KEYS_VALIDITY_PERIOD)
-"""
 
 
 def get_default_encoding_key_and_kid(algorithm):
