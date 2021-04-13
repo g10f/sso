@@ -296,7 +296,7 @@ class UserAddForm(mixins.UserRolesMixin, mixins.UserNoteMixin, forms.ModelForm):
     role_profiles = forms.ModelMultipleChoiceField(
         queryset=None,
         required=False,
-        widget=bootstrap.FilteredSelectMultiple(_("Role profiles")),
+        widget=bootstrap.CheckboxSelectMultiple(),
         label=_("Role profiles"),
         help_text=mixins.UserRolesMixin.role_profiles_help)
 
