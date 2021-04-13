@@ -35,7 +35,7 @@ from sso.middleware import revision_exempt
 from sso.utils.http import get_request_param
 from sso.utils.url import get_base_url
 from .crypt import loads_jwt
-from .keys import get_default_cert, get_public_keys
+from .keys import get_default_cert, get_public_keys, get_certs
 from .models import Client
 from .oidc_server import oidc_server
 
@@ -167,11 +167,8 @@ class CertsView(PreflightMixin, View):
 
     def get(self, request, *args, **kwargs):
         certs = {}
-        try:
-            cert_obj = get_default_cert()
-            certs[cert_obj.component.uuid.hex] = cert_obj.value
-        except IndexError:
-            logger.error("No certs available")
+        for cert in get_certs():
+            certs[cert.component.uuid.hex] = cert.value
 
         return JsonHttpResponse(certs, request, allow_jsonp=True, public_cors=True)
 
