@@ -77,10 +77,8 @@ class OrganisationCountryUpdateView(OrganisationCountryBaseView, FormsetsUpdateV
                                                                      model=EmailAlias, form=EmailAliasInlineForm, max_num=6)
 
             if email_forward_inline_formset:
-                email_forward_inline_formset.forms += [email_forward_inline_formset.empty_form]
                 formsets += [email_forward_inline_formset]
             if email_alias_inline_formset:
-                email_alias_inline_formset.forms += [email_alias_inline_formset.empty_form]
                 formsets += [email_alias_inline_formset]
         return formsets
 

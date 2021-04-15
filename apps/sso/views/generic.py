@@ -236,7 +236,10 @@ class FormsetsUpdateView(generic.UpdateView):
                     if not formset.is_valid():
                         active = formset.prefix
                         break
-
+        # empty forms must be added in the end because formset validation fails since django 3.2
+        # when adding empty_form
+        for formset in formsets:
+            formset.forms += [formset.empty_form]
         context.update({'formsets': formsets, 'media': media, 'active': active, 'errors': errors})
         return context
 

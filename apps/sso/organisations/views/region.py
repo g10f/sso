@@ -15,6 +15,7 @@ from sso.organisations.forms import AdminRegionForm
 from sso.organisations.models import AdminRegion, Association, multiple_associations
 from sso.views import main
 from sso.views.generic import FormsetsUpdateView, ListView, SearchFilter, ViewQuerysetFilter, ViewButtonFilter, ViewChoicesFilter
+
 logger = logging.getLogger(__name__)
 
 
@@ -100,10 +101,8 @@ class AdminRegionUpdateView(AdminRegionBaseView, FormsetsUpdateView):
                 email_alias_inline_formset = None
 
             if email_forward_inline_formset:
-                email_forward_inline_formset.forms += [email_forward_inline_formset.empty_form]
                 formsets += [email_forward_inline_formset]
             if email_alias_inline_formset:
-                email_alias_inline_formset.forms += [email_alias_inline_formset.empty_form]
                 formsets += [email_alias_inline_formset]
 
         return formsets

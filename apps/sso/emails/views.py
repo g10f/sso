@@ -109,10 +109,8 @@ class GroupEmailUpdateView(GroupEmailBaseView, FormsetsUpdateView):
                                                                  model=EmailAlias, form=EmailAliasInlineForm, max_num=6)
 
         if admin_inline_formset:
-            admin_inline_formset.forms += [admin_inline_formset.empty_form]
             formsets += [admin_inline_formset]
         if email_alias_inline_formset:
-            email_alias_inline_formset.forms += [email_alias_inline_formset.empty_form]
             formsets += [email_alias_inline_formset]
 
         return formsets
