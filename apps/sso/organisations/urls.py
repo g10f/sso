@@ -6,8 +6,7 @@ app_name = 'organisations'
 
 urlpatterns = [
     path('', views.OrganisationList.as_view(), name='organisation_list'),
-    path('export.csv', views.OrganisationList.as_view(export=True, filename="organisations.csv",
-                                                      content_type='text/csv;charset=utf-8;'),
+    path('export.csv', views.OrganisationList.as_view(export=True, filename="organisations.csv", content_type='text/csv;charset=utf-8;'),
          name='organisation_list_csv'),
     path('export.txt', views.OrganisationList.as_view(export=True, content_type='text;charset=utf-8;'), name='organisation_list_txt'),
     path('me/', views.MyOrganisationDetailView.as_view(), name='my_organisation_detail'),

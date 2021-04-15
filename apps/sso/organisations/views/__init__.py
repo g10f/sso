@@ -197,16 +197,13 @@ class OrganisationPictureUpdateView(OrganisationBaseView, FormsetsUpdateView):
     def get_formsets(self):
 
         picture_number_extra = 1
-        PictureInlineFormSet = inlineformset_factory(self.model, OrganisationPicture, OrganisationPictureForm,
-                                                     extra=picture_number_extra, max_num=3)
+        PictureInlineFormSet = inlineformset_factory(self.model, OrganisationPicture, OrganisationPictureForm, extra=picture_number_extra, max_num=3)
 
         if self.request.method == 'POST':
-            picture_inline_formset = PictureInlineFormSet(self.request.POST, files=self.request.FILES,
-                                                          instance=self.object)
+            picture_inline_formset = PictureInlineFormSet(self.request.POST, files=self.request.FILES, instance=self.object)
         else:
             picture_inline_formset = PictureInlineFormSet(instance=self.object)
 
-        picture_inline_formset.forms += [picture_inline_formset.empty_form]
         return [picture_inline_formset]
 
 
@@ -261,7 +258,6 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
         return self.form_classes[self.admin_type]
 
     def get_formsets(self):
-
         address_extra = 0
         phone_number_extra = 1
 
@@ -269,11 +265,8 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
         if address_count == 0:
             address_extra = 1
 
-        AddressInlineFormSet = inlineformset_factory(self.model, OrganisationAddress, OrganisationAddressForm,
-                                                     extra=address_extra, max_num=2)
-        PhoneNumberInlineFormSet = inlineformset_factory(self.model, OrganisationPhoneNumber,
-                                                         OrganisationPhoneNumberForm, max_num=6,
-                                                         extra=phone_number_extra)
+        AddressInlineFormSet = inlineformset_factory(self.model, OrganisationAddress, OrganisationAddressForm, extra=address_extra, max_num=2)
+        PhoneNumberInlineFormSet = inlineformset_factory(self.model, OrganisationPhoneNumber, OrganisationPhoneNumberForm, max_num=6, extra=phone_number_extra)
 
         if self.request.method == 'POST':
             address_inline_formset = AddressInlineFormSet(self.request.POST, instance=self.object)
@@ -282,21 +275,16 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
             address_inline_formset = AddressInlineFormSet(instance=self.object)
             phone_number_inline_formset = PhoneNumberInlineFormSet(instance=self.object)
 
-        address_inline_formset.forms += [address_inline_formset.empty_form]
-        phone_number_inline_formset.forms += [phone_number_inline_formset.empty_form]
         formsets = [address_inline_formset, phone_number_inline_formset]
 
         if settings.SSO_ORGANISATION_EMAIL_MANAGEMENT:
             if self.request.user.has_perm('organisations.add_organisation'):
-                email_forward_inline_formset = get_optional_inline_formset(self.request, self.object.email, Email,
-                                                                           model=EmailForward,
-                                                                           form=AdminEmailForwardInlineForm, max_num=10)
+                email_forward_inline_formset = get_optional_inline_formset(
+                    self.request, self.object.email, Email, model=EmailForward, form=AdminEmailForwardInlineForm, max_num=10)
             else:
-                email_forward_inline_formset = get_optional_inline_formset(self.request, self.object.email, Email,
-                                                                           model=EmailForward,
-                                                                           form=EmailForwardInlineForm, max_num=10,
-                                                                           queryset=EmailForward.objects.filter(
-                                                                               primary=False))
+                email_forward_inline_formset = get_optional_inline_formset(
+                    self.request, self.object.email, Email, model=EmailForward, form=EmailForwardInlineForm, max_num=10,
+                    queryset=EmailForward.objects.filter(primary=False))
 
             if self.admin_type in ['region', 'country', 'association']:
                 email_alias_inline_formset = get_optional_inline_formset(self.request, self.object.email, Email,
@@ -306,10 +294,8 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
                 email_alias_inline_formset = None
 
             if email_forward_inline_formset:
-                email_forward_inline_formset.forms += [email_forward_inline_formset.empty_form]
                 formsets += [email_forward_inline_formset]
             if email_alias_inline_formset:
-                email_alias_inline_formset.forms += [email_alias_inline_formset.empty_form]
                 formsets += [email_alias_inline_formset]
 
         return formsets
