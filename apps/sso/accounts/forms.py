@@ -24,7 +24,7 @@ from django.utils.http import urlsafe_base64_encode
 from django.utils.text import capfirst
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
-from sso.forms import bootstrap, mixins, BLANK_CHOICE_DASH, BaseForm
+from sso.forms import bootstrap, mixins, BLANK_CHOICE_DASH, BaseForm, BaseTabularInlineForm, BaseStackedInlineForm
 from sso.forms.fields import EmailFieldLower
 from sso.models import clean_picture
 from sso.organisations.models import Organisation, is_validation_period_active
@@ -353,7 +353,7 @@ class UserAddForm(mixins.UserRolesMixin, mixins.UserNoteMixin, forms.ModelForm):
         return user
 
 
-class AddressForm(BaseForm):
+class AddressForm(BaseStackedInlineForm):
     class Meta:
         model = UserAddress
         fields = (
@@ -367,16 +367,12 @@ class AddressForm(BaseForm):
             'city': bootstrap.TextInput(attrs={'size': 50}),
             'city_native': bootstrap.TextInput(attrs={'size': 50}),
             'postal_code': bootstrap.TextInput(attrs={'size': 50}),
-            'country': bootstrap.Select2(),
+            'country': bootstrap.Select(),  # Select2 does not work with StackedInlineForm
             'region': bootstrap.TextInput(attrs={'size': 50}),
         }
 
-    @staticmethod
-    def template():
-        return 'edit_inline/stacked.html'
 
-
-class PhoneNumberForm(BaseForm):
+class PhoneNumberForm(BaseTabularInlineForm):
     class Meta:
         model = UserPhoneNumber
         fields = ('phone_type', 'phone', 'primary')
@@ -385,10 +381,6 @@ class PhoneNumberForm(BaseForm):
             'phone': bootstrap.TextInput(attrs={'size': 50}),
             'primary': bootstrap.CheckboxInput()
         }
-
-    @staticmethod
-    def template():
-        return 'edit_inline/tabular.html'
 
 
 class SelfUserEmailAddForm(forms.Form):
@@ -418,7 +410,7 @@ class SelfUserEmailAddForm(forms.Form):
         return user_email
 
 
-class UserEmailForm(BaseForm):
+class UserEmailForm(BaseTabularInlineForm):
     class Meta:
         model = UserEmail
         fields = ('email', 'primary', 'confirmed')
@@ -427,10 +419,6 @@ class UserEmailForm(BaseForm):
             'primary': bootstrap.CheckboxInput(),
             'confirmed': bootstrap.CheckboxInput()
         }
-
-    @staticmethod
-    def template():
-        return 'edit_inline/tabular.html'
 
 
 class UserSelfProfileForm(forms.Form):

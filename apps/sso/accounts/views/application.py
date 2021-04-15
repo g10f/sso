@@ -465,10 +465,11 @@ def _update_standard_user(request, user, template='accounts/application/update_u
         user_email_inline_formset = UserEmailInlineFormSet(instance=user)
         form = get_default_admin_update_user_form_class()(instance=user, request=request)
 
-    user_email_inline_formset.forms += [user_email_inline_formset.empty_form]
     formsets = [user_email_inline_formset]
 
     media, errors, active = get_media_errors_and_active_form(form, formsets)
+
+    user_email_inline_formset.forms += [user_email_inline_formset.empty_form]
 
     if (user.last_login is None) or (user.last_login - user.date_joined) < timedelta(seconds=1):
         logged_in = False
