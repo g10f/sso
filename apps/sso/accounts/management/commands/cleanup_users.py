@@ -34,8 +34,7 @@ def delete_deactivated_users():
         q = q & (  # Users who did not registered themselve
                 Q(registrationprofile__isnull=True) |
                 # Users who registered themselve before activation_expiration_date
-                Q(registrationprofile__date_registered__lte=activation_expiration_date) &
-                Q(registrationprofile__is_access_denied=False))
+                Q(registrationprofile__date_registered__lte=activation_expiration_date))
 
         count = 0
         for user in User.objects.filter(q):
