@@ -6,13 +6,6 @@ default_app_config = 'sso.forms.apps.FormsConfig'
 
 
 class BaseForm(forms.ModelForm):
-    """
-    @property
-    def media(self):
-        media = super(BaseForm, self).media
-        js = ['inlines.js']
-        return forms.Media(js=['js/%s' % url for url in js]) + media
-    """
     def save(self, commit=True):
         # attention: a form with initial data has_unchanged if the initial data are unchanged
         if self.instance.pk is None or self.has_changed():
@@ -25,11 +18,19 @@ class BaseForm(forms.ModelForm):
         return self._meta.model._meta
 
 
-class BaseTabularInlineForm(BaseForm):
+class FormsetForm(BaseForm):
+    @property
+    def media(self):
+        media = super().media
+        js = ['js/formsets-1.3.js']
+        return forms.Media(js=js) + media
+
+
+class BaseTabularInlineForm(FormsetForm):
     def template(self):
         return 'edit_inline/tabular.html'
 
 
-class BaseStackedInlineForm(BaseForm):
+class BaseStackedInlineForm(FormsetForm):
     def template(self):
         return 'edit_inline/stacked.html'
