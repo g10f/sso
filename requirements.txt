@@ -1,5 +1,5 @@
 wheel
-django<3.2
+django
 django-formtools
 django-ipware
 django-reversion
@@ -18,5 +18,4 @@ requests
 celery
 python-u2flib-server
 pymemcache
-python-memcached
 gunicorn

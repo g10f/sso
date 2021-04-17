@@ -1,14 +1,13 @@
 import logging
-import time
 import uuid
+
+import time
 
 from django.conf import settings
 from django.contrib.auth import rotate_token, user_logged_in, load_backend, BACKEND_SESSION_KEY, _get_backends
 from django.utils.crypto import constant_time_compare, salted_hmac
 
 logger = logging.getLogger(__name__)
-
-default_app_config = 'sso.auth.apps.AuthConfig'
 
 SESSION_AUTH_DATE = 'iat'
 DEVICE_KEY = 'dev'

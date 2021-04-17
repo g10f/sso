@@ -2,8 +2,6 @@ from django import forms
 
 BLANK_CHOICE_DASH = [("", "---------")]
 
-default_app_config = 'sso.forms.apps.FormsConfig'
-
 
 class BaseForm(forms.ModelForm):
     def save(self, commit=True):
