@@ -37,7 +37,9 @@ def sidebar(request):
     user = request.user
     # Main menue
     sidebar_nav = []
-    if not user.is_authenticated:
+
+    # for 404 response request.resolver_match is None
+    if not user.is_authenticated or request.resolver_match is None:
         return sidebar_nav
 
     if user.is_staff:
