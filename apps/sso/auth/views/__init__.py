@@ -50,7 +50,7 @@ def get_token_url(user_id, expiry, redirect_url, backend, display, device_id):
 
 
 class LoginView(FormView):
-    template_name = 'auth/login.html'
+    template_name = 'sso_auth/login.html'
     form_class = EmailAuthenticationForm
     success_url = reverse_lazy('home')
     is_two_factor_required = False
@@ -122,7 +122,7 @@ class LoginView(FormView):
 
 
 class TokenView(FormView):
-    template_name = 'auth/token.html'
+    template_name = 'sso_auth/token.html'
     form_class = AuthenticationTokenForm
     success_url = reverse_lazy('home')
     user = None
@@ -216,7 +216,7 @@ class TokenView(FormView):
 
 @never_cache
 def logout(request, next_page=None,
-           template_name='auth/logged_out.html',
+           template_name='sso_auth/logged_out.html',
            redirect_field_name=REDIRECT_FIELD_NAME,
            current_app=None, extra_context=None):
     """

@@ -90,16 +90,6 @@ class OrganisationDetailView(OrganisationBaseView, DetailView):
     pass
 
 
-class MyOrganisationDetailView(OrganisationBaseView, DetailView):
-    """
-    View of the center the user belongs to.
-    """
-    template_name = "organisations/my_organisation_detail.html"
-
-    def get_object(self, queryset=None):
-        return self.request.user.organisations.first()
-
-
 class OrganisationDeleteView(OrganisationBaseView, DeleteView):
     def get_success_url(self):
         return reverse('organisations:organisation_list')
@@ -239,8 +229,12 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
         check if the user is a center, region or country admin for the center and save
         the result in admin_type
         """
-        user = self.request.user
         obj = super().get_object(queryset)
+        self.set_admin_type(obj)
+        return obj
+
+    def set_admin_type(self, obj):
+        user = self.request.user
         if obj.association in user.get_assignable_associations():
             self.admin_type = 'association'
         elif obj.organisation_country in user.get_assignable_organisation_countries():
@@ -249,7 +243,6 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
             self.admin_type = 'region'
         else:
             self.admin_type = 'center'
-        return obj
 
     def get_form_class(self):
         """
@@ -299,6 +292,16 @@ class OrganisationUpdateView(OrganisationBaseView, FormsetsUpdateView):
                 formsets += [email_alias_inline_formset]
 
         return formsets
+
+
+class MyOrganisationDetailView(OrganisationBaseView, DetailView):
+    """
+    View of the center the user belongs to.
+    """
+    template_name = "organisations/my_organisation_detail.html"
+
+    def get_object(self, queryset=None):
+        return self.request.user.organisations.first()
 
 
 class OrganisationSearchFilter(SearchFilter):

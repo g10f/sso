@@ -101,7 +101,7 @@ class U2FDevice(Device):
 
     @classmethod
     def detail_template(cls):
-        return 'auth/u2f/detail.html'
+        return 'sso_auth/u2f/detail.html'
 
     def challenges(self):
         u2f_devices = U2FDevice.objects.filter(user=self.user, confirmed=True)
@@ -119,7 +119,7 @@ class U2FDevice(Device):
 
     @property
     def login_form_templates(self):
-        return 'auth/u2f/verify.html'
+        return 'sso_auth/u2f/verify.html'
 
     @property
     def login_text(self):
@@ -206,7 +206,7 @@ class TOTPDevice(Device):
 
     @classmethod
     def detail_template(cls):
-        return 'auth/totp/detail.html'
+        return 'sso_auth/totp/detail.html'
 
     def challenges(self):
         return None
@@ -221,7 +221,7 @@ class TOTPDevice(Device):
 
     @property
     def login_form_templates(self):
-        return 'auth/totp/verify.html'
+        return 'sso_auth/totp/verify.html'
 
     @property
     def login_text(self):

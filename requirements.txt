@@ -18,4 +18,5 @@ requests
 celery
 python-u2flib-server
 pymemcache
+python-memcached
 gunicorn

@@ -1,0 +1,36 @@
+{% extends "base_form.html" %}
+{% load i18n %}
+
+{% block title %}{% translate 'Update Device' %}{% endblock %}
+
+{% block breadcrumb %}
+  <ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li><a href="{% url 'auth:mfa-detail' %}">{% translate 'Security' %}</a></li>
+    <li class="active">{% translate 'Update Device' %}</li>
+  </ol>
+{% endblock breadcrumb %}
+
+{% block form %}
+  <h1>{% translate 'Update Device' %}</h1>
+
+  <form class="form-horizontal" method="post">
+    <div class="form-group">
+      <label class="col-form-label">{% translate 'Type' %}</label>
+      <div class="g10f-form-control">
+        <div class="form-control-plaintext">{{ object.get_child.default_name }}</div>
+      </div>
+    </div>
+
+    {% include 'include/_form_boilerplate.html' %}
+    {% include 'include/_field.html' with field=form.name %}
+
+    <div class="form-group">
+      <div class="g10f-form-submit">
+        <button type="submit" class="btn btn-primary">{% translate 'Save' %}</button>
+      </div>
+    </div>
+
+  </form>
+
+{% endblock form %}

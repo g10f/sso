@@ -1,8 +1,8 @@
-{% extends "auth/verify_base.html" %}
+{% extends "sso_auth/verify_base.html" %}
 {% load i18n static %}
 
 {% block script %}
-  {% include 'auth/u2f/_jscript.html' %}
+  {% include 'sso_auth/u2f/_jscript.html' %}
   {% comment %}
   {% if display != 'popup' %}
     <script type="text/javascript" src="{% static "js/vendor/bs5/beta3/bootstrap.bundle.min.js" %}"></script>

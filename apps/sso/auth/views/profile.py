@@ -2,18 +2,17 @@ import json
 
 from u2flib_server import u2f
 
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse_lazy
-from django.views.generic import FormView
-from sso.auth.forms.profile import TOTPDeviceForm, ProfileForm, AddU2FForm
-from sso.auth.models import U2FDevice, Profile
-from sso.auth.utils import class_view_decorator, default_device, random_hex, get_device_classes
+from django.views.generic import FormView, UpdateView
+from sso.auth.forms.profile import TOTPDeviceForm, ProfileForm, AddU2FForm, DeviceUpdateForm
+from sso.auth.models import U2FDevice, Profile, Device
+from sso.auth.utils import default_device, random_hex, get_device_classes
 
 
-@class_view_decorator(login_required)
-class AddU2FView(FormView):
-    template_name = 'auth/u2f/add_device.html'
+class AddU2FView(LoginRequiredMixin, FormView):
+    template_name = 'sso_auth/u2f/add_device.html'
     form_class = AddU2FForm
     success_url = reverse_lazy('auth:mfa-detail')
     u2f_request = None
@@ -55,8 +54,7 @@ class AddU2FView(FormView):
         return initial
 
 
-@class_view_decorator(login_required)
-class DetailView(FormView):
+class DetailView(LoginRequiredMixin, FormView):
     """
     View used by users for managing two-factor configuration.
 
@@ -64,7 +62,7 @@ class DetailView(FormView):
     account. If two-factor is enabled, it also lists the primary verification
     method and backup verification methods.
     """
-    template_name = 'auth/detail.html'
+    template_name = 'sso_auth/detail.html'
     form_class = ProfileForm
     success_url = reverse_lazy('auth:mfa-detail')
 
@@ -97,9 +95,8 @@ class DetailView(FormView):
         return super().form_valid(form)
 
 
-@class_view_decorator(login_required)
-class AddTOTP(FormView):
-    template_name = 'auth/totp/add_device.html'
+class AddTOTP(LoginRequiredMixin, FormView):
+    template_name = 'sso_auth/totp/add_device.html'
     form_class = TOTPDeviceForm
     success_url = reverse_lazy('auth:mfa-detail')
 
@@ -118,3 +115,9 @@ class AddTOTP(FormView):
     def form_valid(self, form):
         form.save()
         return super().form_valid(form)
+
+
+class DeviceUpdateView(LoginRequiredMixin, UpdateView):
+    form_class = DeviceUpdateForm
+    model = Device
+    success_url = reverse_lazy('auth:mfa-detail')

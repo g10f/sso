@@ -3,11 +3,19 @@ from base64 import b32encode
 from binascii import unhexlify
 
 from django import forms
+from django.forms import ModelForm
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 from sso.auth.models import TOTPDevice, Profile, Device
 from sso.auth.utils import get_qrcode_data_url, totp_digits
 from sso.forms import bootstrap
+
+
+class DeviceUpdateForm(ModelForm):
+    class Meta:
+        model = Device
+        fields = ['name']
+        widgets = {'name': bootstrap.TextInput()}
 
 
 class CredentialSetupForm(forms.Form):
