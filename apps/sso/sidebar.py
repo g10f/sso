@@ -1,20 +1,32 @@
+from django.apps import apps
 from django.conf import settings
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from sso.auth.utils import get_device_classes
-from django.apps import apps
 
 
 def sidebar(request):
-    def set_active_item():
-        for item in sidebar_nav:
+    def set_active_item(menue):
+        # iterate menue and find the active menue item
+        # if the item is inside an submenue, the submeue is expanded and marked active
+        for item in menue:
             if 'submenue' in item:
-                for subitem in item['submenue']:
-                    if subitem['url'] == request.path:
-                        subitem['active'] = True
-                        item['active'] = True
-                        item['expanded'] = True
-                        return
+                if set_active_item(item['submenue']):
+                    item['active'] = True
+                    item['expanded'] = True
+                    return True
+            elif request.resolver_match.view_name in item['view_names']:
+                item['active'] = True
+                return True
+
+    def reverse_url(menue):
+        # reverse the 1. item in from view_names and add a 'url' attribute for creating
+        # the link in the menue. Could also be done in the view
+        for item in menue:
+            if 'submenue' in item:
+                reverse_url(item['submenue'])
+            else:
+                item['url'] = reverse(item['view_names'][0])
 
     def append_submenue(menue):
         if len(menue['submenue']) == 1:
@@ -29,12 +41,14 @@ def sidebar(request):
         return sidebar_nav
 
     if user.is_staff:
-        sidebar_nav.append({'url': reverse('admin:index'), 'icon': 'wrench', 'title': _('Administration')})
+        sidebar_nav.append({'view_names': ['admin:index'], 'icon': 'wrench', 'title': _('Administration')})
 
     # E-Mail submenue
     #################
-    email_list = {'url': reverse('emails:groupemail_list'), 'icon': 'list-task', 'title': _('Emails')}
-    email_create = {'url': reverse('emails:groupemail_create'), 'icon': 'plus', 'title': _('Add Email')}
+    email_list = {'view_names': ['emails:groupemail_list', 'emails:groupemail_detail', 'emails:groupemail_update', 'emails:emailforward_create',
+                                 'emails:emailforward_confirm_delete'],
+                  'icon': 'list-task', 'title': _('Emails')}
+    email_create = {'view_names': ['emails:groupemail_create'], 'icon': 'plus', 'title': _('Add Email')}
 
     email_submenue = {'name': 'emails', 'icon': 'envelope', 'title': _('E-Mails'), 'submenue': []}
     if settings.SSO_ORGANISATION_EMAIL_MANAGEMENT and user.is_groupemail_admin:
@@ -44,13 +58,17 @@ def sidebar(request):
 
     # Organisations submenue
     ########################
-    country_list = {'url': reverse('organisations:organisationcountry_list'), 'icon': 'list-task', 'title': _('Countries')}
-    region_list = {'url': reverse('organisations:adminregion_list'), 'icon': 'list-task', 'title': _('Regions')}
-    org_list = {'url': reverse('organisations:organisation_list'), 'icon': 'list-task', 'title': _('Organisations')}
-    country_create = {'url': reverse('organisations:organisationcountry_create'), 'icon': 'plus', 'title': _('Add Country')}
-    region_create = {'url': reverse('organisations:adminregion_create'), 'icon': 'plus', 'title': _('Add Region')}
-    org_create = {'url': reverse('organisations:organisation_create'), 'icon': 'plus', 'title': _('Add Organisation')}
-    my_org = {'url': reverse('organisations:my_organisation_detail'), 'icon': 'house', 'title': _('My Organisation')}
+    country_list = {'view_names': ['organisations:organisationcountry_list', 'organisations:organisationcountry_update',
+                                   'organisations:organisationcountry_detail'], 'icon': 'list-task', 'title': _('Countries')}
+    region_list = {'view_names': ['organisations:adminregion_list', 'organisations:adminregion_update', 'organisations:adminregion_detail'],
+                   'icon': 'list-task', 'title': _('Regions')}
+    org_list = {'view_names': ['organisations:organisation_list', 'organisations:organisation_update', 'organisations:organisation_delete',
+                               'organisations:organisation_detail', 'organisations:organisation_picture_update'],
+                'icon': 'list-task', 'title': _('Organisations')}
+    country_create = {'view_names': ['organisations:organisationcountry_create'], 'icon': 'plus', 'title': _('Add Country')}
+    region_create = {'view_names': ['organisations:adminregion_create'], 'icon': 'plus', 'title': _('Add Region')}
+    org_create = {'view_names': ['organisations:organisation_create'], 'icon': 'plus', 'title': _('Add Organisation')}
+    my_org = {'view_names': ['organisations:my_organisation_detail'], 'icon': 'house', 'title': _('My Organisation')}
     orgs_submenue = {'name': 'organisations', 'icon': 'house', 'title': _('Organisations'), 'submenue': []}
     if user.organisations.exists:
         orgs_submenue['submenue'].append(my_org)
@@ -72,12 +90,17 @@ def sidebar(request):
     no_reg = user.get_count_of_registrationprofiles()
     no_orgchg = user.get_count_of_organisationchanges()
     no_ext = user.get_count_of_extend_access()
-    registration_list = {'url': reverse('registration:user_registration_list'), 'icon': 'people', 'title': _('Registrations'), 'badge': no_reg}
-    user_list = {'url': reverse('accounts:user_list'), 'icon': 'people', 'title': _('Users')}
-    roles_list = {'url': reverse('accounts:app_admin_user_list'), 'icon': 'people', 'title': _('Roles')}
-    org_changes_list = {'url': reverse('accounts:organisationchange_list'), 'icon': 'arrow-left-right', 'title': _('Organisation Changes'), 'badge': no_orgchg}
-    access_req_list = {'url': reverse('access_requests:extend_access_list'), 'icon': 'folder-plus', 'title': _('Access Requests'), 'badge': no_ext}
-    user_create = {'url': reverse('accounts:add_user'), 'icon': 'person-plus', 'title': _('Add User')}
+    registration_list = {'view_names': ['registration:user_registration_list', 'registration:update_user_registration',
+                                        'registration:delete_user_registration', 'registration:process_user_registration'],
+                         'icon': 'people', 'title': _('Registrations'), 'badge': no_reg}
+    user_list = {'view_names': ['accounts:user_list', 'accounts:update_user', 'accounts:delete_user', 'accounts:organisation_detail',
+                                'accounts:organisation_picture_update'], 'icon': 'people', 'title': _('Users')}
+    roles_list = {'view_names': ['accounts:app_admin_user_list', 'accounts:app_admin_update_user'], 'icon': 'people', 'title': _('Roles')}
+    org_changes_list = {'view_names': ['accounts:organisationchange_list', 'accounts:organisationchange_accept'], 'icon': 'arrow-left-right',
+                        'title': _('Organisation Changes'), 'badge': no_orgchg}
+    access_req_list = {'view_names': ['access_requests:extend_access_list', 'access_requests:extend_access_accept', 'access_requests:process_access_request'],
+                       'icon': 'folder-plus', 'title': _('Access Requests'), 'badge': no_ext}
+    user_create = {'view_names': ['accounts:add_user'], 'icon': 'person-plus', 'title': _('Add User')}
 
     accounts_submenue = {'name': 'accounts', 'icon': 'people', 'title': _('Accounts'), 'submenue': []}
     if (settings.REGISTRATION.get('OPEN', True) or no_reg > 0) and user.has_perm('registration.change_registrationprofile'):
@@ -95,10 +118,11 @@ def sidebar(request):
 
     # my account items
     ##################
-    my_account = {'url': reverse('accounts:profile'), 'icon': 'person-circle', 'title': _('My Account')}
-    my_emails = {'url': reverse('accounts:emails'), 'icon': 'envelope', 'title': _('My Email Addresses')}
-    my_password = {'url': reverse('accounts:password_change'), 'icon': 'lock', 'title': _('Change password')}
-    my_security = {'url': reverse('auth:mfa-detail'), 'icon': 'shield-lock', 'title': _('Security')}
+    my_account = {'view_names': ['accounts:profile'], 'icon': 'person-circle', 'title': _('My Account')}
+    my_emails = {'view_names': ['accounts:emails'], 'icon': 'envelope', 'title': _('My Email Addresses')}
+    my_password = {'view_names': ['accounts:password_change'], 'icon': 'lock', 'title': _('Change password')}
+    my_security = {'view_names': ['auth:mfa-detail', 'auth:mfa-update', 'auth:totp_add_device', 'auth:u2f_add_device'],
+                   'icon': 'shield-lock', 'title': _('Security')}
 
     my_data_submenue = {'name': 'my-data', 'icon': 'person', 'title': _('Personal Data'), 'submenue': [my_account, my_password]}
 
@@ -112,6 +136,7 @@ def sidebar(request):
     append_submenue(accounts_submenue)
     append_submenue(my_data_submenue)
 
-    set_active_item()
+    set_active_item(sidebar_nav)
+    reverse_url(sidebar_nav)
 
     return sidebar_nav

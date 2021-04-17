@@ -35,6 +35,7 @@
                 {{ object.name }}
               </td>
               <td>
+                <a class="btn btn-default" href="{% url 'auth:mfa-update' object.id %}" role="button">{% translate 'Update' %}</a>
                 <button class="btn btn-danger" type="submit" name="delete" value="{{ object.id }}">{% translate 'Delete' %}</button>
                 {% if default_device != object %}
                   <button class="btn btn-outline-primary" type="submit" name="default" value="{{ object.id }}">{% translate 'Set as default' %}</button>

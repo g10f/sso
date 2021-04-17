@@ -3,7 +3,7 @@
 
 {% block script %}
   {{ block.super }}
-  {% include 'auth/u2f/_jscript.html' %}
+  {% include 'sso_auth/u2f/_jscript.html' %}
 {% endblock script %}
 
 {% block title %}{% translate 'Add U2F Device' %}{% endblock %}
