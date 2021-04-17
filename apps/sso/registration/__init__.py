@@ -3,9 +3,6 @@ from django.utils.text import capfirst
 from django.contrib.auth import get_user_model
 
 
-default_app_config = 'sso.registration.apps.RegistrationConfig'
-
-
 def remove(name, *args):
     for arg in args:
         name = name.replace(arg, "")
