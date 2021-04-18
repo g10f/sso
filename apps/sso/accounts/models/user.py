@@ -6,8 +6,7 @@ from sorl import thumbnail
 
 from current_user.models import CurrentUserField
 from django.conf import settings
-from django.contrib.auth.models import Permission, \
-    PermissionsMixin, AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import Permission, PermissionsMixin, AbstractBaseUser, BaseUserManager
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
