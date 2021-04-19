@@ -1,4 +1,5 @@
 import logging
+from base64 import b64encode, urlsafe_b64encode
 from datetime import timedelta
 
 from cryptography import x509
@@ -20,6 +21,7 @@ _ENCODING_KEYS = {'RS256': 'PRIVATE_KEY', 'HS256': 'SECRET_KEY'}
 _DECODING_KEYS = {'RS256': 'PUBLIC_KEY', 'HS256': 'SECRET_KEY'}
 _CACHE_KEY_LATEST_ENCODING_KEY = "latest_encoding_key_and_kid.{0}"
 _CACHE_KEY_SIGNING_CERTS = "signing_certs"
+_CACHE_KEY_SIGNING_CERTS_JWKS = "signing_certs_jwks"
 _CACHE_KEY_PUBLIC_KEYS = "public_keys"
 _CACHE_KEY_DEFAULT_SIGNING_CERT = "default_signing_cert"
 
@@ -48,7 +50,7 @@ def create_key(algorithm, default=True):
         subject = issuer = x509.Name([x509.NameAttribute(OID_COMMON_NAME, settings.SSO_DOMAIN)])
         cert_builder = x509.CertificateBuilder().subject_name(subject).issuer_name(issuer)
         cert_builder = cert_builder.not_valid_before(algorithm_obj.created_at).not_valid_after(
-            now() + timedelta(seconds=settings.SSO_SIGNING_KEYS_VALIDITY_PERIOD))
+            now() + timedelta(seconds=3 * settings.SSO_SIGNING_KEYS_VALIDITY_PERIOD))
         kid = algorithm_obj.uuid.hex
         cert = cert_builder.serial_number(int(kid, 16)).public_key(pub_key_obj).sign(key, hashes.SHA256())
         cert_value = force_str(cert.public_bytes(serialization.Encoding.PEM))
@@ -71,6 +73,7 @@ def create_key(algorithm, default=True):
 
     cache.delete(_CACHE_KEY_LATEST_ENCODING_KEY.format(algorithm))
     cache.delete(_CACHE_KEY_SIGNING_CERTS)
+    cache.delete(_CACHE_KEY_SIGNING_CERTS_JWKS)
     cache.delete(_CACHE_KEY_DEFAULT_SIGNING_CERT)
     cache.delete(_CACHE_KEY_PUBLIC_KEYS)
     logger.info(f"Created new {algorithm} key with kid {kid}")
@@ -139,6 +142,25 @@ def get_certs():
             name='CERTIFICATE').select_related('component').order_by('-component__created_at'))
 
     return cache.get_or_set(_CACHE_KEY_SIGNING_CERTS, _get_certs, settings.SSO_SIGNING_KEYS_VALIDITY_PERIOD)
+
+
+def get_certs_jwks():
+    # get the signing certs in jwks x5c format (base64 encoded DER-format)
+    # to get the cert in DER-format from this value with openssl use:
+    # openssl base64 -d -A -in x5c-file -out certificate.der
+    def _get_certs_jwks():
+        certs = {}
+        for cert in get_certs():
+            c = x509.load_pem_x509_certificate(cert.value.encode())
+            jwks_cert = {
+                'x5t': force_str(urlsafe_b64encode(c.fingerprint(hashes.SHA1()))),
+                'x5t#S256': force_str(urlsafe_b64encode(c.fingerprint(hashes.SHA256()))),
+                'x5c': force_str(b64encode(x509.load_pem_x509_certificate(cert.value.encode()).public_bytes(serialization.Encoding.DER)))
+            }
+            certs[cert.component.uuid.hex] = jwks_cert
+        return certs
+
+    return cache.get_or_set(_CACHE_KEY_SIGNING_CERTS_JWKS, _get_certs_jwks, settings.SSO_SIGNING_KEYS_VALIDITY_PERIOD)
 
 
 def get_default_encoding_key_and_kid(algorithm):
