@@ -4,6 +4,12 @@ from urllib.parse import urlparse, urlunparse, urlsplit, urlunsplit
 
 from jwt import InvalidTokenError
 from jwt.algorithms import RSAAlgorithm
+from oauthlib import oauth2
+from oauthlib.common import Request
+from oauthlib.common import urlencode, urlencoded, quote
+from oauthlib.oauth2.rfc6749.utils import scope_to_list
+from oauthlib.openid.connect.core.exceptions import LoginRequired
+from oauthlib.openid.connect.core.grant_types.exceptions import OIDCNoPrompt
 
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
@@ -21,12 +27,6 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.vary import vary_on_headers
 from django.views.generic import TemplateView
-from oauthlib import oauth2
-from oauthlib.common import Request
-from oauthlib.common import urlencode, urlencoded, quote
-from oauthlib.oauth2.rfc6749.utils import scope_to_list
-from oauthlib.openid.connect.core.exceptions import LoginRequired
-from oauthlib.openid.connect.core.grant_types.exceptions import OIDCNoPrompt
 from sso.api.response import JsonHttpResponse, same_origin
 from sso.api.views.generic import PreflightMixin
 from sso.auth.utils import is_recent_auth_time
@@ -35,7 +35,7 @@ from sso.middleware import revision_exempt
 from sso.utils.http import get_request_param
 from sso.utils.url import get_base_url
 from .crypt import loads_jwt
-from .keys import get_default_cert, get_public_keys, get_certs
+from .keys import get_public_keys, get_certs, get_certs_jwks
 from .models import Client
 from .oidc_server import oidc_server
 
@@ -149,6 +149,8 @@ class JwksView(PreflightMixin, View):
         """
         jwks_uri view (http://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata)
         """
+        certs = get_certs_jwks()
+
         rsa256 = RSAAlgorithm(RSAAlgorithm.SHA256)
         keys = []
         for pub_key in get_public_keys():
@@ -157,6 +159,8 @@ class JwksView(PreflightMixin, View):
             key["kid"] = pub_key.component.uuid.hex
             key["alg"] = pub_key.component.name
             key["use"] = "sig"
+            if pub_key.component.uuid.hex in certs:
+                key.update(certs[pub_key.component.uuid.hex])
             keys.append(key)
         data = {'keys': keys}
         return JsonHttpResponse(data, request, allow_jsonp=True, public_cors=True)
