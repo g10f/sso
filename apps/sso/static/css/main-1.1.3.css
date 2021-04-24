@@ -299,6 +299,7 @@ aside + section .g10f-centered {
 
 footer > div > ul {
   margin-top: 1rem;
+  margin-left: 0;
 }
 footer > div > ul > li {
   display: inline;
@@ -11340,4 +11341,4 @@ textarea.form-control-lg {
   }
 }
 
-/*# sourceMappingURL=main-1.1.2.css.map */
+/*# sourceMappingURL=main-1.1.3.css.map */
