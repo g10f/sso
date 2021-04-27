@@ -134,7 +134,7 @@ class OpenidConfigurationView(PreflightMixin, View):
             "end_session_endpoint": '%s%s' % (base_uri, reverse('auth:logout')),
             "introspection_endpoint": '%s%s' % (base_uri, reverse('oauth2:introspect')),
             "check_session_iframe": '%s%s' % (base_uri, reverse('oauth2:session')),
-            "certs_uri": '%s%s' % (base_uri, reverse('oauth2:certs')),
+            # "certs_uri": '%s%s' % (base_uri, reverse('oauth2:certs')),
             "profile_uri": '%s%s' % (base_uri, reverse('accounts:profile')),
         }
         if settings.SSO_SERVICE_DOCUMENTATION:
