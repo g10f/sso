@@ -406,16 +406,18 @@ def approval(request):
 def client_details(request, object_id):
     client = get_object_or_404(Client, pk=object_id)
     data = {
-        "auth_uri": request.build_absolute_uri(reverse('oauth2:authorize')),
         "client_secret": client.client_secret,
-        "token_uri": request.build_absolute_uri(reverse('oauth2:token')),
-        "redirect_uris": [uri for uri in client.redirect_uris.split()],
         "application_id": client.application.uuid.hex if client.application else None,
         "client_id": client.uuid.hex,
-        "auth_provider_x509_cert_url": request.build_absolute_uri(reverse('oauth2:certs')),
-        "userinfo_uri": request.build_absolute_uri(reverse('api:v1_users_me')),
-        "logout_uri": request.build_absolute_uri(reverse('auth:logout')),
+        "scopes": client.scopes,
+        "force_using_pkce": client.force_using_pkce,
+        "redirect_uris": [uri for uri in client.redirect_uris.split()],
+        "post_logout_redirect_uris": [uri for uri in client.post_logout_redirect_uris.split()],
+        "type": client.type,
     }
+    if client.user:
+        data['user_id'] = client.user.uuid.hex
+
     return JsonHttpResponse(data, request)
 
 
