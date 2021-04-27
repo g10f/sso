@@ -1,0 +1,25 @@
+{% load i18n admin_urls %}
+
+{% block object-tools-items %}
+  <script>{
+      const $ = django.jQuery;
+      $(document).ready(function () {
+          const $ = django.jQuery;
+          $('#clear_signing_keys_cache').click(function (event) {
+              event.preventDefault();
+              $.get($(this).attr('href'));
+          });
+      });
+  }</script>
+  <li>
+    <a id="clear_signing_keys_cache" href="{% url 'admin:clear_signing_keys_cache' %}">{% translate 'Clear signing keys cache' %}</a>
+  </li>
+  {% if has_add_permission %}
+    <li>
+      {% url cl.opts|admin_urlname:'add' as add_url %}
+      <a href="{% add_preserved_filters add_url is_popup to_field %}" class="addlink">
+        {% blocktranslate with cl.opts.verbose_name as name %}Add {{ name }}{% endblocktranslate %}
+      </a>
+    </li>
+  {% endif %}
+{% endblock %}

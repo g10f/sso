@@ -26,57 +26,85 @@ _CACHE_KEY_PUBLIC_KEYS = "public_keys"
 _CACHE_KEY_DEFAULT_SIGNING_CERT = "default_signing_cert"
 
 
+def clear_cache(algorithm=None):
+    if algorithm is None:
+        for algorithm in ['RS256', 'HS256']:
+            clear_cache(algorithm)
+    else:
+        cache.delete(_CACHE_KEY_LATEST_ENCODING_KEY.format(algorithm))
+        if algorithm == 'RS256':
+            cache.delete(_CACHE_KEY_SIGNING_CERTS)
+            cache.delete(_CACHE_KEY_SIGNING_CERTS_JWKS)
+            cache.delete(_CACHE_KEY_DEFAULT_SIGNING_CERT)
+            cache.delete(_CACHE_KEY_PUBLIC_KEYS)
+
+
+def create_rs_key(algorithm_obj):
+    # create a new private key
+    key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    value = force_str(key.private_bytes(encoding=serialization.Encoding.PEM,
+                                        format=serialization.PrivateFormat.PKCS8,
+                                        encryption_algorithm=serialization.NoEncryption()))
+
+    # get the public key
+    pub_key_obj = key.public_key()
+    pub_value = force_str(pub_key_obj.public_bytes(encoding=serialization.Encoding.PEM,
+                                                   format=serialization.PublicFormat.SubjectPublicKeyInfo))
+    ComponentConfig.objects.create(component=algorithm_obj, name=_DECODING_KEYS[algorithm_obj.name], value=pub_value)
+
+    # create the certificate
+    subject = issuer = x509.Name([x509.NameAttribute(OID_COMMON_NAME, settings.SSO_DOMAIN)])
+    cert_builder = x509.CertificateBuilder().subject_name(subject).issuer_name(issuer)
+    cert_builder = cert_builder.not_valid_before(algorithm_obj.created_at).not_valid_after(
+        now() + timedelta(seconds=3 * settings.SSO_SIGNING_KEYS_VALIDITY_PERIOD))
+    kid = algorithm_obj.uuid.hex
+    cert = cert_builder.serial_number(int(kid, 16)).public_key(pub_key_obj).sign(key, hashes.SHA256())
+    cert_value = force_str(cert.public_bytes(serialization.Encoding.PEM))
+    ComponentConfig.objects.create(component=algorithm_obj, name='CERTIFICATE', value=cert_value)
+    return value
+
+
 @transaction.atomic
-def create_key(algorithm, default=True):
+def create_key(algorithm, rotate=True):
     algorithm_obj = Component.objects.create(name=algorithm)
     name = _ENCODING_KEYS[algorithm]
 
+    # create a new private key
     if algorithm == 'HS256':
         value = get_random_secret_key()
     elif algorithm == 'RS256':
-        # create a new private key
-        key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
-        value = force_str(key.private_bytes(encoding=serialization.Encoding.PEM,
-                                            format=serialization.PrivateFormat.PKCS8,
-                                            encryption_algorithm=serialization.NoEncryption()))
-
-        # get the public key
-        pub_key_obj = key.public_key()
-        pub_value = force_str(pub_key_obj.public_bytes(encoding=serialization.Encoding.PEM,
-                                                       format=serialization.PublicFormat.SubjectPublicKeyInfo))
-        ComponentConfig.objects.create(component=algorithm_obj, name=_DECODING_KEYS[algorithm], value=pub_value)
-
-        # create the certificate
-        subject = issuer = x509.Name([x509.NameAttribute(OID_COMMON_NAME, settings.SSO_DOMAIN)])
-        cert_builder = x509.CertificateBuilder().subject_name(subject).issuer_name(issuer)
-        cert_builder = cert_builder.not_valid_before(algorithm_obj.created_at).not_valid_after(
-            now() + timedelta(seconds=3 * settings.SSO_SIGNING_KEYS_VALIDITY_PERIOD))
-        kid = algorithm_obj.uuid.hex
-        cert = cert_builder.serial_number(int(kid, 16)).public_key(pub_key_obj).sign(key, hashes.SHA256())
-        cert_value = force_str(cert.public_bytes(serialization.Encoding.PEM))
-        ComponentConfig.objects.create(component=algorithm_obj, name='CERTIFICATE', value=cert_value)
+        value = create_rs_key(algorithm_obj)
     else:
         raise ValueError(f'algorithm {algorithm} not supported')
 
     key_obj = ComponentConfig.objects.create(component=algorithm_obj, name=name, value=value)
-    kid = key_obj.component.uuid.hex
     ComponentConfig.objects.create(component=algorithm_obj, name='ACTIVE', value='True')
-    if default:
-        # delete previous DEFAULT value
-        ComponentConfig.objects.create(component=algorithm_obj, name='DEFAULT', value='True')
-        ComponentConfig.objects.filter(component__name=algorithm, name='DEFAULT', value='True').exclude(
-            component=algorithm_obj).delete()
 
-    # delete old ḱeys
-    for component in Component.objects.filter(name=algorithm).order_by('-created_at')[3:]:
+    active_algos = Component.objects.filter(name=algorithm, componentconfig__name='ACTIVE', componentconfig__value='True').order_by('-created_at')
+    # rotate signing keys
+    if rotate:
+        # if there are more than 1 ACTIVE set the 2-nd ACTIVE as the default
+        if active_algos.count() > 1:
+            default_algo = active_algos[1]
+        else:
+            default_algo = algorithm_obj
+
+        # create new default
+        ComponentConfig.objects.update_or_create(component=default_algo, name='DEFAULT', defaults={'value': 'True'})
+        # and delete previous DEFAULT value
+        ComponentConfig.objects.filter(component__name=algorithm, name='DEFAULT', value='True').exclude(component=default_algo).delete()
+
+    # keep only 3 keys active
+    for component in active_algos[3:]:
+        ComponentConfig.objects.filter(component=component, name='ACTIVE').delete()
+
+    # delete old inactive ḱeys
+    inactive_algos = Component.objects.filter(name=algorithm).exclude(componentconfig__name='ACTIVE', componentconfig__value='True').order_by('-created_at')
+    for component in inactive_algos[3:]:
         component.delete()
 
-    cache.delete(_CACHE_KEY_LATEST_ENCODING_KEY.format(algorithm))
-    cache.delete(_CACHE_KEY_SIGNING_CERTS)
-    cache.delete(_CACHE_KEY_SIGNING_CERTS_JWKS)
-    cache.delete(_CACHE_KEY_DEFAULT_SIGNING_CERT)
-    cache.delete(_CACHE_KEY_PUBLIC_KEYS)
-    logger.info(f"Created new {algorithm} key with kid {kid}")
+    clear_cache(algorithm)
+    logger.info(f"Created new {algorithm} key with kid {key_obj.component.uuid.hex}")
     return key_obj
 
 
@@ -126,8 +154,7 @@ def get_default_cert():
                 componentconfig__value='True'),
             name='CERTIFICATE').select_related('component').order_by('-component__created_at')[0]
 
-    return cache.get_or_set(_CACHE_KEY_DEFAULT_SIGNING_CERT, _get_default_cert,
-                            settings.SSO_SIGNING_KEYS_VALIDITY_PERIOD)
+    return cache.get_or_set(_CACHE_KEY_DEFAULT_SIGNING_CERT, _get_default_cert, settings.SSO_SIGNING_KEYS_VALIDITY_PERIOD)
 
 
 def get_certs():
