@@ -209,7 +209,7 @@ class SetPictureAndPasswordForm(SetPasswordForm):
 
     def __init__(self, user, *args, **kwargs):
         super().__init__(user, *args, **kwargs)
-        if not user.picture:
+        if user and not user.picture:
             self.fields['picture'] = forms.ImageField(label=_('Profile picture'), widget=bootstrap.ImageWidget())
 
     def clean_picture(self):
