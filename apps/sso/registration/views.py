@@ -137,7 +137,7 @@ class UserRegistrationList(ListView):
         return super().dispatch(request, *args, **kwargs)
 
     def get_queryset(self):
-        qs = super().get_queryset() \
+        qs = RegistrationProfile.objects.get_not_expired() \
             .prefetch_related('user__organisations', 'user__organisations__organisation_country__country',
                               'user__useraddress_set', 'user__useraddress_set__country', 'user__useremail_set') \
             .filter(user__is_active=False, is_validated=True, user__last_login__isnull=True)
