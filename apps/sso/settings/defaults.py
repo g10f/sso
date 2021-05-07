@@ -123,15 +123,6 @@ DATABASES = {
     },
 }
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',
-        'LOCATION': '127.0.0.1:11211',
-        'TIMEOUT': 300,
-        'KEY_PREFIX': 'sso'
-    }
-}
-
 TIME_ZONE = 'Europe/Berlin'
 LANGUAGE_CODE = 'en-us'
 
@@ -258,8 +249,7 @@ REGISTRATION = {
 
 # with AWS SES e.g can only send from verified emails
 # https://docs.aws.amazon.com/ses/latest/DeveloperGuide/verify-addresses-and-domains.html
-SSO_SEND_FROM_VERIFIED_EMAIL_ADDRESSES = '%s|%s|%s' % \
-                                         (DEFAULT_FROM_EMAIL, SSO_NOREPLY_EMAIL, REGISTRATION['CONTACT_EMAIL'])
+SSO_SEND_FROM_VERIFIED_EMAIL_ADDRESSES = '%s|%s|%s' % (DEFAULT_FROM_EMAIL, SSO_NOREPLY_EMAIL, REGISTRATION['CONTACT_EMAIL'])
 
 SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error', 'admin.E408', 'admin.E410']
 

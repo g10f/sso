@@ -124,16 +124,13 @@ class RegistrationManager(models.Manager):
     @classmethod
     def expired_q(cls):
         """
-        If the user is marked with is_access_denied, we don't delete the user, so that the user can not register with
-        the same email. Users who don't complete the email validation in TOKEN_EXPIRATION_DAYS or did not activated by
+        Users who don't complete the email validation in TOKEN_EXPIRATION_DAYS or did not activated by
         an admin in ACTIVATION_EXPIRATION_DAYS will be deleted.
         """
         # Users who didn't validate there email in the token_expiration_date
-        q = Q(user__is_active=False) & Q(is_validated=False) & Q(date_registered__lte=cls.token_expiration_date()) & Q(
-            is_access_denied=False) & Q(user__last_login__isnull=True)
+        q = Q(user__is_active=False) & Q(is_validated=False) & Q(date_registered__lte=cls.token_expiration_date()) & Q(user__last_login__isnull=True)
         # Users who where not activated in activation_expiration_date
-        q = q | (Q(user__is_active=False) & Q(date_registered__lte=cls.activation_expiration_date())) & Q(
-            is_access_denied=False) & Q(user__last_login__isnull=True)
+        q = q | (Q(user__is_active=False) & Q(date_registered__lte=cls.activation_expiration_date())) & Q(user__last_login__isnull=True)
         return q
 
     def get_expired(self):
@@ -157,7 +154,7 @@ class RegistrationManager(models.Manager):
     @classmethod
     def delete_expired_users(cls):
         num_deleted = 0
-        for profile in RegistrationProfile.objects.get_expired():
+        for profile in RegistrationProfile.objects.get_expired().filter(user__is_stored_permanently=False):
             profile.user.delete()
             num_deleted += 1
         return num_deleted

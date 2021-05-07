@@ -115,7 +115,7 @@ class RegistrationAdmin(admin.ModelAdmin):
 
     def delete_expired(self, request, queryset):
         expired_profiles = queryset.filter(
-            id__in=RegistrationProfile.objects.get_expired().values_list('id', flat=True))
+            id__in=RegistrationProfile.objects.get_expired().filter(user__is_stored_permanently=False).values_list('id', flat=True))
         changecount = expired_profiles.count()
         for profile in expired_profiles:
             profile.user.delete()
