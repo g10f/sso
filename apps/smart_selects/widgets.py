@@ -22,7 +22,7 @@ class ChainedSelect(Select):
         if attrs is None:
             attrs = {}
         css_classes = attrs.get('class', '').split()
-        css_classes.append('form-control')
+        css_classes.append('form-select')
         attrs['class'] = ' '.join(css_classes)
         super().__init__(attrs, *args, **kwargs)
 

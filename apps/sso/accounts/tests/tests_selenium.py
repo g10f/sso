@@ -388,7 +388,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         gender.send_keys(new_gender)
 
         required_extra_fields = self.selenium.find_elements_by_xpath(
-            '//span[@class="user-extra-form-fields"]//node()[@class="form-control" and @required]')
+            '//span[@class="user-extra-form-fields"]//node()[@class="form-select" and @required]')
         for required_extra_field in required_extra_fields:
             if required_extra_field.tag_name == 'select':
                 # select the first option with a non empty value

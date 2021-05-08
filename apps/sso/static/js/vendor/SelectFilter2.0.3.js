@@ -24,7 +24,7 @@ copy from django admin
             }
             var from_box = document.getElementById(field_id);
             from_box.id += '_from'; // change its ID
-            from_box.className = 'filtered form-control';
+            from_box.className = 'filtered form-select';
 
             var ps = from_box.parentNode.getElementsByTagName('div');
             var selector_div = quickElement('div', from_box.parentNode);
@@ -65,7 +65,7 @@ copy from django admin
 
             var filter_input = quickElement('input', filter_p, '', 'type', 'text', 'placeholder', gettext("Filter"));
             filter_input.id = field_id + '_input';
-            filter_input.className = "form-control";
+            filter_input.className = "form-select";
 
             selector_available.appendChild(from_box);
             var choose_all = quickElement('a', selector_available, gettext('Choose all') + ' ', 'title', interpolate(gettext('Click to choose all %s at once.'), [field_name]), 'href', '#', 'id', field_id + '_add_all_link');
@@ -98,7 +98,7 @@ copy from django admin
             var tooltip = new bootstrap.Tooltip(help)
 
             var to_box = quickElement('select', selector_chosen, '', 'id', field_id + '_to', 'multiple', 'multiple', 'size', from_box.size, 'name', from_box.getAttribute('name'));
-            to_box.className = 'filtered form-control';
+            to_box.className = 'filtered form-select';
             var clear_all = quickElement('a', selector_chosen, ' ' + gettext('Remove all'), 'title', interpolate(gettext('Click to remove all chosen %s at once.'), [field_name]), 'href', '#', 'id', field_id + '_remove_all_link');
             clear_all.className = 'selector-clearall';
 

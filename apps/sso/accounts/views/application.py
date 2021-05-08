@@ -355,8 +355,7 @@ def add_user(request, template='accounts/application/add_user_form.html'):
             if redirect_uri:
                 success_url = redirect_uri
             else:
-                success_url = urlunsplit(('', '', reverse('accounts:add_user_done', args=[user.uuid.hex]),
-                                          request.GET.urlencode(safe='/'), ''))
+                success_url = urlunsplit(('', '', reverse('accounts:add_user_done', args=[user.uuid.hex]), request.GET.urlencode(safe='/'), ''))
             return HttpResponseRedirect(success_url)
     else:
         initial = {}
