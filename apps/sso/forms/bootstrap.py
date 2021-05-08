@@ -111,11 +111,14 @@ class Textarea(Widget, forms.Textarea):
     pass
 
 
-class Select(Widget, forms.Select):
-    pass
+class Select(forms.Select):
+    def __init__(self, attrs=None, **kwargs):
+        # add form-control class
+        new_attrs = add_class_to_attr(attrs, 'form-select')
+        super().__init__(new_attrs, **kwargs)
 
 
-class Select2(Widget, forms.Select):
+class Select2(forms.Select):
     class Media:
         css = {
             'all': ('css/select2-4.0.13.min.css', 'css/select2-bootstrap4.min.css')
@@ -124,12 +127,15 @@ class Select2(Widget, forms.Select):
 
     def __init__(self, attrs=None, **kwargs):
         # add select2 class
-        new_attrs = add_class_to_attr(attrs, 'select2')
+        new_attrs = add_class_to_attr(attrs, 'form-select select2')
         super().__init__(new_attrs, **kwargs)
 
 
-class SelectMultiple(Widget, forms.SelectMultiple):
-    pass
+class SelectMultiple(forms.SelectMultiple):
+    def __init__(self, attrs=None, **kwargs):
+        # add form-control class
+        new_attrs = add_class_to_attr(attrs, 'form-select')
+        super().__init__(new_attrs, **kwargs)
 
 
 class SelectMultipleWithCurrently(SelectMultiple):
@@ -161,7 +167,7 @@ class SelectDateWidget(widgets.SelectDateWidget):
         a = attrs.copy() if attrs else {}
         # add bootstrap form-control css class
         css_classes = a.get('class', '').split()
-        css_classes.append('form-control')
+        css_classes.append('form-select')
         a['class'] = ' '.join(css_classes)
         super().__init__(attrs=a, years=years, months=months, empty_label=empty_label)
 
@@ -187,14 +193,13 @@ class FilteredSelectMultiple(forms.SelectMultiple):
         js = (
             'vendor/core.js',
             'vendor/SelectBox.js',
-            'vendor/SelectFilter2.0.2.js',
+            'vendor/SelectFilter2.0.3.js',
             'formsets-1.3.js'
         )
         return forms.Media(js=["js/%s" % path for path in js])
 
     def __init__(self, verbose_name, attrs=None, choices=()):
-        new_attrs = add_class_to_attr(attrs, 'form-control')
-        new_attrs = add_class_to_attr(new_attrs, 'selectfilter')
+        new_attrs = add_class_to_attr(attrs, 'selectfilter')
         new_attrs['data-field-name'] = verbose_name
         super().__init__(new_attrs, choices)
 
