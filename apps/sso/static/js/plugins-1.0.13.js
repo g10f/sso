@@ -126,21 +126,23 @@ function showTab(selector) {
         var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
             return new bootstrap.Popover(popoverTriggerEl)
         });
+        var theme = "bootstrap4";
         $("select.select2").each(function () {
-            $('.select2').select2({
-                theme: "bootstrap-5",
+            $(this).select2({
+                theme: theme,
                 width: $(this).data("width") ? $(this).data("width") : $(this).hasClass("w-100") ? "100%" : "style",
                 closeOnSelect: !$(this).attr("multiple")
             });
-            $(':not(form) .select2').select2({theme: "bootstrap-5"});
-            $(':not(form) .select2').on('select2:select', function (e) {
-                var data = e.params.data;
-                if ($(data.element).data('url')) {
-                    window.location = $(data.element).data('url');
-                }
-            });
+            // check if this is a select box inside a nav-item
+            if ($(this).parents(".nav-item").length === 1) {
+                $(this).on('select2:select', function (e) {
+                    var data = e.params.data;
+                    if ($(data.element).data('url')) {
+                        window.location = $(data.element).data('url');
+                    }
+                });
+            }
         });
-
         $('form:has(.tab-pane)').find('[type="submit"]').click(function () {
             $('input:invalid, select:invalid').each(function () {
                 // Find the tab-pane that this element is inside, and get the id
