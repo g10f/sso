@@ -45,7 +45,7 @@ class OrganisationPictureForm(BaseStackedInlineForm):
 class OrganisationAddressForm(BaseForm):
     # Select2 does not work with StackedInlineForm
     country = ModelChoiceField(queryset=Country.objects.filter(active=True), required=True,
-                               label=_("Country"), widget=bootstrap.Select(), to_field_name="iso2_code")
+                               label=_("Country"), widget=bootstrap.Select2(), to_field_name="iso2_code")
 
     class Meta:
         model = OrganisationAddress

@@ -367,7 +367,7 @@ class AddressForm(BaseStackedInlineForm):
             'city': bootstrap.TextInput(attrs={'size': 50}),
             'city_native': bootstrap.TextInput(attrs={'size': 50}),
             'postal_code': bootstrap.TextInput(attrs={'size': 50}),
-            'country': bootstrap.Select(),  # Select2 does not work with StackedInlineForm
+            'country': bootstrap.Select2(),
             'region': bootstrap.TextInput(attrs={'size': 50}),
         }
 
