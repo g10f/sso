@@ -1,7 +1,9 @@
 {
   "dependencies": {
+    "@ttskch/select2-bootstrap4-theme": "^1.5.2",
     "bootstrap": "^5.0.0",
     "bootstrap-icons": "^1.4.1",
-    "jquery": "^3.6.0"
+    "jquery": "^3.5.1",
+    "select2-bootstrap-5-theme": "^1.1.1"
   }
 }
