@@ -1,0 +1,14 @@
+@import "brand";
+
+// Required
+@import "../node_modules/bootstrap/scss/functions";
+@import "../node_modules/bootstrap/scss/variables";
+
+// Include custom variable before mixins and utils
+@import "variables";
+
+@import "../node_modules/bootstrap/scss/mixins";
+
+// select2
+@import "../node_modules/select2/src/scss/core";
+@import "../node_modules/select2-bootstrap-5-theme/src/include-all";

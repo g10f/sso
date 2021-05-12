@@ -121,13 +121,13 @@ class Select(forms.Select):
 class Select2(forms.Select):
     class Media:
         css = {
-            'all': ('css/4.1.0-rc.0/select2.min.css', 'css/1.5.2/select2-bootstrap4.min.css')
+            'all': ('css/select2-1.0.0.min.css', )
         }
         js = ('js/vendor/4.1.0-rc.0/select2.min.js', )
 
     def __init__(self, attrs=None, **kwargs):
         # add select2 class
-        new_attrs = add_class_to_attr(attrs, 'select2 form-select')
+        new_attrs = add_class_to_attr(attrs, 'select2 form-select w-100')
         super().__init__(new_attrs, **kwargs)
 
 

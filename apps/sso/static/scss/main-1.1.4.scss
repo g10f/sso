@@ -1,7 +1,4 @@
-$font-size-base: .875rem;
-$brand: #003366;
-$brand-light: #009ee0;
-$brand-red:#e10000;
+@import "brand";
 
 // Required
 @import "../node_modules/bootstrap/scss/functions";
