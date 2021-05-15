@@ -3,20 +3,9 @@
 
 {% block style %}
   <link rel="stylesheet" href="{% static stylesheet %}">
-  {% comment %}
-  {% if display != 'popup' %}
-    <link rel="stylesheet" href="{% static "css/bootstrap-icons-5.0.0.css" %}">
-  {% endif %}
-  {% endcomment %}
 {% endblock style %}
 
-{% block script %}
-  {% comment %}
-  {% if display != 'popup' %}
-  <script type="text/javascript" src="{% static "js/vendor/bs5/beta3/bootstrap.bundle.min.js" %}"></script>
-  {% endif %}
-{% endcomment %}
-{% endblock %}
+{% block script %}{% endblock %}
 
 {% block title %}{% translate 'Login' %}{% endblock %}
 

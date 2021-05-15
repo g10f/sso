@@ -121,7 +121,7 @@ class Select(forms.Select):
 class Select2(forms.Select):
     class Media:
         css = {
-            'all': ('css/select2-1.0.0.min.css', )
+            'all': ('css/select2-1.0.1.min.css', )
         }
         js = ('js/vendor/4.1.0-rc.0/select2.min.js', )
 
