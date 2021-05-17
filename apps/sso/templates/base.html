@@ -14,11 +14,6 @@
     <link href="{% static stylesheet %}" rel="stylesheet">
     <link href="{% static "font/1.5.0/bootstrap-icons.css" %}" rel="stylesheet">
   {% endblock style %}
-  {% block script %}
-    <script src="{% static "js/vendor/3.5.1/jquery.min.js" %}"></script>
-    <script src="{% static "js/vendor/5.0.1/bootstrap.bundle.min.js" %}"></script>
-    <script src="{% static "js/plugins-1.0.14.js" %}"></script>
-  {% endblock script %}
 </head>
 <body class="{% block bodyclass %}h-100 d-flex flex-column{% endblock %}">
 
@@ -36,11 +31,11 @@
 
       {% block content %}
         <main class="{% block mainclass %}{% endblock %}">
-        {% if user.is_authenticated %}
-          <aside>
-            {% block left_content %}{% include 'include/_sidebar.html' %}{% endblock left_content %}
-          </aside>
-        {% endif %}
+          {% if user.is_authenticated %}
+            <aside>
+              {% block left_content %}{% include 'include/_sidebar.html' %}{% endblock left_content %}
+            </aside>
+          {% endif %}
           <section>
             {% block right_content %}<h1>{% translate 'Home' %}</h1>{% endblock %}
           </section>
@@ -66,5 +61,10 @@
   {% endblock body %}
 {% endwith %}
 {% show_tracker %}
+{% block script %}
+  <script src="{% static "js/vendor/3.5.1/jquery.min.js" %}"></script>
+  <script src="{% static "js/vendor/5.0.1/bootstrap.bundle.min.js" %}"></script>
+  <script src="{% static "js/plugins-1.0.14.js" %}"></script>
+{% endblock script %}
 </body>
 </html>
