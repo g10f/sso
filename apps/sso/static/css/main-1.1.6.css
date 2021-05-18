@@ -307,10 +307,7 @@ footer > div > ul > li {
 }
 
 .sign-in section {
-  margin-top: 4rem;
-}
-.sign-in.popup section {
-  margin-bottom: 2rem;
+  margin-top: 1rem;
 }
 
 .sign-in-form {
@@ -11339,4 +11336,4 @@ textarea.form-control-lg {
   }
 }
 
-/*# sourceMappingURL=main-1.1.5.css.map */
+/*# sourceMappingURL=main-1.1.6.css.map */

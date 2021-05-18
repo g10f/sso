@@ -22,12 +22,15 @@
   <div class="{% block containerclass %}{{ block.super }}{% endblock %}">
     <main>
       <section>
-        <div class="text-center mb-3">
-          <a class="sso-logo" href="{% url 'home' %}" title="{{ brand }}" aria-label="{{ brand }}" role="banner">
-            <img height="90px" src="/static/ico/apple-touch-icon.png" alt="SSO Logo">
-          </a>
-        </div>
-      {% block content %}{% endblock %}</section>
+        {% block logo %}
+          <div class="text-center mb-3">
+            <a class="sso-logo" href="{% url 'home' %}" title="{{ brand }}" aria-label="{{ brand }}" role="banner">
+              <img height="60px" src="/static/ico/apple-touch-icon.png" alt="SSO Logo">
+            </a>
+          </div>
+        {% endblock logo %}
+        {% block content %}{% endblock %}
+      </section>
     </main>
   </div>
   {% if display != 'popup' %}
