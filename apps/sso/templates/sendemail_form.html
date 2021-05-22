@@ -14,8 +14,8 @@
     {% endblock messages %}
     {% with fullname=form.instance.user.get_full_name picture=form.instance.user.picture %}
       <h3>{% blocktranslate %}Email Message to {{ fullname }}{% endblocktranslate %}
-        {% if picture %}{% thumbnail picture "60x60" crop="center" as im %}
-          <img class="rounded" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">
+        {% if picture %}{% thumbnail picture "120x120" crop="center" as im %}
+          <img class="rounded" src="{{ im.url }}" width="{% widthratio im.width 100 50 %}" height="{% widthratio im.height 100 50 %}">
         {% endthumbnail %}{% endif %}
       </h3>
     {% endwith %}

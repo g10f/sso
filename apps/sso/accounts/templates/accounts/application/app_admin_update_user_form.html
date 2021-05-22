@@ -20,8 +20,8 @@
     <div class="row mb-3">
       {% if form.user.picture %}
         <div class="col-lg-5 col-xl-4">
-          {% thumbnail form.user.picture "240x240" crop="center" as im %}
-            <img class="rounded" alt="{{ form.user.get_full_name }}" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}">{% endthumbnail %}
+          {% thumbnail form.user.picture "480x480" crop="center" as im %}
+            <img class="rounded" alt="{{ form.user.get_full_name }}" src="{{ im.url }}" width="{% widthratio im.width 100 50 %}" height="{% widthratio im.height 100 50 %}">{% endthumbnail %}
         </div>
       {% endif %}
       <div class="{% if form.user.picture %}col-lg-7 col-xl-8{% else %}col-12{% endif %}">

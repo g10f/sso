@@ -54,8 +54,8 @@
               </td>
               <td>
                 {% if user_obj.picture %}<a href="{{ user_obj.picture.url }}">
-                  {% thumbnail user_obj.picture "30x30" crop="center" as im %}
-                    <img class="rounded g10f-icon-user" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="">{% endthumbnail %}</a>{% endif %}
+                  {% thumbnail user_obj.picture "60x60" crop="center" as im %}
+                    <img class="rounded g10f-icon-user" src="{{ im.url }}" width="{% widthratio im.width 100 50 %}" height="{% widthratio im.height 100 50 %}" alt="">{% endthumbnail %}</a>{% endif %}
               </td>
               <td>{{ user_obj.last_name }}</td>
               <td>
