@@ -26,8 +26,8 @@
     {% for org_pic in object.organisationpicture_set.all %}
       <div class="col-sm-6 col-lg-5 col-xl-4">
         <figure class="text-center">
-          <a href="{{ org_pic.picture.url }}">{% thumbnail org_pic.picture "240x240" crop="center" as im %}
-            <img class="img-fluid rounded" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}"
+          <a href="{{ org_pic.picture.url }}">{% thumbnail org_pic.picture "480x480" crop="center" as im %}
+            <img class="img-fluid rounded" src="{{ im.url }}" width="{% widthratio im.width 100 50 %}" height="{% widthratio im.height 100 50 %}"
                  alt="">{% endthumbnail %}</a>
           <figcaption class="figure-caption">{% if org_pic.title %}
             <div class="fs-6">{{ org_pic.title }}</div>{% endif %}{{ org_pic.description }}</figcaption>

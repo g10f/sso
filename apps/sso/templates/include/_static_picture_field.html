@@ -3,8 +3,8 @@
   <label class="col-form-label">{% translate 'picture' %}</label>
   <div class="g10f-form-control">
     {% if field %}
-      {% thumbnail field "240x240" crop="center" as im %}
-        <img class="rounded" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="{{ field.name }}">{% endthumbnail %}
+      {% thumbnail field "480x480" crop="center" as im %}
+        <img class="rounded" src="{{ im.url }}" width="{% widthratio im.width 100 50 %}" height="{% widthratio im.height 100 50 %}" alt="{{ field.name }}">{% endthumbnail %}
     {% endif %}
   </div>
 </div>

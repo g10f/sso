@@ -53,8 +53,8 @@
               <td><a href="{% url 'organisations:organisation_detail' object.uuid.hex %}">{{ object.name }}</a></td>
               {% with object.organisationpicture_set.first.picture as picture %}
                 <td>
-                  {% if picture %}<a href="{{ picture.url }}">{% thumbnail picture "30x30" crop="center" as im %}
-                    <img class="rounded g10f-icon-user" src="{{ im.url }}" width="{{ im.width }}" height="{{ im.height }}" alt="">{% endthumbnail %}</a>{% endif %}
+                  {% if picture %}<a href="{{ picture.url }}">{% thumbnail picture "60x60" crop="center" as im %}
+                    <img class="rounded g10f-icon-user" src="{{ im.url }}" width="{% widthratio im.width 100 50 %}" height="{% widthratio im.height 100 50 %}" alt="">{% endthumbnail %}</a>{% endif %}
                 </td>
               {% endwith %}
               <td>{{ object.email | default_if_none:"" }}</td>
