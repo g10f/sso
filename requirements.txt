@@ -8,7 +8,7 @@ django-recaptcha
 docutils
 pyjwt
 cryptography
-oauthlib
+oauthlib==3.1.0
 sorl-thumbnail
 pillow
 pytz
