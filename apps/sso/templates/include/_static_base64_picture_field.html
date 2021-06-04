@@ -2,17 +2,9 @@
   <label class="col-form-label">{{ field.label }}</label>
   <div class="g10f-form-control">
     <p class="form-control-static">
-      <img class="rounded img-thumbnail" style="width: 240px; height: 240px;"/>
+      <label>
+          <img class="rounded img-thumbnail base64-image"{% if field.value != None %} src="{{ field.value|stringformat:'s' }}"{% endif %} width="240px" height="240px">
+      </label>
     </p>
   </div>
 </div>
-<script>
-    $(function () {
-        var max_size = $('#base64-image').data("max-size");
-        // initialize the img field from base64 data if available
-        if ($('[name="base64_picture"]').val()) {
-            var style = 'max-height: ' + max_size + '; max-width: ' + max_size + ';'
-            $('#base64-image img').replaceWith('<img src="' + $('[name="base64_picture"]').val() + '" alt="Image preview" class="img-thumbnail" style="' + style + '">');
-        }
-    });
-</script>

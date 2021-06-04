@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-11 12:06+0200\n"
+"POT-Creation-Date: 2021-06-03 23:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,9 +42,7 @@ msgstr ""
 msgid "Your picture"
 msgstr ""
 
-msgid ""
-"Please use a photo of your face. We are using it also to validate your "
-"registration."
+msgid "Please use a photo of your face."
 msgstr ""
 
 msgid "Organisation"
@@ -351,9 +349,6 @@ msgstr ""
 msgid "Email"
 msgstr ""
 
-msgid "Profile picture"
-msgstr ""
-
 msgid "Password"
 msgstr ""
 
@@ -401,9 +396,6 @@ msgid "Username"
 msgstr ""
 
 msgid "Valid until"
-msgstr ""
-
-msgid "Picture"
 msgstr ""
 
 msgid "Homepage"
@@ -1453,6 +1445,9 @@ msgstr ""
 msgid "default"
 msgstr ""
 
+msgid "Update"
+msgstr ""
+
 msgid "Set as default"
 msgstr ""
 
@@ -1466,6 +1461,9 @@ msgid "Disable 2-step verification"
 msgstr ""
 
 msgid "Enable 2-step verification"
+msgstr ""
+
+msgid "Update Device"
 msgstr ""
 
 msgid "Thanks for spending some quality time with the Web site today."
@@ -1544,6 +1542,13 @@ msgid "Device error, select another device. (%(error)s)"
 msgstr ""
 
 msgid "Logged out"
+msgstr ""
+
+msgid "Clear signing keys cache"
+msgstr ""
+
+#, python-format
+msgid "Add %(name)s"
 msgstr ""
 
 msgid "Email type"
@@ -1670,9 +1675,6 @@ msgstr ""
 msgid "Email alias address"
 msgstr ""
 
-msgid "Update"
-msgstr ""
-
 msgid "Email forwardings"
 msgstr ""
 
@@ -1720,6 +1722,15 @@ msgstr ""
 msgid "Currently:"
 msgstr ""
 
+msgid "Clear"
+msgstr ""
+
+msgid "Currently"
+msgstr ""
+
+msgid "Change"
+msgstr ""
+
 #, python-format
 msgid ""
 "Please keep filesize under %(filesize)s. Current filesize "
@@ -1748,6 +1759,9 @@ msgstr ""
 msgid ""
 "* You don't need to select the application roles which are already included "
 "by the role profiles."
+msgstr ""
+
+msgid "Close"
 msgstr ""
 
 #, python-format
@@ -2390,6 +2404,11 @@ msgid "Keep stored in database to prevent re-registration of denied user."
 msgstr ""
 
 msgid ""
+"Please use a photo of your face. We are using it also to validate your "
+"registration."
+msgstr ""
+
+msgid ""
 "If you would like to tell us something about yourself, please do so in this "
 "box."
 msgstr ""
@@ -2437,9 +2456,6 @@ msgid "Save as new"
 msgstr ""
 
 msgid "Save and view"
-msgstr ""
-
-msgid "Close"
 msgstr ""
 
 msgid "User Registration List"
@@ -2740,15 +2756,6 @@ msgstr ""
 msgid ""
 "There's been an error. It's been reported to the site administrators via "
 "email and should be fixed shortly. Thanks for your patience."
-msgstr ""
-
-msgid "Site admin"
-msgstr ""
-
-msgid "View site"
-msgstr ""
-
-msgid "Documentation"
 msgstr ""
 
 msgid "About us"

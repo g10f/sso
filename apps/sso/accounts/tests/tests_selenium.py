@@ -56,7 +56,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.selenium.find_element_by_name("new_password1").send_keys(new_password)
         self.selenium.find_element_by_name("new_password2").send_keys(new_password)
         picture = os.path.abspath(os.path.join(settings.BASE_DIR, 'sso/static/img/face-cool.png'))
-        self.selenium.find_element_by_id("id_picture").send_keys(picture)
+        self.add_picture(picture)
         self.selenium.find_element_by_tag_name("form").submit()
         self.wait_page_loaded()
 
@@ -270,7 +270,8 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         last_name.send_keys(new_last_name)
 
         self.wait_page_loaded()
-        self.selenium.find_element_by_xpath('//button[@type="submit"][@name="_continue"]').click()
+        continue_button = self.selenium.find_element_by_xpath('//button[@type="submit"][@name="_continue"]')
+        self.click(continue_button)
         self.wait_page_loaded()
 
         first_name = self.selenium.find_element_by_name("first_name")
@@ -345,10 +346,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.login(username='CenterAdmin', password='gsf')
         self.selenium.get('%s%s' % (self.live_server_url, reverse('accounts:update_user', kwargs={'uuid': 'a8992f0348634f76b0dac2de4e4c83ee'})))
         remove_org_button = self.selenium.find_element_by_xpath('//button[@name="_remove_org"]')
-        # maximize window, because button can not clicked if not visible
-        # doesn't work: ActionChains(self.selenium).move_to_element(remove_org_button).click(remove_org_button).perform()
-        self.selenium.maximize_window()
-        remove_org_button.click()
+        self.click(remove_org_button)
         self.wait_page_loaded()
         self.selenium.find_element_by_xpath('//div[@class="alert alert-success"]')
 
