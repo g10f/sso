@@ -1,4 +1,5 @@
 import os
+import time
 
 from selenium.webdriver.chrome.webdriver import WebDriver
 
@@ -77,3 +78,12 @@ class SSOSeleniumTests(StaticLiveServerTestCase):
         self.selenium.get('%s%s' % (self.live_server_url, reverse('auth:logout')))
         # Wait until the response is received
         self.wait_page_loaded()
+
+    def click(self, element):
+        self.selenium.execute_script("arguments[0].scrollIntoView(true);", element)
+        time.sleep(.5)
+        element.click()
+
+    def add_picture(self, picture):
+        self.selenium.find_element_by_xpath('//input[@type="file"]').send_keys(picture)
+        self.selenium.find_element_by_id("crop").click()

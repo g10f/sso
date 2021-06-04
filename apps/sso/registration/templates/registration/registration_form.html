@@ -1,11 +1,6 @@
 {% extends "registration/base_registration.html" %}
 {% load i18n static %}
 
-{% block script %}
-  {{ block.super }}
-  <script src="{% static "js/base64_image-1.0.0.js" %}"></script>
-{% endblock script %}
-
 {% block title %}{% translate 'Register for an account' %}{% endblock %}
 
 {% block form %}
@@ -25,7 +20,7 @@
     {% include 'include/_field.html' with field=form.first_name %}
     {% include 'include/_field.html' with field=form.last_name %}
     {% include 'include/_field.html' with field=form.email %}
-    {% include 'include/_base64_picture_field.html' with field=form.base64_picture %}
+    {% include 'include/_field.html' with field=form.picture %}
     {% include 'include/_field.html' with field=form.organisation %}
     {% include 'include/_field.html' with field=form.country %}
     {% include 'include/_field.html' with field=form.city %}
@@ -46,6 +41,7 @@
     {% include 'include/_field.html' with field=form.captcha %}
     {# used to cache the captcha, that the user needs to solve only 1 captcha #}
     {% include 'include/_field.html' with field=form.state %}
+    <input type="hidden" name="{{ stage_field }}" value="1" />
 
     <div class="form-group">
       <div class="offset-sm-3 g10f-form-control">

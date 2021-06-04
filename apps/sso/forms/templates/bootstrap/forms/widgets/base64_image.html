@@ -1,0 +1,37 @@
+{% load thumbnail i18n %}
+<label>
+  {% if widget.is_initial %}
+    {% thumbnail widget.value "480x480" crop="center" as im %}
+      <img role="button" class="rounded img-thumbnail base64-image" src="{{ im.url }}" width="{% widthratio im.width 100 50 %}" height="{% widthratio im.height 100 50 %}">
+    {% endthumbnail %}
+  {% else %}
+    <img role="button" class="rounded img-thumbnail base64-image"{% if widget.value != None %} src="{{ widget.value|stringformat:'s' }}"{% endif %} width="240px" height="240px">
+  {% endif %}
+    <input type="file" class="visually-hidden base64-image" data-id="{{ widget.attrs.id }}" data-modal-id="{{ widget.modal_id }}" accept="image/*">
+</label>
+{% if widget.is_initial and not widget.required %}
+  <div class="form-check my-2">
+    <input type="checkbox" class="form-check-input" name="{{ widget.checkbox_name }}" id="{{ widget.checkbox_id }}"{% if widget.attrs.disabled %} disabled{% endif %}>
+    <label class="form-check-label" for="{{ widget.checkbox_id }}">{{ widget.clear_checkbox_label }}</label>
+  </div>
+{% endif %}
+<input class="base64-image visually-hidden" type="{{ widget.type }}" name="{{ widget.name }}"{% if widget.value != None and not widget.is_initial %} value="{{ widget.value|stringformat:'s' }}"{% endif %} id="{{ widget.attrs.id }}">
+<div class="modal base64-image" data-bs-backdrop="static" id="{{ widget.modal_id }}" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{% translate 'Your picture' %}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% translate 'Close' %}"></button>
+      </div>
+      <div class="modal-body">
+        <div><img class="mw-100" src="" width="480px" height="480px"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-method="rotate" data-option="90"><i class="bi bi-arrow-clockwise"></i></button>
+        <button type="button" class="btn btn-secondary" data-method="rotate" data-option="-90"><i class="bi bi-arrow-counterclockwise"></i></button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% translate 'Close' %}</button>
+        <button type="button" id="crop" class="btn btn-primary">{% translate 'Save' %}</button>
+      </div>
+    </div>
+  </div>
+</div>

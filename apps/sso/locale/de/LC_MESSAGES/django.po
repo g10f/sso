@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-04-11 12:06+0200\n"
+"POT-Creation-Date: 2021-06-03 23:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -41,12 +41,8 @@ msgstr "Nachricht"
 msgid "Your picture"
 msgstr "Dein Bild"
 
-msgid ""
-"Please use a photo of your face. We are using it also to validate your "
-"registration."
-msgstr ""
-"Bitte verwende ein Bild, dass Dein Gesicht zeigt. Wir verwenden es auch um "
-"Deine Anmeldung zu prüfen."
+msgid "Please use a photo of your face."
+msgstr "Bitte wähle ein Foto mit Deinem Gesicht aus."
 
 msgid "Organisation"
 msgstr "Organisation"
@@ -367,9 +363,6 @@ msgstr ""
 msgid "Email"
 msgstr ""
 
-msgid "Profile picture"
-msgstr "Profilbild"
-
 msgid "Password"
 msgstr ""
 
@@ -418,9 +411,6 @@ msgstr ""
 
 msgid "Valid until"
 msgstr "Gültig bis"
-
-msgid "Picture"
-msgstr "Bild"
 
 msgid "Homepage"
 msgstr ""
@@ -1549,6 +1539,9 @@ msgstr ""
 msgid "default"
 msgstr "Standard"
 
+msgid "Update"
+msgstr "Aktualisieren"
+
 msgid "Set as default"
 msgstr "Als Standard einstellen"
 
@@ -1563,6 +1556,9 @@ msgstr "2-Faktor Authentifizierung deaktivieren"
 
 msgid "Enable 2-step verification"
 msgstr "2-Faktor Authentifizierung aktivieren"
+
+msgid "Update Device"
+msgstr "Gerät aktualisieren"
 
 msgid "Thanks for spending some quality time with the Web site today."
 msgstr "Vielen Dank, dass Du hier ein paar nette Minuten verbracht hast."
@@ -1652,6 +1648,12 @@ msgstr ""
 
 msgid "Logged out"
 msgstr ""
+
+msgid "Clear signing keys cache"
+msgstr ""
+
+msgid "Add %(name)s"
+msgstr "%(name)s hinzufügen"
 
 msgid "Email type"
 msgstr "Email Typ"
@@ -1781,9 +1783,6 @@ msgstr "E-Mail hinzufügen"
 msgid "Email alias address"
 msgstr "E-Mail Alias-Adresse"
 
-msgid "Update"
-msgstr "Aktualisieren"
-
 msgid "Email forwardings"
 msgstr "E-Mail Weiterleitungen"
 
@@ -1831,6 +1830,15 @@ msgstr ""
 msgid "Currently:"
 msgstr ""
 
+msgid "Clear"
+msgstr ""
+
+msgid "Currently"
+msgstr ""
+
+msgid "Change"
+msgstr "Ändern"
+
 #, python-format
 msgid ""
 "Please keep filesize under %(filesize)s. Current filesize "
@@ -1864,6 +1872,9 @@ msgid ""
 msgstr ""
 "* Es ist nicht notwendig die Anwendungsrollen auszuwählen, die schon durch "
 "die Rollenprofile enthalten sind."
+
+msgid "Close"
+msgstr ""
 
 #, python-format
 msgid "You are logged in as %s ."
@@ -2532,6 +2543,13 @@ msgstr ""
 "abgewiesenen Benutzers zu verhindern."
 
 msgid ""
+"Please use a photo of your face. We are using it also to validate your "
+"registration."
+msgstr ""
+"Bitte verwende ein Bild, dass Dein Gesicht zeigt. Wir verwenden es auch um "
+"Deine Anmeldung zu prüfen."
+
+msgid ""
 "If you would like to tell us something about yourself, please do so in this "
 "box."
 msgstr "Wenn Du möchtest, erzähle uns etwas über Dich."
@@ -2580,9 +2598,6 @@ msgstr "Als neu speichern"
 
 msgid "Save and view"
 msgstr "Speichern und Ansehen"
-
-msgid "Close"
-msgstr ""
 
 msgid "User Registration List"
 msgstr "Registrierungs Liste"
@@ -2912,15 +2927,6 @@ msgid ""
 "email and should be fixed shortly. Thanks for your patience."
 msgstr ""
 
-msgid "Site admin"
-msgstr ""
-
-msgid "View site"
-msgstr ""
-
-msgid "Documentation"
-msgstr ""
-
 msgid "About us"
 msgstr ""
 
@@ -3021,6 +3027,12 @@ msgstr ""
 
 msgid "CSRF verification failed. Request aborted."
 msgstr "Die CSRF-Überprüfung ist fehlgeschlagen. Anfrage abgebrochen."
+
+#~ msgid "Profile picture"
+#~ msgstr "Profilbild"
+
+#~ msgid "Picture"
+#~ msgstr "Bild"
 
 #~ msgid "Phone %(number)s"
 #~ msgstr "Telefonnummer %(number)s"

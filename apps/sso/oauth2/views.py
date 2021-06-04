@@ -9,7 +9,6 @@ from oauthlib.common import Request
 from oauthlib.common import urlencode, urlencoded, quote
 from oauthlib.oauth2.rfc6749.utils import scope_to_list
 from oauthlib.openid.connect.core.exceptions import LoginRequired
-from oauthlib.openid.connect.core.grant_types.exceptions import OIDCNoPrompt
 
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
@@ -274,13 +273,8 @@ def should_show_login_form(request):
 
 
 def validate_and_redirect_to_login(request, two_factor, uri, http_method='GET', body=None, headers=None):
-    try:
-        oidc_server.validate_authorization_request(uri, http_method, body, headers)
-        return redirect_to_login(request, two_factor=two_factor)
-    except OIDCNoPrompt:
-        oauth_request = Request(uri, http_method=http_method, body=body, headers=headers)
-        msg = "User is not logged in."
-        raise LoginRequired(request=oauth_request, description=msg)
+    oidc_server.validate_authorization_request(uri, http_method, body, headers)
+    return redirect_to_login(request, two_factor=two_factor)
 
 
 @revision_exempt

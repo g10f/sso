@@ -21,7 +21,7 @@ class AccessRequestsSeleniumTests(SSOSeleniumTests):
         self.selenium.find_element_by_name("message").send_keys('Hello world.')
 
         picture = os.path.abspath(os.path.join(settings.BASE_DIR, 'sso/static/img/face-cool.png'))
-        self.selenium.find_element_by_name("_dummy").send_keys(picture)
+        self.add_picture(picture)
 
         self.selenium.find_element_by_tag_name("form").submit()
 
@@ -63,7 +63,7 @@ class AccessRequestsSeleniumTests(SSOSeleniumTests):
                                               'bc0ee635a536491eb8e7fbe5749e8111'))
         self.selenium.find_element_by_name("message").send_keys('Hello world.')
         picture = os.path.abspath(os.path.join(settings.BASE_DIR, 'sso/static/img/face-cool.png'))
-        self.selenium.find_element_by_name("_dummy").send_keys(picture)
+        self.add_picture(picture)
         Select(self.selenium.find_element_by_name("organisation")).select_by_index(1)
         self.selenium.find_element_by_tag_name("form").submit()
         self.wait_page_loaded()
