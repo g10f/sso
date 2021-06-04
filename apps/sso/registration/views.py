@@ -47,6 +47,9 @@ class UserSelfRegistrationFormPreview(FormPreview):
         send_validation_email(registration_profile, request)
         return redirect('registration:registration_done')
 
+    def security_hash(self, request, form):
+        return '1'
+
 
 class UserRegistrationDeleteView(DeleteView):
     model = get_user_model()
