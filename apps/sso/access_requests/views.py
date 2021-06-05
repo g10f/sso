@@ -190,8 +190,7 @@ class AccountExtendAccessView(UpdateView):
             admins = get_user_admins(sender=self.__class__, organisations=user.organisations.all())
         else:
             admins = []
-        context.update({'site_name': settings.SSO_SITE_NAME, 'max_file_size': User.MAX_PICTURE_SIZE,
-                        'admins': admins})
+        context.update({'site_name': settings.SSO_SITE_NAME, 'admins': admins})
 
         context.update(kwargs)
         return super().get_context_data(**context)

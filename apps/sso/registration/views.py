@@ -37,8 +37,7 @@ class UserSelfRegistrationFormPreview(FormPreview):
     def get_context(self, request, form):
         """Context for template rendering."""
         context = super().get_context(request, form)
-        context.update({'site_name': settings.SSO_SITE_NAME, 'max_file_size': User.MAX_PICTURE_SIZE,
-                        'media': form.media})
+        context.update({'site_name': settings.SSO_SITE_NAME})
         return context
 
     @transaction.atomic

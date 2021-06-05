@@ -169,7 +169,8 @@ class UserSelfRegistrationForm(forms.Form):
     last_name = forms.CharField(label=_('Last name'), required=True, max_length=30,
                                 widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('last name'))}))
     email = forms.EmailField(label=_('Email'), required=True, widget=bootstrap.EmailInput())
-    picture = Base64ImageField(label=_('Your picture'), help_text=_('Please use a photo of your face. We are using it also to validate your registration.'))
+    picture = Base64ImageField(label=_('Your picture'), help_text=_('Please use a photo of your face. We are using it also to validate your registration.'),
+                               widget=bootstrap.ClearableBase64ImageWidget(attrs={'max_file_size': User.MAX_PICTURE_SIZE}))
     known_person1_first_name = forms.CharField(label=_("First name"), max_length=100, widget=bootstrap.TextInput())
     known_person1_last_name = forms.CharField(label=_("Last name"), max_length=100, widget=bootstrap.TextInput())
     known_person2_first_name = forms.CharField(label=_("First name"), max_length=100, widget=bootstrap.TextInput())

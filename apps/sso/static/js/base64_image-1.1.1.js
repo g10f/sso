@@ -3,6 +3,26 @@ $(function () {
     let $base64_modal;
     let $base64_image;
     let $base64_input;
+    let maxFileSize = $('input[type="text"].base64-image').data("max-file-size");
+    maxFileSize = maxFileSize === '' ? 1048576 : maxFileSize;  // defaultt 1 MB
+
+    // initialize the image from the input field, so we don't need to transfer the same data twice
+    $('img.base64-image').each(function (index) {
+        if ($(this).data('id') !== undefined) {
+            $input = $('#' + $(this).data('id'));
+            if ($input.val()) {
+                $(this).attr('src', $input.val());
+            }
+        }
+    });
+
+    const displayMessage = function(message, type) {
+        type = (typeof type !== 'undefined') ? type : 'alert-danger';
+        $alert = $base64_modal.find('.alert');
+        $alert.text(message);
+        $alert.addClass(type);
+        $alert.removeClass('hidden');
+    }
 
     $('[data-method="rotate"]').on('click', function () {
         if (cropper) {
@@ -17,6 +37,12 @@ $(function () {
                 height: 480,
             });
             const dataUrl = canvas.toDataURL();
+            if (dataUrl.length > maxFileSize * 1.37) {
+                var message = gettext("Image is too large (max %skB).")
+                message = interpolate(message, [parseInt(maxFileSize/1024)])
+                displayMessage(message);
+                return;
+            }
             $base64_image.attr('src', dataUrl);
             $base64_input.val(dataUrl);
         }
@@ -60,5 +86,6 @@ $(function () {
         cropper.destroy();
         cropper = null;
         $('img', this).attr('src', '');
+        $base64_modal.find('.alert').addClass('hidden');
     });
 });

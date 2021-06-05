@@ -3,7 +3,7 @@
   <div class="g10f-form-control">
     <p class="form-control-static">
       <label>
-          <img class="rounded img-thumbnail base64-image"{% if field.value != None %} src="{{ field.value|stringformat:'s' }}"{% endif %} width="240px" height="240px">
+          <img class="rounded img-thumbnail base64-image" data-id="{{ field.auto_id }}" width="240px" height="240px">
       </label>
     </p>
   </div>

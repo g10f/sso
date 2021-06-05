@@ -26,7 +26,6 @@ from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from sso.forms import bootstrap, mixins, BLANK_CHOICE_DASH, BaseForm, BaseTabularInlineForm, BaseStackedInlineForm
 from sso.forms.fields import EmailFieldLower, Base64ImageField
-from sso.models import clean_picture
 from sso.organisations.models import Organisation, is_validation_period_active
 from sso.registration import default_username_generator
 from sso.registration.forms import UserSelfRegistrationForm
@@ -210,11 +209,8 @@ class SetPictureAndPasswordForm(SetPasswordForm):
     def __init__(self, user, *args, **kwargs):
         super().__init__(user, *args, **kwargs)
         if user and not user.picture:
-            self.fields['picture'] = Base64ImageField(label=_('Your picture'), required=False,  help_text=_('Please use a photo of your face.'))
-
-    def clean_picture(self):
-        picture = self.cleaned_data["picture"]
-        return clean_picture(picture, User.MAX_PICTURE_SIZE)
+            self.fields['picture'] = Base64ImageField(label=_('Your picture'), required=False, help_text=_('Please use a photo of your face.'),
+                                                      widget=bootstrap.ClearableBase64ImageWidget(attrs={'max_file_size': User.MAX_PICTURE_SIZE}))
 
     def save(self, commit=True):
         cd = self.cleaned_data
@@ -429,7 +425,7 @@ class UserSelfProfileForm(forms.Form):
     valid_until = bootstrap.ReadOnlyField(label=_("Valid until"))
     first_name = forms.CharField(label=_('First name'), max_length=30, widget=bootstrap.TextInput())
     last_name = forms.CharField(label=_('Last name'), max_length=30, widget=bootstrap.TextInput())
-    picture = Base64ImageField(label=_('Your picture'), required=False,  help_text=_('Please use a photo of your face.'))
+    picture = Base64ImageField(label=_('Your picture'), required=False, help_text=_('Please use a photo of your face.'))
     gender = forms.ChoiceField(label=_('Gender'), required=False, choices=(BLANK_CHOICE_DASH + User.GENDER_CHOICES),
                                widget=bootstrap.Select())
     dob = forms.DateField(label=_('Date of birth'), required=False,

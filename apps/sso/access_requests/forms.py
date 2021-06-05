@@ -7,6 +7,7 @@ from django.utils.encoding import force_str
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from sso.access_requests.models import AccessRequest
+from sso.accounts.models import User
 from sso.forms import bootstrap, BaseForm
 from sso.forms.fields import Base64ImageField
 from sso.organisations.models import Organisation
@@ -59,7 +60,8 @@ class AccessRequestAcceptForm(forms.Form):
 
 class AccessRequestForm(BaseForm):
     message = forms.CharField(label=_("Message"), widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 5}))
-    picture = Base64ImageField(label=_('Your picture'), required=True, help_text=_('Please use a photo of your face.'))
+    picture = Base64ImageField(label=_('Your picture'), required=True, help_text=_('Please use a photo of your face.'),
+                               widget=bootstrap.ClearableBase64ImageWidget(attrs={'max_file_size': User.MAX_PICTURE_SIZE}))
     created = forms.BooleanField(widget=forms.HiddenInput(), required=False)
     organisation = forms.ModelChoiceField(queryset=Organisation.objects.filter(
         is_active=True, is_selectable=True, association__is_selectable=True).only(
