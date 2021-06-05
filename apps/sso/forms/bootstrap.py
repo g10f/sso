@@ -219,7 +219,7 @@ class Base64ImageWidget(widgets.Input):
         }
         js = (
             'vendor/1.5.11/cropper.min.js',
-            'js/base64_image-1.1.0.js',
+            'js/base64_image-1.1.1.js',
         )
 
     def modal_id(self, name):
