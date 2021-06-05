@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-06-03 23:57+0200\n"
+"POT-Creation-Date: 2021-06-05 20:34+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1652,6 +1652,7 @@ msgstr ""
 msgid "Clear signing keys cache"
 msgstr ""
 
+#, python-format
 msgid "Add %(name)s"
 msgstr "%(name)s hinzufügen"
 
@@ -1872,6 +1873,9 @@ msgid ""
 msgstr ""
 "* Es ist nicht notwendig die Anwendungsrollen auszuwählen, die schon durch "
 "die Rollenprofile enthalten sind."
+
+msgid "Select image"
+msgstr "Bild Auswählen"
 
 msgid "Close"
 msgstr ""
@@ -3107,6 +3111,3 @@ msgstr "Die CSRF-Überprüfung ist fehlgeschlagen. Anfrage abgebrochen."
 #~ msgstr ""
 #~ "<a href=\"%(login_url)s\">Melde Dich mit Deinem %(brand)s Konto an</a> "
 #~ "und nutze alle %(site_name)s Services."
-
-#~ msgid "Select image"
-#~ msgstr "Bild Auswählen"

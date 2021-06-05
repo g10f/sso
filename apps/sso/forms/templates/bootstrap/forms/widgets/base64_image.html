@@ -8,6 +8,7 @@
     <img role="button" class="rounded img-thumbnail base64-image" data-id="{{ widget.attrs.id }}" width="240px" height="240px">
   {% endif %}
     <input type="file" class="visually-hidden base64-image" data-id="{{ widget.attrs.id }}" data-modal-id="{{ widget.modal_id }}" accept="image/*">
+    <br><div class="btn btn-secondary">{% translate 'Select image' %}</div>
 </label>
 {% if widget.is_initial and not widget.required %}
   <div class="form-check my-2">
