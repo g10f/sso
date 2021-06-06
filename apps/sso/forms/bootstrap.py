@@ -73,6 +73,7 @@ class ImageWidget(forms.ClearableFileInput):
     """
     An ImageField Widget a thumbnailed image as well as a link to the current one if it has one.
     """
+    template_name = 'bootstrap/forms/widgets/clearable_file_input.html'
 
     def __init__(self, attrs=None, **kwargs):
         # add form-control class
@@ -157,8 +158,7 @@ class SelectMultipleWithCurrently(SelectMultiple):
 
 class CheckboxInput(forms.CheckboxInput):
     # overridden 'django/forms/widgets/checkbox.html' template
-    # template_name = 'bootstrap/forms/widgets/checkbox.html'
-    pass
+    template_name = 'bootstrap/forms/widgets/checkbox.html'
 
 
 class SelectDateWidget(widgets.SelectDateWidget):
