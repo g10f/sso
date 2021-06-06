@@ -17,10 +17,10 @@ from django.utils.translation import gettext_lazy as _
 from l10n.models import Country
 from sso.accounts.models import UserAddress, User, UserNote
 from sso.forms import bootstrap, mixins, BLANK_CHOICE_DASH
-from sso.forms.helpers import clean_base64_picture
 from sso.organisations.models import is_validation_period_active
 from . import default_username_generator
 from .models import RegistrationProfile
+from ..forms.fields import Base64ImageField
 
 logger = logging.getLogger(__name__)
 
@@ -169,8 +169,8 @@ class UserSelfRegistrationForm(forms.Form):
     last_name = forms.CharField(label=_('Last name'), required=True, max_length=30,
                                 widget=bootstrap.TextInput(attrs={'placeholder': capfirst(_('last name'))}))
     email = forms.EmailField(label=_('Email'), required=True, widget=bootstrap.EmailInput())
-    base64_picture = forms.CharField(label=_('Your picture'), help_text=_(
-        'Please use a photo of your face. We are using it also to validate your registration.'))
+    picture = Base64ImageField(label=_('Your picture'), help_text=_('Please use a photo of your face. We are using it also to validate your registration.'),
+                               widget=bootstrap.ClearableBase64ImageWidget(attrs={'max_file_size': User.MAX_PICTURE_SIZE}))
     known_person1_first_name = forms.CharField(label=_("First name"), max_length=100, widget=bootstrap.TextInput())
     known_person1_last_name = forms.CharField(label=_("Last name"), max_length=100, widget=bootstrap.TextInput())
     known_person2_first_name = forms.CharField(label=_("First name"), max_length=100, widget=bootstrap.TextInput())
@@ -202,10 +202,6 @@ class UserSelfRegistrationForm(forms.Form):
             return email
         raise forms.ValidationError(self.error_messages['duplicate_email'])
 
-    def clean_base64_picture(self):
-        base64_picture = self.cleaned_data["base64_picture"]
-        return clean_base64_picture(base64_picture, User.MAX_PICTURE_SIZE)
-
     def clean(self):
         """
         if the user clicks the edit_again button a ValidationError is raised, to
@@ -230,8 +226,8 @@ class UserSelfRegistrationForm(forms.Form):
         new_user.dob = data.get('dob')
         new_user.is_active = False
         new_user.set_unusable_password()
-        if 'base64_picture' in data:
-            new_user.picture = data.get('base64_picture')
+        if 'picture' in data:
+            new_user.picture = data.get('picture')
 
         new_user.save()
 

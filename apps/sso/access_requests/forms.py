@@ -2,14 +2,14 @@ import logging
 
 from django import forms
 from django.conf import settings
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
 from django.utils.encoding import force_str
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from sso.access_requests.models import AccessRequest
 from sso.accounts.models import User
 from sso.forms import bootstrap, BaseForm
-from sso.forms.helpers import clean_base64_picture
+from sso.forms.fields import Base64ImageField
 from sso.organisations.models import Organisation
 from sso.utils.email import send_mail
 from sso.utils.translation import i18n_email_msg_and_subj
@@ -46,6 +46,7 @@ class AccessRequestAcceptForm(forms.Form):
     """
     Form for user admins to accept an request for extended access
     """
+
     def __init__(self, access_request, *args, **kwargs):
         self.access_request = access_request
         super().__init__(*args, **kwargs)
@@ -59,20 +60,17 @@ class AccessRequestAcceptForm(forms.Form):
 
 class AccessRequestForm(BaseForm):
     message = forms.CharField(label=_("Message"), widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 5}))
-    base64_picture = forms.CharField(label=_('Your picture'), help_text=_(
-        'Please use a photo of your face. We are using it also to validate your registration.'))
+    picture = Base64ImageField(label=_('Your picture'), required=True, help_text=_('Please use a photo of your face.'),
+                               widget=bootstrap.ClearableBase64ImageWidget(attrs={'max_file_size': User.MAX_PICTURE_SIZE}))
     created = forms.BooleanField(widget=forms.HiddenInput(), required=False)
     organisation = forms.ModelChoiceField(queryset=Organisation.objects.filter(
         is_active=True, is_selectable=True, association__is_selectable=True).only(
         'id', 'location', 'name', 'organisation_country__country__iso2_code', 'association__name').prefetch_related(
         'organisation_country__country', 'association'), label=_("Organisation"), widget=bootstrap.Select2())
 
-    class Media:
-        js = (reverse_lazy('jsi18n'), 'js/base64_image-1.0.0.js')
-
     class Meta:
         model = AccessRequest
-        fields = ('message', 'application', 'user', 'base64_picture', 'organisation')
+        fields = ('message', 'application', 'user', 'picture', 'organisation')
         widgets = {
             'message': bootstrap.Textarea(),
             'application': forms.HiddenInput(),
@@ -83,17 +81,13 @@ class AccessRequestForm(BaseForm):
         user = kwargs.pop('user')  # remove custom user keyword
         super().__init__(initial=initial, instance=instance, *args, **kwargs)
         if user.picture:
-            del self.fields['base64_picture']
+            del self.fields['picture']
         if user.organisations.all():
             del self.fields['organisation']
 
-    def clean_base64_picture(self):
-        base64_picture = self.cleaned_data["base64_picture"]
-        return clean_base64_picture(base64_picture, User.MAX_PICTURE_SIZE)
-
     def save(self, commit=True):
         cd = self.cleaned_data
-        if 'base64_picture' in cd:
-            self.instance.user.picture = cd.get('base64_picture')
+        if 'picture' in cd:
+            self.instance.user.picture = cd.get('picture')
             self.instance.user.save()
         return super().save(commit)

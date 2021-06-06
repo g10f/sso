@@ -1,6 +1,7 @@
+django>3.2
+oauthlib>3.1
 wheel
 psycopg2
-django
 django-formtools
 django-ipware
 django-reversion
@@ -8,7 +9,6 @@ django-recaptcha
 docutils
 pyjwt
 cryptography
-oauthlib==3.1.0
 sorl-thumbnail
 pillow
 pytz

@@ -37,16 +37,17 @@ class UserSelfRegistrationFormPreview(FormPreview):
     def get_context(self, request, form):
         """Context for template rendering."""
         context = super().get_context(request, form)
-        context.update({'site_name': settings.SSO_SITE_NAME, 'max_file_size': User.MAX_PICTURE_SIZE,
-                        'media': form.media})
+        context.update({'site_name': settings.SSO_SITE_NAME})
         return context
 
     @transaction.atomic
     def done(self, request, cleaned_data):
         registration_profile = self.form.save_data(cleaned_data)
         send_validation_email(registration_profile, request)
-
         return redirect('registration:registration_done')
+
+    def security_hash(self, request, form):
+        return '1'
 
 
 class UserRegistrationDeleteView(DeleteView):
