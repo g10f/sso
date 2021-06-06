@@ -1,6 +1,6 @@
 <div class="form-group {{ extra_class }}">
   <label class="col-form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
   <div class="g10f-form-control">
-    <input type="text" readonly class="form-control-plaintext" id="{{ field.id_for_label }}" value="{{ field.value|default_if_none:"" }}">
+    <div class="form-control-plaintext">{{ field.value|default_if_none:"" }}</div>
   </div>
 </div>

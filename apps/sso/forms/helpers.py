@@ -11,7 +11,7 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.core.files.base import ContentFile
 from django.forms.models import inlineformset_factory
 from django.forms.utils import ErrorList as DjangoErrorList
-from django.utils.crypto import get_random_string
+from django.utils.crypto import salted_hmac
 from django.utils.encoding import force_str
 from django.utils.text import get_text_list
 from django.utils.translation import gettext as _
@@ -20,9 +20,10 @@ logger = logging.getLogger(__name__)
 
 BASE_FORM_ID = 'base'
 
+
 def clean_base64_picture(base64_picture, max_upload_size=5242880):
     from django.template.defaultfilters import filesizeformat
-
+    key_salt = 'sso.forms.clean_base64_picture'
     try:
         content_type, image_content = base64_picture.split(',', 1)
         content_type = re.findall(r'data:(\w+/\w+);base64', content_type)[0]
@@ -35,8 +36,8 @@ def clean_base64_picture(base64_picture, max_upload_size=5242880):
                     file_ext = '.jpg'
                 else:
                     file_ext = guess_extension(content_type)
-                name = "%s%s" % (
-                    get_random_string(7, allowed_chars='abcdefghijklmnopqrstuvwxyz0123456789'), file_ext)
+
+                name = "%s%s" % (salted_hmac(key_salt, image_content).hexdigest(), file_ext)
                 picture = ContentFile(b64decode(image_content), name=name)
                 if picture.size > max_upload_size:
                     raise ValidationError(
