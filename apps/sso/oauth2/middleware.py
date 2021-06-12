@@ -5,6 +5,7 @@ from jwt import InvalidTokenError
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.auth.middleware import AuthenticationMiddleware
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.sessions.backends.base import UpdateError
 from django.contrib.sessions.middleware import SessionMiddleware
@@ -12,7 +13,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.exceptions import SuspiciousOperation
 from django.urls import reverse
 from django.utils.cache import patch_vary_headers
-from django.utils.deprecation import MiddlewareMixin
 from django.utils.functional import SimpleLazyObject, empty
 from django.utils.http import http_date
 from sso import auth as sso_auth
@@ -103,7 +103,8 @@ def get_auth_data(request):
     return request._cached_auth_data
 
 
-class OAuthAuthenticationMiddleware(MiddlewareMixin):
+class OAuthAuthenticationMiddleware(AuthenticationMiddleware):
+    # AuthenticationMiddleware as base class, so that django system checks ('admin.E408') are passing
     def process_request(self, request):
         assert hasattr(request, 'session'), "The Django authentication middleware requires session middleware to be " \
                                             "installed. Edit your MIDDLEWARE_CLASSES setting to insert " \

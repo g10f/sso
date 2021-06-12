@@ -36,8 +36,8 @@ SSO_BRAND = 'G10F'
 SSO_SITE_NAME = 'G10F'
 SSO_DOMAIN = "localhost:8000"
 SSO_USE_HTTPS = False
-SSO_SERVICE_DOCUMENTATION = ""  # part of http://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig
-SSO_ABOUT = 'http://g10f.de/'
+SSO_SERVICE_DOCUMENTATION = ""  # part of https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig
+SSO_ABOUT = 'https://g10f.de/'
 SSO_DATA_PROTECTION_URI = None
 SSO_APP_UUID = UUID('fa467234b81e4838a009e38d9e655d18')
 SSO_BROWSER_CLIENT_ID = UUID('ca96cd88bc2740249d0def68221cba88')
@@ -251,7 +251,7 @@ REGISTRATION = {
 # https://docs.aws.amazon.com/ses/latest/DeveloperGuide/verify-addresses-and-domains.html
 SSO_SEND_FROM_VERIFIED_EMAIL_ADDRESSES = '%s|%s|%s' % (DEFAULT_FROM_EMAIL, SSO_NOREPLY_EMAIL, REGISTRATION['CONTACT_EMAIL'])
 
-SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error', 'admin.E408', 'admin.E410']
+SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
 
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
