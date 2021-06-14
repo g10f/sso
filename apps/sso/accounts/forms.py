@@ -210,7 +210,11 @@ class SetPictureAndPasswordForm(SetPasswordForm):
         super().__init__(user, *args, **kwargs)
         if user and not user.picture:
             self.fields['picture'] = Base64ImageField(label=_('Your picture'), required=False, help_text=_('Please use a photo of your face.'),
-                                                      widget=bootstrap.ClearableBase64ImageWidget(attrs={'max_file_size': User.MAX_PICTURE_SIZE}))
+                                                      widget=bootstrap.ClearableBase64ImageWidget(attrs={
+                                                          'max_file_size': User.MAX_PICTURE_SIZE,
+                                                          'width': User.PICTURE_WIDTH,
+                                                          'height': User.PICTURE_HEIGHT,
+                                                      }))
 
     def save(self, commit=True):
         cd = self.cleaned_data
@@ -425,7 +429,12 @@ class UserSelfProfileForm(forms.Form):
     valid_until = bootstrap.ReadOnlyField(label=_("Valid until"))
     first_name = forms.CharField(label=_('First name'), max_length=30, widget=bootstrap.TextInput())
     last_name = forms.CharField(label=_('Last name'), max_length=30, widget=bootstrap.TextInput())
-    picture = Base64ImageField(label=_('Your picture'), required=False, help_text=_('Please use a photo of your face.'))
+    picture = Base64ImageField(label=_('Your picture'), required=False, help_text=_('Please use a photo of your face.'),
+                               widget=bootstrap.ClearableBase64ImageWidget(attrs={
+                                   'max_file_size': User.MAX_PICTURE_SIZE,
+                                   'width': User.PICTURE_WIDTH,
+                                   'height': User.PICTURE_HEIGHT,
+                               }))
     gender = forms.ChoiceField(label=_('Gender'), required=False, choices=(BLANK_CHOICE_DASH + User.GENDER_CHOICES),
                                widget=bootstrap.Select())
     dob = forms.DateField(label=_('Date of birth'), required=False,

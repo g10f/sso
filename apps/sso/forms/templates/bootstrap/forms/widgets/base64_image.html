@@ -16,7 +16,7 @@
     <label class="form-check-label" for="{{ widget.checkbox_id }}">{{ widget.clear_checkbox_label }}</label>
   </div>
 {% endif %}
-<input class="base64-image visually-hidden" type="{{ widget.type }}" name="{{ widget.name }}" data-max-file-size="{{ widget.attrs.max_file_size }}"{% if widget.value != None and not widget.is_initial %} value="{{ widget.value|stringformat:'s' }}"{% endif %} id="{{ widget.attrs.id }}">
+<input class="base64-image visually-hidden" type="{{ widget.type }}" name="{{ widget.name }}" data-max-file-size="{{ widget.attrs.max_file_size }}" data-width="{{ widget.attrs.width }}" data-height="{{ widget.attrs.height }}"{% if widget.value != None and not widget.is_initial %} value="{{ widget.value|stringformat:'s' }}"{% endif %} id="{{ widget.attrs.id }}">
 <div class="modal base64-image" data-bs-backdrop="static" id="{{ widget.modal_id }}" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -27,7 +27,7 @@
       <div class="modal-body">
         <div>
           <div class="alert hidden" role="alert"></div>
-          <img class="mw-100" src="" width="480px" height="480px">
+          <img class="mw-100">
         </div>
       </div>
       <div class="modal-footer">

@@ -1,6 +1,6 @@
 import logging
-import os
-from datetime import timedelta
+from datetime import timedelta, datetime, timezone
+from pathlib import Path
 
 import reversion
 
@@ -22,6 +22,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         delete_deactivated_users()
         check_validation()
+        clean_pictures()
 
 
 def delete_deactivated_users():
@@ -87,17 +88,19 @@ def check_validation():
 
 
 def clean_pictures():
-    for basedir, dirs, _ in os.walk(os.path.join(settings.MEDIA_ROOT, 'image')):
-        for d in dirs:
-            try:
-                picture = User.objects.get(uuid=d).picture
-            except ObjectDoesNotExist:
-                continue
+    path = Path(settings.MEDIA_ROOT) / 'image'
 
-            for subdir, _, files in os.walk(os.path.join(basedir, d)):
-                for f in files:
-                    fname1 = os.path.join(subdir, f)
-                    fname2 = os.path.join(settings.MEDIA_ROOT, str(picture))
-                    if not os.path.samefile(fname1, fname2):
-                        print(fname1)
-                        os.remove(fname1)
+    # remove pictures with no reference
+    pictures = {str(u.picture) for u in User.objects.exclude(picture='').only('picture')}
+    file_names = {str(p.relative_to(settings.MEDIA_ROOT)) for p in path.rglob("*") if p.is_file() and
+                  now() - datetime.fromtimestamp(p.stat().st_mtime, tz=timezone.utc) > timedelta(minutes=5)}
+
+    for f in file_names - pictures:
+        print(f)
+        (Path(settings.MEDIA_ROOT) / f).unlink(True)
+
+    # delete empty dirs
+    empty_dirs = {d for d in path.rglob("*") if d.is_dir() and not len(list(d.iterdir()))}
+    for d in empty_dirs:
+        print(d)
+        d.rmdir()
