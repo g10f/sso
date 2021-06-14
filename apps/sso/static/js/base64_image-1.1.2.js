@@ -4,7 +4,11 @@ $(function () {
     let $base64_image;
     let $base64_input;
     let maxFileSize = $('input[type="text"].base64-image').data("max-file-size");
+    let width = $('input[type="text"].base64-image').data("width");
+    let height = $('input[type="text"].base64-image').data("height");
     maxFileSize = maxFileSize === '' ? 1048576 : maxFileSize;  // defaultt 1 MB
+    width = width === '' ? 550 : width;
+    height = height === '' ? 550 : height;
 
     // initialize the image from the input field, so we don't need to transfer the same data twice
     $('img.base64-image').each(function (index) {
@@ -33,8 +37,8 @@ $(function () {
     $('#crop').on('click', function () {
         if (cropper) {
             let canvas = cropper.getCroppedCanvas({
-                width: 480,
-                height: 480,
+                width: width,
+                height: height,
             });
             const dataUrl = canvas.toDataURL();
             if (dataUrl.length > maxFileSize * 1.37) {

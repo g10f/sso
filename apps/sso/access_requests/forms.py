@@ -61,7 +61,11 @@ class AccessRequestAcceptForm(forms.Form):
 class AccessRequestForm(BaseForm):
     message = forms.CharField(label=_("Message"), widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 5}))
     picture = Base64ImageField(label=_('Your picture'), required=True, help_text=_('Please use a photo of your face.'),
-                               widget=bootstrap.ClearableBase64ImageWidget(attrs={'max_file_size': User.MAX_PICTURE_SIZE}))
+                               widget=bootstrap.ClearableBase64ImageWidget(attrs={
+                                   'max_file_size': User.MAX_PICTURE_SIZE,
+                                   'width': User.PICTURE_WIDTH,
+                                   'height': User.PICTURE_HEIGHT,
+                               }))
     created = forms.BooleanField(widget=forms.HiddenInput(), required=False)
     organisation = forms.ModelChoiceField(queryset=Organisation.objects.filter(
         is_active=True, is_selectable=True, association__is_selectable=True).only(
