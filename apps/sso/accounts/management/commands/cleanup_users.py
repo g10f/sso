@@ -97,7 +97,7 @@ def clean_pictures():
 
     for f in file_names - pictures:
         print(f)
-        (Path(settings.MEDIA_ROOT) / f).unlink(True)
+        (Path(settings.MEDIA_ROOT) / f).unlink()
 
     # delete empty dirs
     empty_dirs = {d for d in path.rglob("*") if d.is_dir() and not len(list(d.iterdir()))}
