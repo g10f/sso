@@ -10,10 +10,9 @@ class Command(BaseCommand):
     args = ''
     help = 'Cleans unconfirmed non primary email addresses.'
 
-    option_list = BaseCommand.option_list + (
-        make_option('--delete', action='store_true', dest='delete', default=False, help='Delete unconfirmed non primary email addresses'),
-        make_option('-m', '--minutes', action='store', dest='minutes', type="int", default=0, help='minutes since last modified'),
-    )
+    def add_arguments(self, parser):
+        parser.add_argument('--delete', action='store_true', dest='delete', default=False, help='Delete unconfirmed non primary email addresses')
+        parser.add_argument('-m', '--minutes', action='store', dest='minutes', type=int, default=0, help='minutes since last modified')
 
     def handle(self, *args, **options):
 
