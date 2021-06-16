@@ -51,7 +51,7 @@ def migrate_pictures(maximum):
                                               format=get_format(picture_path.suffix))
                     image_content = thumbnail.read()
                     name = "%s%s" % (salted_hmac(key_salt, b64encode(image_content)).hexdigest(), Path(str(thumbnail)).suffix)
-                    user.picture.delete(save=False)
+                    # user.picture.delete(save=False) # files will be deleted in cleanup_users
                     user.picture = ContentFile(image_content, name=name)
                     user.save(update_fields=['picture', 'last_modified'])
                     reversion.set_comment(f"update {user} from migrate_pictures task")
@@ -61,7 +61,7 @@ def migrate_pictures(maximum):
 
                     index += 1
                     logger.info(user)
-                    if index > maximum:
+                    if index >= maximum:
                         break
                 except Exception as e:
                     logger.exception(e)
