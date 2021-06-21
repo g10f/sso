@@ -40,12 +40,12 @@ def get_format(file_extension):
 
 
 def migrate_pictures(maximum):
-    with reversion.create_revision():
-        key_salt = 'sso.forms.clean_base64_picture'
-        index = 0
-        for user in User.objects.exclude(picture=''):
-            picture_path = Path(user.picture.path)
-            if len(picture_path.stem) in [7, 8] and picture_path.is_file():
+    key_salt = 'sso.forms.clean_base64_picture'
+    index = 0
+    for user in User.objects.filter(is_active=True).exclude(picture=''):
+        picture_path = Path(user.picture.path)
+        if len(picture_path.stem) in [7, 8] and picture_path.is_file():
+            with reversion.create_revision():
                 try:
                     thumbnail = get_thumbnail(user.picture, f"{User.PICTURE_WIDTH}x{User.PICTURE_HEIGHT}", crop="center", quality=100,
                                               format=get_format(picture_path.suffix))
@@ -64,4 +64,4 @@ def migrate_pictures(maximum):
                     if index >= maximum:
                         break
                 except Exception as e:
-                    logger.exception(e)
+                    logger.error(f"error migrating user {user}. {e}")
