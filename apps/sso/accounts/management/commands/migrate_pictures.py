@@ -44,7 +44,7 @@ def migrate_pictures(maximum):
     index = 0
     for user in User.objects.filter(is_active=True).exclude(picture=''):
         picture_path = Path(user.picture.path)
-        if len(picture_path.stem) in [7, 8] and picture_path.is_file():
+        if len(picture_path.stem) < 9 and picture_path.is_file():
             with reversion.create_revision():
                 try:
                     thumbnail = get_thumbnail(user.picture, f"{User.PICTURE_WIDTH}x{User.PICTURE_HEIGHT}", crop="center", quality=100,

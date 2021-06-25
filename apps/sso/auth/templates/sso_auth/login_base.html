@@ -2,7 +2,7 @@
 {% load i18n static %}
 
 {% block style %}
-  <link rel="stylesheet" href="{% static stylesheet %}">
+  <link href="{% static 'css/' %}{{ dpdc.style }}.min.css" rel="stylesheet">
 {% endblock style %}
 
 {% block script %}{% endblock %}

@@ -3,10 +3,10 @@
 
 {% block style %}
   {{ block.super }}
-  <link href="{% static 'css/select2-1.0.1.min.css' %}" rel="stylesheet">
+  <link href="{% static 'css/' %}select2-{{ dpdc.select2_style }}.min.css" rel="stylesheet">
 {% endblock %}
 
 {% block script %}
   {{ block.super }}
-  <script src="{% static 'js/vendor/4.1.0-rc.0/select2.min.js' %}"></script>
+  <script src="{% static 'js/vendor/' %}{{ dpdc.select2 }}/select2.min.js"></script>
 {% endblock %}

@@ -1,4 +1,5 @@
 from django import forms
+from django.conf import settings
 from django.contrib.gis import forms as gis_forms
 from django.forms import widgets
 from django.forms.widgets import FILE_INPUT_CONTRADICTION
@@ -123,9 +124,9 @@ class Select(forms.Select):
 class Select2(forms.Select):
     class Media:
         css = {
-            'all': ('css/select2-1.0.1.min.css',)
+            'all': (f'css/select2-{ settings.SSO_STATIC_DEPENDENCIES["select2_style"] }.min.css',)
         }
-        js = ('js/vendor/4.1.0-rc.0/select2.min.js',)
+        js = (f'js/vendor/{ settings.SSO_STATIC_DEPENDENCIES["select2"] }/select2.min.js',)
 
     def __init__(self, attrs=None, **kwargs):
         # add select2 class
@@ -215,11 +216,11 @@ class Base64ImageWidget(widgets.Input):
 
     class Media:
         css = {
-            'all': ('vendor/1.5.11/cropper.min.css',)
+            'all': (f'vendor/{ settings.SSO_STATIC_DEPENDENCIES["cropperjs"] }/cropper.min.css',)
         }
         js = (
-            'vendor/1.5.11/cropper.min.js',
-            'js/base64_image-1.1.2.js',
+            f'vendor/{ settings.SSO_STATIC_DEPENDENCIES["cropperjs"] }/cropper.min.js',
+            f'js/base64_image-{ settings.SSO_STATIC_DEPENDENCIES["base64_image"] }.js',
         )
 
     def modal_id(self, name):
