@@ -26,11 +26,15 @@ SSO_STATIC_DEPENDENCIES = {
     "select2_style": "1.0.2",
     "jquery_plugins": "1.0.14",
     "base64_image": "1.1.2",
+    "OLMapWidgetExt": "1.0.6",
+    "formsets": "1.3",
     "bootstrap": "5.0.2",
     "bootstrap_icons": "1.5.0",
     "cropperjs": "1.5.12",
     "jquery": "3.5.1",
     "select2": "4.1.0-rc.0",
+    "u2f_api": "1.1",
+    "u2f": "1.0.3"
 }
 
 THUMBNAIL_QUALITY = 100

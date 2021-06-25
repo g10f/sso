@@ -1,4 +1,5 @@
 from django import forms
+from django.conf import settings
 
 BLANK_CHOICE_DASH = [("", "---------")]
 
@@ -19,8 +20,9 @@ class BaseForm(forms.ModelForm):
 class FormsetForm(BaseForm):
     @property
     def media(self):
+
         media = super().media
-        js = ['js/formsets-1.3.js']
+        js = [f'js/formsets-{ settings.SSO_STATIC_DEPENDENCIES["formsets"]}.js']
         return forms.Media(js=js) + media
 
 
