@@ -21,8 +21,17 @@ else:
 
 ALLOWED_HOSTS = ['.localhost', '127.0.0.1', '[::1]']
 
-SSO_STYLE = 'main'
-SSO_STYLE_VERSION = '1.1.6.min'
+SSO_STATIC_DEPENDENCIES = {
+    "style": "main-1.1.7",
+    "select2_style": "1.0.2",
+    "jquery_plugins": "1.0.14",
+    "base64_image": "1.1.2",
+    "bootstrap": "5.0.2",
+    "bootstrap_icons": "1.5.0",
+    "cropperjs": "1.5.12",
+    "jquery": "3.5.1",
+    "select2": "4.1.0-rc.0",
+}
 
 THUMBNAIL_QUALITY = 100
 THUMBNAIL_FORMAT = 'PNG'

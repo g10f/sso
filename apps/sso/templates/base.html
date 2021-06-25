@@ -11,8 +11,8 @@
   <link href="{% static 'ico/favicon-16x16.png' %}" rel="icon" sizes="16x16" type="image/png">
   <link href="{% static 'ico/favicon.ico' %}" rel="icon">
   {% block style %}
-    <link href="{% static stylesheet %}" rel="stylesheet">
-    <link href="{% static "font/1.5.0/bootstrap-icons.css" %}" rel="stylesheet">
+    <link href="{% static 'css/' %}{{ dpdc.style }}.min.css" rel="stylesheet">
+    <link href="{% static 'font/' %}{{ dpdc.bootstrap_icons }}/bootstrap-icons.css" rel="stylesheet">
   {% endblock style %}
 </head>
 <body class="{% block bodyclass %}h-100 d-flex flex-column{% endblock %}">
@@ -62,9 +62,9 @@
 {% endwith %}
 {% show_tracker %}
 {% block script %}
-  <script src="{% static "js/vendor/5.0.1/bootstrap.bundle.min.js" %}"></script>
-  <script src="{% static "js/vendor/3.5.1/jquery.min.js" %}"></script>
-  <script src="{% static "js/plugins-1.0.14.js" %}"></script>
+  <script src="{% static 'js/vendor/' %}{{ dpdc.bootstrap }}/bootstrap.bundle.min.js"></script>
+  <script src="{% static 'js/vendor/' %}{{ dpdc.jquery }}/jquery.min.js"></script>
+  <script src="{% static 'js/' %}plugins-{{ dpdc.jquery_plugins }}.js"></script>
 {% endblock script %}
 </body>
 </html>

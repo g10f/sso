@@ -5,7 +5,7 @@
   {% include 'sso_auth/u2f/_jscript.html' %}
   {% comment %}
   {% if display != 'popup' %}
-    <script type="text/javascript" src="{% static "js/vendor/bs5/beta3/bootstrap.bundle.min.js" %}"></script>
+    <script src="{% static 'js/vendor/' %}{{ dpdc.bootstrap }}/bootstrap.bundle.min.js"></script>
   {% endif %}
   {% endcomment %}
 {% endblock %}
