@@ -1,9 +1,10 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n static %}
 
 {% block script %}
   {{ block.super }}
-  {% include 'sso_auth/u2f/_jscript.html' %}
+  <script src="{% static 'js/vendor/' %}u2f-api-{{ dpdc.u2f_api }}.js"></script>
+  <script src="{% static 'js/' %}u2f-{{ dpdc.u2f }}.js"></script>
 {% endblock script %}
 
 {% block title %}{% translate 'Add U2F Device' %}{% endblock %}

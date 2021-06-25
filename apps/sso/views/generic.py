@@ -2,6 +2,7 @@ import logging
 from urllib.parse import urlunsplit
 
 from django import forms
+from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
@@ -190,7 +191,7 @@ class FormsetsUpdateView(generic.UpdateView):
 
     @property
     def media(self):
-        js = ['js/formsets-1.3.js']
+        js = [f'js/formsets-{ settings.SSO_STATIC_DEPENDENCIES["formsets"] }.js']
         return forms.Media(js=js)
 
     @property
