@@ -2,6 +2,7 @@
 {% load i18n static %}
 
 {% block script %}
+  <script src="{% static 'js/vendor/' %}{{ dpdc.jquery }}/jquery.min.js"></script>
   <script src="{% static 'js/vendor/' %}u2f-api-{{ dpdc.u2f_api }}.js"></script>
   <script src="{% static 'js/' %}u2f-{{ dpdc.u2f }}.js"></script>
   {% comment %}
