@@ -40,16 +40,26 @@ class OrganisationChangeForm(BaseForm):
         is_active=True, is_selectable=True, association__is_selectable=True).only(
         'id', 'location', 'name', 'organisation_country__country__iso2_code', 'association__name').prefetch_related(
         'organisation_country__country', 'association'), label=_("Organisation"), widget=bootstrap.Select2())
+    picture = Base64ImageField(label=_('Your picture'), required=True, help_text=_('Please use a photo of your face.'),
+                               widget=bootstrap.ClearableBase64ImageWidget(attrs={
+                                   'max_file_size': User.MAX_PICTURE_SIZE,
+                                   'width': User.PICTURE_WIDTH,
+                                   'height': User.PICTURE_HEIGHT,
+                               }))
 
     class Meta:
         model = OrganisationChange
-        fields = ('organisation', 'message')
+        fields = ('organisation', 'message', 'picture')
         widgets = {
             'message': bootstrap.Textarea()
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        assert('user' in self.initial)
+        if self.initial['user'].picture:
+            del self.fields['picture']
+
         if self.instance.pk is not None:
             # to change the organisation, we need a new "organisation change" because the admin got already an email
             self.fields['organisation'].disabled = True
@@ -60,6 +70,13 @@ class OrganisationChangeForm(BaseForm):
             raise forms.ValidationError(_("The new organisation is the same as the old organisation!"))
 
         return organisation
+
+    def save(self, commit=True):
+        cd = self.cleaned_data
+        if 'picture' in cd:
+            self.instance.user.picture = cd.get('picture')
+            self.instance.user.save()
+        return super().save(commit)
 
 
 class OrganisationChangeAcceptForm(forms.Form):
@@ -211,9 +228,9 @@ class SetPictureAndPasswordForm(SetPasswordForm):
         if user and not user.picture:
             self.fields['picture'] = Base64ImageField(label=_('Your picture'), required=False, help_text=_('Please use a photo of your face.'),
                                                       widget=bootstrap.ClearableBase64ImageWidget(attrs={
-                                                          'max_file_size': User.MAX_PICTURE_SIZE,
-                                                          'width': User.PICTURE_WIDTH,
-                                                          'height': User.PICTURE_HEIGHT,
+                                                          'max_file_size': settings.SSO_USER_MAX_PICTURE_SIZE,
+                                                          'width': settings.SSO_USER_PICTURE_WIDTH,
+                                                          'height': settings.SSO_USER_PICTURE_HEIGHT,
                                                       }))
 
     def save(self, commit=True):
@@ -431,9 +448,9 @@ class UserSelfProfileForm(forms.Form):
     last_name = forms.CharField(label=_('Last name'), max_length=30, widget=bootstrap.TextInput())
     picture = Base64ImageField(label=_('Your picture'), required=False, help_text=_('Please use a photo of your face.'),
                                widget=bootstrap.ClearableBase64ImageWidget(attrs={
-                                   'max_file_size': User.MAX_PICTURE_SIZE,
-                                   'width': User.PICTURE_WIDTH,
-                                   'height': User.PICTURE_HEIGHT,
+                                   'max_file_size': settings.SSO_USER_MAX_PICTURE_SIZE,
+                                   'width': settings.SSO_USER_PICTURE_WIDTH,
+                                   'height': settings.SSO_USER_PICTURE_HEIGHT,
                                }))
     gender = forms.ChoiceField(label=_('Gender'), required=False, choices=(BLANK_CHOICE_DASH + User.GENDER_CHOICES),
                                widget=bootstrap.Select())

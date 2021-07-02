@@ -14,6 +14,7 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView, FormView
 from django.views.generic.detail import SingleObjectTemplateResponseMixin
 from django.views.generic.edit import ProcessFormView, ModelFormMixin
+from sso.access_requests.views import get_user_admins
 from sso.accounts.forms import OrganisationChangeForm, OrganisationChangeAcceptForm
 from sso.accounts.models import OrganisationChange
 from sso.accounts.views.filter import OrganisationChangeCountryFilter, OrganisationChangeAdminRegionFilter, \
@@ -51,6 +52,10 @@ class OrganisationChangeDetailView(DetailView):
         update_url = urlunsplit(
             ('', '', reverse('accounts:organisationchange_me'), self.request.GET.urlencode(safe='/'), ''))
         context['update_url'] = update_url
+
+        # enable brand specific modification
+        admins = get_user_admins(sender=self.__class__, organisations=[self.object.organisation])
+        context.update({'site_name': settings.SSO_SITE_NAME, 'admins': admins})
 
         context.update(kwargs)
         return super().get_context_data(**context)
