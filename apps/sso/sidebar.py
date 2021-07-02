@@ -120,7 +120,8 @@ def sidebar(request):
 
     # my account items
     ##################
-    my_account = {'view_names': ['accounts:profile'], 'icon': 'person-circle', 'title': _('My Account')}
+    my_account = {'view_names': ['accounts:profile', 'accounts:organisationchange_me', 'accounts:organisationchange_detail'], 'icon': 'person-circle',
+                  'title': _('My Account')}
     my_emails = {'view_names': ['accounts:emails'], 'icon': 'envelope', 'title': _('My Email Addresses')}
     my_password = {'view_names': ['accounts:password_change'], 'icon': 'lock', 'title': _('Change password')}
     my_security = {'view_names': ['auth:mfa-detail', 'auth:mfa-update', 'auth:totp_add_device', 'auth:u2f_add_device'],

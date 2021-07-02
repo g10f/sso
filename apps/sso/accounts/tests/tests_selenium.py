@@ -195,6 +195,9 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         Select(self.selenium.find_element_by_name("organisation")).select_by_index(2)
         self.selenium.find_element_by_name("message").send_keys('Test')
 
+        picture = os.path.abspath(os.path.join(settings.BASE_DIR, 'sso/static/img/face-cool.png'))
+        self.add_picture(picture)
+
         self.selenium.find_element_by_tag_name("form").submit()
         self.wait_page_loaded()
         self.logout()

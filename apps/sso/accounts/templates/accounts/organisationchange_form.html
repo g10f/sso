@@ -16,6 +16,7 @@
     <h1>{% translate 'Update My Organisation' %}</h1>
     {% include 'include/_form_boilerplate.html' %}
 
+    {% include 'include/_field.html' with field=form.picture %}
     {% include 'include/_field.html' with field=form.organisation %}
     {% include 'include/_field.html' with field=form.message %}
 

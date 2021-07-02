@@ -73,9 +73,9 @@ def generate_filename(instance, filename):
 
 
 class User(AbstractBaseUser, PermissionsMixin):
-    MAX_PICTURE_SIZE = getattr(settings, 'SSO_USER_MAX_PICTURE_SIZE', 1048576)  # 1 MB
-    PICTURE_WIDTH = getattr(settings, 'SSO_USER_PICTURE_HEIGHT', 550)
-    PICTURE_HEIGHT = getattr(settings, 'SSO_USER_PICTURE_HEIGHT', 550)
+    MAX_PICTURE_SIZE = settings.SSO_USER_MAX_PICTURE_SIZE
+    PICTURE_WIDTH = settings.SSO_USER_PICTURE_WIDTH
+    PICTURE_HEIGHT = settings.SSO_USER_PICTURE_HEIGHT
     GENDER_CHOICES = [
         ('m', _('male')),
         ('f', _('female'))

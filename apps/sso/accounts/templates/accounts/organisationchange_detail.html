@@ -22,8 +22,18 @@
   {% endif %}
 
   <div class="alert alert-info">
-    {% blocktranslate trimmed with name=object.organisation.name %}Please contact the user administrator at your organisation {{ name }} to complete the
+    {% blocktranslate trimmed with name=object.organisation.name %}Please contact one of the user administrators at your organisation {{ name }} to complete the
       change.{% endblocktranslate %}
+  </div>
+  <div class="row">
+    <div class="col-sm-6">
+      {% for admin in admins %}
+        {% if not forloop.counter|divisibleby:"2" %}
+          {% include 'access_requests/_admin.html' %}{% endif %}{% endfor %}</div>
+    <div class="col-sm-6">
+      {% for admin in admins %}
+        {% if forloop.counter|divisibleby:"2" %}
+          {% include 'access_requests/_admin.html' %}{% endif %}{% endfor %}</div>
   </div>
 
   <br>
