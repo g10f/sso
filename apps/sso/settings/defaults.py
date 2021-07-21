@@ -94,6 +94,7 @@ OTP_DEVICES = [
     'sso_auth.U2FDevice',
 ]
 SSO_ADMIN_ONLY_2F = False
+SSO_RECAPTCHA_EXPIRATION_TIME = 120
 
 # Celery settings see https://www.cloudamqp.com/docs/celery.html
 CELERY_BROKER_USE_SSL = False
