@@ -26,6 +26,7 @@ class EmailAuthenticationForm(AuthenticationForm):
         widget=bootstrap.TextInput(attrs={
             'placeholder': labels.get('username'),
             'autofocus': True,
+            'autocapitalize': 'none',
             'class': 'form-control-lg',
             'autocomplete': 'username'}))
     password = forms.CharField(
