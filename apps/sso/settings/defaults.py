@@ -22,13 +22,13 @@ else:
 ALLOWED_HOSTS = ['.localhost', '127.0.0.1', '[::1]']
 
 SSO_STATIC_DEPENDENCIES = {
-    "style": "main-1.1.7",
-    "select2_style": "1.0.2",
+    "style": "main-1.1.8",
+    "select2_style": "1.0.3",
     "jquery_plugins": "1.0.14",
     "base64_image": "1.1.2",
     "OLMapWidgetExt": "1.0.6",
     "formsets": "1.3",
-    "bootstrap": "5.0.2",
+    "bootstrap": "5.1.0",
     "bootstrap_icons": "1.5.0",
     "cropperjs": "1.5.12",
     "jquery": "3.5.1",
