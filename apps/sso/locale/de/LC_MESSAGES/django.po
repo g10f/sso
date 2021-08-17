@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-07-01 23:00+0200\n"
+"POT-Creation-Date: 2021-08-17 16:06+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1040,15 +1040,16 @@ msgstr "Mein Konto"
 msgid "Update My Organisation"
 msgstr "Meine Organisation aktualisieren"
 
+#, python-format
 msgid ""
 "Please contact one of the user administrators at your organisation %(name)s "
 "to complete the change."
 msgstr ""
-"Bitte wende Dich an einen Administrator in Deiner Organisation "
-"%(name)s um die Änderung abzuschließen."
+"Bitte wende Dich an einen Administrator in Deiner Organisation %(name)s um "
+"die Änderung abzuschließen."
 
-msgid "Update organisation change"
-msgstr "Organisationswechsel aktualisieren"
+msgid "Edit organisation change"
+msgstr "Organisationswechsel bearbeiten"
 
 msgid "Cancel change of organisation"
 msgstr "Abbrechen des Organisationswechsel"
@@ -1538,8 +1539,8 @@ msgstr ""
 msgid "default"
 msgstr "Standard"
 
-msgid "Update"
-msgstr "Aktualisieren"
+msgid "Edit"
+msgstr "Bearbeiten"
 
 msgid "Set as default"
 msgstr "Als Standard einstellen"
@@ -3030,6 +3031,12 @@ msgstr ""
 
 msgid "CSRF verification failed. Request aborted."
 msgstr "Die CSRF-Überprüfung ist fehlgeschlagen. Anfrage abgebrochen."
+
+#~ msgid "Update organisation change"
+#~ msgstr "Organisationswechsel aktualisieren"
+
+#~ msgid "Update"
+#~ msgstr "Aktualisieren"
 
 #~ msgid "Profile picture"
 #~ msgstr "Profilbild"
