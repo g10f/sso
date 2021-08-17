@@ -77,7 +77,7 @@
     <div class="g10f-form-control_lg">
       {% block submit_group %}
         {% if perms.organisations.change_organisationcountry and has_country_access %}
-          <a class="btn btn-primary" href="{% url 'organisations:organisationcountry_update' object.uuid.hex %}">{% translate 'Update' %}</a>
+          <a class="btn btn-primary" href="{% url 'organisations:organisationcountry_update' object.uuid.hex %}">{% translate 'Edit' %}</a>
         {% endif %}
       {% endblock %}
     </div>

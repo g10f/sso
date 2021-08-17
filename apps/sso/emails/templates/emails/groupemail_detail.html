@@ -54,7 +54,7 @@
       {% block submit_group %}
 
         {% if perms.emails.change_groupemail %}
-          <a class="btn btn-secondary" href="{% url 'emails:groupemail_update' object.uuid.hex %}">{% translate 'Update' %}</a>
+          <a class="btn btn-secondary" href="{% url 'emails:groupemail_update' object.uuid.hex %}">{% translate 'Edit' %}</a>
         {% endif %}
         {% if has_groupmail_access %}
           <a class="btn btn-primary" href="{% url 'emails:emailforward_create' object.uuid.hex %}"> <i

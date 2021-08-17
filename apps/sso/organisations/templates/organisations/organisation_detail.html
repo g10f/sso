@@ -252,7 +252,7 @@
           {% endif %}
           {% if perms.organisations.change_organisation %}
             <a class="btn btn-secondary" href="{% url 'organisations:organisation_picture_update' object.uuid.hex %}">{% translate 'Update Pictures' %}</a>
-            <a class="btn btn-primary" href="{% url 'organisations:organisation_update' object.uuid.hex %}">{% translate 'Update' %}</a>
+            <a class="btn btn-primary" href="{% url 'organisations:organisation_update' object.uuid.hex %}">{% translate 'Edit' %}</a>
           {% endif %}
         {% endif %}
       {% endblock %}
