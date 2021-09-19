@@ -4,6 +4,13 @@ SSO
 SSO is an OpenID Connect Identity Provider with user and organisation management.
 The user and organisation data are exposed via a JSONLD/Hydra Api. Api entry point is /api/
 
+Start a docker container
+------------------------
+Run
+
+ ``docker-compose up``
+
+or
 
 Prepare a development environment
 ----------------------------------

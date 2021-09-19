@@ -271,7 +271,7 @@ class Organisation(AbstractBaseModel):
                             help_text=_("Used for URLs, auto-generated from name if blank"), max_length=255)
     homepage = models.URLField(_("homepage"), blank=True)
     source_urls = URLArrayField(blank=True, null=True, verbose_name=_('source urls'),
-                                help_text=_("Newline separated list of URLs, which are redirected to the "
+                                help_text=_("List of URLs, which are redirected to the "
                                             "homepage"))
     google_plus_page = URLFieldEx(domain='plus.google.com', verbose_name=_("Google+ page"), blank=True)
     facebook_page = URLFieldEx(domain='www.facebook.com', verbose_name=_("Facebook page"), blank=True)

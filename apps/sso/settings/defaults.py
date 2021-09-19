@@ -1,3 +1,4 @@
+from os import environ
 from pathlib import Path
 from uuid import UUID
 
@@ -131,10 +132,10 @@ CENTER_TYPE_CHOICES = (
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'sso',
-        'USER': 'sso',
-        'PASSWORD': 'sso',
-        'HOST': 'localhost',
+        'NAME': environ.get('DATABASE_NAME', 'sso'),
+        'USER': environ.get('DATABASE_USER', 'sso'),
+        'PASSWORD': environ.get('DATABASE_PASSWORD', 'sso'),
+        'HOST': environ.get('DATABASE_HOST', 'localhost'),
         'PORT': '5432',
         'CONN_MAX_AGE': 60
     },
@@ -341,7 +342,7 @@ LOGGING = {
         },
         'sso': {
             'handlers': ['console', 'mail_admins'],
-            'level': 'INFO',
+            'level': 'DEBUG' if DEBUG else 'INFO',
             'propagate': False,
         },
     },
