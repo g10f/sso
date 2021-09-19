@@ -92,7 +92,7 @@ class Migration(migrations.Migration):
                 ('name_native', models.CharField(blank=True, max_length=255, verbose_name='name in native language')),
                 ('slug', models.SlugField(blank=True, help_text='Used for URLs, auto-generated from name if blank', max_length=255, unique=True, verbose_name='Slug Name')),
                 ('homepage', models.URLField(blank=True, verbose_name='homepage')),
-                ('source_urls', sso.fields.URLArrayField(blank=True, help_text='Newline separated list of URLs, which are redirected to the homepage', null=True, size=None, verbose_name='source urls')),
+                ('source_urls', sso.fields.URLArrayField(blank=True, help_text='List of URLs, which are redirected to the homepage', null=True, size=None, verbose_name='source urls')),
                 ('google_plus_page', sso.fields.URLFieldEx(blank=True, domain='plus.google.com', verbose_name='Google+ page')),
                 ('facebook_page', sso.fields.URLFieldEx(blank=True, domain='www.facebook.com', verbose_name='Facebook page')),
                 ('twitter_page', sso.fields.URLFieldEx(blank=True, domain='twitter.com', verbose_name='Twitter page')),
