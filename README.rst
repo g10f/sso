@@ -15,9 +15,9 @@ or
 Prepare a development environment
 ----------------------------------
 
-#) Get python >= 3.6
-#) Create virtualenv for sso:  ``python3 -m venv /venv/sso``
-#) Activate the virtual environment ``source /venv/sso/bin/activate``
+#) Get python >= 3.8
+#) Create virtualenv for sso:  ``python3 -m venv venv``
+#) Activate the virtual environment ``source venv/bin/activate``
 #) Update the Python package manager ``pip install -U pip``
 #) Install sso requirements in the virtualenv with: ``pip install -r requirements.txt``
 #) Install postgresql ``sudo apt install postgresql``
@@ -39,32 +39,8 @@ Prepare tests
 Changelog
 ----------
 
-1.0.0:
- OAuth2 and OpenID Connect Support
-
-1.1.0:
- JSONLD/Hydra Api
-
-1.2.0:
- Organisation Data Management
-
-1.2.1:
- Django 2.0 compatibility
-
-1.3.0
- - PKCE support
-
-1.3.1:
- - User Organisations are stored through exlicit membership class/table
-
-2.1.0
- - django 2.2 compatibility
- - oauthlib>=3
- - New UserNote Model
- - application specific scopes to restrict the clients which have access to user applicationroles
- - Key value table to store arbitrary user attributes. The UI/forms can be overwritten by settings.
- - new select box for administration of user applicationroles
- - support post_logout_redirect_uri of OIDC spec
+3.1.4
+ - Docker support
 
 3.0.1
  - django 3.1 compatibility
@@ -76,3 +52,30 @@ Changelog
      `SSO_ID_TOKEN_AGE = 60 * 5  # 5 minutes`
 
      `SSO_SIGNING_KEYS_VALIDITY_PERIOD = 60 * 60 * 24 * 30  # 30 days`
+
+2.1.0
+ - django 2.2 compatibility
+ - oauthlib>=3
+ - New UserNote Model
+ - application specific scopes to restrict the clients which have access to user applicationroles
+ - Key value table to store arbitrary user attributes. The UI/forms can be overwritten by settings.
+ - new select box for administration of user applicationroles
+ - support post_logout_redirect_uri of OIDC spec
+
+1.3.1:
+ - User Organisations are stored through exlicit membership class/table
+
+1.3.0
+ - PKCE support
+
+1.2.1:
+ Django 2.0 compatibility
+
+1.0.0:
+ OAuth2 and OpenID Connect Support
+
+1.2.0:
+ Organisation Data Management
+
+1.1.0:
+ JSONLD/Hydra Api
