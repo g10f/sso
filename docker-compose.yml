@@ -16,6 +16,7 @@ services:
       - DJANGO_SUPERUSER_USERNAME=admin
     depends_on:
       - db
+      - cache
   db:
     image: postgis/postgis:13-3.1-alpine
     volumes:
@@ -27,6 +28,10 @@ services:
       - POSTGRES_USER=sso
       - POSTGRES_PASSWORD=sso
       - POSTGRES_DB=sso
+#  cache:
+#    image: memcached:alpine
+#    expose:
+#      - 11211
 volumes:
   postgres_data: {}
   media_data: {}
