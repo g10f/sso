@@ -29,8 +29,9 @@ class GroupEmailForwardCreateView(CreateView):
 
     def get_initial(self):
         group_email = GroupEmail.objects.get_by_natural_key(self.kwargs['uuid'])
-        self.initial.update({'email': group_email.email})
-        return self.initial.copy()
+        initial = self.initial.copy()
+        initial.update({'email': group_email.email})
+        return initial
 
     def get_success_url(self):
         return reverse('emails:groupemail_detail', args=[self.kwargs['uuid']])
