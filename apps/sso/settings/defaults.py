@@ -23,7 +23,7 @@ else:
 ALLOWED_HOSTS = ['.localhost', '127.0.0.1', '[::1]']
 
 SSO_STATIC_DEPENDENCIES = {
-    "style": "main-1.1.9",
+    "style": "main-1.1.10",
     "select2_style": "1.0.4",
     "jquery_plugins": "1.0.14",
     "base64_image": "1.1.2",

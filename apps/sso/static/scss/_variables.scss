@@ -10,12 +10,6 @@ $g10f-form-validation-states: (
         )
 );
 
-//$colors: map-merge((
-//        "brand": $brand,
-//),
-//        $colors
-//);
-
 $brand-colors: (
         "error": $danger,
         "brand": $brand,
@@ -27,8 +21,6 @@ $theme-colors: map-merge($theme-colors, $brand-colors);
 $theme-colors-rgb: map-loop($theme-colors, to-rgb, "$value");
 // Utilities maps
 $utilities-colors: map-merge($utilities-colors, $theme-colors-rgb);
-$utilities-text-colors: map-loop($utilities-colors, rgba-css-var, "$key", "text") ;
-$utilities-bg-colors: map-loop($utilities-colors, rgba-css-var, "$key", "bg");
 
 $link-decoration: none;
 $link-hover-decoration: underline;
