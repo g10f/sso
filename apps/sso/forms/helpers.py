@@ -40,10 +40,12 @@ def clean_base64_picture(base64_picture, max_upload_size=5242880):
                 name = "%s%s" % (salted_hmac(key_salt, image_content).hexdigest(), file_ext)
                 picture = ContentFile(b64decode(image_content), name=name)
                 if picture.size > max_upload_size:
+                    filesize = filesizeformat(max_upload_size).replace('\xa0', ' ')
+                    current_filesize = filesizeformat(picture.size).replace('\xa0', ' ')
                     raise ValidationError(
                         _('Please keep filesize under %(filesize)s. Current filesize %(current_filesize)s') %
-                        {'filesize': filesizeformat(max_upload_size),
-                         'current_filesize': filesizeformat(picture.size)})
+                        {'filesize': filesize,
+                         'current_filesize': current_filesize})
 
             else:
                 raise ValidationError(_('File type is not supported'))
