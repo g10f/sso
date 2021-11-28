@@ -26,7 +26,7 @@ SSO_STATIC_DEPENDENCIES = {
     "style": "main-1.1.11",
     "select2_style": "1.0.4",
     "jquery_plugins": "1.0.14",
-    "base64_image": "1.1.2",
+    "base64_image": "1.1.3",
     "OLMapWidgetExt": "1.0.6",
     "formsets": "1.3",
     "bootstrap": "5.1.3",
