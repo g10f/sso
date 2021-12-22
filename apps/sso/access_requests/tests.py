@@ -1,5 +1,6 @@
 import os
 
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
 
 from django.conf import settings
@@ -36,7 +37,7 @@ class AccessRequestsSeleniumTests(SSOSeleniumTests):
         self.login(username='CenterAdmin', password='gsf')
         list_url = reverse('access_requests:extend_access_list')
         self.selenium.get('%s%s' % (self.live_server_url, list_url))
-        elems = self.selenium.find_elements_by_xpath("//a[starts-with(@href, '%s')]" % list_url)
+        elems = self.selenium.find_elements(by=By.XPATH, value="//a[starts-with(@href, '%s')]" % list_url)
         # should be one element in the list
         elems[0].click()
         self.wait_page_loaded()
@@ -77,7 +78,7 @@ class AccessRequestsSeleniumTests(SSOSeleniumTests):
         self.login(username='CenterAdmin', password='gsf')
         list_url = reverse('access_requests:extend_access_list')
         self.selenium.get('%s%s' % (self.live_server_url, list_url))
-        elems = self.selenium.find_elements_by_xpath("//a[starts-with(@href, '%s')]" % list_url)
+        elems = self.selenium.find_elements(by=By.XPATH, value="//a[starts-with(@href, '%s')]" % list_url)
         # should be one element in the list
         elems[0].click()
         self.wait_page_loaded()

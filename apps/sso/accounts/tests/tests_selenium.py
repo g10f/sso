@@ -4,6 +4,7 @@ from urllib.parse import urlencode
 from urllib.parse import urlsplit
 
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 
 from django.conf import settings
@@ -167,7 +168,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.selenium.find_element_by_xpath('//form/div[@class="alert alert-danger"]')  # there should be a form error
         # there should be no logout link, because user is not logged in
         self.assertEqual(
-            len(self.selenium.find_elements_by_xpath('//ul/li/a[@href="%s"]' % reverse('auth:logout'))), 0)
+            len(self.selenium.find_elements(by=By.XPATH, value='//ul/li/a[@href="%s"]' % reverse('auth:logout'))), 0)
 
     def test_change_password(self):
         username = 'GlobalAdmin'
@@ -207,7 +208,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.selenium.get('%s%s' % (self.live_server_url, reverse('accounts:organisationchange_list')))
 
         list_url = reverse('accounts:organisationchange_list')
-        elems = self.selenium.find_elements_by_xpath("//a[starts-with(@href, '%s')]" % list_url)
+        elems = self.selenium.find_elements(by=By.XPATH, value="//a[starts-with(@href, '%s')]" % list_url)
         # should be one element in the list
         elems[0].click()
         self.wait_page_loaded()
@@ -228,7 +229,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.selenium.find_element_by_tag_name("form").submit()
         self.wait_page_loaded()
 
-        self.assertEqual(len(self.selenium.find_elements_by_class_name("alert-error")), 0)
+        self.assertEqual(len(self.selenium.find_elements(by=By.CLASS_NAME, value="alert-error")), 0)
 
         path = self.get_url_path_from_mail()
 
@@ -248,7 +249,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.selenium.find_element_by_tag_name("form").submit()
         self.wait_page_loaded()
 
-        self.assertEqual(len(self.selenium.find_elements_by_class_name("alert-error")), 0)
+        self.assertEqual(len(self.selenium.find_elements(by=By.CLASS_NAME, value="alert-error")), 0)
 
         path = self.get_url_path_from_mail()
 
@@ -297,7 +298,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.selenium.find_element_by_tag_name("form").submit()
         self.wait_page_loaded()
 
-        self.assertEqual(len(self.selenium.find_elements_by_class_name("alert-danger")), 1)
+        self.assertEqual(len(self.selenium.find_elements(by=By.CLASS_NAME, value="alert-danger")), 1)
 
     @override_settings(SSO_POST_RESET_LOGIN=False)
     def test_add_user_as_admin(self):
@@ -388,12 +389,12 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         gender = self.selenium.find_element_by_name("gender")
         gender.send_keys(new_gender)
 
-        required_extra_fields = self.selenium.find_elements_by_xpath(
+        required_extra_fields = self.selenium.find_elements(by=By.XPATH, value=
             '//span[@class="user-extra-form-fields"]//node()[@class="form-select" and @required]')
         for required_extra_field in required_extra_fields:
             if required_extra_field.tag_name == 'select':
                 # select the first option with a non empty value
-                option = required_extra_field.find_elements_by_xpath("option[@value and string-length(@value)!=0]")[0]
+                option = required_extra_field.find_elements(by=By.XPATH, value="option[@value and string-length(@value)!=0]")[0]
                 option.click()
             # TODO: cases for other types of extra fields
 
@@ -417,7 +418,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.selenium.find_element_by_tag_name("form").submit()
 
         self.wait_page_loaded()
-        self.assertEqual(len(self.selenium.find_elements_by_class_name("alert-success")), 1)
+        self.assertEqual(len(self.selenium.find_elements(by=By.CLASS_NAME, value="alert-success")), 1)
 
         self.logout()
         # get the password reset link from the email to the new user
