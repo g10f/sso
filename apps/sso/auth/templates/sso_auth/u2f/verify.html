@@ -2,9 +2,9 @@
 {% load i18n static %}
 
 {% block script %}
+  <script src="{% static 'js/cbor-' %}{{ dpdc.cbor }}.js"></script>
   <script src="{% static 'js/vendor/' %}{{ dpdc.jquery }}/jquery.min.js"></script>
-  <script src="{% static 'js/vendor/' %}u2f-api-{{ dpdc.u2f_api }}.js"></script>
-  <script src="{% static 'js/' %}u2f-{{ dpdc.u2f }}.js"></script>
+  <script src="{% static 'js/fido2-' %}{{ dpdc.fido2 }}.js"></script>
   {% comment %}
   {% if display != 'popup' %}
     <script src="{% static 'js/vendor/' %}{{ dpdc.bootstrap }}/bootstrap.bundle.min.js"></script>

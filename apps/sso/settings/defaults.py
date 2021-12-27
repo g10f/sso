@@ -8,7 +8,7 @@ from django.urls import reverse_lazy
 from django.utils.translation import pgettext_lazy
 
 try:
-    RUNNING_DEVSERVER = (sys.argv[1] == 'runserver')
+    RUNNING_DEVSERVER = (sys.argv[1] in 'runserver')
 except IndexError:
     RUNNING_DEVSERVER = False
 
@@ -34,8 +34,8 @@ SSO_STATIC_DEPENDENCIES = {
     "cropperjs": "1.5.12",
     "jquery": "3.5.1",
     "select2": "4.1.0-rc.0",
-    "u2f_api": "1.1",
-    "u2f": "1.0.3"
+    "fido2": "1.0.0",
+    "cbor": "1.0.0",
 }
 
 THUMBNAIL_QUALITY = 100

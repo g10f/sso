@@ -1,14 +1,18 @@
 import json
+import logging
 
-from u2flib_server import u2f
+from fido2.server import Fido2Server
+from fido2.webauthn import PublicKeyCredentialRpEntity
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.sites.shortcuts import get_current_site
 from django.urls import reverse_lazy
 from django.views.generic import FormView, UpdateView
 from sso.auth.forms.profile import TOTPDeviceForm, ProfileForm, AddU2FForm, DeviceUpdateForm
-from sso.auth.models import U2FDevice, Profile, Device
+from sso.auth.models import U2FDevice, Device, Profile
 from sso.auth.utils import default_device, random_hex, get_device_classes
+
+logger = logging.getLogger(__name__)
 
 
 class AddU2FView(LoginRequiredMixin, FormView):
@@ -16,11 +20,10 @@ class AddU2FView(LoginRequiredMixin, FormView):
     form_class = AddU2FForm
     success_url = reverse_lazy('auth:mfa-detail')
     u2f_request = None
+    server = Fido2Server(PublicKeyCredentialRpEntity("localhost", "Demo server"))
 
     def get(self, request, *args, **kwargs):
-        u2f_devices = U2FDevice.objects.filter(user=self.request.user, confirmed=True)
-        devices = [d.to_json() for d in u2f_devices]
-        self.u2f_request = u2f.begin_registration(app_id=self.get_origin(), registered_keys=devices).data_for_client
+        self.u2f_request = U2FDevice.register_begin(self.request)
         return super().get(request, *args, **kwargs)
 
     def get_origin(self):
@@ -35,15 +38,13 @@ class AddU2FView(LoginRequiredMixin, FormView):
         return kwargs
 
     def form_valid(self, form):
-        u2f_response = form.cleaned_data['u2f_response']
-        u2f_request = form.cleaned_data['u2f_request']
         name = form.cleaned_data['name']
-        device, attestation_cert = u2f.complete_registration(u2f_request, u2f_response)
-        device = U2FDevice.objects.create(name=name, user=self.request.user, public_key=device['publicKey'], key_handle=device['keyHandle'],
-                                          app_id=device['appId'], version=device['version'], confirmed=True)
-
-        if not hasattr(self.request.user, 'sso_auth_profile'):
-            Profile.objects.create(user=self.request.user, default_device=device, is_otp_enabled=True)
+        response_data = form.cleaned_data.get('u2f_response')
+        state_data = form.cleaned_data.get('state')
+        user = self.request.user
+        device = U2FDevice.register_complete(name, response_data, state_data, user)
+        if not hasattr(user, 'sso_auth_profile'):
+            Profile.objects.create(user=user, default_device=device, is_otp_enabled=True)
 
         return super().form_valid(form)
 
