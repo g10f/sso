@@ -16,6 +16,6 @@ geopy
 qrcode
 requests
 celery
-python-u2flib-server
+fido2
 pymemcache
 gunicorn

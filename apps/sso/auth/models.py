@@ -1,11 +1,20 @@
 import json
 import logging
+from base64 import b64encode, b64decode
 
 import time
 from binascii import unhexlify
-from u2flib_server import u2f
+from fido2 import cbor
+from fido2.client import ClientData
+from fido2.cose import CoseKey
+from fido2.ctap2 import AttestedCredentialData, AuthenticatorData, AttestationObject
+from fido2.server import U2FFido2Server
+from fido2.utils import websafe_decode, websafe_encode
+from fido2.webauthn import PublicKeyCredentialRpEntity, UserVerificationRequirement
+from sorl.thumbnail import get_thumbnail
 
 from django.conf import settings
+from django.core import signing
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -13,6 +22,7 @@ from sso.auth.forms import AuthenticationTokenForm, U2FForm
 from sso.auth.oath import TOTP
 from sso.auth.utils import random_hex, hex_validator
 from sso.models import AbstractBaseModel
+from sso.utils.url import absolute_url
 
 logger = logging.getLogger(__name__)
 
@@ -81,17 +91,18 @@ class Profile(models.Model):
 
 class U2FDevice(Device):
     version = models.TextField(default="U2F_V2")
-    public_key = models.TextField()
+    public_key_old = models.TextField()
     key_handle = models.TextField()
     app_id = models.TextField()
+    public_key = models.TextField()
+    credential_id = models.TextField()
+    aaguid = models.TextField()
+    counter = models.IntegerField(default=0)
 
-    def to_json(self):
-        return {
-            'publicKey': self.public_key,
-            'keyHandle': self.key_handle,
-            'appId': self.app_id,
-            "version": self.version
-        }
+    # server = Fido2Server(PublicKeyCredentialRpEntity(settings.SSO_DOMAIN.lower().split(':')[0], f'{settings.SSO_SITE_NAME} Server'))
+    u2f_app_id = f"{'https' if settings.SSO_USE_HTTPS else 'http'}://{settings.SSO_DOMAIN.lower().split(':')[0]}"
+    server = U2FFido2Server(u2f_app_id, PublicKeyCredentialRpEntity(settings.SSO_DOMAIN.lower().split(':')[0], f'{settings.SSO_SITE_NAME} Server'))
+    WEB_AUTHN_SALT = 'sso.auth.models.U2FDevice'
 
     class Meta:
         ordering = ['order', 'name']
@@ -103,10 +114,87 @@ class U2FDevice(Device):
     def detail_template(cls):
         return 'sso_auth/u2f/detail.html'
 
+    @classmethod
+    def register_begin(cls, request):
+        user = request.user
+        credentials = U2FDevice.credentials(user)
+        registration_data, state = cls.server.register_begin({
+            "id": user.uuid.bytes,
+            "name": user.username,
+            "displayName": user.get_full_name(),
+            "icon": absolute_url(request, get_thumbnail(user.picture, "60x60", crop="center").url)},
+            credentials,
+            user_verification="discouraged",
+            authenticator_attachment="cross-platform",
+        )
+        u2f_request = {
+            'req': b64encode(cbor.encode(registration_data)).decode(),
+            'state': signing.dumps(state, salt=U2FDevice.WEB_AUTHN_SALT)
+        }
+        return u2f_request
+
+    @classmethod
+    def register_complete(cls, name, response_data, state_data, user):
+        data = cbor.decode(b64decode(response_data))
+        state = signing.loads(state_data, salt=U2FDevice.WEB_AUTHN_SALT)
+        client_data = ClientData(data["clientDataJSON"])
+        att_obj = AttestationObject(data["attestationObject"])
+        logger.debug("clientData", client_data)
+        logger.debug("AttestationObject:", att_obj)
+
+        auth_data = cls.server.register_complete(state, client_data, att_obj)
+        logger.debug(auth_data)
+        public_key = websafe_encode(cbor.encode(auth_data.credential_data.public_key))
+        aaguid = websafe_encode(auth_data.credential_data.aaguid)
+        credential_id = websafe_encode(auth_data.credential_data.credential_id)
+
+        device = U2FDevice.objects.create(name=name, user=user, public_key=public_key, credential_id=credential_id,
+                                          aaguid=aaguid, confirmed=True, version="fido2")
+        return device
+
+    @classmethod
+    def authenticate_complete(cls, response_data, state_data, user):
+        response = cbor.decode(b64decode(response_data))
+        state = signing.loads(state_data, salt=U2FDevice.WEB_AUTHN_SALT)
+        credential_id = response["credentialId"]
+        client_data = ClientData(response["clientDataJSON"])
+        auth_data = AuthenticatorData(response["authenticatorData"])
+        signature = response["signature"]
+
+        credentials = U2FDevice.credentials(user)
+        cred = cls.server.authenticate_complete(
+            state,
+            credentials,
+            credential_id,
+            client_data,
+            auth_data,
+            signature,
+        )
+        credential_id = websafe_encode(cred.credential_id)
+        device = U2FDevice.objects.get(user=user, credential_id=credential_id)
+        if auth_data.counter <= device.counter:
+            # verify counter is increasing
+            raise ValueError(f"login counter is not increasing. {auth_data.counter} <= {device.counter} ")
+        device.last_used = timezone.now()
+        device.counter = auth_data.counter
+        device.save(update_fields=["last_used", "counter"])
+
+    @classmethod
+    def credentials(cls, user):
+        u2f_devices = cls.objects.filter(user=user, confirmed=True)
+        return [
+            AttestedCredentialData.create(aaguid=websafe_decode(d.aaguid), credential_id=websafe_decode(d.credential_id),
+                                          public_key=CoseKey.parse(cbor.decode(websafe_decode(d.public_key))))
+            for d in u2f_devices
+        ]
+
     def challenges(self):
-        u2f_devices = U2FDevice.objects.filter(user=self.user, confirmed=True)
-        devices = [d.to_json() for d in u2f_devices]
-        sign_request = u2f.begin_authentication(self.app_id, devices)
+        credentials = U2FDevice.credentials(self.user)
+        req, state = self.server.authenticate_begin(credentials=credentials, user_verification=UserVerificationRequirement.DISCOURAGED)
+        sign_request = {
+            'req': b64encode(cbor.encode(req)).decode(),
+            'state': signing.dumps(state, salt=self.WEB_AUTHN_SALT)
+        }
         return json.dumps(sign_request)
 
     @property

@@ -86,7 +86,7 @@ def remove_value_from_url_param(url, param, value):
     return urlunsplit((scheme, netloc, path, new_query_string, fragment))
 
 
-base_url = '%s://%s' % ('https' if settings.SSO_USE_HTTPS else 'http', settings.SSO_DOMAIN)
+base_url = f"{'https' if settings.SSO_USE_HTTPS else 'http'}://{settings.SSO_DOMAIN}"
 
 
 def get_base_url(request=None):

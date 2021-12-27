@@ -25,6 +25,7 @@ class CredentialSetupForm(forms.Form):
 class AddU2FForm(CredentialSetupForm):
     u2f_response = forms.CharField(label=_('Response'), widget=forms.HiddenInput())
     u2f_request = forms.CharField(label=_('Request'), widget=forms.HiddenInput())
+    state = forms.CharField(label=_('State'), widget=forms.HiddenInput())
 
 
 class ProfileForm(forms.Form):

@@ -1,17 +1,16 @@
-import json
+import logging
 from datetime import timedelta
-
-from u2flib_server import u2f
 
 from django import forms
 from django.conf import settings
 from django.contrib.auth.forms import AuthenticationForm
-from django.utils import timezone
 from django.utils.text import capfirst
 from django.utils.translation import gettext_lazy as _
 from sso.auth.utils import totp_digits, match_token
 from sso.forms import bootstrap
 from sso.utils.translation import string_format
+
+logger = logging.getLogger(__name__)
 
 
 class EmailAuthenticationForm(AuthenticationForm):
@@ -60,6 +59,7 @@ class EmailAuthenticationForm(AuthenticationForm):
 class U2FForm(forms.Form):
     response = forms.CharField(label=_('Response'), widget=forms.HiddenInput())
     challenges = forms.CharField(label=_('Challenges'), widget=forms.HiddenInput())
+    state = forms.CharField(label=_('State'), widget=forms.HiddenInput())
 
     def __init__(self, device=None, **kwargs):
         self.user = kwargs.pop('user')
@@ -69,13 +69,7 @@ class U2FForm(forms.Form):
     def clean(self):
         try:
             from sso.auth.models import U2FDevice
-            response = json.loads(self.cleaned_data.get('response'))
-            challenges = json.loads(self.cleaned_data.get('challenges'))
-            device_registerd, counter, user_presence = u2f.complete_authentication(challenges, response)
-            # TODO: store login_counter and verify it's increasing
-            device = U2FDevice.objects.get(user=self.user, key_handle=device_registerd['keyHandle'])
-            device.last_used = timezone.now()
-            device.save(update_fields=["last_used"])
+            U2FDevice.authenticate_complete(self.cleaned_data.get('response'), self.cleaned_data.get('state'), self.user)
         except Exception as e:
             raise forms.ValidationError(e)
 
