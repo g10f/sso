@@ -16,8 +16,9 @@
           </form>
         {% endfor %}
       {% endif %}
-
-      <div class="py-2 text-center">{% if cancel_url %}<a class="link-danger" href="{{ cancel_url }}">{% translate 'Cancel' %}</a>{% endif %}</div>
+      {% if display != 'popup' and cancel_url %}
+        <div class="py-2 text-center">{% if cancel_url %}<a class="link-danger" href="{{ cancel_url }}">{% translate 'Cancel' %}</a>{% endif %}</div>
+      {% endif %}
       </div>
     {% endblock %}
 {% endblock %}
