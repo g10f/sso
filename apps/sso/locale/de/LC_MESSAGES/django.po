@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-29 02:50+0100\n"
+"POT-Creation-Date: 2021-12-29 14:43+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1519,17 +1519,14 @@ msgstr ""
 "Sicherheitsschlüssel zu geben. Nach Erteilung der Berechtigung beginnt das "
 "Gerät zu blinken."
 
-msgid "U2F Device"
-msgstr "U2F-Gerät"
+msgid "FIDO2 or U2F Device"
+msgstr "FIDO2 oder U2F-Gerät"
 
 msgid "Please enter the one-time code from your authenticator app."
 msgstr "Trage bitte den Einmaltoken aus Deinem Authenticator ein."
 
 msgid "TOTP Authenticator"
 msgstr "TOTP-Authenticator"
-
-msgid "Update"
-msgstr "Aktualisieren"
 
 msgid "Security"
 msgstr "Sicherheit"
@@ -1546,8 +1543,8 @@ msgstr "Bearbeiten"
 msgid "Add TOTP Authenticator"
 msgstr "TOTP-Authenticator hinzufügen"
 
-msgid "Add U2F Device"
-msgstr "U2F Gerät hinzufügen"
+msgid "Add FIDO2 or U2F Device"
+msgstr "FIDO2 oder U2F-Gerät hinzufügen"
 
 msgid "Disable 2-step verification"
 msgstr "2-Faktor Authentifizierung deaktivieren"
@@ -1614,11 +1611,11 @@ msgstr ""
 msgid "Submit"
 msgstr "Bestätigen"
 
-msgid "U2F Device Setup"
-msgstr "U2F Gerät Setup"
+msgid "FIDO2 or U2F Device Setup"
+msgstr "FIDO2 oder U2F-Geräte Registrierung"
 
-msgid "Register U2F device"
-msgstr "U2F Gerät registrieren"
+msgid "Register FIDO2 or U2F device"
+msgstr "FIDO2 oder U2F-Gerät registrieren"
 
 msgid "Your current browser is not yet supported."
 msgstr "Dein Browser wird noch nicht unterstützt "
@@ -2160,8 +2157,7 @@ msgid "source urls"
 msgstr "Quell-URLs"
 
 msgid "List of URLs, which are redirected to the homepage"
-msgstr ""
-"Liste von URLs, die auf die Homepage umgeleitet werden."
+msgstr "Liste von URLs, die auf die Homepage umgeleitet werden."
 
 msgid "Google+ page"
 msgstr "Google+ Seite"
@@ -3018,3 +3014,6 @@ msgstr ""
 
 msgid "CSRF verification failed. Request aborted."
 msgstr "Die CSRF-Überprüfung ist fehlgeschlagen. Anfrage abgebrochen."
+
+#~ msgid "Update"
+#~ msgstr "Aktualisieren"

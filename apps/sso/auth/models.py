@@ -102,7 +102,7 @@ class U2FDevice(Device):
     def register_begin(cls, request):
         user = request.user
         credentials = U2FDevice.credentials(user)
-        icon = None if user.picture is None else absolute_url(request, get_thumbnail(user.picture, "60x60", crop="center").url)
+        icon = absolute_url(request, get_thumbnail(user.picture, "60x60", crop="center").url) if user.picture else None
         registration_data, state = cls.server.register_begin(
             {
                 "id": user.uuid.bytes,
@@ -204,7 +204,7 @@ class U2FDevice(Device):
 
     @classmethod
     def default_name(cls):
-        return _('U2F Device')
+        return _('FIDO2 or U2F Device')
 
 
 class TOTPDevice(Device):

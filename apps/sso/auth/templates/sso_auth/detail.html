@@ -47,7 +47,7 @@
     {% include 'sso_auth/_default_device_field.html' with field=form.default_device %}
 
     <a class="btn btn-primary" type="submit" href="{% url 'auth:totp_add_device' %}">{% translate 'Add TOTP Authenticator' %}</a>
-    <a class="btn btn-primary" href="{% url 'auth:u2f_add_device' %}">{% translate 'Add U2F Device' %}</a>
+    <a class="btn btn-primary" href="{% url 'auth:u2f_add_device' %}">{% translate 'Add FIDO2 or U2F Device' %}</a>
       {% if user.sso_auth_profile.is_otp_enabled %}
         <button class="btn btn-danger" type="submit" name="is_otp_enabled" value="3">{% translate "Disable 2-step verification" %}</button>
       {% else %}
