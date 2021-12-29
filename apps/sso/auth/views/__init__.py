@@ -21,7 +21,7 @@ from django.views.generic.edit import FormView
 from sso.auth import is_otp_login, auth_login
 from sso.auth.forms import EmailAuthenticationForm, AuthenticationTokenForm
 from sso.auth.models import Device
-from sso.auth.utils import get_safe_login_redirect_url, get_request_param, get_device_classes
+from sso.auth.utils import get_safe_login_redirect_url, get_request_param, get_device_classes_for_user
 from sso.middleware import revision_exempt
 from sso.oauth2.crypt import loads_jwt
 from sso.oauth2.models import allowed_hosts, post_logout_redirect_uris, Client
@@ -70,10 +70,9 @@ class LoginView(FormView):
             redirect_url = get_safe_login_redirect_url(request)
             expiry = 0 if session.get_expire_at_browser_close() else settings.SESSION_COOKIE_AGE
             backend = session[BACKEND_SESSION_KEY]
-            device = is_otp_login(user, self.is_two_factor_required)
-            device.generate_challenge()
+            device_cls = is_otp_login(user, self.is_two_factor_required)
             display = request.GET.get('display')
-            token_url = get_token_url(user.id, expiry, redirect_url, backend, display, device.id)
+            token_url = get_token_url(user.id, expiry, redirect_url, backend, display, device_cls.get_device_id())
             return redirect(token_url)
 
         return super().get(request, *args, **kwargs)
@@ -90,13 +89,12 @@ class LoginView(FormView):
         # if 2-nd factor available, send token
         self.is_two_factor_required = get_request_param(self.request, TWO_FACTOR_PARAM, False) is not False
         expiry = settings.SESSION_COOKIE_AGE if form.cleaned_data.get('remember_me', False) else 0
-        device = is_otp_login(user, self.is_two_factor_required)
+        device_cls = is_otp_login(user, self.is_two_factor_required)
 
-        if device:
+        if device_cls:
             try:
-                device.generate_challenge()
                 display = self.request.GET.get('display')
-                self.success_url = get_token_url(user.id, expiry, redirect_url, user.backend, display, device.id)
+                self.success_url = get_token_url(user.id, expiry, redirect_url, user.backend, display, device_cls.get_device_id())
             except Exception as e:
                 messages.error(
                     self.request,
@@ -126,7 +124,7 @@ class TokenView(FormView):
     form_class = AuthenticationTokenForm
     success_url = reverse_lazy('home')
     user = None
-    device = None
+    device_cls = None
     expiry = 0
     challenges = None
 
@@ -142,27 +140,22 @@ class TokenView(FormView):
         self.expiry = state['expiry']
         self.user = get_user_model().objects.get(pk=state['user_id'])
         self.user.backend = state['backend']
-        self.device = Device.objects.get(user=self.user, pk=self.kwargs['device_id'])
-        return self.device.login_form_class
+        self.device_cls = Device.get_subclass(self.kwargs['device_id'])
+        return self.device_cls.login_form_class()
 
     def get_template_names(self):
         try:
-            return self.device.login_form_templates
-        except Exception:
+            return self.device_cls.login_form_templates()
+        except RuntimeError:
             return super().get_template_names()
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['user'] = self.user
-        kwargs['device'] = self.device
         return kwargs
 
     def post(self, request, *args, **kwargs):
         if request.POST.get('resend_token'):
-            state = signing.loads(self.kwargs['user_data'], salt=SALT)
-            device = Device.objects.get(user_id=state['user_id'], pk=self.kwargs['device_id'])
-            challenge = device.generate_challenge()
-            messages.add_message(self.request, level=messages.INFO, message=challenge, fail_silently=True)
             return redirect("%s?%s" % (self.request.path, self.request.GET.urlencode()))
 
         return super().post(request, *args, **kwargs)
@@ -173,22 +166,19 @@ class TokenView(FormView):
         """
         context = super().get_context_data(**kwargs)
 
-        device_classes = get_device_classes()
+        device_classes = get_device_classes_for_user(self.user)
         other_devices = []
-        for device_class in device_classes:
-            devices = device_class.objects.filter(user=self.user).exclude(
-                device_ptr_id=self.device.id).prefetch_related('device_ptr')
-            for device in devices:
-                device_info = {
-                    'device': device,
-                    'url': "%s?%s" % (
-                        reverse('auth:token', kwargs={'user_data': self.kwargs['user_data'], 'device_id': device.id}),
-                        self.request.GET.urlencode())
-                }
-                other_devices.append(device_info)
+        for device_cls in filter(lambda d: d != self.device_cls, device_classes):
+            device_info = {
+                'name': device_cls.default_name(),
+                'url': "%s?%s" % (
+                    reverse('auth:token', kwargs={'user_data': self.kwargs['user_data'], 'device_id': device_cls.get_device_id()}),
+                    self.request.GET.urlencode())
+            }
+            other_devices.append(device_info)
 
         context['other_devices'] = other_devices
-        context['device'] = self.device
+        context['device_cls'] = self.device_cls
         redirect_url = get_safe_login_redirect_url(self.request)
         context['cancel_url'] = get_oauth2_cancel_url(redirect_url)
         context['display'] = get_request_param(self.request, 'display', 'page')
@@ -197,7 +187,7 @@ class TokenView(FormView):
     def get_initial(self):
         initial = super().get_initial()
         if self.request.method == 'GET':
-            initial.update({'challenges': self.device.challenges()})
+            initial.update({'challenges': self.device_cls.challenges(self.user)})
         else:
             initial.update({'challenges': self.request.POST.get('challenges')})
 
@@ -206,7 +196,7 @@ class TokenView(FormView):
     def form_valid(self, form):
         redirect_url = get_safe_login_redirect_url(self.request)
         user = form.user
-        user._auth_device_id = self.device.id
+        user._auth_device_id = form.device.id
         user._auth_session_expiry = self.expiry
         auth_login(self.request, form.user)
         # remove the prompt login param, cause login was done here

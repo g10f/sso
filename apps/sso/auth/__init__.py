@@ -6,6 +6,7 @@ import time
 from django.conf import settings
 from django.contrib.auth import rotate_token, user_logged_in, load_backend, BACKEND_SESSION_KEY, _get_backends
 from django.utils.crypto import constant_time_compare, salted_hmac
+from sso.auth.utils import get_device_classes_for_user
 
 logger = logging.getLogger(__name__)
 
@@ -83,17 +84,24 @@ def auth_login(request, user, backend=None):
 
 
 def is_otp_login(user, is_two_factor_required):
-    if hasattr(user, 'sso_auth_profile'):
-        profile = user.sso_auth_profile
-        if (profile.default_device and profile.is_otp_enabled) or (profile.default_device and is_two_factor_required):
-            return profile.default_device
-
-    if is_two_factor_required:
-        # if the user has not enabled two_factor as default but a confirmed device
-        # we return the first device of the user
-        return user.device_set.filter(confirmed=True).first()
+    if is_two_factor_required or (hasattr(user, 'sso_auth_profile') and user.sso_auth_profile.is_otp_enabled):
+        return get_default_device_cls(user)
 
     return None
+
+
+def get_default_device_cls(user):
+    device_classes = get_device_classes_for_user(user)
+    if not device_classes:
+        return None
+    default = next(iter(device_classes))
+
+    if hasattr(user, 'sso_auth_profile'):
+        profile = user.sso_auth_profile
+        if profile.default_device_id is not None:
+            return next(filter(lambda d: d.device_id == profile.default_device_id, device_classes), default)
+
+    return default
 
 
 def verify_session_auth_hash(data, user, client=None):

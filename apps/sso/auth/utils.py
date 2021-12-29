@@ -14,9 +14,8 @@ from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.core.exceptions import ValidationError
 from django.shortcuts import resolve_url
-from django.utils.decorators import method_decorator
 from django.utils.http import url_has_allowed_host_and_scheme
-from sso.auth import SESSION_AUTH_DATE
+from sso.auth.apps import AuthConfig
 from sso.utils.http import get_request_param
 
 logger = logging.getLogger(__name__)
@@ -32,6 +31,7 @@ def is_recent_auth_time(request, max_age=None):
     if max_age is None and settings.SSO_ADMIN_MAX_AGE is also None
     then there is no checking
     """
+    from sso.auth import SESSION_AUTH_DATE
     if SESSION_AUTH_DATE in request.session:
         max_age = max_age if max_age else settings.SSO_ADMIN_MAX_AGE
         if max_age is None:
@@ -45,11 +45,25 @@ def is_recent_auth_time(request, max_age=None):
 
 @lru_cache()
 def get_device_classes():
+    from sso.auth.models import Device
     device_classes = []
-    for device_class_path in settings.OTP_DEVICES:
-        device_class = django_apps.get_model(device_class_path)
+    for model in Device.devices:
+        device_class = django_apps.get_model(AuthConfig.label, model[0])
         device_classes.append(device_class)
     return device_classes
+
+
+def get_device_classes_for_user(user):
+    from sso.auth.models import Device
+    device_classes = set()
+    for device in Device.objects.filter(user=user, confirmed=True):
+        device_class = device.get_child().__class__
+        device_classes.add(device_class)
+    return device_classes
+
+
+def get_device_class_by_app_label(model_name):
+    return django_apps.get_model(AuthConfig.label, model_name)
 
 
 def totp_digits():
@@ -60,35 +74,21 @@ def totp_digits():
     return getattr(settings, 'TWO_FACTOR_TOTP_DIGITS', 6)
 
 
-def default_device(user, is_otp_enabled=True):
-    from sso.auth.models import Device
-    try:
-        if is_otp_enabled is not None:
-            return Device.objects.get(profile__user=user, profile__is_otp_enabled=is_otp_enabled, confirmed=True)
-        else:
-            return Device.objects.get(profile__user=user, confirmed=True)
-
-    except Device.DoesNotExist:
-        return None
-
-
 def match_token(user, token):
     """
     Attempts to verify a :term:`token` on every device attached to the given
     user until one of them succeeds. When possible, you should prefer to verify
     tokens against specific devices.
     """
-    matches = (d for d in devices_for_user(user) if d.verify_token(token))
-
+    matches = (d for d in otp_devices_for_user(user) if d.verify_token(token))
     return next(matches, None)
 
 
-def devices_for_user(user, confirmed=True):
-    from sso.auth.models import Device
+def otp_devices_for_user(user, confirmed=True):
+    from sso.auth.models import TOTPDevice
     if user.is_anonymous:
-        return Device.objects.none()
-
-    return Device.objects.filter(user=user, confirmed=confirmed)
+        return None
+    return TOTPDevice.objects.filter(user=user, confirmed=confirmed)
 
 
 def get_safe_login_redirect_url(request):

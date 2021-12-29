@@ -4,7 +4,7 @@ from django.contrib import admin
 class ProfileAdmin(admin.ModelAdmin):
     search_fields = 'user__username',
     list_filter = 'is_otp_enabled',
-    list_display = 'user', 'is_otp_enabled', 'default_device'
+    list_display = 'user', 'is_otp_enabled', 'default_device_id'
     raw_id_fields = ("user",)
 
 

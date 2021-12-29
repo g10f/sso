@@ -6,8 +6,9 @@ from django import forms
 from django.forms import ModelForm
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
+from sso.auth import get_default_device_cls
 from sso.auth.models import TOTPDevice, Profile, Device
-from sso.auth.utils import get_qrcode_data_url, totp_digits
+from sso.auth.utils import get_qrcode_data_url, totp_digits, get_device_classes_for_user
 from sso.forms import bootstrap
 
 
@@ -29,16 +30,20 @@ class AddU2FForm(CredentialSetupForm):
 
 
 class ProfileForm(forms.Form):
-    default = forms.IntegerField(required=False)
+    default_device = forms.ChoiceField(required=False, label=_('Default 2nd factor authentication'), widget=bootstrap.RadioSelect())
     delete = forms.IntegerField(required=False)
     is_otp_enabled = forms.NullBooleanField()
 
     def __init__(self, user, **kwargs):
+        initial = kwargs.get('initial', {})
+        initial['default_device'] = user.sso_auth_profile.default_device_id
+        kwargs['initial'] = initial
         super().__init__(**kwargs)
+        self.fields['default_device'].choices = [(d.device_id, d.default_name()) for d in get_device_classes_for_user(user)]
         self.user = user
 
     def save(self):
-        default = self.cleaned_data.get('default')
+        default_device = self.cleaned_data.get('default_device')
         delete = self.cleaned_data.get('delete')
         is_otp_enabled = self.cleaned_data.get('is_otp_enabled')
 
@@ -53,14 +58,21 @@ class ProfileForm(forms.Form):
             else:
                 Profile.objects.filter(user=self.user).update(is_otp_enabled=False)
 
-        if default is not None:
+        if default_device:
             if not hasattr(self.user, 'sso_auth_profile'):
-                Profile.objects.create(user=self.user, default_device_id=default)
+                Profile.objects.create(user=self.user, default_device_id=default_device)
             else:
-                Profile.objects.filter(user=self.user).update(default_device_id=default)
+                Profile.objects.filter(user=self.user).update(default_device_id=default_device)
 
         if delete is not None:
             Device.objects.filter(user=self.user, id=delete).delete()
+            default_device = get_default_device_cls(self.user)
+            default_device_id = None if default_device is None else default_device.device_id
+            if hasattr(self.user, 'sso_auth_profile'):
+                profile = Profile.objects.get(user=self.user)
+                if profile.default_device_id != default_device_id:
+                    profile.default_device_id = default_device_id
+                    profile.save()
 
 
 class TOTPDeviceForm(CredentialSetupForm):
