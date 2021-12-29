@@ -34,7 +34,7 @@ SSO_STATIC_DEPENDENCIES = {
     "cropperjs": "1.5.12",
     "jquery": "3.5.1",
     "select2": "4.1.0-rc.0",
-    "fido2": "1.0.1",
+    "fido2": "1.0.2",
     "cbor": "1.0.0",
 }
 

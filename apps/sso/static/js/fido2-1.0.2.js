@@ -30,7 +30,7 @@ if (typeof jQuery === 'undefined') {
                     console.log(response);
                     $("input[name='state']", form).val(state);
                     $("input[name='u2f_response']", form).val(response);
-                    displaySucess("Registration successful.");
+                    displaySucess();
                     document.getElementById("id_name").focus();
                     //form.submit();
                 })
@@ -89,9 +89,10 @@ if (typeof jQuery === 'undefined') {
         status.addClass('alert-danger');
         $(".u2f-login-text").addClass('hidden');
     }
-    function displaySucess(text) {
+    function displaySucess() {
         const status = $("#u2f-status");
-        status.text(text);
+        const message = gettext("Registration successful.")
+        status.text(message);
         status.append(" <i class=\"bi bi-person-check fs-4\"></i>");
         status.addClass('alert');
         status.addClass('alert-success');

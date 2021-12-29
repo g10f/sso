@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-21 15:13+0200\n"
+"POT-Creation-Date: 2021-12-29 14:55+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,84 +17,76 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: static/js/base64_image-1.0.0.js:70
 #, javascript-format
 msgid "Image is too large (max %skB)."
 msgstr ""
 
-#: static/js/base64_image-1.0.0.js:80
-msgid "Image type is not allowed."
+msgid "Registration successful."
 msgstr ""
 
-#: static/js/base64_image-1.0.0.js:94
-msgid "Error loading image file."
-msgstr ""
-
-#: static/js/gis/OLMapWidgetExt-1.0.6.js:39
 msgid "No location found"
 msgstr ""
 
-#: static/js/gis/OLMapWidgetExt-1.0.6.js:43
 msgid ""
 "The map was updated with the new coordinates. Press the 'Save' button for "
 "saving the new coordinates."
 msgstr ""
 
-#: static/js/vendor/SelectFilter2.js:48
 #, javascript-format
 msgid "Available %s"
 msgstr ""
 
-#: static/js/vendor/SelectFilter2.js:54
 #, javascript-format
 msgid ""
 "This is the list of available %s. You may choose some by selecting them in "
 "the box below and then clicking the \"Choose\" arrow between the two boxes."
 msgstr ""
 
-#: static/js/vendor/SelectFilter2.js:70
 #, javascript-format
 msgid "Type into this box to filter down the list of available %s."
 msgstr ""
 
-#: static/js/vendor/SelectFilter2.js:75
 msgid "Filter"
 msgstr ""
 
-#: static/js/vendor/SelectFilter2.js:79
 msgid "Choose all"
 msgstr ""
 
-#: static/js/vendor/SelectFilter2.js:79
 #, javascript-format
 msgid "Click to choose all %s at once."
 msgstr ""
 
-#: static/js/vendor/SelectFilter2.js:88
 msgid "Choose"
 msgstr ""
 
-#: static/js/vendor/SelectFilter2.js:92
 msgid "Remove"
 msgstr ""
 
-#: static/js/vendor/SelectFilter2.js:100
 #, javascript-format
 msgid "Chosen %s"
 msgstr ""
 
-#: static/js/vendor/SelectFilter2.js:106
 #, javascript-format
 msgid ""
 "This is the list of chosen %s. You may remove some by selecting them in the "
 "box below and then clicking the \"Remove\" arrow between the two boxes."
 msgstr ""
 
-#: static/js/vendor/SelectFilter2.js:116
 msgid "Remove all"
 msgstr ""
 
-#: static/js/vendor/SelectFilter2.js:116
 #, javascript-format
 msgid "Click to remove all chosen %s at once."
+msgstr ""
+
+msgid "carousel"
+msgstr ""
+
+msgid "collapse"
+msgstr ""
+
+msgid "dropdown"
+msgstr ""
+
+msgid "modal"
 msgstr ""

@@ -3,6 +3,7 @@
 
 {% block script %}
   {{ block.super }}
+  <script src="{% url 'jsi18n' %}"></script>
   <script src="{% static 'js/cbor-' %}{{ dpdc.cbor }}.js"></script>
   <script src="{% static 'js/vendor/' %}{{ dpdc.jquery }}/jquery.min.js"></script>
   <script src="{% static 'js/fido2-' %}{{ dpdc.fido2 }}.js"></script>
