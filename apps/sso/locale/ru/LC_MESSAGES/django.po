@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-29 02:50+0100\n"
+"POT-Creation-Date: 2021-12-29 14:43+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1427,16 +1427,13 @@ msgid ""
 "device will start to blink."
 msgstr ""
 
-msgid "U2F Device"
+msgid "FIDO2 or U2F Device"
 msgstr ""
 
 msgid "Please enter the one-time code from your authenticator app."
 msgstr ""
 
 msgid "TOTP Authenticator"
-msgstr ""
-
-msgid "Update"
 msgstr ""
 
 msgid "Security"
@@ -1454,7 +1451,7 @@ msgstr ""
 msgid "Add TOTP Authenticator"
 msgstr ""
 
-msgid "Add U2F Device"
+msgid "Add FIDO2 or U2F Device"
 msgstr ""
 
 msgid "Disable 2-step verification"
@@ -1515,10 +1512,10 @@ msgstr ""
 msgid "Submit"
 msgstr ""
 
-msgid "U2F Device Setup"
+msgid "FIDO2 or U2F Device Setup"
 msgstr ""
 
-msgid "Register U2F device"
+msgid "Register FIDO2 or U2F device"
 msgstr ""
 
 msgid "Your current browser is not yet supported."
