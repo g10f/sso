@@ -1,12 +1,9 @@
 import json
 import logging
 
-from fido2.server import Fido2Server
-from fido2.webauthn import PublicKeyCredentialRpEntity
-
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.sites.shortcuts import get_current_site
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views.generic import FormView, UpdateView
 from sso.auth.forms.profile import TOTPDeviceForm, ProfileForm, AddU2FForm, DeviceUpdateForm
 from sso.auth.models import U2FDevice, Device, Profile
@@ -20,7 +17,6 @@ class AddU2FView(LoginRequiredMixin, FormView):
     form_class = AddU2FForm
     success_url = reverse_lazy('auth:mfa-detail')
     u2f_request = None
-    server = Fido2Server(PublicKeyCredentialRpEntity("localhost", "Demo server"))
 
     def get(self, request, *args, **kwargs):
         self.u2f_request = U2FDevice.register_begin(self.request)
@@ -32,9 +28,9 @@ class AddU2FView(LoginRequiredMixin, FormView):
 
     def get_context_data(self, **kwargs):
         kwargs = super().get_context_data(**kwargs)
-
         kwargs['u2f_request'] = json.dumps(self.u2f_request)
-
+        kwargs['device_cls'] = U2FDevice
+        kwargs['cancel_url'] = reverse('auth:mfa-detail')
         return kwargs
 
     def form_valid(self, form):
@@ -44,7 +40,7 @@ class AddU2FView(LoginRequiredMixin, FormView):
         user = self.request.user
         device = U2FDevice.register_complete(name, response_data, state_data, user)
         if not hasattr(user, 'sso_auth_profile'):
-            Profile.objects.create(user=user, default_device=device, is_otp_enabled=True)
+            Profile.objects.create(user=user, default_device_id=device.device_id, is_otp_enabled=True)
 
         return super().form_valid(form)
 

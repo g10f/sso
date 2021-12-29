@@ -8,7 +8,7 @@ from django.urls import reverse_lazy
 from django.utils.translation import pgettext_lazy
 
 try:
-    RUNNING_DEVSERVER = (sys.argv[1] in 'runserver')
+    RUNNING_DEVSERVER = (sys.argv[1] in ['runserver', 'runserver_plus'])
 except IndexError:
     RUNNING_DEVSERVER = False
 
@@ -34,7 +34,7 @@ SSO_STATIC_DEPENDENCIES = {
     "cropperjs": "1.5.12",
     "jquery": "3.5.1",
     "select2": "4.1.0-rc.0",
-    "fido2": "1.0.0",
+    "fido2": "1.0.1",
     "cbor": "1.0.0",
 }
 
