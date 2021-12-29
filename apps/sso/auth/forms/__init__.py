@@ -61,15 +61,15 @@ class U2FForm(forms.Form):
     challenges = forms.CharField(label=_('Challenges'), widget=forms.HiddenInput())
     state = forms.CharField(label=_('State'), widget=forms.HiddenInput())
 
-    def __init__(self, device=None, **kwargs):
+    def __init__(self, **kwargs):
         self.user = kwargs.pop('user')
-        self.device = device
+        self.device = None
         super().__init__(**kwargs)
 
     def clean(self):
         try:
             from sso.auth.models import U2FDevice
-            U2FDevice.authenticate_complete(self.cleaned_data.get('response'), self.cleaned_data.get('state'), self.user)
+            self.device = U2FDevice.authenticate_complete(self.cleaned_data.get('response'), self.cleaned_data.get('state'), self.user)
         except Exception as e:
             raise forms.ValidationError(e)
 
@@ -89,9 +89,9 @@ class AuthenticationTokenForm(forms.Form):
                                        'class': 'form-control-lg'
                                    }))
 
-    def __init__(self, device=None, **kwargs):
+    def __init__(self, **kwargs):
         self.user = kwargs.pop('user')
-        self.device = device
+        self.device = None
         super().__init__(**kwargs)
 
     def clean(self):
@@ -99,16 +99,12 @@ class AuthenticationTokenForm(forms.Form):
             raise forms.ValidationError(_('User is none'))
 
         token = self.cleaned_data.get('otp_token')
-        device = self._verify_token(token)
-        if device is None:
+        self.device = self._verify_token(token)
+        if self.device is None:
             raise forms.ValidationError(_('One-time code does not match.'))
 
         return self.cleaned_data
 
     def _verify_token(self, token):
-        if self.device is not None:
-            device = self.device if self.device.verify_token(token) else None
-        else:
-            device = match_token(self.user, token)
-
+        device = match_token(self.user, token)
         return device

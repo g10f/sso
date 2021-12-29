@@ -1,0 +1,18 @@
+{% load i18n form %}
+{% if field|length > 1 %}
+  <div class="table-responsive align-middle {% if field.errors %}has-error{% endif %}">
+    <table>
+      <tr>
+        <td class="p-2">
+          {{ field }}
+          {% if field.help_text or field.errors %}
+            <div class="form-text mb-1">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</div>
+          {% endif %}
+        </td>
+        <td class="p-2">
+          <button class="btn btn-success" type="submit">{{ field.label }}</button>
+        </td>
+      </tr>
+    </table>
+  </div>
+{% endif %}

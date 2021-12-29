@@ -12,7 +12,7 @@
         <div class="text-center pt-2">{% translate "Alternatively, use one of your backup devices:" %}</div>
         {% for other in other_devices %}
           <form class="d-grid" action="{{ other.url }}" method="post">{% csrf_token %}
-            <button class="btn btn-lg btn-default" type="submit" name="resend_token" value=1">{{ other.device.name }} {{ other.device.default_name }}</button>
+            <button class="btn btn-lg btn-default" type="submit" name="resend_token" value=1">{{ other.name }}</button>
           </form>
         {% endfor %}
       {% endif %}

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-17 16:06+0200\n"
+"POT-Creation-Date: 2021-12-29 02:50+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1393,6 +1393,9 @@ msgstr ""
 msgid "Request"
 msgstr ""
 
+msgid "Default 2nd factor authentication"
+msgstr ""
+
 msgid "One-time code"
 msgstr ""
 
@@ -1418,21 +1421,22 @@ msgstr ""
 msgid "is otp enabled"
 msgstr ""
 
-#, python-format
 msgid ""
-"Please touch the flashing %(name)s U2F device now. You may be prompted to "
-"allow the site permission to access your security keys. After granting "
-"permission, the device will start to blink."
+"Please touch the flashing U2F device now. You may be prompted to allow the "
+"site permission to access your security keys. After granting permission, the "
+"device will start to blink."
 msgstr ""
 
 msgid "U2F Device"
 msgstr ""
 
-#, python-format
-msgid "Please enter the one-time code from your %(name)s authenticator."
+msgid "Please enter the one-time code from your authenticator app."
 msgstr ""
 
 msgid "TOTP Authenticator"
+msgstr ""
+
+msgid "Update"
 msgstr ""
 
 msgid "Security"
@@ -1444,13 +1448,7 @@ msgstr ""
 msgid "Type"
 msgstr ""
 
-msgid "default"
-msgstr ""
-
 msgid "Edit"
-msgstr ""
-
-msgid "Set as default"
 msgstr ""
 
 msgid "Add TOTP Authenticator"
@@ -1521,12 +1519,6 @@ msgid "U2F Device Setup"
 msgstr ""
 
 msgid "Register U2F device"
-msgstr ""
-
-msgid ""
-"Please touch the flashing U2F device now. You may be prompted to allow the "
-"site permission to access your security keys. After granting permission, the "
-"device will start to blink."
 msgstr ""
 
 msgid "Your current browser is not yet supported."
@@ -2046,7 +2038,7 @@ msgstr ""
 msgid "source urls"
 msgstr ""
 
-msgid "Newline separated list of URLs, which are redirected to the homepage"
+msgid "List of URLs, which are redirected to the homepage"
 msgstr ""
 
 msgid "Google+ page"

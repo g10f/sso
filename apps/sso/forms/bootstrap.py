@@ -84,6 +84,11 @@ class ImageWidget(forms.ClearableFileInput):
         super().__init__(new_attrs, **kwargs)
 
 
+class RadioSelect(forms.widgets.RadioSelect):
+    template_name = 'bootstrap/forms/widgets/checkbox_select_multiple.html'
+    option_template_name = 'django/forms/widgets/checkbox_option.html'
+
+
 class CheckboxSelectMultiple(forms.widgets.CheckboxSelectMultiple):
     template_name = 'bootstrap/forms/widgets/checkbox_select_multiple.html'
 
