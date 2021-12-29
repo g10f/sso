@@ -102,11 +102,14 @@ class U2FDevice(Device):
     def register_begin(cls, request):
         user = request.user
         credentials = U2FDevice.credentials(user)
-        registration_data, state = cls.server.register_begin({
-            "id": user.uuid.bytes,
-            "name": user.username,
-            "displayName": user.get_full_name(),
-            "icon": absolute_url(request, get_thumbnail(user.picture, "60x60", crop="center").url)},
+        icon = None if user.picture is None else absolute_url(request, get_thumbnail(user.picture, "60x60", crop="center").url)
+        registration_data, state = cls.server.register_begin(
+            {
+                "id": user.uuid.bytes,
+                "name": user.username,
+                "displayName": user.get_full_name(),
+                "icon": icon
+            },
             credentials,
             user_verification="discouraged"
         )

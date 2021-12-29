@@ -36,7 +36,8 @@ class ProfileForm(forms.Form):
 
     def __init__(self, user, **kwargs):
         initial = kwargs.get('initial', {})
-        initial['default_device'] = user.sso_auth_profile.default_device_id
+        default_device_id = user.sso_auth_profile.default_device_id if hasattr(user, 'sso_auth_profile') else None
+        initial['default_device'] = default_device_id
         kwargs['initial'] = initial
         super().__init__(**kwargs)
         self.fields['default_device'].choices = [(d.device_id, d.default_name()) for d in get_device_classes_for_user(user)]
@@ -70,9 +71,12 @@ class ProfileForm(forms.Form):
             default_device_id = None if default_device is None else default_device.device_id
             if hasattr(self.user, 'sso_auth_profile'):
                 profile = Profile.objects.get(user=self.user)
-                if profile.default_device_id != default_device_id:
-                    profile.default_device_id = default_device_id
-                    profile.save()
+                if default_device is None:
+                    profile.delete()
+                else:
+                    if profile.default_device_id != default_device_id:
+                        profile.default_device_id = default_device_id
+                        profile.save()
 
 
 class TOTPDeviceForm(CredentialSetupForm):
@@ -111,6 +115,6 @@ class TOTPDeviceForm(CredentialSetupForm):
         self.device.name = self.cleaned_data['name']
         self.device.save()
         if not hasattr(self.user, 'sso_auth_profile'):
-            Profile.objects.create(user=self.user, default_device=self.device, is_otp_enabled=True)
+            Profile.objects.create(user=self.user,  default_device_id=self.device.device_id, is_otp_enabled=True)
 
         return self.device

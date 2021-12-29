@@ -8,9 +8,11 @@ if (typeof jQuery === 'undefined') {
     $(function () {
         // Check if WebAuthn is supported by this browser
         if (!window.PublicKeyCredential) {
-            $(".login-text").hide();
+            $(".u2f-login-text").addClass('hidden');
+            $(".browser-not-supported").removeClass('hidden');
         } else {
-            $(".browser-not-supported").hide();
+            $(".u2f-login-text").removeClass('hidden');
+            $(".browser-not-supported").addClass('hidden');
         }
 
         if ($('#u2f_register_form').length) {
@@ -28,7 +30,9 @@ if (typeof jQuery === 'undefined') {
                     console.log(response);
                     $("input[name='state']", form).val(state);
                     $("input[name='u2f_response']", form).val(response);
-                    form.submit();
+                    displaySucess("Registration successful.");
+                    document.getElementById("id_name").focus();
+                    //form.submit();
                 })
                 .catch((err) => {
                     displayError(err)
@@ -59,20 +63,20 @@ if (typeof jQuery === 'undefined') {
     });
 
     function arrayBufferToBase64(buffer) {
-        var binary = '';
-        var bytes = new Uint8Array(buffer);
-        var len = bytes.byteLength;
-        for (var i = 0; i < len; i++) {
+        let binary = '';
+        const bytes = new Uint8Array(buffer);
+        const len = bytes.byteLength;
+        for (let i = 0; i < len; i++) {
             binary += String.fromCharCode(bytes[i]);
         }
         return window.btoa(binary);
     }
 
     function base64ToArrayBuffer(base64) {
-        var binary_string = window.atob(base64);
-        var len = binary_string.length;
-        var bytes = new Uint8Array(len);
-        for (var i = 0; i < len; i++) {
+        const binary_string = window.atob(base64);
+        const len = binary_string.length;
+        let bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) {
             bytes[i] = binary_string.charCodeAt(i);
         }
         return bytes.buffer;
@@ -83,6 +87,14 @@ if (typeof jQuery === 'undefined') {
         status.text(text);
         status.addClass('alert');
         status.addClass('alert-danger');
-        $("#u2f-login-text").hide();
+        $(".u2f-login-text").addClass('hidden');
+    }
+    function displaySucess(text) {
+        const status = $("#u2f-status");
+        status.text(text);
+        status.append(" <i class=\"bi bi-person-check fs-4\"></i>");
+        status.addClass('alert');
+        status.addClass('alert-success');
+        $(".u2f-login-text").addClass('hidden');
     }
 }(jQuery));

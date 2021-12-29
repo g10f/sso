@@ -23,27 +23,21 @@
   <form method="post" id="u2f_register_form">
     <h1>{% translate 'Register U2F device' %}</h1>
 
-    <div class="alert alert-info">
-      {% blocktranslate trimmed %}
-        Please touch the flashing U2F device now.
-        You may be prompted to allow the site permission to access your security keys. After granting permission, the device will start to blink.
-      {% endblocktranslate %}
-    </div>
-
-    <div class="alert alert-danger browser-not-supported">
+    <div class="alert alert-info text-center u2f-login-text hidden" role="alert">{{ device_cls.login_text }}</div>
+    <div class="alert alert-danger browser-not-supported hidden" role="alert">
       {% translate 'Your current browser is not yet supported.' %}
     </div>
-
-    <div class="" id="u2f-status"></div>
 
     {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
 
     {% include 'include/_form_boilerplate.html' %}
+    <div class="" id="u2f-status"></div>
     {% include 'include/_field.html' with field=form.name %}
 
-    <div class="form-group hidden">
+    <div class="form-group">
       <div class="g10f-form-submit">
         <button type="submit" class="btn btn-primary">{% translate 'Submit' %}</button>
+        <a class="btn btn-secondary" href="{{ cancel_url }}">{% translate 'Cancel' %}</a>
       </div>
     </div>
   </form>
