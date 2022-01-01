@@ -39,6 +39,9 @@ Prepare tests
 Changelog
 ----------
 
+3.2.0
+ - support for WebAuthn, allows usb-keys, fingerprint and windows hello
+ 
 3.1.4
  - Docker support
 
