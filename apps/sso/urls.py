@@ -1,7 +1,6 @@
 import sso
 from django.apps import apps
 from django.conf import settings
-from django.conf.urls.static import static
 from django.urls import include, path, register_converter
 from django.utils import timezone
 from django.views.decorators.cache import cache_page
@@ -44,8 +43,13 @@ urlpatterns = [
     path('chained_filter/organisations/AdminRegion/<slug:field>/<slug:value>/', filterchain,
          kwargs={'app': 'organisations', 'model': 'AdminRegion', 'manager': 'active_objects'}, name='chained_filter'),
 ]
+if settings.DEBUG:
+    from django.conf.urls.static import static
+    from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    # Serve static and media files from development server
+    urlpatterns += staticfiles_urlpatterns()
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if apps.is_installed('sso.access_requests'):
     urlpatterns += [

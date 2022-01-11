@@ -22,7 +22,7 @@ class FormsetForm(BaseForm):
     def media(self):
 
         media = super().media
-        js = [f'js/formsets-{ settings.SSO_STATIC_DEPENDENCIES["formsets"]}.js']
+        js = ['js/formsets.js']
         return forms.Media(js=js) + media
 
 
