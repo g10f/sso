@@ -22,6 +22,8 @@ else:
 
 ALLOWED_HOSTS = ['.localhost', '127.0.0.1', '[::1]']
 
+SSO_STYLE = 'css/main.min.css'
+
 SSO_STATIC_DEPENDENCIES = {
     "style": "main-1.1.11",
     "select2_style": "1.0.4",
@@ -153,6 +155,11 @@ MEDIA_ROOT = BASE_DIR.parent / 'htdocs/media'
 
 MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
+
+if RUNNING_TEST:
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+else:
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 if DEBUG:
     # don't use cached loader

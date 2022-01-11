@@ -16,5 +16,5 @@ def settings(request):
         'registration_open': site_settings.REGISTRATION.get('OPEN', True),
         'data_protection_uri': site_settings.SSO_DATA_PROTECTION_URI,
         'sidebar': sidebar(request),
-        'dpdc': site_settings.SSO_STATIC_DEPENDENCIES
+        'sso_style': site_settings.SSO_STYLE
     }

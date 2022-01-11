@@ -191,7 +191,7 @@ class FormsetsUpdateView(generic.UpdateView):
 
     @property
     def media(self):
-        js = [f'js/formsets-{ settings.SSO_STATIC_DEPENDENCIES["formsets"] }.js']
+        js = ['js/formsets.js']
         return forms.Media(js=js)
 
     @property

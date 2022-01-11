@@ -1,12 +1,9 @@
 from django import forms
-from django.conf import settings
 from django.contrib.gis import forms as gis_forms
 from django.forms import widgets
 from django.forms.widgets import FILE_INPUT_CONTRADICTION
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
-
-DEPENDENCIES = settings.SSO_STATIC_DEPENDENCIES
 
 
 def add_class_to_css_class(classes, new_class):
@@ -131,9 +128,9 @@ class Select(forms.Select):
 class Select2(forms.Select):
     class Media:
         css = {
-            'all': (f'css/select2-{DEPENDENCIES["select2_style"]}.min.css',)
+            'all': ('css/select2.min.css',)
         }
-        js = (f'js/vendor/{DEPENDENCIES["select2"]}/select2.min.js',)
+        js = ('js/vendor/select2.min.js',)
 
     def __init__(self, attrs=None, **kwargs):
         # add select2 class
@@ -184,7 +181,7 @@ class SelectDateWidget(widgets.SelectDateWidget):
 class OSMWidget(gis_forms.OSMWidget):
     class Media:
         js = (
-            f'js/gis/OLMapWidgetExt-{DEPENDENCIES["OLMapWidgetExt"]}.js',
+            'js/gis/OLMapWidgetExt.js',
         )
 
 
@@ -202,8 +199,8 @@ class FilteredSelectMultiple(forms.SelectMultiple):
         js = (
             'vendor/core.js',
             'vendor/SelectBox.js',
-            'vendor/SelectFilter2.0.3.js',
-            f'formsets-{ DEPENDENCIES["formsets"] }.js'
+            'vendor/SelectFilter2.js',
+            'formsets.js'
         )
         return forms.Media(js=["js/%s" % path for path in js])
 
@@ -223,11 +220,11 @@ class Base64ImageWidget(widgets.Input):
 
     class Media:
         css = {
-            'all': (f'vendor/{DEPENDENCIES["cropperjs"]}/cropper.min.css',)
+            'all': ('vendor/cropper.min.css',)
         }
         js = (
-            f'vendor/{DEPENDENCIES["cropperjs"]}/cropper.min.js',
-            f'js/base64_image-{DEPENDENCIES["base64_image"]}.js',
+            'vendor/cropper.min.js',
+            'js/base64_image.js',
         )
 
     def modal_id(self, name):
