@@ -24,22 +24,6 @@ ALLOWED_HOSTS = ['.localhost', '127.0.0.1', '[::1]']
 
 SSO_STYLE = 'css/main.min.css'
 
-SSO_STATIC_DEPENDENCIES = {
-    "style": "main-1.1.11",
-    "select2_style": "1.0.4",
-    "jquery_plugins": "1.0.14",
-    "base64_image": "1.1.4",
-    "OLMapWidgetExt": "1.0.6",
-    "formsets": "1.3",
-    "bootstrap": "5.1.3",
-    "bootstrap_icons": "1.7.1",
-    "cropperjs": "1.5.12",
-    "jquery": "3.5.1",
-    "select2": "4.1.0-rc.0",
-    "fido2": "1.0.2",
-    "cbor": "1.0.0",
-}
-
 THUMBNAIL_QUALITY = 100
 THUMBNAIL_FORMAT = 'PNG'
 
@@ -104,8 +88,8 @@ CELERY_BROKER_CONNECTION_TIMEOUT = 30  # May require a long timeout due to Linux
 CELERY_RESULT_BACKEND = None
 CELERY_WORKER_SEND_TASK_EVENTS = False  # Will not create celeryev.* queues
 # CELERY_EVENT_QUEUE_EXPIRES = 60  # Will delete all celeryev. queues without consumers after 1 minute.
-#: Only add pickle to this list if your broker is secured
-#: from unwanted access (see userguide/security.html)
+# Only add pickle to this list if your broker is secured
+# from unwanted access (see userguide/security.html)
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'

@@ -1,7 +1,7 @@
-django>3.2
-oauthlib>3.1
+django<4
+oauthlib
 wheel
-psycopg2-binary
+psycopg2
 django-formtools
 django-ipware
 django-reversion
@@ -16,6 +16,6 @@ geopy
 qrcode
 requests
 celery
-python-u2flib-server
+fido2
 pymemcache
 gunicorn
