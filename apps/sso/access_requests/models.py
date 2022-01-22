@@ -1,9 +1,11 @@
-import datetime
+from datetime import timedelta
 
 from current_user.models import CurrentUserField
 from django.conf import settings
 from django.db import models
+from django.db.models import Q
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from sso.accounts.models import Application
@@ -19,6 +21,20 @@ class AccessRequestManager(AbstractBaseModelManager):
 class OpenAccessRequestManager(AbstractBaseModelManager):
     def get_queryset(self):
         return super().get_queryset().filter(status='o').prefetch_related('user__useremail_set')
+
+    @classmethod
+    def expiration_date(cls):
+        return timezone.now() - timedelta(days=getattr(settings, 'ACCESS_REQUEST_EXPIRATION_DAYS', 180))
+
+    def expired_q(self):
+        q = Q(last_modified__lte=self.expiration_date())
+        return q
+
+    def get_expired(self):
+        return super().filter(self.expired_q()).order_by('last_modified')
+
+    def get_not_expired(self):
+        return super().exclude(self.expired_q())
 
 
 class AccessRequest(AbstractBaseModel):
@@ -70,7 +86,7 @@ class AccessRequest(AbstractBaseModel):
         validation_period_active = False
         for organisation in self.user.organisations.all():
             if is_validation_period_active(organisation):
-                self.user.valid_until = now() + datetime.timedelta(days=settings.SSO_VALIDATION_PERIOD_DAYS)
+                self.user.valid_until = now() + timedelta(days=settings.SSO_VALIDATION_PERIOD_DAYS)
                 self.user.save()
                 validation_period_active = True
         if not validation_period_active:
