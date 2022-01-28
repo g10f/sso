@@ -609,10 +609,12 @@ class UserList(UserMixin, JsonListView):
         qs = qs.order_by('username')
         qs = self.request.user.filter_administrable_users(qs)
 
-        is_active = self.request.GET.get('is_active', None)
-        if is_active:
-            is_active = is_active in ['True', 'true', '1', 'yes', 'Yes', 'Y', 'y']
-            qs = qs.filter(is_active=is_active)
+        for flag_name in ['is_active', 'is_center']:
+            flag_value = self.request.GET.get(flag_name, None)
+            if flag_value:
+                flag_value = flag_value in ['True', 'true', '1', 'yes', 'Yes', 'Y', 'y']
+                kwargs = {flag_name: flag_value}
+                qs = qs.filter(**kwargs)
 
         username = self.request.GET.get('q', None)
         if username:
