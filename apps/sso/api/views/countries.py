@@ -20,6 +20,7 @@ class CountryMixin(object):
             '@id': "%s%s" % (base, reverse('api:v2_country', kwargs={'iso2_code': obj.country.iso2_code})),
             'id': '%s' % obj.uuid.hex,
             'code': obj.country.iso2_code,
+            'order': obj.order,
             'name': '%s' % force_str(obj),
             'homepage': obj.homepage,
             'last_modified': obj.get_last_modified_deep(),

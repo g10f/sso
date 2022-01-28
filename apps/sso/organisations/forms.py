@@ -396,7 +396,7 @@ class OrganisationRegionAdminCreateForm(EmailForwardMixin, OrganisationRegionAdm
 
 class AdminRegionForm(BaseForm):
     email_value = EmailFieldLower(required=True, label=_("Email address"))
-    organisation_country = ModelChoiceField(queryset=None, required=True, label=_("Country"),
+    organisation_country = ModelChoiceField(queryset=None, required=True, label=_("country (org.)"),
                                             widget=bootstrap.Select2())
 
     class Meta:

@@ -159,7 +159,7 @@ class OrganisationCountryList(ListView):
         Get the list of items for this view. This must be an iterable, and may
         be a queryset (in which qs-specific behavior will be enabled).
         """
-        self.cl = main.ChangeList(self.request, self.model, self.list_display, default_ordering=['country'])
+        self.cl = main.ChangeList(self.request, self.model, self.list_display, default_ordering=['order', 'country'])
         qs = super().get_queryset().select_related('country', 'email')
 
         # apply filters
