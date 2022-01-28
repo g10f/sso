@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-29 14:55+0100\n"
+"POT-Creation-Date: 2022-01-28 22:34+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1959,6 +1959,9 @@ msgstr ""
 msgid "The primary email forwarding address for the organisation"
 msgstr ""
 
+msgid "country (org.)"
+msgstr ""
+
 msgid "Country Groups"
 msgstr ""
 
@@ -1999,6 +2002,9 @@ msgstr ""
 msgid ""
 "Designates whether this country should be treated as active. Unselect this "
 "instead of deleting the country."
+msgstr ""
+
+msgid "Country (org.)"
 msgstr ""
 
 msgid ""

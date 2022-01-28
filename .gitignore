@@ -18,3 +18,4 @@ apps/sso/settings/local_*.py
 start.sh
 local.pth
 run.sh
+TODO.txt

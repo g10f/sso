@@ -136,21 +136,21 @@ class ExtraOrganisationCountryManager(models.Model):
 class OrganisationCountry(AbstractBaseModel, ExtraOrganisationCountryManager):
     association = models.ForeignKey(Association, on_delete=models.CASCADE, verbose_name=_("association"),
                                     default=default_association, limit_choices_to={'is_active': True})
-    country = models.ForeignKey(Country, on_delete=models.CASCADE, verbose_name=_("country"),
-                                limit_choices_to={'active': True})
+    country = models.ForeignKey(Country, on_delete=models.CASCADE, verbose_name=_("country"))
     country_groups = models.ManyToManyField(CountryGroup, blank=True, related_name='countries')
-    homepage = models.URLField(_("homepage"), blank=True, )
+    homepage = models.URLField(_("homepage"), blank=True)
     email = models.ForeignKey(Email, verbose_name=_("email address"), blank=True, null=True,
                               limit_choices_to={'email_type': COUNTRY_EMAIL_TYPE},
                               on_delete=models.SET_NULL)
     is_active = models.BooleanField(_('active'), default=True,
                                     help_text=_('Designates whether this country should be treated as '
                                                 'active. Unselect this instead of deleting the country.'))
+    order = models.IntegerField(default=0, help_text=_('Overwrites the alphabetic order.'))
 
     class Meta(AbstractBaseModel.Meta):
-        verbose_name = _('Country')
+        verbose_name = _('Country (org.)')
         verbose_name_plural = _('Countries')
-        ordering = ['country']
+        ordering = ['order', 'country']
         unique_together = (("country", "association"),)
 
     def __str__(self):
@@ -190,7 +190,7 @@ class ExtraManager(models.Model):
 class AdminRegion(AbstractBaseModel, ExtraManager):
     name = models.CharField(_("name"), max_length=255)
     homepage = models.URLField(_("homepage"), blank=True)
-    organisation_country = models.ForeignKey(OrganisationCountry, verbose_name=_("country"), null=True,
+    organisation_country = models.ForeignKey(OrganisationCountry, verbose_name=_("country (org.)"), null=True,
                                              limit_choices_to={'is_active': True},
                                              on_delete=models.SET_NULL)
     email = models.OneToOneField(Email, verbose_name=_("email address"), blank=True, null=True,
@@ -257,7 +257,7 @@ class Organisation(AbstractBaseModel):
                                     limit_choices_to={'is_active': True},
                                     on_delete=models.CASCADE)
     organisation_country = ChainedForeignKey(OrganisationCountry, chained_field='association',
-                                             chained_model_field="association", verbose_name=_("country"), blank=True,
+                                             chained_model_field="association", verbose_name=_("country (org.)"), blank=True,
                                              null=True, limit_choices_to={'is_active': True},
                                              on_delete=models.SET_NULL)
     admin_region = ChainedForeignKey(AdminRegion, chained_field='organisation_country',

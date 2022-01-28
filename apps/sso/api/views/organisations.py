@@ -31,6 +31,7 @@ class OrganisationMixin(object):
             'is_active': obj.is_active,
             'is_live': obj.is_live,
             'is_private': obj.is_private,
+            'order': obj.order,
             'name': '%s' % obj.name,
             'name_native': '%s' % obj.name_native,
             'slug': '%s' % obj.slug,
