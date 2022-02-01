@@ -56,7 +56,7 @@ def check_validation():
 
     # 1. Assign Guest Profile to expired user accounts
     guest_users = User.objects.annotate(count_profiles=Count('role_profiles')).filter(
-        Q(application_roles=None) & Q(role_profiles=guest_profile) & Q(count_profiles=1))
+        Q(role_profiles=guest_profile) & Q(count_profiles=1))
 
     expired_users = User.objects.filter(valid_until__lt=now()).exclude(pk__in=guest_users)
     if not settings.SSO_VALIDATION_PERIOD_IS_ACTIVE_FOR_ALL:
