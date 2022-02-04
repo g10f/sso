@@ -11,19 +11,26 @@ global.config = {
 
 function copyJavaScriptFiles() {
     return gulp.src([
-        './node_modules/bootstrap/dist/js/*.*',
-        './node_modules/jquery/dist/*.*'])
-        .pipe(gulp.dest('./apps/sso/static/js/vendor'))
+        './node_modules/bootstrap/dist/js/bootstrap.bundle.min.js',
+        './node_modules/jquery/dist/jquery.min.js'
+    ]).pipe(gulp.dest('./apps/sso/static/js/vendor'))
 }
 
 function copyFontFiles() {
     return gulp.src([
         './node_modules/bootstrap-icons/font/*.css',
-        './node_modules/bootstrap-icons/font/**//fonts/*.*',
+        './node_modules/bootstrap-icons/font/**//fonts/*.*'
     ]).pipe(gulp.dest('./apps/sso/static/font'))
 }
 
-exports.default = parallel(buildStyles, buildMinStyles, copyJavaScriptFiles, copyFontFiles);
+function copyCropperFiles() {
+    return gulp.src([
+        './node_modules/cropperjs/dist/cropper.min.js',
+        './node_modules/cropperjs/dist/cropper.min.css'
+    ]).pipe(gulp.dest('./apps/sso/static/vendor'))
+}
+
+exports.default = parallel(buildStyles, buildMinStyles, copyJavaScriptFiles, copyFontFiles, copyCropperFiles);
 
 exports.watch = function () {
     gulp.watch(['./apps/sso/static/scss/**/*.scss'], parallel(buildStyles, buildMinStyles));
