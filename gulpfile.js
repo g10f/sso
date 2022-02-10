@@ -6,13 +6,17 @@ const {parallel} = require('gulp');
 const {buildStyles, buildMinStyles} = require('./gulp/buildStyles.js');
 
 global.config = {
-    srcCss: ['./apps/sso/static/scss/main.scss', './apps/sso/static/scss/select2.scss'], buildCss: './apps/sso/static/css'
+    srcCss: [
+        './apps/sso/static/scss/main.scss',
+        './apps/sso/static/scss/select2.scss'],
+    buildCss: './apps/sso/static/css'
 };
 
 function copyJavaScriptFiles() {
     return gulp.src([
         './node_modules/bootstrap/dist/js/bootstrap.bundle.min.js',
-        './node_modules/jquery/dist/jquery.min.js'
+        './node_modules/jquery/dist/jquery.min.js',
+        './node_modules/select2/dist/js/select2.min.js'
     ]).pipe(gulp.dest('./apps/sso/static/js/vendor'))
 }
 
