@@ -19,12 +19,12 @@ class AccessRequestsSeleniumTests(SSOSeleniumTests):
 
         # add new access request
         self.selenium.get('%s%s' % (self.live_server_url, reverse('access_requests:extend_access')))
-        self.selenium.find_element_by_name("message").send_keys('Hello world.')
+        self.selenium.find_element(by=By.NAME, value="message").send_keys('Hello world.')
 
         picture = os.path.abspath(os.path.join(settings.BASE_DIR, 'sso/static/img/face-cool.png'))
         self.add_picture(picture)
 
-        self.selenium.find_element_by_tag_name("form").submit()
+        self.selenium.find_element(by=By.TAG_NAME, value="form").submit()
 
         self.wait_page_loaded()
 
@@ -41,10 +41,10 @@ class AccessRequestsSeleniumTests(SSOSeleniumTests):
         # should be one element in the list
         elems[0].click()
         self.wait_page_loaded()
-        self.selenium.find_element_by_tag_name("form").submit()
+        self.selenium.find_element(by=By.TAG_NAME, value="form").submit()
         # check success message
         self.wait_page_loaded()
-        self.selenium.find_element_by_class_name("alert-success")
+        self.selenium.find_element(by=By.CLASS_NAME, value="alert-success")
         self.logout()
 
         # check if the user got the member profile
@@ -62,11 +62,11 @@ class AccessRequestsSeleniumTests(SSOSeleniumTests):
         # add new access request
         self.selenium.get('%s%s?app_id=%s' % (self.live_server_url, reverse('access_requests:extend_access'),
                                               'bc0ee635a536491eb8e7fbe5749e8111'))
-        self.selenium.find_element_by_name("message").send_keys('Hello world.')
+        self.selenium.find_element(by=By.NAME, value="message").send_keys('Hello world.')
         picture = os.path.abspath(os.path.join(settings.BASE_DIR, 'sso/static/img/face-cool.png'))
         self.add_picture(picture)
-        Select(self.selenium.find_element_by_name("organisation")).select_by_index(1)
-        self.selenium.find_element_by_tag_name("form").submit()
+        Select(self.selenium.find_element(by=By.NAME, value="organisation")).select_by_index(1)
+        self.selenium.find_element(by=By.TAG_NAME, value="form").submit()
         self.wait_page_loaded()
 
         url = reverse('access_requests:extend_access_thanks')
@@ -82,10 +82,10 @@ class AccessRequestsSeleniumTests(SSOSeleniumTests):
         # should be one element in the list
         elems[0].click()
         self.wait_page_loaded()
-        self.selenium.find_element_by_tag_name("form").submit()
+        self.selenium.find_element(by=By.TAG_NAME, value="form").submit()
         # check success message
         self.wait_page_loaded()
-        self.selenium.find_element_by_class_name("alert-success")
+        self.selenium.find_element(by=By.CLASS_NAME, value="alert-success")
         self.logout()
 
         user.refresh_from_db()

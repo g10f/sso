@@ -1,9 +1,9 @@
 import os
+
 import time
-
 from selenium.webdriver.chrome.webdriver import WebDriver
+from selenium.webdriver.common.by import By
 
-# from selenium.webdriver.firefox.webdriver import WebDriver
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from django.urls import reverse
 
@@ -45,7 +45,7 @@ class SSOSeleniumTests(StaticLiveServerTestCase):
         is found on the page.
         """
         self.wait_until(
-            lambda driver: driver.find_element_by_tag_name(tag_name),
+            lambda driver: driver.find_element(by=By.TAG_NAME, value=tag_name),
             timeout
         )
 
@@ -67,9 +67,9 @@ class SSOSeleniumTests(StaticLiveServerTestCase):
         driver = self.selenium
         driver.get('%s%s' % (self.live_server_url, reverse('auth:login')))
         self.wait_page_loaded()
-        driver.find_element_by_name("username").send_keys(username)
-        driver.find_element_by_name("password").send_keys(password)
-        driver.find_element_by_tag_name("form").submit()
+        driver.find_element(by=By.NAME, value="username").send_keys(username)
+        driver.find_element(by=By.NAME, value="password").send_keys(password)
+        driver.find_element(by=By.TAG_NAME, value="form").submit()
 
         # Wait until the response is received
         self.wait_page_loaded()
@@ -85,5 +85,5 @@ class SSOSeleniumTests(StaticLiveServerTestCase):
         element.click()
 
     def add_picture(self, picture):
-        self.selenium.find_element_by_xpath('//input[@type="file"]').send_keys(picture)
-        self.selenium.find_element_by_id("crop").click()
+        self.selenium.find_element(by=By.XPATH, value='//input[@type="file"]').send_keys(picture)
+        self.selenium.find_element(by=By.ID, value="crop").click()
