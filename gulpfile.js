@@ -15,6 +15,7 @@ global.config = {
 function copyJavaScriptFiles() {
     return gulp.src([
         './node_modules/bootstrap/dist/js/bootstrap.bundle.min.js',
+        './node_modules/bootstrap/dist/js/bootstrap.bundle.min.js.map',
         './node_modules/jquery/dist/jquery.min.js',
         './node_modules/select2/dist/js/select2.min.js'
     ]).pipe(gulp.dest('./apps/sso/static/js/vendor'))
