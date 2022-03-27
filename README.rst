@@ -39,9 +39,34 @@ Prepare tests
 Changelog
 ----------
 
+Environment vars:
+
+===========================  =========================  =========================
+Name                         default                    description
+===========================  =========================  =========================
+SSO_STYLE                    css/main.min.css           stylesheet
+ALLOWED_HOSTS                ''
+DATABASE_NAME                sso
+DATABASE_USER                sso
+DATABASE_PASSWORD            sso
+DATABASE_CONN_MAX_AGE        60
+DATABASE_HOST                localhost
+CACHES_LOCATION              None
+CELERY_BROKER_USE_SSL        False
+CELERY_BROKER_URL            None
+DATA_UPLOAD_MAX_MEMORY_SIZE  2621440
+REGISTRATION_OPEN            False
+DEFAULT_FROM_EMAIL           webmaster@g10f.de
+STATIC_ROOT                  ../htdocs/static
+MEDIA_ROOT                   ../htdocs/media
+SSO_THEME                    None
+ROOT_URLCONF                 sso.urls
+===========================  =========================  =========================
+
+
 3.2.0
  - support for WebAuthn, allows usb-keys, fingerprint and windows hello
- 
+
 3.1.4
  - Docker support
 
