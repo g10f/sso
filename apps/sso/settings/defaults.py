@@ -1,8 +1,9 @@
-from os import environ
+import os
 from pathlib import Path
 from uuid import UUID
 
 import sys
+from captcha.constants import TEST_PRIVATE_KEY, TEST_PUBLIC_KEY
 
 from django.urls import reverse_lazy
 from django.utils.translation import pgettext_lazy
@@ -20,9 +21,8 @@ if RUNNING_DEVSERVER or RUNNING_TEST:
 else:
     DEBUG = False
 
-ALLOWED_HOSTS = ['.localhost', '127.0.0.1', '[::1]']
-
-SSO_STYLE = 'css/main.min.css'
+ALLOWED_HOSTS = ['.localhost', '127.0.0.1', '[::1]'] + os.getenv('ALLOWED_HOSTS', '').split(',')
+SSO_STYLE = os.getenv('SSO_STYLE', 'css/main.min.css')
 
 THUMBNAIL_QUALITY = 100
 THUMBNAIL_FORMAT = 'PNG'
@@ -30,7 +30,7 @@ THUMBNAIL_FORMAT = 'PNG'
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 SITE_ID = 1
-DEFAULT_FROM_EMAIL = 'webmaster@g10f.de'
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'webmaster@g10f.de')
 PASSWORD_RESET_TIMEOUT = 60 * 60 * 24 * 3  # new default in django 3
 SSO_BRAND = 'G10F'
 SSO_SITE_NAME = 'G10F'
@@ -80,8 +80,8 @@ SSO_ADMIN_ONLY_2F = False
 SSO_RECAPTCHA_EXPIRATION_TIME = 120
 
 # Celery settings see https://www.cloudamqp.com/docs/celery.html
-CELERY_BROKER_USE_SSL = False
-CELERY_BROKER_URL = None  # 'amqp://guest:guest@localhost//'
+CELERY_BROKER_USE_SSL = os.getenv("CELERY_BROKER_USE_SSL", 'False').lower() in ('true', '1', 't')
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')  # 'amqp://guest:guest@localhost//'
 CELERY_BROKER_POOL_LIMIT = 1  # Will decrease connection usage
 CELERY_BROKER_HEARTBEAT = None
 CELERY_BROKER_CONNECTION_TIMEOUT = 30  # May require a long timeout due to Linux DNS timeouts etc
@@ -114,14 +114,27 @@ CENTER_TYPE_CHOICES = (
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': environ.get('DATABASE_NAME', 'sso'),
-        'USER': environ.get('DATABASE_USER', 'sso'),
-        'PASSWORD': environ.get('DATABASE_PASSWORD', 'sso'),
-        'HOST': environ.get('DATABASE_HOST', 'localhost'),
+        'NAME': os.getenv('DATABASE_NAME', 'sso'),
+        'USER': os.getenv('DATABASE_USER', 'sso'),
+        'PASSWORD': os.getenv('DATABASE_PASSWORD', 'sso'),
+        'HOST': os.getenv('DATABASE_HOST', 'localhost'),
         'PORT': '5432',
-        'CONN_MAX_AGE': 60
+        'CONN_MAX_AGE': int(os.getenv('DATABASE_CONN_MAX_AGE', '60'))
     },
 }
+
+if os.getenv('CACHES_LOCATION') is not None:
+    CACHES = {
+        'default': {
+            'BACKEND': 'sso.cache.backends.SSOCache',
+            'LOCATION': os.getenv('CACHES_LOCATION').split(','),
+            'TIMEOUT': 300,
+            'KEY_PREFIX': 'sso'}}
+
+DATA_UPLOAD_MAX_MEMORY_SIZE = int(os.getenv('DATA_UPLOAD_MAX_MEMORY_SIZE', '2621440'))  # i.e. 2.5 MB
+
+RECAPTCHA_PUBLIC_KEY = os.getenv('RECAPTCHA_PUBLIC_KEY', TEST_PUBLIC_KEY)
+RECAPTCHA_PRIVATE_KEY = os.getenv('RECAPTCHA_PRIVATE_KEY', TEST_PRIVATE_KEY)
 
 TIME_ZONE = 'Europe/Berlin'
 LANGUAGE_CODE = 'en-us'
@@ -134,8 +147,8 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-STATIC_ROOT = BASE_DIR.parent / 'htdocs/static'
-MEDIA_ROOT = BASE_DIR.parent / 'htdocs/media'
+STATIC_ROOT = os.getenv('STATIC_ROOT', BASE_DIR.parent / 'htdocs/static')
+MEDIA_ROOT = os.getenv('MEDIA_ROOT', BASE_DIR.parent / 'htdocs/media')
 
 MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
@@ -196,7 +209,7 @@ MIDDLEWARE = [
     'sso.middleware.RevisionMiddleware'
 ]
 
-ROOT_URLCONF = 'sso.urls'
+ROOT_URLCONF = os.getenv('ROOT_URLCONF', 'sso.urls')
 APPEND_SLASH = True
 
 INSTALLED_APPS = [
@@ -227,6 +240,8 @@ INSTALLED_APPS = [
     'sso.access_requests',
     'sso.components'
 ]
+if os.getenv('SSO_THEME') is not None:
+    INSTALLED_APPS.insert(0, os.getenv('SSO_THEME'))
 
 DEFAULT_AUTHENTICATION_BACKEND = 'sso.auth.backends.EmailBackend'
 
@@ -246,9 +261,9 @@ LOGOUT_URL = reverse_lazy('auth:logout')
 AUTH_USER_MODEL = 'accounts.User'
 
 REGISTRATION = {
-    'OPEN': False,
+    'OPEN': os.getenv("REGISTRATION_OPEN", 'False').lower() in ('true', '1', 't'),
     'TOKEN_EXPIRATION_DAYS': 7,
-    'ACTIVATION_EXPIRATION_DAYS': 60,
+    'ACTIVATION_EXPIRATION_DAYS': 30,
     'CONTACT_EMAIL': DEFAULT_FROM_EMAIL,
 }
 
