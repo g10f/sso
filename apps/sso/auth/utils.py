@@ -1,22 +1,24 @@
 import base64
 import logging
+import time
+from binascii import unhexlify, hexlify
 from functools import lru_cache
 from io import BytesIO
 from os import urandom
-from urllib.parse import quote, urlencode
 
+import pyotp
 import qrcode
-import time
-from binascii import unhexlify, hexlify
 
 from django.apps import apps as django_apps
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.core.exceptions import ValidationError
 from django.shortcuts import resolve_url
+from django.templatetags.static import static
 from django.utils.http import url_has_allowed_host_and_scheme
 from sso.auth.apps import AuthConfig
 from sso.utils.http import get_request_param
+from sso.utils.url import get_base_url
 
 logger = logging.getLogger(__name__)
 
@@ -103,28 +105,6 @@ def get_safe_login_redirect_url(request):
         return resolve_url(settings.LOGIN_REDIRECT_URL)
 
 
-def get_otpauth_url(accountname, secret, issuer=None, digits=None):
-    # For a complete run-through of all the parameters, have a look at the
-    # specs at:
-    # https://code.google.com/p/google-authenticator/wiki/KeyUriFormat
-
-    # quote and urlencode work best with bytes, not unicode strings.
-    accountname = accountname.encode('utf8')
-    issuer = issuer.encode('utf8') if issuer else None
-
-    label = quote(b': '.join([issuer, accountname]) if issuer else accountname)
-
-    query = {
-        'secret': secret,
-        'digits': digits or totp_digits()
-    }
-
-    if issuer:
-        query['issuer'] = issuer
-
-    return 'otpauth://totp/%s?%s' % (label, urlencode(query))
-
-
 def hex_validator(length=0):
     """
     Returns a function to be used as a model validator for a hex-encoded
@@ -184,10 +164,14 @@ def random_hex(length=20):
 def get_qrcode_data_url(key, username, issuer):
     # Get data for qrcode
     from qrcode.image.pil import PilImage
-    otpauth_url = get_otpauth_url(accountname=username,
-                                  issuer=issuer,
-                                  secret=key,
-                                  digits=totp_digits())
+    if settings.SSO_USE_HTTPS:
+        base_uri = get_base_url()
+        image = base_uri + static("ico/apple-touch-icon.png")
+    else:
+        image = None
+
+    otpauth_url = pyotp.TOTP(key, digits=totp_digits()).provisioning_uri(
+        name=username, issuer_name=issuer, image=image)
 
     # Make and return QR code
     img = qrcode.make(otpauth_url, image_factory=PilImage, box_size=3)

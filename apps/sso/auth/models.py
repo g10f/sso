@@ -1,9 +1,9 @@
 import json
 import logging
-from base64 import b64encode, b64decode
-
-import time
+from base64 import b64encode, b64decode, b32encode
 from binascii import unhexlify
+
+import pyotp
 from fido2 import cbor
 from fido2.client import ClientData
 from fido2.cose import CoseKey
@@ -17,9 +17,10 @@ from django.conf import settings
 from django.core import signing
 from django.db import models
 from django.utils import timezone
+from django.utils.crypto import constant_time_compare
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from sso.auth.forms import AuthenticationTokenForm, U2FForm
-from sso.auth.oath import TOTP
 from sso.auth.utils import random_hex, hex_validator, get_device_class_by_app_label
 from sso.models import AbstractBaseModel
 from sso.utils.url import absolute_url
@@ -77,9 +78,11 @@ class U2FDevice(Device):
     aaguid = models.TextField()
     counter = models.IntegerField(default=0)
 
-    # server = Fido2Server(PublicKeyCredentialRpEntity(settings.SSO_DOMAIN.lower().split(':')[0], f'{settings.SSO_SITE_NAME} Server'))
+    # server = Fido2Server(PublicKeyCredentialRpEntity(settings.SSO_DOMAIN.lower().split(':')[0],
+    # f'{settings.SSO_SITE_NAME} Server'))
     u2f_app_id = f"{'https' if settings.SSO_USE_HTTPS else 'http'}://{settings.SSO_DOMAIN.lower().split(':')[0]}"
-    server = U2FFido2Server(u2f_app_id, PublicKeyCredentialRpEntity(settings.SSO_DOMAIN.lower().split(':')[0], f'{settings.SSO_SITE_NAME} Server'))
+    server = U2FFido2Server(u2f_app_id, PublicKeyCredentialRpEntity(settings.SSO_DOMAIN.lower().split(':')[0],
+                                                                    f'{settings.SSO_SITE_NAME} Server'))
     WEB_AUTHN_SALT = 'sso.auth.models.U2FDevice'
     device_id = 1
     Device.devices.add((__qualname__, device_id))
@@ -170,7 +173,8 @@ class U2FDevice(Device):
     def credentials(cls, user):
         u2f_devices = cls.objects.filter(user=user, confirmed=True)
         return [
-            AttestedCredentialData.create(aaguid=websafe_decode(d.aaguid), credential_id=websafe_decode(d.credential_id),
+            AttestedCredentialData.create(aaguid=websafe_decode(d.aaguid),
+                                          credential_id=websafe_decode(d.credential_id),
                                           public_key=CoseKey.parse(cbor.decode(websafe_decode(d.public_key))))
             for d in u2f_devices
         ]
@@ -178,7 +182,8 @@ class U2FDevice(Device):
     @classmethod
     def challenges(cls, user):
         credentials = U2FDevice.credentials(user)
-        req, state = cls.server.authenticate_begin(credentials=credentials, user_verification=UserVerificationRequirement.DISCOURAGED)
+        req, state = cls.server.authenticate_begin(credentials=credentials,
+                                                   user_verification=UserVerificationRequirement.DISCOURAGED)
         sign_request = {
             'req': b64encode(cbor.encode(req)).decode(),
             'state': signing.dumps(state, salt=cls.WEB_AUTHN_SALT)
@@ -199,8 +204,9 @@ class U2FDevice(Device):
 
     @classmethod
     def login_text(cls):
-        return _('Please touch the flashing U2F device now. You may be prompted to allow the site permission to access your security keys. '
-                 'After granting permission, the device will start to blink.')
+        return _(
+            'Please touch the flashing U2F device now. You may be prompted to allow the site permission '
+            'to access your security keys. After granting permission, the device will start to blink.')
 
     @classmethod
     def default_name(cls):
@@ -208,57 +214,16 @@ class U2FDevice(Device):
 
 
 class TOTPDevice(Device):
-    """
-    A generic TOTP :class:`~sso.auth.models.Device`. The model fields mostly
-    correspond to the arguments to :func:`sso.auth.oath.totp`. They all have
-    sensible defaults, including the key, which is randomly generated.
-
-    .. attribute:: key
-        *CharField*: A hex-encoded secret key of up to 40 bytes. (Default: 20
-        random bytes)
-
-    .. attribute:: step
-        *PositiveSmallIntegerField*: The time step in seconds. (Default: 30)
-
-    .. attribute:: t0
-        *BigIntegerField*: The Unix time at which to begin counting steps.
-        (Default: 0)
-
-    .. attribute:: digits
-        *PositiveSmallIntegerField*: The number of digits to expect in a token
-        (6 or 8).  (Default: 6)
-
-    .. attribute:: tolerance
-        *PositiveSmallIntegerField*: The number of time steps in the past or
-        future to allow. For example, if this is 1, we'll accept any of three
-        tokens: the current one, the previous one, and the next one. (Default:
-        1)
-
-    .. attribute:: drift
-        *SmallIntegerField*: The number of time steps the prover is known to
-        deviate from our clock.  If :setting:`OTP_TOTP_SYNC` is ``True``, we'll
-        update this any time we match a token that is not the current one.
-        (Default: 0)
-
-    .. attribute:: last_t
-        *BigIntegerField*: The time step of the last verified token. To avoid
-        verifying the same token twice, this will be updated on each successful
-        verification. Only tokens at a higher time step will be verified
-        subsequently. (Default: -1)
-
-    """
     key = models.CharField(max_length=80, validators=[key_validator], default=default_key,
                            help_text="A hex-encoded secret key of up to 40 bytes.")
     step = models.PositiveSmallIntegerField(default=30, help_text="The time step in seconds.")
-    t0 = models.BigIntegerField(default=0, help_text="The Unix time at which to begin counting steps.")
     digits = models.PositiveSmallIntegerField(choices=[(6, 6), (8, 8)], default=6,
                                               help_text="The number of digits to expect in a token.")
     tolerance = models.PositiveSmallIntegerField(default=1,
                                                  help_text="The number of time steps in the past or future to allow.")
-    drift = models.SmallIntegerField(default=0,
-                                     help_text="The number of time steps the prover is known to deviate from our clock.")
-    last_t = models.BigIntegerField(default=-1,
-                                    help_text="The t value of the latest verified token. The next token must be at a higher time step.")
+    last_t = models.BigIntegerField(
+        default=-1,
+        help_text="The t value of the latest verified token. The next token must be at a higher time step.")
 
     device_id = 2
     Device.devices.add((__qualname__, device_id))
@@ -309,29 +274,29 @@ class TOTPDevice(Device):
         return unhexlify(self.key.encode())
 
     def verify_token(self, token):
-        otp_totp_sync = getattr(settings, 'OTP_TOTP_SYNC', True)
-
         try:
             token = int(token)
         except RuntimeError:
             verified = False
         else:
-            key = self.bin_key
+            b32key = b32encode(self.bin_key).decode()
+            totp = pyotp.TOTP(b32key, interval=self.step, digits=self.digits)
+            for_time = now()
+            timecode = totp.timecode(for_time)
 
-            totp = TOTP(key, self.step, self.t0, self.digits)
-            totp.time = time.time()
-
-            for offset in range(-self.tolerance, self.tolerance + 1):
-                totp.drift = self.drift + offset
-                if (totp.t() > self.last_t) and (totp.token() == token):
-                    self.last_t = totp.t()
-                    if (offset != 0) and otp_totp_sync:
-                        self.drift += offset
-
-                    self.last_used = timezone.now()
-                    self.save()
-
-                    verified = True
+            valid_window = self.tolerance
+            for i in range(-valid_window, valid_window + 1):
+                if constant_time_compare(str(token), str(totp.at(for_time, i))):
+                    if self.last_t >= timecode + i:
+                        # new last_t must be greate then the last
+                        logger.warning(f'timecode {timecode + i} already used for device {self.uuid} from '
+                                       f'user {self.user}')
+                        verified = False
+                    else:
+                        verified = True
+                        self.last_t = timecode + i
+                        self.last_used = for_time
+                        self.save()
                     break
             else:
                 verified = False

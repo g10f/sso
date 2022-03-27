@@ -12,6 +12,7 @@ cryptography
 sorl-thumbnail
 pillow
 pytz
+pyotp
 geopy
 qrcode
 requests
