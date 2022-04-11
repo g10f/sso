@@ -302,14 +302,14 @@ class AccountsSeleniumTests(SSOSeleniumTests):
 
     @override_settings(SSO_POST_RESET_LOGIN=False)
     def test_add_user_as_admin(self):
-        applicationrole = ApplicationRole.objects.get(application__uuid=settings.SSO_APP_UUID, role__name="Admin")
+        applicationrole = ApplicationRole.objects.get(application__uuid=settings.SSO_APP_UUID, role__name="Global")
         allowed_orgs = Organisation.objects.filter(
             uuid__in=['31664dd38ca4454e916e55fe8b1f0745', '31664dd38ca4454e916e55fe8b1f0746'])
         self.add_user(applicationrole=applicationrole, allowed_orgs=allowed_orgs)
 
     @override_settings(SSO_POST_RESET_LOGIN=True)
     def test_add_user_as_admin_post_reset_login(self):
-        applicationrole = ApplicationRole.objects.get(application__uuid=settings.SSO_APP_UUID, role__name="Admin")
+        applicationrole = ApplicationRole.objects.get(application__uuid=settings.SSO_APP_UUID, role__name="Global")
         allowed_orgs = Organisation.objects.filter(
             uuid__in=['31664dd38ca4454e916e55fe8b1f0745', '31664dd38ca4454e916e55fe8b1f0746'])
         self.add_user(applicationrole=applicationrole, allowed_orgs=allowed_orgs)
@@ -390,7 +390,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         gender.send_keys(new_gender)
 
         required_extra_fields = self.selenium.find_elements(by=By.XPATH, value=
-            '//span[@class="user-extra-form-fields"]//node()[@class="form-select" and @required]')
+        '//span[@class="user-extra-form-fields"]//node()[@class="form-select" and @required]')
         for required_extra_field in required_extra_fields:
             if required_extra_field.tag_name == 'select':
                 # select the first option with a non empty value

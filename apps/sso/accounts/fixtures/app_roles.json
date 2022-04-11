@@ -100,6 +100,37 @@
   {
     "model": "auth.group",
     "fields": {
+      "name": "GlobalAppUserAdmin",
+      "permissions": [
+        [
+          "app_admin_access_all_users",
+          "accounts",
+          "user"
+        ]
+      ]
+    }
+  },
+  {
+    "model": "auth.group",
+    "fields": {
+      "name": "GlobalAppAdmin",
+      "permissions": [
+        [
+          "access_all_applications",
+          "accounts",
+          "application"
+        ],
+        [
+          "add_application",
+          "accounts",
+          "application"
+        ]
+      ]
+    }
+  },
+  {
+    "model": "auth.group",
+    "fields": {
       "name": "AssociationAdmin",
       "permissions": [
         [
@@ -418,18 +449,65 @@
     }
   },
   {
+    "model": "auth.group",
+    "fields": {
+      "name": "AppAdmin",
+      "permissions": [
+        [
+          "change_application",
+          "accounts",
+          "application"
+        ],
+        [
+          "delete_application",
+          "accounts",
+          "application"
+        ],
+        [
+          "view_application",
+          "accounts",
+          "application"
+        ],
+        [
+          "add_client",
+          "oauth2",
+          "client"
+        ],
+        [
+          "change_client",
+          "oauth2",
+          "client"
+        ],
+        [
+          "delete_client",
+          "oauth2",
+          "client"
+        ],
+        [
+          "view_client",
+          "oauth2",
+          "client"
+        ]
+      ]
+    }
+  },
+  {
     "model": "accounts.role",
     "fields": {
-      "name": "Admin",
-      "group": ["GlobalAdmin"],
-      "order": 9
+      "name": "Global",
+      "group": [
+        "GlobalAdmin"
+      ],
+      "order": 8
     }
   },
   {
     "model": "accounts.role",
     "fields": {
       "name": "Association",
-      "group": ["AssociationAdmin"],
+      "group": [
+        "AssociationAdmin"
+      ],
       "order": 10
     }
   },
@@ -437,7 +515,9 @@
     "model": "accounts.role",
     "fields": {
       "name": "Country",
-      "group": ["CountryAdmin"],
+      "group": [
+        "CountryAdmin"
+      ],
       "order": 11
     }
   },
@@ -445,7 +525,9 @@
     "model": "accounts.role",
     "fields": {
       "name": "Region",
-      "group": ["RegionAdmin"],
+      "group": [
+        "RegionAdmin"
+      ],
       "order": 12
     }
   },
@@ -453,7 +535,9 @@
     "model": "accounts.role",
     "fields": {
       "name": "Center",
-      "group": ["CenterAdmin"],
+      "group": [
+        "CenterAdmin"
+      ],
       "order": 13
     }
   },
@@ -468,36 +552,56 @@
   {
     "model": "accounts.applicationrole",
     "fields": {
-      "application": ["fa467234b81e4838a009e38d9e655d18"],
-      "role": ["Admin"]
+      "application": [
+        "fa467234b81e4838a009e38d9e655d18"
+      ],
+      "role": [
+        "Global"
+      ]
     }
   },
   {
     "model": "accounts.applicationrole",
     "fields": {
-      "application": ["fa467234b81e4838a009e38d9e655d18"],
-      "role": ["Association"]
+      "application": [
+        "fa467234b81e4838a009e38d9e655d18"
+      ],
+      "role": [
+        "Association"
+      ]
     }
   },
   {
     "model": "accounts.applicationrole",
     "fields": {
-      "application": ["fa467234b81e4838a009e38d9e655d18"],
-      "role": ["Country"]
+      "application": [
+        "fa467234b81e4838a009e38d9e655d18"
+      ],
+      "role": [
+        "Country"
+      ]
     }
   },
   {
     "model": "accounts.applicationrole",
     "fields": {
-      "application": ["fa467234b81e4838a009e38d9e655d18"],
-      "role": ["Region"]
+      "application": [
+        "fa467234b81e4838a009e38d9e655d18"
+      ],
+      "role": [
+        "Region"
+      ]
     }
   },
   {
     "model": "accounts.applicationrole",
     "fields": {
-      "application": ["fa467234b81e4838a009e38d9e655d18"],
-      "role": ["Center"]
+      "application": [
+        "fa467234b81e4838a009e38d9e655d18"
+      ],
+      "role": [
+        "Center"
+      ]
     }
   },
   {

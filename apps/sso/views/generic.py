@@ -2,16 +2,12 @@ import logging
 from urllib.parse import urlunsplit
 
 from django import forms
-from django.conf import settings
-from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
-from django.utils.encoding import force_str
-from django.utils.html import format_html
-from django.utils.translation import gettext_lazy as _
 from django.views import generic
 from sso.forms.helpers import ErrorList, BASE_FORM_ID
 from sso.views import main
+from sso.views.mixins import MessagesMixin
 
 logger = logging.getLogger(__name__)
 
@@ -181,7 +177,7 @@ class ListView(generic.ListView):
             return self.paginate_by
 
 
-class FormsetsUpdateView(generic.UpdateView):
+class FormsetsUpdateView(generic.UpdateView, MessagesMixin):
     def get_formsets(self):
         """
         returns an array of formsets (use django inlineformset_factory)
@@ -261,15 +257,11 @@ class FormsetsUpdateView(generic.UpdateView):
             return self.form_invalid(self.form)
 
     def get_success_url(self):
-        msg_dict = {'name': force_str(self.model._meta.verbose_name), 'obj': force_str(self.object)}
         if "_continue" in self.request.POST:
-            msg = format_html(
-                _('The {name} "{obj}" was changed successfully. You may edit it again below.'),
-                **msg_dict)
             success_url = urlunsplit(('', '', self.request.path, self.request.GET.urlencode(safe='/'), ''))
+            self.update_and_continue_message()
         else:
-            msg = format_html(_('The {name} "{obj}" was changed successfully.'), **msg_dict)
             success_url = super().get_success_url()
+            self.update_message()
 
-        messages.add_message(self.request, level=messages.SUCCESS, message=msg, fail_silently=True)
         return success_url

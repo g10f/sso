@@ -1,8 +1,9 @@
 from django.contrib.auth.views import PasswordResetDoneView, PasswordResetCompleteView
 from django.urls import path
 from django.views.generic import TemplateView
-from .views import PasswordResetView, PasswordResetConfirmView, PasswordChangeDoneView, PasswordCreateConfirmView
-from .views import application, PasswordCreateCompleteView, usernote
+from .views import PasswordResetView, PasswordResetConfirmView, PasswordChangeDoneView, PasswordCreateConfirmView, \
+    application
+from .views import account, PasswordCreateCompleteView, usernote
 from .views import emails, confirm_email
 from .views import onetimemessage
 from .views import organisation
@@ -11,15 +12,24 @@ from .views import password_change, profile, contact, delete_profile
 app_name = 'accounts'
 
 urlpatterns = [
-    path('', application.UserList.as_view(), name='user_list'),
+    path('', account.UserList.as_view(), name='user_list'),
     path('me/', profile, name='profile'),
-    path('add/', application.add_user, name='add_user'),
-    path('add/done/<uuid:uuid>/', application.add_user_done, name="add_user_done"),
-    path('<uuid:uuid>/', application.update_user, name="update_user"),
-    path('<uuid:uuid>/delete/', application.UserDeleteView.as_view(), name="delete_user"),
+    path('add/', account.add_user, name='add_user'),
+    path('add/done/<uuid:uuid>/', account.add_user_done, name="add_user_done"),
+    path('<uuid:uuid>/', account.update_user, name="update_user"),
+    path('<uuid:uuid>/delete/', account.UserDeleteView.as_view(), name="delete_user"),
     path('<uuid:uuid>/notes/delete/', usernote.UserNoteDeleteView.as_view(), name="delete_user_note"),
-    path('app_admin/', application.AppAdminUserList.as_view(), name='app_admin_user_list'),
-    path('app_admin/<uuid:uuid>/', application.app_admin_update_user, name="app_admin_update_user"),
+    path('app/admin/', account.AppAdminUserList.as_view(), name='app_admin_user_list'),
+    path('app/admin/<uuid:uuid>/', account.app_admin_update_user, name="app_admin_update_user"),
+    path('app/', application.ApplicationListView.as_view(), name='application_list'),
+    path('app/add/', application.ApplicationCreateView.as_view(), name='application_add'),
+    path('app/<uuid:uuid>/', application.ApplicationDetailView.as_view(), name='application_detail'),
+    path('app/<uuid:uuid>/update/', application.ApplicationUpdateView.as_view(), name='application_update'),
+    path('app/<uuid:uuid>/delete/', application.ApplicationDeleteView.as_view(), name='application_delete'),
+    path('app/<uuid:uuid>/client/add/', application.ClientCreateView.as_view(), name='client_add'),
+    path('app/client/<uuid:uuid>/update/', application.ClientUpdateView.as_view(), name='client_update'),
+    path('app/client/<uuid:uuid>/delete/', application.ClientDeleteView.as_view(), name='client_delete'),
+    path('app/client/secret/', application.client_secret, name='client_secret'),
     path('contact/', contact, name='contact'),
     path('contact_thanks/', TemplateView.as_view(template_name="accounts/contact_thanks.html"), name='contact_thanks'),
     path('email/confirm/<str:uidb64>/<str:token>/', confirm_email, name='confirm_email'),
@@ -40,5 +50,5 @@ urlpatterns = [
     path('organisation_change/', organisation.OrganisationChangeList.as_view(), name='organisationchange_list'),
     path('organisation_change/<int:pk>/accept/', organisation.OrganisationChangeAcceptView.as_view(), name='organisationchange_accept'),
     path('messages/<uuid:uuid>/', onetimemessage.OneTimeMessageView.as_view(), name="view_message"),
-    path('roleprofiles/', application.RoleProfileListView.as_view(), name='roleprofile_list'),
+    path('roleprofiles/', account.RoleProfileListView.as_view(), name='roleprofile_list'),
 ]

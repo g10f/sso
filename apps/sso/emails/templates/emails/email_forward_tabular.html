@@ -5,7 +5,7 @@
   {% for primary_forward in formset.instance.primary_forward_set %}
     <tr class="text-danger">
       <td colspan="3">
-        <p class="form-control-static">{{ primary_forward }} ({% translate 'Primary forwarding address' %})</p>
+        <p class="form-control-plaintext">{{ primary_forward }} ({% translate 'Primary forwarding address' %})</p>
       </td>
     </tr>
   {% endfor %}

@@ -45,6 +45,18 @@ def sidebar(request):
     if user.is_staff:
         sidebar_nav.append({'view_names': ['admin:index'], 'icon': 'wrench', 'title': _('Administration')})
 
+    # Application submenue
+    ######################
+    application_list = {'view_names': ['accounts:application_list', 'accounts:application_update', 'accounts:application_detail', 'accounts:client_update', 'accounts:client_add'],
+                        'icon': 'list-task', 'title': _('Applications')}
+    application_create = {'view_names': ['accounts:application_add'], 'icon': 'plus', 'title': _('Add Application')}
+
+    application_submenue = {'name': 'applications', 'icon': 'grid-3x3-gap-fill', 'title': _('Applications'), 'submenue': []}
+    if user.has_perm('accounts.view_application'):
+        application_submenue['submenue'].append(application_list)
+    if user.has_perm('accounts.add_application'):
+        application_submenue['submenue'].append(application_create)
+
     # E-Mail submenue
     #################
     email_list = {'view_names': ['emails:groupemail_list', 'emails:groupemail_detail', 'emails:groupemail_update', 'emails:emailforward_create',
@@ -109,7 +121,7 @@ def sidebar(request):
         accounts_submenue['submenue'].append(registration_list)
     if user.is_user_admin:
         accounts_submenue['submenue'].append(user_list)
-    if user.is_app_admin():
+    if user.is_app_user_admin():
         accounts_submenue['submenue'].append(roles_list)
     if user.has_perm('accounts.change_user'):
         accounts_submenue['submenue'].append(org_changes_list)
@@ -134,6 +146,8 @@ def sidebar(request):
     if get_device_classes() and (not settings.SSO_ADMIN_ONLY_2F or user.is_user_admin or user.is_organisation_admin or user.is_staff):
         my_data_submenue['submenue'].append(my_security)
 
+    if user.has_perm('accounts.view_application'):
+        append_submenue(application_submenue)
     append_submenue(email_submenue)
     append_submenue(orgs_submenue)
     append_submenue(accounts_submenue)

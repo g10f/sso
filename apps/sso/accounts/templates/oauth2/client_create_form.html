@@ -1,0 +1,13 @@
+{% extends "oauth2/client_form.html" %}
+{% load i18n %}
+
+{% block title %}{% translate 'Create Client' %}{% endblock %}
+
+{% block breadcrumb %}
+  <ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li><a href="{% url 'accounts:application_list' %}">{% translate 'Applications' %}</a></li>
+    <li><a href="{% url 'accounts:application_detail' form.initial.application.uuid.hex %}">{{ form.initial.application.title }}</a></li>
+    <li class="active">{% translate 'Create Client' %}</li>
+  </ol>
+{% endblock breadcrumb %}

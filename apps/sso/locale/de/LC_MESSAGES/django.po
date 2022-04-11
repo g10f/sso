@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-01-28 22:34+0100\n"
+"POT-Creation-Date: 2022-04-11 08:53+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -328,41 +328,6 @@ msgstr ""
 msgid "Subject"
 msgstr ""
 
-msgid "New password"
-msgstr ""
-
-msgid "New password confirmation"
-msgstr ""
-
-msgid "Old password"
-msgstr ""
-
-msgid "Your old password was entered incorrectly. Please enter it again."
-msgstr "Dein altes Passwort war verkehrt, bitte gib es erneut ein."
-
-msgid ""
-"That email address doesn't have an associated user account. Are you sure "
-"you've registered?"
-msgstr ""
-"Diese E-Mail-Adresse ist keinem Benutzer zugeordnet. Sicher, dass es die "
-"richtige ist?"
-
-msgid ""
-"The user account associated with this email address cannot reset the "
-"password."
-msgstr ""
-"Der Benutzer mit dieser E-Mail-Adresse kann das Passwort nicht zurücksetzen."
-
-msgid ""
-"You can not reset your password jet, because your account is waiting for "
-"initial activation."
-msgstr ""
-"Du kannst Dein Passwort noch nicht zurücksetzen, da Dein Benutzerkonto noch "
-"nichtaktiviert wurde."
-
-msgid "Email"
-msgstr ""
-
 msgid "Password"
 msgstr ""
 
@@ -373,6 +338,9 @@ msgid "Enter the same password as above, for verification."
 msgstr ""
 
 msgid "The two password fields didn't match."
+msgstr ""
+
+msgid "Email"
 msgstr ""
 
 msgid "first name"
@@ -454,8 +422,84 @@ msgstr "aktiv"
 msgid "blocked"
 msgstr "gesperrt"
 
+msgid "Confidential client"
+msgstr "Vertrauenswürdiger Client"
+
+msgid "Public client"
+msgstr "Öffentlicher Client"
+
+msgid "Service account"
+msgstr "Service Konto"
+
+msgid "Application Admin "
+msgstr "Anwendungsadmin"
+
+msgid "The user does not exists"
+msgstr "Der Benutzer existiert nicht"
+
+msgid "Can access all users"
+msgstr "Kann auf alle User zugreifen"
+
+msgid "Type"
+msgstr ""
+
+msgid ""
+"Confidential or public client for <a href='https://openid.net/specs/openid-"
+"connect-core-1_0.html#CodeFlowSteps'>authorisation code flow</a> or service "
+"account client with <a href='https://datatracker.ietf.org/doc/html/"
+"rfc6749#section-4.4'>client credentials grant</a>."
+msgstr ""
+"Vertrauenswürdiger oder öffentlicher Client für den <a href='https://openid."
+"net/specs/openid-connect-core-1_0.html#CodeFlowSteps'>authorisation code "
+"flow</a> oder Service Konto Client mit <a href='https://datatracker.ietf.org/"
+"doc/html/rfc6749#section-4.4'>client credentials grant</a>."
+
+msgid "Client ID"
+msgstr "Client ID"
+
+msgid "Scopes"
+msgstr ""
+
+msgid "New password"
+msgstr ""
+
+msgid "New password confirmation"
+msgstr ""
+
+msgid "Old password"
+msgstr ""
+
+msgid "Your old password was entered incorrectly. Please enter it again."
+msgstr "Dein altes Passwort war verkehrt, bitte gib es erneut ein."
+
+msgid ""
+"That email address doesn't have an associated user account. Are you sure "
+"you've registered?"
+msgstr ""
+"Diese E-Mail-Adresse ist keinem Benutzer zugeordnet. Sicher, dass es die "
+"richtige ist?"
+
+msgid ""
+"The user account associated with this email address cannot reset the "
+"password."
+msgstr ""
+"Der Benutzer mit dieser E-Mail-Adresse kann das Passwort nicht zurücksetzen."
+
+msgid ""
+"You can not reset your password jet, because your account is waiting for "
+"initial activation."
+msgstr ""
+"Du kannst Dein Passwort noch nicht zurücksetzen, da Dein Benutzerkonto noch "
+"nichtaktiviert wurde."
+
+msgid "order"
+msgstr ""
+
 msgid "Overwrites the alphabetic order."
 msgstr "Überschreibt die alphabethische Sortierung"
+
+msgid "title"
+msgstr "Titel"
 
 msgid "global navigation"
 msgstr "globale Navigation"
@@ -468,6 +512,9 @@ msgstr ""
 
 msgid "internal"
 msgstr "intern"
+
+msgid "Designates whether this application should be hidden on the home page."
+msgstr "Gibt an, ob diese Anwendung auf der Startseite verborgen werden soll."
 
 msgid "Designates whether this application should be provided."
 msgstr "Gibt an, ob diese Anwendung aktiv ist."
@@ -496,6 +543,13 @@ msgstr ""
 
 msgid "Associated group for SSO internal permission management."
 msgstr ""
+
+msgid ""
+"Designates whether this Role should be treated as active. Unselect this "
+"instead of deleting Roles."
+msgstr ""
+"Legt fest, ob diese Rolle aktiv ist. Kann deaktiviert werden, anstatt die "
+"Rolle zu löschen."
 
 msgid "role"
 msgstr "Rolle"
@@ -589,9 +643,10 @@ msgstr "Weiblich"
 msgid "username"
 msgstr "Benutzername"
 
-msgid "Required. 70 characters or fewer. Letters, digits and @/./+/-/_ only."
+msgid "Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only."
 msgstr ""
-"Erforderlich. 70 Zeichen oder weniger. Nur Buchstaben, Ziffern und @/./+/-/_."
+"Erforderlich. 150 Zeichen oder weniger. Nur Buchstaben, Ziffern und @/./+/-/"
+"_."
 
 msgid "staff status"
 msgstr ""
@@ -740,9 +795,6 @@ msgstr "Telefontyp"
 msgid "Mobile, home, office, etc."
 msgstr "Handy, privat, Büro, etc."
 
-msgid "title"
-msgstr "Titel"
-
 msgid "one time message"
 msgstr "Einweg-Nachricht"
 
@@ -855,6 +907,72 @@ msgstr ""
 msgid "Remove from organisation"
 msgstr "Aus der Organisation löschen"
 
+msgid "Delete Application"
+msgstr "Löschen der Anwendung"
+
+msgid "Applications"
+msgstr "Anwendungen"
+
+msgid "Title"
+msgstr "Titel"
+
+msgid "url"
+msgstr ""
+
+msgid "Number of users in app roles:"
+msgstr ""
+
+msgid "Number of profiles with app roles:"
+msgstr ""
+
+msgid "Confirm Delete"
+msgstr "Löschen bestätigen"
+
+msgid "or"
+msgstr "oder"
+
+msgid "Cancel"
+msgstr "Abbrechen"
+
+msgid "Add Application"
+msgstr "Anwendung hinzufügen"
+
+msgid "Regions"
+msgstr "Regionen"
+
+msgid "Application Details"
+msgstr "Anwendungsdetails"
+
+msgid "Url"
+msgstr ""
+
+msgid "Active"
+msgstr "Aktiv"
+
+msgid "Internal"
+msgstr "intern"
+
+msgid "Delete"
+msgstr ""
+
+msgid "Edit"
+msgstr "Bearbeiten"
+
+msgid "Add OIDC client"
+msgstr "OIDC Client hinzufügen"
+
+msgid "OIDC clients"
+msgstr "OIDC Clients"
+
+msgid "Action"
+msgstr ""
+
+msgid "Update"
+msgstr "Aktualisieren"
+
+msgid "Application Data"
+msgstr "Anwendungsdaten"
+
 msgid "Contact Information"
 msgstr "Kontakt Information"
 
@@ -872,15 +990,6 @@ msgstr "Profil löschen"
 
 msgid "Do you want to delete your account?"
 msgstr "Möchtest Du Dein Konto löschen?"
-
-msgid "Delete"
-msgstr ""
-
-msgid "or"
-msgstr "oder"
-
-msgid "Cancel"
-msgstr "Abbrechen"
 
 #, python-format
 msgid "Hi %(first_name)s."
@@ -923,9 +1032,6 @@ msgid "Object id"
 msgstr ""
 
 msgid "Object repr"
-msgstr ""
-
-msgid "Action"
 msgstr ""
 
 #, python-format
@@ -1201,9 +1307,6 @@ msgstr "Benutzer löschen"
 msgid "City"
 msgstr ""
 
-msgid "Confirm Delete"
-msgstr "Löschen bestätigen"
-
 msgid "Email Details"
 msgstr "E-Mail Details"
 
@@ -1251,9 +1354,8 @@ msgstr ""
 msgid "body"
 msgstr ""
 
-#
 msgid "Send mail"
-msgstr "E-Mail Senden"
+msgstr "E-Mail senden"
 
 msgid "Impersonate User"
 msgstr "Auftreten als User"
@@ -1264,50 +1366,20 @@ msgstr ""
 msgid "View on site"
 msgstr ""
 
-msgid "The confirmation was not succesfull, please resend the confirmation."
-msgstr ""
-"Die Bestätigung war nicht erfolgreich, bitte versende erneut eine "
-"Bestätigungsemail."
+msgid "Delete Client"
+msgstr "Client löschen"
 
-#, python-format
-msgid "Your email address \"%(email)s\" was already confirmed successfully."
-msgstr "Deine E-Mail Adresse \"%(email)s\" wurde schon bestätigt."
+msgid "Create Client"
+msgstr "Client anlegen"
 
-#, python-format
-msgid "Your email address \"%(email)s\" was confirmed successfully."
-msgstr "Deine E-Mail Adresse \"%(email)s\" wurde erfolgreich bestätigt."
+msgid "Update Client"
+msgstr "Client aktualisieren"
 
-msgid ""
-"The confirmation message has probably already expired, please resend the "
-"confirmation."
-msgstr ""
-"Die Bestätigungsemail ist wahrscheinlich veraltet, bitte versende erneut "
-"eine Bestätigungsemail."
+msgid "OIDC client"
+msgstr "OIDC Client"
 
-#, python-format
-msgid "Confirmation email was sent to \"%(email)s\"."
-msgstr ""
-"Eine E-Mail zur Bestätigung der E-Mail Adresse wurde an \"%(email)s\" "
-"versendet."
-
-#, python-format
-msgid "The email \"%(email)s\" was deleted successfully."
-msgstr "Die  E-Mail Adresse \"%(email)s\" wurde erfolgreich gelöscht."
-
-#, python-format
-msgid "The email \"%(email)s\" was changed successfully."
-msgstr "Die E-Mail Adresse \"%(email)s\" wurde erfolgreich geändert."
-
-msgid "Thank you. Your data were saved."
-msgstr "Vielen Dank, Deine Eingaben wurden gespeichert."
-
-msgid "Your profile was changed successfully. You may edit it again below."
-msgstr ""
-"Dein Benutzerprofil wurde erfolgreich geändert. Du kannst die Daten unten "
-"erneut ändern."
-
-msgid "Thank you. Your profile was saved."
-msgstr "Vielen Dank, Deine Eingaben wurden gespeichert."
+msgid "OIDC client data"
+msgstr "OIDC Clientdaten"
 
 msgid "last login"
 msgstr "letzte Anmeldung"
@@ -1357,11 +1429,25 @@ msgstr "Benutzer bearbeiten"
 msgid "Change user roles"
 msgstr "Benutzer Rollen bearbeiten"
 
+msgid "Active Applications"
+msgstr "Aktive Anwendungen"
+
+msgid "Inactive Applications"
+msgstr "Inaktive Anwendungen"
+
 msgid "active/inactive"
 msgstr "aktiv/inaktiv"
 
 msgid "All"
 msgstr ""
+
+
+msgid ""
+"Application admins can manage the application, OIDC clients and application "
+"roles of users they have access to."
+msgstr ""
+"Anwendungsadministratoren können die Anwendung, OIDC clients und "
+"Anwendungsrollen der User für die sie berechtigt sind, verwalten."
 
 msgid "All Organisations"
 msgstr "Alle Organisationen"
@@ -1386,6 +1472,51 @@ msgstr "zu Organisation"
 
 msgid "from organisation"
 msgstr "von Organisation"
+
+msgid "The confirmation was not succesfull, please resend the confirmation."
+msgstr ""
+"Die Bestätigung war nicht erfolgreich, bitte versende erneut eine "
+"Bestätigungsemail."
+
+#, python-format
+msgid "Your email address \"%(email)s\" was already confirmed successfully."
+msgstr "Deine E-Mail Adresse \"%(email)s\" wurde schon bestätigt."
+
+#, python-format
+msgid "Your email address \"%(email)s\" was confirmed successfully."
+msgstr "Deine E-Mail Adresse \"%(email)s\" wurde erfolgreich bestätigt."
+
+msgid ""
+"The confirmation message has probably already expired, please resend the "
+"confirmation."
+msgstr ""
+"Die Bestätigungsemail ist wahrscheinlich veraltet, bitte versende erneut "
+"eine Bestätigungsemail."
+
+#, python-format
+msgid "Confirmation email was sent to \"%(email)s\"."
+msgstr ""
+"Eine E-Mail zur Bestätigung der E-Mail Adresse wurde an \"%(email)s\" "
+"versendet."
+
+#, python-format
+msgid "The email \"%(email)s\" was deleted successfully."
+msgstr "Die  E-Mail Adresse \"%(email)s\" wurde erfolgreich gelöscht."
+
+#, python-format
+msgid "The email \"%(email)s\" was changed successfully."
+msgstr "Die E-Mail Adresse \"%(email)s\" wurde erfolgreich geändert."
+
+msgid "Thank you. Your data were saved."
+msgstr "Vielen Dank, Deine Eingaben wurden gespeichert."
+
+msgid "Your profile was changed successfully. You may edit it again below."
+msgstr ""
+"Dein Benutzerprofil wurde erfolgreich geändert. Du kannst die Daten unten "
+"erneut ändern."
+
+msgid "Thank you. Your profile was saved."
+msgstr "Vielen Dank, Deine Eingaben wurden gespeichert."
 
 #, python-format
 msgid "%(brand)s SSO site admin"
@@ -1534,12 +1665,6 @@ msgstr "Sicherheit"
 msgid "Setup 2-step verification"
 msgstr "2-Faktor Authentifizierung einrichten"
 
-msgid "Type"
-msgstr ""
-
-msgid "Edit"
-msgstr "Bearbeiten"
-
 msgid "Add TOTP Authenticator"
 msgstr "TOTP-Authenticator hinzufügen"
 
@@ -1662,14 +1787,8 @@ msgstr "E-Mail Weiterleitung"
 msgid "Alias address"
 msgstr "E-Mail Alias"
 
-msgid "The user does not exists"
-msgstr "Der Benutzer existiert nicht"
-
 msgid "Permission"
 msgstr "Berechtigung"
-
-msgid "Active"
-msgstr "Aktiv"
 
 msgid "The email address already exists"
 msgstr "Diese E-Mail Adresse wird schon benutzt."
@@ -1807,9 +1926,6 @@ msgstr "Das %(nth)s-te Element in der Liste ist ungültig: "
 msgid "Some items occur muliple times."
 msgstr "Einige Elemente treten mehrmals auf."
 
-msgid "url"
-msgstr ""
-
 msgid "Forms"
 msgstr ""
 
@@ -1928,26 +2044,28 @@ msgstr "Bearer Token"
 msgid "OAuth2"
 msgstr ""
 
-msgid "Web Application"
-msgstr "Web Anwendung"
-
-msgid "Javascript Application"
-msgstr "Javascript Anwendung"
-
-msgid "Native Application"
-msgstr "Native Anwendung"
-
-msgid "Service Account"
-msgstr "Service Konto"
-
-msgid "Trusted Client"
+msgid "Implicit flow"
 msgstr ""
+
+msgid "Trusted client"
+msgstr "Vertrauenswürdiger Client"
 
 msgid "redirect uris"
-msgstr ""
+msgstr "Weiterleitungs-URIs"
+
+msgid "Whitespace separated list of redirect uris."
+msgstr "Durch Leerzeichen getrennte Liste von Weiterleitungs-URIs"
 
 msgid "post logout redirect uris"
+msgstr "Post Logout Weiterleitungs-URIs"
+
+msgid ""
+"Whitespace separated list of <a href=\"https://openid.net/specs/openid-"
+"connect-rpinitiated-1_0.html#ClientMetadata\">post logout redirect uris</a>."
 msgstr ""
+"Durch Leerzeichen getrennte Liste von <a href=\"https://openid.net/specs/"
+"openid-connect-rpinitiated-1_0.html#ClientMetadata\">Logout Weiterleitungs-"
+"URIs</a>."
 
 msgid "default redirect uri"
 msgstr ""
@@ -2140,9 +2258,6 @@ msgstr ""
 
 msgid "Used for URLs, auto-generated from name if blank"
 msgstr ""
-
-msgid "Regions"
-msgstr "Regionen"
 
 msgid "City/Village"
 msgstr "Stadt/Dorf"
@@ -2852,14 +2967,6 @@ msgid "Group"
 msgstr "Gruppe"
 
 msgctxt "Organisation Type"
-msgid "Kreisverband"
-msgstr ""
-
-msgctxt "Organisation Type"
-msgid "Ortsverband"
-msgstr ""
-
-msgctxt "Organisation Type"
 msgid "Center"
 msgstr "Zentrum"
 
@@ -2878,6 +2985,14 @@ msgstr "Zentrum & Retreat"
 msgctxt "Organisation Type"
 msgid "Group & Retreat"
 msgstr "Gruppe & Retreat"
+
+msgctxt "Organisation Type"
+msgid "Kreisverband"
+msgstr ""
+
+msgctxt "Organisation Type"
+msgid "Ortsverband"
+msgstr ""
 
 msgid "Administration"
 msgstr "Administration"
@@ -2972,6 +3087,12 @@ msgstr "Einmal anmelden, alle %(site_name)s Services nutzen."
 msgid "To login"
 msgstr "Zum Login"
 
+msgid "Delete secret"
+msgstr "Geheimniss Löschen"
+
+msgid "New secret"
+msgstr "Neues Geheimniss"
+
 msgid "Send email"
 msgstr "E-Mail Senden"
 
@@ -3021,5 +3142,31 @@ msgstr ""
 msgid "CSRF verification failed. Request aborted."
 msgstr "Die CSRF-Überprüfung ist fehlgeschlagen. Anfrage abgebrochen."
 
-#~ msgid "Update"
-#~ msgstr "Aktualisieren"
+#, python-brace-format
+msgid "The {name} \"{obj}\" was deleted successfully."
+msgstr "{name} \"{obj}\" wurde gelöscht."
+
+#, python-brace-format
+msgid ""
+"The {name} \"{obj}\" was saved successfully. You may edit it again below."
+msgstr ""
+"{name} \"{obj}\" wurde erfolgreich gespeichert und kann weiter bearbeitet "
+"werden."
+
+#, python-brace-format
+msgid "The {name} \"{obj}\" was saved successfully."
+msgstr "{name} \"{obj}\" wurde erfolgreich gespeichert."
+
+#, python-brace-format
+msgid ""
+"The {name} \"{obj}\" was created successfully. You may edit it again below."
+msgstr ""
+"{name} \"{obj}\" wurde erfolgreich angelegt und kann weiter bearbeitet "
+"werden."
+
+#, python-brace-format
+msgid "The {name} \"{obj}\" was created successfully."
+msgstr "{name} \"{obj}\" wurde erfolgreich angelegt."
+
+#~ msgid "Client"
+#~ msgstr "Client"

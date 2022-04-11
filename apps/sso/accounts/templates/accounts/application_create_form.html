@@ -1,0 +1,17 @@
+{% extends "accounts/application_form.html" %}
+{% load i18n %}
+
+{% block title %}{% translate 'Add Application' %}{% endblock %}
+
+{% block breadcrumb %}
+  <ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li><a href="{% url 'organisations:adminregion_list' %}">{% translate 'Regions' %}</a></li>
+    <li class="active">{% translate 'Add Application' %}</li>
+  </ol>
+{% endblock breadcrumb %}
+
+
+{% block submit_group %}
+  <button type="submit" class="btn btn-primary">{% translate 'Save' %}</button>
+{% endblock %}

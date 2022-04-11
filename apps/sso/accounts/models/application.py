@@ -29,15 +29,16 @@ class ApplicationManager(models.Manager):
 
 
 class Application(models.Model):
-    order = models.IntegerField(default=0, help_text=_('Overwrites the alphabetic order.'))
-    title = models.CharField(max_length=255)
+    order = models.IntegerField(_('order'), default=0, help_text=_('Overwrites the alphabetic order.'))
+    title = models.CharField(_('title'), max_length=255, unique=True)
     url = models.URLField(max_length=2047, blank=True)
     uuid = models.UUIDField(unique=True, default=uuid.uuid4, editable=True)
     global_navigation = models.BooleanField(
         _('global navigation'),
         help_text=_('Designates whether this application should be shown in the global navigation bar.'),
         default=True)
-    is_internal = models.BooleanField(_('internal'), default=False)
+    is_internal = models.BooleanField(_('internal'), default=False,
+                                      help_text=_('Designates whether this application should be hidden on the home page.'))
     is_active = models.BooleanField(_('active'), default=True,
                                     help_text=_('Designates whether this application should be provided.'))
     redirect_to_after_first_login = models.BooleanField(
@@ -50,6 +51,9 @@ class Application(models.Model):
     objects = ApplicationManager()
 
     class Meta:
+        permissions = (
+            ("access_all_applications", "Can access all applications"),
+        )
         ordering = ['order', 'title']
         verbose_name = _("application")
         verbose_name_plural = _("applications")
@@ -78,6 +82,8 @@ class Role(models.Model):
     order = models.IntegerField(default=0, help_text=_('Overwrites the alphabetic order.'))
     group = models.ForeignKey(Group, on_delete=models.SET_NULL, blank=True, null=True,
                               help_text=_('Associated group for SSO internal permission management.'))
+    is_active = models.BooleanField(_('active'), default=True, db_index=True, help_text=_(
+        'Designates whether this Role should be treated as active. Unselect this instead of deleting Roles.'))
     objects = RoleManager()
 
     class Meta:

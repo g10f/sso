@@ -113,6 +113,28 @@ function showTab(selector) {
             showDistance(null);
         }
     }
+    function toggleOIDCClientFields(type) {
+        if (type === 'service') {
+            // disable redirect_uris post_logout_redirect_uris and
+            // enable can_access_all_users client_secret
+            $(".oidc-client [name='redirect_uris']").parent().parent().addClass('hidden')
+            $(".oidc-client [name='post_logout_redirect_uris']").parent().parent().addClass('hidden')
+            $(".oidc-client [name='can_access_all_users']").parent().parent().removeClass('hidden')
+            $(".oidc-client [name='client_secret']").parent().parent().removeClass('hidden')
+        }
+        else if (type === 'web') {
+            $(".oidc-client [name='redirect_uris']").parent().parent().removeClass('hidden')
+            $(".oidc-client [name='post_logout_redirect_uris']").parent().parent().removeClass('hidden')
+            $(".oidc-client [name='can_access_all_users']").parent().parent().addClass('hidden')
+            $(".oidc-client [name='client_secret']").parent().parent().removeClass('hidden')
+        }
+        else if (type === 'native') {
+            $(".oidc-client [name='redirect_uris']").parent().parent().removeClass('hidden')
+            $(".oidc-client [name='post_logout_redirect_uris']").parent().parent().removeClass('hidden')
+            $(".oidc-client [name='can_access_all_users']").parent().parent().addClass('hidden')
+            $(".oidc-client [name='client_secret']").parent().parent().addClass('hidden')
+        }
+    }
 
     $(function () {
         $("button.geo-location").click(function () {
@@ -154,5 +176,20 @@ function showTab(selector) {
                 return false;
             });
         });
+        // oidc client configuration page
+        $("button.client-secret-delete").click(function () {
+            $(this).siblings("input").val('');
+        });
+        $("button.client-secret-renew").click(function () {
+            const url = $(this).data('url');
+            const input = $(this).siblings("input");
+            $.get(url, function (data) {
+                input.val(data);
+            });
+        });
+        $(".oidc-client select[name='type']").change(function () {
+            toggleOIDCClientFields(this.value);
+        });
+        $(".oidc-client select[name='type']").trigger("change");
     });
 })(jQuery);

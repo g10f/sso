@@ -138,6 +138,22 @@ class Select2(forms.Select):
         super().__init__(new_attrs, **kwargs)
 
 
+class Select2Multiple(forms.SelectMultiple):
+    class Media:
+        css = {
+            'all': ('css/select2.min.css',)
+        }
+        js = ('js/vendor/select2.min.js',)
+
+    def __init__(self, attrs=None, **kwargs):
+        if attrs is None:
+            attrs = {}
+        attrs['multiple'] = True
+        # add select2 class
+        new_attrs = add_class_to_attr(attrs, 'select2 form-select w-100')
+        super().__init__(new_attrs, **kwargs)
+
+
 class SelectMultiple(forms.SelectMultiple):
     def __init__(self, attrs=None, **kwargs):
         # add form-control class
@@ -280,7 +296,7 @@ class ClearableBase64ImageWidget(Base64ImageWidget):
     def value_from_datadict(self, data, files, name):
         upload = super().value_from_datadict(data, files, name)
         if not self.is_required and CheckboxInput().value_from_datadict(
-                data, files, self.clear_checkbox_name(name)):
+            data, files, self.clear_checkbox_name(name)):
 
             if upload:
                 # If the user contradicts themselves (uploads a new file AND
@@ -293,6 +309,6 @@ class ClearableBase64ImageWidget(Base64ImageWidget):
 
     def value_omitted_from_data(self, data, files, name):
         return (
-                super().value_omitted_from_data(data, files, name) and
-                self.clear_checkbox_name(name) not in data
+            super().value_omitted_from_data(data, files, name) and
+            self.clear_checkbox_name(name) not in data
         )

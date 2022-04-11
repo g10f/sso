@@ -3,7 +3,7 @@
   <label class="col-form-label">{{ field.label }}</label>
 
   <div class="g10f-form-control">
-    <p class="form-control-static">{{ field.value|default:"---" }}</p>
+    <p class="form-control-plaintext">{{ field.value|default:"---" }}</p>
     {% if user.organisationchange_set.open %}
       <a class="btn btn-warning" href="{% url 'accounts:organisationchange_me' %}" role="button">
         {% blocktranslate with name=user.organisationchange_set.open.organisation.name %}Update change of organisation to {{ name }}{% endblocktranslate %}</a>

@@ -1,0 +1,48 @@
+{% extends "base_form.html" %}
+{% load i18n %}
+
+{% block title %}{% translate 'Update Client' %}{% endblock %}
+
+{% block breadcrumb %}
+  <ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li><a href="{% url 'accounts:application_list' %}">{% translate 'Applications' %}</a></li>
+    <li><a href="{% url 'accounts:application_detail' object.application.uuid.hex %}">{{ object.application.title }}</a></li>
+    <li class="active">{% translate 'Update Client' %}</li>
+  </ol>
+{% endblock breadcrumb %}
+
+{% block form %}
+  <form class="form-horizontal oidc-client" method="post">
+    <h1>{% translate 'OIDC client' %}</h1>
+    {% include 'include/_form_boilerplate.html' %}
+    {% translate 'OIDC client data' as base_title %}
+    {% include 'bootstrap/forms/nav-tabs.html' %}
+
+    <div class="tab-content">
+      <div class="tab-pane" role="tabpanel" id="base">
+        {% include 'include/_field.html' with field=form.type %}
+        {% include 'include/_field.html' with field=form.name %}
+        {% if user.is_global_user_admin or user.is_global_app_user_admin %}
+          {% include 'include/_field.html' with field=form.can_access_all_users %}
+        {% endif %}
+        {% include 'include/_field.html' with field=form.scopes %}
+        {% include 'include/_field.html' with field=form.uuid %}
+        {% include 'include/_client_secret_field.html' with field=form.client_secret %}
+        {% include 'include/_field.html' with field=form.redirect_uris %}
+        {% include 'include/_field.html' with field=form.post_logout_redirect_uris %}
+        {% include 'include/_field.html' with field=form.notes %}
+        {% include 'include/_field.html' with field=form.is_active %}
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="g10f-form-submit">
+        {% block submit_group %}
+          <button type="submit" class="btn btn-secondary" name="_continue">{% translate 'Save and continue editing' %}</button>
+          <button type="submit" class="btn btn-primary">{% translate 'Save' %}</button>
+        {% endblock submit_group %}
+      </div>
+    </div>
+  </form>
+{% endblock %}

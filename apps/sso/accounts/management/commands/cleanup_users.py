@@ -3,6 +3,7 @@ from datetime import timedelta, datetime, timezone
 from pathlib import Path
 
 import reversion
+from django.contrib import admin
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -20,6 +21,7 @@ class Command(BaseCommand):
     help = 'Cleanup Users'  # @ReservedAssignment
 
     def handle(self, *args, **options):
+        admin.autodiscover()
         delete_deactivated_users()
         check_validation()
         clean_pictures()

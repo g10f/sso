@@ -1,5 +1,7 @@
 import logging
 
+from reversion.admin import VersionAdmin
+
 from django import forms
 from django.contrib import admin
 from django.urls import reverse
@@ -34,7 +36,7 @@ class ClientAdminForm(forms.ModelForm):
                 self.add_error('user', "User is only used for service clients")
 
 
-class ClientAdmin(admin.ModelAdmin):
+class ClientAdmin(VersionAdmin):
     list_display = ('name', 'uuid', 'application', 'type', 'user', 'is_active')
     list_filter = ('is_active', 'type', 'is_trustworthy', 'application')
     fields = ('application', 'type', 'name', 'uuid', 'client_secret', 'redirect_uris', 'post_logout_redirect_uris',

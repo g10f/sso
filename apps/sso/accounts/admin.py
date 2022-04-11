@@ -112,15 +112,15 @@ class OneTimeMessageAdmin(admin.ModelAdmin):
     message_link.short_description = _('Link')
 
 
-class ApplicationAdmin(admin.ModelAdmin):
+class ApplicationAdmin(VersionAdmin):
     list_display = ('title', 'order', 'link', 'is_active', 'global_navigation', 'required_scope')
     list_filter = ('global_navigation', 'is_internal', 'is_active')
     search_fields = ('url', 'title', 'uuid', 'notes')
 
 
 class RoleAdmin(admin.ModelAdmin):
-    list_display = ('name', 'order')
-    list_filter = ('group',)
+    list_display = ('name', 'group', 'order', 'is_active')
+    list_filter = ('group', 'is_active')
 
 
 class ApplicationRoleAdmin(admin.ModelAdmin):

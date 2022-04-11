@@ -1,0 +1,53 @@
+{% extends 'base_list.html' %}
+{% load i18n list tz %}
+
+{% block title %}{% translate 'Applications' %}{% endblock %}
+
+{% block nav_organisations_region_list_class %}active{% endblock %}
+
+{% block breadcrumb %}
+  <ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li class="active">{% translate 'Applications' %}</li>
+  </ol>
+{% endblock breadcrumb %}
+
+
+{% block content %}
+  <div class="row">
+    <div class="col-sm-12">
+      {% if messages %}{% for message in messages %}
+        <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
+      {% endif %}
+    </div>
+  </div><!-- /.row -->
+
+  <div class="g10f-filter-row">
+    <ul class="nav">
+      <li class="nav-item">{% include 'include/_search_form.html' %}</li>
+      {% for filter in filters %}{% if filter %}
+        <li class="nav-item">{% include filter.template_name with filter=filter %}</li>
+      {% endif %}{% endfor %}
+    </ul>
+  </div>
+
+  <main>
+    <section class="table-responsive">
+      <table class="table table-bordered table-striped">
+        {% include "include/table_header.html" %}
+        <tbody>
+        {% for object in object_list %}
+          <tr>
+            <td><a href="{% url 'accounts:application_detail' object.uuid.hex %}">{{ object.title }}</a></td>
+            <td>{% if object.url %}<a href="{{ object.url }}">{{ object.url }}</a>{% endif %}</td>
+            <td>{% if object.global_navigation %}<i class="bi bi-check2"></i>{% endif %}
+            <td>{% if object.is_internal %}<i class="bi bi-check2"></i>{% endif %}
+            <td>{% if object.is_active %}<i class="bi bi-check2"></i>{% endif %}
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      {% if is_paginated %}{% pagination page_obj cl %}{% endif %}
+    </section>
+  </main>
+{% endblock content %}
