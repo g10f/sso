@@ -49,6 +49,13 @@
     </div>
   {% endif %}
 
+  {% if object.applicationadmin_set.all %}
+    <div class="row">
+      <div class="col-4">{% translate 'Application Admins' %}:</div>
+      <div class="col-8">{% for applicationadmin in object.applicationadmin_set.all %}{{ applicationadmin.admin }}{% if not forloop.last %}, {% endif %}{% endfor %}</div>
+    </div>
+  {% endif %}
+
   <br>
   <div class="form-group">
     <div class="g10f-form-control_lg">

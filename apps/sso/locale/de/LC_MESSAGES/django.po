@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-11 08:53+0200\n"
+"POT-Creation-Date: 2022-04-11 09:31+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -952,6 +952,9 @@ msgstr "Aktiv"
 msgid "Internal"
 msgstr "intern"
 
+msgid "Application Admins"
+msgstr "Anwendungsadmins"
+
 msgid "Delete"
 msgstr ""
 
@@ -1440,7 +1443,6 @@ msgstr "aktiv/inaktiv"
 
 msgid "All"
 msgstr ""
-
 
 msgid ""
 "Application admins can manage the application, OIDC clients and application "
