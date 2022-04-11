@@ -9,22 +9,29 @@
   {
     "model": "accounts.role",
     "fields": {
-      "name": "Staff",
+      "name": "Admin",
       "order": 20
     }
   },
   {
     "model": "accounts.role",
     "fields": {
-      "name": "User",
+      "name": "Staff",
       "order": 30
     }
   },
   {
     "model": "accounts.role",
     "fields": {
-      "name": "Guest",
+      "name": "User",
       "order": 40
+    }
+  },
+  {
+    "model": "accounts.role",
+    "fields": {
+      "name": "Guest",
+      "order": 50
     }
   }
 ]

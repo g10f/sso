@@ -17,7 +17,7 @@ from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
 from sso.access_requests.models import AccessRequest
 from sso.accounts.models import OrganisationChange
-from sso.accounts.models.application import ApplicationRole, RoleProfile, Application, Role, get_applicationrole_ids
+from sso.accounts.models.application import ApplicationRole, RoleProfile, Application, Role, get_applicationrole_ids, ApplicationAdmin
 from sso.accounts.models.user_data import UserEmail, Membership
 from sso.decorators import memoize
 from sso.emails.models import GroupEmailManager
@@ -82,12 +82,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     ]
     username_validator = UnicodeUsernameValidator()
 
-    username = models.CharField(_('username'), max_length=70, unique=True,
-                                help_text=_('Required. 70 characters or fewer. Letters, digits and @/./+/-/_ only.'),
-                                validators=[username_validator], error_messages={
-            'unique': _("A user with that username already exists."), }, )
-    first_name = models.CharField(_('first name'), max_length=30, blank=True)
-    last_name = models.CharField(_('last name'), max_length=40, blank=True)
+    username = models.CharField(_('username'), max_length=150, unique=True, help_text=_('Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.'),
+                                validators=[username_validator], error_messages={'unique': _("A user with that username already exists.")})
+    first_name = models.CharField(_('first name'), max_length=150, blank=True)
+    last_name = models.CharField(_('last name'), max_length=150, blank=True)
     is_staff = models.BooleanField(_('staff status'), default=False, help_text=_('Designates whether the user can log into this admin site.'))
     is_active = models.BooleanField(_('active'), default=True, db_index=True, help_text=_(
         'Designates whether this user should be treated as active. Unselect this instead of deleting accounts.'))
@@ -372,7 +370,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         get a queryset for the admin
         """
-        if self.is_app_admin():
+        if self.is_app_user_admin():
             return ApplicationRole.objects.filter(application__applicationadmin__admin=self)
         else:
             return ApplicationRole.objects.none()
@@ -381,7 +379,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_administrable_app_admin_role_profiles(self):
         # all role profiles the user has, with adequate inheritable flag
         role_profiles = self.role_profiles.none()
-        if self.is_app_admin():
+        if self.is_app_user_admin():
             role_profiles = RoleProfile.objects.filter(roleprofileadmin__admin=self)
 
         return role_profiles.prefetch_related('application_roles', 'application_roles__role',
@@ -456,9 +454,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         return a list of countries from all the users we have app admin rights on
         """
-        if self.is_global_app_admin or self.is_superuser:
+        if self.is_global_app_user_admin or self.is_superuser:
             return OrganisationCountry.objects.all().select_related('country', 'association')
-        elif self.is_app_admin():
+        elif self.is_app_user_admin():
             return OrganisationCountry.objects.filter(
                 # for admin regions without a associated country
                 Q(organisation__admin_region__in=self.app_admin_regions.all()) |
@@ -475,9 +473,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         return a list of organisations from all the users we have rights to manage app_roles
         """
-        if self.is_global_app_admin or self.is_superuser:
+        if self.is_global_app_user_admin or self.is_superuser:
             return Organisation.objects.all().select_related('organisation_country__country', 'email')
-        elif self.is_app_admin():
+        elif self.is_app_user_admin():
             return Organisation.objects.filter(
                 Q(pk__in=self.organisations.all()) |
                 Q(admin_region__in=self.app_admin_regions.all()) |
@@ -492,9 +490,9 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         return a list of regions from all the users we have admin rights on
         """
-        if self.is_global_app_admin or self.is_superuser:
+        if self.is_global_app_user_admin or self.is_superuser:
             return AdminRegion.objects.all()
-        elif self.is_app_admin():
+        elif self.is_app_user_admin():
             return AdminRegion.objects.filter(
                 Q(organisation__in=self.organisations.all()) |
                 Q(pk__in=self.app_admin_regions.all()) |
@@ -731,14 +729,26 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def filter_administrable_app_admin_users(self, qs):
         # filter the users for who the authenticated user can manage app_roles
-        if self.is_global_app_admin:
+        if self.is_global_app_user_admin:
             qs = qs.filter(is_superuser=False, is_service=False)
-        elif self.is_app_admin():
+        elif self.is_app_user_admin():
             organisations = self.get_administrable_app_admin_user_organisations()
             q = Q(is_superuser=False) & Q(is_service=False) & Q(organisations__in=organisations)
             qs = qs.filter(q).distinct()
         else:
             qs = User.objects.none()
+        return qs
+
+    def filter_administrable_apps(self, qs):
+        # filter the apps for who the authenticated user has admin rights
+        if self.is_superuser:
+            pass
+        elif self.is_global_app_admin:
+            pass
+        elif self.has_perms(["accounts.view_application"]):
+            qs = qs.filter(applicationadmin__admin=self)
+        else:
+            qs = qs.none()
         return qs
 
     @property
@@ -765,12 +775,20 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.has_perms(["accounts.read_user"])  # is used also by the api for read_only access
 
     @property
+    def is_global_app_user_admin(self):
+        return self.is_app_user_admin() and self.has_perm("accounts.app_admin_access_all_users")
+
+    @memoize
+    def is_app_user_admin(self):
+        return self.applicationadmin_set.exists() or self.roleprofileadmin_set.exists()
+
+    @property
     def is_global_app_admin(self):
-        return self.is_app_admin() and self.has_perm("accounts.app_admin_access_all_users")
+        return self.has_perms(["accounts.view_application", "accounts.access_all_applications"])
 
     @memoize
     def is_app_admin(self):
-        return self.applicationadmin_set.exists() or self.roleprofileadmin_set.exists()
+        return self.applicationadmin_set.exists() and self.has_perms(["accounts.view_application"])
 
     @property
     def is_global_organisation_admin(self):
@@ -843,7 +861,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         if self.is_superuser:
             return True
-        if self.is_global_app_admin:
+        if self.is_global_app_user_admin:
             user = User.objects.get(uuid=uuid)
             return not user.is_superuser and not user.is_service
         else:
@@ -895,6 +913,18 @@ class User(AbstractBaseUser, PermissionsMixin):
             return True
         else:
             return False
+
+    def has_app_access(self, uuid):
+        if self.is_global_app_admin:
+            return True
+        else:
+            return ApplicationAdmin.objects.filter(application__uuid=uuid, admin=self).exists()
+
+    def has_client_access(self, uuid):
+        if self.is_global_app_admin:
+            return True
+        else:
+            return ApplicationAdmin.objects.filter(application__client__uuid=uuid, admin=self).exists()
 
     @property
     def is_complete(self):

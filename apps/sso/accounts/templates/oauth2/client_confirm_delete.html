@@ -1,0 +1,49 @@
+{% extends "base_form.html" %}
+{% load i18n %}
+
+{% block title %}{% translate 'Delete Application' %}{% endblock %}
+
+{% block breadcrumb %}
+  <ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li><a href="{% url 'accounts:application_list' %}">{% translate 'Applications' %}</a></li>
+    <li><a href="{% url 'accounts:application_detail' object.application.uuid.hex %}">{{ object.application.title }}</a></li>
+    <li class="active">{% translate 'Delete Client' %}</li>
+  </ol>
+{% endblock breadcrumb %}
+
+{% block form %}
+  <form class="form-horizontal" method="post">
+    <h1>{% translate 'Delete Client' %}</h1>
+
+    {% include 'include/_form_boilerplate.html' %}
+
+    <div class="form-group">
+      <label class="col-form-label">{% translate 'Name' %}</label>
+      <div class="g10f-form-control"><p class="form-control-plaintext">{{ object.name }}</p></div>
+    </div>
+
+    <div class="form-group">
+      <label class="col-form-label">{% translate 'Type' %}</label>
+      <div class="g10f-form-control"><p class="form-control-plaintext">{{ object.type }}</p></div>
+    </div>
+
+    <div class="form-group">
+      <label class="col-form-label">{% translate 'Client ID' %}</label>
+      <div class="g10f-form-control"><p class="form-control-plaintext">{{ object.uuid }}</p></div>
+    </div>
+
+    <div class="form-group">
+      <label class="col-form-label">{% translate 'Notes' %}</label>
+      <div class="g10f-form-control"><p class="form-control-plaintext">{{ object.notes }}</p></div>
+    </div>
+
+    <div class="form-group">
+      <div class="g10f-form-control_lg">
+        <button type="submit" class="btn btn-danger">{% translate 'Confirm Delete' %}</button>
+        {% if cancel_url %}&nbsp;{% translate 'or' %}&nbsp;
+          <a class="btn btn-secondary" href="{{ cancel_url }}">{% translate 'Cancel' %}</a>{% endif %}
+      </div>
+    </div>
+  </form>
+{% endblock %}

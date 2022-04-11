@@ -40,7 +40,7 @@
         {% for user_obj in object_list %}
           <tr>
             <td>
-              {% if user.is_app_admin %}
+              {% if user.is_app_user_admin %}
                 <a class="" href="{% url 'accounts:app_admin_update_user' user_obj.uuid.hex %}{{ cl.get_query_string }}">{{ user_obj.username }}</a>
               {% else %}{{ user_obj.username }}{% endif %}
             </td>

@@ -1,8 +1,6 @@
 import logging
 from urllib.parse import urlparse, urlsplit, urlunsplit
 
-from django.utils.encoding import force_str
-
 from django.conf import settings
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
@@ -10,11 +8,13 @@ from django.db import models
 from django.http import QueryDict
 from django.urls import reverse
 from django.utils.crypto import get_random_string
+from django.utils.encoding import force_str
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from sso.accounts.models import Application
 from sso.auth.models import Device
 from sso.models import AbstractBaseModel, AbstractBaseModelManager
+from sso.utils.translation import mark_safe_lazy
 
 logger = logging.getLogger(__name__)
 
@@ -67,13 +67,13 @@ OAUTH2_GRANT_TYPES = [
 """
 
 CLIENT_TYPES = [
-    ('web', _('Web Application')),  # response_type=code  grant_type=authorization_code or refresh_token
-    ('javascript', _('Javascript Application')),  # response_type=token
-    ('native', _('Native Application')),
+    ('web', _('Confidential client')),  # response_type=code  grant_type=authorization_code or refresh_token
+    ('javascript', _('Implicit flow')),  # response_type=token
+    ('native', _('Public client')),
     # response_type=code  grant_type=authorization_code or refresh_token redirect_uris=http://localhost or
     #  urn:ietf:wg:oauth:2.0:oob
-    ('service', _('Service Account')),  # grant_type=client_credentials
-    ('trusted', _('Trusted Client'))  # grant_type=password
+    ('service', _('Service account')),  # grant_type=client_credentials
+    ('trusted', _('Trusted client'))  # grant_type=password
 ]
 
 CLIENT_RESPONSE_TYPES = {
@@ -142,8 +142,12 @@ class Client(AbstractBaseModel):
     name = models.CharField(_("name"), max_length=255)
     application = models.ForeignKey(Application, on_delete=models.SET_NULL, verbose_name=_('application'), blank=True,
                                     null=True)
-    redirect_uris = models.TextField(_('redirect uris'), blank=True)
-    post_logout_redirect_uris = models.TextField(_('post logout redirect uris'), blank=True)
+    redirect_uris = models.TextField(_('redirect uris'), help_text=_('Whitespace separated list of redirect uris.'), blank=True)
+    post_logout_redirect_uris = models.TextField(
+        _('post logout redirect uris'),
+        help_text=mark_safe_lazy(_('Whitespace separated list of '
+                                   '<a href="https://openid.net/specs/openid-connect-rpinitiated-1_0.html#ClientMetadata">post logout redirect uris</a>.')),
+        blank=True)
     default_redirect_uri = models.CharField(_('default redirect uri'), max_length=2047, blank=True)
     client_secret = models.CharField(_('client secret'), max_length=2047, blank=True, default=get_default_secret)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, verbose_name=_('user'), null=True,
@@ -163,9 +167,9 @@ class Client(AbstractBaseModel):
     notes = models.TextField(_("Notes"), blank=True, max_length=2048)
     is_trustworthy = models.BooleanField(_("trustworthy"), default=False)
     force_using_pkce = models.BooleanField(_('force using PKCE'), default=False,
-                                           help_text=mark_safe(_('Enforce Proof Key for Code Exchange '
-                                                                 '<a href="https://tools.ietf.org/html/rfc7636">'
-                                                                 'https://tools.ietf.org/html/rfc7636</a>')))
+                                           help_text=mark_safe_lazy(_('Enforce Proof Key for Code Exchange '
+                                                                      '<a href="https://tools.ietf.org/html/rfc7636">'
+                                                                      'https://tools.ietf.org/html/rfc7636</a>')))
 
     objects = ClientManager()
 

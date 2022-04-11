@@ -26,7 +26,7 @@ from sso.views.generic import SearchFilter, ViewChoicesFilter, ViewQuerysetFilte
 from .models import RegistrationProfile, RegistrationManager, get_check_back_email_message, \
     get_access_denied_email_message, send_set_password_email, send_validation_email
 from .tokens import default_token_generator
-from ..accounts.views.application import get_usernotes_and_accessible_created_by_users
+from ..accounts.views.account import get_usernotes_and_accessible_created_by_users
 from ..views.sendmail import SendMailFormView
 
 

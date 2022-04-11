@@ -69,7 +69,7 @@ class EmailAliasInlineForm(BaseTabularInlineForm):
 
 class EmailManagerInlineForm(BaseTabularInlineForm):
     """
-    inline form for the adminstrating the admins
+    inline form for administrating the admins
     """
     manager_email = forms.CharField(max_length=254, label=_('Email'), widget=bootstrap.TextInput(attrs={'size': 50}))
     name = bootstrap.ReadOnlyField(label=_('Name'), initial='')

@@ -1,0 +1,104 @@
+{% extends "base_form.html" %}
+{% load i18n %}
+
+{% block title %}{% translate 'Application Details' %}{% endblock %}
+
+{% block breadcrumb %}
+  <ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li><a href="{% url 'accounts:application_list' %}">{% translate 'Applications' %}</a></li>
+    <li class="active">{{ object.title }}</li>
+  </ol>
+{% endblock breadcrumb %}
+
+
+{% block form %}
+
+  <h1>{% translate 'Application' %}</h1>
+
+  {% if messages %}{% for message in messages %}
+    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
+  {% endif %}
+
+  <div class="row">
+    <div class="col-4">{% translate 'Title' %}:</div>
+    <div class="col-8">{{ object.title }}</div>
+  </div>
+  <div class="row">
+    <div class="col-4">{% translate 'Url' %}:</div>
+    <div class="col-8"><a href="{{ object.homepage }}">{{ object.url }}</a></div>
+  </div>
+  <div class="row">
+    <div class="col-4">{% translate 'Notes' %}:</div>
+    <div class="col-8">{{ object.notes }}</div>
+  </div>
+  <div class="row">
+    <div class="col-4">{% translate 'Active' %}:</div>
+    <div class="col-8"><i class="bi bi-{% if object.is_active %}check-{% endif %}square"></i>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-4">{% translate 'Internal' %}:</div>
+    <div class="col-8"><i class="bi bi-{% if object.is_internal %}check-{% endif %}square"></i>
+    </div>
+  </div>
+  {% if object.applicationrole_set.all %}
+    <div class="row">
+      <div class="col-4">{% translate 'Application Roles' %}:</div>
+      <div class="col-8">{% for role in object.applicationrole_set.all %}{{ role.role }}{% if not forloop.last %}, {% endif %}{% endfor %}</div>
+    </div>
+  {% endif %}
+
+  <br>
+  <div class="form-group">
+    <div class="g10f-form-control_lg">
+      {% block submit_group %}
+        {% if perms.accounts.delete_application %}
+          <a class="btn btn-secondary" rel="delete" href="{% url 'accounts:application_delete' object.uuid.hex %}">{% translate 'Delete' %}</a>
+        {% endif %}
+        {% if perms.accounts.change_application %}
+          <a class="btn btn-secondary" rel="update" href="{% url 'accounts:application_update' object.uuid.hex %}">{% translate 'Edit' %}</a>
+        {% endif %}
+        {% if perms.oauth2.add_client %}
+          <a class="btn btn-primary" rel="add-client" href="{% url 'accounts:client_add' object.uuid.hex %}"> <i
+            class="bi bi-plus-circle"></i> {% translate 'Add OIDC client' %}</a>
+        {% endif %}
+      {% endblock %}
+    </div>
+  </div>
+  <br>
+
+  {% if object.client_set.all %}
+    <h4>{% translate 'OIDC clients' %}</h4>
+    <div>
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+          <thead>
+          <tr>
+            <th scope="col">{% translate 'Name' %}</th>
+            <th scope="col">{% translate 'Client ID' %}</th>
+            <th scope="col">{% translate 'Type' %}</th>
+            <th scope="col">{% translate 'Action' %}</th>
+          </tr>
+          </thead>
+          <tbody>
+          {% for object in object.client_set.all %}
+            <tr>
+              <td>{{ object.name }}</td>
+              <td>{{ object.uuid }}</td>
+              <td>{{ object.get_type_display }}</td>
+              <td>
+                <a class="btn btn-default{% if not object.type in allowed_types or not perms.oauth2.change_client %} disabled{% endif %}" rel="update-client" role="button"
+                   {% if object.type in allowed_types and perms.oauth2.change_client %}href="{% url 'accounts:client_update' object.uuid.hex %}"{% endif %}>{% translate 'Edit' %}</a>
+                <a class="btn btn-secondary{% if not perms.oauth2.delete_client %} disabled{% endif %}" rel="delete-client" role="button"
+                   {% if perms.oauth2.delete_client %}href="{% url 'accounts:client_delete' object.uuid.hex %}"{% endif %}>{% translate 'Delete' %}</a>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% endif %}
+
+{% endblock %}

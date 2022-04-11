@@ -8,7 +8,7 @@ from django.views.decorators.http import last_modified
 from django.views.generic import RedirectView, TemplateView
 from django.views.i18n import JavaScriptCatalog
 from smart_selects.views import filterchain
-from sso.accounts.views.application import get_default_user_self_registration_form_class
+from sso.accounts.views.account import get_default_user_self_registration_form_class
 from sso.admin import sso_admin_site
 from sso.oauth2.views import OpenidConfigurationView
 from sso.registration.sites import RegistrationSite

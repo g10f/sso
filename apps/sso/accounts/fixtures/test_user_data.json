@@ -6,10 +6,26 @@
       "first_name": "Gunnar",
       "last_name": "Scherf",
       "is_active": true,
-      "is_superuser": true,
+      "is_superuser": false,
       "is_staff": true,
       "last_login": "2012-03-23T07:19:02.736Z",
-      "groups": [["RegistrationAdmin"]],
+      "groups": [
+        [
+          "RegistrationAdmin"
+        ],
+        [
+          "GlobalAppAdmin"
+        ],
+        [
+          "AppAdmin"
+        ]
+      ],
+      "application_roles": [
+        [
+          "fa467234b81e4838a009e38d9e655d18",
+          "Global"
+        ]
+      ],
       "user_permissions": [],
       "password": "pbkdf2_sha1$10000$tW4pBVoq45Dk$gP0qOqRozGKtx9oAWbnWyL5pe+0=",
       "date_joined": "2012-03-23T07:00:46.076Z",
@@ -109,7 +125,11 @@
     "model": "accounts.user",
     "fields": {
       "username": "RegionAdmin",
-      "admin_regions": [["0ebf2537fc664b7db285ea773c981404"]],
+      "admin_regions": [
+        [
+          "0ebf2537fc664b7db285ea773c981404"
+        ]
+      ],
       "first_name": "Region",
       "last_name": "Admin",
       "is_active": true,
@@ -136,7 +156,11 @@
     "model": "accounts.user",
     "fields": {
       "username": "CountryAdmin",
-      "admin_organisation_countries": [[ "6bc429702f9f442ea9717824a8d76d84" ]],
+      "admin_organisation_countries": [
+        [
+          "6bc429702f9f442ea9717824a8d76d84"
+        ]
+      ],
       "first_name": "Country",
       "last_name": "Admin",
       "is_active": true,
@@ -166,7 +190,9 @@
       "last_modified": "2012-03-23T07:00:46.076Z",
       "email": "admin@g10f.de",
       "primary": true,
-      "user": ["GlobalAdmin"]
+      "user": [
+        "GlobalAdmin"
+      ]
     }
   },
   {
@@ -177,7 +203,9 @@
       "email": "gunnar@g10f.de",
       "primary": true,
       "confirmed": true,
-      "user": ["GunnarScherf"]
+      "user": [
+        "GunnarScherf"
+      ]
     }
   },
   {
@@ -187,7 +215,9 @@
       "last_modified": "2012-03-23T07:00:46.076Z",
       "email": "center@g10f.de",
       "primary": true,
-      "user": ["CenterAdmin"]
+      "user": [
+        "CenterAdmin"
+      ]
     }
   },
   {
@@ -197,7 +227,9 @@
       "last_modified": "2012-03-23T07:00:46.076Z",
       "email": "region@g10f.de",
       "primary": true,
-      "user": ["RegionAdmin"]
+      "user": [
+        "RegionAdmin"
+      ]
     }
   },
   {
@@ -207,57 +239,99 @@
       "last_modified": "2012-03-23T07:00:46.076Z",
       "email": "country@g10f.de",
       "primary": true,
-      "user": ["CountryAdmin"]
+      "user": [
+        "CountryAdmin"
+      ]
+    }
+  },
+  {
+    "model": "accounts.useremail",
+    "fields": {
+      "uuid": "cfc5c0e468784c12ac19bbef149cd0de",
+      "last_modified": "2022-04-10T16:00:46.076Z",
+      "email": "app-admin@g10f.de",
+      "primary": true,
+      "user": [
+        "ApplicationAdmin"
+      ]
     }
   },
   {
     "model": "accounts.applicationadmin",
     "fields": {
-      "application": ["bc0ee635a536491eb8e7fbe5749e8111"],
-      "admin": ["ApplicationAdmin"],
+      "application": [
+        "bc0ee635a536491eb8e7fbe5749e8111"
+      ],
+      "admin": [
+        "ApplicationAdmin"
+      ],
       "last_modified": "2017-02-26T11:20:46.076Z"
     }
   },
   {
     "model": "accounts.membership",
     "fields": {
-      "user": ["GlobalAdmin"],
-      "organisation": ["31664dd38ca4454e916e55fe8b1f0745"]
+      "user": [
+        "GlobalAdmin"
+      ],
+      "organisation": [
+        "31664dd38ca4454e916e55fe8b1f0745"
+      ]
     }
   },
   {
     "model": "accounts.membership",
     "fields": {
-      "user": ["GunnarScherf"],
-      "organisation": ["31664dd38ca4454e916e55fe8b1f0745"]
+      "user": [
+        "GunnarScherf"
+      ],
+      "organisation": [
+        "31664dd38ca4454e916e55fe8b1f0745"
+      ]
     }
   },
   {
     "model": "accounts.membership",
     "fields": {
-      "user": ["ApplicationAdmin"],
-      "organisation": ["31664dd38ca4454e916e55fe8b1f0745"]
+      "user": [
+        "ApplicationAdmin"
+      ],
+      "organisation": [
+        "31664dd38ca4454e916e55fe8b1f0745"
+      ]
     }
   },
   {
     "model": "accounts.membership",
     "fields": {
-      "user": ["CenterAdmin"],
-      "organisation": ["31664dd38ca4454e916e55fe8b1f0745"]
+      "user": [
+        "CenterAdmin"
+      ],
+      "organisation": [
+        "31664dd38ca4454e916e55fe8b1f0745"
+      ]
     }
   },
   {
     "model": "accounts.membership",
     "fields": {
-      "user": ["RegionAdmin"],
-      "organisation": ["31664dd38ca4454e916e55fe8b1f0745"]
+      "user": [
+        "RegionAdmin"
+      ],
+      "organisation": [
+        "31664dd38ca4454e916e55fe8b1f0745"
+      ]
     }
   },
   {
     "model": "accounts.membership",
     "fields": {
-      "user": ["CountryAdmin"],
-      "organisation": ["31664dd38ca4454e916e55fe8b1f0745"]
+      "user": [
+        "CountryAdmin"
+      ],
+      "organisation": [
+        "31664dd38ca4454e916e55fe8b1f0745"
+      ]
     }
   }
 ]

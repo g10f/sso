@@ -8,6 +8,9 @@
       <div class="alert alert-danger">
         {% if formset.non_field_errors|length == 1 %}{{ formset.non_field_errors.0 }}{% else %}{{ formset.non_field_errors }}{% endif %}
       </div>{% endif %}
+    {% if formset.error_messages.help_text %}
+      <div class="form-text">{{ formset.error_messages.help_text }}</div>
+    {% endif %}
     <table class="table table-condensed">
       <thead>
       <tr>
@@ -34,7 +37,7 @@
           </tr>
         {% endif %}
         <tr class="tabular
-            {% cycle ' row1' ' row2' %}{% if field.errors or form.non_field_errors %} danger{% endif %}{% if form.fields.id.initial %} has_original{% endif %}{% if forloop.last %} empty-form{% endif %}"
+          {% cycle ' row1' ' row2' %}{% if field.errors or form.non_field_errors %} danger{% endif %}{% if form.fields.id.initial %} has_original{% endif %}{% if forloop.last %} empty-form{% endif %}"
             id="{{ formset.prefix }}-{% if not forloop.last %}{{ forloop.counter0 }}{% else %}empty{% endif %}">
           <td class="original hidden">
             {% spaceless %}

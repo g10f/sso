@@ -28,28 +28,28 @@
 
     <div class="form-group">
       <label class="col-form-label">{% translate 'First name' %}</label>
-      <div class="g10f-form-control"><p class="form-control-static">{{ access_request.user.first_name }}</p></div>
+      <div class="g10f-form-control"><p class="form-control-plaintext">{{ access_request.user.first_name }}</p></div>
     </div>
     <div class="form-group">
       <label class="col-form-label">{% translate 'Last name' %}</label>
-      <div class="g10f-form-control"><p class="form-control-static">{{ access_request.user.last_name }}</p></div>
+      <div class="g10f-form-control"><p class="form-control-plaintext">{{ access_request.user.last_name }}</p></div>
     </div>
     <div class="form-group">
       <label class="col-form-label">{% translate 'Email address' %}</label>
-      <div class="g10f-form-control"><p class="form-control-static">{{ access_request.user.primary_email }}</p></div>
+      <div class="g10f-form-control"><p class="form-control-plaintext">{{ access_request.user.primary_email }}</p></div>
     </div>
     <div class="form-group">
       <label class="col-form-label">{% translate 'Phone number' %}</label>
-      <div class="g10f-form-control"><p class="form-control-static">{{ access_request.user.primary_phone }}</p></div>
+      <div class="g10f-form-control"><p class="form-control-plaintext">{{ access_request.user.primary_phone }}</p></div>
     </div>
     <div class="form-group">
       <label class="col-form-label">{% translate 'Message' %}</label>
-      <div class="g10f-form-control"><p class="form-control-static">{{ access_request.message }}</p></div>
+      <div class="g10f-form-control"><p class="form-control-plaintext">{{ access_request.message }}</p></div>
     </div>
     {% if access_request.user.organisations.all %}
       <div class="form-group">
         <label class="col-form-label">{% translate 'Organisation' %}</label>
-        <div class="g10f-form-control"><p class="form-control-static">
+        <div class="g10f-form-control"><p class="form-control-plaintext">
           {% for organisation in access_request.user.organisations.all %}{{ organisation }}
             {% if not forloop.last %}, {% endif %}{% endfor %}</p></div>
       </div>
@@ -57,17 +57,17 @@
     {% if access_request.organisation %}
       <div class="form-group">
         <label class="col-form-label">{% translate 'New Organisation' %}</label>
-        <div class="g10f-form-control"><p class="form-control-static">{{ access_request.organisation }}</p></div>
+        <div class="g10f-form-control"><p class="form-control-plaintext">{{ access_request.organisation }}</p></div>
       </div>
     {% endif %}
     <div class="form-group">
       <label class="col-form-label">{% translate 'Application' %}</label>
-      <div class="g10f-form-control"><p class="form-control-static">{{ access_request.application|default_if_none:"" }}</p></div>
+      <div class="g10f-form-control"><p class="form-control-plaintext">{{ access_request.application|default_if_none:"" }}</p></div>
     </div>
     {% if has_user_access %}
       <div class="form-group">
         <label class="col-form-label">{% translate 'Edit details' %}</label>
-        <div class="g10f-form-control"><p class="form-control-static">
+        <div class="g10f-form-control"><p class="form-control-plaintext">
           <a href="{% url 'accounts:update_user' access_request.user.uuid.hex %}">{{ access_request.user.username }}</a>
         </p></div>
       </div>
