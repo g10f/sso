@@ -2,6 +2,8 @@ import logging
 from urllib.parse import urlparse, urlsplit, urlunsplit
 
 from django.conf import settings
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
@@ -9,11 +11,11 @@ from django.http import QueryDict
 from django.urls import reverse
 from django.utils.crypto import get_random_string
 from django.utils.encoding import force_str
-from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
-from sso.accounts.models import Application
+from sso.accounts.models import Application, User, ApplicationAdmin
 from sso.auth.models import Device
 from sso.models import AbstractBaseModel, AbstractBaseModelManager
+from sso.registration import default_username_generator
 from sso.utils.translation import mark_safe_lazy
 
 logger = logging.getLogger(__name__)
@@ -74,6 +76,14 @@ CLIENT_TYPES = [
     #  urn:ietf:wg:oauth:2.0:oob
     ('service', _('Service account')),  # grant_type=client_credentials
     ('trusted', _('Trusted client'))  # grant_type=password
+]
+
+ALLOWED_CLIENT_TYPES = [
+    ('web', _('Confidential client')),  # response_type=code grant_type=authorization_code or refresh_token
+    ('native', _('Public client')),
+    # response_type=code  grant_type=authorization_code or refresh_token redirect_uris=http://localhost or
+    #  urn:ietf:wg:oauth:2.0:oob
+    ('service', _('Service account')),  # grant_type=client_credentials
 ]
 
 CLIENT_RESPONSE_TYPES = {
@@ -139,6 +149,7 @@ def post_logout_redirect_uris():
 
 
 class Client(AbstractBaseModel):
+    codename = 'app_admin_access_all_users'
     name = models.CharField(_("name"), max_length=255)
     application = models.ForeignKey(Application, on_delete=models.SET_NULL, verbose_name=_('application'), blank=True,
                                     null=True)
@@ -185,6 +196,69 @@ class Client(AbstractBaseModel):
 
     def get_absolute_url(self):
         return reverse('oauth2:client.details.json', args=[str(self.id)])
+
+    @property
+    def is_allowed_client(self):
+        return self.type in {x[0] for x in ALLOWED_CLIENT_TYPES}
+
+    def has_access(self, user, perms=None):
+        if not self.is_allowed_client:
+            return False
+        if perms is None:
+            perms = ["oauth2.change_client"]
+        if not user.has_perms(perms):
+            return False
+        if self.has_access_to_all_users:
+            # check if user has also access right to all users
+            if not user.is_global_user_admin and not user.is_global_app_user_admin:
+                return False
+        # check if user is admin of the app
+        if user.is_global_app_admin:
+            return True
+        else:
+            return user.pk in self.application.applicationadmin_set.all().values_list('admin__pk', flat=True)
+
+    @property
+    def has_access_to_all_users(self):
+        return self.user and self.user.has_perm(f'accounts.{self.codename}')
+
+    def set_access_to_all_users(self, access_all_users, user):
+        if self.type != 'service':
+            logger.warning("set_access_to_all_users is only relevant for clients of type service")
+            return
+        if not user.is_global_user_admin and not user.is_global_app_user_admin:
+            logger.warning("set_access_to_all_users is only allowed for users with global user access")
+            return
+        self.ensure_service_user_exists()
+        content_type = ContentType.objects.get_for_model(User)
+        permission = Permission.objects.get(codename=self.codename, content_type=content_type)
+        if access_all_users:
+            self.user.user_permissions.add(permission)
+        else:
+            self.user.user_permissions.remove(permission)
+
+    def ensure_service_user_exists(self):
+        if self.type != 'service':
+            logger.warning("service user is only relevant for clients of type service")
+            return
+        if self.user is None:
+            first_name = self.name
+            last_name = "Service"
+            username = default_username_generator(first_name, last_name)
+            user = User.objects.create_user(username=username, first_name=first_name, last_name=last_name, is_service=True)
+            self.user = user
+            self.save(update_fields=['user', 'last_modified'])
+
+    def remove_service_user(self):
+        if self.type == 'service':
+            logger.warning("service user is required for clients of type service")
+            return
+        if self.user is not None:
+            if Client.objects.filter(user=self.user).exclude(pk=self.pk).count() == 0:
+                self.user.delete()
+            else:
+                self.user = None
+                self.save(update_fields=['user', 'last_modified'])
 
 
 class AuthorizationCode(models.Model):

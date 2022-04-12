@@ -89,16 +89,19 @@
           </tr>
           </thead>
           <tbody>
-          {% for object in object.client_set.all %}
+          {% for object in client_list %}
             <tr>
               <td>{{ object.name }}</td>
               <td>{{ object.uuid }}</td>
-              <td>{{ object.get_type_display }}</td>
+              {% with has_access_to_all_users=object.has_access_to_all_users %}
+                <td {% if has_access_to_all_users %}data-bs-toggle="tooltip" title="{% translate 'Has access to all users' %}"{% endif %}>
+                  {{ object.get_type_display }}{% if has_access_to_all_users %} <i class="bi bi-person-check-fill"></i>{% endif %}</td>
+              {% endwith %}
               <td>
-                <a class="btn btn-default{% if not object.type in allowed_types or not perms.oauth2.change_client %} disabled{% endif %}" rel="update-client" role="button"
-                   {% if object.type in allowed_types and perms.oauth2.change_client %}href="{% url 'accounts:client_update' object.uuid.hex %}"{% endif %}>{% translate 'Edit' %}</a>
-                <a class="btn btn-secondary{% if not perms.oauth2.delete_client %} disabled{% endif %}" rel="delete-client" role="button"
-                   {% if perms.oauth2.delete_client %}href="{% url 'accounts:client_delete' object.uuid.hex %}"{% endif %}>{% translate 'Delete' %}</a>
+                <a class="btn btn-default{% if not object.user_has_access %} disabled{% endif %}" rel="update-client" role="button"
+                   {% if object.user_has_access %}href="{% url 'accounts:client_update' object.uuid.hex %}"{% endif %}>{% translate 'Edit' %}</a>
+                <a class="btn btn-secondary{% if not object.user_has_access %} disabled{% endif %}" rel="delete-client" role="button"
+                   {% if object.user_has_access %}href="{% url 'accounts:client_delete' object.uuid.hex %}"{% endif %}>{% translate 'Delete' %}</a>
               </td>
             </tr>
           {% endfor %}

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-11 09:31+0200\n"
+"POT-Creation-Date: 2022-04-12 09:26+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -422,15 +422,6 @@ msgstr "aktiv"
 msgid "blocked"
 msgstr "gesperrt"
 
-msgid "Confidential client"
-msgstr "Vertrauenswürdiger Client"
-
-msgid "Public client"
-msgstr "Öffentlicher Client"
-
-msgid "Service account"
-msgstr "Service Konto"
-
 msgid "Application Admin "
 msgstr "Anwendungsadmin"
 
@@ -444,15 +435,17 @@ msgid "Type"
 msgstr ""
 
 msgid ""
-"Confidential or public client for <a href='https://openid.net/specs/openid-"
-"connect-core-1_0.html#CodeFlowSteps'>authorisation code flow</a> or service "
-"account client with <a href='https://datatracker.ietf.org/doc/html/"
+"Confidential client (can store a secret) or public client for <a "
+"href='https://openid.net/specs/openid-connect-core-1_0."
+"html#CodeFlowSteps'>authorisation code flow</a> or service account client "
+"with <a href='https://datatracker.ietf.org/doc/html/"
 "rfc6749#section-4.4'>client credentials grant</a>."
 msgstr ""
-"Vertrauenswürdiger oder öffentlicher Client für den <a href='https://openid."
-"net/specs/openid-connect-core-1_0.html#CodeFlowSteps'>authorisation code "
-"flow</a> oder Service Konto Client mit <a href='https://datatracker.ietf.org/"
-"doc/html/rfc6749#section-4.4'>client credentials grant</a>."
+"Vertraulicher Client (kann ein Geheimniss speichern) oder öffentlicher "
+"Client für den <a href='https://openid.net/specs/openid-connect-core-1_0."
+"html#CodeFlowSteps'>authorisation code flow</a> oder Service Konto Client "
+"mit <a href='https://datatracker.ietf.org/doc/html/"
+"rfc6749#section-4.4'>client credentials grant</a>."
 
 msgid "Client ID"
 msgstr "Client ID"
@@ -967,8 +960,14 @@ msgstr "OIDC Client hinzufügen"
 msgid "OIDC clients"
 msgstr "OIDC Clients"
 
+msgid "Access to all users"
+msgstr "Kann auf alle User zugreifen"
+
 msgid "Action"
 msgstr ""
+
+msgid "Has access to all users"
+msgstr "Kann auf alle User zugreifen"
 
 msgid "Update"
 msgstr "Aktualisieren"
@@ -2046,8 +2045,17 @@ msgstr "Bearer Token"
 msgid "OAuth2"
 msgstr ""
 
+msgid "Confidential client"
+msgstr "Vertraulicher Client"
+
 msgid "Implicit flow"
 msgstr ""
+
+msgid "Public client"
+msgstr "Öffentlicher Client"
+
+msgid "Service account"
+msgstr "Service Konto"
 
 msgid "Trusted client"
 msgstr "Vertrauenswürdiger Client"

@@ -31,7 +31,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
     def get_url_path_from_mail(self):
         outbox = getattr(mail, 'outbox')
         self.assertEqual(len(outbox), 1)
-        urls = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+',
+        urls = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|%[0-9a-fA-F][0-9a-fA-F])+',
                           outbox[0].body)
         self.assertEqual(len(urls), 1)
         scheme, netloc, path, query_string, fragment = urlsplit(urls[0])  # @UnusedVariable
@@ -389,8 +389,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         gender = self.selenium.find_element(by=By.NAME, value="gender")
         gender.send_keys(new_gender)
 
-        required_extra_fields = self.selenium.find_elements(by=By.XPATH, value=
-        '//span[@class="user-extra-form-fields"]//node()[@class="form-select" and @required]')
+        required_extra_fields = self.selenium.find_elements(by=By.XPATH, value='//span[@class="user-extra-form-fields"]//node()[@class="form-select" and @required]')
         for required_extra_field in required_extra_fields:
             if required_extra_field.tag_name == 'select':
                 # select the first option with a non empty value
@@ -430,9 +429,9 @@ class AccountsSeleniumTests(SSOSeleniumTests):
 
         # check if the login link has a the new app url as next parameter (redirect_to_after_first_login=True)
         if settings.SSO_POST_RESET_LOGIN:
-            url = 'http://test.example.com'
+            url = 'https://test.example.com'
         else:
-            url = '%s?%s' % (reverse('auth:login'), urlencode({'next': 'http://test.example.com'}, safe='/'))
+            url = '%s?%s' % (reverse('auth:login'), urlencode({'next': 'https://test.example.com'}, safe='/'))
 
         self.selenium.find_element(by=By.XPATH, value='//a[@href="%s"]' % url)
 
@@ -440,4 +439,4 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.login_test(new_email, new_password)
 
         # check if we have the Test App in the app roles
-        self.selenium.find_element(by=By.XPATH, value='//a[@href="http://test.example.com"]')
+        self.selenium.find_element(by=By.XPATH, value='//a[@href="https://test.example.com"]')

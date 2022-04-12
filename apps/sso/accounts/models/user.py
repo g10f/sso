@@ -602,9 +602,9 @@ class User(AbstractBaseUser, PermissionsMixin):
             return AdminRegion.objects.filter(
                 Q(organisation_country__association__is_external=False)
                 & (
-                        Q(user=self) |
-                        Q(organisation_country__user=self) |
-                        Q(organisation_country__association__user=self))).distinct()
+                    Q(user=self) |
+                    Q(organisation_country__user=self) |
+                    Q(organisation_country__association__user=self))).distinct()
         else:
             return AdminRegion.objects.none()
 
@@ -620,9 +620,9 @@ class User(AbstractBaseUser, PermissionsMixin):
             return OrganisationCountry.objects.filter(
                 Q(association__is_external=False)
                 & (
-                        Q(adminregion__user=self) |
-                        Q(user=self) |
-                        Q(association__user=self))).distinct().prefetch_related('country', 'association')
+                    Q(adminregion__user=self) |
+                    Q(user=self) |
+                    Q(association__user=self))).distinct().prefetch_related('country', 'association')
         else:
             return OrganisationCountry.objects.none()
 
@@ -919,12 +919,6 @@ class User(AbstractBaseUser, PermissionsMixin):
             return True
         else:
             return ApplicationAdmin.objects.filter(application__uuid=uuid, admin=self).exists()
-
-    def has_client_access(self, uuid):
-        if self.is_global_app_admin:
-            return True
-        else:
-            return ApplicationAdmin.objects.filter(application__client__uuid=uuid, admin=self).exists()
 
     @property
     def is_complete(self):
