@@ -89,7 +89,15 @@ class ApplicationBaseView(MessagesMixin):
     slug_field = slug_url_kwarg = 'uuid'
 
     def get_context_data(self, **kwargs):
-        context = {'allowed_types': ['web', 'native', 'service']}
+        client_list = []
+        user = self.request.user
+        if self.object is not None:
+            perms = ["oauth2.change_client", "oauth2.delete_client"]
+            for client in self.object.client_set.all():
+                client.user_has_access = client.has_access(user, perms)
+                client_list.append(client)
+
+        context = {'client_list': client_list}
         context.update(kwargs)
         return super().get_context_data(**context)
 
@@ -199,7 +207,8 @@ class ClientBaseView(MessagesMixin):
     @method_decorator(permission_required('oauth2.view_client', raise_exception=True))
     def dispatch(self, request, *args, **kwargs):
         user = request.user
-        if 'uuid' in kwargs and not user.has_client_access(kwargs.get('uuid')):
+        self.object = self.get_object()
+        if not self.object.has_access(user):
             raise PermissionDenied
         return super().dispatch(request, *args, **kwargs)
 

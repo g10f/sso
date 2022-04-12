@@ -3,25 +3,15 @@ import uuid
 
 from django import forms
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Permission, Group
-from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.utils.translation import gettext_lazy as _
 from sso.forms import bootstrap, BaseForm, BaseTabularInlineForm
-from ..models import ApplicationRole, Application, ApplicationAdmin, User, Role
-from ...oauth2.models import Client
-from ...registration import default_username_generator
+from ..models import ApplicationRole, Application, ApplicationAdmin, Role
+from ...oauth2.models import Client, ALLOWED_CLIENT_TYPES
 from ...utils.translation import mark_safe_lazy
 
 logger = logging.getLogger(__name__)
-
-ALLOWED_CLIENT_TYPES = [
-    ('web', _('Confidential client')),  # response_type=code grant_type=authorization_code or refresh_token
-    ('native', _('Public client')),
-    # response_type=code  grant_type=authorization_code or refresh_token redirect_uris=http://localhost or
-    #  urn:ietf:wg:oauth:2.0:oob
-    ('service', _('Service account')),  # grant_type=client_credentials
-]
 
 ALLOWED_SCOPES = [
     ('openid', 'openid'),
@@ -130,11 +120,10 @@ class ApplicationAdminForm(BaseTabularInlineForm):
 
 
 class ClientForm(BaseForm):
-    codename = 'app_admin_access_all_users'
     can_access_all_users = forms.BooleanField(label=_('Can access all users'), required=False, widget=bootstrap.CheckboxInput())
     type = forms.ChoiceField(label=_('Type'), help_text=mark_safe_lazy(_(
-        "Confidential or public client for <a href='https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowSteps'>authorisation code flow</a> or service account client "
-        "with <a href='https://datatracker.ietf.org/doc/html/rfc6749#section-4.4'>client credentials grant</a>.")),
+        "Confidential client (can store a secret) or public client for <a href='https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowSteps'>authorisation code flow</a> "
+        "or service account client with <a href='https://datatracker.ietf.org/doc/html/rfc6749#section-4.4'>client credentials grant</a>.")),
                              required=True, choices=ALLOWED_CLIENT_TYPES, widget=bootstrap.Select())
     uuid = forms.UUIDField(label=_('Client ID'), required=True, initial=uuid.uuid4, widget=bootstrap.TextInput(attrs={'readonly': True}))
     scopes = forms.MultipleChoiceField(label=_('Scopes'), required=False, initial=['openid'], choices=ALLOWED_SCOPES, widget=bootstrap.Select2Multiple())
@@ -159,8 +148,7 @@ class ClientForm(BaseForm):
             instance = kwargs['instance']
             if instance.scopes:
                 kwargs['initial']['scopes'] = instance.scopes.split()
-            if instance.user and instance.user.has_perm(f'accounts.{self.codename}'):
-                kwargs['initial']['can_access_all_users'] = True
+            kwargs['initial']['can_access_all_users'] = instance.has_access_to_all_users
 
         super().__init__(*args, **kwargs)
 
@@ -188,35 +176,14 @@ class ClientForm(BaseForm):
 
     def save(self, commit=True):
         instance = super().save(commit)
-        user = instance.user
-        can_access_all_users = self.cleaned_data['can_access_all_users']
-
         # service clients need a user associated with
         if self.instance.type == 'service':
-            if user is None:
-                first_name = instance.name
-                last_name = "Service"
-                username = default_username_generator(first_name, last_name)
-                user = User.objects.create_user(username=username, first_name=first_name, last_name=last_name, is_service=True)
-                instance.user = user
-                instance.save()
+            instance.ensure_service_user_exists()
 
-            # modify the service account permission to access all users
-            # only if the current user has access to all users
-            if self.user.is_global_user_admin or self.user.is_global_app_user_admin:
-                if user.has_perm(f'accounts.{self.codename}') != can_access_all_users:
-                    content_type = ContentType.objects.get_for_model(User)
-                    permission = Permission.objects.get(codename=self.codename, content_type=content_type)
-                    if can_access_all_users:
-                        user.user_permissions.add(permission)
-                    else:
-                        user.user_permissions.remove(permission)
+            can_access_all_users = self.cleaned_data['can_access_all_users']
+            if can_access_all_users is not None:
+                instance.set_access_to_all_users(can_access_all_users, self.user)
         else:
-            if user is not None:
-                if Client.objects.filter(user=user).exclude(pk=instance.pk).count() == 0:
-                    user.delete()
-                else:
-                    instance.user = None
-                    instance.save()
+            self.instance.remove_service_user()
 
         return instance
