@@ -68,6 +68,42 @@
   {
     "model": "accounts.user",
     "fields": {
+      "username": "EmailAdmin",
+      "first_name": "Email",
+      "last_name": "Admin",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "last_login": "2017-02-26T08:18:33.143Z",
+      "groups": [],
+      "user_permissions": [],
+      "password": "pbkdf2_sha256$10000$JuM5NUO9HJ7e$61H65Og8koE7TCu37DfS1AqshlDiqmL1skZ6EzjrrGg=",
+      "date_joined": "2017-02-26T07:18:33.143Z",
+      "user_permissions": [
+        [
+          "access_all_users",
+          "accounts",
+          "user"
+        ],
+        [
+          "read_user",
+          "accounts",
+          "user"
+        ],
+        [
+          "read_email",
+          "emails",
+          "email"
+        ]
+      ],
+      "is_subscriber": false,
+      "is_center": false,
+      "last_modified": "2022-04-15T10:18:33.143Z"
+    }
+  },
+  {
+    "model": "accounts.user",
+    "fields": {
       "username": "ApplicationAdmin",
       "first_name": "Application",
       "last_name": "Admin",
