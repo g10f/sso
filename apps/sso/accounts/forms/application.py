@@ -8,24 +8,10 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.utils.translation import gettext_lazy as _
 from sso.forms import bootstrap, BaseForm, BaseTabularInlineForm
 from ..models import ApplicationRole, Application, ApplicationAdmin, Role
-from ...oauth2.models import Client, ALLOWED_CLIENT_TYPES
+from ...oauth2.models import Client, ALLOWED_CLIENT_TYPES, ALLOWED_SCOPES
 from ...utils.translation import mark_safe_lazy
 
 logger = logging.getLogger(__name__)
-
-ALLOWED_SCOPES = [
-    ('openid', 'openid'),
-    ('profile', 'profile'),
-    ('email', 'email'),
-    ('role', 'role'),
-    ('role_profile', 'role_profile'),
-    ('offline_access', 'offline_access'),
-    ('address', 'address'),
-    ('phone', 'phone'),
-    ('picture', 'picture'),
-    ('events', 'events'),
-    ('users', 'users'),
-]
 
 
 def add_app_admin_group(user):

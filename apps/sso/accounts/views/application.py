@@ -95,6 +95,10 @@ class ApplicationBaseView(MessagesMixin):
             perms = ["oauth2.change_client", "oauth2.delete_client"]
             for client in self.object.client_set.all():
                 client.user_has_access = client.has_access(user, perms)
+                if not client.has_supported_client_type:
+                    client.title = _('Client has an unsupported client type.')
+                elif not client.has_supported_scope:
+                    client.title = _('Client has unsupported scopes.')
                 client_list.append(client)
 
         context = {'client_list': client_list}
