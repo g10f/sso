@@ -78,12 +78,28 @@ CLIENT_TYPES = [
     ('trusted', _('Trusted client'))  # grant_type=password
 ]
 
+# selfservice allowed types
 ALLOWED_CLIENT_TYPES = [
     ('web', _('Confidential client')),  # response_type=code grant_type=authorization_code or refresh_token
     ('native', _('Public client')),
     # response_type=code  grant_type=authorization_code or refresh_token redirect_uris=http://localhost or
     #  urn:ietf:wg:oauth:2.0:oob
     ('service', _('Service account')),  # grant_type=client_credentials
+]
+
+# selfservice allowed scopes
+ALLOWED_SCOPES = [
+    ('openid', 'openid'),
+    ('profile', 'profile'),
+    ('email', 'email'),
+    ('role', 'role'),
+    # ('role_profile', 'role_profile'),  # there can be private role profiles
+    ('offline_access', 'offline_access'),
+    ('address', 'address'),
+    ('phone', 'phone'),
+    ('picture', 'picture'),
+    ('events', 'events'),
+    ('users', 'users'),
 ]
 
 CLIENT_RESPONSE_TYPES = {
@@ -169,7 +185,7 @@ class Client(AbstractBaseModel):
     scopes = models.CharField(_('scopes'), max_length=512, blank=True, default='openid profile email',
                               help_text=_(
                                   "Allowed space-delimited access token scopes ('openid', 'profile', 'email', 'role', "
-                                  "'role_profile', 'offline_access', 'address', 'phone', 'users', 'picture', 'events')"
+                                  "'role_profile', 'offline_access', 'address', 'phone', 'users', 'picture', 'events', 'tt')"
                               ))
     is_active = models.BooleanField(_('active'), default=True,
                                     help_text=_(
@@ -177,10 +193,9 @@ class Client(AbstractBaseModel):
                                         'instead of deleting clients.'))
     notes = models.TextField(_("Notes"), blank=True, max_length=2048)
     is_trustworthy = models.BooleanField(_("trustworthy"), default=False)
-    force_using_pkce = models.BooleanField(_('force using PKCE'), default=False,
-                                           help_text=mark_safe_lazy(_('Enforce Proof Key for Code Exchange '
-                                                                      '<a href="https://tools.ietf.org/html/rfc7636">'
-                                                                      'https://tools.ietf.org/html/rfc7636</a>')))
+    force_using_pkce = models.BooleanField(
+        _('force using PKCE'), default=False,
+        help_text=mark_safe_lazy(_('Enforce Proof Key for Code Exchange <a href="https://tools.ietf.org/html/rfc7636">https://tools.ietf.org/html/rfc7636</a>')))
 
     objects = ClientManager()
 
@@ -198,11 +213,18 @@ class Client(AbstractBaseModel):
         return reverse('oauth2:client.details.json', args=[str(self.id)])
 
     @property
-    def is_allowed_client(self):
-        return self.type in {x[0] for x in ALLOWED_CLIENT_TYPES}
+    def has_supported_client_type(self):
+        allowed_client_types = {x[0] for x in ALLOWED_CLIENT_TYPES}
+        return self.type in allowed_client_types
+
+    @property
+    def has_supported_scope(self):
+        scopes = set(self.scopes.split())
+        allowed_scopes = {x[0] for x in ALLOWED_SCOPES}
+        return scopes.issubset(allowed_scopes)
 
     def has_access(self, user, perms=None):
-        if not self.is_allowed_client:
+        if not self.has_supported_client_type or not self.has_supported_scope:
             return False
         if perms is None:
             perms = ["oauth2.change_client"]
