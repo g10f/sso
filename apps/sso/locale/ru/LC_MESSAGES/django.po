@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-12 09:26+0200\n"
+"POT-Creation-Date: 2022-04-16 10:20+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -912,9 +912,6 @@ msgstr ""
 msgid "OIDC clients"
 msgstr ""
 
-msgid "Access to all users"
-msgstr ""
-
 msgid "Action"
 msgstr ""
 
@@ -1358,6 +1355,12 @@ msgid "active/inactive"
 msgstr ""
 
 msgid "All"
+msgstr ""
+
+msgid "Client has an unsupported client type."
+msgstr ""
+
+msgid "Client has unsupported scopes."
 msgstr ""
 
 msgid ""
@@ -1974,7 +1977,7 @@ msgstr ""
 msgid ""
 "Allowed space-delimited access token scopes ('openid', 'profile', 'email', "
 "'role', 'role_profile', 'offline_access', 'address', 'phone', 'users', "
-"'picture', 'events')"
+"'picture', 'events', 'tt')"
 msgstr ""
 
 msgid ""
@@ -2935,7 +2938,7 @@ msgstr ""
 msgid "search text"
 msgstr ""
 
-msgid "2 factor logged in"
+msgid "Strong authenticated"
 msgstr ""
 
 #, python-format

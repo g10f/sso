@@ -13,6 +13,9 @@ main {
 }
 
 aside {
+  @include media-breakpoint-down(md) {
+    order: 6;
+  }
   @include make-col-ready();
   @include media-breakpoint-up(md) {
     @include make-col(5);

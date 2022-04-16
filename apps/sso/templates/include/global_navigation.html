@@ -51,7 +51,7 @@
                 <i class="bi bi-person-circle"></i>
               {% endif %}
               {{ user.first_name }}
-              {% if user.is_verified %}<sup><i class="bi bi-asterisk" title="{% translate '2 factor logged in' %}"></i></sup>{% endif %}
+              {% if user.is_verified %}<sup><i class="bi bi-shield-lock" title="{% translate 'Strong authenticated' %}"></i></sup>{% endif %}
             </a></li>
           <li class="nav-item">
             <a class="nav-link" href="{% url 'auth:logout' %}"><i class="bi bi-box-arrow-left"></i> {% translate 'Log out' %}</a></li>
