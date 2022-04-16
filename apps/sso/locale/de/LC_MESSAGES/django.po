@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-12 09:26+0200\n"
+"POT-Creation-Date: 2022-04-16 10:20+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -960,9 +960,6 @@ msgstr "OIDC Client hinzufügen"
 msgid "OIDC clients"
 msgstr "OIDC Clients"
 
-msgid "Access to all users"
-msgstr "Kann auf alle User zugreifen"
-
 msgid "Action"
 msgstr ""
 
@@ -1441,6 +1438,12 @@ msgid "active/inactive"
 msgstr "aktiv/inaktiv"
 
 msgid "All"
+msgstr ""
+
+msgid "Client has an unsupported client type."
+msgstr ""
+
+msgid "Client has unsupported scopes."
 msgstr ""
 
 msgid ""
@@ -2095,7 +2098,7 @@ msgstr ""
 msgid ""
 "Allowed space-delimited access token scopes ('openid', 'profile', 'email', "
 "'role', 'role_profile', 'offline_access', 'address', 'phone', 'users', "
-"'picture', 'events')"
+"'picture', 'events', 'tt')"
 msgstr ""
 
 msgid ""
@@ -3109,8 +3112,8 @@ msgstr "E-Mail Senden"
 msgid "search text"
 msgstr "Suchtext"
 
-msgid "2 factor logged in"
-msgstr ""
+msgid "Strong authenticated"
+msgstr "Stark authentifiziert"
 
 #, python-format
 msgid ""
@@ -3177,6 +3180,9 @@ msgstr ""
 #, python-brace-format
 msgid "The {name} \"{obj}\" was created successfully."
 msgstr "{name} \"{obj}\" wurde erfolgreich angelegt."
+
+#~ msgid "Access to all users"
+#~ msgstr "Kann auf alle User zugreifen"
 
 #~ msgid "Client"
 #~ msgstr "Client"
