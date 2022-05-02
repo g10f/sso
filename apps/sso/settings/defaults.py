@@ -30,7 +30,7 @@ THUMBNAIL_FORMAT = 'PNG'
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 SITE_ID = 1
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'webmaster@g10f.de')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'gunnar.scherf@gmail.com')
 PASSWORD_RESET_TIMEOUT = 60 * 60 * 24 * 3  # new default in django 3
 SSO_BRAND = 'G10F'
 SSO_SITE_NAME = 'G10F'
@@ -58,7 +58,7 @@ SSO_COUNTRY_MANAGEMENT = False
 SSO_GOOGLE_GEO_API_KEY = 'insert your key'
 SSO_EMAIL_LOGO = ""
 SSO_ASYNC_EMAILS = False  # send emails async via celery task
-SSO_NOREPLY_EMAIL = 'webmaster@g10f.de'
+SSO_NOREPLY_EMAIL = 'gunnar.scherf@gmail.com'
 SSO_POST_RESET_LOGIN = True
 # configured default forms and functions
 SSO_ADMIN_UPDATE_USER_FORM = 'sso.accounts.forms.UserProfileForm'
@@ -103,7 +103,7 @@ EMAIL_SUBJECT_PREFIX = '[SSO] '
 FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
 ADMINS = (
-    ('Gunnar Scherf', 'webmaster@g10f.de'),
+    ('Gunnar Scherf', 'gunnar.scherf@gmail.com'),
 )
 MANAGERS = ADMINS
 
