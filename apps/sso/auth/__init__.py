@@ -48,7 +48,7 @@ def auth_login(request, user, backend=None):
 
     if SESSION_KEY in request.session:
         if _get_user_session_key(request) != _get_user_key(user) or (
-                session_auth_hash and request.session.get(HASH_SESSION_KEY) != session_auth_hash):
+            session_auth_hash and request.session.get(HASH_SESSION_KEY) != session_auth_hash):
             # To avoid reusing another user's session, create a new, empty
             # session if the existing session corresponds to a different
             # authenticated user.
@@ -126,7 +126,7 @@ def get_session_auth_hash(user, client=None):
     if client is not None:
         data += client.client_secret
 
-    auth_hash = salted_hmac(key_salt, data, algorithm=settings.DEFAULT_HASHING_ALGORITHM).hexdigest()
+    auth_hash = salted_hmac(key_salt, data, algorithm='sha256').hexdigest()
     return auth_hash[:10]
 
 
