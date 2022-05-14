@@ -8,7 +8,6 @@ from oauthlib import oauth2
 from oauthlib.common import Request
 from oauthlib.common import urlencode, urlencoded, quote
 from oauthlib.oauth2.rfc6749.utils import scope_to_list
-from oauthlib.openid.connect.core.exceptions import LoginRequired
 
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
@@ -230,7 +229,7 @@ def get_oidc_session_state(request):
     else:
         data = request.session.session_key
     key_salt = 'get_oidc_session_state'
-    return salted_hmac(key_salt, data, algorithm=settings.DEFAULT_HASHING_ALGORITHM).hexdigest()
+    return salted_hmac(key_salt, data, algorithm='sha256').hexdigest()
 
 
 class TwoFactorRequiredError(oauth2.OAuth2Error):

@@ -5,8 +5,7 @@ from urllib.parse import urlsplit, urlunsplit
 from django.conf import settings
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import QueryDict
-from django.utils.http import is_safe_url
-
+from django.utils.http import url_has_allowed_host_and_scheme
 from sso.utils.http import get_request_param
 
 logger = logging.getLogger(__name__)
@@ -38,7 +37,7 @@ def get_safe_redirect_uri(request, allowed_hosts, redirect_field_name=REDIRECT_U
         redirect_uri = get_request_param(request, redirect_field_name)
 
     if redirect_uri is not None:
-        if is_safe_url(redirect_uri, allowed_hosts=allowed_hosts):
+        if url_has_allowed_host_and_scheme(redirect_uri, allowed_hosts=allowed_hosts):
             state = get_request_param(request, 'state')
             if state is not None:
                 redirect_uri = update_url(redirect_uri, {'state': state})
