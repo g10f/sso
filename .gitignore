@@ -13,6 +13,7 @@ temp
 logs
 data
 docs
+venv
 scripts/data
 apps/sso/settings/local_*.py
 start.sh
