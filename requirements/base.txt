@@ -5,7 +5,7 @@ django-formtools
 django-ipware
 django-reversion
 django-recaptcha
-fido2
+fido2<1
 geopy
 gunicorn
 oauthlib
