@@ -5,12 +5,11 @@ from binascii import unhexlify
 
 import pyotp
 from fido2 import cbor
-from fido2.client import ClientData
+from fido2.client import CollectedClientData
 from fido2.cose import CoseKey
-from fido2.ctap2 import AttestedCredentialData, AuthenticatorData, AttestationObject
 from fido2.server import U2FFido2Server
 from fido2.utils import websafe_decode, websafe_encode
-from fido2.webauthn import PublicKeyCredentialRpEntity, UserVerificationRequirement
+from fido2.webauthn import PublicKeyCredentialRpEntity, UserVerificationRequirement, AuthenticatorData, AttestationObject, AttestedCredentialData
 from sorl.thumbnail import get_thumbnail
 
 from django.conf import settings
@@ -81,8 +80,8 @@ class U2FDevice(Device):
     # server = Fido2Server(PublicKeyCredentialRpEntity(settings.SSO_DOMAIN.lower().split(':')[0],
     # f'{settings.SSO_SITE_NAME} Server'))
     u2f_app_id = f"{'https' if settings.SSO_USE_HTTPS else 'http'}://{settings.SSO_DOMAIN.lower().split(':')[0]}"
-    server = U2FFido2Server(u2f_app_id, PublicKeyCredentialRpEntity(settings.SSO_DOMAIN.lower().split(':')[0],
-                                                                    f'{settings.SSO_SITE_NAME} Server'))
+    server = U2FFido2Server(u2f_app_id, PublicKeyCredentialRpEntity(id=settings.SSO_DOMAIN.lower().split(':')[0],
+                                                                    name=f'{settings.SSO_SITE_NAME} Server'))
     WEB_AUTHN_SALT = 'sso.auth.models.U2FDevice'
     device_id = 1
     Device.devices.add((__qualname__, device_id))
@@ -111,7 +110,7 @@ class U2FDevice(Device):
                 "id": user.uuid.bytes,
                 "name": user.username,
                 "displayName": user.get_full_name(),
-                "icon": icon
+                # "icon": icon
             },
             credentials,
             user_verification="discouraged"
@@ -126,7 +125,7 @@ class U2FDevice(Device):
     def register_complete(cls, name, response_data, state_data, user):
         data = cbor.decode(b64decode(response_data))
         state = signing.loads(state_data, salt=U2FDevice.WEB_AUTHN_SALT)
-        client_data = ClientData(data["clientDataJSON"])
+        client_data = CollectedClientData(data["clientDataJSON"])
         att_obj = AttestationObject(data["attestationObject"])
         logger.debug("clientData", client_data)
         logger.debug("AttestationObject:", att_obj)
@@ -146,7 +145,7 @@ class U2FDevice(Device):
         response = cbor.decode(b64decode(response_data))
         state = signing.loads(state_data, salt=U2FDevice.WEB_AUTHN_SALT)
         credential_id = response["credentialId"]
-        client_data = ClientData(response["clientDataJSON"])
+        client_data = CollectedClientData(response["clientDataJSON"])
         auth_data = AuthenticatorData(response["authenticatorData"])
         signature = response["signature"]
 
