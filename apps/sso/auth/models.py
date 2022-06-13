@@ -80,8 +80,8 @@ class U2FDevice(Device):
     # server = Fido2Server(PublicKeyCredentialRpEntity(settings.SSO_DOMAIN.lower().split(':')[0],
     # f'{settings.SSO_SITE_NAME} Server'))
     u2f_app_id = f"{'https' if settings.SSO_USE_HTTPS else 'http'}://{settings.SSO_DOMAIN.lower().split(':')[0]}"
-    server = U2FFido2Server(u2f_app_id, PublicKeyCredentialRpEntity(settings.SSO_DOMAIN.lower().split(':')[0],
-                                                                    f'{settings.SSO_SITE_NAME} Server'))
+    server = U2FFido2Server(u2f_app_id, PublicKeyCredentialRpEntity(id=settings.SSO_DOMAIN.lower().split(':')[0],
+                                                                    name=f'{settings.SSO_SITE_NAME} Server'))
     WEB_AUTHN_SALT = 'sso.auth.models.U2FDevice'
     device_id = 1
     Device.devices.add((__qualname__, device_id))
@@ -110,7 +110,7 @@ class U2FDevice(Device):
                 "id": user.uuid.bytes,
                 "name": user.username,
                 "displayName": user.get_full_name(),
-                "icon": icon
+                # "icon": icon
             },
             credentials,
             user_verification="discouraged"
