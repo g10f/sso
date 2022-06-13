@@ -1,3 +1,5 @@
 -r requirements/base.txt
 selenium
 uritemplate
+django-extensions
+Werkzeug
