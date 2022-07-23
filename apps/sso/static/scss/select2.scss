@@ -1,12 +1,16 @@
-@import "brand";
-
-// Required
+// scss-docs-start import-stack
+// Configuration
 @import "node_modules/bootstrap/scss/functions";
-@import "node_modules/bootstrap/scss/variables";
 
-// Include custom variable before mixins and utils
+// Include any default variable overrides here
+@import "../sso/apps/sso/static/scss/variables";
 @import "variables";
 
+@import "node_modules/bootstrap/scss/variables";
+
+@import "../sso/apps/sso/static/scss/maps";
+
+@import "node_modules/bootstrap/scss/maps";
 @import "node_modules/bootstrap/scss/mixins";
 
 // select2
