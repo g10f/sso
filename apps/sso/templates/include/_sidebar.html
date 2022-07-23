@@ -5,7 +5,7 @@
       <li>
         <button
             aria-expanded="{% if item.expanded %}true{% else %}false{% endif %}"
-            class="nav-link link-brand d-flex justify-content-between {% if not item.expanded %}collapsed{% endif %}{% if item.active %} active{% endif %}"
+            class="nav-link d-flex justify-content-between {% if not item.expanded %}collapsed{% endif %}{% if item.active %} active{% endif %}"
             data-bs-target="#{{ item.name }}-collapse"
             data-bs-toggle="collapse">
           <i class="bi bi-{{ item.icon }}"></i>&nbsp;{{ item.title }}

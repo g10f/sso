@@ -37,7 +37,7 @@ $utilities-text: map-merge(
     "body": to-rgb($body-color)
   )
 );
-$utilities-text-colors: map-loop($utilities-text, rgba-css-var, "$key", "text") !default;
+$utilities-text-colors: map-loop($utilities-text, rgba-css-var, "$key", "text");
 // scss-docs-end utilities-text-colors
 
 // scss-docs-start utilities-bg-colors
