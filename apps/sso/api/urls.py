@@ -15,6 +15,7 @@ urlpatterns = [
     path('v2/users/', users_v2.UserList.as_view(), name='v2_users'),
     path('v2/users/me/', users_v2.MyDetailView.as_view(), name='v2_users_me'),
     path('v2/users/<uuid:uuid>/', users_v2.UserDetailView.as_view(), name='v2_user'),
+    path('v2/users/<uuid:uuid>/verify_email/', users_v2.VerifyEmailView.as_view(), name='v2_verify_email'),
     path('v2/users/me/navigation/', users_v2.MyGlobalNavigationView.as_view(), name='v2_navigation_me'),
     path('v2/users/<uuid:uuid>/navigation/', users_v2.GlobalNavigationView.as_view(),
          name='v2_navigation'),

@@ -191,7 +191,7 @@ class User(AbstractBaseUser, PermissionsMixin):
                 else:
                     if l_user_email.primary:
                         l_user_email.primary = False
-                        l_user_email.save(update_fields=['primary'])
+                        l_user_email.save(update_fields=['last_modified', 'primary'])
         if not user_email:
             kwargs = {'email': email, 'user': self, 'primary': True}
             if confirmed is not None:

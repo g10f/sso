@@ -38,6 +38,7 @@ def home(request):
         "organisation": "%s%s%s" % (base_uri, reverse('api:v2_organisations'), "{org_id}/"),
         "users": "%s%s%s" % (base_uri, reverse('api:v2_users'), FIND_USER_EXPRESSION),
         "user": "%s%s%s%s" % (base_uri, reverse('api:v2_users'), "{user_id}/", CREATE_USER_QUERY_PARAMS),
+        "verify_email": "%s%s%s" % (base_uri, reverse('api:v2_users'), "{user_id}/verify_email/"),
         "me": "%s%s" % (base_uri, reverse('api:v2_users_me')),
         "navigation_me": "%s%s" % (base_uri, reverse('api:v2_navigation_me')),
         "navigation": "%s%s" % (base_uri, reverse('api:v2_navigation_me').replace('/me/', '/{user_id}/', 1)),

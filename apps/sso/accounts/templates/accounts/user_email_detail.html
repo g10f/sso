@@ -43,7 +43,7 @@
                 <i class="bi bi-envelope"></i>
                 {% translate 'Resend confirmation email' %}
               </button>{% endif %}
-            {% if not email.primary %}
+            {% if not email.primary or confirmed_count > 1 %}
               <button name="delete" type="submit" class="btn btn-danger" value="{{ email.id }}">
                 <i class="bi bi-trash"></i> {% translate 'Delete' %}
               </button>{% endif %}

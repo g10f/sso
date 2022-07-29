@@ -2,6 +2,8 @@ import logging
 from calendar import timegm
 from functools import wraps
 
+from oauthlib.oauth2 import OAuth2Error
+
 from django.core.exceptions import PermissionDenied, ObjectDoesNotExist, ValidationError
 from django.http import HttpResponseNotModified, HttpResponse, Http404
 from django.utils.encoding import force_str
@@ -34,7 +36,7 @@ def api_user_passes_test(test_func):
 def catch_errors(view_func):
     """
     Decorator for views that catches Exception and returns a json response,
-    with error information. The json response is with respect to a possible 
+    with error information. The json response is with respect to a possible
     jsonp request, which does not handle HTTP Errors.
     """
 
@@ -53,6 +55,10 @@ def catch_errors(view_func):
             logger.warning('Error caught while processing request, %s.' % e)
             return HttpApiErrorResponse(error='bad_request', error_description=force_str(e), request=request,
                                         status_code=400)
+        except OAuth2Error as e:
+            logger.warning('OAuth2Error caught while processing request, %s.' % e)
+            return HttpApiErrorResponse(error=e.error, error_description=force_str(e.description), request=request,
+                                        status_code=e.status_code)
         except Exception as e:
             logger.exception('Exception caught while processing request, %s.' % e)
             return HttpApiErrorResponse(error_description=force_str(e), request=request)
@@ -63,11 +69,11 @@ def catch_errors(view_func):
 def condition(last_modified_and_etag_func=None):
     """
     see condition from django.views.decorators.http
-    
+
     what is changed?
-    for put, patch and post request, the etag and last_modified are fresh created  
+    for put, patch and post request, the etag and last_modified are fresh created
     at the end of the function
-    
+
     from django original:
     Decorator to support conditional retrieval (or change) for a view
     function.
@@ -130,14 +136,14 @@ def condition(last_modified_and_etag_func=None):
 
             response = None
             if not ((if_match and (if_modified_since or if_none_match)) or
-                        (if_match and if_none_match)):
+                    (if_match and if_none_match)):
                 # We only get here if no undefined combinations of headers are
                 # specified.
                 if ((if_none_match and (res_etag in etags or
-                                                    "*" in etags and res_etag)) and
-                        (not if_modified_since or
-                             (res_last_modified and if_modified_since and
-                                      res_last_modified <= if_modified_since))):
+                                        "*" in etags and res_etag)) and
+                    (not if_modified_since or
+                     (res_last_modified and if_modified_since and
+                      res_last_modified <= if_modified_since))):
                     if request.method in ("GET", "HEAD"):
                         response = HttpResponseNotModified()
                     else:
@@ -146,14 +152,14 @@ def condition(last_modified_and_etag_func=None):
                                        )
                         response = HttpResponse(status=412)
                 elif if_match and ((not res_etag and "*" in etags) or
-                                       (res_etag and res_etag not in etags)):
+                                   (res_etag and res_etag not in etags)):
                     logger.warning('Precondition Failed: %s', request.path,
                                    extra={'status_code': 412, 'request': request}
                                    )
                     response = HttpResponse(status=412)
                 elif (not if_none_match and request.method == "GET" and
-                          res_last_modified and if_modified_since and
-                              res_last_modified <= if_modified_since):
+                      res_last_modified and if_modified_since and
+                      res_last_modified <= if_modified_since):
                     response = HttpResponseNotModified()
 
             if response is None:
@@ -161,8 +167,8 @@ def condition(last_modified_and_etag_func=None):
 
             # refresh last_modified and res_etag if needed
             if (request.method in ("PUT", "POST", "PATCH")) and (
-                        (res_last_modified and not response.has_header('Last-Modified')) or
-                        (res_etag and not response.has_header('ETag'))):  # refresh last_modified and res_etag!
+                (res_last_modified and not response.has_header('Last-Modified')) or
+                (res_etag and not response.has_header('ETag'))):  # refresh last_modified and res_etag!
                 res_last_modified, res_etag = get_last_modified_and_etag_func(last_modified_and_etag_func, request,
                                                                               *args, **kwargs)
 
