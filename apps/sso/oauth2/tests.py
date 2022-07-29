@@ -1,5 +1,8 @@
 import base64
 import hashlib
+import re
+
+from django.core import mail
 from time import sleep
 from urllib.parse import urlsplit
 
@@ -122,6 +125,14 @@ class OAuth2BaseTestCase(TestCase):
         data = token_data.copy()
         authorization = self.get_http_authorization(data)
         return self.client.post(reverse('oauth2:token'), data, HTTP_AUTHORIZATION=authorization)
+
+    def get_url_from_mail(self, n=1):
+        outbox = getattr(mail, 'outbox')
+        self.assertTrue(len(outbox) >= n)
+        urls = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|%[0-9a-fA-F][0-9a-fA-F])+',
+                          outbox[n-1].body)
+        self.assertEqual(len(urls), 1)
+        return urls[0]
 
 
 class OAuth2Tests(OAuth2BaseTestCase):

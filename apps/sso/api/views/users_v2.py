@@ -18,10 +18,11 @@ from django.utils.translation import get_language_from_request, gettext as _
 from django.views.decorators.cache import cache_control
 from django.views.decorators.csrf import csrf_exempt
 from l10n.models import Country
-from sso.accounts.email import send_account_created_email
+from sso.accounts.email import send_account_created_email, send_useremail_confirmation
 from sso.accounts.models import UserAddress, UserPhoneNumber, User, UserEmail, ApplicationRole, Application, \
     UserAssociatedSystem, RoleProfile
 from sso.api.decorators import condition, api_user_passes_test
+from sso.api.response import JsonHttpResponse
 from sso.api.views.generic import JsonListView, JsonDetailView
 from sso.auth.utils import is_recent_auth_time
 from sso.models import update_object_from_dict, map_dict2dict
@@ -398,6 +399,19 @@ class UserDetailView(UserMixin, JsonDetailView):
         object_data = map_dict2dict(API_USER_MAPPING, data)
         object_data['is_active'] = True
 
+        if 'email_verified' in data and obj.primary_email():
+            email = obj.primary_email()
+            if email:
+                if email.confirmed != data['email_verified']:
+                    email.confirmed = data['email_verified']
+                    email.save(update_fields=['last_modified', 'confirmed'])
+                    if email.primary and not email.confirmed:
+                        # if the current email is the primary email and not confirmed
+                        # check if there is another confirmed email, which we assign as the primary email
+                        confirmed_email = UserEmail.objects.filter(user=obj, confirmed=True).exclude(pk=email.pk).first()
+                        if confirmed_email:
+                            obj.create_primary_email(confirmed_email.email)
+
         # if 'email' not in object_data:
         #    raise ValueError(_("E-mail value is missing"))
         # TODO: redesign email handling
@@ -512,6 +526,44 @@ class MyDetailView(UserDetailView):
 
     def get_object(self, queryset=None):
         return self.request.user
+
+
+class VerifyEmailView(JsonDetailView):
+    model = User
+    http_method_names = ['get', 'post', 'options']
+
+    permissions_tests = {
+        'read': read_permission,
+        'create': create_permission,
+    }
+    operations = {
+        'create': {'@type': 'CreateResourceOperation', 'method': 'POST'}
+    }
+
+    def get_unconfirmed_primary_email(self):
+        user = self.get_object()
+        user_email = UserEmail.objects.filter(user=user, primary=True, confirmed=False).first()
+        if not user_email:
+            raise ObjectDoesNotExist("No unconfirmed primary email found.")
+        return user_email
+
+    def get_object_data(self, request, obj):
+        base = get_base_url(request)
+        user_email = self.get_unconfirmed_primary_email()
+        data = {
+            '@id': "%s%s" % (base, reverse('api:v2_verify_email', kwargs={'uuid': obj.uuid.hex})),
+            'id': '%s' % user_email.uuid.hex,
+            'last_modified': user_email.last_modified
+        }
+        return data
+
+    def post(self, request, *args, **kwargs):
+        self.check_permission('create')
+        user_email = self.get_unconfirmed_primary_email()
+        if not user_email:
+            raise ObjectDoesNotExist(f"No unconfirmed primary email for user found.")
+        send_useremail_confirmation(user_email, request)
+        return JsonHttpResponse(request=request, data={"code": 200, "description": 'verification email send'})
 
 
 class GlobalNavigationView(UserDetailView):

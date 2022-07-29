@@ -1,9 +1,9 @@
 import json
 from uuid import uuid4
 
-from django.urls import reverse
 from uritemplate import expand
 
+from django.urls import reverse
 from sso.oauth2.tests import OAuth2BaseTestCase
 
 
@@ -44,6 +44,9 @@ class ApiTests(OAuth2BaseTestCase):
         'country_group_id': 'f6b34d1cee944138800980fe48a2b26f',
         'association_id': 'bad2e6edff274f2f900ff3dbb26e38ce'
     }
+    status_codes = {
+        'verify_email': 404
+    }
 
     def get_url_from_api_home(self, name, kwargs=None):
         if kwargs is None:
@@ -61,9 +64,13 @@ class ApiTests(OAuth2BaseTestCase):
             if entry[0] != '@':
                 url = expand(home[entry], self.data)
                 response = self.client.get(url, HTTP_AUTHORIZATION=authorization)
+                status_code = self.status_codes.get(entry, 200)
                 if 'application/json' in response['Content-Type'].split(';'):
-                    self.assertNotIn('error', response.json(), url)
-                self.assertEqual(response.status_code, 200, "got %s on %s" % (response.status_code, url))
+                    if status_code < 400:
+                        self.assertNotIn('error', response.json(), url)
+                    else:
+                        self.assertIn('error', response.json(), url)
+                self.assertEqual(response.status_code, status_code, "got %s on %s" % (response.status_code, url))
 
     def test_organisation_list(self):
         organisations_url = self.get_url_from_api_home('organisations')
@@ -79,7 +86,8 @@ class ApiTests(OAuth2BaseTestCase):
         self.assertNotIn('error', organisations)
 
     def test_user_list(self):
-        users_url = self.get_url_from_api_home('users')
+        api_home = self.client.get(reverse('api:home')).json()
+        users_url = expand(api_home['users'])
 
         authorization = self.get_authorization(client_id="1811f02ed81b43b5bee1afe031e6198e", username="CountryAdmin", scope="users")
         # get user list
@@ -97,12 +105,27 @@ class ApiTests(OAuth2BaseTestCase):
         user_url = users['member'][0]['@id']
         response = self.client.get(user_url, HTTP_AUTHORIZATION=authorization)
         user = response.json()
+        user_id = uuid4().hex
         user['email'] = 'abc@g10f.de'
         user['birth_date'] = '1964-09-01'
-        user_url = expand('http://testserver/api/v2/users/{uuid}/', {'uuid': uuid4().hex})
+        user_url = expand(api_home['user'], {'user_id': user_id})
         response = self.client.put(user_url, json.dumps(user), HTTP_AUTHORIZATION=authorization)
         user = response.json()
         self.assertNotIn('error', user)
+
+        # verify mail
+        verify_email_url = expand(api_home['verify_email'], {'user_id': user_id})
+        response = self.client.post(verify_email_url, HTTP_AUTHORIZATION=authorization).json()
+        self.assertEqual(response['code'], 200)
+        verify_url = self.get_url_from_mail(2)
+        self.assertTrue('/accounts/email/confirm/' in verify_url)
+
+        # set verified via api
+        user = self.client.put(user_url, json.dumps({'email_verified': True}), HTTP_AUTHORIZATION=authorization).json()
+        self.assertEqual(user['email_verified'], True)
+        # set unverified via api
+        user = self.client.put(user_url, json.dumps({'email_verified': False}), HTTP_AUTHORIZATION=authorization).json()
+        self.assertEqual(user['email_verified'], False)
 
         # add address to  existing user (failing)
         user['addresses'] = {uuid4().hex: address('Test Address', address_type='work')}

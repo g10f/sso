@@ -116,7 +116,11 @@ def confirm_email(request, uidb64, token, post_reset_redirect=None):
                       _('Your email address \"%(email)s\" was already confirmed successfully.') % {
                           'email': user_email})
     elif user_email is not None and email_confirm_token_generator.check_token(user_email, token):
+        confirmed_primary_exists = UserEmail.objects.filter(confirmed=True, primary=True, user=request.user).exists()
         user_email.confirmed = True
+        if not confirmed_primary_exists:
+            user_email.primary = True
+            UserEmail.objects.filter(user=user_email.user, primary=True).exclude(pk=user_email.pk).update(primary=False)
         user_email.save()
         messages.success(request,
                          _('Your email address \"%(email)s\" was confirmed successfully.') % {'email': user_email})
@@ -143,7 +147,13 @@ def emails(request):
         elif 'delete' in request.POST:
             try:
                 user_email = UserEmail.objects.get(id=request.POST['delete'])
+                is_primary = user_email.primary
                 user_email.delete()
+                if is_primary:
+                    confirmed_email = UserEmail.objects.filter(user=user, confirmed=True).first()
+                    if confirmed_email:
+                        user.create_primary_email(confirmed_email.email)
+
                 messages.success(request,
                                  _('The email \"%(email)s\" was deleted successfully.') % {'email': user_email})
             except UserEmail.DoesNotExist:
@@ -173,6 +183,7 @@ def emails(request):
         add_form = SelfUserEmailAddForm(initial={'user': user.id})
 
     context = {
+        'confirmed_count': UserEmail.objects.filter(user=user, confirmed=True).count(),
         'form': add_form,
         'max_email_adresses': UserEmail.MAX_EMAIL_ADRESSES,
         'redirect_uri': redirect_uri
