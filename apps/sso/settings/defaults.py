@@ -33,11 +33,11 @@ SITE_ID = 1
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'gunnar.scherf@gmail.com')
 PASSWORD_RESET_TIMEOUT = 60 * 60 * 24 * 3  # new default in django 3
 SSO_BRAND = 'G10F'
-SSO_SITE_NAME = 'G10F'
-SSO_DOMAIN = "localhost:8000"
-SSO_USE_HTTPS = False
+SSO_SITE_NAME = os.getenv('SSO_SITE_NAME', "G10F")
+SSO_DOMAIN = os.getenv('SSO_DOMAIN', "localhost:8000")
+SSO_USE_HTTPS = os.getenv("SSO_USE_HTTPS", 'True').lower() in ('true', '1', 't')
 SSO_SERVICE_DOCUMENTATION = ""  # part of https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig
-SSO_ABOUT = 'https://g10f.de/'
+SSO_ABOUT = os.getenv('SSO_ABOUT', "https://g10f.de/")
 SSO_DATA_PROTECTION_URI = None
 SSO_APP_UUID = UUID('fa467234b81e4838a009e38d9e655d18')
 SSO_BROWSER_CLIENT_ID = UUID('ca96cd88bc2740249d0def68221cba88')
@@ -55,7 +55,7 @@ SSO_ORGANISATION_EMAIL_MANAGEMENT = False
 SSO_ORGANISATION_REQUIRED = False
 SSO_REGION_MANAGEMENT = False
 SSO_COUNTRY_MANAGEMENT = False
-SSO_GOOGLE_GEO_API_KEY = 'insert your key'
+SSO_GOOGLE_GEO_API_KEY = os.getenv('SSO_GOOGLE_GEO_API_KEY')
 SSO_EMAIL_LOGO = ""
 SSO_ASYNC_EMAILS = False  # send emails async via celery task
 SSO_NOREPLY_EMAIL = 'gunnar.scherf@gmail.com'
@@ -72,15 +72,15 @@ SSO_USER_RECOVERY_PERIOD_MINUTES = 60 * 24 * 30  # 30 days
 SSO_ACCESS_TOKEN_AGE = 60 * 60  # 1 hour
 SSO_ID_TOKEN_AGE = 60 * 5  # 5 minutes
 SSO_SIGNING_KEYS_VALIDITY_PERIOD = 60 * 60 * 24 * 30  # 30 days
-SSO_USER_MAX_PICTURE_SIZE = 1048576
+SSO_USER_MAX_PICTURE_SIZE = int(os.getenv('SSO_USER_MAX_PICTURE_SIZE', '1048576'))
 SSO_USER_PICTURE_WIDTH = 550
 SSO_USER_PICTURE_HEIGHT = 550
 SSO_OIDC_SESSION_COOKIE_NAME = 'oidcsession'
-SSO_ADMIN_ONLY_2F = False
+SSO_ADMIN_ONLY_2F = os.getenv("SSO_ADMIN_ONLY_2F", 'False').lower() in ('true', '1', 't')
 SSO_RECAPTCHA_EXPIRATION_TIME = 120
 
 # Celery settings see https://www.cloudamqp.com/docs/celery.html
-CELERY_BROKER_USE_SSL = os.getenv("CELERY_BROKER_USE_SSL", 'False').lower() in ('true', '1', 't')
+CELERY_BROKER_USE_SSL = os.getenv("CELERY_BROKER_USE_SSL", 'True').lower() in ('true', '1', 't')
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')  # 'amqp://guest:guest@localhost//'
 CELERY_BROKER_POOL_LIMIT = 1  # Will decrease connection usage
 CELERY_BROKER_HEARTBEAT = None
@@ -98,8 +98,8 @@ CELERY_RESULT_SERIALIZER = 'json'
 BROKER_USE_SSL = CELERY_BROKER_USE_SSL
 BROKER_URL = CELERY_BROKER_URL
 
-EMAIL_SUBJECT_PREFIX = '[SSO] '
-
+EMAIL_SUBJECT_PREFIX = os.getenv('EMAIL_SUBJECT_PREFIX', '[SSO] ')
+SERVER_EMAIL = os.getenv('SERVER_EMAIL', 'root@localhost')
 FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
 ADMINS = (
@@ -154,10 +154,11 @@ MEDIA_URL = '/media/'
 STATIC_URL = '/static/'
 
 if RUNNING_TEST:
-    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 else:
-    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
+WHITENOISE_ROOT = os.path.join(STATIC_ROOT, 'root')
 if DEBUG:
     # don't use cached loader
     LOADERS = [
@@ -196,6 +197,7 @@ TEMPLATES = [
 ]
 
 MIDDLEWARE = [
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'sso.oauth2.middleware.SsoSessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -220,6 +222,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    "whitenoise.runserver_nostatic",
     'django.contrib.staticfiles',
     'django.contrib.admin.apps.SimpleAdminConfig',
     'django.contrib.gis',
@@ -296,8 +299,8 @@ AUTH_PASSWORD_VALIDATORS = [{
 # overwrite this if integration with other associations is required
 SSO_DEFAULT_ASSOCIATION_UUID = UUID('bad2e6edff274f2f900ff3dbb26e38ce')
 
-# overwrite this in local_settings.py
-SECRET_KEY = '$20e%(in^nv_-&syxvx4$1%()nfx$dx@)omf)0i-%je&w!((^e'
+# set this in local_settings.py or by env var
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 LOGGING = {
     'version': 1,
