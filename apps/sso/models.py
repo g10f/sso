@@ -2,12 +2,9 @@ import logging
 import os
 import re
 import uuid
-from io import BytesIO
 from mimetypes import guess_extension
 from os.path import splitext
 
-from PIL import Image
-from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import fields
@@ -16,7 +13,6 @@ from django.forms.models import model_to_dict
 from django.utils.crypto import get_random_string
 from django.utils.text import get_valid_filename
 from django.utils.translation import gettext_lazy as _
-
 from l10n.models import Country, AdminArea
 
 logger = logging.getLogger(__name__)
@@ -24,48 +20,6 @@ logger = logging.getLogger(__name__)
 
 def get_filename(filename):
     return os.path.normpath(get_valid_filename(os.path.basename(filename)))
-
-
-def transpose_image(picture):
-    # copied from ImageOps.exif_transpose but avoiding to create a copy if not
-    # transposed
-    # argument is a UploadedFile Object instead of Image
-    # exif is only in TIFF and JPEG available
-    if picture.image.format not in ['JPEG', 'TIFF']:
-        return picture
-
-    exif = picture.image.getexif()
-    orientation = exif.get(0x0112)
-    method = {
-        2: Image.FLIP_LEFT_RIGHT,
-        3: Image.ROTATE_180,
-        4: Image.FLIP_TOP_BOTTOM,
-        5: Image.TRANSPOSE,
-        6: Image.ROTATE_270,
-        7: Image.TRANSVERSE,
-        8: Image.ROTATE_90,
-    }.get(orientation)
-    if method is not None:
-        image = Image.open(picture.file)
-        transposed_image = image.transpose(method)
-        del exif[0x0112]
-        transposed_image.info["exif"] = exif.tobytes()
-        # create a new UploadedFile
-        f = BytesIO()
-        transposed_image.save(f, image.format)
-        picture = InMemoryUploadedFile(
-            file=f,
-            field_name=picture.field_name,
-            name=picture.name,
-            content_type=picture.content_type,
-            size=f.tell(),
-            charset=picture.charset,
-            content_type_extra=picture.content_type_extra
-        )
-        picture.image = transposed_image
-        return picture
-
-    return picture
 
 
 def clean_picture(picture, max_upload_size):
@@ -88,10 +42,6 @@ def clean_picture(picture, max_upload_size):
                 file_ext = splitext(picture.name)[1].lower()
             picture.name = "%s%s" % (
                 get_random_string(7, allowed_chars='abcdefghijklmnopqrstuvwxyz0123456789'), file_ext)
-            try:
-                picture = transpose_image(picture)
-            except Exception as e:
-                logger.warning("Transpose image failed: ", e)
         else:
             raise forms.ValidationError(_('File type is not supported'))
     return picture

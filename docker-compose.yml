@@ -1,37 +1,43 @@
 services:
   web:
-    build: .
+    build:
+      context: .
     ports:
-      - "8000:8000"
-    command: bash -c 'while !</dev/tcp/db/5432; do sleep 1; done; bash run.sh'
+      - 8000:8000
+#    command: gunicorn sso.wsgi:application --bind 0.0.0.0:8000 --log-level debug --timeout=600
     volumes:
-      - ./local_settings.py:/opt/g10f/sso/apps/sso/settings/local_settings.py
+#      - ./apps/sso/settings/local_settings.py:/opt/g10f/sso/apps/sso/settings/local_settings.py
       - media_data:/opt/g10f/sso/htdocs/media
     environment:
       - DATABASE_HOST=db
       - DATABASE_PASSWORD=sso
       - DATABASE_USER=sso
       - DATABASE_NAME=sso
+      - SECRET_KEY=123
       - DJANGO_SUPERUSER_PASSWORD=admin
       - DJANGO_SUPERUSER_USERNAME=admin
+      - DJANGO_MIGRATE=on
+      - DJANGO_CREATE_SUPERUSER=on
+      - DJANGO_LOAD_INITIAL_DATA=on
     depends_on:
-      - db
-      - cache
+      db:
+         condition: service_healthy
   db:
-    image: postgis/postgis:13-3.1-alpine
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-      - ./initdb.sql:/docker-entrypoint-initdb.d/initdb.sql
-    expose:
-      - 5432
-    environment:
-      - POSTGRES_USER=sso
-      - POSTGRES_PASSWORD=sso
-      - POSTGRES_DB=sso
-#  cache:
-#    image: memcached:alpine
-#    expose:
-#      - 11211
+      image: postgis/postgis:14-3.2
+      volumes:
+        - postgres_data:/var/lib/postgresql/data/
+        - ./Docker/initdb.sh:/docker-entrypoint-initdb.d/initdb.sh
+      expose:
+        - 5432
+      environment:
+        - POSTGRES_USER=sso
+        - POSTGRES_PASSWORD=sso
+        - POSTGRES_DB=sso
+      healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U sso"]
+        interval: 5s
+        timeout: 5s
+        retries: 5
 volumes:
   postgres_data: {}
   media_data: {}
