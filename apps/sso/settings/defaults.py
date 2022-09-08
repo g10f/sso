@@ -100,6 +100,9 @@ BROKER_URL = CELERY_BROKER_URL
 
 EMAIL_SUBJECT_PREFIX = os.getenv('EMAIL_SUBJECT_PREFIX', '[SSO] ')
 SERVER_EMAIL = os.getenv('SERVER_EMAIL', 'root@localhost')
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'localhost')
+EMAIL_PORT = int(os.getenv('EMAIL_PORT', '25'))
+
 FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
 ADMINS = (
