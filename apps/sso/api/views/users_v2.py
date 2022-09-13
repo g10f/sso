@@ -199,7 +199,7 @@ class UserMixin(object):
                         applications[application.uuid.hex] = application_data
                 data['apps'] = applications
 
-            # be carefull to assign role_profile, because there can be private / secret role_profiles
+            # be carefully to assign role_profile, because there can be private / secret role_profiles
             if 'role_profile' in scopes:
                 data['role_profiles'] = [role_profile.uuid.hex for role_profile in obj.role_profiles.all()]
 
@@ -701,12 +701,19 @@ class UserList(UserMixin, JsonListView):
             # only allow app_id if application.required_scope is in request.scopes
             scopes = self.request.scopes
             application = Application.objects.get_by_natural_key(app_uuid)
-            if not application.required_scope or application.required_scope in scopes:
+            if application.required_scope and not application.required_scope in scopes:
+                raise ValueError("required scope %s not in scopes %s" % (application.required_scope, scopes))
+
+            role = self.request.GET.get('role', None)
+            if role:
+                app_role = ApplicationRole.objects.get(application=application, role__name=role)
+                q = Q(application_roles=app_role)
+                q |= Q(role_profiles__application_roles=app_role)
+                qs = qs.filter(q)
+            else:
                 q = Q(application_roles__application__uuid=app_uuid)
                 q |= Q(role_profiles__application_roles__application__uuid=app_uuid)
                 qs = qs.filter(q)
-            else:
-                raise ValueError("required scope %s not in scopes %s" % (application.required_scope, scopes))
 
         associated_system_uuid = self.request.GET.get('associated_system_id', None)
         if associated_system_uuid:
