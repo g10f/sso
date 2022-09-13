@@ -6,8 +6,10 @@
 /logs
 /data
 /docs
-/venv
+/gulp
+/node_modules
 /scripts
+/venv
 /apps/sso/settings/local_*.py
 start.sh
 local.pth

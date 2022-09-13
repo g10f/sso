@@ -8,6 +8,7 @@ django-recaptcha
 fido2
 geopy
 gunicorn
+kombu
 oauthlib
 pillow
 psycopg2
@@ -19,3 +20,4 @@ qrcode
 requests
 sorl-thumbnail
 wheel
+whitenoise
