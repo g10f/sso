@@ -8,7 +8,7 @@ from sso.utils.url import get_base_url
 logger = logging.getLogger(__name__)
 
 FIND_ASSOCIATION_EXPRESSION = "{?q,per_page,modified_since}"
-FIND_USER_EXPRESSION = "{?q,per_page,app_id,modified_since,is_active,country_group_id,country,region_id,org_id,email," \
+FIND_USER_EXPRESSION = "{?q,per_page,app_id,app_role,modified_since,is_active,country_group_id,country,region_id,org_id,email," \
                        "associated_system_id,valid_until_lt,is_center}"
 FIND_ORGANISATION_EXPRESSION = "{?q,per_page,modified_since,is_active,country_group_id,country,country_code," \
                                "region_id,latlng,dlt,with_unofficial,org_type,is_live}"
