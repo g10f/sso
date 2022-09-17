@@ -3,7 +3,7 @@ WORKDIR /opt/g10f/sso
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-ENV VIRTUAL_ENV=/venv
+ENV VIRTUAL_ENV='/venv'
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 COPY requirements.txt .
@@ -17,7 +17,7 @@ FROM python:3.10-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-ENV VIRTUAL_ENV=/venv
+ENV VIRTUAL_ENV='/venv'
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 #https://docs.djangoproject.com/en/3.2/ref/contrib/gis/install/geolibs/
