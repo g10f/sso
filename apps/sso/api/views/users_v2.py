@@ -704,15 +704,22 @@ class UserList(UserMixin, JsonListView):
             if application.required_scope and not application.required_scope in scopes:
                 raise ValueError("required scope %s not in scopes %s" % (application.required_scope, scopes))
 
-            role = self.request.GET.get('role', None)
-            if role:
+            q = Q(application_roles__application__uuid=app_uuid)
+            q |= Q(role_profiles__application_roles__application__uuid=app_uuid)
+            qs = qs.filter(q)
+
+        app_roles = self.request.GET.getlist('app_role', None)
+        if app_roles:
+            scopes = self.request.scopes
+            for app_role in app_roles:
+                app_uuid, role = app_role.split(',')
+                application = Application.objects.get_by_natural_key(app_uuid)
+                if application.required_scope and not application.required_scope in scopes:
+                    raise ValueError("required scope %s not in scopes %s" % (application.required_scope, scopes))
+
                 app_role = ApplicationRole.objects.get(application=application, role__name=role)
                 q = Q(application_roles=app_role)
                 q |= Q(role_profiles__application_roles=app_role)
-                qs = qs.filter(q)
-            else:
-                q = Q(application_roles__application__uuid=app_uuid)
-                q |= Q(role_profiles__application_roles__application__uuid=app_uuid)
                 qs = qs.filter(q)
 
         associated_system_uuid = self.request.GET.get('associated_system_id', None)
