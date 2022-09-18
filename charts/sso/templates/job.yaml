@@ -1,0 +1,32 @@
+{{- range .Values.jobs }}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ $.Release.Name }}-{{ .name }}
+  labels:
+    {{- include "sso.labels" $ | nindent 4 }}
+spec:
+  schedule: {{ .schedule | quote }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: {{ $.Chart.Name }}
+              image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag | default $.Chart.AppVersion }}"
+              imagePullPolicy: {{ $.Values.image.pullPolicy }}
+              command:
+                {{- .command | toYaml | nindent 16 }}
+              envFrom:
+                - configMapRef:
+                    name: {{ $.Release.Name }}-configmap
+              volumeMounts:
+                - mountPath: /opt/g10f/sso/htdocs/media
+                  name: media
+          restartPolicy: Never
+          volumes:
+            - name: media
+              persistentVolumeClaim:
+                claimName: {{ include "sso.fullname" $ }}-media
+{{- end }}

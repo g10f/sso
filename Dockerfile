@@ -26,6 +26,7 @@ RUN apt-get update -y && apt-get -y install binutils libproj19 gdal-bin && apt-g
 COPY --from=builder $VIRTUAL_ENV $VIRTUAL_ENV
 WORKDIR /opt/g10f/sso/apps
 COPY apps .
+COPY Docker/gunicorn.conf.py ./gunicorn.conf.py
 ARG SECRET_KEY=dummy
 RUN ./manage.py collectstatic
 ENTRYPOINT ["./docker-entrypoint.sh"]
