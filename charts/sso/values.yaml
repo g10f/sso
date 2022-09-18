@@ -1,0 +1,162 @@
+# Default values for sso.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+domain: "sso.g10f.de"
+# comma separated list of hosts, default is the value of domain if empty
+allowedHosts: ""
+siteName: "G10F"
+serverEmail: '"G10F SSO" <webmaster@g10f.de>'
+secretKey: changeme
+django:
+  loadInitialData: "on"
+  migrate: "on"
+  createAdmin: "on"
+  adminName: "admin"
+  adminPassword: "changeme"
+
+# Additional environment variables for sso
+extraEnv: ""
+#  - name: EMAIL_HOST
+#    value: mail.g10f.de
+#  - name: EMAIL_PORT
+#    value: 587
+
+# Additional environment variables for sso mapped from Secret or ConfigMap
+extraEnvFrom: ""
+
+celeryBrokerURL: ""
+entryPoint: |
+  {{- .Files.Get "scripts/docker-entrypoint.sh" }}
+
+localSettings:
+  local_settings.py: |
+    {{- .Files.Get "settings/local_settings.py" }}
+global:
+  postgresql:
+    auth:
+      username: sso
+      password: sso
+      database: sso
+postgresql:
+  externalDatabaseHost: ""
+  primary:
+    initdb:
+      scripts:
+        my_init_script.sh: |
+          #!/bin/bash
+          set -ex
+          export PGUSER=postgres
+          echo "Loading extensions into $POSTGRES_DB"
+          psql --dbname="$POSTGRES_DB" <<-'EOSQL'
+          CREATE EXTENSION IF NOT EXISTS postgis;
+          CREATE EXTENSION IF NOT EXISTS citext;
+          EOSQL
+
+replicaCount: 1
+image:
+  repository: g10f/sso
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+ingress:
+  enabled: true
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: ""
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
+podDisruptionBudget: {}
+messaging:
+  replicaCount: 1
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  podAnnotations: {}
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+
+media:
+  replicaCount: 1
+  resources: {}
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  podAnnotations: {}
+  autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+  ingress:
+    enabled: true
+
+tags:
+  postgresql: true
+  memcached: true
+
+jobs: []

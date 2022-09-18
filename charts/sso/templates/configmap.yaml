@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-configmap
+data:
+  SSO_SITE_NAME: {{ .Values.siteName | quote }}
+  SERVER_EMAIL: {{ .Values.serverEmail | quote }}
+  SSO_DOMAIN: {{ .Values.domain | quote }}
+  DATABASE_HOST: {{ .Values.postgresql.externalDatabaseHost | default (printf "%s-postgresql" .Release.Name ) }}
+  DATABASE_NAME: {{ .Values.global.postgresql.auth.database }}
+  DATABASE_USER: {{ .Values.global.postgresql.auth.username}}
+  DATABASE_PASSWORD: {{ .Values.global.postgresql.auth.password }}
+  SECRET_KEY: {{ .Values.secretKey }}
+  {{- if .Values.tags.memcached }}
+  CACHES_LOCATION: {{ .Release.Name }}-memcached:11211
+  {{- end }}
+  {{- if .Values.celeryBrokerURL }}
+  CELERY_BROKER_URL: {{ .Values.celeryBrokerURL}}
+  {{- end }}
