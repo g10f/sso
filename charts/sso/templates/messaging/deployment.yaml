@@ -1,0 +1,62 @@
+{{- if .Values.celeryBrokerURL -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "sso.fullname" . }}-messaging
+  labels:
+    {{- include "sso.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.messaging.autoscaling.enabled }}
+  replicas: {{ .Values.messaging.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "sso.selectorLabelsMessaging" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- with .Values.messaging.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "sso.selectorLabelsMessaging" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: [ "celery", "-A", "sso", "worker", "-c", "1", "-l", "info", "--without-gossip", "--without-mingle", "--without-heartbeat" ]
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-configmap
+          volumeMounts:
+            - mountPath: /opt/g10f/sso/htdocs/media
+              name: media
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: media
+          persistentVolumeClaim:
+            claimName: {{ include "sso.fullname" . }}-media
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

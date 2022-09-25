@@ -1,0 +1,126 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "sso.fullname" . }}-backend
+  labels:
+    {{- include "sso.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      {{- include "sso.selectorLabels" . | nindent 6 }}
+  serviceName: {{ include "sso.fullname" . }}-backend-hl
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/entry-point: {{ include (print $.Template.BasePath "/backend/configmap-entrypoint.yaml") . | sha256sum }}
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "sso.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if not .Values.postgresql.externalDatabaseHost }}
+      initContainers:
+        - name: check-db-ready
+          image: postgres:alpine
+          command:
+            - /bin/sh
+            - -c
+            - exec pg_isready -U {{ .Values.global.postgresql.auth.username }} -d "dbname={{ .Values.global.postgresql.auth.database }}" -h {{ printf "%s-postgresql" .Release.Name }} -p {{ .Values.postgresql.containerPorts.postgresql }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args: [ "gunicorn", "sso.wsgi:application", "-w", "3", "--log-level", "debug" ]
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8000
+              httpHeaders:
+                - name: Host
+                  value: {{ .Values.domain }}
+                - name: X-FORWARDED-SSL
+                  value: 'on'
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8000
+              httpHeaders:
+                - name: Host
+                  value: {{ .Values.domain }}
+                - name: X-FORWARDED-SSL
+                  value: 'on'
+          envFrom:
+            - configMapRef:
+                name: {{ .Release.Name }}-configmap
+            {{- with .Values.extraEnvFrom }}
+            {{- tpl . $ | nindent 12 }}
+            {{- end }}
+          env:
+            - name: DJANGO_MIGRATE
+              value: {{ .Values.django.migrate | quote}}
+            - name: DJANGO_LOAD_INITIAL_DATA
+              value: {{ .Values.django.loadInitialData | quote}}
+            - name: DJANGO_CREATE_SUPERUSER
+              value: {{ .Values.django.createAdmin | quote }}
+            - name: DJANGO_SUPERUSER_PASSWORD
+              value: {{ .Values.django.adminPassword | quote }}
+            - name: DJANGO_SUPERUSER_USERNAME
+              value: {{ .Values.django.adminName | quote}}
+            - name: ALLOWED_HOSTS
+              value: "{{ .Values.allowedHosts | default .Values.domain }}"
+            {{- with .Values.extraEnv }}
+            {{- tpl . $ | nindent 12 }}
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          volumeMounts:
+            - mountPath: /opt/g10f/sso/htdocs/media
+              name: media
+            {{- if .Values.entryPoint }}
+            - name: entrypoint
+              mountPath: /opt/g10f/sso/apps/docker-entrypoint.sh
+              subPath: docker-entrypoint.sh
+              readOnly: true
+            {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: media
+          persistentVolumeClaim:
+            claimName: {{ include "sso.fullname" . }}-media
+        {{- if .Values.entryPoint }}
+        - name: entrypoint
+          configMap:
+            name: {{ include "sso.fullname" . }}-entrypoint
+            defaultMode: 0555
+        {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,11 @@
+{{- if .Values.entryPoint }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "sso.fullname" . }}-entrypoint
+  labels:
+    {{- include "sso.labels" . | nindent 4 }}
+data:
+  docker-entrypoint.sh: |
+    {{- tpl .Values.entryPoint . | nindent 4 }}
+{{- end -}}
