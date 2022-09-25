@@ -15,22 +15,35 @@ RUN pip install -r requirements.txt
 #####################################################
 FROM python:3.10-slim
 
+#https://docs.djangoproject.com/en/3.2/ref/contrib/gis/install/geolibs/
+RUN apt-get update -y && apt-get -y install binutils libproj19 gdal-bin && apt-get clean
+
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV VIRTUAL_ENV='/venv'
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-#https://docs.djangoproject.com/en/3.2/ref/contrib/gis/install/geolibs/
-RUN apt-get update -y && apt-get -y install binutils libproj19 gdal-bin && apt-get clean
+ARG USERNAME=worker
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+
+# Create the user
+RUN groupadd --gid $USER_GID $USERNAME \
+    && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME
 
 COPY --from=builder $VIRTUAL_ENV $VIRTUAL_ENV
+
 WORKDIR /opt/g10f/sso/apps
 COPY apps .
 COPY Docker/gunicorn.conf.py ./gunicorn.conf.py
+
+RUN chown -R $USERNAME: $VIRTUAL_ENV
+RUN chown -R $USERNAME: /opt/g10f
+
+USER $USERNAME
 ARG SECRET_KEY=dummy
 RUN ./manage.py collectstatic
 ENTRYPOINT ["./docker-entrypoint.sh"]
-
 # Start gunicorn
 CMD ["gunicorn", "sso.wsgi:application", "--bind 0.0.0.0:8000", "-w", "2"]
 EXPOSE 8000
