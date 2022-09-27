@@ -14,7 +14,7 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: 2Gi
+      storage: {{ .Values.storageSize }}
   {{- if .Values.dataSorceName }}
   dataSource:
     kind: PersistentVolumeClaim
