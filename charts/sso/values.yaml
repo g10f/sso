@@ -4,6 +4,8 @@
 
 domain: "sso.g10f.de"
 # comma separated list of hosts, default is the value of domain if empty
+# storageClass: nas
+storageSize: 8Gi
 allowedHosts: ""
 siteName: "G10F"
 serverEmail: '"G10F SSO" <webmaster@g10f.de>'
