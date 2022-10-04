@@ -231,3 +231,8 @@ def update_object_from_object(destination, source, exclude=None):
     if not exclude: exclude = ['id']
     source_dict = model_to_dict(source, exclude=exclude)
     update_object_from_dict(destination, source_dict)
+
+
+# This will make sure the app is always imported when
+# Django starts so that shared_task will use this app.
+from .celery import app as celery_app  # noqa
