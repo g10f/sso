@@ -3,7 +3,7 @@ import re
 from base64 import b64encode
 from urllib.parse import urlencode, urlsplit, parse_qs
 
-from locust import HttpLocust, TaskSet, task, between
+from locust import HttpUser, task, between, run_single_user
 from pyquery import PyQuery
 
 pattern = re.compile("^{(?P<env_var>.*)}$")
@@ -53,9 +53,12 @@ def update_values_from_environment(data):
 update_values_from_environment(test_data)
 
 
-class UserBehavior(TaskSet):
-    def __init__(self, parent):
-        super().__init__(parent)
+class WebsiteUser(HttpUser):
+    wait_time = between(1, 2)
+    host = "{0}://{1}".format(*urlsplit(test_data['idp']['oidc']['iss']))
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.openid_configuration = {}
         self.proxies = {}  # test_data['proxies']
 
@@ -132,7 +135,6 @@ class UserBehavior(TaskSet):
         self.client.get(self.openid_configuration['userinfo_endpoint'], headers=headers, proxies=self.proxies)
 
 
-class WebsiteUser(HttpLocust):
-    task_set = UserBehavior
-    wait_time = between(1, 2)
-    host = "{0}://{1}".format(*urlsplit(test_data['idp']['oidc']['iss']))
+# if launched directly, e.g. "python3 debugging.py", not "locust -f debugging.py"
+if __name__ == "__main__":
+    run_single_user(WebsiteUser)

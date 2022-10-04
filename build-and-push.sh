@@ -1,3 +1,5 @@
 #!/bin/bash
-tag=1.0.15
+tag=$(python apps/version.py)
+DOCKER_BUILDKIT=1
+docker buildx create --use
 docker buildx build --platform linux/amd64,linux/arm64 -t g10f/sso:$tag -t g10f/sso:latest --push .

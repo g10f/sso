@@ -4,11 +4,10 @@ services:
       context: .
     ports:
       - 8000:8000
-#    command: gunicorn sso.wsgi:application --bind 0.0.0.0:8000 --log-level debug --timeout=600
     volumes:
-#      - ./apps/sso/settings/local_settings.py:/opt/g10f/sso/apps/sso/settings/local_settings.py
       - media_data:/opt/g10f/sso/htdocs/media
     environment:
+      - SSO_USE_HTTPS=False
       - DATABASE_HOST=db
       - DATABASE_PASSWORD=sso
       - DATABASE_USER=sso

@@ -1,5 +1,7 @@
 -r requirements/base.txt
+django-extensions
+locust
+pyquery
 selenium
 uritemplate
-django-extensions
 Werkzeug
