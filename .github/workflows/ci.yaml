@@ -13,6 +13,12 @@ jobs:
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v2
+
+      - name: Get Version
+        run: |
+          echo "::set-output name=version::$(python apps/version.py)\n"
+        id: sso_version
+
       -
         name: Docker meta
         id: meta
@@ -24,7 +30,7 @@ jobs:
           # generate Docker tags based on the following events/attributes
           tags: |
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'master') }}
-            type=semver,pattern={{raw}}
+            type=semver,value={{ steps.sso_version.outputs.version }}
             type=sha
           flavor: |
             latest=auto
