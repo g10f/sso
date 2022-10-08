@@ -48,4 +48,5 @@ jobs:
         with:
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: g10f/sso:latest
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
