@@ -1,10 +1,11 @@
 name: ci
 
 on:
-  push:
+push:
     branches:
       - 'master'
-
+    tags:
+      - '*'
 jobs:
   docker:
     runs-on: ubuntu-latest
@@ -23,7 +24,7 @@ jobs:
           # generate Docker tags based on the following events/attributes
           tags: |
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'master') }}
-            type=semver,pattern={{version}}
+            type=semver,pattern={{raw}}
             type=sha
           flavor: |
             latest=auto
