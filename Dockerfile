@@ -16,7 +16,7 @@ RUN pip install -U pip wheel
 RUN pip install -r requirements.txt
 
 #####################################################
-FROM python:3.10-slim
+FROM python:3.10
 
 # https://docs.djangoproject.com/en/3.2/ref/contrib/gis/install/geolibs/
 RUN apt-get update -y && apt-get -y install binutils libproj19 gdal-bin && apt-get clean
