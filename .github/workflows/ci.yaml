@@ -16,8 +16,9 @@ jobs:
 
       - name: Get Version
         run: |
-          echo "$(pwd)"\n
-          echo "::set-output name=version::1.2.3\n"
+          echo "$(pwd)\n"
+          echo "$(ls -l)\n"
+          echo "::set-output name=version::1.2.3"
         id: sso_version
 
       -
