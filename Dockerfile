@@ -1,4 +1,7 @@
 FROM python:3.10 as builder
+
+RUN apt-get update -y && apt-get -y install python3-venv
+
 WORKDIR /opt/g10f/sso
 
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -15,7 +18,7 @@ RUN pip install -r requirements.txt
 #####################################################
 FROM python:3.10-slim
 
-#https://docs.djangoproject.com/en/3.2/ref/contrib/gis/install/geolibs/
+# https://docs.djangoproject.com/en/3.2/ref/contrib/gis/install/geolibs/
 RUN apt-get update -y && apt-get -y install binutils libproj19 gdal-bin && apt-get clean
 
 ENV PYTHONDONTWRITEBYTECODE=1
