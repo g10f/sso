@@ -12,11 +12,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Get Version
         run: |
-          echo "::set-output name=version::$(python /home/runner/work/sso/sso/apps/version.py)"
-          echo "::set-output name=version::$(python /home/runner/work/sso/apps/version.py)"
+          echo "::set-output name=version::$(python sso/apps/version.py)"
+          echo "::set-output name=version::$(python sso/apps/version.py)"
         id: sso_version
 
 #      - name: Set up QEMU
