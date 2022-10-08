@@ -32,3 +32,6 @@ indent_size = 2
 # Batch files use tabs for indentation
 [*.bat]
 indent_style = tab
+
+[*.yaml]
+indent_size = 2
