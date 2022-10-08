@@ -16,9 +16,7 @@ jobs:
 
       - name: Get Version
         run: |
-          echo "$(pwd)\n"
-          echo "$(ls -l)\n"
-          echo "::set-output name=version::1.2.3"
+          echo "::set-output name=version::$(python sso/apps/version.py)"
         id: sso_version
 
       -
