@@ -12,8 +12,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+
+      - name: Get Version
         run: |
-          echo "::set-output name=version::$(python sso/apps/version.py)"
+          set -xe
+          echo "$(ls -l)\n"
+          echo "::set-output name=version::$(python sso/sso/sso/apps/version.py)"
           echo "::set-output name=version::$(python sso/apps/version.py)"
         id: sso_version
 
