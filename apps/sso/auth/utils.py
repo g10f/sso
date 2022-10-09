@@ -166,7 +166,7 @@ def get_qrcode_data_url(key, username, issuer):
     from qrcode.image.pil import PilImage
     if settings.SSO_USE_HTTPS:
         base_uri = get_base_url()
-        image = base_uri + static("ico/apple-touch-icon.png")
+        image = base_uri + static("root/apple-touch-icon.png")
     else:
         image = None
 
