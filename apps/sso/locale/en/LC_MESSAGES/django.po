@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-04-16 10:20+0200\n"
+"POT-Creation-Date: 2022-10-20 13:38+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -880,9 +880,6 @@ msgstr ""
 msgid "Add Application"
 msgstr ""
 
-msgid "Regions"
-msgstr ""
-
 msgid "Application Details"
 msgstr ""
 
@@ -1618,8 +1615,8 @@ msgstr ""
 
 #, python-format
 msgid ""
-"Open the TOTP authenticator and scan the barcode. <br><img src=\"%(qr_code)s"
-"\" alt=\"QR Code\"/>"
+"Open the TOTP authenticator and scan the barcode. <br><img "
+"src=\"%(qr_code)s\" alt=\"QR Code\"/>"
 msgstr ""
 
 msgid ""
@@ -1648,6 +1645,9 @@ msgstr ""
 
 #, python-format
 msgid "Device error, select another device. (%(error)s)"
+msgstr ""
+
+msgid "The login process took too long. Please try again."
 msgstr ""
 
 msgid "Logged out"
@@ -2135,6 +2135,9 @@ msgid "Slug Name"
 msgstr ""
 
 msgid "Used for URLs, auto-generated from name if blank"
+msgstr ""
+
+msgid "Regions"
 msgstr ""
 
 msgid "City/Village"
@@ -2964,8 +2967,8 @@ msgstr ""
 
 #, python-format
 msgid ""
-"Our data protection declaration can be found on the Website <a href="
-"\"%(data_protection_uri)s\">%(data_protection_uri)s</a>."
+"Our data protection declaration can be found on the Website <a "
+"href=\"%(data_protection_uri)s\">%(data_protection_uri)s</a>."
 msgstr ""
 
 msgid "CSRF verification failed. Request aborted."

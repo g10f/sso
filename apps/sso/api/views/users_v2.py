@@ -200,6 +200,7 @@ class UserMixin(object):
                 data['apps'] = applications
 
             # be carefully to assign role_profile, because there can be private / secret role_profiles
+            # TODO: filter role_profiles by required_scope
             if 'role_profile' in scopes:
                 data['role_profiles'] = [role_profile.uuid.hex for role_profile in obj.role_profiles.all()]
 

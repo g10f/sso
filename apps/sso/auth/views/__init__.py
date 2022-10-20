@@ -127,19 +127,30 @@ class TokenView(FormView):
     device_cls = None
     expiry = 0
     challenges = None
+    error_messages = {
+        'signature_expired': _("The login process took too long. Please try again."),
+    }
 
     @method_decorator(revision_exempt)
     @method_decorator(sensitive_post_parameters())
     @method_decorator(never_cache)
     @method_decorator(throttle(duration=30, max_calls=12))
     def dispatch(self, *args, **kwargs):
+        try:
+            state = signing.loads(self.kwargs['user_data'], salt=SALT, max_age=settings.SSO_LOGIN_MAX_AGE)
+            self.expiry = state['expiry']
+            self.user = get_user_model().objects.get(pk=state['user_id'])
+            self.user.backend = state['backend']
+        except signing.SignatureExpired as e:
+            logger.info(e)
+            message = self.error_messages['signature_expired']
+            messages.add_message(self.request, level=messages.ERROR, message=message, fail_silently=True)
+            # redirect to login page with correct next url
+            return redirect(get_safe_login_redirect_url(self.request))
+
         return super().dispatch(*args, **kwargs)
 
     def get_form_class(self):
-        state = signing.loads(self.kwargs['user_data'], salt=SALT)
-        self.expiry = state['expiry']
-        self.user = get_user_model().objects.get(pk=state['user_id'])
-        self.user.backend = state['backend']
         self.device_cls = Device.get_subclass(self.kwargs['device_id'])
         return self.device_cls.login_form_class()
 

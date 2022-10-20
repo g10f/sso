@@ -17,10 +17,7 @@
         {% block left_content %}{{ block.super }}{% endblock left_content %}
       </aside>
       <section>
-        {% if messages %}{% for message in messages %}
-          <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>
-        {% endfor %}
-        {% endif %}
+        {% include 'include/_messages.html' %}
         {% translate 'Welcome,' %}
         <strong>{% filter force_escape %}{% firstof user.get_full_name user.username %}{% endfilter %}</strong>.
         {% if apps %}
@@ -37,6 +34,7 @@
       <section class="py-5 text-center">
         <div class="sign-in-form">
           <h1>{% blocktranslate %}One account. All of {{ site_name }}.{% endblocktranslate %}</h1>
+          {% include 'include/_messages.html' %}
           {% url 'registration:registration_register' as registration_register_url %}
           <a class="btn btn-lg btn-brand" href="{{ login_url }}">{% translate 'To login' %}</a>
           {% if registration_register_url and registration_open %}
