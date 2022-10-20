@@ -15,11 +15,7 @@
 {% block form %}
 
   <h1>{% translate 'Application' %}</h1>
-
-  {% if messages %}{% for message in messages %}
-    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
-  {% endif %}
-
+  {% include 'include/_messages.html' %}
   <div class="row">
     <div class="col-4">{% translate 'Title' %}:</div>
     <div class="col-8">{{ object.title }}</div>
@@ -45,14 +41,16 @@
   {% if object.applicationrole_set.all %}
     <div class="row">
       <div class="col-4">{% translate 'Application Roles' %}:</div>
-      <div class="col-8">{% for role in object.applicationrole_set.all %}{{ role.role }}{% if not forloop.last %}, {% endif %}{% endfor %}</div>
+      <div class="col-8">{% for role in object.applicationrole_set.all %}{{ role.role }}{% if not forloop.last %},
+      {% endif %}{% endfor %}</div>
     </div>
   {% endif %}
 
   {% if object.applicationadmin_set.all %}
     <div class="row">
       <div class="col-4">{% translate 'Application Admins' %}:</div>
-      <div class="col-8">{% for applicationadmin in object.applicationadmin_set.all %}{{ applicationadmin.admin }}{% if not forloop.last %}, {% endif %}{% endfor %}</div>
+      <div class="col-8">{% for applicationadmin in object.applicationadmin_set.all %}{{ applicationadmin.admin }}
+        {% if not forloop.last %}, {% endif %}{% endfor %}</div>
     </div>
   {% endif %}
 
@@ -61,14 +59,16 @@
     <div class="g10f-form-control_lg">
       {% block submit_group %}
         {% if perms.accounts.delete_application %}
-          <a class="btn btn-secondary" rel="delete" href="{% url 'accounts:application_delete' object.uuid.hex %}">{% translate 'Delete' %}</a>
+          <a class="btn btn-secondary" rel="delete"
+             href="{% url 'accounts:application_delete' object.uuid.hex %}">{% translate 'Delete' %}</a>
         {% endif %}
         {% if perms.accounts.change_application %}
-          <a class="btn btn-secondary" rel="update" href="{% url 'accounts:application_update' object.uuid.hex %}">{% translate 'Edit' %}</a>
+          <a class="btn btn-secondary" rel="update"
+             href="{% url 'accounts:application_update' object.uuid.hex %}">{% translate 'Edit' %}</a>
         {% endif %}
         {% if perms.oauth2.add_client %}
           <a class="btn btn-primary" rel="add-client" href="{% url 'accounts:client_add' object.uuid.hex %}"> <i
-            class="bi bi-plus-circle"></i> {% translate 'Add OIDC client' %}</a>
+              class="bi bi-plus-circle"></i> {% translate 'Add OIDC client' %}</a>
         {% endif %}
       {% endblock %}
     </div>
@@ -96,15 +96,19 @@
               <td>{{ object.name }}</td>
               <td>{{ object.uuid }}</td>
               {% with has_access_to_all_users=object.has_access_to_all_users %}
-                <td {% if has_access_to_all_users %}data-bs-toggle="tooltip" title="{% translate 'Has access to all users' %}"{% endif %}>
-                  {{ object.get_type_display }}{% if has_access_to_all_users %} <i class="bi bi-person-check-fill"></i>{% endif %}</td>
+                <td {% if has_access_to_all_users %}data-bs-toggle="tooltip"
+                    title="{% translate 'Has access to all users' %}"{% endif %}>
+                  {{ object.get_type_display }}{% if has_access_to_all_users %}
+                    <i class="bi bi-person-check-fill"></i>{% endif %}</td>
               {% endwith %}
               <td>{{ object.scopes }}</td>
               <td>{% if object.is_active %}<i class="bi bi-check2"></i>{% endif %}
               <td>
-                <a class="btn btn-default{% if not object.user_has_access %} disabled{% endif %}" rel="update-client" role="button"
+                <a class="btn btn-default{% if not object.user_has_access %} disabled{% endif %}" rel="update-client"
+                   role="button"
                    {% if object.user_has_access %}href="{% url 'accounts:client_update' object.uuid.hex %}"{% endif %}>{% translate 'Edit' %}</a>
-                <a class="btn btn-secondary{% if not object.user_has_access %} disabled{% endif %}" rel="delete-client" role="button"
+                <a class="btn btn-secondary{% if not object.user_has_access %} disabled{% endif %}" rel="delete-client"
+                   role="button"
                    {% if object.user_has_access %}href="{% url 'accounts:client_delete' object.uuid.hex %}"{% endif %}>{% translate 'Delete' %}</a>
               </td>
             </tr>

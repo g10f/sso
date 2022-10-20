@@ -18,10 +18,7 @@
 {% block right_content %}
   <div class="row">
     <div class="col-sm-12">
-      {% if messages %}{% for message in messages %}
-        <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>
-      {% endfor %}
-      {% endif %}
+      {% include 'include/_messages.html' %}
     </div>
   </div>
 
