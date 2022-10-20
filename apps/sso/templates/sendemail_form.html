@@ -4,13 +4,7 @@
 {% block form %}
   <form role="form" class="form-horizontal" method="post">{% csrf_token %}
     {% block messages %}
-      {% if messages %}
-        {% for message in messages %}
-          <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">
-            {{ message }}
-          </div>
-        {% endfor %}
-      {% endif %}
+      {% include 'include/_messages.html' %}
     {% endblock messages %}
     {% with fullname=form.instance.user.get_full_name picture=form.instance.user.picture %}
       <h3>{% blocktranslate %}Email Message to {{ fullname }}{% endblocktranslate %}

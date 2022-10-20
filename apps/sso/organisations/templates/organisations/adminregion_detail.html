@@ -17,9 +17,7 @@
 
   <h1>{{ object.name }}</h1>
 
-  {% if messages %}{% for message in messages %}
-    <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</div>{% endfor %}
-  {% endif %}
+  {% include 'include/_messages.html' %}
 
   <div class="row">
     <div class="col-4">{% translate 'Name' %}:</div>
