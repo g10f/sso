@@ -38,5 +38,5 @@ services:
         timeout: 5s
         retries: 5
 volumes:
-  postgres_data: {}
-  media_data: {}
+  postgres_data:
+  media_data:

@@ -1,4 +1,4 @@
-FROM python:3.10 as builder
+FROM python:3.11 as builder
 
 RUN apt-get update -y && apt-get -y install python3-venv
 
@@ -16,7 +16,7 @@ RUN pip install -U pip wheel
 RUN pip install -r requirements.txt
 
 #####################################################
-FROM python:3.10-slim
+FROM python:3.11-slim
 
 # https://docs.djangoproject.com/en/3.2/ref/contrib/gis/install/geolibs/
 RUN apt-get update -y && apt-get -y install binutils libproj19 gdal-bin && apt-get clean
@@ -33,6 +33,10 @@ ARG USER_GID=$USER_UID
 # Create the user
 RUN groupadd --gid $USER_GID $USERNAME \
     && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME
+
+# create media dir
+RUN mkdir -p /opt/g10f/sso/htdocs/media
+RUN chown $USERNAME:$USERNAME /opt/g10f/sso/htdocs/media
 
 COPY --from=builder $VIRTUAL_ENV $VIRTUAL_ENV
 
