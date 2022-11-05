@@ -57,8 +57,12 @@ def check_validation():
         return
 
     # 1. Assign Guest Profile to expired user accounts
-    guest_users = User.objects.annotate(count_profiles=Count('role_profiles')).filter(
-        Q(role_profiles=guest_profile) & Q(count_profiles=1))
+    # exclude existing guest users from iteration
+    guest_users = User.objects.annotate(
+        count_profiles=Count('role_profiles'),
+        count_applicationadmin=Count('applicationadmin'),
+        count_roleprofileadmin=Count('roleprofileadmin')).filter(
+        Q(role_profiles=guest_profile) & Q(count_profiles=1) & Q(count_applicationadmin=0) & Q(count_roleprofileadmin=0))
 
     expired_users = User.objects.filter(valid_until__lt=now()).exclude(pk__in=guest_users)
     if not settings.SSO_VALIDATION_PERIOD_IS_ACTIVE_FOR_ALL:
@@ -67,10 +71,12 @@ def check_validation():
     logger.info("Expired Users:")
     logger.debug("-----------------------------------------")
     with reversion.create_revision():
-        reversion.set_comment("cleared application_roles and set guest_profile in cleanup_users task")
+        reversion.set_comment("cleared application_roles, app-admin and profile admin permissions and set guest_profile in cleanup_users task")
         for expired_user in expired_users:
             expired_user.application_roles.clear()
             expired_user.role_profiles.set([guest_profile])
+            expired_user.applicationadmin_set.all().delete()
+            expired_user.roleprofileadmin_set.all().delete()
             expired_user.update_last_modified()
             logger.debug(f"{expired_user} expired since {expired_user.valid_until:%Y-%m-%d}.")
 
