@@ -20,23 +20,23 @@ services:
       - DJANGO_LOAD_INITIAL_DATA=on
     depends_on:
       db:
-         condition: service_healthy
+        condition: service_healthy
   db:
-      image: postgis/postgis:14-3.2
-      volumes:
-        - postgres_data:/var/lib/postgresql/data/
-        - ./Docker/initdb.sh:/docker-entrypoint-initdb.d/initdb.sh
-      expose:
-        - 5432
-      environment:
-        - POSTGRES_USER=sso
-        - POSTGRES_PASSWORD=sso
-        - POSTGRES_DB=sso
-      healthcheck:
-        test: ["CMD-SHELL", "pg_isready -U sso"]
-        interval: 5s
-        timeout: 5s
-        retries: 5
+    image: postgis/postgis:14-3.2
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+      - ./Docker/initdb.sh:/docker-entrypoint-initdb.d/initdb.sh
+    expose:
+      - 5432
+    environment:
+      - POSTGRES_USER=sso
+      - POSTGRES_PASSWORD=sso
+      - POSTGRES_DB=sso
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sso"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 volumes:
   postgres_data:
   media_data:
