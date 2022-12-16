@@ -22,7 +22,7 @@ services:
       db:
         condition: service_healthy
   db:
-    image: postgis/postgis:14-3.2
+    image: postgis/postgis:14-3.3-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data/
       - ./Docker/initdb.sh:/docker-entrypoint-initdb.d/initdb.sh
