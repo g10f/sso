@@ -15,6 +15,10 @@
 
   <form method="post">
     {% include 'include/_form_boilerplate.html' %}
+    {% if redirect_uri %}
+      <div class="alert alert-info">
+        {% translate 'Please activate two factor authentication and continue.' %}</div>
+    {% endif %}
     {% if user.device_set.all %}
       <div class="table-responsive">
         <table class="table table-bordered table-striped">
@@ -29,13 +33,17 @@
           {% for object in user.device_set.all %}
             <tr>
               <td>{{ object.get_child.default_name }}
-                {% if not object.confirmed %}<span class="badge rounded-pill bg-primary">{% translate 'unconfirmed' %}</span>{% endif %}
+                {% if not object.confirmed %}
+                  <span class="badge rounded-pill bg-primary">{% translate 'unconfirmed' %}</span>{% endif %}
               <td>
                 {{ object.name }}
               </td>
               <td>
-                <a class="btn btn-default" href="{% url 'auth:mfa-update' object.id %}" role="button">{% translate 'Edit' %}</a>
-                <button class="btn btn-danger" type="submit" name="delete" value="{{ object.id }}">{% translate 'Delete' %}</button>
+                <a class="btn btn-default"
+                   href="{% url 'auth:mfa-update' object.id %}{% if query_string %}?{{ query_string }}{% endif %}"
+                   role="button">{% translate 'Edit' %}</a>
+                <button class="btn btn-danger" type="submit" name="delete"
+                        value="{{ object.id }}">{% translate 'Delete' %}</button>
               </td>
             </tr>
           {% endfor %}
@@ -44,15 +52,23 @@
       </div>
     {% endif %}
 
-    {% include 'sso_auth/_default_device_field.html' with field=form.default_device %}
-
-    <a class="btn btn-primary" type="submit" href="{% url 'auth:totp_add_device' %}">{% translate 'Add TOTP Authenticator' %}</a>
-    <a class="btn btn-primary" href="{% url 'auth:u2f_add_device' %}">{% translate 'Add FIDO2 or U2F Device' %}</a>
+    <a class="btn btn-secondary" type="submit" href="
+      {% url 'auth:totp_add_device' %}{% if query_string %}?{{ query_string }}{% endif %}">{% translate 'Add TOTP Authenticator' %}</a>
+    <a class="btn btn-secondary" href="
+      {% url 'auth:u2f_add_device' %}{% if query_string %}?{{ query_string }}{% endif %}">{% translate 'Add FIDO2 or U2F Device' %}</a>
     {% if user.sso_auth_profile %}
       {% if user.sso_auth_profile.is_otp_enabled %}
-        <button class="btn btn-danger" type="submit" name="is_otp_enabled" value="3">{% translate "Disable 2-step verification" %}</button>{% else %}
-        <button class="btn btn-primary" type="submit" name="is_otp_enabled" value="2">{% translate "Enable 2-step verification" %}</button>
+        <button class="btn btn-danger" type="submit" name="is_otp_enabled"
+                value="3">{% translate "Disable 2-step verification" %}</button>{% else %}
+        <button class="btn btn-default" type="submit" name="is_otp_enabled"
+                value="2">{% translate "Enable 2-step verification" %}</button>
       {% endif %}
     {% endif %}
+    {% if redirect_uri %}
+      <a class="btn btn-default" href="{{ redirect_uri }}">{% translate 'Continue' %}</a>
+    {% endif %}
+    {% include 'sso_auth/_default_device_field.html' with field=form.default_device %}
   </form>
+
+
 {% endblock right_content %}

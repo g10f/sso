@@ -2,16 +2,15 @@ from functools import wraps
 from urllib.parse import urlparse
 
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth import REDIRECT_FIELD_NAME
-from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import resolve_url
 from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
 from sso.auth.utils import is_recent_auth_time
-from sso.auth.views import TWO_FACTOR_PARAM
-from sso.utils.url import update_url
 
 
-def request_passes_test(test_func, login_url=None, redirect_field_name=REDIRECT_FIELD_NAME):
+def request_passes_test(test_func, login_url=None, redirect_field_name=REDIRECT_FIELD_NAME, message=''):
     """
     Same as django.contrib.auth.decorators.user_passes_test with passing the request
     to the test_func instead of the user object
@@ -31,6 +30,8 @@ def request_passes_test(test_func, login_url=None, redirect_field_name=REDIRECT_
             if ((not login_scheme or login_scheme == current_scheme) and
                 (not login_netloc or login_netloc == current_netloc)):
                 path = request.get_full_path()
+            if message:
+                messages.add_message(request, level=messages.ERROR, message=message, fail_silently=True)
             from django.contrib.auth.views import redirect_to_login
             return redirect_to_login(
                 path, resolved_login_url, redirect_field_name)
@@ -61,12 +62,12 @@ def otp_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME, login_u
     to the log-in page if necessary.
     """
     if login_url is None:
-        login_url = update_url(reverse_lazy('login'), {TWO_FACTOR_PARAM: '1'})
-    test = lambda u: u.is_authenticated and u.is_verified
-    actual_decorator = user_passes_test(
-        test,
+        login_url = reverse_lazy('auth:mfa-detail')
+    actual_decorator = request_passes_test(
+        lambda request: request.user.is_authenticated and request.user.is_verified,
         login_url=login_url,
-        redirect_field_name=redirect_field_name
+        redirect_field_name=redirect_field_name,
+        message=_('MFA Authentication required!')
     )
     if function:
         return actual_decorator(function)

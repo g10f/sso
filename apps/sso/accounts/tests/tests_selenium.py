@@ -427,7 +427,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         new_password = 'gsf1zghxyz'
         self.set_create_password(path, new_password)
 
-        # check if the login link has a the new app url as next parameter (redirect_to_after_first_login=True)
+        # check if the login link has the new app url as next parameter (redirect_to_after_first_login=True)
         if settings.SSO_POST_RESET_LOGIN:
             url = 'https://test.example.com'
         else:

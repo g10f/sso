@@ -4,6 +4,20 @@ SSO
 SSO is an OpenID Connect Identity Provider with user and organisation management.
 The user and organisation data are exposed via a JSONLD/Hydra Api. Api entry point is /api/
 
+Run locally
+-----------
+
+ ``manage.py runserver``
+
+with ssl
+
+    INSTALLED_APPS = INSTALLED_APPS + ['django_extensions']
+    SSO_USE_HTTPS = True
+    SSO_DOMAIN = "localhost:8433"
+
+
+    ``manage.py runserver_plus localhost:8433 --cert-file ../temp/cert``
+
 Start a docker container
 ------------------------
 Run

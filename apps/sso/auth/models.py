@@ -127,8 +127,8 @@ class U2FDevice(Device):
         state = signing.loads(state_data, salt=U2FDevice.WEB_AUTHN_SALT)
         client_data = CollectedClientData(data["clientDataJSON"])
         att_obj = AttestationObject(data["attestationObject"])
-        logger.debug("clientData", client_data)
-        logger.debug("AttestationObject:", att_obj)
+        logger.debug(f"clientData {client_data}")
+        logger.debug(f"AttestationObject: {att_obj}")
 
         auth_data = cls.server.register_complete(state, client_data, att_obj)
         logger.debug(auth_data)
