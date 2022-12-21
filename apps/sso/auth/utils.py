@@ -68,6 +68,10 @@ def get_device_class_by_app_label(model_name):
     return django_apps.get_model(AuthConfig.label, model_name)
 
 
+def should_use_mfa(user):
+    return get_device_classes() and (not settings.SSO_ADMIN_ONLY_2F or user.is_user_admin or user.is_organisation_admin or user.is_staff)
+
+
 def totp_digits():
     """
     Returns the number of digits (as configured by the TWO_FACTOR_TOTP_DIGITS setting)

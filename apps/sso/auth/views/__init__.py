@@ -21,7 +21,7 @@ from django.views.generic.edit import FormView
 from sso.auth import is_otp_login, auth_login
 from sso.auth.forms import EmailAuthenticationForm, AuthenticationTokenForm
 from sso.auth.models import Device
-from sso.auth.utils import get_safe_login_redirect_url, get_request_param, get_device_classes_for_user
+from sso.auth.utils import get_safe_login_redirect_url, get_request_param, get_device_classes_for_user, should_use_mfa
 from sso.middleware import revision_exempt
 from sso.oauth2.crypt import loads_jwt
 from sso.oauth2.models import allowed_hosts, post_logout_redirect_uris, Client
@@ -87,7 +87,7 @@ class LoginView(FormView):
         redirect_url = get_safe_login_redirect_url(self.request)
 
         # if 2-nd factor available, send token
-        self.is_two_factor_required = get_request_param(self.request, TWO_FACTOR_PARAM, False) is not False
+        self.is_two_factor_required = get_request_param(self.request, TWO_FACTOR_PARAM, 'False').lower() in ('true', '1', 't')
         expiry = settings.SESSION_COOKIE_AGE if form.cleaned_data.get('remember_me', False) else 0
         device_cls = is_otp_login(user, self.is_two_factor_required)
 
@@ -103,9 +103,16 @@ class LoginView(FormView):
 
         else:
             # remove the prompt login param, cause login was done here
-            self.success_url = remove_value_from_url_param(redirect_url, 'prompt', 'login')
-            user._auth_session_expiry = expiry  # used to update the session in auth_login
+            success_url = remove_value_from_url_param(redirect_url, 'prompt', 'login')
 
+            if should_use_mfa(user):
+                query_string = {REDIRECT_FIELD_NAME: success_url}
+                self.success_url = "%s?%s" % (reverse('auth:mfa-detail'), urlencode(query_string))
+            else:
+                # remove the prompt login param, cause login was done here
+                self.success_url = success_url
+
+            user._auth_session_expiry = expiry  # used to update the session in auth_login
             auth_login(self.request, user)
 
         return super().form_valid(form)

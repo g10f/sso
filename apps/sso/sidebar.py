@@ -2,7 +2,7 @@ from django.apps import apps
 from django.conf import settings
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from sso.auth.utils import get_device_classes
+from sso.auth.utils import should_use_mfa
 
 
 def sidebar(request):
@@ -143,7 +143,7 @@ def sidebar(request):
 
     if not user.is_center:
         my_data_submenue['submenue'].append(my_emails)
-    if get_device_classes() and (not settings.SSO_ADMIN_ONLY_2F or user.is_user_admin or user.is_organisation_admin or user.is_staff):
+    if should_use_mfa(user):
         my_data_submenue['submenue'].append(my_security)
 
     if user.has_perm('accounts.view_application'):

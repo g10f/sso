@@ -1,10 +1,9 @@
 import logging
 import uuid
 from urllib.parse import urlsplit, urlunsplit
-
 from django.conf import settings
-from django.contrib.sites.shortcuts import get_current_site
 from django.http import QueryDict
+from django.utils.functional import lazy
 from django.utils.http import url_has_allowed_host_and_scheme
 from sso.utils.http import get_request_param
 
@@ -51,11 +50,11 @@ def update_url(url, params):
     """Given a URL, add or update query parameter and return the
     modified URL.
 
-    >>> update_url('http://example.com?foo=bar&biz=baz', {'foo': 'stuff', 'new': 'val'})
-    'http://example.com?foo=stuff&biz=baz&new=val'
+    >>> update_url('https://example.com?foo=bar&biz=baz', {'foo': 'stuff', 'new': 'val'})
+    'https://example.com?foo=stuff&biz=baz&new=val'
 
     """
-    (scheme, netloc, path, query, fragment) = urlsplit(url)
+    (scheme, netloc, path, query, fragment) = urlsplit(str(url))
     q = QueryDict(query, mutable=True)
 
     for k, v in params.items():
@@ -69,8 +68,8 @@ def update_url(url, params):
 def remove_value_from_url_param(url, param, value):
     """Given a URL removes a value from the param.
 
-    >>> remove_value_from_url_param('http://example.com?prompt=login%20consent&foo=sample', 'prompt', 'login')
-    'http://example.com?prompt=consent&foo=sample'
+    >>> remove_value_from_url_param('https://example.com?prompt=login%20consent&foo=sample', 'prompt', 'login')
+    'https://example.com?prompt=consent&foo=sample'
     """
     (scheme, netloc, path, query, fragment) = urlsplit(url)
     q = QueryDict(query, mutable=True)
@@ -89,6 +88,8 @@ base_url = f"{'https' if settings.SSO_USE_HTTPS else 'http'}://{settings.SSO_DOM
 
 
 def get_base_url(request=None):
+    # import django.contrib.sites here, because we want to import this module in urls, which is loaded before the apps are initialized
+    from django.contrib.sites.shortcuts import get_current_site
     if request:
         domain = get_current_site(request).domain
         use_https = request.is_secure()
@@ -104,6 +105,8 @@ def get_base_url(request=None):
 
 
 def absolute_url(request, url):
+    # import django.contrib.sites here, because we want to import this module in urls, which is loaded before the apps are initialized
+    from django.contrib.sites.shortcuts import get_current_site
     (scheme, netloc, path, query, fragment) = urlsplit(url)
     if not scheme:
         scheme = 'https' if request.is_secure() else 'http'

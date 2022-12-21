@@ -4,13 +4,15 @@
     <table>
       <tr>
         <td class="p-2">
+          <div class="form-label mb-1">{{ field.label }}:</div>
           {{ field }}
           {% if field.help_text or field.errors %}
-            <div class="form-text mb-1">{{ field.help_text }} {% for error in field.errors %}{{ error }} {% endfor %}</div>
+            <div class="form-text mb-1">{{ field.help_text }}
+              {% for error in field.errors %}{{ error }} {% endfor %}</div>
           {% endif %}
         </td>
         <td class="p-2">
-          <button class="btn btn-success" type="submit">{{ field.label }}</button>
+          <button class="btn btn-success" type="submit">{% translate 'Save' %}</button>
         </td>
       </tr>
     </table>
