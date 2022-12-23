@@ -53,6 +53,8 @@
             <li><a href="{% url 'privacy' %}">{% translate 'Privacy' %}</a></li>
             <li class="text-muted">·</li>
             <li><a href="{% url 'accounts:contact' %}">{% translate 'Feedback' %}</a></li>
+            <li class="text-muted">·</li>
+            <li>{{ version }}</li>
           </ul>
         </div>
       </footer>

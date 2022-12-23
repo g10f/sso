@@ -23,3 +23,7 @@ rm -r /home/gunnar/workspace/sso/htdocs/media/cache/
 $MANAGE thumbnail clear
 $MANAGE thumbnail cleanup
 $MANAGE migrate
+
+psql -h localhost -p 65432 -d sso -U postgres
+pg_dump -h sso-postgresql -d sso -U postgres | psql -h sso-db-postgresql -d sso -U postgres
+pg_dump -h dev-postgresql -d sso_dev -U postgres | psql -h dev-db-postgresql -d sso_dev -U postgres

@@ -17,8 +17,14 @@
     {% include 'include/_form_boilerplate.html' %}
     {% if redirect_uri %}
       <div class="alert alert-info">
-        {% translate 'Please activate two factor authentication and continue.' %}</div>
+        {% if user.sso_auth_profile.is_otp_enabled %}
+          {% translate 'Please continue.' %}
+        {% else %}
+          {% translate 'Please activate 2-step verification and continue.' %}
+        {% endif %}
+      </div>
     {% endif %}
+
     {% if user.device_set.all %}
       <div class="table-responsive">
         <table class="table table-bordered table-striped">
@@ -53,9 +59,11 @@
     {% endif %}
 
     <a class="btn btn-secondary" type="submit" href="
-      {% url 'auth:totp_add_device' %}{% if query_string %}?{{ query_string }}{% endif %}">{% translate 'Add TOTP Authenticator' %}</a>
+
+      {% url 'auth:totp_add_device' %}{% if query_string %}?{{ query_string }}{% endif %}">{% translate 'Add Authenticator App' %}</a>
     <a class="btn btn-secondary" href="
-      {% url 'auth:u2f_add_device' %}{% if query_string %}?{{ query_string }}{% endif %}">{% translate 'Add FIDO2 or U2F Device' %}</a>
+
+      {% url 'auth:u2f_add_device' %}{% if query_string %}?{{ query_string }}{% endif %}">{% translate 'Add Security Key' %}</a>
     {% if user.sso_auth_profile %}
       {% if user.sso_auth_profile.is_otp_enabled %}
         <button class="btn btn-danger" type="submit" name="is_otp_enabled"
@@ -65,7 +73,7 @@
       {% endif %}
     {% endif %}
     {% if redirect_uri %}
-      <a class="btn btn-default" href="{{ redirect_uri }}">{% translate 'Continue' %}</a>
+      <a class="btn btn-primary" href="{{ redirect_uri }}">{% translate 'Continue' %}</a>
     {% endif %}
     {% include 'sso_auth/_default_device_field.html' with field=form.default_device %}
   </form>

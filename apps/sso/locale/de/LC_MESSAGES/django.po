@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-20 13:38+0200\n"
+"POT-Creation-Date: 2022-12-23 14:31+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1552,6 +1552,9 @@ msgstr "Die Organisation fehlt"
 msgid "SSO Auth"
 msgstr ""
 
+msgid "2 Factor Authentication required!"
+msgstr "2-Faktor Authentifizierung notwendig!"
+
 msgid "Email address or Username"
 msgstr "E-Mail Adresse oder Benutzername"
 
@@ -1651,14 +1654,14 @@ msgstr ""
 "Sicherheitsschlüssel zu geben. Nach Erteilung der Berechtigung beginnt das "
 "Gerät zu blinken."
 
-msgid "FIDO2 or U2F Device"
-msgstr "FIDO2 oder U2F-Gerät"
+msgid "Security Key"
+msgstr "Sicherheitsschlüssel"
 
 msgid "Please enter the one-time code from your authenticator app."
 msgstr "Trage bitte den Einmaltoken aus Deinem Authenticator ein."
 
-msgid "TOTP Authenticator"
-msgstr "TOTP-Authenticator"
+msgid "Authenticator App"
+msgstr "Authenticator App"
 
 msgid "Security"
 msgstr "Sicherheit"
@@ -1666,11 +1669,17 @@ msgstr "Sicherheit"
 msgid "Setup 2-step verification"
 msgstr "2-Faktor Authentifizierung einrichten"
 
-msgid "Add TOTP Authenticator"
-msgstr "TOTP-Authenticator hinzufügen"
+msgid "Please continue."
+msgstr "Bitte fortsetzen."
 
-msgid "Add FIDO2 or U2F Device"
-msgstr "FIDO2 oder U2F-Gerät hinzufügen"
+msgid "Please activate 2-step verification and continue."
+msgstr "Bitte 2-Faktor Authentifizierung aktivieren und fortsetzen."
+
+msgid "Add Authenticator App"
+msgstr "Authenticator App hinzufügen"
+
+msgid "Add Security Key"
+msgstr "Sicherheitsschlüssel hinzufügen"
 
 msgid "Disable 2-step verification"
 msgstr "2-Faktor Authentifizierung deaktivieren"
@@ -1713,35 +1722,35 @@ msgstr "Anmeldung"
 msgid "Token Generator Setup"
 msgstr ""
 
-msgid "TOTP Authenticator Setup"
-msgstr "TOTP-Authenticator Einrichtung"
+msgid "Authenticator App Setup"
+msgstr "Authenticator App Setup"
 
-msgid "Install an TOTP authenticator on your mobile, e.g."
-msgstr "Installiere einen TOTP-Authenticator auf deinem Mobilgerät, z.B."
+msgid "Install an Authenticator App on your mobile, e.g."
+msgstr "Installiere eine Authenticator App auf deinem Mobilgerät, z.B."
 
 #, python-format
 msgid ""
-"Open the TOTP authenticator and scan the barcode. <br><img "
+"Open the Authenticator App and scan the barcode. <br><img "
 "src=\"%(qr_code)s\" alt=\"QR Code\"/>"
 msgstr ""
-"Starte den TOTP-Authenticator und scanne den Barcode. <br><img "
+"Starte die Authenticator App und scanne den Barcode. <br><img "
 "src=\"%(qr_code)s\" alt=\"QR Code\"/>"
 
 msgid ""
-"Enter the one-time code provided by the TOTP application and click Save to "
+"Enter the one-time code provided by the Authenticator App and click Save to "
 "finish the setup."
 msgstr ""
-"Gebe den von dem TOTP-Authenticator bereitgestellten Einmaltoken ein und "
+"Gebe den von der Authenticator App bereitgestellten Einmaltoken ein und "
 "klicke auf Speichern, um die Einrichtung abzuschließen."
 
 msgid "Submit"
 msgstr "Bestätigen"
 
-msgid "FIDO2 or U2F Device Setup"
-msgstr "FIDO2 oder U2F-Geräte Registrierung"
+msgid "Security Key Setup"
+msgstr "Sicherheitsschlüssel Setup"
 
-msgid "Register FIDO2 or U2F device"
-msgstr "FIDO2 oder U2F-Gerät registrieren"
+msgid "Register Security Key"
+msgstr "Sicherheitsschlüssel Einrichten"
 
 msgid "Your current browser is not yet supported."
 msgstr "Dein Browser wird noch nicht unterstützt "
@@ -3037,6 +3046,9 @@ msgstr "Persönliche Daten"
 msgid "Forbidden"
 msgstr "Verboten"
 
+msgid "Try again"
+msgstr "Erneut versuchen"
+
 msgid "Page not found"
 msgstr "Seite nicht gefunden"
 
@@ -3056,33 +3068,6 @@ msgstr ""
 
 msgid "Privacy"
 msgstr "Datenschutz"
-
-msgid ""
-"You are seeing this message because this HTTPS site requires a 'Referer "
-"header' to be sent by your Web browser, but none was sent. This header is "
-"required for security reasons, to ensure that your browser is not being "
-"hijacked by third parties."
-msgstr ""
-
-msgid ""
-"If you have configured your browser to disable 'Referer' headers, please re-"
-"enable them, at least for this site, or for HTTPS connections, or for 'same-"
-"origin' requests."
-msgstr ""
-
-msgid ""
-"You are seeing this message because this site requires a CSRF cookie when "
-"submitting forms. This cookie is required for security reasons, to ensure "
-"that your browser is not being hijacked by third parties."
-msgstr ""
-
-msgid ""
-"If you have configured your browser to disable cookies, please re-enable "
-"them, at least for this site, or for 'same-origin' requests."
-msgstr ""
-
-msgid "Try again"
-msgstr "Erneut versuchen"
 
 msgid "Delete?"
 msgstr "Löschen?"
@@ -3155,9 +3140,6 @@ msgstr ""
 "Unsere Datenschutzerklärung kannst Du auf der Webseite <a "
 "href=\"%(data_protection_uri)s\">%(data_protection_uri)s</a> einsehen."
 
-msgid "CSRF verification failed. Request aborted."
-msgstr "Die CSRF-Überprüfung ist fehlgeschlagen. Anfrage abgebrochen."
-
 #, python-brace-format
 msgid "The {name} \"{obj}\" was deleted successfully."
 msgstr "{name} \"{obj}\" wurde gelöscht."
@@ -3183,9 +3165,3 @@ msgstr ""
 #, python-brace-format
 msgid "The {name} \"{obj}\" was created successfully."
 msgstr "{name} \"{obj}\" wurde erfolgreich angelegt."
-
-#~ msgid "Access to all users"
-#~ msgstr "Kann auf alle User zugreifen"
-
-#~ msgid "Client"
-#~ msgstr "Client"

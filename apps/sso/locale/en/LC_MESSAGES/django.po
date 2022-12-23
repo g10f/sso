@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-20 13:38+0200\n"
+"POT-Creation-Date: 2022-12-23 14:31+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1457,6 +1457,9 @@ msgstr ""
 msgid "SSO Auth"
 msgstr ""
 
+msgid "2 Factor Authentication required!"
+msgstr ""
+
 msgid "Email address or Username"
 msgstr ""
 
@@ -1548,13 +1551,13 @@ msgid ""
 "device will start to blink."
 msgstr ""
 
-msgid "FIDO2 or U2F Device"
+msgid "Security Key"
 msgstr ""
 
 msgid "Please enter the one-time code from your authenticator app."
 msgstr ""
 
-msgid "TOTP Authenticator"
+msgid "Authenticator App"
 msgstr ""
 
 msgid "Security"
@@ -1563,10 +1566,16 @@ msgstr ""
 msgid "Setup 2-step verification"
 msgstr ""
 
-msgid "Add TOTP Authenticator"
+msgid "Please continue."
 msgstr ""
 
-msgid "Add FIDO2 or U2F Device"
+msgid "Please activate 2-step verification and continue."
+msgstr ""
+
+msgid "Add Authenticator App"
+msgstr ""
+
+msgid "Add Security Key"
 msgstr ""
 
 msgid "Disable 2-step verification"
@@ -1607,30 +1616,30 @@ msgstr ""
 msgid "Token Generator Setup"
 msgstr ""
 
-msgid "TOTP Authenticator Setup"
+msgid "Authenticator App Setup"
 msgstr ""
 
-msgid "Install an TOTP authenticator on your mobile, e.g."
+msgid "Install an Authenticator App on your mobile, e.g."
 msgstr ""
 
 #, python-format
 msgid ""
-"Open the TOTP authenticator and scan the barcode. <br><img "
+"Open the Authenticator App and scan the barcode. <br><img "
 "src=\"%(qr_code)s\" alt=\"QR Code\"/>"
 msgstr ""
 
 msgid ""
-"Enter the one-time code provided by the TOTP application and click Save to "
+"Enter the one-time code provided by the Authenticator App and click Save to "
 "finish the setup."
 msgstr ""
 
 msgid "Submit"
 msgstr ""
 
-msgid "FIDO2 or U2F Device Setup"
+msgid "Security Key Setup"
 msgstr ""
 
-msgid "Register FIDO2 or U2F device"
+msgid "Register Security Key"
 msgstr ""
 
 msgid "Your current browser is not yet supported."
@@ -2861,6 +2870,9 @@ msgstr ""
 msgid "Forbidden"
 msgstr ""
 
+msgid "Try again"
+msgstr ""
+
 msgid "Page not found"
 msgstr ""
 
@@ -2879,33 +2891,6 @@ msgid "About us"
 msgstr ""
 
 msgid "Privacy"
-msgstr ""
-
-msgid ""
-"You are seeing this message because this HTTPS site requires a 'Referer "
-"header' to be sent by your Web browser, but none was sent. This header is "
-"required for security reasons, to ensure that your browser is not being "
-"hijacked by third parties."
-msgstr ""
-
-msgid ""
-"If you have configured your browser to disable 'Referer' headers, please re-"
-"enable them, at least for this site, or for HTTPS connections, or for 'same-"
-"origin' requests."
-msgstr ""
-
-msgid ""
-"You are seeing this message because this site requires a CSRF cookie when "
-"submitting forms. This cookie is required for security reasons, to ensure "
-"that your browser is not being hijacked by third parties."
-msgstr ""
-
-msgid ""
-"If you have configured your browser to disable cookies, please re-enable "
-"them, at least for this site, or for 'same-origin' requests."
-msgstr ""
-
-msgid "Try again"
 msgstr ""
 
 msgid "Delete?"
@@ -2969,9 +2954,6 @@ msgstr ""
 msgid ""
 "Our data protection declaration can be found on the Website <a "
 "href=\"%(data_protection_uri)s\">%(data_protection_uri)s</a>."
-msgstr ""
-
-msgid "CSRF verification failed. Request aborted."
 msgstr ""
 
 #, python-brace-format

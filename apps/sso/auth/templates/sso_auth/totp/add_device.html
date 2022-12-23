@@ -7,24 +7,24 @@
   <ol class="breadcrumb">
     <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
     <li><a href="{% url 'auth:mfa-detail' %}">{% translate 'Security' %}</a></li>
-    <li class="active">{% translate 'TOTP Authenticator Setup' %}</li>
+    <li class="active">{% translate 'Authenticator App Setup' %}</li>
   </ol>
 {% endblock breadcrumb %}
 
 {% block form %}
-  <h1>{% translate 'TOTP Authenticator Setup' %}</h1>
+  <h1>{% translate 'Authenticator App Setup' %}</h1>
 
   <form class="form-horizontal" method="post">
     <ol>
-      <li>{% translate 'Install an TOTP authenticator on your mobile, e.g.' %}
+      <li>{% translate 'Install an Authenticator App on your mobile, e.g.' %}
         <ul>
           <li>Free OTP</li>
           <li>Mirosoft Authenticator</li>
           <li>Google Authenticator</li>
         </ul>
       </li>
-      <li>{% blocktranslate trimmed with qr_code=form.qr_code %}Open the TOTP authenticator and scan the barcode. <br><img src="{{ qr_code }}" alt="QR Code"/>{% endblocktranslate %}</li>
-      <li>{% translate 'Enter the one-time code provided by the TOTP application and click Save to finish the setup.' %}</li>
+      <li>{% blocktranslate trimmed with qr_code=form.qr_code %}Open the Authenticator App and scan the barcode. <br><img src="{{ qr_code }}" alt="QR Code"/>{% endblocktranslate %}</li>
+      <li>{% translate 'Enter the one-time code provided by the Authenticator App and click Save to finish the setup.' %}</li>
     </ol>
 
     {% include 'include/_form_boilerplate.html' %}
