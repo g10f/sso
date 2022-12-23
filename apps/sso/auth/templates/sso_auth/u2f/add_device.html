@@ -9,20 +9,20 @@
   <script src="{% static 'js/fido2.js' %}"></script>
 {% endblock script %}
 
-{% block title %}{% translate 'Add FIDO2 or U2F Device' %}{% endblock %}
+{% block title %}{% translate 'Add Security Key' %}{% endblock %}
 
 {% block breadcrumb %}
   <ol class="breadcrumb">
     <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
     <li><a href="{% url 'auth:mfa-detail' %}">{% translate 'Security' %}</a></li>
-    <li class="active">{% translate 'FIDO2 or U2F Device Setup' %}</li>
+    <li class="active">{% translate 'Security Key Setup' %}</li>
   </ol>
 {% endblock breadcrumb %}
 
 {% block right_content %}
 
   <form method="post" id="u2f_register_form">
-    <h1>{% translate 'Register FIDO2 or U2F device' %}</h1>
+    <h1>{% translate 'Register Security Key' %}</h1>
 
     <div class="alert alert-info text-center u2f-login-text hidden" role="alert">{{ device_cls.login_text }}</div>
     <div class="alert alert-danger browser-not-supported hidden" role="alert">

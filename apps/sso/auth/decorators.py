@@ -67,7 +67,7 @@ def otp_required(function=None, redirect_field_name=REDIRECT_FIELD_NAME, login_u
         lambda request: request.user.is_authenticated and request.user.is_verified,
         login_url=login_url,
         redirect_field_name=redirect_field_name,
-        message=_('MFA Authentication required!')
+        message=_('2 Factor Authentication required!')
     )
     if function:
         return actual_decorator(function)

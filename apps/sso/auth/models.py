@@ -209,7 +209,7 @@ class U2FDevice(Device):
 
     @classmethod
     def default_name(cls):
-        return _('FIDO2 or U2F Device')
+        return _('Security Key')
 
 
 class TOTPDevice(Device):
@@ -263,7 +263,7 @@ class TOTPDevice(Device):
 
     @classmethod
     def default_name(cls):
-        return _('TOTP Authenticator')
+        return _('Authenticator App')
 
     @property
     def bin_key(self):

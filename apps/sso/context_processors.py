@@ -3,7 +3,7 @@ import logging
 from django.conf import settings as site_settings
 from sso.sidebar import sidebar
 from sso.utils.url import get_base_url
-
+from sso import __version__
 log = logging.getLogger(__name__)
 
 
@@ -16,5 +16,6 @@ def settings(request):
         'registration_open': site_settings.REGISTRATION.get('OPEN', True),
         'data_protection_uri': site_settings.SSO_DATA_PROTECTION_URI,
         'sidebar': sidebar(request),
-        'sso_style': site_settings.SSO_STYLE
+        'sso_style': site_settings.SSO_STYLE,
+        'version': __version__
     }

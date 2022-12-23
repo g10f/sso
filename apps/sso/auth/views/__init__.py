@@ -90,10 +90,10 @@ class LoginView(FormView):
         self.is_two_factor_required = get_request_param(self.request, TWO_FACTOR_PARAM, 'False').lower() in ('true', '1', 't')
         expiry = settings.SESSION_COOKIE_AGE if form.cleaned_data.get('remember_me', False) else 0
         device_cls = is_otp_login(user, self.is_two_factor_required)
+        display = self.request.GET.get('display')
 
         if device_cls:
             try:
-                display = self.request.GET.get('display')
                 self.success_url = get_token_url(user.id, expiry, redirect_url, user.backend, display, device_cls.get_device_id())
             except Exception as e:
                 messages.error(
@@ -105,11 +105,10 @@ class LoginView(FormView):
             # remove the prompt login param, cause login was done here
             success_url = remove_value_from_url_param(redirect_url, 'prompt', 'login')
 
-            if should_use_mfa(user):
+            if should_use_mfa(user) and display not in ['popup']:
                 query_string = {REDIRECT_FIELD_NAME: success_url}
                 self.success_url = "%s?%s" % (reverse('auth:mfa-detail'), urlencode(query_string))
             else:
-                # remove the prompt login param, cause login was done here
                 self.success_url = success_url
 
             user._auth_session_expiry = expiry  # used to update the session in auth_login

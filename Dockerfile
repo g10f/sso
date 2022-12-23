@@ -1,11 +1,10 @@
 FROM python:3.11 as builder
 
-RUN apt-get update -y && apt-get -y install python3-venv
+RUN apt-get update && apt-get -y install python3-venv
 
 WORKDIR /opt/g10f/sso
 
 ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
 ENV VIRTUAL_ENV='/venv'
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
@@ -19,7 +18,7 @@ RUN pip install -r requirements.txt
 FROM python:3.11-slim
 
 # https://docs.djangoproject.com/en/3.2/ref/contrib/gis/install/geolibs/
-RUN apt-get update -y && apt-get -y install binutils libproj19 gdal-bin && apt-get clean
+RUN apt-get update && apt-get install -y binutils libproj19 gdal-bin && rm -rf /var/lib/apt/lists/*
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
