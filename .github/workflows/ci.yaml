@@ -6,7 +6,6 @@ on:
       - 'main'
 jobs:
   build-and-push-image:
-    # if: ${{ false }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -25,10 +24,8 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          # list of Docker images to use as base name for tags
           images: |
             g10f/sso
-          # generate Docker tags based on the following events/attributes
           tags: |
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
             type=pep440,pattern={{version}},value=${{ steps.version.outputs.VERSION }}
@@ -49,6 +46,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           platforms: linux/amd64,linux/arm64
+          pull: true
           push: true
           tags: ${{ steps.meta.outputs.tags }}
 
@@ -93,5 +91,3 @@ jobs:
         env:
           ANSIBLE_VAULT_IDENTITY_LIST: vault-password-file.sh
           ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
-
-

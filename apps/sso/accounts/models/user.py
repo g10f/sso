@@ -19,6 +19,7 @@ from sso.access_requests.models import AccessRequest
 from sso.accounts.models import OrganisationChange
 from sso.accounts.models.application import ApplicationRole, RoleProfile, Application, Role, get_applicationrole_ids, ApplicationAdmin
 from sso.accounts.models.user_data import UserEmail, Membership
+from sso.auth.utils import get_device_classes
 from sso.decorators import memoize
 from sso.emails.models import GroupEmailManager
 from sso.models import ensure_single_primary, get_filename
@@ -1000,3 +1001,7 @@ class User(AbstractBaseUser, PermissionsMixin):
             organisation_related_role_profiles = RoleProfile.objects.filter(is_organisation_related=True)
         self.application_roles.remove(*list(organisation_related_application_roles))
         self.role_profiles.remove(*list(organisation_related_role_profiles))
+
+    @property
+    def is_mfa_required(self):
+        return get_device_classes() and (not settings.SSO_ADMIN_ONLY_2F or self.is_user_admin or self.is_organisation_admin or self.is_staff)

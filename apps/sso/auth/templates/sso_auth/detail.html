@@ -15,13 +15,17 @@
 
   <form method="post">
     {% include 'include/_form_boilerplate.html' %}
-    {% if redirect_uri %}
+    {% if user.is_mfa_required %}
       <div class="alert alert-info">
-        {% if user.sso_auth_profile.is_otp_enabled %}
-          {% translate 'Please continue.' %}
-        {% else %}
-          {% translate 'Please activate 2-step verification and continue.' %}
-        {% endif %}
+        {% blocktranslate trimmed %}
+          As your account has access to personal userdata we would like to ask you to enable 2-step verification.
+          By this your account will be better protected against online identity theft.
+          <br>
+          We support Authenticator Apps (like FreeOTP, Google Authenticator, Microsoft Authenticator or Twilio Authy)
+          and
+          Security Keys from FIDO2 Certified devices that connect to your devices through USB, Bluetooth, or NFC
+          (like YubiKey or devices with TouchID, FaceID or Windows Hello)
+        {% endblocktranslate %}
       </div>
     {% endif %}
 
@@ -58,12 +62,12 @@
       </div>
     {% endif %}
 
-    <a class="btn btn-secondary" type="submit" href="
-
-      {% url 'auth:totp_add_device' %}{% if query_string %}?{{ query_string }}{% endif %}">{% translate 'Add Authenticator App' %}</a>
-    <a class="btn btn-secondary" href="
-
-      {% url 'auth:u2f_add_device' %}{% if query_string %}?{{ query_string }}{% endif %}">{% translate 'Add Security Key' %}</a>
+    <a class="btn btn-secondary" type="submit"
+       href="{% url 'auth:totp_add_device' %}{% if query_string %}?{{ query_string }}{% endif %}">
+      {% translate 'Add Authenticator App' %}</a>
+    <a class="btn btn-secondary"
+       href="{% url 'auth:u2f_add_device' %}{% if query_string %}?{{ query_string }}{% endif %}">
+      {% translate 'Add Security Key' %}</a>
     {% if user.sso_auth_profile %}
       {% if user.sso_auth_profile.is_otp_enabled %}
         <button class="btn btn-danger" type="submit" name="is_otp_enabled"
@@ -73,7 +77,13 @@
       {% endif %}
     {% endif %}
     {% if redirect_uri %}
-      <a class="btn btn-primary" href="{{ redirect_uri }}">{% translate 'Continue' %}</a>
+      <a class="btn btn-primary" href="{{ redirect_uri }}">
+        {% if user.sso_auth_profile.is_otp_enabled %}
+          {% translate 'Continue' %}
+        {% else %}
+          {% translate 'Continue without 2-step verification' %}
+        {% endif %}
+      </a>
     {% endif %}
     {% include 'sso_auth/_default_device_field.html' with field=form.default_device %}
   </form>

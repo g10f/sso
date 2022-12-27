@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "bootstrap": "^5.2.3",
-    "bootstrap-icons": "^1.10.2",
+    "bootstrap-icons": "^1.10.3",
     "cropperjs": "^1.5.13",
     "jquery": "^3.6.2",
     "select2": "^4.1.0-rc.0",

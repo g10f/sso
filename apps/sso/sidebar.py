@@ -2,7 +2,6 @@ from django.apps import apps
 from django.conf import settings
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from sso.auth.utils import should_use_mfa
 
 
 def sidebar(request):
@@ -143,7 +142,7 @@ def sidebar(request):
 
     if not user.is_center:
         my_data_submenue['submenue'].append(my_emails)
-    if should_use_mfa(user):
+    if user.is_mfa_required:
         my_data_submenue['submenue'].append(my_security)
 
     if user.has_perm('accounts.view_application'):

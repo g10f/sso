@@ -21,7 +21,7 @@ from django.views.generic.edit import FormView
 from sso.auth import is_otp_login, auth_login
 from sso.auth.forms import EmailAuthenticationForm, AuthenticationTokenForm
 from sso.auth.models import Device
-from sso.auth.utils import get_safe_login_redirect_url, get_request_param, get_device_classes_for_user, should_use_mfa
+from sso.auth.utils import get_safe_login_redirect_url, get_request_param, get_device_classes_for_user
 from sso.middleware import revision_exempt
 from sso.oauth2.crypt import loads_jwt
 from sso.oauth2.models import allowed_hosts, post_logout_redirect_uris, Client
@@ -105,7 +105,7 @@ class LoginView(FormView):
             # remove the prompt login param, cause login was done here
             success_url = remove_value_from_url_param(redirect_url, 'prompt', 'login')
 
-            if should_use_mfa(user) and display not in ['popup']:
+            if user.is_mfa_required and display not in ['popup']:
                 query_string = {REDIRECT_FIELD_NAME: success_url}
                 self.success_url = "%s?%s" % (reverse('auth:mfa-detail'), urlencode(query_string))
             else:
