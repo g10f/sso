@@ -154,8 +154,8 @@ USE_TZ = True
 STATIC_ROOT = os.getenv('STATIC_ROOT', BASE_DIR.parent / 'htdocs/static')
 MEDIA_ROOT = os.getenv('MEDIA_ROOT', BASE_DIR.parent / 'htdocs/media')
 
-MEDIA_URL = '/media/'
-STATIC_URL = '/static/'
+MEDIA_URL = os.getenv('MEDIA_URL', '/media/')
+STATIC_URL = os.getenv('STATIC_URL', '/static/')
 
 if RUNNING_TEST:
     STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
