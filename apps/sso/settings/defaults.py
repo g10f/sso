@@ -77,7 +77,8 @@ SSO_USER_MAX_PICTURE_SIZE = int(os.getenv('SSO_USER_MAX_PICTURE_SIZE', '1048576'
 SSO_USER_PICTURE_WIDTH = 550
 SSO_USER_PICTURE_HEIGHT = 550
 SSO_OIDC_SESSION_COOKIE_NAME = 'oidcsession'
-SSO_ADMIN_ONLY_2F = os.getenv("SSO_ADMIN_ONLY_2F", 'False').lower() in ('true', '1', 't')
+SSO_ADMIN_ONLY_MFA = os.getenv("SSO_ADMIN_ONLY_MFA", 'False').lower() in ('true', '1', 't')
+SSO_ADMIN_MFA_REQUIRED = os.getenv("SSO_ADMIN_MFA_REQUIRED", 'False').lower() in ('true', '1', 't')
 SSO_RECAPTCHA_EXPIRATION_TIME = 120
 
 # Celery settings see https://www.cloudamqp.com/docs/celery.html
