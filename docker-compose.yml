@@ -18,11 +18,18 @@ services:
       - DJANGO_MIGRATE=on
       - DJANGO_CREATE_SUPERUSER=on
       - DJANGO_LOAD_INITIAL_DATA=on
+      - MEDIA_URL=http://localhost:8080/media/
     depends_on:
       db:
         condition: service_healthy
+  media:
+    image: nginx:latest
+    volumes:
+      - media_data:/usr/share/nginx/html/media
+    ports:
+      - "8080:80"
   db:
-    image: postgis/postgis:14-3.3-alpine
+    image: postgis/postgis:latest
     volumes:
       - postgres_data:/var/lib/postgresql/data/
       - ./Docker/initdb.sh:/docker-entrypoint-initdb.d/initdb.sh
@@ -34,7 +41,7 @@ services:
       - POSTGRES_DB=sso
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U sso"]
-      interval: 5s
+      interval: 2s
       timeout: 5s
       retries: 5
 volumes:

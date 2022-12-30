@@ -95,6 +95,8 @@ REGISTRATION_OPEN            False
 DEFAULT_FROM_EMAIL           webmaster@g10f.de
 STATIC_ROOT                  ../htdocs/static
 MEDIA_ROOT                   ../htdocs/media
+MEDIA_URL                    /media/
+STATIC_URL                   /static/
 SSO_THEME                    None
 ROOT_URLCONF                 sso.urls
 ===========================  =========================  =========================

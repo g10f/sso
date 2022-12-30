@@ -26,6 +26,7 @@ jobs:
         with:
           images: |
             g10f/sso
+            ghcr.io/g10f/sso
           tags: |
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
             type=pep440,pattern={{version}},value=${{ steps.version.outputs.VERSION }}
@@ -41,6 +42,9 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Log in to ghcr
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
 
       - name: Build and push
         uses: docker/build-push-action@v3
