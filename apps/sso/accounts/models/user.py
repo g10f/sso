@@ -1004,4 +1004,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def is_mfa_required(self):
-        return get_device_classes() and (not settings.SSO_ADMIN_ONLY_2F or self.is_user_admin or self.is_organisation_admin or self.is_staff)
+        return settings.SSO_ADMIN_MFA_REQUIRED and self.is_mfa_enabled and (self.is_user_admin or self.is_organisation_admin or self.is_staff)
+
+    @property
+    def is_mfa_enabled(self):
+        return get_device_classes() and (not settings.SSO_ADMIN_ONLY_MFA or self.is_user_admin or self.is_organisation_admin or self.is_staff)

@@ -142,7 +142,7 @@ def sidebar(request):
 
     if not user.is_center:
         my_data_submenue['submenue'].append(my_emails)
-    if user.is_mfa_required:
+    if user.is_mfa_enabled:
         my_data_submenue['submenue'].append(my_security)
 
     if user.has_perm('accounts.view_application'):

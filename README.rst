@@ -99,6 +99,8 @@ MEDIA_URL                    /media/
 STATIC_URL                   /static/
 SSO_THEME                    None
 ROOT_URLCONF                 sso.urls
+SSO_ADMIN_MFA_REQUIRED       False
+SSO_ADMIN_ONLY_MFA           False
 ===========================  =========================  =========================
 
 
