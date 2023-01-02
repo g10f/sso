@@ -143,10 +143,10 @@ class TokenView(FormView):
     @method_decorator(throttle(duration=30, max_calls=12))
     def dispatch(self, *args, **kwargs):
         try:
-            state = signing.loads(self.kwargs['user_data'], salt=SALT, max_age=settings.SSO_LOGIN_MAX_AGE)
-            self.expiry = state['expiry']
-            self.user = get_user_model().objects.get(pk=state['user_id'])
-            self.user.backend = state['backend']
+            user_data = signing.loads(self.kwargs['user_data'], salt=SALT, max_age=settings.SSO_LOGIN_MAX_AGE)
+            self.expiry = user_data['expiry']
+            self.user = get_user_model().objects.get(pk=user_data['user_id'])
+            self.user.backend = user_data['backend']
         except signing.SignatureExpired as e:
             logger.info(e)
             message = self.error_messages['signature_expired']
@@ -179,7 +179,7 @@ class TokenView(FormView):
 
     def get_context_data(self, **kwargs):
         """
-        Adds user's default and backup OTP devices to the context.
+        Adds user's default and backup devices to the context.
         """
         context = super().get_context_data(**kwargs)
 

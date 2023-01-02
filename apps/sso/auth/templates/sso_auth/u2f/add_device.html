@@ -4,9 +4,8 @@
 {% block script %}
   {{ block.super }}
   <script src="{% url 'jsi18n' %}"></script>
-  <script src="{% static 'js/cbor.js' %}"></script>
   <script src="{% static 'js/vendor/jquery.min.js' %}"></script>
-  <script src="{% static 'js/fido2.js' %}"></script>
+  <script type="module" src="{% static 'js/fido2.js' %}"></script>
 {% endblock script %}
 
 {% block title %}{% translate 'Add Security Key' %}{% endblock %}
@@ -29,12 +28,13 @@
       {% translate 'Your current browser is not yet supported.' %}
     </div>
 
-    {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
-
     {% include 'include/_form_boilerplate.html' %}
     <div class="" id="u2f-status"></div>
     {% include 'include/_field.html' with field=form.name %}
-
+    {# for debugging purpose #}
+{#    {% include 'include/_field.html' with field=form.state %}#}
+{#    {% include 'include/_field.html' with field=form.u2f_response %}#}
+{#    {% include 'include/_field.html' with field=form.u2f_request %}#}
     <div class="form-group">
       <div class="g10f-form-submit">
         <button type="submit" class="btn btn-primary">{% translate 'Submit' %}</button>

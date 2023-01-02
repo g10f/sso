@@ -14,6 +14,8 @@ global.config = {
 
 function copyJavaScriptFiles() {
     return gulp.src([
+        './node_modules/@github/webauthn-json/dist/esm/webauthn-json.browser-ponyfill.js',
+        './node_modules/@github/webauthn-json/dist/esm/webauthn-json.browser-ponyfill.js.map',
         './node_modules/bootstrap/dist/js/bootstrap.bundle.min.js',
         './node_modules/bootstrap/dist/js/bootstrap.bundle.min.js.map',
         './node_modules/jquery/dist/jquery.min.js',

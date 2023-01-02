@@ -54,7 +54,7 @@ class AddU2FView(RedirectViewMixin, FormView):
 
     def get_context_data(self, **kwargs):
         kwargs = super().get_context_data(**kwargs)
-        kwargs['u2f_request'] = json.dumps(self.u2f_request)
+        kwargs['u2f_request'] = self.u2f_request
         kwargs['device_cls'] = U2FDevice
         kwargs['cancel_url'] = self.get_url_with_redirect_param(reverse('auth:mfa-detail'))
         return kwargs
@@ -73,7 +73,7 @@ class AddU2FView(RedirectViewMixin, FormView):
     def get_initial(self):
         initial = super().get_initial()
         if self.u2f_request is not None:
-            initial.update({'u2f_request': json.dumps(self.u2f_request)})
+            initial.update({'u2f_request': self.u2f_request})
         return initial
 
 

@@ -10,8 +10,10 @@ from django.utils.translation import pgettext_lazy
 
 try:
     RUNNING_DEVSERVER = (sys.argv[1] in ['runserver', 'runserver_plus'])
+    RUNNING_DEVSERVER_PLUS = (sys.argv[1] in ['runserver_plus'])
 except IndexError:
     RUNNING_DEVSERVER = False
+    RUNNING_DEVSERVER_PLUS = False
 
 RUNNING_TEST = 'test' in sys.argv
 
@@ -250,6 +252,9 @@ INSTALLED_APPS = [
 ]
 if os.getenv('SSO_THEME') is not None:
     INSTALLED_APPS.insert(0, os.getenv('SSO_THEME'))
+
+if RUNNING_DEVSERVER_PLUS:
+    INSTALLED_APPS = INSTALLED_APPS + ['django_extensions']
 
 DEFAULT_AUTHENTICATION_BACKEND = 'sso.auth.backends.EmailBackend'
 

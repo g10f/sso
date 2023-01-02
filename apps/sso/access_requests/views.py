@@ -111,7 +111,8 @@ class AccountExtendAccessDoneView(TemplateView):
 
     def get_object(self, queryset=None):
         try:
-            return AccessRequest.open.get(user=self.request.user)
+            # doubleclick on submit can cause to 2 open AccessRequest
+            return AccessRequest.open.filter(user=self.request.user).first()
         except ObjectDoesNotExist:
             return None
 
@@ -202,7 +203,8 @@ class AccountExtendAccessView(UpdateView):
 
     def get_object(self, queryset=None):
         try:
-            return AccessRequest.open.get(user=self.request.user)
+            # doubleclick on submit can cause to 2 open AccessRequest
+            return AccessRequest.open.filter(user=self.request.user).first()
         except ObjectDoesNotExist:
             return None
 
