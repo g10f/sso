@@ -2,9 +2,8 @@
 {% load i18n static %}
 
 {% block script %}
-  <script src="{% static 'js/cbor.js' %}"></script>
   <script src="{% static 'js/vendor/jquery.min.js' %}"></script>
-  <script src="{% static 'js/fido2.js' %}"></script>
+  <script  type="module" src="{% static 'js/fido2.js' %}"></script>
   {% comment %}
   {% if display != 'popup' %}
     <script src="{% static 'js/vendor/bootstrap.bundle.min.js' %}"></script>
