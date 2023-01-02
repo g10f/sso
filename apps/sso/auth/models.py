@@ -108,6 +108,7 @@ class U2FDevice(Device):
         options, state = cls.fido2_server.register_begin(
             user=user_entity,
             credentials=credentials,
+            extensions={"credProps": True},
             user_verification=UserVerificationRequirement.DISCOURAGED,
             authenticator_attachment=AuthenticatorAttachment.CROSS_PLATFORM)
         u2f_request = {
