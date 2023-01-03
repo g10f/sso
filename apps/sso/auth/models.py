@@ -104,10 +104,16 @@ class U2FDevice(Device):
         user = request.user
         credentials = U2FDevice.credentials(user)
         user_entity = PublicKeyCredentialUserEntity(id=user.uuid.bytes, name=user.username, display_name=user.get_full_name())
+
+        if settings.SSO_WEBAUTHN_EXTENSIONS:
+            extensions = {"credProps": settings.SSO_WEBAUTHN_CREDPROPS}
+        else:
+            extensions = None
+
         options, state = cls.fido2_server.register_begin(
             user=user_entity,
             credentials=credentials,
-            extensions=settings.SSO_WEBAUTHN_EXTENSIONS,
+            extensions=extensions,
             user_verification=settings.SSO_WEBAUTHN_USER_VERIFICATION,
             authenticator_attachment=settings.SSO_WEBAUTHN_AUTHENTICATOR_ATTACHMENT)
         u2f_request = {
