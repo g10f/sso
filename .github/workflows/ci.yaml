@@ -84,7 +84,7 @@ jobs:
           python-version: '3.11'
       - run: |
           pip install -r requirements.txt
-          ansible-playbook deploy.yml -D -l g10f-sso
+          ansible-playbook deploy.yml -D -l g10f-sso -t update
         env:
           ANSIBLE_VAULT_IDENTITY_LIST: vault-password-file.sh
           ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}

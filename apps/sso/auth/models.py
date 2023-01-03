@@ -15,7 +15,7 @@ from django.utils.translation import gettext_lazy as _
 from fido2 import cbor
 from fido2.cose import CoseKey
 from fido2.features import webauthn_json_mapping
-from fido2.server import Fido2Server  # , U2FFido2Server
+from fido2.server import Fido2Server, U2FFido2Server
 from fido2.utils import websafe_decode, websafe_encode
 from fido2.webauthn import PublicKeyCredentialRpEntity, UserVerificationRequirement, AttestedCredentialData, \
     PublicKeyCredentialUserEntity
@@ -77,10 +77,12 @@ class U2FDevice(Device):
     aaguid = models.TextField()
     counter = models.IntegerField(default=0)
 
-    # u2f_app_id = f"{'https' if settings.SSO_USE_HTTPS else 'http'}://{settings.SSO_DOMAIN.lower().split(':')[0]}"
-    # u2f_fido2_server = U2FFido2Server(u2f_app_id, PublicKeyCredentialRpEntity(id=settings.SSO_DOMAIN.lower().split(':')[0],
-    #                                                                 name=f'{settings.SSO_SITE_NAME} Server'))
-    fido2_server = Fido2Server(PublicKeyCredentialRpEntity(name=settings.SSO_SITE_NAME, id=settings.SSO_DOMAIN.lower().split(':')[0]))
+    if settings.SSO_WEBAUTHN_VERSION == "U2F_V2":
+        u2f_app_id = f"{'https' if settings.SSO_USE_HTTPS else 'http'}://{settings.SSO_DOMAIN.lower().split(':')[0]}"
+        fido2_server = U2FFido2Server(u2f_app_id, PublicKeyCredentialRpEntity(id=settings.SSO_DOMAIN.lower().split(':')[0],
+                                                                        name=f'{settings.SSO_SITE_NAME}'))
+    else:
+        fido2_server = Fido2Server(PublicKeyCredentialRpEntity(name=settings.SSO_SITE_NAME, id=settings.SSO_DOMAIN.lower().split(':')[0]))
     WEB_AUTHN_SALT = 'sso.auth.models.U2FDevice'
     device_id = 1
     Device.devices.add((__qualname__, device_id))
