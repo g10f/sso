@@ -81,11 +81,11 @@ SSO_USER_PICTURE_HEIGHT = 550
 SSO_OIDC_SESSION_COOKIE_NAME = 'oidcsession'
 SSO_ADMIN_ONLY_MFA = os.getenv("SSO_ADMIN_ONLY_MFA", 'False').lower() in ('true', '1', 't')
 SSO_ADMIN_MFA_REQUIRED = os.getenv("SSO_ADMIN_MFA_REQUIRED", 'False').lower() in ('true', '1', 't')
-SSO_WEBAUTHN_VERSION = os.getenv('SSO_WEBAUTHN_VERSION', 'U2F_V2')  # "U2F_V2", "FIDO_2_0"
-SSO_WEBAUTHN_USER_VERIFICATION = os.getenv('SSO_WEBAUTHN_USER_VERIFICATION', 'preferred')
-SSO_WEBAUTHN_AUTHENTICATOR_ATTACHMENT = os.getenv('SSO_WEBAUTHN_AUTHENTICATOR_ATTACHMENT', 'cross-platform')
-SSO_WEBAUTHN_EXTENSIONS = os.getenv("SSO_WEBAUTHN_EXTENSIONS", 'True').lower() in ('true', '1', 't')
-SSO_WEBAUTHN_CREDPROPS = os.getenv("SSO_WEBAUTHN_CREDPROPS", 'True').lower() in ('true', '1', 't')
+SSO_WEBAUTHN_VERSION = os.getenv('SSO_WEBAUTHN_VERSION', 'FIDO_2_0')  # "U2F_V2", "FIDO_2_0"
+SSO_WEBAUTHN_USER_VERIFICATION = os.getenv('SSO_WEBAUTHN_USER_VERIFICATION', '')
+SSO_WEBAUTHN_AUTHENTICATOR_ATTACHMENT = os.getenv('SSO_WEBAUTHN_AUTHENTICATOR_ATTACHMENT', '')
+SSO_WEBAUTHN_EXTENSIONS = os.getenv("SSO_WEBAUTHN_EXTENSIONS", 'False').lower() in ('true', '1', 't')
+SSO_WEBAUTHN_CREDPROPS = os.getenv("SSO_WEBAUTHN_CREDPROPS", 'False').lower() in ('true', '1', 't')
 SSO_RECAPTCHA_EXPIRATION_TIME = 120
 
 # Celery settings see https://www.cloudamqp.com/docs/celery.html

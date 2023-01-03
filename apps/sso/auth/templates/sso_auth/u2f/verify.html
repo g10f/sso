@@ -15,9 +15,9 @@
   <form class="d-grid" method="post" id="u2f_sign_form">
     <button class="hidden" type="submit" class="btn btn-primary">{% translate 'Submit' %}</button>
     {% include 'include/_form_boilerplate.html' %}
-    <div class="alert alert-primary text-center u2f-login-text hidden" role="alert">{{ device_cls.login_text }}</div>
+    <div class="alert alert-info text-center u2f-login-text hidden" role="alert">{{ device_cls.login_text }}</div>
     <div id="u2f-status"></div>
-    <div class="btn btn-primary hidden start-authentication">{% translate 'Start Authentication' %}</div>
+    <div class="btn btn-primary hidden start-authentication">{% translate 'Use Security Key' %}</div>
     <div class="alert alert-danger browser-not-supported text-center hidden">{% translate 'Your current browser is not yet supported.' %}</div>
   </form>
 {% endblock %}
