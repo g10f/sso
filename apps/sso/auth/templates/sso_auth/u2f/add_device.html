@@ -37,7 +37,8 @@
 {#    {% include 'include/_field.html' with field=form.u2f_request %}#}
     <div class="form-group">
       <div class="g10f-form-submit">
-        <button type="submit" class="btn btn-primary">{% translate 'Submit' %}</button>
+        <div class="btn btn-primary start-registration">{% translate 'Start Registration' %}</div>
+        <button type="submit" class="btn btn-primary hidden">{% translate 'Submit' %}</button>
         <a class="btn btn-secondary" href="{{ cancel_url }}">{% translate 'Cancel' %}</a>
       </div>
     </div>
