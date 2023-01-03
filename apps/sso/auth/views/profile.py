@@ -1,4 +1,3 @@
-import json
 import logging
 from urllib.parse import urlencode
 
@@ -30,7 +29,8 @@ class RedirectViewMixin(LoginRequiredMixin):
         kwargs = super().get_context_data(**kwargs)
         redirect_uri = self.get_safe_redirect_uri()
         kwargs['redirect_uri'] = redirect_uri
-        kwargs['query_string'] = urlencode({REDIRECT_FIELD_NAME: redirect_uri})
+        if redirect_uri is not None:
+            kwargs['query_string'] = urlencode({REDIRECT_FIELD_NAME: redirect_uri})
         return kwargs
 
     def get_success_url(self):

@@ -18,7 +18,9 @@
     <div class="form-group">
       <label class="col-form-label">{% translate 'Type' %}</label>
       <div class="g10f-form-control">
-        <div class="form-control-plaintext">{{ object.get_child.default_name }}</div>
+        <div class="form-control-plaintext">{{ object.get_child.default_name }}
+        {% if not object.confirmed %}<span class="badge rounded-pill bg-danger">{% translate 'unconfirmed' %}</span>{% endif %}
+        </div>
       </div>
     </div>
 
@@ -28,6 +30,9 @@
     <div class="form-group">
       <div class="g10f-form-submit">
         <button type="submit" class="btn btn-primary">{% translate 'Save' %}</button>
+{#        {% if not object.confirmed %}#}
+{#        <button type="submit" class="btn btn-primary" name="confirm" >{% translate 'Confirm' %}</button>#}
+{#        {% endif %}#}
       </div>
     </div>
 

@@ -81,7 +81,6 @@ class U2FDevice(Device):
     # u2f_fido2_server = U2FFido2Server(u2f_app_id, PublicKeyCredentialRpEntity(id=settings.SSO_DOMAIN.lower().split(':')[0],
     #                                                                 name=f'{settings.SSO_SITE_NAME} Server'))
     fido2_server = Fido2Server(PublicKeyCredentialRpEntity(name=settings.SSO_SITE_NAME, id=settings.SSO_DOMAIN.lower().split(':')[0]))
-
     WEB_AUTHN_SALT = 'sso.auth.models.U2FDevice'
     device_id = 1
     Device.devices.add((__qualname__, device_id))
@@ -108,9 +107,9 @@ class U2FDevice(Device):
         options, state = cls.fido2_server.register_begin(
             user=user_entity,
             credentials=credentials,
-            extensions={"credProps": True},
-            user_verification=UserVerificationRequirement.DISCOURAGED,
-            authenticator_attachment=AuthenticatorAttachment.CROSS_PLATFORM)
+            extensions=settings.SSO_WEBAUTHN_EXTENSIONS,
+            user_verification=settings.SSO_WEBAUTHN_USER_VERIFICATION,
+            authenticator_attachment=settings.SSO_WEBAUTHN_AUTHENTICATOR_ATTACHMENT)
         u2f_request = {
             'req': dict(options),
             'state': signing.dumps(state, salt=U2FDevice.WEB_AUTHN_SALT)

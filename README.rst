@@ -77,32 +77,33 @@ Changelog
 
 Environment vars:
 
-===========================  =========================  =========================
-Name                         default                    description
-===========================  =========================  =========================
-SSO_STYLE                    css/main.min.css           stylesheet
-ALLOWED_HOSTS                ''
-DATABASE_NAME                sso
-DATABASE_USER                sso
-DATABASE_PASSWORD            sso
-DATABASE_CONN_MAX_AGE        60
-DATABASE_HOST                localhost
-CACHES_LOCATION              None
-CELERY_BROKER_USE_SSL        False
-CELERY_BROKER_URL            None
-DATA_UPLOAD_MAX_MEMORY_SIZE  2621440
-REGISTRATION_OPEN            False
-DEFAULT_FROM_EMAIL           webmaster@g10f.de
-STATIC_ROOT                  ../htdocs/static
-MEDIA_ROOT                   ../htdocs/media
-MEDIA_URL                    /media/
-STATIC_URL                   /static/
-SSO_THEME                    None
-ROOT_URLCONF                 sso.urls
-SSO_ADMIN_MFA_REQUIRED       False
-SSO_ADMIN_ONLY_MFA           False
-===========================  =========================  =========================
-
+======================================= =========================  =========================
+Name                                    default                    description
+======================================= =========================  =========================
+SSO_STYLE                               css/main.min.css           stylesheet
+ALLOWED_HOSTS                           ''
+DATABASE_NAME                           sso
+DATABASE_USER                           sso
+DATABASE_PASSWORD                       sso
+DATABASE_CONN_MAX_AGE                   60
+DATABASE_HOST                           localhost
+CACHES_LOCATION                         None
+CELERY_BROKER_USE_SSL                   False
+CELERY_BROKER_URL                       None
+DATA_UPLOAD_MAX_MEMORY_SIZE             2621440
+REGISTRATION_OPEN                       False
+DEFAULT_FROM_EMAIL                      webmaster@g10f.de
+STATIC_ROOT                             ../htdocs/static
+MEDIA_ROOT                              ../htdocs/media
+MEDIA_URL                               /media/
+STATIC_URL                              /static/
+SSO_THEME                               None
+ROOT_URLCONF                            sso.urls
+SSO_ADMIN_MFA_REQUIRED                  False
+SSO_ADMIN_ONLY_MFA                      False
+SSO_WEBAUTHN_USER_VERIFICATION          preferred
+SSO_WEBAUTHN_AUTHENTICATOR_ATTACHMENT   cross-platform
+======================================= =========================  =========================
 
 3.2.0
  - support for WebAuthn, allows usb-keys, fingerprint and windows hello
