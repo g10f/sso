@@ -411,13 +411,13 @@ class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
         user = form.save()
         del self.request.session[INTERNAL_RESET_SESSION_TOKEN]
         if settings.SSO_POST_RESET_LOGIN:
-            # check if user has 2 factor authentication enabled
+            # check if user has 2-factor authentication enabled
             device = is_otp_login(user, is_two_factor_required=False)
             if device:
                 redirect_url = reverse('accounts:password_reset_complete')
                 self.success_url = get_token_url(user.id, expiry=0, redirect_url=redirect_url,
                                                  backend=self.post_reset_login_backend,
-                                                 display=None, device_id=device.id)
+                                                 display=None, device_id=device.get_device_id())
             else:
                 auth_login(self.request, user, self.post_reset_login_backend)
         return super(auth_views.PasswordResetConfirmView, self).form_valid(form)
