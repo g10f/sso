@@ -18,7 +18,7 @@ from fido2.features import webauthn_json_mapping
 from fido2.server import Fido2Server  # , U2FFido2Server
 from fido2.utils import websafe_decode, websafe_encode
 from fido2.webauthn import PublicKeyCredentialRpEntity, UserVerificationRequirement, AttestedCredentialData, \
-    PublicKeyCredentialUserEntity, AuthenticatorAttachment
+    PublicKeyCredentialUserEntity
 from sso.auth.forms import AuthenticationTokenForm, U2FForm
 from sso.auth.utils import random_hex, hex_validator, get_device_class_by_app_label
 from sso.models import AbstractBaseModel
@@ -104,18 +104,23 @@ class U2FDevice(Device):
         user = request.user
         credentials = U2FDevice.credentials(user)
         user_entity = PublicKeyCredentialUserEntity(id=user.uuid.bytes, name=user.username, display_name=user.get_full_name())
-
+        extensions = None
+        user_verification = None
+        authenticator_attachment = None
         if settings.SSO_WEBAUTHN_EXTENSIONS:
             extensions = {"credProps": settings.SSO_WEBAUTHN_CREDPROPS}
-        else:
-            extensions = None
+        if settings.SSO_WEBAUTHN_USER_VERIFICATION:
+            user_verification = settings.SSO_WEBAUTHN_USER_VERIFICATION
+        if settings.SSO_WEBAUTHN_AUTHENTICATOR_ATTACHMENT:
+            authenticator_attachment = settings.SSO_WEBAUTHN_AUTHENTICATOR_ATTACHMENT
 
         options, state = cls.fido2_server.register_begin(
             user=user_entity,
             credentials=credentials,
             extensions=extensions,
-            user_verification=settings.SSO_WEBAUTHN_USER_VERIFICATION,
-            authenticator_attachment=settings.SSO_WEBAUTHN_AUTHENTICATOR_ATTACHMENT)
+            user_verification=user_verification,
+            authenticator_attachment=authenticator_attachment
+        )
         u2f_request = {
             'req': dict(options),
             'state': signing.dumps(state, salt=U2FDevice.WEB_AUTHN_SALT)
