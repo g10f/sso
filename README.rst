@@ -103,6 +103,8 @@ SSO_ADMIN_MFA_REQUIRED                  False
 SSO_ADMIN_ONLY_MFA                      False
 SSO_WEBAUTHN_USER_VERIFICATION          preferred
 SSO_WEBAUTHN_AUTHENTICATOR_ATTACHMENT   cross-platform
+SSO_WEBAUTHN_EXTENSIONS                 True
+SSO_WEBAUTHN_CREDPROPS                  True
 ======================================= =========================  =========================
 
 3.2.0

@@ -83,7 +83,8 @@ SSO_ADMIN_ONLY_MFA = os.getenv("SSO_ADMIN_ONLY_MFA", 'False').lower() in ('true'
 SSO_ADMIN_MFA_REQUIRED = os.getenv("SSO_ADMIN_MFA_REQUIRED", 'False').lower() in ('true', '1', 't')
 SSO_WEBAUTHN_USER_VERIFICATION = os.getenv('SSO_WEBAUTHN_USER_VERIFICATION', 'preferred')
 SSO_WEBAUTHN_AUTHENTICATOR_ATTACHMENT = os.getenv('SSO_WEBAUTHN_AUTHENTICATOR_ATTACHMENT', 'cross-platform')
-SSO_WEBAUTHN_EXTENSIONS = {"credProps": True}
+SSO_WEBAUTHN_EXTENSIONS = os.getenv("SSO_WEBAUTHN_EXTENSIONS", 'True').lower() in ('true', '1', 't')
+SSO_WEBAUTHN_CREDPROPS = os.getenv("SSO_WEBAUTHN_CREDPROPS", 'True').lower() in ('true', '1', 't')
 SSO_RECAPTCHA_EXPIRATION_TIME = 120
 
 # Celery settings see https://www.cloudamqp.com/docs/celery.html
