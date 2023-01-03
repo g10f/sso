@@ -18,6 +18,6 @@
     <div class="alert alert-info text-center u2f-login-text hidden" role="alert">{{ device_cls.login_text }}</div>
     <div class="alert alert-danger browser-not-supported text-center hidden">{% translate 'Your current browser is not yet supported.' %}</div>
     <div id="u2f-status"></div>
-    <div class="btn btn-lg btn-primary hidden start-authentication">{% translate 'Use Security Key' %}</div>
+    <button type="button" class="btn btn-lg btn-primary hidden start-authentication">{% translate 'Use Security Key' %}</button>
   </form>
 {% endblock %}

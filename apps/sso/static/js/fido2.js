@@ -23,6 +23,14 @@ import {
         }
 
         if ($('#u2f_register_form').length) {
+            $(document).on("keypress", 'form', function (e) {
+                var code = e.keyCode || e.which;
+                if (code == 13) {
+                    e.preventDefault();
+                    start_registration();
+                    return false;
+                }
+            });
             $(".start-registration").click(function () {
                 start_registration();
             });
