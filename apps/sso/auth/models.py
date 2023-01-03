@@ -83,7 +83,6 @@ class U2FDevice(Device):
                                                                         name=f'{settings.SSO_SITE_NAME}'))
     else:
         fido2_server = Fido2Server(PublicKeyCredentialRpEntity(name=settings.SSO_SITE_NAME, id=settings.SSO_DOMAIN.lower().split(':')[0]))
-    WEB_AUTHN_SALT = 'sso.auth.models.U2FDevice'
     device_id = 1
     Device.devices.add((__qualname__, device_id))
 
@@ -109,6 +108,9 @@ class U2FDevice(Device):
         extensions = None
         user_verification = None
         authenticator_attachment = None
+        if settings.SSO_WEBAUTHN_VERSION == "U2F_V2":
+            # default for U2F_V2
+            extensions = {}
         if settings.SSO_WEBAUTHN_EXTENSIONS:
             extensions = {"credProps": settings.SSO_WEBAUTHN_CREDPROPS}
         if settings.SSO_WEBAUTHN_USER_VERIFICATION:
@@ -125,13 +127,13 @@ class U2FDevice(Device):
         )
         u2f_request = {
             'req': dict(options),
-            'state': signing.dumps(state, salt=U2FDevice.WEB_AUTHN_SALT)
+            'state': signing.dumps(state, salt=user.uuid.hex)
         }
         return json.dumps(u2f_request)
 
     @classmethod
     def register_complete(cls, name, response_data, state_data, user):
-        state = signing.loads(state_data, salt=U2FDevice.WEB_AUTHN_SALT)
+        state = signing.loads(state_data, salt=user.uuid.hex)
         logger.debug(f"Response: {response_data}")
         response = json.loads(response_data)
         auth_data = cls.fido2_server.register_complete(state, response=response)
@@ -142,13 +144,13 @@ class U2FDevice(Device):
         credential_id = websafe_encode(auth_data.credential_data.credential_id)
 
         device = U2FDevice.objects.create(name=name, user=user, public_key=public_key, credential_id=credential_id,
-                                          aaguid=aaguid, confirmed=True, version="fido2")
+                                          aaguid=aaguid, confirmed=True, version=settings.SSO_WEBAUTHN_VERSION)
         return device
 
     @classmethod
     def authenticate_complete(cls, response_data, state_data, user):
         response = json.loads(response_data)
-        state = signing.loads(state_data, salt=U2FDevice.WEB_AUTHN_SALT)
+        state = signing.loads(state_data, salt=user.uuid.hex)
         credentials = U2FDevice.credentials(user)
         cred = cls.fido2_server.authenticate_complete(state=state, credentials=credentials, response=response)
         credential_id = websafe_encode(cred.credential_id)
@@ -174,7 +176,7 @@ class U2FDevice(Device):
                                                          user_verification=UserVerificationRequirement.DISCOURAGED)
         sign_request = {
             'req': dict(req),
-            'state': signing.dumps(state, salt=cls.WEB_AUTHN_SALT)
+            'state': signing.dumps(state, salt=user.uuid.hex)
         }
         return json.dumps(sign_request)
 
@@ -192,9 +194,8 @@ class U2FDevice(Device):
 
     @classmethod
     def login_text(cls):
-        return _(
-            'Please touch the flashing U2F device now. You may be prompted to allow the site permission '
-            'to access your security keys. After granting permission, the device will start to blink.')
+        return _('Please press the button below. You may be prompted to allow the site permission '
+                 'to access your security key.')
 
     @classmethod
     def default_name(cls):
