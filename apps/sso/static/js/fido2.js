@@ -1,7 +1,13 @@
 if (typeof jQuery === 'undefined') {
     throw new Error('u2f\'s JavaScript requires jQuery.');
 }
-import {create, get, parseRequestOptionsFromJSON, parseCreationOptionsFromJSON, supported} from './vendor/webauthn-json.browser-ponyfill.js';
+import {
+    create,
+    get,
+    parseCreationOptionsFromJSON,
+    parseRequestOptionsFromJSON,
+    supported
+} from './vendor/webauthn-json.browser-ponyfill.js';
 
 (function ($) {
     'use strict';
@@ -17,31 +23,45 @@ import {create, get, parseRequestOptionsFromJSON, parseCreationOptionsFromJSON, 
         }
 
         if ($('#u2f_register_form').length) {
-            const form = $('#u2f_register_form');
-            const data = JSON.parse($("input[name='u2f_request']", form).val());
-            const state = data.state
-            const options = parseCreationOptionsFromJSON(data.req);
-            create(options).then(function (result) {
-                $("input[name='u2f_response']", form).val(JSON.stringify(result));
-                $("input[name='state']", form).val(state);
-                displaySucess();
-            }).catch((err) => {
-                displayError(err)
+            $(".start-registration").click(function () {
+                start_registration();
             });
         } else if ($('#u2f_sign_form').length) {
-            const form = $('#u2f_sign_form');
-            const data = JSON.parse($("input[name='challenges']", form).val());
-            const state = data.state
-            const options = parseRequestOptionsFromJSON(data.req);
-            get(options).then(function (result) {
-                $("input[name='response']", form).val(JSON.stringify(result));
-                $("input[name='state']", form).val(state);
-                form.submit();
-            }).catch((err) => {
-                displayError(err)
+            $(".start-authentication").removeClass('hidden');
+            $(".start-authentication").click(function () {
+                start_authentication();
             });
         }
     });
+
+    function start_authentication() {
+        let form = $('#u2f_sign_form');
+        let data = JSON.parse($("input[name='challenges']", form).val());
+        let state = data.state
+        let options = parseRequestOptionsFromJSON(data.req);
+        get(options).then(function (result) {
+            $("input[name='response']", form).val(JSON.stringify(result));
+            $("input[name='state']", form).val(state);
+            form.submit();
+        }).catch((err) => {
+            displayError(err)
+        });
+    }
+
+    function start_registration() {
+        let form = $('#u2f_register_form');
+        let data = JSON.parse($("input[name='u2f_request']", form).val());
+        let state = data.state;
+        let options = parseCreationOptionsFromJSON(data.req);
+        console.log(options)
+        create(options).then(function (result) {
+            $("input[name='u2f_response']", form).val(JSON.stringify(result));
+            $("input[name='state']", form).val(state);
+            form.submit();
+        }).catch((err) => {
+            displayError(err);
+        });
+    }
 
     function displayError(text) {
         const status = $("#u2f-status");
@@ -60,4 +80,6 @@ import {create, get, parseRequestOptionsFromJSON, parseCreationOptionsFromJSON, 
         status.addClass('alert-success');
         $(".u2f-login-text").addClass('hidden');
     }
+
+
 }(jQuery));
