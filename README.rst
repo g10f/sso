@@ -101,11 +101,16 @@ SSO_THEME                               None
 ROOT_URLCONF                            sso.urls
 SSO_ADMIN_MFA_REQUIRED                  False
 SSO_ADMIN_ONLY_MFA                      False
-SSO_WEBAUTHN_USER_VERIFICATION          preferred
-SSO_WEBAUTHN_AUTHENTICATOR_ATTACHMENT   cross-platform
-SSO_WEBAUTHN_EXTENSIONS                 True
-SSO_WEBAUTHN_CREDPROPS                  True
+SSO_WEBAUTHN_USER_VERIFICATION          ''
+SSO_WEBAUTHN_AUTHENTICATOR_ATTACHMENT   ''
+SSO_WEBAUTHN_EXTENSIONS                 False
+SSO_WEBAUTHN_CREDPROPS                  False
 ======================================= =========================  =========================
+
+3.3.23
+ - fido2 version 1.1
+ - switched to Fido2 only
+ - fixed iOS compatibility
 
 3.2.0
  - support for WebAuthn, allows usb-keys, fingerprint and windows hello

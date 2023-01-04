@@ -24,7 +24,7 @@ import {
 
         if ($('#u2f_register_form').length) {
             $(document).on("keypress", 'form', function (e) {
-                var code = e.keyCode || e.which;
+                const code = e.keyCode || e.which;
                 if (code == 13) {
                     e.preventDefault();
                     start_registration();
@@ -36,6 +36,13 @@ import {
             });
         } else if ($('#u2f_sign_form').length) {
             $(".start-authentication").removeClass('hidden');
+            $(document).on("keypress", function (e) {
+                if (e.which == 13) {
+                    e.preventDefault();
+                    start_authentication();
+                    return false;
+                }
+            });
             $(".start-authentication").click(function () {
                 start_authentication();
             });
@@ -43,9 +50,9 @@ import {
     });
 
     function start_authentication() {
-        let form = $('#u2f_sign_form');
-        let data = JSON.parse($("input[name='challenges']", form).val());
-        let state = data.state
+        const form = $('#u2f_sign_form');
+        const data = JSON.parse($("input[name='challenges']", form).val());
+        const state = data.state
         let options = parseRequestOptionsFromJSON(data.req);
         get(options).then(function (result) {
             $("input[name='response']", form).val(JSON.stringify(result));
@@ -57,9 +64,9 @@ import {
     }
 
     function start_registration() {
-        let form = $('#u2f_register_form');
-        let data = JSON.parse($("input[name='u2f_request']", form).val());
-        let state = data.state;
+        const form = $('#u2f_register_form');
+        const data = JSON.parse($("input[name='u2f_request']", form).val());
+        const state = data.state;
         let options = parseCreationOptionsFromJSON(data.req);
         console.log(options)
         create(options).then(function (result) {
