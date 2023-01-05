@@ -17,7 +17,7 @@ from fido2.cose import CoseKey
 from fido2.features import webauthn_json_mapping
 from fido2.server import Fido2Server, U2FFido2Server
 from fido2.utils import websafe_decode, websafe_encode
-from fido2.webauthn import PublicKeyCredentialRpEntity, UserVerificationRequirement, AttestedCredentialData, \
+from fido2.webauthn import PublicKeyCredentialRpEntity, AttestedCredentialData, \
     PublicKeyCredentialUserEntity
 from sso.auth.forms import AuthenticationTokenForm, U2FForm
 from sso.auth.utils import random_hex, hex_validator, get_device_class_by_app_label
@@ -80,7 +80,7 @@ class U2FDevice(Device):
     if settings.SSO_WEBAUTHN_VERSION == "U2F_V2":
         u2f_app_id = f"{'https' if settings.SSO_USE_HTTPS else 'http'}://{settings.SSO_DOMAIN.lower().split(':')[0]}"
         fido2_server = U2FFido2Server(u2f_app_id, PublicKeyCredentialRpEntity(id=settings.SSO_DOMAIN.lower().split(':')[0],
-                                                                        name=f'{settings.SSO_SITE_NAME}'))
+                                                                              name=f'{settings.SSO_SITE_NAME}'))
     else:
         fido2_server = Fido2Server(PublicKeyCredentialRpEntity(name=settings.SSO_SITE_NAME, id=settings.SSO_DOMAIN.lower().split(':')[0]))
     device_id = 1
@@ -156,6 +156,7 @@ class U2FDevice(Device):
         credential_id = websafe_encode(cred.credential_id)
         device = U2FDevice.objects.get(user=user, credential_id=credential_id)
         device.last_used = timezone.now()
+        device.counter += 1
         device.save(update_fields=["last_used", "counter"])
         return device
 
@@ -172,8 +173,10 @@ class U2FDevice(Device):
     @classmethod
     def challenges(cls, user):
         credentials = U2FDevice.credentials(user)
-        req, state = cls.fido2_server.authenticate_begin(credentials=credentials,
-                                                         user_verification=UserVerificationRequirement.DISCOURAGED)
+        user_verification = None
+        if settings.SSO_WEBAUTHN_USER_VERIFICATION:
+            user_verification = settings.SSO_WEBAUTHN_USER_VERIFICATION
+        req, state = cls.fido2_server.authenticate_begin(credentials=credentials, user_verification=user_verification)
         sign_request = {
             'req': dict(req),
             'state': signing.dumps(state, salt=user.uuid.hex)

@@ -16,7 +16,7 @@ with ssl
     SSO_DOMAIN = "localhost:8433"
 
 
-    ``manage.py runserver_plus localhost:8433 --cert-file ../temp/cert``
+    ``manage.py runserver_plus localhost:8443 --cert-file ../temp/cert``
 
 Start a docker container
 ------------------------
