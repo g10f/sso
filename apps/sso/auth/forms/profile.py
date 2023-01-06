@@ -95,11 +95,20 @@ class TOTPDeviceForm(CredentialSetupForm):
         self.device = None
 
     @property
-    def qr_code(self):
+    def b32key(self):
         key = self.data.get('key', self.initial['key'])
         rawkey = unhexlify(key.encode('ascii'))
         b32key = b32encode(rawkey).decode('utf-8')
-        return get_qrcode_data_url(b32key, force_str(self.user), self.issuer)
+        return b32key
+
+    @property
+    def b32key_formatted(self):
+        n = 4
+        return ' '.join([self.b32key[i:i + n] for i in range(0, len(self.b32key), n)])
+
+    @property
+    def qr_code(self):
+        return get_qrcode_data_url(self.b32key, force_str(self.user), self.issuer)
 
     def clean(self):
         cd = super().clean()

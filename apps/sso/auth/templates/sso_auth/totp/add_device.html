@@ -24,7 +24,14 @@
           <li>Twilio Authy</li>
         </ul>
       </li>
-      <li>{% blocktranslate trimmed with qr_code=form.qr_code %}Open the Authenticator App and scan the barcode. <br><img src="{{ qr_code }}" alt="QR Code"/>{% endblocktranslate %}</li>
+      <li>{% blocktranslate trimmed with qr_code=form.qr_code %}Open the Authenticator App and scan the QR code. <br>
+        <img src="{{ qr_code }}" alt="QR Code"/>{% endblocktranslate %}</li>
+      <li>
+        {% translate 'Or enter the following code manually in the Authenticator App (whitespace will be ignored):' %}
+        <div class="g10f-form-control">
+          <p class="form-control-plaintext">{{ form.b32key_formatted }}</p>
+        </div>
+      </li>
       <li>{% translate 'Enter the one-time code provided by the Authenticator App and click Save to finish the setup.' %}</li>
     </ol>
 
