@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-03 14:33+0100\n"
+"POT-Creation-Date: 2023-01-06 11:27+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1633,8 +1633,13 @@ msgstr ""
 
 #, python-format
 msgid ""
-"Open the Authenticator App and scan the barcode. <br><img "
+"Open the Authenticator App and scan the QR code. <br> <img "
 "src=\"%(qr_code)s\" alt=\"QR Code\"/>"
+msgstr ""
+
+msgid ""
+"Or enter the following code manually in the Authenticator App (whitespace "
+"will be ignored):"
 msgstr ""
 
 msgid ""

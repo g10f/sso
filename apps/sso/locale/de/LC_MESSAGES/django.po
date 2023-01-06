@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-03 14:33+0100\n"
+"POT-Creation-Date: 2023-01-06 11:27+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1611,7 +1611,7 @@ msgid "One-time code does not match."
 msgstr "Einmaltoken passt nicht"
 
 msgid "The human-readable name of this device."
-msgstr "Der Anzeigename des Geräts."
+msgstr "Der Name des Geräts."
 
 msgid "Request"
 msgstr ""
@@ -1643,7 +1643,6 @@ msgstr ""
 
 msgid "is otp enabled"
 msgstr ""
-
 
 msgid ""
 "Please press the button below. You may be prompted to allow the site "
@@ -1745,13 +1744,19 @@ msgstr "Authenticator App Setup"
 msgid "Install an Authenticator App on your mobile, e.g."
 msgstr "Installiere eine Authenticator App auf deinem Mobilgerät, z.B."
 
-#, python-format
 msgid ""
-"Open the Authenticator App and scan the barcode. <br><img "
+"Open the Authenticator App and scan the QR code. <br> <img "
 "src=\"%(qr_code)s\" alt=\"QR Code\"/>"
 msgstr ""
-"Starte die Authenticator App und scanne den Barcode. <br><img "
+"Starte die Authenticator App und scanne den QR-Code. <br><img "
 "src=\"%(qr_code)s\" alt=\"QR Code\"/>"
+
+msgid ""
+"Or enter the following code manually in the Authenticator App (whitespace "
+"will be ignored):"
+msgstr ""
+"Oder gebe den folgenden Code manuell in der Authenticator App ein "
+"(Leerzeichen werden ignoriert):"
 
 msgid ""
 "Enter the one-time code provided by the Authenticator App and click Save to "
@@ -1772,10 +1777,8 @@ msgstr "Sicherheitsschlüssel Einrichten"
 msgid "Your current browser is not yet supported."
 msgstr "Dein Browser wird noch nicht unterstützt "
 
-
 msgid "Start Registration"
 msgstr "Starte die Registrierung"
-
 
 msgid "Use Security Key"
 msgstr "Sicherheitsschlüssel verwenden"
