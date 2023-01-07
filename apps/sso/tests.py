@@ -13,7 +13,7 @@ class SSOSeleniumTests(StaticLiveServerTestCase):
 
     @classmethod
     def setUpClass(cls):
-        os.environ['THROTTELING_DISABLED'] = 'True'
+        os.environ['THROTTLING_DISABLED'] = 'True'
         # capabilities = DesiredCapabilities.FIREFOX.copy()
         # capabilities['marionette'] = True
         # capabilities['binary'] = '/opt/mozilla/geckodriver'
@@ -25,7 +25,7 @@ class SSOSeleniumTests(StaticLiveServerTestCase):
 
     @classmethod
     def tearDownClass(cls):
-        del os.environ['THROTTELING_DISABLED']
+        del os.environ['THROTTLING_DISABLED']
         cls.selenium.quit()
         super().tearDownClass()
 
