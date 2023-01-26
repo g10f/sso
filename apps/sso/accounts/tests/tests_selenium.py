@@ -173,7 +173,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
     def test_change_password(self):
         username = 'GlobalAdmin'
         old_password = 'secret007'
-        new_password = 'gsf1zgh'
+        new_password = 'shRvubgx'
 
         self.login_test(username, old_password)
 

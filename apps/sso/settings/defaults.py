@@ -1,8 +1,8 @@
 import os
+import sys
 from pathlib import Path
 from uuid import UUID
 
-import sys
 from captcha.constants import TEST_PRIVATE_KEY, TEST_PUBLIC_KEY
 
 from django.urls import reverse_lazy
@@ -229,7 +229,6 @@ APPEND_SLASH = True
 INSTALLED_APPS = [
     'sso',
     'sso.forms',
-    'password',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -304,12 +303,11 @@ if not (RUNNING_DEVSERVER or RUNNING_TEST):
     CSRF_COOKIE_SECURE = True
 
 AUTH_PASSWORD_VALIDATORS = [{
-    'NAME': 'password.validation.MinimumLengthValidator',
-}, {
-    'NAME': 'password.validation.CommonPasswordValidator',
-}, {
-    'NAME': 'password.validation.DigitsValidator'
-}]
+    'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    'OPTIONS': {
+        'min_length': int(os.getenv('SSO_PASSWORD_MINIMUM_LENGTH', '8')), }}, {
+    'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'}
+]
 
 # overwrite this if integration with other associations is required
 SSO_DEFAULT_ASSOCIATION_UUID = UUID('bad2e6edff274f2f900ff3dbb26e38ce')
