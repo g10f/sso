@@ -5,7 +5,9 @@
   <link href="{% static sso_style %}" rel="stylesheet">
 {% endblock style %}
 
-{% block script %}{% endblock %}
+{% block script %}
+  <script src="{% static 'js/toogle_password.js' %}"></script>
+{% endblock script %}
 
 {% block title %}{% translate 'Login' %}{% endblock %}
 

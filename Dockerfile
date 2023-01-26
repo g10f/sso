@@ -51,5 +51,5 @@ ARG SECRET_KEY=dummy
 RUN ./manage.py collectstatic
 ENTRYPOINT ["./docker-entrypoint.sh"]
 # Start gunicorn
-CMD ["gunicorn", "sso.wsgi:application", "--bind 0.0.0.0:8000", "-w", "2"]
+CMD ["gunicorn", "sso.wsgi:application", "-b", "0.0.0.0:8000", "-w", "2"]
 EXPOSE 8000
