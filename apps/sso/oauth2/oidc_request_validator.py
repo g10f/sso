@@ -322,13 +322,15 @@ class OIDCRequestValidator(RequestValidator):
 
     def validate_user_match(self, id_token_hint, scopes, claims, request):
         if id_token_hint:
-            try:
-                # ID Token can be expired
-                id_token = loads_jwt(id_token_hint, options={'verify_exp': False, 'verify_aud': False})
-                if id_token['sub'] == request.user.uuid.hex:
-                    return True
-            except InvalidTokenError as e:
-                logger.warning(e)
+            # https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
+            if request.user and request.user.is_authenticated:
+                try:
+                    # ID Token can be expired
+                    id_token = loads_jwt(id_token_hint, options={'verify_exp': False, 'verify_aud': False})
+                    if id_token['sub'] == request.user.uuid.hex:
+                        return True
+                except InvalidTokenError as e:
+                    logger.warning(e)
             return False
         return True
 
