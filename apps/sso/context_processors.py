@@ -15,6 +15,7 @@ def settings(request):
         'sso_app_uuid': site_settings.SSO_APP_UUID,
         'registration_open': site_settings.REGISTRATION.get('OPEN', True),
         'data_protection_uri': site_settings.SSO_DATA_PROTECTION_URI,
+        'sso_region_management': site_settings.SSO_REGION_MANAGEMENT,
         'sidebar': sidebar(request),
         'sso_style': site_settings.SSO_STYLE,
         'version': __version__

@@ -410,6 +410,9 @@ class OrganisationList(ListView):
     model = Organisation
     list_display = ['name', _('picture'), 'email', 'coordinates_type', 'organisation_country', 'founded', 'is_active',
                     'is_live']
+    if settings.SSO_REGION_MANAGEMENT:
+        list_display.insert(5, 'admin_region')
+
     filename = None
     export = False
 
@@ -437,7 +440,7 @@ class OrganisationList(ListView):
         Get the list of items for this view. This must be an iterable, and may
         be a queryset (in which qs-specific behavior will be enabled).
         """
-        qs = super().get_queryset().prefetch_related('email', 'organisationpicture_set', 'organisation_country__country')
+        qs = super().get_queryset().prefetch_related('email', 'organisationpicture_set', 'organisation_country__country', 'admin_region')
         return self.apply_filters(qs)
 
     def get_context_data(self, **kwargs):
