@@ -87,6 +87,8 @@ SSO_WEBAUTHN_AUTHENTICATOR_ATTACHMENT = os.getenv('SSO_WEBAUTHN_AUTHENTICATOR_AT
 SSO_WEBAUTHN_EXTENSIONS = os.getenv("SSO_WEBAUTHN_EXTENSIONS", 'False').lower() in ('true', '1', 't')
 SSO_WEBAUTHN_CREDPROPS = os.getenv("SSO_WEBAUTHN_CREDPROPS", 'False').lower() in ('true', '1', 't')
 SSO_RECAPTCHA_EXPIRATION_TIME = 120
+SSO_THROTTLING_DURATION = int(os.getenv('SSO_THROTTLING_DURATION', '30'))
+SSO_THROTTLING_MAX_CALLS = int(os.getenv('SSO_THROTTLING_MAX_CALLS', '5'))
 
 # Celery settings see https://www.cloudamqp.com/docs/celery.html
 CELERY_BROKER_USE_SSL = os.getenv("CELERY_BROKER_USE_SSL", 'True').lower() in ('true', '1', 't')
