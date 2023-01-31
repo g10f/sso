@@ -105,6 +105,8 @@ SSO_WEBAUTHN_USER_VERIFICATION          ''
 SSO_WEBAUTHN_AUTHENTICATOR_ATTACHMENT   ''
 SSO_WEBAUTHN_EXTENSIONS                 False
 SSO_WEBAUTHN_CREDPROPS                  False
+SSO_THROTTLING_DURATION                 30
+SSO_THROTTLING_MAX_CALLS                5
 ======================================= =========================  =========================
 
 3.3.23
