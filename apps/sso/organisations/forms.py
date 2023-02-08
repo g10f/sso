@@ -95,8 +95,7 @@ class OrganisationBaseForm(BaseForm):
 
         fields = (
             'name_native', 'homepage', 'source_urls', 'google_plus_page', 'facebook_page', 'twitter_page', 'founded',
-            'coordinates_type',
-            'is_private', 'is_live', 'location', 'neighbour_distance', 'transregional_distance', 'timezone')
+            'coordinates_type', 'is_private', 'is_live', 'location', 'neighbour_distance', 'transregional_distance', 'timezone')
         years_to_display = range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1)
         widgets = {
             'homepage': bootstrap.URLInput(attrs={'size': 50}),
@@ -113,6 +112,7 @@ class OrganisationBaseForm(BaseForm):
             'is_private': bootstrap.CheckboxInput(),
             'is_active': bootstrap.CheckboxInput(),
             'is_live': bootstrap.CheckboxInput(),
+            'is_selectable': bootstrap.CheckboxInput(),
             'timezone': bootstrap.Select2(),
             'location': bootstrap.OSMWidget(),
             'neighbour_distance': bootstrap.TextInput(attrs={'type': 'number', 'step': '0.001'}),
@@ -228,7 +228,7 @@ class OrganisationAssociationAdminForm(OrganisationEmailAdminForm):
     class Meta(OrganisationBaseForm.Meta):
         fields = OrganisationBaseForm.Meta.fields + (
             'association', 'admin_region', 'organisation_country', 'name', 'center_type',
-            'is_active')
+            'is_active', 'is_selectable')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -251,7 +251,7 @@ class OrganisationCountryAdminForm(OrganisationEmailAdminForm):
 
     class Meta(OrganisationBaseForm.Meta):
         fields = OrganisationBaseForm.Meta.fields + (
-            'organisation_country', 'admin_region', 'name', 'center_type', 'is_active')  # , 'can_publish')
+            'organisation_country', 'admin_region', 'name', 'center_type', 'is_active', 'is_selectable')  # , 'can_publish')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -279,7 +279,7 @@ class OrganisationRegionAdminForm(OrganisationEmailAdminForm):
 
     class Meta(OrganisationBaseForm.Meta):
         fields = OrganisationBaseForm.Meta.fields + (
-            'organisation_country', 'admin_region', 'name', 'center_type', 'is_active')  # , 'can_publish')
+            'organisation_country', 'admin_region', 'name', 'center_type', 'is_active', 'is_selectable')  # , 'can_publish')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
