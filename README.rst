@@ -107,6 +107,11 @@ SSO_WEBAUTHN_EXTENSIONS                 False
 SSO_WEBAUTHN_CREDPROPS                  False
 SSO_THROTTLING_DURATION                 30
 SSO_THROTTLING_MAX_CALLS                5
+SSO_ADMIN_MAX_AGE                       1800                        30 min
+SSO_ORGANISATION_EMAIL_DOMAIN           ''
+SSO_ASYNC_EMAILS                        False
+ANALYTICS_CODE                          ''
+SESSION_COOKIE_AGE                      1209600                     2 weeks
 ======================================= =========================  =========================
 
 3.3.23

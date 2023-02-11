@@ -51,15 +51,15 @@ SSO_SHOW_ADDRESS_AND_PHONE_FORM = True  # Address and Phone number in profile fo
 SSO_VALIDATION_PERIOD_IS_ACTIVE = False  # accounts must not be prolonged
 SSO_VALIDATION_PERIOD_IS_ACTIVE_FOR_ALL = False  # all accounts must be prolonged, not only account from marked centers
 SSO_VALIDATION_PERIOD_DAYS = 365  # accounts must be prolonged after 1 year
-SSO_ADMIN_MAX_AGE = 60 * 30  # 30 min max age for admin pages
-SSO_ORGANISATION_EMAIL_DOMAIN = ''
+SSO_ADMIN_MAX_AGE = int(os.getenv("SSO_ADMIN_MAX_AGE", '1800'))   # 30 min max age for admin pages
+SSO_ORGANISATION_EMAIL_DOMAIN = os.getenv("SSO_ORGANISATION_EMAIL_DOMAIN", '')
 SSO_ORGANISATION_EMAIL_MANAGEMENT = False
 SSO_ORGANISATION_REQUIRED = False
 SSO_REGION_MANAGEMENT = False
 SSO_COUNTRY_MANAGEMENT = False
 SSO_GOOGLE_GEO_API_KEY = os.getenv('SSO_GOOGLE_GEO_API_KEY')
 SSO_EMAIL_LOGO = ""
-SSO_ASYNC_EMAILS = False  # send emails async via celery task
+SSO_ASYNC_EMAILS = os.getenv("SSO_ASYNC_EMAILS", 'False').lower() in ('true', '1', 't')  # send emails async via celery task
 SSO_NOREPLY_EMAIL = 'gunnar.scherf@gmail.com'
 SSO_POST_RESET_LOGIN = True
 # configured default forms and functions
@@ -108,6 +108,8 @@ CELERY_RESULT_SERIALIZER = 'json'
 # Publishing Broker
 BROKER_USE_SSL = CELERY_BROKER_USE_SSL
 BROKER_URL = CELERY_BROKER_URL
+
+ANALYTICS = {'ANALYTICS_CODE': os.getenv('ANALYTICS_CODE', '')}
 
 EMAIL_SUBJECT_PREFIX = os.getenv('EMAIL_SUBJECT_PREFIX', '[SSO] ')
 SERVER_EMAIL = os.getenv('SERVER_EMAIL', 'root@localhost')
@@ -294,7 +296,7 @@ SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
 
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
-SESSION_COOKIE_AGE = 60 * 60 * 24 * 7 * 2  # 2 weeks
+SESSION_COOKIE_AGE = int(os.getenv("SESSION_COOKIE_AGE", f'{ 60 * 60 * 24 * 7 * 2 }'))  # 2 weeks
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = False
 SESSION_ENGINE = 'sso.sessions.backends.jwt_cookies'
