@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-06 11:27+0100\n"
+"POT-Creation-Date: 2023-02-16 21:27+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1744,6 +1744,7 @@ msgstr "Authenticator App Setup"
 msgid "Install an Authenticator App on your mobile, e.g."
 msgstr "Installiere eine Authenticator App auf deinem Mobilgerät, z.B."
 
+#, python-format
 msgid ""
 "Open the Authenticator App and scan the QR code. <br> <img "
 "src=\"%(qr_code)s\" alt=\"QR Code\"/>"
@@ -3040,6 +3041,14 @@ msgid "Group & Retreat"
 msgstr "Gruppe & Retreat"
 
 msgctxt "Organisation Type"
+msgid "Region"
+msgstr "Region"
+
+msgctxt "Organisation Type"
+msgid "Country"
+msgstr "Land"
+
+msgctxt "Organisation Type"
 msgid "Kreisverband"
 msgstr ""
 
@@ -3125,6 +3134,10 @@ msgstr "Neues Geheimniss"
 msgid "Send email"
 msgstr "E-Mail Senden"
 
+#| msgid "Google+ page"
+msgid "Toogle view"
+msgstr "Ansicht umschalten"
+
 msgid "search text"
 msgstr "Suchtext"
 
@@ -3193,9 +3206,3 @@ msgstr ""
 #, python-brace-format
 msgid "The {name} \"{obj}\" was created successfully."
 msgstr "{name} \"{obj}\" wurde erfolgreich angelegt."
-
-#~ msgid "Please continue."
-#~ msgstr "Bitte fortsetzen."
-
-#~ msgid "Please activate 2-step verification and continue."
-#~ msgstr "Bitte 2-Faktor Authentifizierung aktivieren und fortsetzen."
