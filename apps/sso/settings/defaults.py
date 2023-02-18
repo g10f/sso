@@ -51,7 +51,7 @@ SSO_SHOW_ADDRESS_AND_PHONE_FORM = True  # Address and Phone number in profile fo
 SSO_VALIDATION_PERIOD_IS_ACTIVE = False  # accounts must not be prolonged
 SSO_VALIDATION_PERIOD_IS_ACTIVE_FOR_ALL = False  # all accounts must be prolonged, not only account from marked centers
 SSO_VALIDATION_PERIOD_DAYS = 365  # accounts must be prolonged after 1 year
-SSO_ADMIN_MAX_AGE = int(os.getenv("SSO_ADMIN_MAX_AGE", '1800'))   # 30 min max age for admin pages
+SSO_ADMIN_MAX_AGE = int(os.getenv("SSO_ADMIN_MAX_AGE", '1800'))  # 30 min max age for admin pages
 SSO_ORGANISATION_EMAIL_DOMAIN = os.getenv("SSO_ORGANISATION_EMAIL_DOMAIN", '')
 SSO_ORGANISATION_EMAIL_MANAGEMENT = False
 SSO_ORGANISATION_REQUIRED = False
@@ -104,10 +104,6 @@ CELERY_WORKER_SEND_TASK_EVENTS = False  # Will not create celeryev.* queues
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
-
-# Publishing Broker
-BROKER_USE_SSL = CELERY_BROKER_USE_SSL
-BROKER_URL = CELERY_BROKER_URL
 
 ANALYTICS = {'ANALYTICS_CODE': os.getenv('ANALYTICS_CODE', '')}
 
@@ -296,7 +292,7 @@ SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
 
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
-SESSION_COOKIE_AGE = int(os.getenv("SESSION_COOKIE_AGE", f'{ 60 * 60 * 24 * 7 * 2 }'))  # 2 weeks
+SESSION_COOKIE_AGE = int(os.getenv("SESSION_COOKIE_AGE", f'{60 * 60 * 24 * 7 * 2}'))  # 2 weeks
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = False
 SESSION_ENGINE = 'sso.sessions.backends.jwt_cookies'
