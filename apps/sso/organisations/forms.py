@@ -170,7 +170,7 @@ class OrganisationEmailAdminForm(OrganisationBaseForm):
     permission = PERM_EVERYBODY
     email_value = EmailFieldLower(required=True, label=_("Email address"))
 
-fi    error_messages = {
+    error_messages = {
         'email_already_exists': _('The email address already exists'),
     }
 
