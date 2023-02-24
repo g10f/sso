@@ -170,6 +170,10 @@ class OrganisationEmailAdminForm(OrganisationBaseForm):
     permission = PERM_EVERYBODY
     email_value = EmailFieldLower(required=True, label=_("Email address"))
 
+fi    error_messages = {
+        'email_already_exists': _('The email address already exists'),
+    }
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if self.instance.email:
@@ -187,10 +191,13 @@ class OrganisationEmailAdminForm(OrganisationBaseForm):
             msg = _('The email address of the center must be ending with %(domain)s') % {
                 'domain': SSO_ORGANISATION_EMAIL_DOMAIN}
             raise ValidationError(msg)
-
-        if Email.objects.filter(email=email_value).exclude(organisation=self.instance).exists():
-            msg = _('The email address already exists')
-            raise ValidationError(msg)
+        # check if email is already used
+        if self.instance.pk is not None:
+            if Email.objects.filter(email=email_value).exclude(organisation=self.instance).exists():
+                raise ValidationError(self.error_messages['email_already_exists'])
+        else:
+            if Email.objects.filter(email=email_value).exists():
+                raise ValidationError(self.error_messages['email_already_exists'])
 
         return email_value
 
