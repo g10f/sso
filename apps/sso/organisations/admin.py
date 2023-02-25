@@ -131,7 +131,7 @@ class PhoneNumber_Inline(admin.TabularInline):
 class OrganisationAdmin(VersionAdmin, OSMGeoAdmin):
     openlayers_url = '//cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js'
     list_select_related = ('organisation_country__country', 'email', 'association')
-    actions = OSMGeoAdmin.actions + ['mark_uses_user_activation']
+    actions = OSMGeoAdmin.actions + ('mark_uses_user_activation', )
     save_on_top = True
     search_fields = ('name', 'uuid')
     inlines = [PhoneNumber_Inline, Address_Inline]
