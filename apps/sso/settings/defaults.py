@@ -155,8 +155,11 @@ ABSOLUTE_URL_OVERRIDES = {
     'accounts.user': lambda u: "/api/v2/users/%s/" % u.uuid.hex,
 }
 
-USE_I18N = True
-USE_L10N = True
+# Default in django 4.1
+# USE_I18N = True
+# USE_L10N = True
+
+# Default from django 5.0
 USE_TZ = True
 
 STATIC_ROOT = os.getenv('STATIC_ROOT', BASE_DIR.parent / 'htdocs/static')
