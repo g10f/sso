@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.test import TransactionTestCase
 from django.urls import reverse
+from sso.organisations.forms import OrganisationEmailAdminForm
 from sso.organisations.models import OrganisationCountry, Organisation, AdminRegion
 from sso.test.client import SSOClient
 
@@ -74,6 +75,21 @@ class OrganisationsTest(TransactionTestCase):
         organisation = Organisation.objects.get(name="New Center")
         self.assertEqual(organisation.organisation_country, organisation_country)
         self.assertIsNotNone(organisation.uuid)
+
+        # create a new center with existing email from region
+        data = {
+            'name': 'New Center2',
+            'center_type': 'g',
+            'organisation_country': organisation_country.pk,
+            'admin_region': admin_region.pk,
+            'email_value': 'newcenter' + email_domain,
+            'email_forward': 'test@g10f.de',
+            'is_active': 'on'
+        }
+        response = self.client.post(reverse('organisations:organisation_create'), data=data)
+        self.assertEqual(response.status_code, 200)
+        error_msg = OrganisationEmailAdminForm.error_messages['email_already_exists']
+        self.assertFormError(response.context['form'], 'email_value', [error_msg])
 
     def test_some_list(self):
         self.client.login(username='CountryAdmin', password='gsf')
