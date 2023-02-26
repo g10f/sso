@@ -112,6 +112,9 @@ SSO_ORGANISATION_EMAIL_DOMAIN           ''
 SSO_ASYNC_EMAILS                        False
 ANALYTICS_CODE                          ''
 SESSION_COOKIE_AGE                      1209600                     2 weeks
+SSO_2FA_HELP_URL                        ''                          external url
+SSO_TOTP_TOLERANCE                      2                           tolerance of timespan
+SSO_WEBAUTHN_USER_VERIFICATION          discouraged                 required value for android
 ======================================= =========================  =========================
 
 3.3.23

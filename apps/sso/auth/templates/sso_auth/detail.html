@@ -30,6 +30,12 @@
       Security Keys from FIDO2 Certified devices that connect to your devices through USB, Bluetooth, or NFC
       (like YubiKey or devices with TouchID, FaceID or Windows Hello)
     {% endblocktranslate %}
+    {% if sso_2fa_help_url %}
+      <br>
+      {% blocktranslate trimmed %}
+        Please take a look at <a class="" href="{{ sso_2fa_help_url }}">{{ sso_2fa_help_url }}</a> for support.
+      {% endblocktranslate %}
+    {% endif %}
     </div>
 
     {% if user.device_set.all %}
