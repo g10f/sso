@@ -166,7 +166,7 @@ def emails(request):
             user_email.save()
             UserEmail.objects.filter(user=user_email.user, primary=True).exclude(pk=user_email.pk).update(
                 primary=False)
-            messages.success(request, _("The email \"%(email)s\" was changed successfully.") % {'email': user_email})
+            messages.success(request, _("The email \"%(email)s\" was saved successfully.") % {'email': user_email})
             return redirect(post_change_redirect)
         else:
             add_form = SelfUserEmailAddForm(request.POST)
@@ -197,7 +197,7 @@ def get_profile_success_url(request, redirect_uri):
             success_url = update_url(reverse('accounts:profile'), {'redirect_uri': redirect_uri})
         else:
             success_url = reverse('accounts:profile')
-        messages.success(request, _('Your profile was changed successfully. You may edit it again below.'))
+        messages.success(request, _('Your profile was saved successfully. You may edit it again below.'))
     else:
         if redirect_uri:
             success_url = redirect_uri

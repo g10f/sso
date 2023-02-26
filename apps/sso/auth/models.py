@@ -211,7 +211,7 @@ class TOTPDevice(Device):
     step = models.PositiveSmallIntegerField(default=30, help_text="The time step in seconds.")
     digits = models.PositiveSmallIntegerField(choices=[(6, 6), (8, 8)], default=6,
                                               help_text="The number of digits to expect in a token.")
-    tolerance = models.PositiveSmallIntegerField(default=1,
+    tolerance = models.PositiveSmallIntegerField(default=settings.SSO_TOTP_TOLERANCE,
                                                  help_text="The number of time steps in the past or future to allow.")
     last_t = models.BigIntegerField(
         default=-1,

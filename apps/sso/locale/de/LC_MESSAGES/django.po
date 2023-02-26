@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-16 21:27+0100\n"
+"POT-Creation-Date: 2023-02-26 11:54+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1389,21 +1389,25 @@ msgstr "Zu dem Konto %(username)s wurde keine E-Mail Adresse angegeben!"
 
 #, python-brace-format
 msgid ""
-"The {name} \"{obj}\" was changed successfully. You may add another {name} "
+"The {name} \"{obj}\" was saved successfully. You may add another {name} "
 "below."
 msgstr ""
+"{name} \"{obj}\" wurde erfolgreich gespeichert und kann weiter bearbeitet "
+"werden."
 
 #, python-brace-format
 msgid ""
-"The {name} \"{obj}\" was changed successfully. You may edit it again below."
+"The {name} \"{obj}\" was saved successfully. You may edit it again below."
 msgstr ""
+"{name} \"{obj}\" wurde erfolgreich gespeichert und kann weiter bearbeitet "
+"werden."
 
 #, python-format
 msgid ""
-"The %(name)s \"%(obj)s\" was changed successfully and the invitation email "
-"was resend."
+"The %(name)s \"%(obj)s\" was saved successfully and the invitation email was "
+"resend."
 msgstr ""
-"%(name)s \"%(obj)s\" wurde erfolgreich geändert und eine Email Einladung "
+"%(name)s \"%(obj)s\" wurde erfolgreich gespeichert und eine Email Einladung "
 "wurde erneut versendet."
 
 #, python-format
@@ -1416,8 +1420,8 @@ msgid ""
 msgstr "%(name)s \"%(obj)s\" wurde erfolgreich aus der Organisation gelöscht."
 
 #, python-brace-format
-msgid "The {name} \"{obj}\" was changed successfully."
-msgstr ""
+msgid "The {name} \"{obj}\" was saved successfully."
+msgstr "{name} \"{obj}\" wurde erfolgreich gespeichert."
 
 msgid "Change user"
 msgstr "Benutzer bearbeiten"
@@ -1505,15 +1509,15 @@ msgid "The email \"%(email)s\" was deleted successfully."
 msgstr "Die  E-Mail Adresse \"%(email)s\" wurde erfolgreich gelöscht."
 
 #, python-format
-msgid "The email \"%(email)s\" was changed successfully."
-msgstr "Die E-Mail Adresse \"%(email)s\" wurde erfolgreich geändert."
+msgid "The email \"%(email)s\" was saved successfully."
+msgstr "Die E-Mail Adresse \"%(email)s\" wurde erfolgreich gespeichert."
 
 msgid "Thank you. Your data were saved."
 msgstr "Vielen Dank, Deine Eingaben wurden gespeichert."
 
-msgid "Your profile was changed successfully. You may edit it again below."
+msgid "Your profile was saved successfully. You may edit it again below."
 msgstr ""
-"Dein Benutzerprofil wurde erfolgreich geändert. Du kannst die Daten unten "
+"Dein Benutzerprofil wurde erfolgreich gespeichert. Du kannst die Daten unten "
 "erneut ändern."
 
 msgid "Thank you. Your profile was saved."
@@ -1687,6 +1691,14 @@ msgstr ""
 "FIDO2-zertifizierten Geräten, die sich über USB, Bluetooth oder NFC mit "
 "Ihren Geräten verbinden (wie YubiKey oder Geräte mit TouchID, FaceID oder "
 "Windows Hello)"
+
+#, python-format
+msgid ""
+"Please take a look at <a class=\"\" "
+"href=\"%(sso_2fa_help_url)s\">%(sso_2fa_help_url)s</a> for support."
+msgstr ""
+"Bitte werfen Sie einen Blick auf <a class=\"\" "
+"href=\"%(sso_2fa_help_url)s\">%(sso_2fa_help_url)s</a> für Unterstützung."
 
 msgid "Add Authenticator App"
 msgstr "Authenticator App hinzufügen"
@@ -3021,6 +3033,14 @@ msgid "Group"
 msgstr "Gruppe"
 
 msgctxt "Organisation Type"
+msgid "Kreisverband"
+msgstr ""
+
+msgctxt "Organisation Type"
+msgid "Ortsverband"
+msgstr ""
+
+msgctxt "Organisation Type"
 msgid "Center"
 msgstr "Zentrum"
 
@@ -3047,14 +3067,6 @@ msgstr "Region"
 msgctxt "Organisation Type"
 msgid "Country"
 msgstr "Land"
-
-msgctxt "Organisation Type"
-msgid "Kreisverband"
-msgstr ""
-
-msgctxt "Organisation Type"
-msgid "Ortsverband"
-msgstr ""
 
 msgid "Administration"
 msgstr "Administration"
@@ -3134,7 +3146,6 @@ msgstr "Neues Geheimniss"
 msgid "Send email"
 msgstr "E-Mail Senden"
 
-#| msgid "Google+ page"
 msgid "Toogle view"
 msgstr "Ansicht umschalten"
 
@@ -3187,17 +3198,6 @@ msgstr "{name} \"{obj}\" wurde gelöscht."
 
 #, python-brace-format
 msgid ""
-"The {name} \"{obj}\" was saved successfully. You may edit it again below."
-msgstr ""
-"{name} \"{obj}\" wurde erfolgreich gespeichert und kann weiter bearbeitet "
-"werden."
-
-#, python-brace-format
-msgid "The {name} \"{obj}\" was saved successfully."
-msgstr "{name} \"{obj}\" wurde erfolgreich gespeichert."
-
-#, python-brace-format
-msgid ""
 "The {name} \"{obj}\" was created successfully. You may edit it again below."
 msgstr ""
 "{name} \"{obj}\" wurde erfolgreich angelegt und kann weiter bearbeitet "
@@ -3206,3 +3206,15 @@ msgstr ""
 #, python-brace-format
 msgid "The {name} \"{obj}\" was created successfully."
 msgstr "{name} \"{obj}\" wurde erfolgreich angelegt."
+
+#, python-brace-format
+#~ msgid ""
+#~ "The {name} \"{obj}\" was changed successfully. You may edit it again "
+#~ "below."
+#~ msgstr ""
+#~ "{name}  \"{obj}\" wurde erfolgreich geändert und kann weiter bearbeitet "
+#~ "werden."
+
+#, python-brace-format
+#~ msgid "The {name} \"{obj}\" was changed successfully."
+#~ msgstr "{name}  \"{obj}\" wurde erfolgreich geändert"
