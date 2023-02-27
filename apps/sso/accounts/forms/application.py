@@ -5,11 +5,11 @@ from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from sso.forms import bootstrap, BaseForm, BaseTabularInlineForm
 from ..models import ApplicationRole, Application, ApplicationAdmin, Role
 from ...oauth2.models import Client, ALLOWED_CLIENT_TYPES, ALLOWED_SCOPES
-from ...utils.translation import mark_safe_lazy
 
 logger = logging.getLogger(__name__)
 
@@ -107,7 +107,7 @@ class ApplicationAdminForm(BaseTabularInlineForm):
 
 class ClientForm(BaseForm):
     can_access_all_users = forms.BooleanField(label=_('Can access all users'), required=False, widget=bootstrap.CheckboxInput())
-    type = forms.ChoiceField(label=_('Type'), help_text=mark_safe_lazy(_(
+    type = forms.ChoiceField(label=_('Type'), help_text=mark_safe(_(
         "Confidential client (can store a secret) or public client for <a href='https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowSteps'>authorisation code flow</a> "
         "or service account client with <a href='https://datatracker.ietf.org/doc/html/rfc6749#section-4.4'>client credentials grant</a>.")),
                              required=True, choices=ALLOWED_CLIENT_TYPES, widget=bootstrap.Select())

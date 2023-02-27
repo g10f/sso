@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-16 21:27+0100\n"
+"POT-Creation-Date: 2023-02-26 11:53+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1308,19 +1308,19 @@ msgstr ""
 
 #, python-brace-format
 msgid ""
-"The {name} \"{obj}\" was changed successfully. You may add another {name} "
+"The {name} \"{obj}\" was saved successfully. You may add another {name} "
 "below."
 msgstr ""
 
 #, python-brace-format
 msgid ""
-"The {name} \"{obj}\" was changed successfully. You may edit it again below."
+"The {name} \"{obj}\" was saved successfully. You may edit it again below."
 msgstr ""
 
 #, python-format
 msgid ""
-"The %(name)s \"%(obj)s\" was changed successfully and the invitation email "
-"was resend."
+"The %(name)s \"%(obj)s\" was saved successfully and the invitation email was "
+"resend."
 msgstr ""
 
 #, python-format
@@ -1333,7 +1333,7 @@ msgid ""
 msgstr ""
 
 #, python-brace-format
-msgid "The {name} \"{obj}\" was changed successfully."
+msgid "The {name} \"{obj}\" was saved successfully."
 msgstr ""
 
 msgid "Change user"
@@ -1414,13 +1414,13 @@ msgid "The email \"%(email)s\" was deleted successfully."
 msgstr ""
 
 #, python-format
-msgid "The email \"%(email)s\" was changed successfully."
+msgid "The email \"%(email)s\" was saved successfully."
 msgstr ""
 
 msgid "Thank you. Your data were saved."
 msgstr ""
 
-msgid "Your profile was changed successfully. You may edit it again below."
+msgid "Your profile was saved successfully. You may edit it again below."
 msgstr ""
 
 msgid "Thank you. Your profile was saved."
@@ -1578,6 +1578,12 @@ msgid ""
 "Authenticator or Twilio Authy) and Security Keys from FIDO2 Certified "
 "devices that connect to your devices through USB, Bluetooth, or NFC (like "
 "YubiKey or devices with TouchID, FaceID or Windows Hello)"
+msgstr ""
+
+#, python-format
+msgid ""
+"Please take a look at <a class=\"\" "
+"href=\"%(sso_2fa_help_url)s\">%(sso_2fa_help_url)s</a> for support."
 msgstr ""
 
 msgid "Add Authenticator App"
@@ -2838,6 +2844,14 @@ msgid "Group"
 msgstr ""
 
 msgctxt "Organisation Type"
+msgid "Kreisverband"
+msgstr ""
+
+msgctxt "Organisation Type"
+msgid "Ortsverband"
+msgstr ""
+
+msgctxt "Organisation Type"
 msgid "Center"
 msgstr ""
 
@@ -2863,14 +2877,6 @@ msgstr ""
 
 msgctxt "Organisation Type"
 msgid "Country"
-msgstr ""
-
-msgctxt "Organisation Type"
-msgid "Kreisverband"
-msgstr ""
-
-msgctxt "Organisation Type"
-msgid "Ortsverband"
 msgstr ""
 
 msgid "Administration"
@@ -2991,15 +2997,6 @@ msgstr ""
 
 #, python-brace-format
 msgid "The {name} \"{obj}\" was deleted successfully."
-msgstr ""
-
-#, python-brace-format
-msgid ""
-"The {name} \"{obj}\" was saved successfully. You may edit it again below."
-msgstr ""
-
-#, python-brace-format
-msgid "The {name} \"{obj}\" was saved successfully."
 msgstr ""
 
 #, python-brace-format

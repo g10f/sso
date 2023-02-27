@@ -1,6 +1,7 @@
 import logging
 from urllib.parse import urlencode
 
+from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.sites.shortcuts import get_current_site
@@ -88,6 +89,11 @@ class DetailView(RedirectViewMixin, FormView):
     template_name = 'sso_auth/detail.html'
     form_class = ProfileForm
     success_url = reverse_lazy('auth:mfa-detail')
+
+    def get_context_data(self, **kwargs):
+        kwargs = super().get_context_data(**kwargs)
+        kwargs['sso_2fa_help_url'] = settings.SSO_2FA_HELP_URL
+        return kwargs
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()

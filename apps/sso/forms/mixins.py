@@ -1,10 +1,9 @@
 from django.db.models.query_utils import Q
 from django.urls import reverse_lazy
-from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _
 from sso.accounts.models import UserNote
 from sso.signals import user_m2m_field_updated
-from sso.utils.translation import mark_safe_lazy
+from sso.utils.translation import format_html_lazy
 
 
 def ids_from_objs(listobject):
@@ -31,16 +30,16 @@ class UserNoteMixin:
 
 
 class UserRolesMixin(object):
-    role_profiles_help = mark_safe_lazy(format_lazy(
+    role_profiles_help = format_html_lazy(
         '{help_text} <a data-bs-toggle="tooltip" title="{roleprofiles_title}" href="{url}"><i class="bi bi-info-circle"></i></a>',
         url=reverse_lazy("accounts:roleprofile_list"),
         roleprofiles_title=_('View role profile details'),
-        help_text=_("Groups of application roles that are assigned together.")))
-    application_roles_help = mark_safe_lazy(format_lazy(
+        help_text=_("Groups of application roles that are assigned together."))
+    application_roles_help = format_html_lazy(
         '{help_text} <a data-bs-toggle="tooltip" title="{roleprofiles_title}" href="{url}"><i class="bi bi-info-circle"></i></a>',
         url=reverse_lazy("accounts:roleprofile_list"),
         roleprofiles_title=_('View role profile details'),
-        help_text=_("* You don't need to select the application roles which are already included by the role profiles.")))
+        help_text=_("* You don't need to select the application roles which are already included by the role profiles."))
 
     def _update_user_m2m(self, new_value_set, administrable_values, attribute_name):
         """
