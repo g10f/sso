@@ -95,7 +95,9 @@ class ViewQuerysetFilter(BaseFilter):
                 return self.model.objects.get(pk=value)
             except ObjectDoesNotExist:
                 # return empty object
-                return self.model()
+                # return self.model()
+                # RemovedInDjango50Warning: Passing unsaved model instances to related filters is deprecated.
+                return None
         else:
             return None
 

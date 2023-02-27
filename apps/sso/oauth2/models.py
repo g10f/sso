@@ -11,12 +11,12 @@ from django.http import QueryDict
 from django.urls import reverse
 from django.utils.crypto import get_random_string
 from django.utils.encoding import force_str
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from sso.accounts.models import Application, User, ApplicationAdmin
 from sso.auth.models import Device
 from sso.models import AbstractBaseModel, AbstractBaseModelManager
 from sso.registration import default_username_generator
-from sso.utils.translation import mark_safe_lazy
 
 logger = logging.getLogger(__name__)
 
@@ -172,8 +172,8 @@ class Client(AbstractBaseModel):
     redirect_uris = models.TextField(_('redirect uris'), help_text=_('Whitespace separated list of redirect uris.'), blank=True)
     post_logout_redirect_uris = models.TextField(
         _('post logout redirect uris'),
-        help_text=mark_safe_lazy(_('Whitespace separated list of '
-                                   '<a href="https://openid.net/specs/openid-connect-rpinitiated-1_0.html#ClientMetadata">post logout redirect uris</a>.')),
+        help_text=mark_safe(_('Whitespace separated list of '
+                              '<a href="https://openid.net/specs/openid-connect-rpinitiated-1_0.html#ClientMetadata">post logout redirect uris</a>.')),
         blank=True)
     default_redirect_uri = models.CharField(_('default redirect uri'), max_length=2047, blank=True)
     client_secret = models.CharField(_('client secret'), max_length=2047, blank=True, default=get_default_secret)
@@ -195,7 +195,7 @@ class Client(AbstractBaseModel):
     is_trustworthy = models.BooleanField(_("trustworthy"), default=False)
     force_using_pkce = models.BooleanField(
         _('force using PKCE'), default=False,
-        help_text=mark_safe_lazy(_('Enforce Proof Key for Code Exchange <a href="https://tools.ietf.org/html/rfc7636">https://tools.ietf.org/html/rfc7636</a>')))
+        help_text=mark_safe(_('Enforce Proof Key for Code Exchange <a href="https://tools.ietf.org/html/rfc7636">https://tools.ietf.org/html/rfc7636</a>')))
 
     objects = ClientManager()
 

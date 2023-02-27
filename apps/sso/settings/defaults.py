@@ -40,6 +40,7 @@ SSO_DOMAIN = os.getenv('SSO_DOMAIN', "localhost:8000")
 SSO_USE_HTTPS = os.getenv("SSO_USE_HTTPS", 'True').lower() in ('true', '1', 't')
 SSO_SERVICE_DOCUMENTATION = ""  # part of https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig
 SSO_ABOUT = os.getenv('SSO_ABOUT', "https://g10f.de/")
+SSO_2FA_HELP_URL = os.getenv('SSO_2FA_HELP_URL', "")
 SSO_DATA_PROTECTION_URI = None
 SSO_APP_UUID = UUID('fa467234b81e4838a009e38d9e655d18')
 SSO_BROWSER_CLIENT_ID = UUID('ca96cd88bc2740249d0def68221cba88')
@@ -79,10 +80,11 @@ SSO_USER_MAX_PICTURE_SIZE = int(os.getenv('SSO_USER_MAX_PICTURE_SIZE', '1048576'
 SSO_USER_PICTURE_WIDTH = 550
 SSO_USER_PICTURE_HEIGHT = 550
 SSO_OIDC_SESSION_COOKIE_NAME = 'oidcsession'
+SSO_TOTP_TOLERANCE = int(os.getenv('SSO_TOTP_TOLERANCE', '2'))
 SSO_ADMIN_ONLY_MFA = os.getenv("SSO_ADMIN_ONLY_MFA", 'False').lower() in ('true', '1', 't')
 SSO_ADMIN_MFA_REQUIRED = os.getenv("SSO_ADMIN_MFA_REQUIRED", 'False').lower() in ('true', '1', 't')
 SSO_WEBAUTHN_VERSION = os.getenv('SSO_WEBAUTHN_VERSION', 'FIDO_2_0')  # "U2F_V2", "FIDO_2_0"
-SSO_WEBAUTHN_USER_VERIFICATION = os.getenv('SSO_WEBAUTHN_USER_VERIFICATION', '')
+SSO_WEBAUTHN_USER_VERIFICATION = os.getenv('SSO_WEBAUTHN_USER_VERIFICATION', 'discouraged')
 SSO_WEBAUTHN_AUTHENTICATOR_ATTACHMENT = os.getenv('SSO_WEBAUTHN_AUTHENTICATOR_ATTACHMENT', '')
 SSO_WEBAUTHN_EXTENSIONS = os.getenv("SSO_WEBAUTHN_EXTENSIONS", 'False').lower() in ('true', '1', 't')
 SSO_WEBAUTHN_CREDPROPS = os.getenv("SSO_WEBAUTHN_CREDPROPS", 'False').lower() in ('true', '1', 't')
@@ -155,8 +157,11 @@ ABSOLUTE_URL_OVERRIDES = {
     'accounts.user': lambda u: "/api/v2/users/%s/" % u.uuid.hex,
 }
 
-USE_I18N = True
-USE_L10N = True
+# Default in django 4.1
+# USE_I18N = True
+# USE_L10N = True
+
+# Default from django 5.0
 USE_TZ = True
 
 STATIC_ROOT = os.getenv('STATIC_ROOT', BASE_DIR.parent / 'htdocs/static')
