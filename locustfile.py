@@ -23,8 +23,8 @@ test_data = {
     },
     "idp": {
         "oidc": {
-            "verify_tls": False,
-            "iss": "https://sso.dwbn.org",
+            "verify_tls": True,
+            "iss": "{G10F_ISSUER}",
         }
     },
     "proxies": {
