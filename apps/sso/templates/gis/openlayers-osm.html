@@ -9,7 +9,7 @@
 
 <div id="{{ id }}_div_map">
     <div id="{{ id }}_map"></div>
-    {% if not disabled %}<button type="button" class="btn btn-link clear_features">{% translate 'Delete all Features' %}</button>{% endif %}
+    {% if not disabled %}<div class="clear_features"><a href="#">{% translate 'Delete all Features' %}</a></div>{% endif %}
     {% if display_raw %}<p>{% translate "Debugging window (serialized value)" %}</p>{% endif %}
     <textarea id="{{ id }}" class="vSerializedField required geodjango-field" cols="150" rows="10" name="{{ name }}"
     	data-geom_type="{{ geom_type }}"  data-map_srid="{{ map_srid }}" data-default_lon="{{ default_lon }}"
