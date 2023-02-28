@@ -22,10 +22,6 @@
 
             var geodjango_widget = new MapWidget(options);
 
-            $(".clear_features").click(function () {
-                geodjango_widget.clearFeatures();
-            });
-
             $("button.geocode").on('click', function () {
                 var $btn = $(this).button('loading');
                 var formset_prefix = $(this).parents(".dynamic-organisationaddress_set").attr("id");
