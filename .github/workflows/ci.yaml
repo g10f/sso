@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - 'main'
-      - 'feature/django4'
 jobs:
   build-and-push-image:
     runs-on: ubuntu-latest
