@@ -165,7 +165,7 @@ def post_logout_redirect_uris():
 
 
 class Client(AbstractBaseModel):
-    codename = 'app_admin_access_all_users'
+    access_to_all_users_permissions = ("access_all_users", "read_user")
     name = models.CharField(_("name"), max_length=255)
     application = models.ForeignKey(Application, on_delete=models.SET_NULL, verbose_name=_('application'), blank=True,
                                     null=True)
@@ -242,7 +242,8 @@ class Client(AbstractBaseModel):
 
     @property
     def has_access_to_all_users(self):
-        return self.user and self.user.has_perm(f'accounts.{self.codename}')
+        perm_list = [f'accounts.{perm}' for perm in self.access_to_all_users_permissions]
+        return self.user and self.user.has_perms(perm_list)
 
     def set_access_to_all_users(self, access_all_users, user):
         if self.type != 'service':
@@ -253,11 +254,11 @@ class Client(AbstractBaseModel):
             return
         self.ensure_service_user_exists()
         content_type = ContentType.objects.get_for_model(User)
-        permission = Permission.objects.get(codename=self.codename, content_type=content_type)
+        permissions = Permission.objects.filter(codename__in=self.access_to_all_users_permissions, content_type=content_type)
         if access_all_users:
-            self.user.user_permissions.add(permission)
+            self.user.user_permissions.add(*permissions)
         else:
-            self.user.user_permissions.remove(permission)
+            self.user.user_permissions.remove(*permissions)
 
     def ensure_service_user_exists(self):
         if self.type != 'service':
