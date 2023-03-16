@@ -563,8 +563,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         elif self.has_perm("organisations.change_organisation"):
             return OrganisationCountry.objects.filter(
                 Q(is_active=True, association__is_active=True, association__is_external=False)
-                & (Q(user=self) |
-                   Q(association__user=self))).prefetch_related('country', 'association')
+                & (Q(user=self) | Q(association__user=self))).distinct().prefetch_related('country', 'association')
         else:
             return OrganisationCountry.objects.none()
 
