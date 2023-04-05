@@ -1,7 +1,4 @@
 const gulp = require('gulp');
-const sass = require('gulp-sass')(require('sass'));
-const sourcemaps = require('gulp-sourcemaps');
-const rename = require("gulp-rename");
 const {parallel} = require('gulp');
 const {buildStyles, buildMinStyles} = require('./gulp/buildStyles.js');
 
