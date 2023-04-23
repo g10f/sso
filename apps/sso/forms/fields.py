@@ -55,3 +55,8 @@ class Base64ImageField(fields.FileField):
 
     def has_changed(self, initial, data):
         return not self.disabled and data != ''
+
+    def bound_data(self, data, initial):
+        if data in (None, FILE_INPUT_CONTRADICTION):
+            return initial
+        return data

@@ -1,6 +1,6 @@
 celery
 cryptography
-django<4.2
+django
 django-formtools
 django-ipware
 django-reversion
