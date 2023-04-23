@@ -18,7 +18,7 @@ RUN pip install -r requirements.txt
 FROM python:3.11-slim
 
 # https://docs.djangoproject.com/en/3.2/ref/contrib/gis/install/geolibs/
-RUN apt-get update && apt-get -y install --no-install-recommends binutils libproj19 gdal-bin && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get -y install binutils libproj19 gdal-bin && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
