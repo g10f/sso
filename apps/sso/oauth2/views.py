@@ -305,7 +305,7 @@ def authorize(request):
         # Less grave errors will be reported back to client
         logger.warning(f'OAuth2Error, redirecting to error page. {e}')
         redirect_uri = get_request_param(request, 'redirect_uri', reverse('oauth2:oauth2_error'))
-        return HttpResponseRedirect(e.in_uri(redirect_uri))
+        return HttpOAuth2ResponseRedirect(e.in_uri(redirect_uri))
 
 
 def token(request):
