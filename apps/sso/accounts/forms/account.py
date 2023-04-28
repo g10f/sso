@@ -443,6 +443,8 @@ class UserSelfRegistrationForm2(UserSelfRegistrationForm):
             self.fields['captcha'] = ReCaptchaField()
 
     def is_captcha_needed(self):
+        if not settings.SSO_RECAPTCHA_ENABLED:
+            return False
         max_age = settings.SSO_RECAPTCHA_EXPIRATION_TIME
         if self.data and ('state' in self.data):
             try:

@@ -55,7 +55,7 @@ class UserRegistrationDeleteView(DeleteView):
     success_url = reverse_lazy('registration:user_registration_list')
 
     def get_queryset(self):
-        # filter the users for who the authenticated user has admin rights
+        # filter the users for whom the authenticated user has admin rights
         qs = super().get_queryset()
         user = self.request.user
         return user.filter_administrable_users(qs)
