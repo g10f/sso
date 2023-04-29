@@ -11,7 +11,7 @@ gunicorn
 kombu
 oauthlib
 pillow
-psycopg2
+psycopg[c]
 pyjwt
 pymemcache
 pytz
