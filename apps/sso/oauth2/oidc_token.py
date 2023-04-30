@@ -49,7 +49,7 @@ def get_roles(user, client):
         roles = []
         for organisation in user.organisations.all():
             for role in user.get_roles_by_app(client.application.uuid).values_list('name', flat=True):
-                roles.append(f"{organisation.name}-{role}")
+                roles.append(f"{organisation.name.replace(' ', '-')}-{role}")
         return roles
     else:
         return ' '.join(user.get_roles_by_app(client.application.uuid).values_list('name', flat=True))  # custom
