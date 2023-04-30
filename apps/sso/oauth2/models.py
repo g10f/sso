@@ -165,6 +165,13 @@ def post_logout_redirect_uris():
 
 
 class Client(AbstractBaseModel):
+    ROLE_LIST = "list"
+    ROLE_LIST_WITH_ORGANISATIONS = "list-with-organisation"
+    ROLES_CHOICES = [
+        # ('default', _('List seperated by spaces')),
+        (ROLE_LIST, _('List')),
+        (ROLE_LIST_WITH_ORGANISATIONS, _('List with organisations'))
+    ]
     access_to_all_users_permissions = ("access_all_users", "read_user")
     name = models.CharField(_("name"), max_length=255)
     application = models.ForeignKey(Application, on_delete=models.SET_NULL, verbose_name=_('application'), blank=True,
@@ -196,6 +203,7 @@ class Client(AbstractBaseModel):
     force_using_pkce = models.BooleanField(
         _('force using PKCE'), default=False,
         help_text=mark_safe(_('Enforce Proof Key for Code Exchange <a href="https://tools.ietf.org/html/rfc7636">https://tools.ietf.org/html/rfc7636</a>')))
+    roles_type = models.CharField(_('Roles type'), max_length=255, choices=ROLES_CHOICES, blank=True)
 
     objects = ClientManager()
 
