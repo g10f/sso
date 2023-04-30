@@ -10,6 +10,7 @@ from django.utils.encoding import force_str
 from django.utils.module_loading import import_string
 from sso.auth import get_session_auth_hash, HASH_SESSION_KEY
 from .crypt import make_jwt
+from .models import Client
 
 logger = logging.getLogger(__name__)
 
@@ -36,9 +37,22 @@ def get_token_claim_set(request, max_age=settings.SSO_ACCESS_TOKEN_AGE):
         HASH_SESSION_KEY: get_session_auth_hash(user, request.client),  # custom, required
     }
     if request.client.application:
-        claim_set['roles'] = ' '.join(
-            user.get_roles_by_app(request.client.application.uuid).values_list('name', flat=True))  # custom
+        claim_set['roles'] = get_roles(user, request.client)
     return claim_set
+
+
+def get_roles(user, client):
+    roles_type = client.roles_type
+    if roles_type == Client.ROLE_LIST:
+        return [role for role in user.get_roles_by_app(client.application.uuid).values_list('name', flat=True)]
+    elif roles_type == Client.ROLE_LIST_WITH_ORGANISATIONS:
+        roles = []
+        for organisation in user.organisations.all():
+            for role in user.get_roles_by_app(client.application.uuid).values_list('name', flat=True):
+                roles.append(f"{organisation.name}-{role}")
+        return roles
+    else:
+        return ' '.join(user.get_roles_by_app(client.application.uuid).values_list('name', flat=True))  # custom
 
 
 def default_token_generator(request, max_age=settings.SSO_ACCESS_TOKEN_AGE):
@@ -64,8 +78,7 @@ def get_idtoken_claim_set(request, max_age=settings.SSO_ID_TOKEN_AGE):
         'family_name': user.last_name,  # custom
     }
     if request.client.application:
-        claim_set['roles'] = ' '.join(
-            user.get_roles_by_app(request.client.application.uuid).values_list('name', flat=True))  # custom
+        claim_set['roles'] = get_roles(user, request.client)
     return claim_set
 
 
