@@ -116,7 +116,7 @@ class ClientForm(BaseForm):
 
     class Meta:
         model = Client
-        fields = ('application', 'uuid', 'client_secret', 'name', 'type', 'redirect_uris', 'post_logout_redirect_uris', 'notes', 'is_active', 'scopes')
+        fields = ('application', 'uuid', 'client_secret', 'name', 'type', 'redirect_uris', 'post_logout_redirect_uris', 'notes', 'is_active', 'scopes', 'roles_type')
         widgets = {
             'application': bootstrap.HiddenInput(),
             'name': bootstrap.TextInput(attrs={'size': 50}),
@@ -125,6 +125,7 @@ class ClientForm(BaseForm):
             'redirect_uris': bootstrap.Textarea(attrs={'rows': '3'}),
             'post_logout_redirect_uris': bootstrap.Textarea(attrs={'rows': '3'}),
             'is_active': bootstrap.CheckboxInput(),
+            'roles_type': bootstrap.Select()
         }
 
     def __init__(self, *args, **kwargs):
