@@ -203,7 +203,9 @@ class Client(AbstractBaseModel):
     force_using_pkce = models.BooleanField(
         _('force using PKCE'), default=False,
         help_text=mark_safe(_('Enforce Proof Key for Code Exchange <a href="https://tools.ietf.org/html/rfc7636">https://tools.ietf.org/html/rfc7636</a>')))
-    roles_type = models.CharField(_('Roles type'), max_length=255, choices=ROLES_CHOICES, blank=True)
+    roles_type = models.CharField(_('Roles type'), max_length=255, choices=ROLES_CHOICES, blank=True,
+                                  help_text=_('Type of the roles claim in the id_token and access token. Can be a space delimited string (default), list or list with '
+                                              'organisation prefixed to the role like "organisation-role".'))
 
     objects = ClientManager()
 

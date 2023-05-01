@@ -27,6 +27,7 @@
           {% include 'include/_field.html' with field=form.can_access_all_users %}
         {% endif %}
         {% include 'include/_field.html' with field=form.scopes %}
+        {% include 'include/_field.html' with field=form.roles_type %}
         {% include 'include/_field.html' with field=form.uuid %}
         {% include 'include/_client_secret_field.html' with field=form.client_secret %}
         {% include 'include/_field.html' with field=form.redirect_uris %}

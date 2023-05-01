@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-26 11:53+0100\n"
+"POT-Creation-Date: 2023-05-01 21:42+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1978,6 +1978,12 @@ msgstr ""
 msgid "Trusted client"
 msgstr ""
 
+msgid "List"
+msgstr ""
+
+msgid "List with organisations"
+msgstr ""
+
 msgid "redirect uris"
 msgstr ""
 
@@ -2027,6 +2033,15 @@ msgstr ""
 msgid ""
 "Enforce Proof Key for Code Exchange <a href=\"https://tools.ietf.org/html/"
 "rfc7636\">https://tools.ietf.org/html/rfc7636</a>"
+msgstr ""
+
+msgid "Roles type"
+msgstr ""
+
+msgid ""
+"Type of the roles claim in the id_token and access token. Can be a space "
+"delimited string (default), list or list with organisation prefixed to the "
+"role like \"organisation-role\"."
 msgstr ""
 
 msgid "code"
