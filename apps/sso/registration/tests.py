@@ -42,6 +42,10 @@ class RegistrationSeleniumTests(SSOSeleniumTests):
         organisation_select = Select(self.selenium.find_element(by=By.NAME, value="organisation"))
         organisation_select.select_by_value(str(organisation.pk))
 
+        for user_extra_attribute in settings.SSO_TEST_USER_EXTRA_ATTRIBUTES:
+            extra_select = Select(self.selenium.find_element(by=By.NAME, value=user_extra_attribute['name']))
+            extra_select.select_by_value(user_extra_attribute['value'])
+
         self.selenium.find_element(by=By.TAG_NAME, value="form").submit()
         self.wait_page_loaded()
 

@@ -13,6 +13,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='client',
             name='roles_type',
-            field=models.CharField(blank=True, choices=[('list', 'List'), ('list-with-organisation', 'List with organisations')], max_length=255, verbose_name='Roles type'),
+            field=models.CharField(blank=True, choices=[('list', 'List'), ('list-with-organisation', 'List with organisations')], help_text='Type of the roles claim in the id_token and access token. Can be a space delimited string (default), list or list with organisation prefixed to the role like "organisation-role".',
+                                   max_length=255, verbose_name='Roles type'),
         ),
     ]
