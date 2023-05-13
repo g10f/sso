@@ -171,9 +171,23 @@ MEDIA_URL = os.getenv('MEDIA_URL', '/media/')
 STATIC_URL = os.getenv('STATIC_URL', '/static/')
 
 if RUNNING_TEST:
-    STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.InMemoryStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+        },
+    }
 else:
-    STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
 
 WHITENOISE_ROOT = os.path.join(STATIC_ROOT, 'root')
 if DEBUG:
