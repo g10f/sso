@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='profile',
             name='default_device_id',
-            field=models.IntegerField(choices=[('TOTPDevice', 2), ('U2FDevice', 1)], default=None, null=True),
+            field=models.IntegerField(choices=[('U2FDevice', 1), ('TOTPDevice', 2)], default=None, null=True),
         ),
         migrations.AlterField(
             model_name='totpdevice',

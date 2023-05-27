@@ -114,7 +114,7 @@ class TOTPDeviceForm(CredentialSetupForm):
         cd = super().clean()
         if 'token' in cd:
             token = cd.get("token")
-            self.device = TOTPDevice(user=self.user, key=cd['key'], digits=self.digits, tolerance=2)
+            self.device = TOTPDevice(user=self.user, key=cd['key'], digits=self.digits)
 
             if not self.device.verify_token(token):
                 raise forms.ValidationError(self.error_messages['invalid_token'], params={'token': token})

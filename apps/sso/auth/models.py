@@ -1,17 +1,9 @@
 import json
 import logging
 from base64 import b32encode
-from binascii import unhexlify
 
 import pyotp
-
-from django.conf import settings
-from django.core import signing
-from django.db import models
-from django.utils import timezone
-from django.utils.crypto import constant_time_compare
-from django.utils.timezone import now
-from django.utils.translation import gettext_lazy as _
+from binascii import unhexlify
 from fido2 import cbor
 from fido2.cose import CoseKey
 from fido2.features import webauthn_json_mapping
@@ -19,6 +11,15 @@ from fido2.server import Fido2Server, U2FFido2Server
 from fido2.utils import websafe_decode, websafe_encode
 from fido2.webauthn import PublicKeyCredentialRpEntity, AttestedCredentialData, \
     PublicKeyCredentialUserEntity
+
+from django.conf import settings
+from django.core import signing
+from django.core.exceptions import ValidationError
+from django.db import models
+from django.utils import timezone
+from django.utils.crypto import constant_time_compare
+from django.utils.timezone import now
+from django.utils.translation import gettext_lazy as _
 from sso.auth.forms import AuthenticationTokenForm, U2FForm
 from sso.auth.utils import random_hex, hex_validator, get_device_class_by_app_label
 from sso.models import AbstractBaseModel
@@ -211,8 +212,6 @@ class TOTPDevice(Device):
     step = models.PositiveSmallIntegerField(default=30, help_text="The time step in seconds.")
     digits = models.PositiveSmallIntegerField(choices=[(6, 6), (8, 8)], default=6,
                                               help_text="The number of digits to expect in a token.")
-    tolerance = models.PositiveSmallIntegerField(default=settings.SSO_TOTP_TOLERANCE,
-                                                 help_text="The number of time steps in the past or future to allow.")
     last_t = models.BigIntegerField(
         default=-1,
         help_text="The t value of the latest verified token. The next token must be at a higher time step.")
@@ -276,14 +275,13 @@ class TOTPDevice(Device):
             for_time = now()
             timecode = totp.timecode(for_time)
 
-            valid_window = self.tolerance
+            valid_window = settings.SSO_TOTP_TOLERANCE
             for i in range(-valid_window, valid_window + 1):
                 if constant_time_compare(str(token), str(totp.at(for_time, i))):
                     if self.last_t >= timecode + i:
                         # new last_t must be greate then the last
-                        logger.warning(f'timecode {timecode + i} already used for device {self.uuid} from '
-                                       f'user {self.user}')
-                        verified = False
+                        logger.warning(f'timecode {timecode + i} already used for device {self.uuid} from user {self.user}')
+                        raise ValidationError(_("The Token was already used."))
                     else:
                         verified = True
                         self.last_t = timecode + i
