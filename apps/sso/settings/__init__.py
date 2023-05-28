@@ -1,9 +1,8 @@
 import logging
 
-from .defaults import *
-
 logger = logging.getLogger(__name__)
 
+from .defaults import *
 # Try loading local settings
 try:
     from .local_settings import *

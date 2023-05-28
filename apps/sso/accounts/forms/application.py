@@ -90,8 +90,7 @@ class ApplicationAdminForm(BaseTabularInlineForm):
     def clean_admin_email(self):
         admin_email = self.cleaned_data['admin_email']
         if not get_user_model().objects.filter(useremail__email=admin_email).exists():
-            msg = _('The user does not exists')
-            raise ValidationError(msg)
+            raise ValidationError(_('The user does not exists'))
 
         return admin_email
 
