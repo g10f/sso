@@ -3,8 +3,6 @@ import sys
 from pathlib import Path
 from uuid import UUID
 
-from captcha.constants import TEST_PRIVATE_KEY, TEST_PUBLIC_KEY
-
 from django.urls import reverse_lazy
 from django.utils.translation import pgettext_lazy
 
@@ -147,8 +145,9 @@ if os.getenv('CACHES_LOCATION') is not None:
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = int(os.getenv('DATA_UPLOAD_MAX_MEMORY_SIZE', '2621440'))  # i.e. 2.5 MB
 
-RECAPTCHA_PUBLIC_KEY = os.getenv('RECAPTCHA_PUBLIC_KEY', TEST_PUBLIC_KEY)
-RECAPTCHA_PRIVATE_KEY = os.getenv('RECAPTCHA_PRIVATE_KEY', TEST_PRIVATE_KEY)
+# see captcha.constants
+RECAPTCHA_PUBLIC_KEY = os.getenv('RECAPTCHA_PUBLIC_KEY', "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI")
+RECAPTCHA_PRIVATE_KEY = os.getenv('RECAPTCHA_PRIVATE_KEY', "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe")
 
 TIME_ZONE = 'Europe/Berlin'
 LANGUAGE_CODE = 'en-us'

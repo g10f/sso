@@ -1,5 +1,4 @@
 import logging
-from distutils.util import strtobool
 from uuid import UUID
 
 from sorl.thumbnail import get_thumbnail
@@ -28,7 +27,7 @@ from sso.auth.utils import is_recent_auth_time
 from sso.models import update_object_from_dict, map_dict2dict
 from sso.organisations.models import Organisation
 from sso.registration import default_username_generator
-from sso.utils.parse import parse_datetime_with_timezone_support
+from sso.utils.parse import parse_datetime_with_timezone_support, strtobool
 from sso.utils.url import absolute_url, get_base_url
 
 logger = logging.getLogger(__name__)
