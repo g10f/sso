@@ -14,17 +14,6 @@ RUN python3 -m venv $VIRTUAL_ENV
 RUN pip install -U pip wheel
 RUN pip install -r requirements.txt
 
-#####################################################
-FROM python:3.11-slim
-
-# https://docs.djangoproject.com/en/3.2/ref/contrib/gis/install/geolibs/
-RUN apt-get update && apt-get -y install --no-install-recommends binutils libproj19 gdal-bin && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-ENV VIRTUAL_ENV='/venv'
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
-
 ARG USERNAME=worker
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
@@ -35,8 +24,6 @@ RUN groupadd --gid $USER_GID $USERNAME && useradd --uid $USER_UID --gid $USER_GI
 # create media dir
 RUN mkdir -p /opt/g10f/sso/htdocs/media
 RUN chown $USERNAME:$USERNAME /opt/g10f/sso/htdocs/media
-
-COPY --from=builder $VIRTUAL_ENV $VIRTUAL_ENV
 
 WORKDIR /opt/g10f/sso/apps
 COPY apps .
