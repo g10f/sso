@@ -1,6 +1,6 @@
 FROM python:3.11 as builder
 
-RUN apt-get update && apt-get -y install python3-venv
+RUN apt-get update && apt-get -y install --no-install-recommends python3-venv binutils libproj25 gdal-bin && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /opt/g10f/sso
 
