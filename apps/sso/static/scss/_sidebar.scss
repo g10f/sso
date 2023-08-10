@@ -1,5 +1,5 @@
 .sidebar {
-  background-color: tint-color($brand-light, 95%);
+  background-color: rgba(var(--bs-brand-light-rgb), .05);
   border-radius: .25rem;
 
   ul > li {
@@ -11,7 +11,7 @@
 
     &:hover,
     &:focus {
-      color: shade-color($navbar-light-brand-hover-color, 10%);
+      color: $navbar-light-brand-hover-color;
     }
 
     &.active.nav-link {
@@ -27,7 +27,7 @@
 
     &:hover,
     &:focus {
-      color: shade-color($navbar-light-brand-hover-color, 10%);
+      color: $navbar-light-brand-hover-color
     }
 
     &:not(.collapsed) {

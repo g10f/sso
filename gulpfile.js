@@ -5,7 +5,8 @@ const {buildStyles, buildMinStyles} = require('./gulp/buildStyles.js');
 global.config = {
     srcCss: [
         './apps/sso/static/scss/main.scss',
-        './apps/sso/static/scss/select2.scss'],
+        './apps/sso/static/scss/select2.scss'
+    ],
     buildCss: './apps/sso/static/css'
 };
 
@@ -37,5 +38,5 @@ function copyCropperFiles() {
 exports.default = parallel(buildStyles, buildMinStyles, copyJavaScriptFiles, copyFontFiles, copyCropperFiles);
 
 exports.watch = function () {
-    gulp.watch(['./apps/sso/static/scss/**/*.scss'], parallel(buildStyles, buildMinStyles));
+    gulp.watch(['./apps/sso/static/scss/**/*.scss'], parallel(buildMinStyles));
 };
