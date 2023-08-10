@@ -229,3 +229,12 @@ footer {
     }
   }
 }
+// color mode picker
+.navbar {
+  .dropdown-menu .active .bi {
+    display: block !important;
+  }
+  .dropdown-menu-end {
+    --bs-dropdown-min-width: 8rem;
+  }
+}

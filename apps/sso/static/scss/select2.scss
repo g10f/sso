@@ -1,18 +1,18 @@
 // scss-docs-start import-stack
 // Configuration
-@import "node_modules/bootstrap/scss/functions";
+@import "bootstrap/scss/functions";
 
 // Include any default variable overrides here
-@import "../sso/apps/sso/static/scss/variables";
 @import "variables";
 
-@import "node_modules/bootstrap/scss/variables";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/variables-dark";
 
-@import "../sso/apps/sso/static/scss/maps";
+@import "maps";
 
-@import "node_modules/bootstrap/scss/maps";
-@import "node_modules/bootstrap/scss/mixins";
+@import "bootstrap/scss/maps";
+@import "bootstrap/scss/mixins";
 
 // select2
-@import "node_modules/select2/src/scss/core";
-@import "node_modules/select2-bootstrap-5-theme/src/include-all";
+@import "select2/src/scss/core";
+@import "select2-bootstrap-5-theme/src/include-all";
