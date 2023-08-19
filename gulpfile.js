@@ -38,5 +38,5 @@ function copyCropperFiles() {
 exports.default = parallel(buildStyles, buildMinStyles, copyJavaScriptFiles, copyFontFiles, copyCropperFiles);
 
 exports.watch = function () {
-    gulp.watch(['./apps/sso/static/scss/**/*.scss'], parallel(buildMinStyles));
+    gulp.watch(['./apps/sso/static/scss/**/*.scss'], parallel(buildStyles, buildMinStyles));
 };
