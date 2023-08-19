@@ -265,6 +265,12 @@ class OIDCRequestValidator(RequestValidator):
         """
         try:
             refresh_token = RefreshToken.objects.get(token=refresh_token)
+            refresh_token.no_tokens_issued += 1
+            refresh_token.save()
+            if not refresh_token.is_active:
+                logger.warning(f'Refresh token {refresh_token} is not active.')
+                return False
+
             request.user = authenticate(token=refresh_token)
         except RefreshToken.DoesNotExist:
             return False

@@ -345,6 +345,9 @@ class RefreshToken(models.Model):
     token = models.CharField(_('token'), max_length=2048, unique=True)
     # otp_device = models.ForeignKey(Device, null=True, on_delete=models.SET_NULL)
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)
+    last_modified = models.DateTimeField(_('last modified'), auto_now=True)
+    is_active = models.BooleanField(_('active'), default=True, db_index=True)
+    no_tokens_issued = models.IntegerField(_('number of tokens issued'), default=0)
 
     @property
     def user(self):
