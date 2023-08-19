@@ -99,8 +99,8 @@ class AuthorizationCodeAdmin(admin.ModelAdmin):
 
 
 class RefreshTokenAdmin(admin.ModelAdmin):
-    list_display = ('id', 'bearer_token_link', 'created_at')
-    list_filter = ('bearer_token__client__application', 'bearer_token__client')
+    list_display = ('id', 'bearer_token_link', 'created_at', 'last_modified', 'is_active', 'no_tokens_issued')
+    list_filter = ('no_tokens_issued', 'bearer_token__client__application', 'bearer_token__client')
     search_fields = ('user__username', 'user__first_name', 'user__last_name', 'user__uuid', 'user__useremail__email')
     raw_id_fields = ("bearer_token",)
     readonly_fields = ('created_at',)
