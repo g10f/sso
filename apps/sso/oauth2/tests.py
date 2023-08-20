@@ -392,6 +392,11 @@ class OAuth2Tests(OAuth2BaseTestCase):
 
         self.assertTrue({'scope': 'openid profile email', 'token_type': 'Bearer'}, token)
 
+        # test that refresh tokens can only be used once
+        token_response = self.token_request(token_data)
+        self.assertEqual(token_response.status_code, 400)
+        self.assertIn('error', token_response.json())
+
         # revoke the last refresh token
         data = {
             'token': token['refresh_token'],

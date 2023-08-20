@@ -60,8 +60,12 @@ class OIDCRequestValidator(RequestValidator):
 
     def introspect_token(self, token, token_type_hint, request, *args, **kwargs):
         try:
-            refresh_token = RefreshToken.objects.get(token=token)
-            return {'active': True, 'username': refresh_token.user.username, 'token_type': 'refresh_token'}
+            refresh_token = RefreshToken.objects.select_related("bearer_token__user").get(token=token)
+            if refresh_token.is_active and refresh_token.bearer_token.user.is_active and refresh_token.no_tokens_issued == 0:
+                return {'username': refresh_token.user.username, 'token_type': 'refresh_token'}
+            else:
+                return None
+
         except RefreshToken.DoesNotExist:
             pass
 
@@ -264,12 +268,19 @@ class OIDCRequestValidator(RequestValidator):
         associated with this refresh token.
         """
         try:
-            refresh_token = RefreshToken.objects.get(token=refresh_token)
-            refresh_token.no_tokens_issued += 1
-            refresh_token.save()
+            refresh_token = RefreshToken.objects.select_related("bearer_token__user").get(token=refresh_token)
             if not refresh_token.is_active:
                 logger.warning(f'Refresh token {refresh_token} is not active.')
                 return False
+            if not refresh_token.bearer_token.user.is_active:
+                logger.warning(f'User {refresh_token.bearer.user} is not active.')
+                return False
+            if refresh_token.no_tokens_issued > 0:
+                logger.warning(f'Refresh token was already used.')
+                return False
+
+            refresh_token.no_tokens_issued += 1
+            refresh_token.save()
 
             request.user = authenticate(token=refresh_token)
         except RefreshToken.DoesNotExist:
@@ -312,7 +323,7 @@ class OIDCRequestValidator(RequestValidator):
             return False
 
     def revoke_token(self, token, token_type_hint, request, *args, **kwargs):
-        RefreshToken.objects.filter(token=token).delete()
+        RefreshToken.objects.filter(token=token).update(is_active=False)
 
     def finalize_id_token(self, id_token, token, token_handler, request):
         # Finalize OpenID Connect ID token & Sign or Encrypt.
