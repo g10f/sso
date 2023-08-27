@@ -18,5 +18,6 @@ def settings(request):
         'sso_region_management': site_settings.SSO_REGION_MANAGEMENT,
         'sidebar': sidebar(request),
         'sso_style': site_settings.SSO_STYLE,
+        'default_theme': site_settings.SSO_DEFAULT_THEME,
         'version': __version__
     }

@@ -7,7 +7,7 @@
   }
 
   a {
-    color: $navbar-light-brand-color;
+    color: var(--#{$prefix}body-color);
 
     &:hover,
     &:focus {
@@ -23,7 +23,7 @@
 
   button {
     width: 100%;
-    color: $navbar-light-brand-color;
+    color: var(--#{$prefix}body-color);
 
     &:hover,
     &:focus {
