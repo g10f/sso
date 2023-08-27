@@ -1,5 +1,5 @@
 <!doctype html>{% load static i18n analytics %}
-<html lang="{{ LANGUAGE_CODE }}" class="{% block htmlclass %}h-100{% endblock %}" data-bs-theme="light">
+<html lang="{{ LANGUAGE_CODE }}" class="{% block htmlclass %}h-100{% endblock %}" data-default-theme="{{ default_theme }}">
 <head>
   <meta charset="utf-8">
   <title>{% block title %}{% endblock %}</title>
@@ -10,7 +10,7 @@
   <link href="{% static 'root/favicon-32x32.png' %}" rel="icon" sizes="32x32" type="image/png">
   <link href="{% static 'root/favicon-16x16.png' %}" rel="icon" sizes="16x16" type="image/png">
   <link href="{% static 'root/favicon.ico' %}" rel="icon">
-  {#  <script src="{% static 'js/color_mode.js' %}"></script> #}
+  <script src="{% static 'js/theme.js' %}"></script>
   {% block style %}
     <link href="{% static sso_style %}" rel="stylesheet">
     <link href="{% static 'font/bootstrap-icons.min.css' %}" rel="stylesheet">

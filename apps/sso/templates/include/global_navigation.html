@@ -59,7 +59,7 @@
           <li class="nav-item">
             <a class="nav-link" href="{% url 'auth:login' %}"><i class="bi bi-box-arrow-in-right"></i> {% translate 'Log in' %}</a></li>
         {% endif %}
-        {#% include 'include/_color_mode_dropdown.html' %#}
+        {% include 'include/_color_mode_button.html' %}
       </ul>
     </div>
   </div>

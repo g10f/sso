@@ -11591,11 +11591,20 @@ footer > div > ul > li {
   padding: 0 2px;
 }
 
-.navbar .dropdown-menu .active .bi {
-  display: block !important;
+.theme-toggle * {
+  display: none;
 }
-.navbar .dropdown-menu-end {
-  --bs-dropdown-min-width: 8rem;
+
+html[data-theme=auto] .theme-icon-when-auto {
+  display: inline-block;
+}
+
+html[data-theme=dark] .theme-icon-when-dark {
+  display: inline-block;
+}
+
+html[data-theme=light] .theme-icon-when-light {
+  display: inline-block;
 }
 
 .sign-in section {
@@ -11999,7 +12008,7 @@ a.selector-clearall {
   margin-left: 1.08rem;
 }
 .sidebar a {
-  color: rgba(var(--bs-emphasis-color-rgb), 1);
+  color: var(--bs-body-color);
 }
 .sidebar a:hover, .sidebar a:focus {
   color: rgba(var(--bs-emphasis-color-rgb), 1);
@@ -12011,7 +12020,7 @@ a.selector-clearall {
 }
 .sidebar button {
   width: 100%;
-  color: rgba(var(--bs-emphasis-color-rgb), 1);
+  color: var(--bs-body-color);
 }
 .sidebar button:hover, .sidebar button:focus {
   color: rgba(var(--bs-emphasis-color-rgb), 1);
