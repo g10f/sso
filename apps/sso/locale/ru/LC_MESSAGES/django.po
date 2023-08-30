@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-27 12:19+0200\n"
+"POT-Creation-Date: 2023-08-30 17:58+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2076,6 +2076,9 @@ msgstr ""
 msgid "token"
 msgstr ""
 
+msgid "number of tokens issued"
+msgstr ""
+
 msgid "Authorization"
 msgstr ""
 
@@ -2970,6 +2973,9 @@ msgid "Delete secret"
 msgstr ""
 
 msgid "New secret"
+msgstr ""
+
+msgid "Dark mode toggle"
 msgstr ""
 
 msgid "Send email"

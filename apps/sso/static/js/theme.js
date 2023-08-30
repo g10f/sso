@@ -28,7 +28,8 @@
         localStorage.setItem("theme", mode);
     }
 
-    function cycleTheme() {
+    function cycleTheme(event) {
+        event.preventDefault();
         const currentTheme = localStorage.getItem("theme") || "auto";
         const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
