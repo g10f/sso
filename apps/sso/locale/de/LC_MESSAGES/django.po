@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-05-27 12:18+0200\n"
+"POT-Creation-Date: 2023-08-30 17:58+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2216,7 +2216,10 @@ msgid "access token"
 msgstr "Zugriffstoken"
 
 msgid "token"
-msgstr ""
+msgstr "Token"
+
+msgid "number of tokens issued"
+msgstr "Anzahl der ausgelieferten Tokens"
 
 msgid "Authorization"
 msgstr "Autorisation"
@@ -3165,6 +3168,9 @@ msgstr "Geheimniss Löschen"
 msgid "New secret"
 msgstr "Neues Geheimniss"
 
+msgid "Dark mode toggle"
+msgstr "Dunkles Design aktivieren oder deaktivieren"
+
 msgid "Send email"
 msgstr "E-Mail Senden"
 
@@ -3228,15 +3234,3 @@ msgstr ""
 #, python-brace-format
 msgid "The {name} \"{obj}\" was created successfully."
 msgstr "{name} \"{obj}\" wurde erfolgreich angelegt."
-
-#, python-brace-format
-#~ msgid ""
-#~ "The {name} \"{obj}\" was changed successfully. You may edit it again "
-#~ "below."
-#~ msgstr ""
-#~ "{name}  \"{obj}\" wurde erfolgreich geändert und kann weiter bearbeitet "
-#~ "werden."
-
-#, python-brace-format
-#~ msgid "The {name} \"{obj}\" was changed successfully."
-#~ msgstr "{name}  \"{obj}\" wurde erfolgreich geändert"
