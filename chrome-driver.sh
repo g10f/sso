@@ -1,4 +1,4 @@
-#CHROME_DRIVER_VERSION
+#CHROME_DRIVER_VERSION='116.0.5845.96'
 # set -xe
 if [ -z "$CHROME_DRIVER_VERSION" ]; then
     CHROME_MAJOR_VERSION=$(google-chrome --version | sed -E "s/.* ([0-9]+)(\.[0-9]+){3}.*/\1/")
