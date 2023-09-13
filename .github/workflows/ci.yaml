@@ -18,7 +18,7 @@ jobs:
           echo "VERSION=$(python apps/version.py)" >> $GITHUB_OUTPUT
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
 
       - name: Docker meta
         id: meta
