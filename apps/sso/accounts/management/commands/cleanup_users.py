@@ -11,7 +11,7 @@ from django.core.management.base import BaseCommand
 from django.db.models.aggregates import Count
 from django.db.models.query_utils import Q
 from django.utils.timezone import now
-from sso.accounts.models import User, RoleProfile, UserManager
+from sso.accounts.models import User, RoleProfile, UserManager, UserNote
 from sso.registration.models import RegistrationManager
 
 logger = logging.getLogger(__name__)
@@ -71,13 +71,15 @@ def check_validation():
     logger.info("Expired Users:")
     logger.debug("-----------------------------------------")
     with reversion.create_revision():
-        reversion.set_comment("cleared application_roles, app-admin and profile admin permissions and set guest_profile in cleanup_users task")
+        note = "cleared application_roles, app-admin and profile admin permissions and set guest_profile in cleanup_users task"
+        reversion.set_comment(note)
         for expired_user in expired_users:
             expired_user.application_roles.clear()
             expired_user.role_profiles.set([guest_profile])
             expired_user.applicationadmin_set.all().delete()
             expired_user.roleprofileadmin_set.all().delete()
             expired_user.update_last_modified()
+            UserNote.objects.create_note(user=expired_user, notes=[note], created_by_user=None)
             logger.debug(f"{expired_user} expired since {expired_user.valid_until:%Y-%m-%d}.")
 
     # 2. user with valid_until__isnull=True and a organisation which uses user activation will expire in 30 days
