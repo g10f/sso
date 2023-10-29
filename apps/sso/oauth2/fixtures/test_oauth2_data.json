@@ -56,7 +56,7 @@
       ],
       "redirect_uris": "http://localhost",
       "client_secret": "geheim",
-      "scopes": "openid profile email users",
+      "scopes": "openid profile email users role",
       "user": null,
       "type": "web"
     }
@@ -66,7 +66,7 @@
     "fields": {
       "uuid": "81062e2af4db4669a721d37d1ed7c058",
       "last_modified": "2012-03-23T07:00:46.076Z",
-      "name": "Test Client2 - web",
+      "name": "Test Client3 - web",
       "application": [
         "bc0ee635a536491eb8e7fbe5749e8111"
       ],
@@ -82,7 +82,7 @@
     "fields": {
       "uuid": "5614cdb0aa3c48d59828681bd62e1741",
       "last_modified": "2012-03-23T07:00:46.076Z",
-      "name": "Test Client2 - web",
+      "name": "Test Client4 - web",
       "application": [
         "bc0ee635a536491eb8e7fbe5749e8111"
       ],
@@ -98,7 +98,7 @@
     "fields": {
       "uuid": "ec4c46551416431db114a4c54d552f5b",
       "last_modified": "2019-06-10T10:00:46.076Z",
-      "name": "Test Client2 (pkce) - web",
+      "name": "Test Client (pkce) - web",
       "application": [
         "bc0ee635a536491eb8e7fbe5749e8111"
       ],
@@ -108,6 +108,24 @@
       "user": null,
       "type": "web",
       "force_using_pkce": true
+    }
+  },
+  {
+    "model": "oauth2.client",
+    "fields": {
+      "uuid": "b740653ccaa14feba7e223c609896672",
+      "last_modified": "2023-10-29T10:00:46.076Z",
+      "name": "Test Client - service",
+      "application": [
+        "bc0ee635a536491eb8e7fbe5749e8111"
+      ],
+      "client_secret": "geheim",
+      "scopes": "openid role",
+      "user": [
+        "TestClientService"
+      ],
+      "type": "service",
+      "force_using_pkce": false
     }
   }
 ]

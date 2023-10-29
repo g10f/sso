@@ -42,7 +42,9 @@ class ApiTests(OAuth2BaseTestCase):
         'country_code': 'DE',
         'region_id': '0ebf2537fc664b7db285ea773c981404',
         'country_group_id': 'f6b34d1cee944138800980fe48a2b26f',
-        'association_id': 'bad2e6edff274f2f900ff3dbb26e38ce'
+        'association_id': 'bad2e6edff274f2f900ff3dbb26e38ce',
+        'app_id': 'bc0ee635a536491eb8e7fbe5749e8111',
+        'role': 'Staff'
     }
     status_codes = {
         'verify_email': 404
@@ -58,7 +60,7 @@ class ApiTests(OAuth2BaseTestCase):
     def test_entry_point(self):
         response = self.client.get(reverse('api:home'))
         home = response.json()
-        authorization = self.get_authorization(client_id="1811f02ed81b43b5bee1afe031e6198e", username="GlobalAdmin", password="secret007", scope="users")
+        authorization = self.get_authorization(client_id="1811f02ed81b43b5bee1afe031e6198e", username="GlobalAdmin", password="secret007", scope="users role")
         self.longMessage = True
         for entry in home:
             if entry[0] != '@':
