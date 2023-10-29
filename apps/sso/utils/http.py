@@ -18,7 +18,9 @@ def parse_json(request, **extra):
     #         'Content-Type header is "{0}", not "application/json"'
     #         .format(request.content_type)
     #     )
-    return json.loads(request.body.decode(), **extra)
+    body =  request.body.decode()
+    data = body if body else "{}"
+    return json.loads(data, **extra)
 
 
 class HttpPostLogoutRedirect(HttpResponse):

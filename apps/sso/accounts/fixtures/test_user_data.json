@@ -24,6 +24,10 @@
         [
           "fa467234b81e4838a009e38d9e655d18",
           "Global"
+        ],
+        [
+          "bc0ee635a536491eb8e7fbe5749e8111",
+          "Staff"
         ]
       ],
       "user_permissions": [],
@@ -217,6 +221,56 @@
       "is_subscriber": false,
       "is_center": false,
       "last_modified": "2012-03-23T07:00:46.076Z"
+    }
+  },
+  {
+    "model": "accounts.user",
+    "fields": {
+      "username": "TestClientService",
+      "first_name": "TestClient",
+      "last_name": "Service",
+      "is_active": true,
+      "is_superuser": false,
+      "is_staff": false,
+      "last_login": "2023-10-29T07:18:33.143Z",
+      "user_permissions": [
+        [
+          "access_all_users",
+          "accounts",
+          "user"
+        ],
+        [
+          "read_user",
+          "accounts",
+          "user"
+        ],
+        [
+          "change_user",
+          "accounts",
+          "user"
+        ]
+      ],
+      "password": "!7yUozMEJjyRRZ7VcceIDkqMJlEpBD3Yl0It7SadT",
+      "date_joined": "2023-10-29T07:18:33.143Z",
+      "uuid": "96d7a84807a94b7ba1e519c649489f2a",
+      "groups": [
+        [
+          "GlobalAppUserAdmin"
+        ]
+      ],
+      "application_roles": [
+        [
+          "bc0ee635a536491eb8e7fbe5749e8111",
+          "Staff"
+        ],
+        [
+          "bc0ee635a536491eb8e7fbe5749e8111",
+          "Admin"
+        ]
+      ],
+      "is_subscriber": false,
+      "is_center": false,
+      "last_modified": "2023-10-29T07:18:33.143Z"
     }
   },
   {

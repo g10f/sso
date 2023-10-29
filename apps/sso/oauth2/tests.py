@@ -112,6 +112,14 @@ class OAuth2BaseTestCase(TestCase):
         self.logout()
         return 'Bearer %s' % token['access_token']
 
+    def get_authorization_with_client_credentials(self, client_id=None, client_secret='geheim', scope="openid profile email"):
+        token_response = self.token_request_with_client_credentials(client_id, client_secret=client_secret, scope=scope)
+        self.assertEqual(token_response.status_code, 200)
+        self.assertIn('application/json', token_response['Content-Type'])
+        token = token_response.json()
+        self.logout()
+        return 'Bearer %s' % token['access_token']
+
     def get_http_authorization(self, data):
         if 'client_secret' in data and data['client_secret']:
             auth = b"%s:%s" % (data['client_id'].encode(), data['client_secret'].encode())
@@ -125,6 +133,16 @@ class OAuth2BaseTestCase(TestCase):
         data = token_data.copy()
         authorization = self.get_http_authorization(data)
         return self.client.post(reverse('oauth2:token'), data, HTTP_AUTHORIZATION=authorization)
+
+    def token_request_with_client_credentials(self, client_id=None, client_secret="geheim", scope="openid profile email"):
+        data = {
+            'grant_type': "client_credentials",
+            'client_secret': client_secret,
+            'client_id': client_id if client_id else self._client_id,
+        }
+        if scope:
+            data['scope'] = scope
+        return self.client.post(reverse('oauth2:token'), data)
 
     def get_url_from_mail(self, n=1):
         outbox = getattr(mail, 'outbox')

@@ -1,5 +1,5 @@
 from django.urls import path
-from sso.api.views import users, users_v2, organisations, home, countries, regions, country_groups, media, associations
+from sso.api.views import users, users_v2, organisations, home, countries, regions, country_groups, media, associations, application_roles
 
 app_name = 'api'
 
@@ -16,6 +16,9 @@ urlpatterns = [
     path('v2/users/me/', users_v2.MyDetailView.as_view(), name='v2_users_me'),
     path('v2/users/<uuid:uuid>/', users_v2.UserDetailView.as_view(), name='v2_user'),
     path('v2/users/<uuid:uuid>/verify_email/', users_v2.VerifyEmailView.as_view(), name='v2_verify_email'),
+    path('v2/apps/<uuid:uuid>/', application_roles.ApplicationView.as_view(), name='v2_app'),
+    path('v2/users/<uuid:uuid>/apps/<uuid:app_uuid>/roles/', application_roles.UserApplicationRolesView.as_view(), name='v2_user_app_roles'),
+    path('v2/users/<uuid:uuid>/apps/<uuid:app_uuid>/roles/<slug:role>/', application_roles.UserApplicationRoleView.as_view(), name='v2_user_app_role'),
     path('v2/users/me/navigation/', users_v2.MyGlobalNavigationView.as_view(), name='v2_navigation_me'),
     path('v2/users/<uuid:uuid>/navigation/', users_v2.GlobalNavigationView.as_view(),
          name='v2_navigation'),

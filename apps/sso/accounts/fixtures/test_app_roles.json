@@ -12,6 +12,17 @@
   {
     "model": "accounts.application",
     "fields": {
+      "order": -1,
+      "uuid": "8478dbea8d594b2780fa76a6ef822ad2",
+      "title": "Test App with required scope",
+      "url": "https://test.example.com",
+      "redirect_to_after_first_login": false,
+      "required_scope": "special"
+    }
+  },
+  {
+    "model": "accounts.application",
+    "fields": {
       "uuid": "e4a281ef13e1484b93fe4b7cc66374c8",
       "title": "Shop 108 Home",
       "url": "https://ds108.example.com"

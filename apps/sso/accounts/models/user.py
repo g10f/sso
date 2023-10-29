@@ -322,8 +322,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         return Permission.objects.distinct().filter(q)
 
     @memoize
-    def get_applicationrole_ids(self):
-        return get_applicationrole_ids(self.id)
+    def get_applicationrole_ids(self, filter=None):
+        return get_applicationrole_ids(self.id, filter)
 
     @memoize
     def get_applicationroles(self):
@@ -331,14 +331,17 @@ class User(AbstractBaseUser, PermissionsMixin):
         return ApplicationRole.objects.filter(id__in=applicationrole_ids).select_related()
 
     @memoize
-    def get_administrable_application_roles(self):
+    def get_administrable_application_roles(self, filter=None):
         """
         get a queryset for the admin
         """
         if self.is_superuser:
-            return ApplicationRole.objects.all().select_related()
+            if filter is not None:
+                return ApplicationRole.objects.filter(filter).select_related()
+            else:
+                return ApplicationRole.objects.all().select_related()
         else:
-            applicationrole_ids = self.get_applicationrole_ids()
+            applicationrole_ids = self.get_applicationrole_ids(filter)
             # all roles the user has, with adequate inheritable flag
             if self.is_global_user_admin:
                 application_roles = ApplicationRole.objects.filter(id__in=applicationrole_ids,
