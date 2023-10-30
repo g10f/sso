@@ -147,7 +147,14 @@ class UserApplicationRoleView(JsonDetailView):
         }
 
     def get_object(self, queryset=None):
-        self.object = super().get_object(queryset)
+        try:
+            self.object = super().get_object(queryset)
+        except Http404 as e:
+            raise ObjectDoesNotExist(e)
+
+        # check if app exists and throw exception if not exists
+        Application.objects.get_by_natural_key(self.kwargs['app_uuid'])
+
         try:
             # check if user has app role
             self.app_role = self.object.get_applicationroles().get(application__uuid=self.kwargs['app_uuid'], role__name=self.kwargs['role'])
