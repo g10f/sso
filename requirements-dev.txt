@@ -6,3 +6,4 @@ selenium
 uritemplate
 Werkzeug
 pyOpenSSL
+requests_oauthlib
