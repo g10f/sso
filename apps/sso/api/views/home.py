@@ -51,6 +51,7 @@ def home(request):
         "organisation": "%s%s%s" % (base_uri, reverse('api:v2_organisations'), "{org_id}/"),
         "users": "%s%s%s" % (base_uri, reverse('api:v2_users'), FIND_USER_EXPRESSION),
         "user": "%s%s%s%s" % (base_uri, reverse('api:v2_users'), "{user_id}/", CREATE_USER_QUERY_PARAMS),
+        "apps": "%s%s" % (base_uri, reverse('api:v2_apps')),
         "app": "%s%s" % (base_uri, reverse('api:v2_app', kwargs={'uuid': UUIDS['app_id']})),
         "user_app_roles": "%s%s" % (base_uri, reverse('api:v2_user_app_roles', kwargs={'uuid': UUIDS['user_id'], 'app_uuid': UUIDS['app_id']})),
         "user_app_role": "%s%s" % (base_uri, reverse('api:v2_user_app_role', kwargs={'uuid': UUIDS['user_id'], 'app_uuid': UUIDS['app_id'], 'role': UUIDS['role']})),
