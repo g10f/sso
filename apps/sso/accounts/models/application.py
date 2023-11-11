@@ -119,6 +119,9 @@ class ApplicationRole(models.Model):
     objects = ApplicationRoleManager()
 
     class Meta:
+        permissions = (
+            ("access_all_application_roles", "Can access all applications roles"),
+        )
         ordering = ['application', 'role']
         unique_together = (("application", "role"),)
         verbose_name = _('application role')

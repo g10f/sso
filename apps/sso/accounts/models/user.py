@@ -335,7 +335,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         """
         get a queryset for the admin
         """
-        if self.is_superuser:
+        if self.is_superuser or self.has_perms(['accounts.access_all_applications']):
             if filter is not None:
                 return ApplicationRole.objects.filter(filter).select_related()
             else:

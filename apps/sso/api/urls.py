@@ -16,6 +16,7 @@ urlpatterns = [
     path('v2/users/me/', users_v2.MyDetailView.as_view(), name='v2_users_me'),
     path('v2/users/<uuid:uuid>/', users_v2.UserDetailView.as_view(), name='v2_user'),
     path('v2/users/<uuid:uuid>/verify_email/', users_v2.VerifyEmailView.as_view(), name='v2_verify_email'),
+    path('v2/apps/', application_roles.ApplicationList.as_view(), name='v2_apps'),
     path('v2/apps/<uuid:uuid>/', application_roles.ApplicationView.as_view(), name='v2_app'),
     path('v2/users/<uuid:uuid>/apps/<uuid:app_uuid>/roles/', application_roles.UserApplicationRolesView.as_view(), name='v2_user_app_roles'),
     path('v2/users/<uuid:uuid>/apps/<uuid:app_uuid>/roles/<slug:role>/', application_roles.UserApplicationRoleView.as_view(), name='v2_user_app_role'),

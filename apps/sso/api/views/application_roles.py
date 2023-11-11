@@ -5,30 +5,67 @@ from django.db.models import Q
 from django.http import Http404
 from django.urls import reverse
 from sso.accounts.models import User, Application, ApplicationRole
-from sso.api.views.generic import JsonDetailView
+from sso.api.views.generic import JsonDetailView, JsonListView
 from sso.api.views.home import UUIDS, replace_with_param_name
 from sso.utils.url import get_base_url
 
 logger = logging.getLogger(__name__)
 
 
-class ApplicationView(JsonDetailView):
+class ApplicationMixin(object):
     model = Application
-    http_method_names = ['get', 'options']
 
-    def get_object_data(self, request, obj):
-        app_roles = self.request.user.get_administrable_application_roles(Q(application__uuid=self.kwargs['uuid']))
+    def get_object_data(self, request, obj, details=False):
+        base = get_base_url(request)
         data = {
+            '@id': "%s%s" % (base, reverse('api:v2_app', kwargs={'uuid': obj.uuid.hex})),
             'id': '%s' % obj.uuid.hex,
             'order': obj.order,
             'link': {
-                'href':  obj.url,
+                'href': obj.url,
                 'title': obj.title,
                 'global_navigation': obj.global_navigation,
-            },
-            'roles': [app_role.role.name for app_role in app_roles]
+            }
         }
+        if details:
+            app_roles = request.user.get_administrable_application_roles(Q(application__uuid=obj.uuid))
+            data['roles'] = [app_role.role.name for app_role in app_roles]
         return data
+
+
+class ApplicationList(ApplicationMixin, JsonListView):
+    def get_queryset(self):
+        qs = super().get_queryset().filter()
+        name = self.request.GET.get('q', None)
+        if name:
+            qs = qs.filter(title__icontains=name)
+
+        is_active = self.request.GET.get('is_active', 'True')
+        if is_active in ['True', 'true', '1', 'yes', 'Yes', 'Y', 'y']:
+            qs = qs.filter(is_active=True)
+        else:
+            qs = qs.filter(is_active=False)
+
+        global_navigation = self.request.GET.get('global_navigation', None)
+        if global_navigation in ['True', 'true', '1', 'yes', 'Yes', 'Y', 'y']:
+            qs = qs.filter(global_navigation=True)
+        elif global_navigation in ['False', 'false', '0', 'no', 'No', 'N', 'n']:
+            qs = qs.filter(global_navigation=False)
+
+        is_internal = self.request.GET.get('is_internal', None)
+        if is_internal in ['True', 'true', '1', 'yes', 'Yes', 'Y', 'y']:
+            qs = qs.filter(is_internal=True)
+        elif is_internal in ['False', 'false', '0', 'no', 'No', 'N', 'n']:
+            qs = qs.filter(is_internal=False)
+
+        return qs
+
+
+class ApplicationView(ApplicationMixin, JsonDetailView):
+    http_method_names = ['get', 'options']
+
+    def get_object_data(self, request, obj, details=True):
+        return super().get_object_data(request, obj, details=details)
 
 
 def read_permission(request, obj):
@@ -67,6 +104,7 @@ def replace_permission(request, obj):
         return False, "User has no access to object"
     else:
         return True, None
+
 
 class UserApplicationRolesView(JsonDetailView):
     model = User
