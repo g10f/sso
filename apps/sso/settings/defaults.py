@@ -259,7 +259,7 @@ INSTALLED_APPS = [
     'django.forms',
     'formtools',
     'sorl.thumbnail',
-    'captcha',
+    'django_recaptcha',
     'l10n',
     'smart_selects',
     'reversion',
@@ -307,7 +307,7 @@ REGISTRATION = {
 # https://docs.aws.amazon.com/ses/latest/DeveloperGuide/verify-addresses-and-domains.html
 SSO_SEND_FROM_VERIFIED_EMAIL_ADDRESSES = '%s|%s|%s' % (DEFAULT_FROM_EMAIL, SSO_NOREPLY_EMAIL, REGISTRATION['CONTACT_EMAIL'])
 
-SILENCED_SYSTEM_CHECKS = ['captcha.recaptcha_test_key_error']
+SILENCED_SYSTEM_CHECKS = ['django_recaptcha.recaptcha_test_key_error']
 
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
