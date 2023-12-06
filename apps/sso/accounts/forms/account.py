@@ -2,7 +2,7 @@ import datetime
 import logging
 
 import pytz
-from captcha.fields import ReCaptchaField
+from django_recaptcha.fields import ReCaptchaField
 
 from django import forms
 from django.conf import settings

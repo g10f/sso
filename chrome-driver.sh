@@ -1,14 +1,11 @@
-#CHROME_DRIVER_VERSION='116.0.5845.96'
-# set -xe
-if [ -z "$CHROME_DRIVER_VERSION" ]; then
-    CHROME_MAJOR_VERSION=$(google-chrome --version | sed -E "s/.* ([0-9]+)(\.[0-9]+){3}.*/\1/")
-    CHROME_DRIVER_VERSION=$(wget --no-verbose -O - "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_MAJOR_VERSION}");
-fi
-echo "Using chromedriver version: ""$CHROME_DRIVER_VERSION"
-wget --no-verbose -O /tmp/chromedriver_linux64.zip https://chromedriver.storage.googleapis.com/"$CHROME_DRIVER_VERSION"/chromedriver_linux64.zip
-rm -rf /opt/selenium/chromedriver
-unzip /tmp/chromedriver_linux64.zip -d /opt/selenium
-rm /tmp/chromedriver_linux64.zip
-mv /opt/selenium/chromedriver /opt/selenium/chromedriver-"$CHROME_DRIVER_VERSION"
-chmod 755 /opt/selenium/chromedriver-"$CHROME_DRIVER_VERSION"
-ln -fs /opt/selenium/chromedriver-"$CHROME_DRIVER_VERSION" /usr/bin/chromedriver
+#!/bin/bash
+platform=linux64
+
+url=$(curl https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json | \
+ jq -r ".channels.Stable.downloads.chromedriver[] | select(.platform == \"${platform}\") | .url")
+#echo $url
+curl "$url" -O
+unzip chromedriver-"$platform".zip
+sudo mv chromedriver-"$platform"/chromedriver /usr/bin/chromedriver
+rm -r chromedriver-"$platform"
+rm chromedriver-"$platform".zip
