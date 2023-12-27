@@ -2,6 +2,7 @@ import os
 import sys
 from pathlib import Path
 from uuid import UUID
+from warnings import filterwarnings
 
 from django.urls import reverse_lazy
 from django.utils.translation import pgettext_lazy
@@ -156,10 +157,6 @@ LANGUAGE_CODE = 'en-us'
 ABSOLUTE_URL_OVERRIDES = {
     'accounts.user': lambda u: "/api/v2/users/%s/" % u.uuid.hex,
 }
-
-# Default in django 4.1
-# USE_I18N = True
-# USE_L10N = True
 
 # Default from django 5.0
 USE_TZ = True
@@ -320,6 +317,10 @@ CSRF_COOKIE_HTTPONLY = os.getenv('CSRF_COOKIE_HTTPONLY', 'True').lower() in ('tr
 if not (RUNNING_DEVSERVER or RUNNING_TEST):
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
+
+# silence RemovedInDjango60Warning
+filterwarnings("ignore", "The FORMS_URLFIELD_ASSUME_HTTPS transitional setting is deprecated.")
+FORMS_URLFIELD_ASSUME_HTTPS = True
 
 AUTH_PASSWORD_VALIDATORS = [{
     'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',

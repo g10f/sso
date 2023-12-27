@@ -402,6 +402,7 @@ class PhoneNumberInline(admin.TabularInline):
 
 
 class UserAdmin(VersionAdmin, AdminImageMixin, DjangoUserAdmin):
+    show_facets = admin.ShowFacets.NEVER
     add_form = AdminUserCreationForm
     save_on_top = True
     list_display = (

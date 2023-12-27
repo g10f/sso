@@ -195,6 +195,7 @@ class SelectDateWidget(widgets.SelectDateWidget):
 
 
 class OSMWidget(gis_forms.OSMWidget):
+    template_name = "gis/openlayers-osm-ex.html"
     class Media:
         js = (
             'js/gis/OLMapWidgetExt.js',
