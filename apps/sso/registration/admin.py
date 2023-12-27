@@ -55,6 +55,7 @@ class LoggedInFilter(SimpleListFilter):
 
 
 class RegistrationAdmin(admin.ModelAdmin):
+    show_facets = admin.ShowFacets.NEVER
     actions = ['activate', 'validate_users', 'resend_validation_email', 'delete_expired']
     list_display = ('user', 'last_login', 'primary_email', 'date_registered', 'about_me', 'is_validated',
                     'token_valid', 'activation_valid', 'is_access_denied', 'is_active')

@@ -30,7 +30,7 @@ class URLValidatorEx(URLValidator):
 
 
 class URLFormFieldEx(forms.URLField):
-    def __init__(self, max_length=None, min_length=None, *args, **kwargs):
+    def __init__(self, max_length=None, min_length=None,  assume_scheme='https', **kwargs):
         domain = kwargs.pop('domain')
         validators = [URLValidatorEx(domain)]
         error_messages = {
@@ -38,7 +38,7 @@ class URLFormFieldEx(forms.URLField):
         }
         kwargs['error_messages'] = error_messages
         kwargs['validators'] = validators
-        super().__init__(max_length=max_length, min_length=min_length, *args, **kwargs)
+        super().__init__(max_length=max_length, min_length=min_length, assume_scheme=assume_scheme, **kwargs)
 
 
 class URLFieldEx(URLField):

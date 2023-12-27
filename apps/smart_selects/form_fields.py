@@ -20,4 +20,4 @@ class ChainedModelChoiceField(ModelChoiceField):
         self.widget.queryset = self.queryset
         choices = super()._get_choices()
         return choices
-    choices = property(_get_choices, ChoiceField._set_choices)
+    choices = property(_get_choices, ChoiceField.choices.fset)

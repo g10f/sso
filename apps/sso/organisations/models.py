@@ -66,7 +66,7 @@ class CountryGroup(AbstractBaseModel):
     name = models.CharField(_("name"), max_length=255)
     email = models.OneToOneField(Email, on_delete=models.SET_NULL, verbose_name=_("email address"), blank=True,
                                  null=True, limit_choices_to={'email_type': COUNTRY_GROUP_EMAIL_TYPE})
-    homepage = models.URLField(_("homepage"), blank=True, )
+    homepage = models.URLField(_("homepage"), blank=True)
 
     class Meta(AbstractBaseModel.Meta):
         verbose_name = _('Country group')

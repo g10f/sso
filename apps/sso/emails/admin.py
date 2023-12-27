@@ -68,9 +68,10 @@ class EmailTypeFilter(admin.SimpleListFilter):
 
 
 class EmailAdmin(admin.ModelAdmin):
+    show_facets = admin.ShowFacets.NEVER
     search_fields = ('email', 'uuid')
     list_display = ('email', 'email_type', 'last_modified', 'uuid')
-    list_filter = (EmailTypeFilter, 'email_type', 'permission', 'groupemail__is_guide_email')
+    list_filter = (EmailTypeFilter, 'email_type', 'permission')
     inlines = [EmailAlias_Inline, EmailForward_Inline]
 
 
@@ -78,20 +79,20 @@ class EmailAliasAdmin(admin.ModelAdmin):
     list_select_related = ('email',)
     search_fields = ('email__email', 'alias', 'uuid')
     list_display = ('alias', 'email', 'last_modified', 'uuid')
-    list_filter = ('email__email_type', 'email')
+    list_filter = ('email__email_type', )
 
 
 class EmailForwardAdmin(admin.ModelAdmin):
     list_select_related = ('email',)
     search_fields = ('email__email', 'forward', 'uuid')
     list_display = ('forward', 'email', 'last_modified', 'uuid')
-    list_filter = ('email__email_type', 'email')
+    list_filter = ('email__email_type', )
 
 
 class GroupEmailAdmin(admin.ModelAdmin):
     list_select_related = ('email',)
     list_display = ('name', 'email', 'homepage', 'uuid')
-    list_filter = ('email__permission', 'is_guide_email')
+    list_filter = ('email__permission', )
 
 
 class GroupEmailManagerAdmin(admin.ModelAdmin):

@@ -5,7 +5,7 @@ from django.contrib import admin
 from django.contrib.admin import SimpleListFilter
 from django.contrib.admin.utils import model_ngettext
 from django.contrib.admin.widgets import FilteredSelectMultiple
-from django.contrib.gis.admin import OSMGeoAdmin
+from django.contrib.gis.admin import GISModelAdmin
 from django.utils.translation import gettext_lazy as _
 from l10n.models import Country
 from sso.emails.models import Email, CENTER_EMAIL_TYPE
@@ -34,6 +34,7 @@ class CountryListFilter(SimpleListFilter):
 
 
 class AdminRegionAdmin(VersionAdmin, admin.ModelAdmin):
+    show_facets = admin.ShowFacets.NEVER
     list_display = ('name', 'uuid', 'last_modified')
     list_filter = (CountryListFilter,)
     date_hierarchy = 'last_modified'
@@ -128,10 +129,10 @@ class PhoneNumber_Inline(admin.TabularInline):
     ]
 
 
-class OrganisationAdmin(VersionAdmin, OSMGeoAdmin):
-    openlayers_url = '//cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js'
+class OrganisationAdmin(VersionAdmin, GISModelAdmin):
+    show_facets = admin.ShowFacets.NEVER
     list_select_related = ('organisation_country__country', 'email', 'association')
-    actions = OSMGeoAdmin.actions + ('mark_uses_user_activation', )
+    actions = GISModelAdmin.actions + ('mark_uses_user_activation',)
     save_on_top = True
     search_fields = ('name', 'uuid')
     inlines = [PhoneNumber_Inline, Address_Inline]
