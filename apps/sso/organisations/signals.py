@@ -1,8 +1,7 @@
 from django.db.models.signals import pre_save, post_delete
-from django.utils.text import slugify
-
 from django.dispatch.dispatcher import receiver
-from sso.organisations.models import OrganisationAddress, OrganisationPhoneNumber, Organisation, default_unique_slug_generator, deactivate_center_account, AdminRegion
+from django.utils.text import slugify
+from sso.organisations.models import OrganisationAddress, OrganisationPhoneNumber, Organisation, default_unique_slug_generator, deactivate_center_account
 from sso.utils.loaddata import disable_for_loaddata
 
 
