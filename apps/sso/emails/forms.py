@@ -113,7 +113,7 @@ class GroupEmailForm(BaseForm):
 
     class Meta:
         model = GroupEmail
-        fields = ['homepage', 'name', 'is_guide_email']
+        fields = ['homepage', 'name']
         widgets = {
             'homepage': bootstrap.TextInput(attrs={'size': 50}),
             'name': bootstrap.TextInput(attrs={'size': 50}),
