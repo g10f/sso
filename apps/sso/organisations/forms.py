@@ -2,6 +2,7 @@ import datetime
 
 from django import forms
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.forms import ModelChoiceField, ModelMultipleChoiceField, ValidationError
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
@@ -89,6 +90,8 @@ class OrganisationPhoneNumberForm(BaseTabularInlineForm):
 
 class OrganisationBaseForm(BaseForm):
     google_maps_url = bootstrap.ReadOnlyField(label=_("Google Maps"))
+    # disabled is False, to ensure last_modified_by_user is always updated (also when address or phone numbers were changed)
+    last_modified_by_user = forms.CharField(label=_("Last modified by"), disabled=False, required=False, widget=bootstrap.TextInput(attrs={'disabled': ''}))
 
     class Meta:
         model = Organisation
@@ -99,7 +102,7 @@ class OrganisationBaseForm(BaseForm):
         years_to_display = range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1)
         widgets = {
             'homepage': bootstrap.URLInput(attrs={'size': 50}),
-                'source_urls': bootstrap.Textarea(attrs={'rows': '3'}),
+            'source_urls': bootstrap.Textarea(attrs={'rows': '3'}),
             'google_plus_page': bootstrap.URLInput(attrs={'size': 50}),
             'facebook_page': bootstrap.URLInput(attrs={'size': 50}),
             'twitter_page': bootstrap.URLInput(attrs={'size': 50}),
@@ -121,6 +124,12 @@ class OrganisationBaseForm(BaseForm):
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')  # remove custom user keyword
+        initial = kwargs.get('initial', {})
+        instance = kwargs.get('instance')
+        # set the lastmodified user field
+        if instance is not None:
+            initial['last_modified_by_user'] = instance.last_modified_by_user if instance.last_modified_by_user else ''
+        kwargs['initial'] = initial
         super().__init__(*args, **kwargs)
         if self.instance.location:
             self.fields['google_maps_url'].initial = self.instance.google_maps_url
