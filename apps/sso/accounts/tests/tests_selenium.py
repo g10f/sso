@@ -1,5 +1,6 @@
 import os
 import re
+import uuid
 from urllib.parse import urlencode
 from urllib.parse import urlsplit
 
@@ -299,6 +300,30 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.wait_page_loaded()
 
         self.assertEqual(len(self.selenium.find_elements(by=By.CLASS_NAME, value="alert-danger")), 1)
+    def modify_app_role_to_user(self, user_id, add=True, number=1):
+        id_application_role = f'//select[@id="id_application_roles_from"]/option[{number}]' if add else f'//select[@id="id_application_roles_to"]/option[{number}]'
+        id_application_roles_modify_link = 'id_application_roles_add_link' if add else 'id_application_roles_remove_link'
+        self.selenium.get('%s%s' % (self.live_server_url, reverse('accounts:update_user', kwargs={'uuid': user_id})))
+        self.selenium.find_element(by=By.XPATH, value='//a[@href="#tab_application_roles"]').click()
+        self.selenium.find_element(by=By.XPATH, value=id_application_role).click()
+        self.selenium.find_element(by=By.ID, value=id_application_roles_modify_link).click()
+        self.selenium.find_element(by=By.TAG_NAME, value="form").submit()
+        self.wait_page_loaded()
+        self.assertEqual(len(self.selenium.find_elements(by=By.CLASS_NAME, value="alert-success")), 1)
+
+    def test_update_user_as_admin(self):
+        applicationrole = ApplicationRole.objects.get(application__uuid="bc0ee635a536491eb8e7fbe5749e8111", role__name="Admin")
+        user = get_user_model().objects.get(username='GunnarScherf')
+        self.assertIn(applicationrole, user.application_roles.all())
+
+        self.login(username='GlobalAdmin', password='secret007')
+        # remove app role TestApp - Admin
+        self.modify_app_role_to_user(user.uuid, add=False)
+        self.assertNotIn(applicationrole, user.application_roles.all())
+
+        # add app role TestApp - Admin
+        self.modify_app_role_to_user(user.uuid, add=True)
+        self.assertIn(applicationrole, user.application_roles.all())
 
     @override_settings(SSO_POST_RESET_LOGIN=False)
     def test_add_user_as_admin(self):
