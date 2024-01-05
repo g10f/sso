@@ -74,8 +74,8 @@ class OrganisationChangeForm(BaseForm):
 
 class OrganisationChangeAcceptForm(forms.Form):
     """
-    Form for organisation admins to accept an request for changing
-    the organisation from an user of another organisation
+    Form for organisation admins to accept a request for changing
+    the organisation from a user of another organisation
     """
 
     def __init__(self, organisationchange, *args, **kwargs):
@@ -100,7 +100,7 @@ class ContactForm(forms.Form):
 class AdminUserCreationForm(forms.ModelForm):
     """
     Django Admin Site UserCreationForm where no password is required and the username is created from first_name and
-    last_name. If the password is empty, an random password is created
+    last_name. If the password is empty, a random password is created
     """
     password1 = forms.CharField(label=_("Password"), required=False, widget=forms.PasswordInput)
     password2 = forms.CharField(label=_("Password confirmation"), required=False, widget=forms.PasswordInput,
@@ -537,13 +537,14 @@ class UserProfileForm(mixins.UserRolesMixin, mixins.UserNoteMixin, forms.Form):
         kwargs['initial'] = initial
         super().__init__(*args, **kwargs)
 
-        self.fields['application_roles'].choices = []
+        application_roles_choices = []
         app_roles_by_profile = ApplicationRole.objects.filter(roleprofile__user__id=self.user.pk).only("id")
         for application_role in self.request.user.get_administrable_application_roles():
             app_role_text = str(application_role)
             if application_role in app_roles_by_profile:
                 app_role_text += " *"
-            self.fields['application_roles'].choices.append((application_role.id, app_role_text))
+            application_roles_choices.append((application_role.id, app_role_text))
+        self.fields['application_roles'].choices = application_roles_choices
         self.fields['role_profiles'].choices = [(role_profile.id, role_profile) for role_profile in
                                                 self.request.user.get_administrable_role_profiles()]
         if self.user.organisations.count() > 1:
@@ -645,14 +646,14 @@ class CenterProfileForm(mixins.UserRolesMixin, mixins.UserNoteMixin, forms.Form)
         kwargs['initial'] = initial
         super().__init__(*args, **kwargs)
 
-        self.fields['application_roles'].choices = []
+        application_roles_choices = []
         app_roles_by_profile = ApplicationRole.objects.filter(roleprofile__user__id=self.user.pk).only("id")
         for application_role in self.request.user.get_administrable_application_roles():
             app_role_text = str(application_role)
             if application_role in app_roles_by_profile:
                 app_role_text += " *"
-            self.fields['application_roles'].choices.append((application_role.id, app_role_text))
-
+            application_roles_choices.append((application_role.id, app_role_text))
+        self.fields['application_roles'].choices = application_roles_choices
         self.fields['role_profiles'].choices = [(role_profile.id, role_profile) for role_profile in
                                                 self.request.user.get_administrable_role_profiles()]
 

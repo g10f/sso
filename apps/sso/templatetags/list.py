@@ -1,5 +1,6 @@
 from django.template import Library
 from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 from sso.views.main import PAGE_VAR
 
 register = Library()
@@ -42,7 +43,7 @@ def paginator_number(page, i, cl):
     Generates an individual page index link in a paginated list.
     """
     if i == DOT:
-        return format_html('<li class="page-item disabled"><a class="page-link" href="#">&hellip;</a></li>')
+        return mark_safe('<li class="page-item disabled"><a class="page-link" href="#">&hellip;</a></li>')
     elif i == page.number:
         return format_html('<li class="page-item active"><a class="page-link" href="#">{0}</a></li>', i)
     else:
