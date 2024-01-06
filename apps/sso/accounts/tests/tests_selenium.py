@@ -1,6 +1,5 @@
 import os
 import re
-import uuid
 from urllib.parse import urlencode
 from urllib.parse import urlsplit
 
@@ -32,7 +31,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
     def get_url_path_from_mail(self):
         outbox = getattr(mail, 'outbox')
         self.assertEqual(len(outbox), 1)
-        urls = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|%[0-9a-fA-F][0-9a-fA-F])+',
+        urls = re.findall('https?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*(),]|%[0-9a-fA-F][0-9a-fA-F])+',
                           outbox[0].body)
         self.assertEqual(len(urls), 1)
         scheme, netloc, path, query_string, fragment = urlsplit(urls[0])  # @UnusedVariable
@@ -300,6 +299,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.wait_page_loaded()
 
         self.assertEqual(len(self.selenium.find_elements(by=By.CLASS_NAME, value="alert-danger")), 1)
+
     def modify_app_role_to_user(self, user_id, add=True, number=1):
         id_application_role = f'//select[@id="id_application_roles_from"]/option[{number}]' if add else f'//select[@id="id_application_roles_to"]/option[{number}]'
         id_application_roles_modify_link = 'id_application_roles_add_link' if add else 'id_application_roles_remove_link'
@@ -417,7 +417,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         required_extra_fields = self.selenium.find_elements(by=By.XPATH, value='//span[@class="user-extra-form-fields"]//node()[@class="form-select" and @required]')
         for required_extra_field in required_extra_fields:
             if required_extra_field.tag_name == 'select':
-                # select the first option with a non empty value
+                # select the first option with a non-empty value
                 option = required_extra_field.find_elements(by=By.XPATH, value="option[@value and string-length(@value)!=0]")[0]
                 option.click()
             # TODO: cases for other types of extra fields

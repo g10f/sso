@@ -13,7 +13,7 @@ class CurrentUserField(models.ForeignKey):
         self.created_by_only = created_by_only
         super().__init__(settings.AUTH_USER_MODEL, null=True, **kwargs)
 
-    def contribute_to_class(self, cls, name):
-        super().contribute_to_class(cls, name)
+    def contribute_to_class(self, cls, name, **kwargs):
+        super().contribute_to_class(cls, name, **kwargs)
         registry = registration.FieldRegistry()
         registry.add_field(cls, self)
