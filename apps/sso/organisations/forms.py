@@ -89,6 +89,7 @@ class OrganisationPhoneNumberForm(BaseTabularInlineForm):
 
 class OrganisationBaseForm(BaseForm):
     google_maps_url = bootstrap.ReadOnlyField(label=_("Google Maps"))
+    last_modified_by_user = forms.CharField(label=_("Last modified by"), required=False, widget=bootstrap.TextInput(attrs={'disabled': ''}))
 
     class Meta:
         model = Organisation
@@ -99,7 +100,7 @@ class OrganisationBaseForm(BaseForm):
         years_to_display = range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1)
         widgets = {
             'homepage': bootstrap.URLInput(attrs={'size': 50}),
-                'source_urls': bootstrap.Textarea(attrs={'rows': '3'}),
+            'source_urls': bootstrap.Textarea(attrs={'rows': '3'}),
             'google_plus_page': bootstrap.URLInput(attrs={'size': 50}),
             'facebook_page': bootstrap.URLInput(attrs={'size': 50}),
             'twitter_page': bootstrap.URLInput(attrs={'size': 50}),
@@ -121,6 +122,12 @@ class OrganisationBaseForm(BaseForm):
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('user')  # remove custom user keyword
+        initial = kwargs.get('initial', {})
+        instance = kwargs.get('instance')
+        # set the lastmodified user field
+        if instance is not None:
+            initial['last_modified_by_user'] = instance.last_modified_by_user if instance.last_modified_by_user else ''
+        kwargs['initial'] = initial
         super().__init__(*args, **kwargs)
         if self.instance.location:
             self.fields['google_maps_url'].initial = self.instance.google_maps_url
@@ -138,7 +145,10 @@ class OrganisationBaseForm(BaseForm):
             cleaned_data['coordinates_type'] = ''
 
         return cleaned_data
-
+    def has_changed(self):
+        # always return True, because we want to update last_modified_by_user also when address or telephone
+        # number changed
+        return True
 
 class OrganisationCenterAdminForm(OrganisationBaseForm):
     email_value = bootstrap.ReadOnlyField(label=_("Email address"))
@@ -201,7 +211,7 @@ class OrganisationEmailAdminForm(OrganisationBaseForm):
 
         return email_value
 
-    def save(self, commit=True):
+    def save(self, commit=True, **kwargs):
         """
         save the email address or create a new email object if it does not exist
         """
@@ -258,7 +268,7 @@ class OrganisationCountryAdminForm(OrganisationEmailAdminForm):
 
     class Meta(OrganisationBaseForm.Meta):
         fields = OrganisationBaseForm.Meta.fields + (
-            'organisation_country', 'admin_region', 'name', 'center_type', 'is_active', 'is_selectable')  # , 'can_publish')
+            'organisation_country', 'admin_region', 'name', 'center_type', 'is_active', 'is_selectable')  # , 'can_publish'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -286,7 +296,7 @@ class OrganisationRegionAdminForm(OrganisationEmailAdminForm):
 
     class Meta(OrganisationBaseForm.Meta):
         fields = OrganisationBaseForm.Meta.fields + (
-            'organisation_country', 'admin_region', 'name', 'center_type', 'is_active', 'is_selectable')  # , 'can_publish')
+            'organisation_country', 'admin_region', 'name', 'center_type', 'is_active', 'is_selectable')  # , 'can_publish'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -336,7 +346,7 @@ class EmailForwardMixin(object):
 
 class OrganisationAssociationAdminCreateForm(EmailForwardMixin, OrganisationAssociationAdminForm):
     """
-    A form for a association admins for create organisations with
+    A form for an association admins for create organisations with
     additionally email_forward field
     """
     email_forward = EmailFieldLower(required=True, label=_("Email forwarding address"),

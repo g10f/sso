@@ -41,6 +41,7 @@
         {% include 'include/_field.html' with field=form.is_selectable %}
         {% include 'include/_field.html' with field=form.neighbour_distance %}
         {% include 'include/_field.html' with field=form.transregional_distance %}
+        {% include 'include/_user_field.html' with field=form.last_modified_by_user %}
       </div>
 
       {% for formset in formsets %}
