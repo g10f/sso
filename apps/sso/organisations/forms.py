@@ -2,7 +2,6 @@ import datetime
 
 from django import forms
 from django.conf import settings
-from django.contrib.auth import get_user_model
 from django.forms import ModelChoiceField, ModelMultipleChoiceField, ValidationError
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
@@ -90,8 +89,7 @@ class OrganisationPhoneNumberForm(BaseTabularInlineForm):
 
 class OrganisationBaseForm(BaseForm):
     google_maps_url = bootstrap.ReadOnlyField(label=_("Google Maps"))
-    # disabled is False, to ensure last_modified_by_user is always updated (also when address or phone numbers were changed)
-    last_modified_by_user = forms.CharField(label=_("Last modified by"), disabled=False, required=False, widget=bootstrap.TextInput(attrs={'disabled': ''}))
+    last_modified_by_user = forms.CharField(label=_("Last modified by"), required=False, widget=bootstrap.TextInput(attrs={'disabled': ''}))
 
     class Meta:
         model = Organisation
@@ -147,7 +145,10 @@ class OrganisationBaseForm(BaseForm):
             cleaned_data['coordinates_type'] = ''
 
         return cleaned_data
-
+    def has_changed(self):
+        # always return True, because we want to update last_modified_by_user also when address or telephone
+        # number changed
+        return True
 
 class OrganisationCenterAdminForm(OrganisationBaseForm):
     email_value = bootstrap.ReadOnlyField(label=_("Email address"))
@@ -210,7 +211,7 @@ class OrganisationEmailAdminForm(OrganisationBaseForm):
 
         return email_value
 
-    def save(self, commit=True):
+    def save(self, commit=True, **kwargs):
         """
         save the email address or create a new email object if it does not exist
         """
@@ -267,7 +268,7 @@ class OrganisationCountryAdminForm(OrganisationEmailAdminForm):
 
     class Meta(OrganisationBaseForm.Meta):
         fields = OrganisationBaseForm.Meta.fields + (
-            'organisation_country', 'admin_region', 'name', 'center_type', 'is_active', 'is_selectable')  # , 'can_publish')
+            'organisation_country', 'admin_region', 'name', 'center_type', 'is_active', 'is_selectable')  # , 'can_publish'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -295,7 +296,7 @@ class OrganisationRegionAdminForm(OrganisationEmailAdminForm):
 
     class Meta(OrganisationBaseForm.Meta):
         fields = OrganisationBaseForm.Meta.fields + (
-            'organisation_country', 'admin_region', 'name', 'center_type', 'is_active', 'is_selectable')  # , 'can_publish')
+            'organisation_country', 'admin_region', 'name', 'center_type', 'is_active', 'is_selectable')  # , 'can_publish'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -345,7 +346,7 @@ class EmailForwardMixin(object):
 
 class OrganisationAssociationAdminCreateForm(EmailForwardMixin, OrganisationAssociationAdminForm):
     """
-    A form for a association admins for create organisations with
+    A form for an association admins for create organisations with
     additionally email_forward field
     """
     email_forward = EmailFieldLower(required=True, label=_("Email forwarding address"),
