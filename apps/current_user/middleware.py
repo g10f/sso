@@ -10,7 +10,7 @@ class CurrentUserMiddleware(MiddlewareMixin):
     def process_request(self, request):
         if request.method in ('GET', 'HEAD', 'OPTIONS', 'TRACE'):
             # This request shouldn't update anything,
-            # so no singal handler should be attached.
+            # so no signal handler should be attached.
             return
 
         if hasattr(request, 'user') and request.user.is_authenticated:

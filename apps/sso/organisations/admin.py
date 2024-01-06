@@ -139,6 +139,7 @@ class OrganisationAdmin(VersionAdmin, GISModelAdmin):
     readonly_fields = ['last_modified', 'google_maps_link']
     non_su_readonly_fields = ['uuid', 'last_modified', 'google_maps_link']
     date_hierarchy = 'founded'
+    raw_id_fields =  ['last_modified_by_user']
     list_filter = (
         'association', 'is_active', 'is_private', 'is_live', 'is_selectable', 'uses_user_activation', 'coordinates_type', 'admin_region',
         'organisation_country__country__continent', CountryListFilter, 'center_type',
@@ -148,7 +149,7 @@ class OrganisationAdmin(VersionAdmin, GISModelAdmin):
         (None,
          {'fields':
               ['uuid', 'centerid', 'order', 'name', 'name_native', 'slug', 'center_type', 'association',
-               'organisation_country',
+               'organisation_country', 'last_modified_by_user',
                'admin_region', 'founded', ('coordinates_type', 'google_maps_link'),
                'location', 'email', 'homepage', 'source_urls', 'is_active', 'is_private', 'is_live', 'is_selectable',
                'uses_user_activation', 'neighbour_distance', 'transregional_distance',

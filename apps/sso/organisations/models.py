@@ -4,6 +4,7 @@ import re
 from pytz import timezone, common_timezones, UnknownTimeZoneError
 from sorl import thumbnail
 
+from current_user.models import CurrentUserField
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.gis import measure
@@ -314,6 +315,7 @@ class Organisation(AbstractBaseModel):
     is_selectable = models.BooleanField(_('selectable'), default=True, help_text=_(
         'Designates whether the organisations can be selected by users in the registration and '
         'organisation change form.'))
+    last_modified_by_user = CurrentUserField(verbose_name=_('last modified by'), blank=True, on_delete=models.SET_NULL)
 
     class Meta(AbstractBaseModel.Meta):
         permissions = (
