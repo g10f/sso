@@ -21,6 +21,7 @@ if RUNNING_DEVSERVER or RUNNING_TEST:
     DEBUG = True
 else:
     DEBUG = False
+DEBUG = os.getenv("DEBUG", str(DEBUG)).lower() in ('true', '1', 't')
 
 ALLOWED_HOSTS = ['.localhost', '127.0.0.1', '[::1]'] + os.getenv('ALLOWED_HOSTS', '').split(',')
 SSO_STYLE = os.getenv('SSO_STYLE', 'css/main.min.css')
