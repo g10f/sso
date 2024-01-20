@@ -335,6 +335,12 @@ SSO_DEFAULT_ASSOCIATION_UUID = UUID('bad2e6edff274f2f900ff3dbb26e38ce')
 # set this in local_settings.py or by env var
 SECRET_KEY = os.getenv("SECRET_KEY")
 
+# Logging
+LOGGING_LEVEL_DB = os.getenv('LOGGING_LEVEL_DB', 'INFO')
+LOGGING_LEVEL_SSO = os.getenv('LOGGING_LEVEL_SSO', 'DEBUG' if DEBUG else 'INFO')
+LOGGING_LEVEL_ROOT = os.getenv('LOGGING_LEVEL_ROOT', 'INFO')
+LOGGING_LEVEL_DJANGO = os.getenv('LOGGING_LEVEL_DJANGO', 'INFO')
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -370,22 +376,22 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['console', 'mail_admins'],
-            'level': 'INFO',
+            'level': LOGGING_LEVEL_DJANGO,
             'propagate': False,
         },
         'django.db.backends': {
             'handlers': ['console', 'mail_admins'],
-            'level': 'INFO',
+            'level': LOGGING_LEVEL_DB,
             'propagate': False,
         },
         'sso': {
             'handlers': ['console', 'mail_admins'],
-            'level': 'DEBUG' if DEBUG else 'INFO',
+            'level': LOGGING_LEVEL_SSO,
             'propagate': False,
         },
     },
     'root': {
-        'level': 'INFO',
+        'level': LOGGING_LEVEL_ROOT,
         'handlers': ['console', 'mail_admins'],
     },
 }
