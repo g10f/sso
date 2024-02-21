@@ -6,6 +6,8 @@
 {% block form %}
   <form class="form-horizontal" method="post">{% csrf_token %}
     <h1>{% blocktranslate %}Sign up for {{ site_name }}{% endblocktranslate %}</h1>
+    {% block registration-message %}
+    {% endblock %}
 
     {% if "_edit_again" in form.non_field_errors %}
       <div class="alert alert-info">
