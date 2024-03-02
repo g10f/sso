@@ -253,6 +253,8 @@ class OrganisationAssociationAdminForm(OrganisationEmailAdminForm):
         if not OrganisationCountry.objects.filter(association__in=assignable_associations).exists():
             del self.fields['organisation_country']
             del self.fields['admin_region']
+        else:
+            self.fields['organisation_country'].queryset = self.user.get_assignable_organisation_countries()
 
         self.fields['association'].queryset = assignable_associations
 
