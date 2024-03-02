@@ -98,7 +98,6 @@ class ValidUntil(object):
     def __str__(self):
         return 'valid_until'
 
-
 class UserList(ListView):
     template_name = 'accounts/application/user_list.html'
     model = get_user_model()

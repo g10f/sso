@@ -22,7 +22,7 @@ from smart_selects.db_fields import ChainedForeignKey
 from sso.decorators import memoize
 from sso.emails.models import Email, CENTER_EMAIL_TYPE, COUNTRY_EMAIL_TYPE, REGION_EMAIL_TYPE, COUNTRY_GROUP_EMAIL_TYPE
 from sso.fields import URLFieldEx, URLArrayField
-from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary, get_filename
+from sso.models import AbstractBaseModel, AddressMixin, PhoneNumberMixin, ensure_single_primary, get_filename, AbstractBaseModelManager
 
 logger = logging.getLogger(__name__)
 
@@ -65,8 +65,8 @@ class TzWorld(models.Model):
 
 class CountryGroup(AbstractBaseModel):
     name = models.CharField(_("name"), max_length=255)
-    email = models.OneToOneField(Email, on_delete=models.SET_NULL, verbose_name=_("email address"), blank=True,
-                                 null=True, limit_choices_to={'email_type': COUNTRY_GROUP_EMAIL_TYPE})
+    email = models.OneToOneField(Email, on_delete=models.SET_NULL, verbose_name=_("email address"), blank=True, null=True,
+                                 limit_choices_to={'email_type': COUNTRY_GROUP_EMAIL_TYPE})
     homepage = models.URLField(_("homepage"), blank=True)
 
     class Meta(AbstractBaseModel.Meta):
@@ -77,18 +77,15 @@ class CountryGroup(AbstractBaseModel):
     def __str__(self):
         return self.name
 
-
 class Association(AbstractBaseModel):
     name = models.CharField(_("name"), max_length=255)
     homepage = models.URLField(_("homepage"), blank=True)
     email_domain = models.CharField(_("email domain"), blank=True, max_length=254)
-    is_active = models.BooleanField(_('active'), default=True,
-                                    help_text=_('Designates whether this association should be treated as '
-                                                'active. Unselect this instead of deleting the association.'))
-    is_external = models.BooleanField(_('external'), default=False,
-                                      help_text=_('Designates whether this association is managed externally.'))
-    is_selectable = models.BooleanField(_('selectable'), default=True, help_text=_(
-        'Designates whether the organisations of this association can be selected by/assigned to users.'))
+    is_active = models.BooleanField(_('active'), default=True, help_text=_('Designates whether this association should be treated as '
+                                                                           'active. Unselect this instead of deleting the association.'))
+    is_external = models.BooleanField(_('external'), default=False, help_text=_('Designates whether this association is managed externally.'))
+    is_selectable = models.BooleanField(_('selectable'), default=True,
+                                        help_text=_('Designates whether the organisations of this association can be selected by/assigned to users.'))
 
     class Meta(AbstractBaseModel.Meta):
         verbose_name = _('Association')
@@ -133,21 +130,23 @@ class ExtraOrganisationCountryManager(models.Model):
     class Meta:
         abstract = True
 
+class OrganisationCountryManager(AbstractBaseModelManager):
+    def get_queryset(self):
+        return super().get_queryset().select_related('country', 'association')
+
 
 class OrganisationCountry(AbstractBaseModel, ExtraOrganisationCountryManager):
-    association = models.ForeignKey(Association, on_delete=models.CASCADE, verbose_name=_("association"),
-                                    default=default_association, limit_choices_to={'is_active': True})
+    association = models.ForeignKey(Association, on_delete=models.CASCADE, verbose_name=_("association"), default=default_association, limit_choices_to={'is_active': True})
     country = models.ForeignKey(Country, on_delete=models.CASCADE, verbose_name=_("country"))
     country_groups = models.ManyToManyField(CountryGroup, blank=True, related_name='countries')
     homepage = models.URLField(_("homepage"), blank=True)
-    email = models.ForeignKey(Email, verbose_name=_("email address"), blank=True, null=True,
-                              limit_choices_to={'email_type': COUNTRY_EMAIL_TYPE},
-                              on_delete=models.SET_NULL)
-    is_active = models.BooleanField(_('active'), default=True,
-                                    help_text=_('Designates whether this country should be treated as '
-                                                'active. Unselect this instead of deleting the country.'))
+    email = models.ForeignKey(Email, verbose_name=_("email address"), blank=True, null=True, limit_choices_to={'email_type': COUNTRY_EMAIL_TYPE}, on_delete=models.SET_NULL)
+    is_active = models.BooleanField(_('active'), default=True, help_text=_('Designates whether this country should be treated as '
+                                                                           'active. Unselect this instead of deleting the country.'))
     order = models.IntegerField(default=0, help_text=_('Overwrites the alphabetic order.'))
 
+    # always select related and association for __str__
+    objects = OrganisationCountryManager()
     class Meta(AbstractBaseModel.Meta):
         verbose_name = _('Country (org.)')
         verbose_name_plural = _('Countries')
@@ -191,17 +190,11 @@ class ExtraManager(models.Model):
 class AdminRegion(AbstractBaseModel, ExtraManager):
     name = models.CharField(_("name"), max_length=255)
     homepage = models.URLField(_("homepage"), blank=True)
-    organisation_country = models.ForeignKey(OrganisationCountry, verbose_name=_("country (org.)"), null=True,
-                                             limit_choices_to={'is_active': True},
-                                             on_delete=models.SET_NULL)
-    email = models.OneToOneField(Email, verbose_name=_("email address"), blank=True, null=True,
-                                 limit_choices_to={'email_type': REGION_EMAIL_TYPE},
-                                 on_delete=models.SET_NULL)
-    is_active = models.BooleanField(_('active'), default=True,
-                                    help_text=_('Designates whether this region should be treated as '
-                                                'active. Unselect this instead of deleting the region.'))
-    slug = models.SlugField(_("Slug Name"), blank=True, unique=True,
-                            help_text=_("Used for URLs, auto-generated from name if blank"), max_length=255)
+    organisation_country = models.ForeignKey(OrganisationCountry, verbose_name=_("country (org.)"), null=True, limit_choices_to={'is_active': True}, on_delete=models.SET_NULL)
+    email = models.OneToOneField(Email, verbose_name=_("email address"), blank=True, null=True, limit_choices_to={'email_type': REGION_EMAIL_TYPE}, on_delete=models.SET_NULL)
+    is_active = models.BooleanField(_('active'), default=True, help_text=_('Designates whether this region should be treated as '
+                                                                           'active. Unselect this instead of deleting the region.'))
+    slug = models.SlugField(_("Slug Name"), blank=True, unique=True, help_text=_("Used for URLs, auto-generated from name if blank"), max_length=255)
 
     class Meta(AbstractBaseModel.Meta):
         verbose_name = _('Region')
@@ -236,12 +229,8 @@ def get_near_organisations(current_point, distance_from_point=None, qs=None, ord
 
 
 class Organisation(AbstractBaseModel):
-    COORDINATES_TYPE_CHOICES = (
-        # ('1', _('Unknown')),
-        ('2', _('City/Village')),
-        ('3', _('Exact')),
-        ('4', _('Nearby')),
-    )
+    COORDINATES_TYPE_CHOICES = (# ('1', _('Unknown')),
+        ('2', _('City/Village')), ('3', _('Exact')), ('4', _('Nearby')),)
     _center_type_choices = {}
     for choice in settings.CENTER_TYPE_CHOICES:
         _center_type_choices[choice[0]] = choice[1]
@@ -254,73 +243,49 @@ class Organisation(AbstractBaseModel):
     name = models.CharField(_("name"), max_length=255)
     order = models.IntegerField(default=0, help_text=_('Overwrites the alphabetic order.'))
     name_native = models.CharField(_("name in native language"), max_length=255, blank=True)
-    association = models.ForeignKey(Association, verbose_name=_("association"), default=default_association, null=True,
-                                    limit_choices_to={'is_active': True},
+    association = models.ForeignKey(Association, verbose_name=_("association"), default=default_association, null=True, limit_choices_to={'is_active': True},
                                     on_delete=models.CASCADE)
-    organisation_country = ChainedForeignKey(OrganisationCountry, chained_field='association',
-                                             chained_model_field="association", verbose_name=_("country (org.)"), blank=True,
-                                             null=True, limit_choices_to={'is_active': True},
-                                             on_delete=models.SET_NULL)
-    admin_region = ChainedForeignKey(AdminRegion, chained_field='organisation_country',
-                                     chained_model_field="organisation_country", on_delete=models.SET_NULL,
-                                     verbose_name=_("admin region"), blank=True, null=True,
-                                     limit_choices_to={'is_active': True})
-    email = models.ForeignKey(Email, verbose_name=_("email address"), blank=True, null=True,
-                              limit_choices_to={'email_type': CENTER_EMAIL_TYPE},
-                              on_delete=models.SET_NULL)
-    slug = models.SlugField(_("Slug Name"), blank=True, unique=True,
-                            help_text=_("Used for URLs, auto-generated from name if blank"), max_length=255)
+    # organisation_country = models.ForeignKey(OrganisationCountry, verbose_name=_("country (org.)"), blank=True,
+    #                                          null=True, limit_choices_to={'is_active': True}, on_delete=models.SET_NULL)
+    # admin_region = models.ForeignKey(AdminRegion,  on_delete=models.SET_NULL,
+    organisation_country = ChainedForeignKey(OrganisationCountry, chained_field='association', chained_model_field="association", verbose_name=_("country (org.)"), blank=True,
+                                             null=True, limit_choices_to={'is_active': True}, on_delete=models.SET_NULL)
+    admin_region = ChainedForeignKey(AdminRegion, chained_field='organisation_country', chained_model_field="organisation_country", on_delete=models.SET_NULL,
+                                     verbose_name=_("admin region"), blank=True, null=True, limit_choices_to={'is_active': True})
+    email = models.ForeignKey(Email, verbose_name=_("email address"), blank=True, null=True, limit_choices_to={'email_type': CENTER_EMAIL_TYPE}, on_delete=models.SET_NULL)
+    slug = models.SlugField(_("Slug Name"), blank=True, unique=True, help_text=_("Used for URLs, auto-generated from name if blank"), max_length=255)
     homepage = models.URLField(_("homepage"), blank=True)
-    source_urls = URLArrayField(blank=True, null=True, verbose_name=_('source urls'),
-                                help_text=_("List of URLs, which are redirected to the "
-                                            "homepage"))
+    source_urls = URLArrayField(blank=True, null=True, verbose_name=_('source urls'), help_text=_("List of URLs, which are redirected to the "
+                                                                                                  "homepage"))
     google_plus_page = URLFieldEx(domain='plus.google.com', verbose_name=_("Google+ page"), blank=True)
     facebook_page = URLFieldEx(domain='www.facebook.com', verbose_name=_("Facebook page"), blank=True)
     twitter_page = URLFieldEx(domain='twitter.com', verbose_name=_("Twitter page"), blank=True)
     notes = models.TextField(_('notes'), blank=True, max_length=255)
-    center_type = models.CharField(_('organisation type'), max_length=2, choices=settings.CENTER_TYPE_CHOICES,
-                                   db_index=True)
+    center_type = models.CharField(_('organisation type'), max_length=2, choices=settings.CENTER_TYPE_CHOICES, db_index=True)
     centerid = models.IntegerField(blank=True, help_text=_("id from the previous center DB (obsolete)"), null=True)
     founded = models.DateField(_("founded"), blank=True, null=True)
-    coordinates_type = models.CharField(_('coordinates type'), max_length=1, choices=COORDINATES_TYPE_CHOICES,
-                                        default='3', db_index=True, blank=True)
+    coordinates_type = models.CharField(_('coordinates type'), max_length=1, choices=COORDINATES_TYPE_CHOICES, default='3', db_index=True, blank=True)
     location = PointField(_("location"), geography=True, blank=True, null=True)
-    timezone = models.CharField(_('timezone'), choices=list(zip(common_timezones, common_timezones)), blank=True,
-                                max_length=254)
-    is_active = models.BooleanField(_('active'),
-                                    default=True,
-                                    help_text=_('Designates whether this organisation should be treated as '
-                                                'active. Unselect this instead of deleting organisation.'))
-    is_private = models.BooleanField(_("private"),
-                                     help_text=_(
-                                         'Designates whether this organisation data should be treated as private and '
-                                         'only a telephone number should be displayed on public sites.'),
-                                     default=False)
-    uses_user_activation = models.BooleanField(_("uses activation"),
-                                               help_text=_('Designates whether this organisation uses the new user '
-                                                           'activation process.'),
-                                               default=False)
-    neighbour_distance = models.DecimalField(_("neighbour distance"),
-                                             help_text=_('Distance used for neighbour calculations [km].'),
-                                             max_digits=8, decimal_places=3, blank=True, null=True)
-    transregional_distance = models.DecimalField(_("transregional distance"),
-                                                 help_text=_(
-                                                     'Distance used for calculations of transregional events [km].'),
-                                                 max_digits=8, decimal_places=3, blank=True, null=True)
-    is_live = models.BooleanField(_('live'),
-                                  default=True,
-                                  help_text=_('Designates whether this organisation is live. '
-                                              'Unselect this for organisations which are prelive.'))
+    timezone = models.CharField(_('timezone'), choices=list(zip(common_timezones, common_timezones)), blank=True, max_length=254)
+    is_active = models.BooleanField(_('active'), default=True, help_text=_('Designates whether this organisation should be treated as '
+                                                                           'active. Unselect this instead of deleting organisation.'))
+    is_private = models.BooleanField(_("private"), help_text=_('Designates whether this organisation data should be treated as private and '
+                                                               'only a telephone number should be displayed on public sites.'), default=False)
+    uses_user_activation = models.BooleanField(_("uses activation"), help_text=_('Designates whether this organisation uses the new user '
+                                                                                 'activation process.'), default=False)
+    neighbour_distance = models.DecimalField(_("neighbour distance"), help_text=_('Distance used for neighbour calculations [km].'), max_digits=8, decimal_places=3, blank=True,
+                                             null=True)
+    transregional_distance = models.DecimalField(_("transregional distance"), help_text=_('Distance used for calculations of transregional events [km].'), max_digits=8,
+                                                 decimal_places=3, blank=True, null=True)
+    is_live = models.BooleanField(_('live'), default=True, help_text=_('Designates whether this organisation is live. '
+                                                                       'Unselect this for organisations which are prelive.'))
 
-    is_selectable = models.BooleanField(_('selectable'), default=True, help_text=_(
-        'Designates whether the organisations can be selected by users in the registration and '
-        'organisation change form.'))
+    is_selectable = models.BooleanField(_('selectable'), default=True, help_text=_('Designates whether the organisations can be selected by users in the registration and '
+                                                                                   'organisation change form.'))
     last_modified_by_user = CurrentUserField(verbose_name=_('last modified by'), blank=True, on_delete=models.SET_NULL)
 
     class Meta(AbstractBaseModel.Meta):
-        permissions = (
-            ("access_all_organisations", "Can access all organisations"),
-            # ("read_organisation", "Can read organisation data"),
+        permissions = (("access_all_organisations", "Can access all organisations"),# ("read_organisation", "Can read organisation data"),
         )
         required_db_features = ['gis_enabled']
         ordering = ['order', 'name']
@@ -413,13 +378,10 @@ class Organisation(AbstractBaseModel):
 
     def get_near_organisations(self):
         if self.neighbour_distance is not None:
-            return get_near_organisations(
-                self.location, distance_from_point={'km': self.neighbour_distance},
+            return get_near_organisations(self.location, distance_from_point={'km': self.neighbour_distance},
                 qs=Organisation.objects.filter(is_active=True, is_live=True).exclude(pk=self.pk))
         else:
-            return get_near_organisations(
-                self.location,
-                qs=Organisation.objects.filter(is_active=True, is_live=True).exclude(pk=self.pk))[:10]
+            return get_near_organisations(self.location, qs=Organisation.objects.filter(is_active=True, is_live=True).exclude(pk=self.pk))[:10]
 
     def get_absolute_url(self):
         return reverse('organisations:organisation_detail', kwargs={'uuid': self.uuid.hex})
@@ -473,8 +435,7 @@ class Organisation(AbstractBaseModel):
 
 
 def generate_filename(instance, filename):
-    return 'organisation_image/%s/%s' % (
-        instance.organisation.uuid.hex, get_filename(filename.encode('ascii', 'replace')))
+    return 'organisation_image/%s/%s' % (instance.organisation.uuid.hex, get_filename(filename.encode('ascii', 'replace')))
 
 
 class OrganisationPicture(AbstractBaseModel):
@@ -492,10 +453,7 @@ class OrganisationPicture(AbstractBaseModel):
 
 
 class OrganisationAddress(AbstractBaseModel, AddressMixin):
-    ADDRESSTYPE_CHOICES = [
-        ('physical', pgettext_lazy('organisation address', 'Physical Address')),
-        ('postal', pgettext_lazy('organisation address', 'Postal Address'))
-    ]
+    ADDRESSTYPE_CHOICES = [('physical', pgettext_lazy('organisation address', 'Physical Address')), ('postal', pgettext_lazy('organisation address', 'Postal Address'))]
     address_type = models.CharField(_("address type"), choices=ADDRESSTYPE_CHOICES, max_length=20)
     organisation = models.ForeignKey(Organisation, on_delete=models.CASCADE)
     careof = models.CharField(_('care of (c/o)'), default='', blank=True, max_length=80)
@@ -509,16 +467,9 @@ class OrganisationAddress(AbstractBaseModel, AddressMixin):
 
 
 class OrganisationPhoneNumber(AbstractBaseModel, PhoneNumberMixin):
-    PHONE_CHOICES = [
-        ('home', pgettext_lazy('phone number', 'Home')),  # with translation context
-        ('mobile', _('Mobile')),
-        ('mobile2', _('Mobile#2')),
-        ('fax', _('Fax')),
-        ('other', _('Other')),
-        ('other2', _('Other#2')),
-    ]
-    phone_type = models.CharField(_("phone type"), help_text=_('Mobile, home, office, etc.'), choices=PHONE_CHOICES,
-                                  max_length=20)
+    PHONE_CHOICES = [('home', pgettext_lazy('phone number', 'Home')),  # with translation context
+        ('mobile', _('Mobile')), ('mobile2', _('Mobile#2')), ('fax', _('Fax')), ('other', _('Other')), ('other2', _('Other#2')), ]
+    phone_type = models.CharField(_("phone type"), help_text=_('Mobile, home, office, etc.'), choices=PHONE_CHOICES, max_length=20)
     organisation = models.ForeignKey(Organisation, on_delete=models.CASCADE)
 
     class Meta(AbstractBaseModel.Meta, PhoneNumberMixin.Meta):
@@ -597,5 +548,4 @@ def get_organisations(organisation_or_region_or_country_id):
         organisation = Organisation.objects.get_by_natural_key(organisation_or_region_or_country_id)
         return Organisation.objects.filter(pk=organisation.pk)
     except ObjectDoesNotExist:
-        raise ValueError("nor organisation and region and country found with uuid=%s" %
-                         organisation_or_region_or_country_id)
+        raise ValueError("nor organisation and region and country found with uuid=%s" % organisation_or_region_or_country_id)
