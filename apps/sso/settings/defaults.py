@@ -61,7 +61,7 @@ SSO_COUNTRY_MANAGEMENT = False
 SSO_GOOGLE_GEO_API_KEY = os.getenv('SSO_GOOGLE_GEO_API_KEY')
 SSO_EMAIL_LOGO = ""
 SSO_ASYNC_EMAILS = os.getenv("SSO_ASYNC_EMAILS", 'False').lower() in ('true', '1', 't')  # send emails async via celery task
-SSO_NOREPLY_EMAIL = 'gunnar.scherf@gmail.com'
+SSO_NOREPLY_EMAIL = os.getenv('SSO_NOREPLY_EMAIL', 'gunnar.scherf@gmail.com')
 SSO_POST_RESET_LOGIN = True
 # configured default forms and functions
 SSO_ADMIN_UPDATE_USER_FORM = 'sso.accounts.forms.UserProfileForm'
@@ -237,9 +237,10 @@ MIDDLEWARE = [
     'django.middleware.locale.LocaleMiddleware',
     'current_user.middleware.CurrentUserMiddleware',
     'sso.middleware.TimezoneMiddleware',
-    'sso.middleware.RevisionMiddleware'
+    'sso.middleware.RevisionMiddleware',
+    # 'silk.middleware.SilkyMiddleware'
 ]
-
+# SILKY_PYTHON_PROFILER = True
 ROOT_URLCONF = os.getenv('ROOT_URLCONF', 'sso.urls')
 APPEND_SLASH = True
 
@@ -255,6 +256,7 @@ INSTALLED_APPS = [
     'django.contrib.admin.apps.SimpleAdminConfig',
     'django.contrib.gis',
     'django.forms',
+    # 'silk',
     'formtools',
     'sorl.thumbnail',
     'django_recaptcha',
