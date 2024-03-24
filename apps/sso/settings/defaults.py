@@ -93,6 +93,7 @@ SSO_RECAPTCHA_ENABLED = os.getenv("SSO_RECAPTCHA_ENABLED", 'True').lower() in ('
 SSO_THROTTLING_DURATION = int(os.getenv('SSO_THROTTLING_DURATION', '30'))
 SSO_THROTTLING_MAX_CALLS = int(os.getenv('SSO_THROTTLING_MAX_CALLS', '5'))
 SSO_DEFAULT_THEME = os.getenv("SSO_DEFAULT_THEME", 'auto')
+SSO_ENABLE_PLAUSIBLE = os.getenv('SSO_ENABLE_PLAUSIBLE', 'False').lower() in ('true', '1', 't')
 # Celery settings see https://www.cloudamqp.com/docs/celery.html
 CELERY_BROKER_USE_SSL = os.getenv("CELERY_BROKER_USE_SSL", 'True').lower() in ('true', '1', 't')
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')  # 'amqp://guest:guest@localhost//'
