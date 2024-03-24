@@ -9,6 +9,8 @@ log = logging.getLogger(__name__)
 
 def settings(request):
     return {
+        'enable_plausible': site_settings.SSO_ENABLE_PLAUSIBLE,
+        'domain': site_settings.SSO_DOMAIN,
         'brand': site_settings.SSO_BRAND,
         'base_url': get_base_url(request),
         # 'stylesheet': 'css/%(style)s-%(version)s.css' % {'style': site_settings.SSO_STYLE, 'version': site_settings.SSO_STYLE_VERSION},

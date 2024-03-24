@@ -11,6 +11,9 @@
   <link href="{% static 'root/favicon-16x16.png' %}" rel="icon" sizes="16x16" type="image/png">
   <link href="{% static 'root/favicon.ico' %}" rel="icon">
   <script src="{% static 'js/theme.js' %}"></script>
+  {% if enable_plausible %}
+  <script defer data-domain="{{ domain }}" src="/js/plausible-script.js"></script>
+  {% endif %}
   {% block style %}
     <link href="{% static sso_style %}" rel="stylesheet">
     <link href="{% static 'font/bootstrap-icons.min.css' %}" rel="stylesheet">
