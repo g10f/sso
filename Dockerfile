@@ -44,7 +44,7 @@ RUN chown -R $USERNAME: /opt/g10f
 USER $USERNAME
 ARG SECRET_KEY=dummy
 RUN ./manage.py collectstatic
-ENTRYPOINT ["docker-entrypoint.sh"]
+ENTRYPOINT ["./docker-entrypoint.sh"]
 # Start gunicorn
 CMD ["gunicorn", "sso.wsgi:application"]
 EXPOSE 8000
