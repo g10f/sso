@@ -46,5 +46,5 @@ ARG SECRET_KEY=dummy
 RUN ./manage.py collectstatic
 ENTRYPOINT ["./docker-entrypoint.sh"]
 # Start gunicorn
-CMD ["gunicorn", "sso.wsgi:application"]
+CMD ["gunicorn", "sso.wsgi:application", "-b", "0.0.0.0:8000", "--forwarded_allow_ips", "'*'"]
 EXPOSE 8000
