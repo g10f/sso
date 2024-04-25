@@ -8,6 +8,7 @@ from django.core.exceptions import PermissionDenied
 from django.forms.models import inlineformset_factory
 from django.http import HttpResponseRedirect
 from django.http.response import HttpResponse
+from django.template.defaultfilters import default_if_none
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
@@ -547,15 +548,15 @@ class OrganisationList(ListView):
             response['Content-Disposition'] = 'attachment; filename="%s"' % self.filename
 
         writer = csv.writer(response, quoting=csv.QUOTE_ALL)
-        row = ["name", "is_active", "homepage", "email", "primary_phone", "country", "admin_region", "addressee",
+        row = ["id", "name", "is_active", "homepage", "email", "primary_phone", "country", "admin_region", "addressee",
                "careof", "street_address", "city", "postal_code", "founded"]
         writer.writerow(row)
         for organisation in qs:
-            admin_region = str(organisation.admin_region) if organisation.admin_region else str('')
-            primary_phone = str(organisation.primary_phone) if organisation.primary_phone else str('')
-            row = [organisation.name, str(organisation.is_active), organisation.homepage,
-                   str(organisation.email), primary_phone,
-                   str(organisation.organisation_country), admin_region]
+            admin_region = default_if_none(organisation.admin_region, "")
+            primary_phone = default_if_none(organisation.primary_phone, "")
+            row = [organisation.uuid.hex, organisation.name, str(organisation.is_active), organisation.homepage,
+                   default_if_none(organisation.email, ""), primary_phone,
+                   default_if_none(organisation.organisation_country, ""), admin_region]
 
             primary_address = organisation.primary_address
             if not organisation.is_private and primary_address:
