@@ -17,3 +17,5 @@ local.pth
 TODO.txt
 env.sh
 *.dump
+/set-version.sh
+/package-lock.json

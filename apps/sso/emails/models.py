@@ -104,8 +104,6 @@ class GroupEmail(AbstractBaseModel):
                                  limit_choices_to=Q(email_type=GROUP_EMAIL_TYPE) | Q(
                                      email_type=COUNTRY_GROUP_EMAIL_TYPE))
     homepage = models.URLField(_("homepage"), blank=True, default='')
-    # TODO: delete line and create migration
-    # is_guide_email = models.BooleanField(_('guide email'), default=False)
     is_active = models.BooleanField(_('active'), default=True,
                                     help_text=_('Designates whether this email should be treated as '
                                                 'active. Unselect this instead of deleting the email.'))
