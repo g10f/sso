@@ -14,6 +14,6 @@ jobs:
         fetch-depth: 0
     - uses: wangchucheng/git-repo-sync@v0.1.0
       with:
-        target-url: ${{ secrets.TARGET_URL }}
-        target-username: ${{ secrets.TARGET_USERNAME }}
-        target-token: ${{ secrets.TARGET_TOKEN }}
+        target-url: ${{ secrets.GITLAB_TARGET_URL }}
+        target-username: ${{ secrets.GITLAB_TARGET_USERNAME }}
+        target-token: ${{ secrets.GITLAB_TARGET_TOKEN }}
