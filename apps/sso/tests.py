@@ -1,6 +1,8 @@
 import os
 
 import time
+
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 
@@ -20,7 +22,9 @@ class SSOSeleniumTests(StaticLiveServerTestCase):
         # cls.selenium = WebDriver(firefox_binary=FirefoxBinary(log_file=open('./ff.log', 'w')))
         # cls.selenium = WebDriver(capabilities=capabilities)
         super().setUpClass()
-        cls.selenium = WebDriver()
+        chrome_options = Options()
+        chrome_options.add_argument("--disable-search-engine-choice-screen")
+        cls.selenium = WebDriver(options=chrome_options)
         cls.selenium.implicitly_wait(1)
 
     @classmethod
