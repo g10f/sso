@@ -1,5 +1,7 @@
 from functools import update_wrapper
 
+from django.utils.decorators import method_decorator
+
 from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth import get_user_model
@@ -64,7 +66,7 @@ class SSOAdminSite(admin.AdminSite):
             inner = csrf_protect(inner)
         return update_wrapper(inner, view)
 
-    @never_cache
+    @method_decorator(never_cache)
     def login(self, request, extra_context=None):
         return HttpResponseRedirect(reverse('auth:login'))
 
