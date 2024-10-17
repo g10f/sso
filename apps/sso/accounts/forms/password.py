@@ -143,7 +143,7 @@ class SetPictureAndPasswordForm(SetPasswordForm):
     def __init__(self, user, *args, **kwargs):
         super().__init__(user, *args, **kwargs)
         if user and not user.picture:
-            self.fields['picture'] = Base64ImageField(label=_('Your picture'), required=False,
+            self.fields['picture'] = Base64ImageField(label=_('Your picture'), required=settings.SSO_USER_PICTURE_REQUIRED,
                                                       help_text=_('Please use a photo of your face.'),
                                                       widget=bootstrap.ClearableBase64ImageWidget(attrs={
                                                           'max_file_size': settings.SSO_USER_MAX_PICTURE_SIZE,

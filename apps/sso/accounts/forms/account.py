@@ -300,7 +300,7 @@ class UserSelfProfileForm(forms.Form):
     valid_until = bootstrap.ReadOnlyField(label=_("Valid until"))
     first_name = forms.CharField(label=_('First name'), max_length=30, widget=bootstrap.TextInput())
     last_name = forms.CharField(label=_('Last name'), max_length=30, widget=bootstrap.TextInput())
-    picture = Base64ImageField(label=_('Your picture'), required=False, help_text=_('Please use a photo of your face.'),
+    picture = Base64ImageField(label=_('Your picture'), required=settings.SSO_USER_PICTURE_REQUIRED, help_text=_('Please use a photo of your face.'),
                                widget=bootstrap.ClearableBase64ImageWidget(attrs={
                                    'max_file_size': settings.SSO_USER_MAX_PICTURE_SIZE,
                                    'width': settings.SSO_USER_PICTURE_WIDTH,
