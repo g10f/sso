@@ -304,7 +304,7 @@ class Organisation(AbstractBaseModel):
         if self.timezone == '' and self.location != self._original_location:
             self.timezone = self.timezone_from_location
 
-        super().save(force_insert, force_update, *args, **kwargs)
+        super().save(force_insert=force_insert, force_update=force_update, *args, **kwargs)
         self._original_location = self.location
 
     @property

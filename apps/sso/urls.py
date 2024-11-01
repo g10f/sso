@@ -12,12 +12,12 @@ from sso.accounts.views.account import get_default_user_self_registration_form_c
 from sso.admin import sso_admin_site
 from sso.oauth2.views import OpenidConfigurationView
 from sso.registration.sites import RegistrationSite
-from sso.utils.url import UUIDConverter
+from sso.utils.url import SSOUUIDConverter
 from sso.views import home
 
 registration_site = RegistrationSite(form_cls=get_default_user_self_registration_form_class())
 
-register_converter(UUIDConverter, 'uuid')
+register_converter(SSOUUIDConverter, 'sso.uuid')
 last_modified_date = timezone.now()
 
 urlpatterns = [

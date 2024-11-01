@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 REDIRECT_URI_FIELD_NAME = 'redirect_uri'
 
 
-class UUIDConverter:
+class SSOUUIDConverter:
     """
     UUID converter which accepts uuids with or without hyphens
     """
