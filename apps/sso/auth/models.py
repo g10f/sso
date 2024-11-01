@@ -11,13 +11,13 @@ from fido2.server import Fido2Server, U2FFido2Server
 from fido2.utils import websafe_decode, websafe_encode
 from fido2.webauthn import PublicKeyCredentialRpEntity, AttestedCredentialData, \
     PublicKeyCredentialUserEntity
+from pyotp.utils import strings_equal
 
 from django.conf import settings
 from django.core import signing
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
-from django.utils.crypto import constant_time_compare
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from sso.auth.forms import AuthenticationTokenForm, U2FForm
@@ -277,7 +277,7 @@ class TOTPDevice(Device):
 
             valid_window = settings.SSO_TOTP_TOLERANCE
             for i in range(-valid_window, valid_window + 1):
-                if constant_time_compare(str(token), str(totp.at(for_time, i))):
+                if strings_equal(str(token), str(totp.at(for_time, i))):
                     if self.last_t >= timecode + i:
                         # new last_t must be greate then the last
                         logger.warning(f'timecode {timecode + i} already used for device {self.uuid} from user {self.user}')
