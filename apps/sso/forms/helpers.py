@@ -131,7 +131,7 @@ class ChangedDataList(list):
         return change_message or _('No fields changed.')
 
 
-def log_change(request, object, message):  # @ReservedAssignment
+def log_change(request, obj, message):  # @ReservedAssignment
     """
     Log that an object has been successfully changed.
 
@@ -151,11 +151,9 @@ def log_change(request, object, message):  # @ReservedAssignment
             # we need a user id for logging
             return
 
-    LogEntry.objects.log_action(
+    LogEntry.objects.log_actions(
         user_id=user_id,  # request.user.pk,
-        content_type_id=ContentType.objects.get_for_model(object).pk,
-        object_id=object.pk,
-        object_repr=force_str(object),
+        queryset=[obj],
         action_flag=CHANGE,
         change_message=message
     )
