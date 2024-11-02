@@ -266,8 +266,9 @@ class TOTPDevice(Device):
 
     def verify_token(self, token):
         try:
-            token = int(token)
-        except RuntimeError:
+            # check if token is an integer (can have leading zeros!)
+            _t = int(token)
+        except TypeError:
             verified = False
         else:
             b32key = b32encode(self.bin_key).decode()
@@ -277,7 +278,7 @@ class TOTPDevice(Device):
 
             valid_window = settings.SSO_TOTP_TOLERANCE
             for i in range(-valid_window, valid_window + 1):
-                if strings_equal(str(token), str(totp.at(for_time, i))):
+                if strings_equal(token, totp.at(for_time, i)):
                     if self.last_t >= timecode + i:
                         # new last_t must be greate then the last
                         logger.warning(f'timecode {timecode + i} already used for device {self.uuid} from user {self.user}')
