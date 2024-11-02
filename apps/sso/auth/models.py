@@ -289,6 +289,7 @@ class TOTPDevice(Device):
                         self.save()
                     break
             else:
+                logger.warning(f"TOTP verify failed. user: {self.user}, device {self.uuid}, token: {token}, for_time: {for_time}, valid_window: {valid_window}")
                 verified = False
 
         return verified
