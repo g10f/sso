@@ -266,8 +266,10 @@ class TOTPDevice(Device):
 
     def verify_token(self, token):
         try:
-            # check if token is an integer (can have leading zeros!)
-            _t = int(token)
+            # check if token is an integer
+            token = int(token)
+            # fill up with leading zeros
+            token = str(token).zfill(self.digits)
         except TypeError:
             verified = False
         else:
