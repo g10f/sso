@@ -120,7 +120,7 @@ class UserPictureDetailView(JsonDetailView):
             raise ValueError("unsupported content type %s" % request.META['CONTENT_TYPE'])
 
         image_file_name = "%s%s" % (
-        get_random_string(7, allowed_chars='abcdefghijklmnopqrstuvwxyz0123456789'), file_ext)
+            get_random_string(7, allowed_chars='abcdefghijklmnopqrstuvwxyz0123456789'), file_ext)
 
         # update the database at the end
         self.object.picture.delete(save=False)

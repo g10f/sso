@@ -11,6 +11,7 @@ gunicorn
 kombu
 oauthlib
 pillow
+pillow-heif
 psycopg[c]
 pyjwt
 pymemcache

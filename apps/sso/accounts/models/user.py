@@ -2,6 +2,7 @@ import datetime
 import logging
 import uuid
 
+from pillow_heif import register_heif_opener
 from sorl import thumbnail
 
 from current_user.models import CurrentUserField
@@ -29,6 +30,8 @@ from sso.signals import default_roles
 from sso.utils.email import send_mail
 
 logger = logging.getLogger(__name__)
+
+register_heif_opener(thumbnails=False)
 
 
 class UserManager(BaseUserManager):
