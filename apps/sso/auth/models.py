@@ -283,16 +283,17 @@ class TOTPDevice(Device):
                 if strings_equal(token, totp.at(for_time, i)):
                     if self.last_t >= timecode + i:
                         # new last_t must be greate then the last
-                        logger.warning(f'timecode {timecode + i} already used for device {self.uuid} from user {self.user}')
+                        logger.warning(f'timecode {timecode + i} already used. user {self.user}, device {self.uuid}')
                         raise ValidationError(_("The Token was already used."))
                     else:
                         verified = True
                         self.last_t = timecode + i
                         self.last_used = for_time
                         self.save()
+                        logger.info(f"TOTP verify success. user: {self.user}, device {self.uuid}, token: {token}, for_time: {for_time}")
                     break
             else:
-                logger.warning(f"TOTP verify failed. user: {self.user}, device {self.uuid}, token: {token}, for_time: {for_time}, valid_window: {valid_window}")
+                logger.warning(f"TOTP verify failed. user: {self.user}, device {self.uuid}, token: {token}, for_time: {for_time}")
                 verified = False
 
         return verified
