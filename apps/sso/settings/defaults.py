@@ -135,12 +135,15 @@ DATABASES = {
         'USER': os.getenv('DATABASE_USER', 'sso'),
         'PASSWORD': os.getenv('DATABASE_PASSWORD', 'sso'),
         'HOST': os.getenv('DATABASE_HOST', 'localhost'),
-        'PORT': '5432',
-        "OPTIONS": {
-            "pool": True
-        }
+        'PORT': '5432'
     },
 }
+
+if os.getenv("DATABASE_CONN_POOL", 'False').lower() in ('true', '1', 't'):
+    DATABASES['default']['OPTIONS'] = {"pool": True}
+else:
+    # CONN_MAX_AGE can only be used without connection pooling
+    DATABASES['default']['CONN_MAX_AGE'] = int(os.getenv('DATABASE_CONN_MAX_AGE', '60'))
 
 if os.getenv('CACHES_LOCATION') is not None:
     CACHES = {
