@@ -85,7 +85,6 @@ ALLOWED_HOSTS                           ''
 DATABASE_NAME                           sso
 DATABASE_USER                           sso
 DATABASE_PASSWORD                       sso
-DATABASE_CONN_MAX_AGE                   60
 DATABASE_HOST                           localhost
 CACHES_LOCATION                         None
 CELERY_BROKER_USE_SSL                   False

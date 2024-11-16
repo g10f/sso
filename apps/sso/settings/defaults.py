@@ -136,7 +136,6 @@ DATABASES = {
         'PASSWORD': os.getenv('DATABASE_PASSWORD', 'sso'),
         'HOST': os.getenv('DATABASE_HOST', 'localhost'),
         'PORT': '5432',
-        'CONN_MAX_AGE': int(os.getenv('DATABASE_CONN_MAX_AGE', '60')),
         "OPTIONS": {
             "pool": True
         }

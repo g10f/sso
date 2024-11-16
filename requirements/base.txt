@@ -12,7 +12,7 @@ kombu
 oauthlib
 pillow
 pillow-heif
-psycopg[c]
+psycopg[pool]
 pyjwt
 pymemcache
 pytz
