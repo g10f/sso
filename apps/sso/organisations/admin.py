@@ -124,7 +124,7 @@ class PhoneNumber_Inline(admin.TabularInline):
     max_num = 6
     fieldsets = [
         (None,
-         {'fields': ['phone_type', 'phone', 'primary'],
+         {'fields': ['phone_type', 'phone'],
           'classes': ['wide'], }),
     ]
 

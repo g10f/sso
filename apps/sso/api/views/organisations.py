@@ -112,8 +112,7 @@ class OrganisationMixin(object):
             data['phone_numbers'] = {
                 phone_number.uuid.hex: {
                     'phone_type': phone_number.phone_type,
-                    'phone': phone_number.phone,
-                    'primary': phone_number.primary
+                    'phone': phone_number.phone
                 } for phone_number in obj.organisationphonenumber_set.all()
             }
             data['pictures'] = {
@@ -142,8 +141,8 @@ class OrganisationDetailView(OrganisationMixin, JsonDetailView):
             'organisation_country__country', 'email', 'organisationaddress_set', 'organisationphonenumber_set',
             'organisationpicture_set')
 
-    def get_object_data(self, request, obj):
-        return super().get_object_data(request, obj, details=True)
+    def get_object_data(self, request, obj, details=True):
+        return super().get_object_data(request, obj, details=details)
 
     def delete_object(self, request, obj):
         obj.is_active = False
