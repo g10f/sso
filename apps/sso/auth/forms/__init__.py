@@ -6,6 +6,7 @@ from django.conf import settings
 from django.contrib.auth.forms import AuthenticationForm
 from django.utils.text import capfirst
 from django.utils.translation import gettext_lazy as _
+
 from sso.auth.utils import totp_digits, match_token
 from sso.forms import bootstrap
 from sso.utils.translation import string_format
@@ -80,14 +81,16 @@ class AuthenticationTokenForm(forms.Form):
     labels = {
         'otp_token': capfirst(_("one-time password")),
     }
-    otp_token = forms.IntegerField(label=labels.get('otp_token'),
-                                   min_value=1, max_value=int('9' * totp_digits()),
-                                   widget=bootstrap.TextInput(attrs={
-                                       'placeholder': labels.get('otp_token'),
-                                       'autofocus': True,
-                                       'autocomplete': 'one-time-code',
-                                       'class': 'form-control-lg'
-                                   }))
+    otp_token = forms.CharField(label=labels.get('otp_token'),
+                                min_length=totp_digits(),
+                                max_length=totp_digits(),
+                                widget=bootstrap.TextInput(attrs={
+                                    'placeholder': labels.get('otp_token'),
+                                    'autofocus': True,
+                                    'autocomplete': 'one-time-code',
+                                    'class': 'form-control-lg',
+                                    'pattern': "\\d{6,6}"
+                                }))
 
     def __init__(self, **kwargs):
         self.user = kwargs.pop('user')

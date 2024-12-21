@@ -1,11 +1,11 @@
 from base64 import b32encode
-
 from binascii import unhexlify
 
 from django import forms
 from django.forms import ModelForm
 from django.utils.encoding import force_str
 from django.utils.translation import gettext_lazy as _
+
 from sso.auth import get_default_device_cls
 from sso.auth.models import TOTPDevice, Profile, Device
 from sso.auth.utils import get_qrcode_data_url, totp_digits, get_device_classes_for_user
@@ -80,7 +80,15 @@ class ProfileForm(forms.Form):
 
 
 class TOTPDeviceForm(CredentialSetupForm):
-    token = forms.IntegerField(label=_("One-time code"), min_value=0, max_value=int('9' * totp_digits()), widget=bootstrap.TextInput(attrs={'autofocus': True}))
+    token = forms.CharField(label=_("One-time code"),
+                            min_length=totp_digits(),
+                            max_length=totp_digits(),
+                            widget=bootstrap.TextInput(attrs={
+                                'autofocus': True,
+                                'autocomplete': 'one-time-code',
+                                'class': 'form-control-lg',
+                                'pattern': "\\d{6,6}"
+                            }))
     key = forms.CharField(label=_('Key'), widget=forms.HiddenInput())
 
     error_messages = {
@@ -124,6 +132,6 @@ class TOTPDeviceForm(CredentialSetupForm):
         self.device.name = self.cleaned_data['name']
         self.device.save()
         if not hasattr(self.user, 'sso_auth_profile'):
-            Profile.objects.create(user=self.user,  default_device_id=self.device.device_id, is_otp_enabled=True)
+            Profile.objects.create(user=self.user, default_device_id=self.device.device_id, is_otp_enabled=True)
 
         return self.device
