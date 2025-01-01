@@ -45,8 +45,7 @@ def get_token_url(user_id, expiry, redirect_url, backend, display, device_id):
     if display:
         query_string['display'] = display
 
-    return "%s?%s" % (reverse('auth:token', kwargs={'user_data': user_data, 'device_id': device_id}),
-                      urlencode(query_string))
+    return "%s?%s" % (reverse('auth:token', kwargs={'user_data': user_data, 'device_id': device_id}), urlencode(query_string))
 
 
 class LoginView(FormView):
@@ -96,18 +95,19 @@ class LoginView(FormView):
             try:
                 self.success_url = get_token_url(user.id, expiry, redirect_url, user.backend, display, device_cls.get_device_id())
             except Exception as e:
-                messages.error(
-                    self.request,
-                    _('Device error, select another device. (%(error)s)') % {'error': force_str(e)})
+                messages.error(self.request, _('Device error, select another device. (%(error)s)') % {'error': force_str(e)})
                 return self.render_to_response(self.get_context_data(form=form))
 
         else:
             # remove the prompt login param, cause login was done here
             success_url = remove_value_from_url_param(redirect_url, 'prompt', 'login')
 
+            # add required action
+            query_string = {REDIRECT_FIELD_NAME: success_url}
             if user.is_mfa_required and display not in ['popup']:
-                query_string = {REDIRECT_FIELD_NAME: success_url}
                 self.success_url = "%s?%s" % (reverse('auth:mfa-detail'), urlencode(query_string))
+            elif user.is_profile_update_required and display not in ['popup']:
+                self.success_url = "%s?%s" % (reverse('accounts:profile'), urlencode(query_string))
             else:
                 self.success_url = success_url
 
@@ -133,9 +133,7 @@ class TokenView(FormView):
     device_cls = None
     expiry = 0
     challenges = None
-    error_messages = {
-        'signature_expired': _("The login process took too long. Please try again."),
-    }
+    error_messages = {'signature_expired': _("The login process took too long. Please try again."), }
 
     @method_decorator(revision_exempt)
     @method_decorator(sensitive_post_parameters())
@@ -186,12 +184,8 @@ class TokenView(FormView):
         device_classes = get_device_classes_for_user(self.user)
         other_devices = []
         for device_cls in filter(lambda d: d != self.device_cls, device_classes):
-            device_info = {
-                'name': device_cls.default_name(),
-                'url': "%s?%s" % (
-                    reverse('auth:token', kwargs={'user_data': self.kwargs['user_data'], 'device_id': device_cls.get_device_id()}),
-                    self.request.GET.urlencode())
-            }
+            device_info = {'name': device_cls.default_name(),
+                'url': "%s?%s" % (reverse('auth:token', kwargs={'user_data': self.kwargs['user_data'], 'device_id': device_cls.get_device_id()}), self.request.GET.urlencode())}
             other_devices.append(device_info)
 
         context['other_devices'] = other_devices
@@ -211,21 +205,27 @@ class TokenView(FormView):
         return initial
 
     def form_valid(self, form):
+        display = self.request.GET.get('display')
         redirect_url = get_safe_login_redirect_url(self.request)
         user = form.user
         user._auth_device_id = form.device.id
         user._auth_session_expiry = self.expiry
         auth_login(self.request, form.user)
         # remove the prompt login param, cause login was done here
-        self.success_url = remove_value_from_url_param(redirect_url, 'prompt', 'login')
+        success_url = remove_value_from_url_param(redirect_url, 'prompt', 'login')
+
+        # add required action
+        query_string = {REDIRECT_FIELD_NAME: success_url}
+        if user.is_profile_update_required and display not in ['popup']:
+            self.success_url = "%s?%s" % (reverse('accounts:profile'), urlencode(query_string))
+        else:
+            self.success_url = success_url
+
         return super().form_valid(form)
 
 
 @never_cache
-def logout(request, next_page=None,
-           template_name='sso_auth/logged_out.html',
-           redirect_field_name=REDIRECT_FIELD_NAME,
-           current_app=None, extra_context=None):
+def logout(request, next_page=None, template_name='sso_auth/logged_out.html', redirect_field_name=REDIRECT_FIELD_NAME, current_app=None, extra_context=None):
     """
     Logs out the user and displays 'You are logged out' message.
     see http://openid.net/specs/openid-connect-session-1_0.html#RPLogout
@@ -264,11 +264,7 @@ def logout(request, next_page=None,
     if next_page is None:
         current_site = get_current_site(request)
         site_name = settings.SSO_SITE_NAME
-        context = {
-            'site': current_site,
-            'site_name': site_name,
-            'title': _('Logged out')
-        }
+        context = {'site': current_site, 'site_name': site_name, 'title': _('Logged out')}
         if extra_context is not None:
             context.update(extra_context)
         if current_app is not None:

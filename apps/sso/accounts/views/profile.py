@@ -22,8 +22,7 @@ from django.utils.translation import gettext as _
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from sso.accounts.email import send_useremail_confirmation, send_mail_managers
-from sso.accounts.forms import PasswordResetForm, SetPasswordForm, ContactForm, AddressForm, PhoneNumberForm, \
-    SetPictureAndPasswordForm, PasswordChangeForm, SelfUserEmailAddForm
+from sso.accounts.forms import PasswordResetForm, SetPasswordForm, ContactForm, AddressForm, PhoneNumberForm, SetPictureAndPasswordForm, PasswordChangeForm, SelfUserEmailAddForm
 from sso.accounts.forms import UserSelfProfileForm, UserSelfProfileDeleteForm, CenterSelfProfileForm
 from sso.accounts.models import User, UserAddress, UserPhoneNumber, UserEmail, get_applicationrole_ids, Application
 from sso.accounts.tokens import email_confirm_token_generator
@@ -32,7 +31,7 @@ from sso.auth.views import get_token_url
 from sso.forms.helpers import ChangedDataList, log_change, get_media_errors_and_active_form
 from sso.oauth2.models import allowed_hosts
 from sso.organisations.models import is_validation_period_active
-from sso.utils.url import get_safe_redirect_uri, update_url
+from sso.utils.url import get_safe_redirect_uri, update_url, REDIRECT_URI_FIELD_NAME
 
 logger = logging.getLogger(__name__)
 
@@ -45,8 +44,7 @@ def contact(request):
         if form.is_valid():
             cd = form.cleaned_data
             html_message = render_to_string('accounts/email/contact_email.html', cd)
-            send_mail_managers(cd['subject'], message=strip_tags(html_message), html_message=html_message,
-                               fail_silently=settings.DEBUG, reply_to=[cd['email']])
+            send_mail_managers(cd['subject'], message=strip_tags(html_message), html_message=html_message, fail_silently=settings.DEBUG, reply_to=[cd['email']])
             return redirect('accounts:contact_thanks')
     else:
         initial = {}
@@ -79,12 +77,7 @@ def password_change(request):
             return HttpResponseRedirect(post_change_redirect)
     else:
         form = PasswordChangeForm(user=request.user)
-    context = {
-        'password_validators_help_texts': password_validators_help_texts(),
-        'form': form,
-        'title': _('Password change'),
-        'redirect_uri': redirect_uri
-    }
+    context = {'password_validators_help_texts': password_validators_help_texts(), 'form': form, 'title': _('Password change'), 'redirect_uri': redirect_uri}
 
     return TemplateResponse(request, template_name, context)
 
@@ -112,9 +105,7 @@ def confirm_email(request, uidb64, token, post_reset_redirect=None):
         user_email = None
 
     if user_email is not None and user_email.confirmed:
-        messages.info(request,
-                      _('Your email address \"%(email)s\" was already confirmed successfully.') % {
-                          'email': user_email})
+        messages.info(request, _('Your email address \"%(email)s\" was already confirmed successfully.') % {'email': user_email})
     elif user_email is not None and email_confirm_token_generator.check_token(user_email, token):
         confirmed_primary_exists = UserEmail.objects.filter(confirmed=True, primary=True, user=request.user).exists()
         user_email.confirmed = True
@@ -122,11 +113,9 @@ def confirm_email(request, uidb64, token, post_reset_redirect=None):
             user_email.primary = True
             UserEmail.objects.filter(user=user_email.user, primary=True).exclude(pk=user_email.pk).update(primary=False)
         user_email.save()
-        messages.success(request,
-                         _('Your email address \"%(email)s\" was confirmed successfully.') % {'email': user_email})
+        messages.success(request, _('Your email address \"%(email)s\" was confirmed successfully.') % {'email': user_email})
     elif user_email is not None:
-        messages.error(request,
-                       _('The confirmation message has probably already expired, please resend the confirmation.'))
+        messages.error(request, _('The confirmation message has probably already expired, please resend the confirmation.'))
 
     return HttpResponseRedirect(post_reset_redirect)
 
@@ -154,8 +143,7 @@ def emails(request):
                     if confirmed_email:
                         user.create_primary_email(confirmed_email.email)
 
-                messages.success(request,
-                                 _('The email \"%(email)s\" was deleted successfully.') % {'email': user_email})
+                messages.success(request, _('The email \"%(email)s\" was deleted successfully.') % {'email': user_email})
             except UserEmail.DoesNotExist:
                 # may be a double click on the delete button
                 pass
@@ -164,8 +152,7 @@ def emails(request):
             user_email = UserEmail.objects.get(id=request.POST['set_primary'])
             user_email.primary = True
             user_email.save()
-            UserEmail.objects.filter(user=user_email.user, primary=True).exclude(pk=user_email.pk).update(
-                primary=False)
+            UserEmail.objects.filter(user=user_email.user, primary=True).exclude(pk=user_email.pk).update(primary=False)
             messages.success(request, _("The email \"%(email)s\" was saved successfully.") % {'email': user_email})
             return redirect(post_change_redirect)
         else:
@@ -182,12 +169,8 @@ def emails(request):
     else:
         add_form = SelfUserEmailAddForm(initial={'user': user.id})
 
-    context = {
-        'confirmed_count': UserEmail.objects.filter(user=user, confirmed=True).count(),
-        'form': add_form,
-        'max_email_adresses': UserEmail.MAX_EMAIL_ADRESSES,
-        'redirect_uri': redirect_uri
-    }
+    context = {'confirmed_count': UserEmail.objects.filter(user=user, confirmed=True).count(), 'form': add_form, 'max_email_adresses': UserEmail.MAX_EMAIL_ADRESSES,
+        'redirect_uri': redirect_uri}
     return render(request, 'accounts/user_email_detail.html', context)
 
 
@@ -210,7 +193,9 @@ def get_profile_success_url(request, redirect_uri):
 
 @login_required
 def profile(request):
-    redirect_uri = get_safe_redirect_uri(request, allowed_hosts())
+    # allow REDIRECT_URI_FIELD_NAME and REDIRECT_FIELD_NAME for external and internal use cases
+    # internal REDIRECT_FIELD_NAME has higher prio
+    redirect_uri = get_safe_redirect_uri(request, allowed_hosts(), redirect_field_name=[REDIRECT_FIELD_NAME, REDIRECT_URI_FIELD_NAME])
     if getattr(request.user, 'is_center', False):
         return profile_center_account(request, redirect_uri)
     if settings.SSO_SHOW_ADDRESS_AND_PHONE_FORM:
@@ -258,8 +243,7 @@ def profile_core(request, redirect_uri=None):
     except ObjectDoesNotExist:
         user_organisation = None
 
-    context = {'form': form, 'redirect_uri': redirect_uri,
-               'is_validation_period_active': is_validation_period_active(user_organisation)}
+    context = {'form': form, 'redirect_uri': redirect_uri, 'is_validation_period_active': is_validation_period_active(user_organisation)}
     return render(request, 'accounts/profile_core_form.html', context)
 
 
@@ -273,8 +257,7 @@ def profile_with_address_and_phone(request, redirect_uri=None):
         address_extra = 1
 
     AddressInlineFormSet = inlineformset_factory(User, UserAddress, AddressForm, extra=address_extra, max_num=3)
-    PhoneNumberInlineFormSet = inlineformset_factory(User, UserPhoneNumber, PhoneNumberForm, extra=phonenumber_extra,
-                                                     max_num=6)
+    PhoneNumberInlineFormSet = inlineformset_factory(User, UserPhoneNumber, PhoneNumberForm, extra=phonenumber_extra, max_num=6)
 
     if request.method == 'POST':
         form = UserSelfProfileForm(request.POST, instance=user, files=request.FILES)
@@ -312,8 +295,7 @@ def profile_with_address_and_phone(request, redirect_uri=None):
     except ObjectDoesNotExist:
         user_organisation = None
 
-    context = {'form': form, 'errors': errors, 'formsets': formsets, 'media': media, 'active': active,
-               'redirect_uri': redirect_uri,
+    context = {'form': form, 'errors': errors, 'formsets': formsets, 'media': media, 'active': active, 'redirect_uri': redirect_uri,
                'is_validation_period_active': is_validation_period_active(user_organisation)}
     return render(request, 'accounts/profile_form.html', context)
 
@@ -340,8 +322,7 @@ def get_start_app(uidb64):
         uid = urlsafe_base64_decode(uidb64).decode()
         applicationrole_ids = get_applicationrole_ids(uid, Q(application__redirect_to_after_first_login=True))
         if applicationrole_ids:
-            app = Application.objects.distinct().filter(applicationrole__in=applicationrole_ids,
-                                                        is_active=True).first()
+            app = Application.objects.distinct().filter(applicationrole__in=applicationrole_ids, is_active=True).first()
             if app is not None and app.url:
                 return app
     except (TypeError, ValueError, OverflowError) as e:
@@ -415,9 +396,8 @@ class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
             device = is_otp_login(user, is_two_factor_required=False)
             if device:
                 redirect_url = reverse('accounts:password_reset_complete')
-                self.success_url = get_token_url(user.id, expiry=0, redirect_url=redirect_url,
-                                                 backend=self.post_reset_login_backend,
-                                                 display=None, device_id=device.get_device_id())
+                self.success_url = get_token_url(user.id, expiry=0, redirect_url=redirect_url, backend=self.post_reset_login_backend, display=None,
+                                                 device_id=device.get_device_id())
             else:
                 auth_login(self.request, user, self.post_reset_login_backend)
         return super(auth_views.PasswordResetConfirmView, self).form_valid(form)

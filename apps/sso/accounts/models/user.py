@@ -1017,3 +1017,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def is_mfa_enabled(self):
         return get_device_classes() and (not settings.SSO_ADMIN_ONLY_MFA or self.is_user_admin or self.is_organisation_admin or self.is_staff)
+
+    @property
+    def is_profile_update_required(self):
+        if not self.is_service and not self.is_center and settings.SSO_USER_PICTURE_REQUIRED and not self.picture:
+            return True
+        else:
+            return False
