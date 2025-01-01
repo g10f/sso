@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-08-30 17:58+0200\n"
+"POT-Creation-Date: 2024-12-31 19:49+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1297,6 +1297,12 @@ msgstr ""
 msgid "My account"
 msgstr "Mein Konto"
 
+msgid "Please complete your profile data."
+msgstr "Bitte vervollständige Deine Daten."
+
+msgid "Continue without completing the profile"
+msgstr "Fortsetzen ohne Vervollständigung des Profils"
+
 msgid "Delete user"
 msgstr "Benutzer löschen"
 
@@ -1905,9 +1911,6 @@ msgstr "E-Mail Alias"
 
 msgid "email aliases"
 msgstr "E-Mail Aliase"
-
-msgid "guide email"
-msgstr "Guide E-Mail Adresse"
 
 msgid "group email"
 msgstr "Gruppen E-Mail"
@@ -3234,3 +3237,6 @@ msgstr ""
 #, python-brace-format
 msgid "The {name} \"{obj}\" was created successfully."
 msgstr "{name} \"{obj}\" wurde erfolgreich angelegt."
+
+#~ msgid "guide email"
+#~ msgstr "Guide E-Mail Adresse"

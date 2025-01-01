@@ -13,7 +13,11 @@
 {% block form %}
   <form enctype="multipart/form-data" class="form-horizontal" method="post">
     <h1>{% translate 'My account' %}</h1>
+    {% if user.is_profile_update_required %}
+      <div class="alert alert-danger">{% translate "Please complete your profile data." %}</div>
+    {% endif %}
     {% include 'include/_form_boilerplate.html' %}
+
     {% translate 'Profile' as base_title %}
     {% include 'bootstrap/forms/nav-tabs.html' %}
 
@@ -38,9 +42,17 @@
       <div class="form-group">
         <div class="g10f-form-submit">
           {% if redirect_uri %}
-            <a class="btn btn-secondary" href="{{ redirect_uri }}">{% translate 'Back' %}</a>{% endif %}
+            <a class="btn btn-primary" href="{{ redirect_uri }}">
+              {% if user.is_profile_update_required %}
+                {% translate 'Continue without completing the profile' %}
+              {% else %}
+                {% translate 'Continue' %}
+              {% endif %}
+            </a>
+          {% endif %}
           <a class="btn btn-secondary" href="{% url 'accounts:delete_profile' %}">{% translate 'Delete' %}</a>
-          <button type="submit" class="btn btn-secondary" name="_continue">{% translate 'Save and continue editing' %}</button>
+          <button type="submit" class="btn btn-secondary"
+                  name="_continue">{% translate 'Save and continue editing' %}</button>
           <button type="submit" class="btn btn-primary">{% translate 'Save' %}</button>
         </div>
       </div>
