@@ -1,0 +1,47 @@
+// Light mode
+$brand-colors-text: (
+  "error": $danger-text-emphasis,
+  "brand": $brand-text-emphasis,
+  "brand-light": $brand-light-text-emphasis,
+  "default": $default-text-emphasis
+);
+$brand-colors-bg-subtle: (
+  "error": $danger-bg-subtle,
+  "brand": $brand-bg-subtle,
+  "brand-light": $brand-light-bg-subtle,
+  "default": $default-bg-subtle
+);
+$brand-colors-border-subtle: (
+  "error": $danger-border-subtle,
+  "brand": $brand-border-subtle,
+  "brand-light": $brand-light-border-subtle,
+  "default": $default-border-subtle
+);
+
+// Dark mode
+$brand-colors-text-dark: (
+  "error": $danger-text-emphasis-dark,
+  "brand": $brand-text-emphasis-dark,
+  "brand-light": $brand-light-text-emphasis-dark,
+  "default": $default-text-emphasis-dark
+);
+$brand-colors-bg-subtle-dark: (
+  "error": $danger-bg-subtle-dark,
+  "brand": $brand-bg-subtle-dark,
+  "brand-light": $brand-light-bg-subtle-dark,
+  "default": $default-bg-subtle-dark
+);
+$brand-colors-border-subtle-dark: (
+  "error": $danger-border-subtle-dark,
+  "brand": $brand-border-subtle-dark,
+  "brand-light": $brand-light-border-subtle-dark,
+  "default": $default-border-subtle-dark
+);
+
+$theme-colors-text: map-merge($theme-colors-text, $brand-colors-text);
+$theme-colors-bg-subtle: map-merge($theme-colors-bg-subtle, $brand-colors-bg-subtle);
+$theme-colors-border-subtle: map-merge($theme-colors-border-subtle, $brand-colors-border-subtle);
+
+$theme-colors-text-dark: map-merge($theme-colors-text-dark, $brand-colors-text-dark);
+$theme-colors-bg-subtle-dark: map-merge($theme-colors-bg-subtle-dark, $brand-colors-bg-subtle-dark);
+$theme-colors-border-subtle-dark: map-merge($theme-colors-border-subtle-dark, $brand-colors-border-subtle-dark);

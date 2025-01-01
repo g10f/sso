@@ -17,9 +17,12 @@
 // 5. Include remainder of required parts
 @import "bootstrap/scss/maps";
 @import "bootstrap/scss/mixins";
-@import "bootstrap/scss/root";
 
-// 6. Optionally include any other parts as needed
+// 6. Add a custom color to new theme maps
+@import "colors";
+
+// 7. Optionally include any other parts as needed
+@import "bootstrap/scss/root";
 @import "bootstrap/scss/utilities";
 @import "bootstrap/scss/reboot";
 @import "bootstrap/scss/type";

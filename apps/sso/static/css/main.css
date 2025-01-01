@@ -56,6 +56,10 @@
   --bs-danger-text-emphasis: #58151c;
   --bs-light-text-emphasis: #495057;
   --bs-dark-text-emphasis: #495057;
+  --bs-error-text-emphasis: #58151c;
+  --bs-brand-text-emphasis: #001429;
+  --bs-brand-light-text-emphasis: #003f5a;
+  --bs-default-text-emphasis: #595a5c;
   --bs-primary-bg-subtle: #ccd6e0;
   --bs-secondary-bg-subtle: #e2e3e5;
   --bs-success-bg-subtle: #d1e7dd;
@@ -64,6 +68,10 @@
   --bs-danger-bg-subtle: #f8d7da;
   --bs-light-bg-subtle: #fcfcfd;
   --bs-dark-bg-subtle: #ced4da;
+  --bs-error-bg-subtle: #f8d7da;
+  --bs-brand-bg-subtle: #ccd6e0;
+  --bs-brand-light-bg-subtle: #ccecf9;
+  --bs-default-bg-subtle: #f8f9fa;
   --bs-primary-border-subtle: #99adc2;
   --bs-secondary-border-subtle: #c4c8cb;
   --bs-success-border-subtle: #a3cfbb;
@@ -72,6 +80,10 @@
   --bs-danger-border-subtle: #f1aeb5;
   --bs-light-border-subtle: #e9ecef;
   --bs-dark-border-subtle: #adb5bd;
+  --bs-error-border-subtle: #f1aeb5;
+  --bs-brand-border-subtle: #99adc2;
+  --bs-brand-light-border-subtle: #99d8f3;
+  --bs-default-border-subtle: #f2f3f5;
   --bs-white-rgb: 255, 255, 255;
   --bs-black-rgb: 0, 0, 0;
   --bs-font-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
@@ -153,6 +165,10 @@
   --bs-danger-text-emphasis: #ea868f;
   --bs-light-text-emphasis: #f8f9fa;
   --bs-dark-text-emphasis: #dee2e6;
+  --bs-error-text-emphasis: #ea868f;
+  --bs-brand-text-emphasis: #6685a3;
+  --bs-brand-light-text-emphasis: #66c5ec;
+  --bs-default-text-emphasis: #ebeef0;
   --bs-primary-bg-subtle: #000a14;
   --bs-secondary-bg-subtle: #161719;
   --bs-success-bg-subtle: #051b11;
@@ -161,6 +177,10 @@
   --bs-danger-bg-subtle: #2c0b0e;
   --bs-light-bg-subtle: #343a40;
   --bs-dark-bg-subtle: #1a1d20;
+  --bs-error-bg-subtle: #2c0b0e;
+  --bs-brand-bg-subtle: #000a14;
+  --bs-brand-light-bg-subtle: #00202d;
+  --bs-default-bg-subtle: #2c2d2e;
   --bs-primary-border-subtle: #001f3d;
   --bs-secondary-border-subtle: #41464b;
   --bs-success-border-subtle: #0f5132;
@@ -169,6 +189,10 @@
   --bs-danger-border-subtle: #842029;
   --bs-light-border-subtle: #495057;
   --bs-dark-border-subtle: #343a40;
+  --bs-error-border-subtle: #842029;
+  --bs-brand-border-subtle: #001f3d;
+  --bs-brand-light-border-subtle: #005f86;
+  --bs-default-border-subtle: #85888a;
   --bs-heading-color: inherit;
   --bs-link-color: #6685a3;
   --bs-link-hover-color: #859db5;
