@@ -277,6 +277,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         continue_button = self.selenium.find_element(by=By.XPATH, value='//button[@type="submit"][@name="_continue"]')
         self.click(continue_button)
         self.wait_page_loaded()
+        self.assertEqual(len(self.selenium.find_elements(by=By.CLASS_NAME, value="alert-danger")), 0)
 
         first_name = self.selenium.find_element(by=By.NAME, value="first_name")
         self.assertEqual(first_name.get_attribute("value"), new_first_name)
