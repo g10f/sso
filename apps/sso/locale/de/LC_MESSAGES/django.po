@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-31 19:49+0100\n"
+"POT-Creation-Date: 2025-01-06 22:01+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1297,11 +1297,11 @@ msgstr ""
 msgid "My account"
 msgstr "Mein Konto"
 
-msgid "Please complete your profile data."
-msgstr "Bitte vervollständige Deine Daten."
+msgid "Please select a profile picture."
+msgstr "Bitte wähle ein Profilbild aus"
 
-msgid "Continue without completing the profile"
-msgstr "Fortsetzen ohne Vervollständigung des Profils"
+msgid "Continue without a profile picture"
+msgstr "Ohne Profilbild fortfahren"
 
 msgid "Delete user"
 msgstr "Benutzer löschen"
@@ -3237,6 +3237,12 @@ msgstr ""
 #, python-brace-format
 msgid "The {name} \"{obj}\" was created successfully."
 msgstr "{name} \"{obj}\" wurde erfolgreich angelegt."
+
+#~ msgid "Please complete your profile data."
+#~ msgstr "Bitte vervollständige Deine Daten."
+
+#~ msgid "Continue without completing the profile"
+#~ msgstr "Fortsetzen ohne Vervollständigung des Profils"
 
 #~ msgid "guide email"
 #~ msgstr "Guide E-Mail Adresse"
