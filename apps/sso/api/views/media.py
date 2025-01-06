@@ -1,6 +1,7 @@
 import logging
 from mimetypes import guess_extension
 
+from django.conf import settings
 from sorl.thumbnail import get_thumbnail
 
 from django.core.files.base import ContentFile
@@ -54,6 +55,12 @@ def modify_permission(request, obj):
                     return True, None
     return False, "picture not in scope '%s'" % request.scopes
 
+def delete_permission(request, obj):
+    if settings.SSO_USER_PICTURE_REQUIRED:
+        return False, "picture required"
+    else:
+        return modify_permission(request, obj)
+
 
 class UserPictureDetailView(JsonDetailView):
     model = User
@@ -61,7 +68,7 @@ class UserPictureDetailView(JsonDetailView):
     permissions_tests = {
         'read': read_permission,
         'create': modify_permission,
-        'delete': modify_permission,
+        'delete': delete_permission,
     }
     operations = {
         'create': {'@type': 'CreateResourceOperation', 'method': 'POST'},
