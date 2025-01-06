@@ -13,8 +13,8 @@
 {% block form %}
   <form enctype="multipart/form-data" class="form-horizontal" method="post">
     <h1>{% translate 'My account' %}</h1>
-    {% if user.is_profile_update_required %}
-      <div class="alert alert-danger">{% translate "Please complete your profile data." %}</div>
+    {% if user.is_picture_required %}
+      <div class="alert alert-danger">{% translate "Please select a profile picture." %}</div>
     {% endif %}
     {% include 'include/_form_boilerplate.html' %}
 
@@ -43,8 +43,8 @@
         <div class="g10f-form-submit">
           {% if redirect_uri %}
             <a class="btn btn-primary" href="{{ redirect_uri }}">
-              {% if user.is_profile_update_required %}
-                {% translate 'Continue without completing the profile' %}
+              {% if user.is_picture_required %}
+                {% translate 'Continue without a profile picture' %}
               {% else %}
                 {% translate 'Continue' %}
               {% endif %}

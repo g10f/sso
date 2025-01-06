@@ -106,7 +106,7 @@ class LoginView(FormView):
             query_string = {REDIRECT_FIELD_NAME: success_url}
             if user.is_mfa_required and display not in ['popup']:
                 self.success_url = "%s?%s" % (reverse('auth:mfa-detail'), urlencode(query_string))
-            elif user.is_profile_update_required and display not in ['popup']:
+            elif user.is_picture_required and display not in ['popup']:
                 self.success_url = "%s?%s" % (reverse('accounts:profile'), urlencode(query_string))
             else:
                 self.success_url = success_url
@@ -216,7 +216,7 @@ class TokenView(FormView):
 
         # add required action
         query_string = {REDIRECT_FIELD_NAME: success_url}
-        if user.is_profile_update_required and display not in ['popup']:
+        if user.is_picture_required and display not in ['popup']:
             self.success_url = "%s?%s" % (reverse('accounts:profile'), urlencode(query_string))
         else:
             self.success_url = success_url
