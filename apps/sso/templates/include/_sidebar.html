@@ -1,7 +1,7 @@
 {% load i18n %}
 <ul class="sidebar nav nav-pills flex-column mb-3">
   {% for item in sidebar %}
-    {% if item.submenue %}
+    {% if item.submenu %}
       <li>
         <button
             aria-expanded="{% if item.expanded %}true{% else %}false{% endif %}"
@@ -12,7 +12,7 @@
         </button>
         <div class="collapse{% if item.expanded %} show{% endif %}" id="{{ item.name }}-collapse">
           <ul class="nav flex-column mb-auto">
-            {% for item in item.submenue %}
+            {% for item in item.submenu %}
               <li>
                 <a class="nav-link{% if item.active %} active{% endif %}{% if item.badge %} d-flex justify-content-between{% endif %}"
                    href="{{ item.url }}">
