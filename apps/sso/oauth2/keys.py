@@ -182,7 +182,7 @@ def get_certs_jwks():
             jwks_cert = {
                 'x5t': force_str(urlsafe_b64encode(c.fingerprint(hashes.SHA1()))),
                 'x5t#S256': force_str(urlsafe_b64encode(c.fingerprint(hashes.SHA256()))),
-                'x5c': force_str(b64encode(x509.load_pem_x509_certificate(cert.value.encode()).public_bytes(serialization.Encoding.DER)))
+                'x5c': [force_str(b64encode(x509.load_pem_x509_certificate(cert.value.encode()).public_bytes(serialization.Encoding.DER)))]
             }
             certs[cert.component.uuid.hex] = jwks_cert
         return certs
