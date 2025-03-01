@@ -34,6 +34,7 @@ class OAuth2RefreshTokenGrantEx(OAuth2RefreshTokenGrant):
         self.request_validator.save_token(token, request)
 
         logger.debug('Issuing new token to client id %r (%r), %r.', request.client_id, request.client, token)
+        headers.update(self._create_cors_headers(request))
         return headers, json.dumps(token), 200
 
 
@@ -68,10 +69,7 @@ class OAuth2AuthorizationCodeGrantEx(OAuth2AuthorizationCodeGrant):
         self.request_validator.save_token(token, request)
         self.request_validator.invalidate_authorization_code(
             request.client_id, request.code, request)
-        # custom exrefresh_tokentension of original oauthlib
-        # if request.client and request.client.type not in CONFIDENTIAL_CLIENTS and 'HTTP_ORIGIN' in request.headers:
-        #     origin = request.headers['HTTP_ORIGIN']
-        #     add_cors_header(origin, request.client, headers)
+        headers.update(self._create_cors_headers(request))
         return headers, json.dumps(token), 200
 
 

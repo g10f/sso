@@ -32,7 +32,7 @@ class IterableLazyObject(SimpleLazyObject):
 
 
 def get_access_token(request):
-    http_authorization = request.META.get('HTTP_AUTHORIZATION')
+    http_authorization = request.headers.get('Authorization')
     if http_authorization:
         http_authorization = http_authorization.split()
         if len(http_authorization) == 2:
