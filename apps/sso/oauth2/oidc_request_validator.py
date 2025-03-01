@@ -15,14 +15,15 @@ from .crypt import loads_jwt
 from .models import BearerToken, RefreshToken, AuthorizationCode, Client, check_redirect_uri, CONFIDENTIAL_CLIENTS, \
     CLIENT_RESPONSE_TYPES
 from .oidc_token import get_idtoken_finalizer
+from ..api.response import same_origin
 
 logger = logging.getLogger(__name__)
 
 
 def get_client_id_and_secret_from_auth_header(request):
-    if 'HTTP_AUTHORIZATION' in request.headers:
+    if 'Authorization' in request.headers:
         # client credentials grant type
-        http_authorization = request.headers['HTTP_AUTHORIZATION'].split(' ')
+        http_authorization = request.headers['Authorization'].split(' ')
         if (len(http_authorization) == 2) and http_authorization[0] == 'Basic':
             data = base64.b64decode(force_bytes(http_authorization[1])).decode()
             return data.split(':')
@@ -42,6 +43,14 @@ class OIDCRequestValidator(RequestValidator):
     def is_pkce_required(self, client_id, request):
         client = self._get_client(client_id, request)
         return client.force_using_pkce
+
+    def is_origin_allowed(self, client_id, origin, request, *args, **kwargs):
+        client = self._get_client(client_id, request)
+        for redirect_uri in client.redirect_uris.split():
+             if same_origin(redirect_uri, origin):
+                 return True
+
+        return False
 
     def get_code_challenge(self, code, request):
         return request.client.authorization_code.code_challenge or None
@@ -141,7 +150,7 @@ class OIDCRequestValidator(RequestValidator):
         # Whichever authentication method suits you, HTTP Basic might work
         if request.grant_type in ['client_credentials', 'password', 'refresh_token']:
             # http://tools.ietf.org/html/rfc6749#section-4.4
-            if 'HTTP_AUTHORIZATION' in request.headers:
+            if 'Authorization' in request.headers:
                 request.client_id, request.client_secret = get_client_id_and_secret_from_auth_header(request)
         try:
             # 1. check the client_id
@@ -312,7 +321,7 @@ class OIDCRequestValidator(RequestValidator):
 
     def client_authentication_required(self, request, *args, **kwargs):
         if not request.client_id:
-            if 'HTTP_AUTHORIZATION' in request.headers:
+            if 'Authorization' in request.headers:
                 # client credentials grant type
                 request.client_id, request.client_secret = get_client_id_and_secret_from_auth_header(request)
 

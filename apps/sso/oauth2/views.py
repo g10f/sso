@@ -25,7 +25,7 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.vary import vary_on_headers
 from django.views.generic import TemplateView
-from sso.api.response import JsonHttpResponse, same_origin, add_cors_header
+from sso.api.response import JsonHttpResponse, same_origin
 from sso.api.views.generic import PreflightMixin
 from sso.auth.utils import is_recent_auth_time
 from sso.auth.views import TWO_FACTOR_PARAM
@@ -57,13 +57,7 @@ def extract_params(request):
     logger.debug('Extracting parameters from request.')
     uri = _get_escaped_full_path(request)
     http_method = request.method
-    headers = request.META
-    if 'wsgi.input' in headers:
-        del headers['wsgi.input']
-    if 'wsgi.errors' in headers:
-        del headers['wsgi.errors']
-    if 'HTTP_AUTHORIZATION' in headers:
-        headers['Authorization'] = headers['HTTP_AUTHORIZATION']
+    headers = request.headers
     body = urlencode(request.POST.items())
     return uri, http_method, body, headers
 
@@ -317,8 +311,6 @@ def token(request):
     for k, v in headers.items():
         response[k] = v
 
-    origin = request.META.get('HTTP_ORIGIN')
-    add_cors_header(origin, request.client, response, True)
     return response
 
 
