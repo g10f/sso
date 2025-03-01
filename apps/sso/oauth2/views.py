@@ -318,7 +318,7 @@ def token(request):
         response[k] = v
 
     origin = request.META.get('HTTP_ORIGIN')
-    add_cors_header(origin, request.client, response, False)
+    add_cors_header(origin, request.client, response, True)
     return response
 
 
