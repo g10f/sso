@@ -25,7 +25,7 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.vary import vary_on_headers
 from django.views.generic import TemplateView
-from sso.api.response import JsonHttpResponse, same_origin
+from sso.api.response import JsonHttpResponse, same_origin, add_cors_header
 from sso.api.views.generic import PreflightMixin
 from sso.auth.utils import is_recent_auth_time
 from sso.auth.views import TWO_FACTOR_PARAM
@@ -316,6 +316,9 @@ def token(request):
 
     for k, v in headers.items():
         response[k] = v
+
+    origin = request.META.get('HTTP_ORIGIN')
+    add_cors_header(origin, request.client, response, False)
     return response
 
 
@@ -329,7 +332,6 @@ class TokenView(PreflightMixin, View):
 
     def post(self, request, *args, **kwargs):
         return token(request)
-
 
 @revision_exempt
 @csrf_exempt
