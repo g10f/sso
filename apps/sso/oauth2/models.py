@@ -82,9 +82,10 @@ CLIENT_TYPES = [
 ALLOWED_CLIENT_TYPES = [
     ('web', _('Confidential client')),  # response_type=code grant_type=authorization_code or refresh_token
     ('native', _('Public client')),
+    ('service', _('Service account')),  # grant_type=client_credentials
+    ('javascript', _('Implicit flow (deprecated)')),
     # response_type=code  grant_type=authorization_code or refresh_token redirect_uris=http://localhost or
     #  urn:ietf:wg:oauth:2.0:oob
-    ('service', _('Service account')),  # grant_type=client_credentials
 ]
 
 # selfservice allowed scopes
@@ -305,7 +306,7 @@ class AuthorizationCode(models.Model):
     created_at = models.DateTimeField(_('created at'), auto_now_add=True)
     redirect_uri = models.CharField(_('redirect uri'), max_length=2047, blank=True)
     is_valid = models.BooleanField(_('is valid'), default=True)
-    state = models.CharField(_('client state'), max_length=2047, blank=True)
+    state = models.CharField(_('client state'), max_length=4096, blank=True)
     scopes = models.CharField(_('scopes'), max_length=2047, blank=True)
     code_challenge = models.CharField(_('code_challenge'), max_length=128, blank=True)
     code_challenge_method = models.CharField(_('code_challenge_method'), max_length=5, blank=True)

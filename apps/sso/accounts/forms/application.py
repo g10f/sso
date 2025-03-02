@@ -107,8 +107,10 @@ class ApplicationAdminForm(BaseTabularInlineForm):
 class ClientForm(BaseForm):
     can_access_all_users = forms.BooleanField(label=_('Can access all users'), required=False, widget=bootstrap.CheckboxInput())
     type = forms.ChoiceField(label=_('Type'), help_text=mark_safe(_(
-        "Confidential client (can store a secret) or public client for <a href='https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowSteps'>authorisation code flow</a> "
-        "or service account client with <a href='https://datatracker.ietf.org/doc/html/rfc6749#section-4.4'>client credentials grant</a>.")),
+        "Confidential client (can store a secret), Public client for <a href='https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowSteps'>authorisation code flow</a> "
+        "or service account client with <a href='https://datatracker.ietf.org/doc/html/rfc6749#section-4.4'>client credentials grant</a>. "
+        "<a href='https://datatracker.ietf.org/doc/html/draft-ietf-oauth-browser-based-apps#name-oauth-implicit-grant'>The Implicit flow is deprecated</a>, "
+        "you should use 'Public client' with authorisation code flow.")),
                              required=True, choices=ALLOWED_CLIENT_TYPES, widget=bootstrap.Select())
     uuid = forms.UUIDField(label=_('Client ID'), required=True, initial=uuid.uuid4, widget=bootstrap.TextInput(attrs={'readonly': True}))
     scopes = forms.MultipleChoiceField(label=_('Scopes'), required=False, initial=['openid'], choices=ALLOWED_SCOPES, widget=bootstrap.Select2Multiple())

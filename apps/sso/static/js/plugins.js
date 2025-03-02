@@ -114,25 +114,28 @@ function showTab(selector) {
         }
     }
     function toggleOIDCClientFields(type) {
-        if (type === 'service') {
-            // disable redirect_uris post_logout_redirect_uris and
-            // enable can_access_all_users client_secret
-            $(".oidc-client [name='redirect_uris']").parent().parent().addClass('hidden')
-            $(".oidc-client [name='post_logout_redirect_uris']").parent().parent().addClass('hidden')
-            $(".oidc-client [name='can_access_all_users']").parent().parent().removeClass('hidden')
-            $(".oidc-client [name='client_secret']").parent().parent().removeClass('hidden')
-        }
-        else if (type === 'web') {
-            $(".oidc-client [name='redirect_uris']").parent().parent().removeClass('hidden')
-            $(".oidc-client [name='post_logout_redirect_uris']").parent().parent().removeClass('hidden')
-            $(".oidc-client [name='can_access_all_users']").parent().parent().addClass('hidden')
-            $(".oidc-client [name='client_secret']").parent().parent().removeClass('hidden')
-        }
-        else if (type === 'native') {
-            $(".oidc-client [name='redirect_uris']").parent().parent().removeClass('hidden')
-            $(".oidc-client [name='post_logout_redirect_uris']").parent().parent().removeClass('hidden')
-            $(".oidc-client [name='can_access_all_users']").parent().parent().addClass('hidden')
-            $(".oidc-client [name='client_secret']").parent().parent().addClass('hidden')
+        switch(type) {
+            case "service":
+                // disable redirect_uris post_logout_redirect_uris and
+                // enable can_access_all_users client_secret
+                $(".oidc-client [name='redirect_uris']").parent().parent().addClass('hidden')
+                $(".oidc-client [name='post_logout_redirect_uris']").parent().parent().addClass('hidden')
+                $(".oidc-client [name='can_access_all_users']").parent().parent().removeClass('hidden')
+                $(".oidc-client [name='client_secret']").parent().parent().removeClass('hidden')
+                break;
+            case "web":
+                $(".oidc-client [name='redirect_uris']").parent().parent().removeClass('hidden')
+                $(".oidc-client [name='post_logout_redirect_uris']").parent().parent().removeClass('hidden')
+                $(".oidc-client [name='can_access_all_users']").parent().parent().addClass('hidden')
+                $(".oidc-client [name='client_secret']").parent().parent().removeClass('hidden')
+                break;
+            case "native":
+            case "javascript":
+                $(".oidc-client [name='redirect_uris']").parent().parent().removeClass('hidden')
+                $(".oidc-client [name='post_logout_redirect_uris']").parent().parent().removeClass('hidden')
+                $(".oidc-client [name='can_access_all_users']").parent().parent().addClass('hidden')
+                $(".oidc-client [name='client_secret']").parent().parent().addClass('hidden')
+                break;
         }
     }
 
