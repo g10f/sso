@@ -406,7 +406,7 @@ class UserAdmin(VersionAdmin, AdminImageMixin, DjangoUserAdmin):
     add_form = AdminUserCreationForm
     save_on_top = True
     list_display = (
-        'id', 'username', 'primary_email', 'last_login', 'date_joined',
+        'id', 'username', 'primary_email', 'last_login', 'date_joined', 'valid_until',
         'last_modified', 'get_last_modified_by_user', 'get_created_by_user')
     search_fields = ('username', 'first_name', 'last_name', 'useremail__email', 'uuid', 'last_ip')
     list_filter = (SuperuserFilter, 'is_staff', 'is_center', 'is_service', 'is_active', LoggedInFilter, 'groups',
