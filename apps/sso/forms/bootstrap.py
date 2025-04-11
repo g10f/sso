@@ -4,6 +4,7 @@ from django.forms import widgets
 from django.forms.widgets import FILE_INPUT_CONTRADICTION
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
+from django_recaptcha.widgets import ReCaptchaV2Checkbox
 
 
 def add_class_to_css_class(classes, new_class):
@@ -313,3 +314,8 @@ class ClearableBase64ImageWidget(Base64ImageWidget):
             super().value_omitted_from_data(data, files, name) and
             self.clear_checkbox_name(name) not in data
         )
+
+class ReCaptchaV2VisibleCheckbox(ReCaptchaV2Checkbox):
+    # since version 4.1 ReCaptchaV2Checkbox has input_type = "hidden"
+    # https://github.com/django-recaptcha/django-recaptcha/commit/63c39c7b10a444506930bfaaefcafa28084f8587
+    input_type = None

@@ -7,6 +7,8 @@ from warnings import filterwarnings
 from django.urls import reverse_lazy
 from django.utils.translation import pgettext_lazy
 
+from django.core.management.utils import get_random_secret_key
+
 try:
     RUNNING_DEVSERVER = (sys.argv[1] in ['runserver', 'runserver_plus'])
     RUNNING_DEVSERVER_PLUS = (sys.argv[1] in ['runserver_plus'])
@@ -343,7 +345,7 @@ AUTH_PASSWORD_VALIDATORS = [{
 SSO_DEFAULT_ASSOCIATION_UUID = UUID('bad2e6edff274f2f900ff3dbb26e38ce')
 
 # set this in local_settings.py or by env var
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = os.getenv('SECRET_KEY', get_random_secret_key())
 
 # Logging
 LOGGING_LEVEL_DB = os.getenv('LOGGING_LEVEL_DB', 'INFO')

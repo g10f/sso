@@ -2,8 +2,6 @@ import datetime
 import logging
 
 import pytz
-from django_recaptcha.fields import ReCaptchaField
-
 from django import forms
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -17,12 +15,15 @@ from django.utils.functional import cached_property
 from django.utils.text import capfirst
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
+from django_recaptcha.fields import ReCaptchaField
+
 from sso.forms import bootstrap, mixins, BLANK_CHOICE_DASH, BaseForm, BaseTabularInlineForm, BaseStackedInlineForm
 from sso.forms.fields import EmailFieldLower, Base64ImageField
 from sso.organisations.models import Organisation, is_validation_period_active
 from sso.registration import default_username_generator
 from sso.registration.forms import UserSelfRegistrationForm
 from ..models import User, UserAddress, UserPhoneNumber, UserEmail, OrganisationChange, RoleProfile, ApplicationRole
+from ...forms.bootstrap import ReCaptchaV2VisibleCheckbox
 from ...signals import extend_user_validity
 
 logger = logging.getLogger(__name__)
@@ -440,7 +441,7 @@ class UserSelfRegistrationForm2(UserSelfRegistrationForm):
         super().__init__(data, *args, **kwargs)
 
         if self.is_captcha_needed():
-            self.fields['captcha'] = ReCaptchaField()
+            self.fields['captcha'] = ReCaptchaField(widget=ReCaptchaV2VisibleCheckbox)
 
     def is_captcha_needed(self):
         if not settings.SSO_RECAPTCHA_ENABLED:
