@@ -97,6 +97,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
 
         # add new email
         self.selenium.get('%s%s' % (self.live_server_url, reverse('accounts:emails')))
+        self.wait_page_loaded()
         self.selenium.find_element(by=By.NAME, value="email").send_keys(new_email)
         self.selenium.find_element(by=By.TAG_NAME, value="form").submit()
         self.wait_page_loaded()
@@ -116,6 +117,8 @@ class AccountsSeleniumTests(SSOSeleniumTests):
 
         # add new email
         self.selenium.get('%s%s' % (self.live_server_url, reverse('accounts:emails')))
+        self.wait_page_loaded()
+
         self.selenium.find_element(by=By.NAME, value="email").send_keys(new_email)
         self.selenium.find_element(by=By.TAG_NAME, value="form").submit()
         self.wait_page_loaded()
@@ -152,7 +155,6 @@ class AccountsSeleniumTests(SSOSeleniumTests):
 
         # delete email
         self.selenium.find_element(by=By.XPATH, value='//button[@name="delete"]').click()
-        self.wait_page_loaded()
         response = self.selenium.find_element(by=By.XPATH, value='//div[@class="alert alert-success"]')
         self.assertIn("gunnar@g10f.de", response.text)
 
@@ -358,6 +360,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.login(username='CenterAdmin', password='gsf')
         self.selenium.get('%s%s' % (
             self.live_server_url, reverse('accounts:update_user', kwargs={'uuid': 'a8992f0348634f76b0dac2de4e4c83ee'})))
+        self.wait_page_loaded()
         self.selenium.find_element(by=By.XPATH, value='//button[@name="_remove_org"]').click()
         self.wait_page_loaded()
         self.selenium.find_element(by=By.XPATH, value='//div[@class="alert alert-success"]')
@@ -375,6 +378,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         # remove user from all organisations where CenterAdmin has admin rights
         self.login(username='CenterAdmin', password='gsf')
         self.selenium.get('%s%s' % (self.live_server_url, reverse('accounts:update_user', kwargs={'uuid': 'a8992f0348634f76b0dac2de4e4c83ee'})))
+        self.wait_page_loaded()
         remove_org_button = self.selenium.find_element(by=By.XPATH, value='//button[@name="_remove_org"]')
         self.click(remove_org_button)
         self.wait_page_loaded()

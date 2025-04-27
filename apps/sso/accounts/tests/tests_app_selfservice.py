@@ -44,6 +44,8 @@ class AppSelfServiceSeleniumTests(SSOSeleniumTests):
         self.assertIn("Sorry, but you have no permission for the page you were trying to view.", browser.page_source)
 
         browser.get(f"{self.live_server_url}{reverse('accounts:application_list')}")
+        self.wait_page_loaded()
+
         browser.find_element(by=By.LINK_TEXT, value=app_name).click()
 
         # add confidential client
