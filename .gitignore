@@ -15,7 +15,7 @@ apps/sso/settings/local_*.py
 start.sh
 local.pth
 TODO.txt
-env.sh
+temp/env.sh
 *.dump
 /set-version.sh
 /package-lock.json

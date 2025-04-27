@@ -15,4 +15,4 @@ start.sh
 local.pth
 .git
 .idea
-env.sh
+temp/env.sh
