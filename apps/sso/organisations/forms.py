@@ -514,10 +514,12 @@ class OrganisationCountryForm(BaseForm):
                 'domain': SSO_ORGANISATION_EMAIL_DOMAIN}
             raise ValidationError(msg)
 
-        if Email.objects.filter(email=email_value).exclude(organisationcountry=self.instance).exists():
+        existing_email = Email.objects.filter(email=email_value)
+        if self.instance.pk is not None:
+            existing_email = existing_email.exclude(organisationcountry=self.instance)
+        if existing_email.exists():
             msg = _('The email address already exists')
             raise ValidationError(msg)
-
         return email_value
 
     def save(self, commit=True):
