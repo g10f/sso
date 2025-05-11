@@ -115,6 +115,11 @@
           <a class="btn btn-danger" href="{% url 'accounts:delete_user' form.user.uuid.hex %}">{% translate 'Delete User' %}</a>
         {% endif %}
 
+        {% if perms.accounts.reset_user_2fa and form.user.sso_auth_profile.is_otp_enabled %}
+          <button class="btn btn-danger" type="submit" name="disable_otp" >{% translate "Disable 2-step verification" %}</button>
+        {% endif %}
+
+
       </div>
     </div>
   </div>
