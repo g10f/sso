@@ -121,7 +121,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta(AbstractBaseUser.Meta):
         verbose_name = _('user')
         verbose_name_plural = _('users')
-        permissions = (("read_user", "Can read user data"), ("access_all_users", "Can access all users"), ("app_admin_access_all_users", "Can access all users as App admin"),)
+        permissions = (("read_user", "Can read user data"), ("access_all_users", "Can access all users"), ("app_admin_access_all_users", "Can access all users as App admin"),
+                       ("reset_user_2fa", "Can reset 2fa authentication for users"))
 
     def get_full_name(self):
         """

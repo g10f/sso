@@ -430,20 +430,16 @@ def _update_standard_user(request, user, template='accounts/application/update_u
 
             msg_dict = {'name': force_str(get_user_model()._meta.verbose_name), 'obj': force_str(user)}
             msg = ''
+            success_url = reverse('accounts:user_list') + "?" + request.GET.urlencode()
             if "_addanother" in request.POST:
-                msg = format_html(_(
-                    'The {name} "{obj}" was saved successfully. You may add another {name} below.'),
-                    **msg_dict)
+                msg = format_html(_('The {name} "{obj}" was saved successfully. You may add another {name} below.'), **msg_dict)
                 success_url = reverse('accounts:add_user')
             elif "_continue" in request.POST:
-                msg = format_html(
-                    _('The {name} "{obj}" was saved successfully. You may edit it again below.'),
-                    **msg_dict)
+                msg = format_html(_('The {name} "{obj}" was saved successfully. You may edit it again below.'), **msg_dict)
                 success_url = reverse('accounts:update_user', args=[user.uuid.hex])
             elif "_resend_invitation" in request.POST:
                 send_account_created_email(user, request)
-                msg = _(
-                    'The %(name)s "%(obj)s" was saved successfully and the invitation email was resend.') % msg_dict
+                msg = _('The %(name)s "%(obj)s" was saved successfully and the invitation email was resend.') % msg_dict
                 success_url = reverse('accounts:update_user', args=[user.uuid.hex])
             elif "_deactivate" in request.POST:
                 success_url = reverse('accounts:update_user', args=[user.uuid.hex])
@@ -452,10 +448,14 @@ def _update_standard_user(request, user, template='accounts/application/update_u
                 success_url = reverse('accounts:update_user', args=[user.uuid.hex])
             elif "_remove_org" in request.POST:
                 msg = _('The %(name)s "%(obj)s" was removed from the organisation successfully.') % msg_dict
-                success_url = reverse('accounts:user_list') + "?" + request.GET.urlencode()
+            elif "disable_otp" in request.POST:
+                if not request.user.has_perm("accounts.reset_user_2fa"):
+                    raise PermissionDenied
+                user.sso_auth_profile.is_otp_enabled = False
+                user.sso_auth_profile.save()
+                msg = format_html(_('For {name} "{obj}" 2fa was disabled.'), **msg_dict)
             else:
                 msg = format_html(_('The {name} "{obj}" was saved successfully.'), **msg_dict)
-                success_url = reverse('accounts:user_list') + "?" + request.GET.urlencode()
             if msg:
                 messages.add_message(request, level=messages.SUCCESS, message=msg, fail_silently=True)
             return HttpResponseRedirect(success_url)

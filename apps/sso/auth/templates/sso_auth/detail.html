@@ -80,9 +80,9 @@
     {% if user.sso_auth_profile %}
       {% if user.sso_auth_profile.is_otp_enabled %}
         <button class="btn btn-danger" type="submit" name="is_otp_enabled"
-                value="3">{% translate "Disable 2-step verification" %}</button>{% else %}
+                value="false">{% translate "Disable 2-step verification" %}</button>{% else %}
         <button class="btn btn-default" type="submit" name="is_otp_enabled"
-                value="2">{% translate "Enable 2-step verification" %}</button>
+                value="true">{% translate "Enable 2-step verification" %}</button>
       {% endif %}
     {% endif %}
     {% if redirect_uri %}
