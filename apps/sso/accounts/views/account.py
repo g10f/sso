@@ -40,7 +40,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_usernotes_and_accessible_created_by_users(user, admin_user):
-    usernote_set = user.usernote_set.all()
+    usernote_set = user.usernote_set.all().order_by('-last_modified')
     # get the list of all users in the created_by_user field, to which the current user has
     # admin rights. If the current user has admin rights then a link to the user form is generated,
     # otherwise only the name is displayed
