@@ -36,13 +36,11 @@ RUN chown $USERNAME:$USERNAME /opt/g10f/sso/htdocs/media
 
 WORKDIR /opt/g10f/sso/apps
 COPY apps .
-#COPY Docker/gunicorn.conf.py ./gunicorn.conf.py
 
 RUN chown -R $USERNAME: $VIRTUAL_ENV
 RUN chown -R $USERNAME: /opt/g10f
 
 USER $USERNAME
-ARG SECRET_KEY=dummy
 RUN ./manage.py collectstatic
 ENTRYPOINT ["./docker-entrypoint.sh"]
 # Start gunicorn
