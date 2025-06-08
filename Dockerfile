@@ -1,4 +1,4 @@
-FROM python:3.13.3-slim-bookworm
+FROM python:3.13.4-slim
 
 # Install packages needed to run your application (not build deps):
 ENV RUN_DEPS="libexpat1 libjpeg62-turbo libpcre3 libpq5 mime-support postgresql-client procps zlib1g libproj25 gdal-bin"
