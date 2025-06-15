@@ -129,6 +129,12 @@
       <div class="col-4">{% translate 'Email address' %}:</div>
       <div class="col-8"><a href="mailto:{{ object.email }}">{{ object.email }}</a></div>
     </div>
+    {% if organisation_account and perms.accounts.change_user and has_organisation_account_access %}
+    <div class="row">
+      <div class="col-4">{% translate 'User account' %}:</div>
+      <div class="col-8"><a class="" href="{% url 'accounts:update_user' organisation_account.uuid.hex %}">{{ organisation_account.username }}</a></div>
+    </div>
+    {% endif %}
     {% if perms.organisations.change_organisation and has_organisation_access %}
       {% for emailforward in  object.email.emailforward_set.all %}
         <div class="row">

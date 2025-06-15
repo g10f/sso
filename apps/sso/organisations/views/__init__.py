@@ -14,6 +14,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import DeleteView, DetailView, CreateView
 from l10n.models import Country
+from sso.accounts.models import User
 from sso.emails.forms import AdminEmailForwardInlineForm, EmailForwardInlineForm, EmailAliasInlineForm
 from sso.emails.models import EmailForward, Email, EmailAlias
 from sso.forms.helpers import get_optional_inline_formset
@@ -60,6 +61,14 @@ class OrganisationBaseView(MessagesMixin):
 
         if self.object and self.request.user.is_authenticated:
             context['has_organisation_access'] = self.request.user.has_organisation_access(self.object.uuid)
+            if self.object.email:
+                try:
+                    organisation_account = User.objects.get_by_email(self.object.email)
+                    context['organisation_account'] = organisation_account
+                    context['has_organisation_account_access'] = self.request.user.has_user_access(organisation_account.uuid)
+                except User.DoesNotExist:
+                    # If the organization is not active, the user account was probably also deactivated and deleted.
+                    logger.info(f"No account for organisation email {self.object.email} found." )
 
         context.update(kwargs)
         return super().get_context_data(**context)
