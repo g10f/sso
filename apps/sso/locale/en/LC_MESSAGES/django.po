@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-02 09:59+0100\n"
+"POT-Creation-Date: 2025-06-15 16:12+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -428,11 +428,11 @@ msgstr ""
 msgid ""
 "Confidential client (can store a secret), Public client for <a href='https://"
 "openid.net/specs/openid-connect-core-1_0.html#CodeFlowSteps'>authorisation "
-"code flow</a> or service account client with <a href='https://datatracker."
-"ietf.org/doc/html/rfc6749#section-4.4'>client credentials grant</a>. <a "
-"href='https://datatracker.ietf.org/doc/html/draft-ietf-oauth-browser-based-"
-"apps#name-oauth-implicit-grant'>The Implicit flow is deprecated</a>, you "
-"should use 'Public client' with authorisation code flow."
+"code flow</a> or service account client with <a href='https://"
+"datatracker.ietf.org/doc/html/rfc6749#section-4.4'>client credentials grant</"
+"a>. <a href='https://datatracker.ietf.org/doc/html/draft-ietf-oauth-browser-"
+"based-apps#name-oauth-implicit-grant'>The Implicit flow is deprecated</a>, "
+"you should use 'Public client' with authorisation code flow."
 msgstr ""
 
 msgid "Client ID"
@@ -839,6 +839,9 @@ msgid "Save and resend Invitation Mail"
 msgstr ""
 
 msgid "Save and extend validity"
+msgstr ""
+
+msgid "Disable 2-step verification"
 msgstr ""
 
 msgid "Registration"
@@ -1339,6 +1342,10 @@ msgid ""
 msgstr ""
 
 #, python-brace-format
+msgid "For {name} \"{obj}\" 2fa was disabled."
+msgstr ""
+
+#, python-brace-format
 msgid "The {name} \"{obj}\" was saved successfully."
 msgstr ""
 
@@ -1599,9 +1606,6 @@ msgid "Add Authenticator App"
 msgstr ""
 
 msgid "Add Security Key"
-msgstr ""
-
-msgid "Disable 2-step verification"
 msgstr ""
 
 msgid "Enable 2-step verification"
@@ -2379,6 +2383,9 @@ msgid "Local date and time"
 msgstr ""
 
 msgid "Founded"
+msgstr ""
+
+msgid "User account"
 msgstr ""
 
 msgid ""
