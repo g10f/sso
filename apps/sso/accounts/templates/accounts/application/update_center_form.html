@@ -64,6 +64,11 @@
           <button type="submit" class="btn btn-secondary" name="_extend_validity">{% translate 'Save and extend validity' %}</button>
         {% endif %}
         <button type="submit" class="btn btn-primary">{% translate 'Save' %}</button>
+
+        {% if perms.accounts.reset_user_2fa and form.user.sso_auth_profile.is_otp_enabled %}
+          <button class="btn btn-danger" type="submit" name="disable_otp" >{% translate "Disable 2-step verification" %}</button>
+        {% endif %}
+
       </div>
     </div>
 
