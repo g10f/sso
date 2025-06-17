@@ -282,7 +282,7 @@ class OIDCRequestValidator(RequestValidator):
                 logger.warning(f'Refresh token {refresh_token} is not active.')
                 return False
             if not refresh_token.bearer_token.user.is_active:
-                logger.warning(f'User {refresh_token.bearer.user} is not active.')
+                logger.warning(f'User {refresh_token.bearer_token.user} is not active.')
                 return False
             if refresh_token.no_tokens_issued > 0:
                 logger.warning(f'Refresh token was already used.')
