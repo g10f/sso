@@ -10,4 +10,4 @@
 """
 
 __author__ = 'Gunnar Scherf <gunnar@g10f.de>'
-__version__ = '5.1.9'
+__version__ = '5.1.10'
