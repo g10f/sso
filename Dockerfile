@@ -1,8 +1,8 @@
 FROM python:3.13.7-slim
 
 # Install packages needed to run your application (not build deps):
-ENV RUN_DEPS="libexpat1 libjpeg62-turbo libpcre3 libpq5 mime-support postgresql-client procps zlib1g libproj25 gdal-bin"
-ENV BUILD_DEPS="build-essential curl git libexpat1-dev libjpeg62-turbo-dev libpcre3-dev libpq-dev zlib1g-dev libproj-dev"
+ENV RUN_DEPS="libexpat1 libjpeg62-turbo libpq5 media-types postgresql-client procps zlib1g libproj25 gdal-bin"
+ENV BUILD_DEPS="build-essential curl git libexpat1-dev libjpeg62-turbo-dev libpq-dev zlib1g-dev libproj-dev"
 RUN set -ex \
     && apt-get update && apt-get install -y --no-install-recommends $RUN_DEPS \
     && rm -rf /var/lib/apt/lists/*
