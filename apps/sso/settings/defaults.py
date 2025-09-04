@@ -75,6 +75,7 @@ SSO_DEFAULT_TOKEN_GENERATOR = 'sso.oauth2.oidc_token.default_token_generator'
 SSO_TEST_USER_EXTRA_ATTRIBUTES = []
 SSO_USER_RECOVERY_PERIOD_MINUTES = 60 * 24 * 30  # 30 days
 SSO_ACCESS_TOKEN_AGE = 60 * 60  # 1 hour
+SSO_REFRESH_TOKEN_AGE = int(os.getenv('SSO_REFRESH_TOKEN_AGE', 60 * 60 * 24 * 90))  # default 90 days
 SSO_ID_TOKEN_AGE = 60 * 5  # 5 minutes
 SSO_LOGIN_MAX_AGE = int(os.getenv('SSO_LOGIN_MAX_AGE', '300'))
 SSO_SIGNING_KEYS_VALIDITY_PERIOD = 60 * 60 * 24 * 30  # 30 days
