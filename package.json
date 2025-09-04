@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "@github/webauthn-json": "^2.1.1",
-    "bootstrap": "^5.3.7",
+    "bootstrap": "^5.3.8",
     "bootstrap-icons": "^1.13.1",
     "cropperjs": "^1.6.2",
     "jquery": "^3.7.1",
