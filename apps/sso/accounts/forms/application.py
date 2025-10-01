@@ -157,9 +157,6 @@ class ClientForm(BaseForm):
         if client_type in ['web', 'native']:
             if not redirect_uris:
                 self.add_error('redirect_uris', ValidationError("A redirect uri is required for this client type."))
-        else:
-            cleaned_data['redirect_uris'] = ''
-            cleaned_data['post_logout_redirect_uris'] = ''
         return self.cleaned_data
 
     def save(self, commit=True):

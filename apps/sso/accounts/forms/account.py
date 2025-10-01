@@ -95,7 +95,7 @@ class ContactForm(forms.Form):
     email = forms.EmailField(label=_("Email address"), max_length=75, widget=bootstrap.TextInput())
     subject = forms.CharField(label=_("Subject"), widget=bootstrap.TextInput())
     message = forms.CharField(label=_("Message"), widget=bootstrap.Textarea(attrs={'cols': 40, 'rows': 5}))
-    captcha = ReCaptchaField()
+    captcha = ReCaptchaField(label=_("Captcha"), widget=ReCaptchaV2VisibleCheckbox)
 
 
 class AdminUserCreationForm(forms.ModelForm):

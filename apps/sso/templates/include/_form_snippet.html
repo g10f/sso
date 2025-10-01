@@ -1,4 +1,4 @@
-{% for field in form %}
+{% for field in form.visible_fields %}
   <div class="form-group {% if field.errors %}has-error{% endif %}" {% if field.is_hidden %}hidden{% endif %}>
     <label class="col-form-label" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %}*{% endif %}</label>
     <div class="g10f-form-control">
