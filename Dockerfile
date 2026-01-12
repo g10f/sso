@@ -1,4 +1,4 @@
-FROM python:3.14.0-slim
+FROM python:3.14.2-slim
 
 # Install packages needed to run your application (not build deps):
 ENV RUN_DEPS="libexpat1 libjpeg62-turbo libpq5 media-types postgresql-client procps zlib1g libproj25 gdal-bin"
