@@ -116,7 +116,7 @@ class OpenidConfigurationView(PreflightMixin, View):
             "id_token_signing_alg_values_supported":
                 ["RS256"],
             "token_endpoint_auth_methods_supported":
-                ["client_secret_basic"],
+                ["client_secret_basic", "client_secret_post"],
             "token_endpoint_auth_signing_alg_values_supported":
                 ["RS256"],
             "display_values_supported":
