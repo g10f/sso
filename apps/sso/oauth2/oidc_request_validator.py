@@ -2,6 +2,7 @@ import base64
 import logging
 from uuid import UUID
 
+from django.utils.crypto import constant_time_compare
 from jwt import InvalidTokenError
 
 from django.contrib.auth import authenticate, get_user_model
@@ -156,7 +157,7 @@ class OIDCRequestValidator(RequestValidator):
             # 1. check the client_id
             client = self._get_client(request.client_id, request)
             # 2. check client_secret
-            if client.client_secret != request.client_secret:
+            if not constant_time_compare(client.client_secret, request.client_secret):
                 raise ObjectDoesNotExist('client_secret does not match')
 
             # 3. check that a user is associated to the client for grant_type == 'client_credentials'
