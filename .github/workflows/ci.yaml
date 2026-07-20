@@ -82,7 +82,7 @@ jobs:
               User ubuntu
               IdentityFile ~/.ssh/id_rsa
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.13'
       - run: |
