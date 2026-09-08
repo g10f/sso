@@ -95,15 +95,16 @@ class OrganisationBaseForm(BaseForm):
         model = Organisation
 
         fields = (
-            'name_native', 'homepage', 'source_urls', 'google_plus_page', 'facebook_page', 'twitter_page', 'founded',
+            'name_native', 'homepage', 'source_urls', 'facebook_page', 'twitter_page', 'instagram_page', 'founded',
             'coordinates_type', 'is_private', 'is_live', 'location', 'neighbour_distance', 'transregional_distance', 'timezone')
         years_to_display = range(datetime.datetime.now().year - 100, datetime.datetime.now().year + 1)
         widgets = {
             'homepage': bootstrap.URLInput(attrs={'size': 50}),
             'source_urls': bootstrap.Textarea(attrs={'rows': '3'}),
-            'google_plus_page': bootstrap.URLInput(attrs={'size': 50}),
+            # 'google_plus_page': bootstrap.URLInput(attrs={'size': 50}),
             'facebook_page': bootstrap.URLInput(attrs={'size': 50}),
             'twitter_page': bootstrap.URLInput(attrs={'size': 50}),
+            'instagram_page': bootstrap.URLInput(attrs={'size': 50}),
             'association': bootstrap.Select(),
             'name': bootstrap.TextInput(attrs={'size': 50}),
             'name_native': bootstrap.TextInput(attrs={'size': 50}),

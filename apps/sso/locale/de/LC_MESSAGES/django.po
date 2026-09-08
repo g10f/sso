@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-15 16:12+0200\n"
+"POT-Creation-Date: 2026-09-08 21:47+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -326,6 +326,9 @@ msgid "Name"
 msgstr ""
 
 msgid "Subject"
+msgstr ""
+
+msgid "Captcha"
 msgstr ""
 
 msgid "Password"
@@ -2386,14 +2389,14 @@ msgstr "Quell-URLs"
 msgid "List of URLs, which are redirected to the homepage"
 msgstr "Liste von URLs, die auf die Homepage umgeleitet werden."
 
-msgid "Google+ page"
-msgstr "Google+ Seite"
-
 msgid "Facebook page"
 msgstr "Facebook Seite"
 
-msgid "Twitter page"
-msgstr "Twitter Seite"
+msgid "X page"
+msgstr "X Seite"
+
+msgid "Instagram page"
+msgstr "Instagram Seite"
 
 msgid "organisation type"
 msgstr "Organisationstyp"
@@ -2549,7 +2552,6 @@ msgstr "Lokales Datum und Uhrzeit"
 msgid "Founded"
 msgstr "Gegründet"
 
-#| msgid "Service account"
 msgid "User account"
 msgstr "Benutzer Konto"
 
@@ -3254,15 +3256,3 @@ msgstr ""
 msgid "The {name} \"{obj}\" was created successfully."
 msgstr "{name} \"{obj}\" wurde erfolgreich angelegt."
 
-#~| msgid "Organisation Account"
-#~ msgid "Organisation account"
-#~ msgstr "Organisationskonto"
-
-#~ msgid "Please complete your profile data."
-#~ msgstr "Bitte vervollständige Deine Daten."
-
-#~ msgid "Continue without completing the profile"
-#~ msgstr "Fortsetzen ohne Vervollständigung des Profils"
-
-#~ msgid "guide email"
-#~ msgstr "Guide E-Mail Adresse"

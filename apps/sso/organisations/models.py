@@ -257,9 +257,10 @@ class Organisation(AbstractBaseModel):
     homepage = models.URLField(_("homepage"), blank=True)
     source_urls = URLArrayField(blank=True, null=True, verbose_name=_('source urls'), help_text=_("List of URLs, which are redirected to the "
                                                                                                   "homepage"))
-    google_plus_page = URLFieldEx(domain='plus.google.com', verbose_name=_("Google+ page"), blank=True)
+    #google_plus_page = URLFieldEx(domain='plus.google.com', verbose_name=_("Google+ page"), blank=True)
     facebook_page = URLFieldEx(domain='www.facebook.com', verbose_name=_("Facebook page"), blank=True)
-    twitter_page = URLFieldEx(domain='twitter.com', verbose_name=_("Twitter page"), blank=True)
+    twitter_page = URLFieldEx(domain='x.com', verbose_name=_("X page"), blank=True)
+    instagram_page = URLFieldEx(domain='www.instagram.com', verbose_name=_("Instagram page"), blank=True)
     notes = models.TextField(_('notes'), blank=True, max_length=255)
     center_type = models.CharField(_('organisation type'), max_length=2, choices=settings.CENTER_TYPE_CHOICES, db_index=True)
     centerid = models.IntegerField(blank=True, help_text=_("id from the previous center DB (obsolete)"), null=True)

@@ -87,12 +87,12 @@
       </div>
     </div>
   {% endif %}
-  {% if object.google_plus_page %}
-    <div class="row">
-      <div class="col-4">{% translate 'Google+ page' %}:</div>
-      <div class="col-8"><a href="{{ object.google_plus_page }}">{% translate 'Google+ page' %}</a></div>
-    </div>
-  {% endif %}
+{#  {% if object.google_plus_page %}#}
+{#    <div class="row">#}
+{#      <div class="col-4">{% translate 'Google+ page' %}:</div>#}
+{#      <div class="col-8"><a href="{{ object.google_plus_page }}">{% translate 'Google+ page' %}</a></div>#}
+{#    </div>#}
+{#  {% endif %}#}
   {% if object.facebook_page %}
     <div class="row">
       <div class="col-4">{% translate 'Facebook page' %}:</div>
@@ -101,8 +101,14 @@
   {% endif %}
   {% if object.twitter_page %}
     <div class="row">
-      <div class="col-4">{% translate 'Twitter page' %}:</div>
-      <div class="col-8"><a href="{{ object.twitter_page }}">{% translate 'Twitter page' %}</a></div>
+      <div class="col-4">{% translate 'X page' %}:</div>
+      <div class="col-8"><a href="{{ object.twitter_page }}">{% translate 'X page' %}</a></div>
+    </div>
+  {% endif %}
+  {% if object.instagram_page %}
+    <div class="row">
+      <div class="col-4">{% translate 'Instagram page' %}:</div>
+      <div class="col-8"><a href="{{ object.instagram_page }}">{% translate 'Instagram page' %}</a></div>
     </div>
   {% endif %}
   {% if object.local_datetime %}
