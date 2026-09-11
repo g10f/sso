@@ -134,11 +134,20 @@ class UserMixin(object):
             data['email'] = email.email
             data['email_verified'] = email.confirmed
 
-        data['picture'] = {
-            '@id': "%s%s" % (base, reverse('api:v2_picture', kwargs={'uuid': obj.uuid.hex}))
-        }
-        if obj.picture:
-            data['picture']['url'] = absolute_url(request, obj.picture.url)
+        if 'openid' in scopes:
+            # OIDC userinfo_endpoint reuses this view. Per the OIDC spec 'picture' must be a plain
+            # URL string, not our internal {'@id':..., 'url':...} object - relying parties (e.g.
+            # umami-sso) deserialize it strictly and error out on the object shape. Only send it
+            # when the client explicitly requested the 'picture' scope, so clients that don't
+            # (like umami-sso) never see the claim at all.
+            if 'picture' in scopes and obj.picture:
+                data['picture'] = absolute_url(request, obj.picture.url)
+        else:
+            data['picture'] = {
+                '@id': "%s%s" % (base, reverse('api:v2_picture', kwargs={'uuid': obj.uuid.hex}))
+            }
+            if obj.picture:
+                data['picture']['url'] = absolute_url(request, obj.picture.url)
 
         data['associated_systems'] = {
             associated_system.application.uuid.hex: {
@@ -146,7 +155,7 @@ class UserMixin(object):
             } for associated_system in UserAssociatedSystem.objects.filter(user=obj)}
 
         if details:
-            if obj.picture:
+            if 'openid' not in scopes and obj.picture:
                 data['picture']['30x30'] = absolute_url(request, get_thumbnail(obj.picture, "30x30", crop="center").url)
                 data['picture']['60x60'] = absolute_url(request, get_thumbnail(obj.picture, "60x60", crop="center").url)
                 data['picture']['120x120'] = absolute_url(request, get_thumbnail(obj.picture, "120x120", crop="center").url)

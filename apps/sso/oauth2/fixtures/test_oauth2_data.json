@@ -12,7 +12,7 @@
       "client_secret": "geheim",
       "user": null,
       "type": "web",
-      "scopes": "openid profile email test"
+      "scopes": "openid profile email test picture"
     }
   },
   {
