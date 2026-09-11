@@ -74,6 +74,12 @@ class ApiTests(OAuth2BaseTestCase):
                         self.assertIn('error', response.json(), url)
                 self.assertEqual(response.status_code, status_code, "got %s on %s" % (response.status_code, url))
 
+    def test_userinfo_picture_is_plain_string_for_openid_scope(self):
+        authorization = self.get_authorization(scope="openid profile email")
+        response = self.client.get(reverse('api:v2_users_me'), HTTP_AUTHORIZATION=authorization)
+        data = response.json()
+        self.assertNotIsInstance(data['picture'], dict)
+
     def test_organisation_list(self):
         organisations_url = self.get_url_from_api_home('organisations')
         authorization = self.get_authorization(client_id="1811f02ed81b43b5bee1afe031e6198e", username="CountryAdmin", scope="users")
