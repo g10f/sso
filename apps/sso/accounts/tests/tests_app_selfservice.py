@@ -19,19 +19,18 @@ class AppSelfServiceSeleniumTests(SSOSeleniumTests):
         self.login(username='GlobalAdmin', password='secret007')
         browser.get(f"{self.live_server_url}{reverse('accounts:application_add')}")
         browser.find_element(by=By.NAME, value="title").send_keys(app_name)
-        browser.find_element(by=By.TAG_NAME, value="form").submit()
-        self.wait_page_loaded()
+        self.submit_form()
         browser.find_element(by=By.CSS_SELECTOR, value="a[rel='update']").click()
         browser.find_element(by=By.CSS_SELECTOR, value="a[href='#applicationadmin_set']").click()
         browser.find_element(by=By.NAME, value="applicationadmin_set-1-admin_email").send_keys("app-admin@g10f.de")
-        browser.find_element(by=By.TAG_NAME, value="form").submit()
+        self.submit_form()
 
         # add client with access to all users
         browser.find_element(by=By.CSS_SELECTOR, value="a[rel='add-client']").click()
         browser.find_element(by=By.NAME, value="name").send_keys("my-secret-client")
         Select(browser.find_element(by=By.NAME, value="type")).select_by_value("service")
         browser.find_element(by=By.NAME, value="can_access_all_users").click()
-        browser.find_element(by=By.TAG_NAME, value="form").submit()
+        self.submit_form()
         browser.find_element(by=By.CLASS_NAME, value="alert-success")
         client_update_uri = browser.find_element(by=By.CSS_SELECTOR, value="a[rel='update-client']").get_attribute("href")
         self.logout()
@@ -52,7 +51,7 @@ class AppSelfServiceSeleniumTests(SSOSeleniumTests):
         browser.find_element(by=By.CSS_SELECTOR, value="a[rel='add-client']").click()
         browser.find_element(by=By.NAME, value="name").send_keys("my-client")
         browser.find_element(by=By.NAME, value="redirect_uris").send_keys("https://example.com")
-        browser.find_element(by=By.TAG_NAME, value="form").submit()
+        self.submit_form()
         browser.find_element(by=By.CLASS_NAME, value="alert-success")
 
         # add service account
@@ -63,7 +62,7 @@ class AppSelfServiceSeleniumTests(SSOSeleniumTests):
         with self.assertRaises(NoSuchElementException):
             # ensure can_access_all_users is not available unless user has access to all users
             browser.find_element(by=By.NAME, value="can_access_all_users")
-        browser.find_element(by=By.TAG_NAME, value="form").submit()
+        self.submit_form()
         browser.find_element(by=By.CLASS_NAME, value="alert-success")
 
         client = Client.objects.get(name=service_account_client_name, application__title=app_name)
