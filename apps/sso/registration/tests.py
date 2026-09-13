@@ -46,8 +46,7 @@ class RegistrationSeleniumTests(SSOSeleniumTests):
             extra_select = Select(self.selenium.find_element(by=By.NAME, value=user_extra_attribute['name']))
             extra_select.select_by_value(user_extra_attribute['value'])
 
-        self.selenium.find_element(by=By.TAG_NAME, value="form").submit()
-        self.wait_page_loaded()
+        self.submit_form()
 
         self.selenium.find_element(by=By.XPATH, value='//button[@name="_edit_again"]')
 

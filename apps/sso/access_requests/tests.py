@@ -24,9 +24,7 @@ class AccessRequestsSeleniumTests(SSOSeleniumTests):
         picture = os.path.abspath(os.path.join(settings.BASE_DIR, 'sso/static/img/face-cool.png'))
         self.add_picture(picture)
 
-        self.selenium.find_element(by=By.TAG_NAME, value="form").submit()
-
-        self.wait_page_loaded()
+        self.submit_form()
 
         url = reverse('access_requests:extend_access_thanks')
         full_url = self.live_server_url + url
@@ -39,11 +37,9 @@ class AccessRequestsSeleniumTests(SSOSeleniumTests):
         self.selenium.get('%s%s' % (self.live_server_url, list_url))
         elems = self.selenium.find_elements(by=By.XPATH, value="//a[starts-with(@href, '%s')]" % list_url)
         # should be one element in the list
-        elems[0].click()
-        self.wait_page_loaded()
-        self.selenium.find_element(by=By.TAG_NAME, value="form").submit()
+        self.click_and_wait(elems[0])
+        self.submit_form()
         # check success message
-        self.wait_page_loaded()
         self.selenium.find_element(by=By.CLASS_NAME, value="alert-success")
         self.logout()
 
@@ -66,8 +62,7 @@ class AccessRequestsSeleniumTests(SSOSeleniumTests):
         picture = os.path.abspath(os.path.join(settings.BASE_DIR, 'sso/static/img/face-cool.png'))
         self.add_picture(picture)
         Select(self.selenium.find_element(by=By.NAME, value="organisation")).select_by_index(1)
-        self.selenium.find_element(by=By.TAG_NAME, value="form").submit()
-        self.wait_page_loaded()
+        self.submit_form()
 
         url = reverse('access_requests:extend_access_thanks')
         full_url = self.live_server_url + url
@@ -80,11 +75,9 @@ class AccessRequestsSeleniumTests(SSOSeleniumTests):
         self.selenium.get('%s%s' % (self.live_server_url, list_url))
         elems = self.selenium.find_elements(by=By.XPATH, value="//a[starts-with(@href, '%s')]" % list_url)
         # should be one element in the list
-        elems[0].click()
-        self.wait_page_loaded()
-        self.selenium.find_element(by=By.TAG_NAME, value="form").submit()
+        self.click_and_wait(elems[0])
+        self.submit_form()
         # check success message
-        self.wait_page_loaded()
         self.selenium.find_element(by=By.CLASS_NAME, value="alert-success")
         self.logout()
 

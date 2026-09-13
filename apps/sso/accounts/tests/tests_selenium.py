@@ -42,8 +42,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.wait_page_loaded()
         self.selenium.find_element(by=By.NAME, value="new_password1").send_keys(new_password)
         self.selenium.find_element(by=By.NAME, value="new_password2").send_keys(new_password)
-        self.selenium.find_element(by=By.TAG_NAME, value="form").submit()
-        self.wait_page_loaded()
+        self.submit_form()
 
         if settings.SSO_POST_RESET_LOGIN:
             url = reverse('home')
@@ -58,8 +57,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.selenium.find_element(by=By.NAME, value="new_password2").send_keys(new_password)
         picture = os.path.abspath(os.path.join(settings.BASE_DIR, 'sso/static/img/face-cool.png'))
         self.add_picture(picture)
-        self.selenium.find_element(by=By.TAG_NAME, value="form").submit()
-        self.wait_page_loaded()
+        self.submit_form()
 
     def test_login(self):
         username = 'GlobalAdmin'
@@ -79,8 +77,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         email_element = self.selenium.find_element(by=By.NAME, value="useremail_set-0-email")
         email_element.clear()
         email_element.send_keys(new_email)
-        self.selenium.find_element(by=By.XPATH, value='//button[@name="_continue"]').click()
-        self.wait_page_loaded()
+        self.click_and_wait(self.selenium.find_element(by=By.XPATH, value='//button[@name="_continue"]'))
 
         self.selenium.find_element(by=By.XPATH, value='//div[@class="alert alert-success"]')
 
@@ -99,8 +96,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.selenium.get('%s%s' % (self.live_server_url, reverse('accounts:emails')))
         self.wait_page_loaded()
         self.selenium.find_element(by=By.NAME, value="email").send_keys(new_email)
-        self.selenium.find_element(by=By.TAG_NAME, value="form").submit()
-        self.wait_page_loaded()
+        self.submit_form()
 
         self.selenium.find_element(by=By.XPATH, value='//div[@class="alert alert-success"]')
 
@@ -120,8 +116,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.wait_page_loaded()
 
         self.selenium.find_element(by=By.NAME, value="email").send_keys(new_email)
-        self.selenium.find_element(by=By.TAG_NAME, value="form").submit()
-        self.wait_page_loaded()
+        self.submit_form()
 
         self.selenium.find_element(by=By.XPATH, value='//div[@class="alert alert-success"]')
 
@@ -149,20 +144,19 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         # set email as primary
         self.selenium.get('%s%s' % (self.live_server_url, reverse('accounts:emails')))
         self.wait_page_loaded()
-        self.selenium.find_element(by=By.XPATH, value='//button[@name="set_primary"]').click()
+        self.click_and_wait(self.selenium.find_element(by=By.XPATH, value='//button[@name="set_primary"]'))
         response = self.selenium.find_element(by=By.XPATH, value='//div[@class="alert alert-success"]')
         self.assertIn(new_email, response.text)
 
         # delete email
-        self.selenium.find_element(by=By.XPATH, value='//button[@name="delete"]').click()
+        self.click_and_wait(self.selenium.find_element(by=By.XPATH, value='//button[@name="delete"]'))
         response = self.selenium.find_element(by=By.XPATH, value='//div[@class="alert alert-success"]')
         self.assertIn("gunnar@g10f.de", response.text)
 
     def test_delete_user(self):
         self.login(username='GunnarScherf', password='gsf')
         self.selenium.get('%s%s' % (self.live_server_url, reverse('accounts:delete_profile')))
-        self.selenium.find_element(by=By.TAG_NAME, value="form").submit()
-        self.wait_page_loaded()
+        self.submit_form()
         self.selenium.find_element(by=By.XPATH, value='//a[@href="%s"]' % reverse('auth:login'))
 
         # check if login is denied
@@ -183,8 +177,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.selenium.find_element(by=By.NAME, value="old_password").send_keys(old_password)
         self.selenium.find_element(by=By.NAME, value="new_password1").send_keys(new_password)
         self.selenium.find_element(by=By.NAME, value="new_password2").send_keys(new_password)
-        self.selenium.find_element(by=By.TAG_NAME, value="form").submit()
-        self.wait_page_loaded()
+        self.submit_form()
 
         self.logout()
 
@@ -201,8 +194,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         picture = os.path.abspath(os.path.join(settings.BASE_DIR, 'sso/static/img/face-cool.png'))
         self.add_picture(picture)
 
-        self.selenium.find_element(by=By.TAG_NAME, value="form").submit()
-        self.wait_page_loaded()
+        self.submit_form()
         self.logout()
 
         # Accept center change as admin
@@ -212,12 +204,10 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         list_url = reverse('accounts:organisationchange_list')
         elems = self.selenium.find_elements(by=By.XPATH, value="//a[starts-with(@href, '%s')]" % list_url)
         # should be one element in the list
-        elems[0].click()
-        self.wait_page_loaded()
-        self.selenium.find_element(by=By.TAG_NAME, value="form").submit()
+        self.click_and_wait(elems[0])
+        self.submit_form()
 
         # check success message
-        self.wait_page_loaded()
         self.selenium.find_element(by=By.CLASS_NAME, value="alert-success")
         self.logout()
 
@@ -228,8 +218,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         username = 'gunnar@g10f.de'
         self.selenium.get('%s%s' % (self.live_server_url, reverse('accounts:password_reset')))
         self.selenium.find_element(by=By.NAME, value="email").send_keys('gunnar@g10f.de')
-        self.selenium.find_element(by=By.TAG_NAME, value="form").submit()
-        self.wait_page_loaded()
+        self.submit_form()
 
         self.assertEqual(len(self.selenium.find_elements(by=By.CLASS_NAME, value="alert-error")), 0)
 
@@ -248,8 +237,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.wait_page_loaded()
 
         self.selenium.find_element(by=By.NAME, value="email").send_keys('gunnar@g10f.de')
-        self.selenium.find_element(by=By.TAG_NAME, value="form").submit()
-        self.wait_page_loaded()
+        self.submit_form()
 
         self.assertEqual(len(self.selenium.find_elements(by=By.CLASS_NAME, value="alert-error")), 0)
 
@@ -277,8 +265,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
 
         self.wait_page_loaded()
         continue_button = self.selenium.find_element(by=By.XPATH, value='//button[@type="submit"][@name="_continue"]')
-        self.click(continue_button)
-        self.wait_page_loaded()
+        self.click_and_wait(continue_button)
         self.assertEqual(len(self.selenium.find_elements(by=By.CLASS_NAME, value="alert-danger")), 0)
 
         first_name = self.selenium.find_element(by=By.NAME, value="first_name")
@@ -298,8 +285,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         homepage.clear()
         homepage.send_keys(new_homepage)
 
-        self.selenium.find_element(by=By.TAG_NAME, value="form").submit()
-        self.wait_page_loaded()
+        self.submit_form()
 
         self.assertEqual(len(self.selenium.find_elements(by=By.CLASS_NAME, value="alert-danger")), 1)
 
@@ -310,8 +296,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.selenium.find_element(by=By.XPATH, value='//a[@href="#tab_application_roles"]').click()
         self.selenium.find_element(by=By.XPATH, value=id_application_role).click()
         self.selenium.find_element(by=By.ID, value=id_application_roles_modify_link).click()
-        self.selenium.find_element(by=By.TAG_NAME, value="form").submit()
-        self.wait_page_loaded()
+        self.submit_form()
         self.assertEqual(len(self.selenium.find_elements(by=By.CLASS_NAME, value="alert-success")), 1)
 
     def test_update_user_as_admin(self):
@@ -361,8 +346,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.selenium.get('%s%s' % (
             self.live_server_url, reverse('accounts:update_user', kwargs={'uuid': 'a8992f0348634f76b0dac2de4e4c83ee'})))
         self.wait_page_loaded()
-        self.selenium.find_element(by=By.XPATH, value='//button[@name="_remove_org"]').click()
-        self.wait_page_loaded()
+        self.click_and_wait(self.selenium.find_element(by=By.XPATH, value='//button[@name="_remove_org"]'))
         self.selenium.find_element(by=By.XPATH, value='//div[@class="alert alert-success"]')
 
         user = get_user_model().objects.get(username='GunnarScherf')
@@ -380,8 +364,7 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.selenium.get('%s%s' % (self.live_server_url, reverse('accounts:update_user', kwargs={'uuid': 'a8992f0348634f76b0dac2de4e4c83ee'})))
         self.wait_page_loaded()
         remove_org_button = self.selenium.find_element(by=By.XPATH, value='//button[@name="_remove_org"]')
-        self.click(remove_org_button)
-        self.wait_page_loaded()
+        self.click_and_wait(remove_org_button)
         self.selenium.find_element(by=By.XPATH, value='//div[@class="alert alert-success"]')
 
         user_organisations = user.organisations.all()
@@ -444,9 +427,8 @@ class AccountsSeleniumTests(SSOSeleniumTests):
         self.selenium.find_element(by=By.XPATH, value='//select[@id="id_application_roles_from"]/option[1]').click()
         self.selenium.find_element(by=By.ID, value="id_application_roles_add_link").click()
 
-        self.selenium.find_element(by=By.TAG_NAME, value="form").submit()
+        self.submit_form()
 
-        self.wait_page_loaded()
         self.assertEqual(len(self.selenium.find_elements(by=By.CLASS_NAME, value="alert-success")), 1)
 
         self.logout()
