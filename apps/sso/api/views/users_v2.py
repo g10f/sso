@@ -153,16 +153,21 @@ class UserMixin(object):
                 data['picture']['240x240'] = absolute_url(request, get_thumbnail(obj.picture, "240x240", crop="center").url)
                 data['picture']['480x480'] = absolute_url(request, get_thumbnail(obj.picture, "480x480", crop="center").url)
 
-            data['organisations'] = {
-                organisation.uuid.hex: {
-                    'country': organisation.organisation_country.country.iso2_code,
-                    'name': organisation.name,
-                    '@id': "%s%s" % (base, reverse('api:v2_organisation', kwargs={'uuid': organisation.uuid.hex}))
-                } if organisation.organisation_country else {
-                    'name': organisation.name,
-                    '@id': "%s%s" % (base, reverse('api:v2_organisation', kwargs={'uuid': organisation.uuid.hex}))
-                } for organisation in obj.organisations.all().prefetch_related('organisation_country__country')
-            }
+            membership_set = obj.membership_set.all().order_by("-primary").prefetch_related('organisation', 'organisation__organisation_country__country')
+            count_of_memberships = len(membership_set)
+            if count_of_memberships > 0:
+                data['organisations'] = {}
+                for membership in membership_set:
+                    organisation = {
+                        'name': membership.organisation.name,
+                        '@id': "%s%s" % (base, reverse('api:v2_organisation', kwargs={'uuid': membership.organisation.uuid.hex}))
+                    }
+                    if count_of_memberships > 1:
+                        organisation['is_primary'] = membership.primary
+                    if membership.organisation.organisation_country:
+                        organisation['country'] = membership.organisation.organisation_country.country.iso2_code
+                    data['organisations'][membership.organisation.uuid.hex] = organisation
+
             data['admin_regions'] = {
                 region.uuid.hex: {
                     'country': region.organisation_country.country.iso2_code,
