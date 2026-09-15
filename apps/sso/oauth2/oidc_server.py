@@ -5,14 +5,18 @@ from oauthlib.oauth2.rfc6749.endpoints import AuthorizationEndpoint, RevocationE
 from oauthlib.oauth2.rfc6749.endpoints.introspect import IntrospectEndpoint
 from oauthlib.oauth2.rfc6749.grant_types import ImplicitGrant as OAuth2ImplicitGrant, ClientCredentialsGrant, \
     ResourceOwnerPasswordCredentialsGrant
+from oauthlib.oauth2.rfc8628.endpoints.device_authorization import DeviceAuthorizationEndpoint
 from oauthlib.openid.connect.core.grant_types import ImplicitGrant
 from oauthlib.openid.connect.core.grant_types.dispatchers import AuthorizationCodeGrantDispatcher, \
     ImplicitTokenGrantDispatcher, AuthorizationTokenGrantDispatcher
 
 from django.conf import settings
-from .oidc_grants import OAuth2AuthorizationCodeGrantEx, AuthorizationCodeGrantEx, HybridGrantEx, RefreshTokenGrantEx
+from .models import generate_user_code
+from .oidc_grants import OAuth2AuthorizationCodeGrantEx, AuthorizationCodeGrantEx, HybridGrantEx, RefreshTokenGrantEx, \
+    DeviceCodeGrantEx
 from .oidc_request_validator import OIDCRequestValidator
 from .oidc_token import get_token_generator
+from ..utils.url import get_base_url
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +35,7 @@ class Server(AuthorizationEndpoint, IntrospectEndpoint, TokenEndpoint, Revocatio
         password_grant = ResourceOwnerPasswordCredentialsGrant(request_validator)
         credentials_grant = ClientCredentialsGrant(request_validator)
         refresh_grant = RefreshTokenGrantEx(request_validator)
+        device_code_grant = DeviceCodeGrantEx(request_validator)
         openid_connect_auth_ex = AuthorizationCodeGrantEx(request_validator)
         openid_connect_implicit = ImplicitGrant(request_validator)
         openid_connect_hybrid_ex = HybridGrantEx(request_validator)
@@ -63,6 +68,7 @@ class Server(AuthorizationEndpoint, IntrospectEndpoint, TokenEndpoint, Revocatio
                                    'password': password_grant,
                                    'client_credentials': credentials_grant,
                                    'refresh_token': refresh_grant,
+                                   'urn:ietf:params:oauth:grant-type:device_code': device_code_grant,
                                },
                                default_token_type=bearer)
         RevocationEndpoint.__init__(self, request_validator)
@@ -72,3 +78,18 @@ class Server(AuthorizationEndpoint, IntrospectEndpoint, TokenEndpoint, Revocatio
 oidc_request_validator = OIDCRequestValidator()
 oidc_server = Server(oidc_request_validator, token_expires_in=getattr(settings, 'SSO_ACCESS_TOKEN_AGE', 3600),
                      token_generator=get_token_generator(), refresh_token_generator=tokens.random_token_generator)
+
+# RFC 8628 Device Authorization Grant. Separate endpoint object (not part of Server
+# above) since oauthlib models device_authorization/ as its own endpoint, distinct
+# from the authorize/token/revoke/introspect endpoints AuthorizationEndpoint,
+# TokenEndpoint etc. cover; the token/ step itself is still handled by oidc_server
+# above via the 'urn:ietf:params:oauth:grant-type:device_code' grant registered on it.
+_device_verification_uri = f'{get_base_url()}/oauth2/device/'
+device_authorization_endpoint = DeviceAuthorizationEndpoint(
+    oidc_request_validator,
+    verification_uri=_device_verification_uri,
+    verification_uri_complete=lambda user_code: f'{_device_verification_uri}?user_code={user_code}',
+    expires_in=getattr(settings, 'SSO_DEVICE_CODE_AGE', 600),
+    interval=getattr(settings, 'SSO_DEVICE_CODE_INTERVAL', 5),
+    user_code_generator=generate_user_code,
+)

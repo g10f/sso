@@ -26,8 +26,8 @@ from sso.components.admin import ComponentAdmin
 from sso.components.models import Component
 from sso.emails.admin import EmailAdmin, EmailAliasAdmin, EmailForwardAdmin, GroupEmailAdmin, GroupEmailManagerAdmin
 from sso.emails.models import Email, EmailForward, EmailAlias, GroupEmail, GroupEmailManager
-from sso.oauth2.admin import ClientAdmin, AuthorizationCodeAdmin, BearerTokenAdmin, RefreshTokenAdmin
-from sso.oauth2.models import Client, AuthorizationCode, BearerToken, RefreshToken
+from sso.oauth2.admin import ClientAdmin, AuthorizationCodeAdmin, BearerTokenAdmin, RefreshTokenAdmin, DeviceCodeAdmin
+from sso.oauth2.models import Client, AuthorizationCode, BearerToken, RefreshToken, DeviceCode
 from sso.organisations import admin as org_admin
 from sso.organisations import models as org_models
 from sso.registration.admin import RegistrationAdmin
@@ -102,6 +102,7 @@ sso_admin_site.register(models.OrganisationChange, OrganisationChangeAdmin)
 sso_admin_site.register(AuthorizationCode, AuthorizationCodeAdmin)
 sso_admin_site.register(BearerToken, BearerTokenAdmin)
 sso_admin_site.register(RefreshToken, RefreshTokenAdmin)
+sso_admin_site.register(DeviceCode, DeviceCodeAdmin)
 sso_admin_site.register(Client, ClientAdmin)
 
 sso_admin_site.register(Country, CountryOptions)

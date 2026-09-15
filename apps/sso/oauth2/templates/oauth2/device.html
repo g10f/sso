@@ -1,0 +1,41 @@
+{% extends "base_site.html" %}
+{% load i18n %}
+
+{% block title %}{% translate 'Device sign-in' %}{% endblock %}
+
+{% block breadcrumb %}
+  <ol class="breadcrumb">
+    <li><a href="{% url 'home' %}">{% translate 'Home' %}</a></li>
+    <li class="active">{% translate 'Device sign-in' %}</li>
+  </ol>
+{% endblock breadcrumb %}
+
+{% block content %}
+  <h1>{% translate 'Device sign-in' %}</h1>
+
+  {% if approved %}
+    <p>{% blocktranslate with name=client.name %}You're signed in. You can go back to {{ name }} now.{% endblocktranslate %}</p>
+  {% elif denied %}
+    <p>{% translate "You've denied this sign-in request. You can close this page." %}</p>
+  {% elif device_code %}
+    <p>{% blocktranslate with name=device_code.client.name %}Sign in to {{ name }} on your TV?{% endblocktranslate %}</p>
+    <p><strong>{{ device_code.user_code }}</strong></p>
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="user_code" value="{{ user_code }}">
+      <button type="submit" name="approve" class="btn btn-primary">{% translate 'Confirm' %}</button>
+      <button type="submit" name="deny" class="btn btn-default">{% translate 'Deny' %}</button>
+    </form>
+  {% else %}
+    {% if error %}
+      <p class="text-danger">{{ error }}</p>
+    {% endif %}
+    <p>{% translate 'Enter the code shown on your TV.' %}</p>
+    <form method="get">
+      <input id="user_code" class="form-control" type="text" name="user_code" value="{{ user_code }}"
+             autocapitalize="characters" autocomplete="off" autofocus>
+      <br>
+      <button type="submit" class="btn btn-primary">{% translate 'Continue' %}</button>
+    </form>
+  {% endif %}
+{% endblock %}

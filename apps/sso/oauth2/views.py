@@ -1,5 +1,6 @@
 import json
 import logging
+from datetime import timedelta
 from urllib.parse import urlparse, urlunparse, urlsplit, urlunsplit
 
 from jwt import InvalidTokenError
@@ -12,13 +13,16 @@ from oauthlib.oauth2.rfc6749.utils import scope_to_list
 from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth.decorators import permission_required, login_required
+from django.core.exceptions import ValidationError
 from django.http import HttpResponseRedirect, HttpResponse, QueryDict
 from django.http.response import HttpResponseRedirectBase, Http404
 from django.shortcuts import render, get_object_or_404, resolve_url
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.crypto import salted_hmac
 from django.utils.decorators import method_decorator
 from django.utils.encoding import iri_to_uri, force_str
+from django.utils.translation import gettext as _
 from django.views import View
 from django.views.decorators.cache import never_cache, cache_page, cache_control
 from django.views.decorators.clickjacking import xframe_options_exempt
@@ -34,8 +38,8 @@ from sso.utils.http import get_request_param
 from sso.utils.url import get_base_url
 from .crypt import loads_jwt
 from .keys import get_public_keys, get_certs, get_certs_jwks
-from .models import Client
-from .oidc_server import oidc_server
+from .models import Client, DeviceCode
+from .oidc_server import oidc_server, device_authorization_endpoint
 
 logger = logging.getLogger(__name__)
 
@@ -325,6 +329,44 @@ class TokenView(PreflightMixin, View):
     def post(self, request, *args, **kwargs):
         return token(request)
 
+
+@revision_exempt
+@csrf_exempt
+def device_authorization(request):
+    """
+    RFC 8628 device_authorization endpoint. oauthlib's DeviceAuthorizationEndpoint
+    (device_authorization_endpoint, see oidc_server.py) mints the device_code/user_code
+    pair but does not persist them itself -- we do that here once it returns a 200,
+    so DeviceCodeGrantEx / OIDCRequestValidator.validate_device_code have a DeviceCode
+    row to poll from the token endpoint.
+    """
+    uri, http_method, body, headers = extract_params(request)
+    oauth_request = Request(uri, http_method=http_method, body=body, headers=headers)
+    resp_headers, data, status = device_authorization_endpoint.create_device_authorization_response(
+        uri, http_method=http_method, body=body, headers=headers)
+
+    if status == 200:
+        try:
+            client = Client.objects.get(uuid=oauth_request.client_id, is_active=True)
+        except (Client.DoesNotExist, ValueError, ValidationError):
+            error = oauth2.InvalidClientError(request=oauth_request)
+            return HttpResponse(content=error.json, status=error.status_code, content_type='application/json')
+
+        scopes = scope_to_list(oauth_request.scope) or client.scopes.split()
+        DeviceCode.objects.create(
+            client=client,
+            device_code=data['device_code'],
+            user_code=data['user_code'],
+            scopes=' '.join(scopes),
+            expires_at=timezone.now() + timedelta(seconds=data['expires_in']),
+        )
+
+    response = HttpResponse(content=json.dumps(data), status=status, content_type='application/json')
+    for k, v in resp_headers.items():
+        response[k] = v
+    return response
+
+
 @revision_exempt
 @csrf_exempt
 def revoke(request):
@@ -387,6 +429,46 @@ def approval(request):
     state = request.GET.get('state', '')
     code = request.GET.get('code', '')
     return render(request, 'oauth2/approval.html', context={'state': state, 'code': code})
+
+
+@never_cache
+@login_required
+def device(request):
+    """
+    RFC 8628 verification_uri: the second-screen page a user opens (from the TV's
+    prompt, or via verification_uri_complete's ?user_code=... if scanned/tapped) to
+    confirm or deny the code shown on their TV.
+    """
+    user_code = (request.POST.get('user_code') or request.GET.get('user_code') or '').strip().upper()
+    error = None
+    device_code_obj = None
+
+    if user_code:
+        try:
+            device_code_obj = DeviceCode.objects.select_related('client').get(
+                user_code=user_code, status=DeviceCode.STATUS_PENDING)
+            if device_code_obj.is_expired:
+                device_code_obj = None
+                error = _('This code has expired. Please restart on your TV.')
+        except DeviceCode.DoesNotExist:
+            error = _('This code is not valid. Please check what is shown on your TV.')
+
+    if request.method == 'POST' and device_code_obj:
+        if 'approve' in request.POST:
+            device_code_obj.user = request.user
+            device_code_obj.status = DeviceCode.STATUS_APPROVED
+            device_code_obj.save(update_fields=['user', 'status'])
+            return render(request, 'oauth2/device.html', {'approved': True, 'client': device_code_obj.client})
+        elif 'deny' in request.POST:
+            device_code_obj.status = DeviceCode.STATUS_DENIED
+            device_code_obj.save(update_fields=['status'])
+            return render(request, 'oauth2/device.html', {'denied': True})
+
+    return render(request, 'oauth2/device.html', {
+        'user_code': user_code,
+        'device_code': device_code_obj,
+        'error': error,
+    })
 
 
 @permission_required("oauth2.change_client")
