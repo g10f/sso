@@ -115,3 +115,31 @@ class RefreshTokenAdmin(admin.ModelAdmin):
 
     bearer_token_link.short_description = _('bearer token')
     bearer_token_link.admin_order_field = 'bearer_token'
+
+
+class DeviceCodeAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user_code', 'client_link', 'user_link', 'status', 'created_at', 'expires_at')
+    list_filter = ('status', 'client__application', 'client')
+    search_fields = ('user_code', 'user__username', 'user__first_name', 'user__last_name', 'user__uuid', 'user__useremail__email')
+    raw_id_fields = ("user",)
+    readonly_fields = ('device_code', 'created_at', 'last_polled_at')
+    list_select_related = ('user', 'client')
+    date_hierarchy = 'created_at'
+
+    @mark_safe
+    def user_link(self, obj):
+        if not obj.user:
+            return ''
+        url = reverse('admin:accounts_user_change', args=(obj.user.pk,), current_app=self.admin_site.name)
+        return '<a href="%s">%s</a>' % (url, obj.user)
+
+    user_link.short_description = _('user')
+    user_link.admin_order_field = 'user'
+
+    @mark_safe
+    def client_link(self, obj):
+        url = reverse('admin:oauth2_client_change', args=(obj.client.pk,), current_app=self.admin_site.name)
+        return '<a href="%s">%s</a>' % (url, obj.client)
+
+    client_link.short_description = _('client')
+    client_link.admin_order_field = 'client'

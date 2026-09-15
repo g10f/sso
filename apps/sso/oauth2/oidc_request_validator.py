@@ -5,16 +5,24 @@ from uuid import UUID
 from django.utils.crypto import constant_time_compare
 from jwt import InvalidTokenError
 
+from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model
 from django.core import signing
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.utils import timezone
 from django.utils.encoding import force_bytes
 from oauthlib.oauth2 import FatalClientError
+from oauthlib.oauth2.rfc6749 import errors
+from oauthlib.oauth2.rfc8628.errors import (
+    AccessDenied as DeviceAccessDeniedError,
+    AuthorizationPendingError as DeviceAuthorizationPendingError,
+    ExpiredTokenError as DeviceExpiredTokenError,
+    SlowDownError as DeviceSlowDownError,
+)
 from oauthlib.openid.connect.core.request_validator import RequestValidator
 from .crypt import loads_jwt
-from .models import BearerToken, RefreshToken, AuthorizationCode, Client, check_redirect_uri, CONFIDENTIAL_CLIENTS, \
-    CLIENT_RESPONSE_TYPES
+from .models import BearerToken, RefreshToken, AuthorizationCode, Client, DeviceCode, check_redirect_uri, \
+    CONFIDENTIAL_CLIENTS, CLIENT_RESPONSE_TYPES
 from .oidc_token import get_idtoken_finalizer
 from ..api.response import same_origin
 
@@ -247,6 +255,46 @@ class OIDCRequestValidator(RequestValidator):
         # Authorization codes are used once, invalidate it when a Bearer token
         # has been acquired.
         AuthorizationCode.objects.filter(code=code, is_valid=True).update(is_valid=False)
+
+    # Device Authorization Grant (RFC 8628), called from DeviceCodeGrantEx.create_token_response
+    def validate_device_code(self, client_id, device_code, request, *args, **kwargs):
+        """
+        Look up a DeviceCode by its device_code and apply the RFC 8628 3.5 polling
+        state machine: unknown/mismatched code -> invalid_grant, expired -> expired_token,
+        denied -> access_denied, still pending -> authorization_pending (or slow_down if
+        polled again before `interval` seconds have passed). Returns the DeviceCode once
+        the verification page ("device" view) has approved it.
+        """
+        try:
+            device_code_obj = DeviceCode.objects.select_related('client', 'user').get(device_code=device_code)
+        except DeviceCode.DoesNotExist:
+            raise errors.InvalidGrantError(request=request)
+
+        if device_code_obj.client.client_id != client_id:
+            raise errors.InvalidGrantError(request=request)
+
+        if device_code_obj.is_expired:
+            device_code_obj.delete()
+            raise DeviceExpiredTokenError(request=request)
+
+        if device_code_obj.status == DeviceCode.STATUS_DENIED:
+            device_code_obj.delete()
+            raise DeviceAccessDeniedError(request=request)
+
+        if device_code_obj.status == DeviceCode.STATUS_PENDING:
+            interval = getattr(settings, 'SSO_DEVICE_CODE_INTERVAL', 5)
+            now = timezone.now()
+            if device_code_obj.last_polled_at and (now - device_code_obj.last_polled_at).total_seconds() < interval:
+                raise DeviceSlowDownError(request=request)
+            device_code_obj.last_polled_at = now
+            device_code_obj.save(update_fields=['last_polled_at'])
+            raise DeviceAuthorizationPendingError(request=request)
+
+        return device_code_obj
+
+    def invalidate_device_code(self, device_code, request, *args, **kwargs):
+        # Device codes are single-use, invalidate it once a Bearer token has been acquired.
+        device_code.delete()
 
     # Protected resource request
     def validate_bearer_token(self, token, scopes, request):

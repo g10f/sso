@@ -5,6 +5,7 @@ from oauthlib.oauth2 import InvalidRequestError
 from oauthlib.oauth2 import RefreshTokenGrant as OAuth2RefreshTokenGrant
 from oauthlib.oauth2.rfc6749 import errors
 from oauthlib.oauth2.rfc6749.grant_types import AuthorizationCodeGrant as OAuth2AuthorizationCodeGrant
+from oauthlib.oauth2.rfc8628.grant_types.device_code import DeviceCodeGrant as OAuth2DeviceCodeGrant
 from oauthlib.openid import RequestValidator
 from oauthlib.openid.connect.core.grant_types import GrantTypeBase
 
@@ -129,3 +130,58 @@ class HybridGrantEx(GrantTypeBase):
             if not request.nonce:
                 raise InvalidRequestError(request=request, description='Request is missing mandatory nonce parameter.')
         return request_info
+
+
+class DeviceCodeGrantEx(GrantTypeBase):
+    """
+    RFC 8628 Device Authorization Grant, for clients with no keyboard (TVs) or no
+    browser to redirect through (CLIs) -- same category of "public client" the
+    existing 'native' Client type already covers for the out-of-band authorization
+    code flow (see oauth2/views.py:approval).
+
+    oauthlib ships the wire format (DeviceAuthorizationEndpoint, see oidc_server.py)
+    and this proxy_target grant class, but its stock create_token_response():
+      (a) unconditionally calls request_validator.authenticate_client(), which
+          requires a client secret -- wrong here, since this grant exists
+          specifically for clients that cannot hold one; and
+      (b) implements none of the RFC 8628 polling semantics (authorization_pending /
+          slow_down / expired_token / access_denied) or the pending -> approved
+          handoff from the verification page.
+    We reimplement create_token_response to add both, delegating the actual
+    DeviceCode lookup/state machine to OIDCRequestValidator.validate_device_code().
+    """
+    def __init__(self, request_validator=None, **kwargs):
+        # overwrite with custom proxy_target, matching the other Ex grants in this module
+        self.proxy_target = OAuth2DeviceCodeGrant(request_validator=request_validator, **kwargs)
+
+    def create_authorization_response(self, request, token_handler):
+        raise NotImplementedError('Device code grant does not implement an authorization response')
+
+    def create_token_response(self, request, token_handler):
+        headers = self._get_default_headers()
+        try:
+            # Section 3.4 of RFC 8628: device_code requests come from public clients,
+            # so we confirm client_id the same way AuthorizationCodeGrantEx does for
+            # 'native' clients, not via authenticate_client()'s client_secret check.
+            if not self.request_validator.authenticate_client_id(request.client_id, request):
+                raise errors.InvalidClientError(request=request)
+
+            device_code = self.request_validator.validate_device_code(
+                request.client_id, request.device_code, request)
+        except errors.OAuth2Error as e:
+            logger.debug('Client error during device_code token request: %r.', e)
+            headers.update(e.headers)
+            return headers, e.json, e.status_code
+
+        request.user = device_code.user
+        request.scopes = device_code.scopes.split()
+        request.client = device_code.client
+
+        token = token_handler.create_token(request, refresh_token='offline_access' in request.scopes)
+        for modifier in self._token_modifiers:
+            token = modifier(token, token_handler, request)
+        self.request_validator.save_token(token, request)
+        self.request_validator.invalidate_device_code(device_code, request)
+
+        headers.update(self._create_cors_headers(request))
+        return headers, json.dumps(token), 200
