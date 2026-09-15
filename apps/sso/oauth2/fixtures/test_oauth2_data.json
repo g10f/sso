@@ -127,5 +127,21 @@
       "type": "service",
       "force_using_pkce": false
     }
+  },
+  {
+    "model": "oauth2.client",
+    "fields": {
+      "uuid": "3f6a9b6b1a8940e6a3f0a2f7f3f2e1a1",
+      "last_modified": "2026-09-15T10:00:46.076Z",
+      "name": "Test Client - TV (device flow)",
+      "application": [
+        "bc0ee635a536491eb8e7fbe5749e8111"
+      ],
+      "client_secret": "",
+      "scopes": "openid profile email offline_access",
+      "user": null,
+      "type": "native",
+      "force_using_pkce": false
+    }
   }
 ]

@@ -1,18 +1,21 @@
 import base64
 import hashlib
 import re
+from datetime import timedelta
 
 from django.core import mail
 from time import sleep
-from urllib.parse import urlsplit
+from urllib.parse import urlencode, urlsplit
 
 from django.conf import settings
 from django.http import QueryDict, SimpleCookie
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.crypto import get_random_string
 from sso.test.client import SSOClient
 from . import crypt
+from .models import DeviceCode
 
 
 def get_query_dict(url):
@@ -565,3 +568,111 @@ class OAuth2Tests(OAuth2BaseTestCase):
         self.assertIn('error', token)
         expected = {'error': 'invalid_grant'}
         self.assertTrue(set(expected.items()).issubset(set(token.items())))
+
+
+class DeviceCodeGrantTests(OAuth2BaseTestCase):
+    # the 'Test Client - TV (device flow)' fixture: type=native, no client_secret
+    _tv_client_id = "3f6a9b6b1a8940e6a3f0a2f7f3f2e1a1"
+
+    def device_authorization_request(self, client_id=None, scope="openid profile email"):
+        # RFC 8628's device_authorization endpoint requires application/x-www-form-urlencoded,
+        # unlike token/ -- Django's test client defaults to multipart, so this needs encoding explicitly.
+        data = {'client_id': client_id if client_id else self._tv_client_id}
+        if scope is not None:
+            data['scope'] = scope
+        return self.client.post(reverse('oauth2:device_authorization'), data=urlencode(data),
+                                content_type='application/x-www-form-urlencoded')
+
+    def poll_token(self, device_code, client_id=None):
+        return self.client.post(reverse('oauth2:token'), {
+            'grant_type': 'urn:ietf:params:oauth:grant-type:device_code',
+            'client_id': client_id if client_id else self._tv_client_id,
+            'device_code': device_code,
+        })
+
+    def test_device_authorization_returns_user_code(self):
+        response = self.device_authorization_request()
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('application/json', response['Content-Type'])
+        data = response.json()
+        self.assertIn('device_code', data)
+        self.assertIn('user_code', data)
+        self.assertIn('verification_uri', data)
+        self.assertIn('expires_in', data)
+        self.assertIn('interval', data)
+
+        device_code_obj = DeviceCode.objects.get(device_code=data['device_code'])
+        self.assertEqual(device_code_obj.user_code, data['user_code'])
+        self.assertEqual(device_code_obj.status, DeviceCode.STATUS_PENDING)
+        self.assertEqual(device_code_obj.client.client_id, self._tv_client_id)
+
+    def test_device_authorization_unknown_client_is_rejected(self):
+        response = self.device_authorization_request(client_id="0" * 32)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(DeviceCode.objects.count(), 0)
+
+    def test_token_is_authorization_pending_before_approval(self):
+        data = self.device_authorization_request().json()
+        token_response = self.poll_token(data['device_code'])
+        self.assertEqual(token_response.status_code, 400)
+        self.assertEqual(token_response.json()['error'], 'authorization_pending')
+
+    def test_token_slow_down_on_rapid_polling(self):
+        data = self.device_authorization_request().json()
+        first_poll = self.poll_token(data['device_code'])
+        self.assertEqual(first_poll.json()['error'], 'authorization_pending')
+        second_poll = self.poll_token(data['device_code'])
+        self.assertEqual(second_poll.json()['error'], 'slow_down')
+
+    def test_full_flow_approve_then_get_token(self):
+        data = self.device_authorization_request(scope="openid profile email offline_access").json()
+
+        self.client.login(username='GunnarScherf', password='gsf')
+        approve_response = self.client.post(reverse('oauth2:device'), {
+            'user_code': data['user_code'],
+            'approve': '1',
+        })
+        self.assertEqual(approve_response.status_code, 200)
+        self.logout()
+
+        token_response = self.poll_token(data['device_code'])
+        self.assertEqual(token_response.status_code, 200)
+        token = token_response.json()
+        self.assertIn('access_token', token)
+        self.assertIn('refresh_token', token)
+
+        # device codes are single-use: the row is gone, and polling again fails
+        self.assertFalse(DeviceCode.objects.filter(device_code=data['device_code']).exists())
+        second_poll = self.poll_token(data['device_code'])
+        self.assertEqual(second_poll.status_code, 400)
+        self.assertEqual(second_poll.json()['error'], 'invalid_grant')
+
+    def test_deny_blocks_the_token(self):
+        data = self.device_authorization_request().json()
+
+        self.client.login(username='GunnarScherf', password='gsf')
+        deny_response = self.client.post(reverse('oauth2:device'), {
+            'user_code': data['user_code'],
+            'deny': '1',
+        })
+        self.assertEqual(deny_response.status_code, 200)
+        self.logout()
+
+        token_response = self.poll_token(data['device_code'])
+        self.assertEqual(token_response.status_code, 400)
+        self.assertEqual(token_response.json()['error'], 'access_denied')
+
+    def test_expired_device_code_is_rejected(self):
+        data = self.device_authorization_request().json()
+        DeviceCode.objects.filter(device_code=data['device_code']).update(
+            expires_at=timezone.now() - timedelta(seconds=1))
+
+        token_response = self.poll_token(data['device_code'])
+        self.assertEqual(token_response.status_code, 400)
+        self.assertEqual(token_response.json()['error'], 'expired_token')
+
+    def test_device_page_rejects_unknown_user_code(self):
+        self.client.login(username='GunnarScherf', password='gsf')
+        response = self.client.get(reverse('oauth2:device'), {'user_code': 'ZZZZ-ZZZZ'})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'not valid')
