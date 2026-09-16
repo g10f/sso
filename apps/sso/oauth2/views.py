@@ -25,7 +25,7 @@ from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.vary import vary_on_headers
 from django.views.generic import TemplateView
-from sso.api.response import JsonHttpResponse, same_origin
+from sso.api.response import JsonHttpResponse, same_origin, add_cors_header
 from sso.api.views.generic import PreflightMixin
 from sso.auth.utils import is_recent_auth_time
 from sso.auth.views import TWO_FACTOR_PARAM
@@ -92,6 +92,33 @@ class HttpOAuth2ResponseRedirect(HttpResponseRedirect):
         self['Location'] = iri_to_uri(redirect_to)
 
 
+@method_decorator(revision_exempt, name='dispatch')
+@method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(never_cache, name='dispatch')
+class UserInfoView(PreflightMixin, View):
+    """
+    OpenID Connect userinfo endpoint
+    see https://openid.net/specs/openid-connect-core-1_0.html#UserInfo
+    """
+    http_method_names = ['get', 'post', 'options']
+
+    def get(self, request, *args, **kwargs):
+        uri, http_method, body, headers = extract_params(request)
+        try:
+            headers, body, status = oidc_server.create_userinfo_response(uri, http_method, body, headers)
+        except oauth2.OAuth2Error as e:
+            headers, body, status = {**e.headers, 'Content-Type': 'application/json'}, e.json, e.status_code
+        response = HttpResponse(content=body, status=status)
+        for k, v in headers.items():
+            response[k] = v
+        # only bearer tokens and no cookies are accepted, so every origin is allowed
+        add_cors_header(request.META.get('HTTP_ORIGIN'), None, response, public_cors=True)
+        return response
+
+    def post(self, request, *args, **kwargs):
+        return self.get(request, *args, **kwargs)
+
+
 @method_decorator(cache_page(60 * 60), name='dispatch')
 @method_decorator(vary_on_headers('Origin', 'Accept-Language'), name='dispatch')
 class OpenidConfigurationView(PreflightMixin, View):
@@ -106,7 +133,7 @@ class OpenidConfigurationView(PreflightMixin, View):
             "issuer": base_uri,
             "authorization_endpoint": '%s%s' % (base_uri, reverse('oauth2:authorize')),
             "token_endpoint": '%s%s' % (base_uri, reverse('oauth2:token')),
-            "userinfo_endpoint": '%s%s' % (base_uri, reverse('api:v2_users_me')),
+            "userinfo_endpoint": '%s%s' % (base_uri, reverse('oauth2:userinfo')),
             "revocation_endpoint": '%s%s' % (base_uri, reverse('oauth2:revoke')),
             "jwks_uri": '%s%s' % (base_uri, reverse('oauth2:jwks')),
             "scopes_supported":

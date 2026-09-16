@@ -5,13 +5,13 @@ from uuid import UUID
 from django.utils.crypto import constant_time_compare
 from jwt import InvalidTokenError
 
-from django.contrib.auth import authenticate, get_user_model
-from django.core import signing
+from django.contrib.auth import authenticate
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.utils import timezone
 from django.utils.encoding import force_bytes
 from oauthlib.oauth2 import FatalClientError
 from oauthlib.openid.connect.core.request_validator import RequestValidator
+from . import userinfo
 from .crypt import loads_jwt
 from .models import BearerToken, RefreshToken, AuthorizationCode, Client, check_redirect_uri, CONFIDENTIAL_CLIENTS, \
     CLIENT_RESPONSE_TYPES
@@ -250,24 +250,24 @@ class OIDCRequestValidator(RequestValidator):
 
     # Protected resource request
     def validate_bearer_token(self, token, scopes, request):
-        # Remember to check expiration and scope membership
-        try:
-            if not token:
-                return False
-            data = loads_jwt(token)
-            required_scopes = set(scopes)
-            if data.get('scope'):
-                valid_scopes = set(data['scope'].split())
-                if not required_scopes.issubset(valid_scopes):
-                    return False
-            else:
-                logger.debug('Bearer Token with no scope')
-            user = get_user_model().objects.get(uuid=data['sub'])
-            request.user = user
-            request.client = Client.objects.get(uuid=data['aud'], is_active=True)
-        except (ObjectDoesNotExist, signing.BadSignature, ValueError):
+        """
+        Validate the token in the same way as for the api (see sso.oauth2.middleware),
+        including expiration, signature and session hash, and check that the token has all required scopes.
+        """
+        # imported here, because the middleware imports the views, which import this module
+        from .middleware import get_auth_data_from_token
+        user, client, token_scopes = get_auth_data_from_token(token)
+        if not user.is_authenticated or client is None or not client.is_active:
             return False
+        if not set(scopes).issubset(token_scopes):
+            return False
+        request.user = user
+        request.client = client
+        request.scopes = list(token_scopes)
         return True
+
+    def get_userinfo_claims(self, request):
+        return userinfo.get_userinfo_claims(request)
 
     # Token refresh request
     def validate_refresh_token(self, refresh_token, client, request, *args, **kwargs):

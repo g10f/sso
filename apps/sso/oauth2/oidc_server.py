@@ -5,6 +5,7 @@ from oauthlib.oauth2.rfc6749.endpoints import AuthorizationEndpoint, RevocationE
 from oauthlib.oauth2.rfc6749.endpoints.introspect import IntrospectEndpoint
 from oauthlib.oauth2.rfc6749.grant_types import ImplicitGrant as OAuth2ImplicitGrant, ClientCredentialsGrant, \
     ResourceOwnerPasswordCredentialsGrant
+from oauthlib.openid.connect.core.endpoints.userinfo import UserInfoEndpoint
 from oauthlib.openid.connect.core.grant_types import ImplicitGrant
 from oauthlib.openid.connect.core.grant_types.dispatchers import AuthorizationCodeGrantDispatcher, \
     ImplicitTokenGrantDispatcher, AuthorizationTokenGrantDispatcher
@@ -21,7 +22,7 @@ logger = logging.getLogger(__name__)
 # DEFAULT_SCOPES = ['openid', 'profile']
 
 
-class Server(AuthorizationEndpoint, IntrospectEndpoint, TokenEndpoint, RevocationEndpoint):
+class Server(AuthorizationEndpoint, IntrospectEndpoint, TokenEndpoint, RevocationEndpoint, UserInfoEndpoint):
     """ An all-in-one endpoint  see oauthlib.openid.connect.core.endpoints.pre_configured """
 
     def __init__(self, request_validator, token_expires_in=None, token_generator=None, refresh_token_generator=None,
@@ -67,6 +68,7 @@ class Server(AuthorizationEndpoint, IntrospectEndpoint, TokenEndpoint, Revocatio
                                default_token_type=bearer)
         RevocationEndpoint.__init__(self, request_validator)
         IntrospectEndpoint.__init__(self, request_validator)
+        UserInfoEndpoint.__init__(self, request_validator)
 
 
 oidc_request_validator = OIDCRequestValidator()
