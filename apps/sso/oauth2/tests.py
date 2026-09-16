@@ -297,7 +297,10 @@ class OAuth2Tests(OAuth2BaseTestCase):
         self.assertEqual(response.status_code, 200)
         user_info = response.json()
         self.assertEqual(user_info['family_name'], 'Scherf')
-        self.assertIn('31664dd38ca4454e916e55fe8b1f0745', user_info['organisations'])
+        # organisations are no standard claim, they are available in the v2 users api
+        self.assertNotIn('organisations', user_info)
+        response = self.client.get(reverse('api:v2_users_me'), HTTP_AUTHORIZATION=authorization)
+        self.assertIn('31664dd38ca4454e916e55fe8b1f0745', response.json()['organisations'])
 
         # this is only for global admin accounts
         response = self.client.get(reverse('api:v1_users'), HTTP_AUTHORIZATION=authorization)
@@ -367,7 +370,10 @@ class OAuth2Tests(OAuth2BaseTestCase):
         self.assertEqual(response.status_code, 200)
         user_info = response.json()
         self.assertEqual(user_info['family_name'], 'Scherf')
-        self.assertIn('31664dd38ca4454e916e55fe8b1f0745', user_info['organisations'])
+        # organisations are no standard claim, they are available in the v2 users api
+        self.assertNotIn('organisations', user_info)
+        response = self.client.get(reverse('api:v2_users_me'), HTTP_AUTHORIZATION=authorization)
+        self.assertIn('31664dd38ca4454e916e55fe8b1f0745', response.json()['organisations'])
 
         # this is only for global admin accounts
         response = self.client.get(reverse('api:v1_users'), HTTP_AUTHORIZATION=authorization)

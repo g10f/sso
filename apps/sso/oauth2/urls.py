@@ -11,6 +11,7 @@ urlpatterns = [
     path('token/', views.TokenView.as_view(), name='token'),
     path('tokeninfo/', views.tokeninfo, name='tokeninfo'),
     path('introspect/', views.introspect, name='introspect'),
+    path('userinfo/', views.UserInfoView.as_view(), name='userinfo'),
     path('approval/', views.approval, name='approval'),
     path('error/', views.ErrorView.as_view(), name='oauth2_error'),
     path('session/', views.SessionView.as_view(template_name="oauth2/session.html"), name='session'),
