@@ -1,12 +1,15 @@
 import base64
 import logging
+from datetime import timedelta
 from uuid import UUID
 
 from django.utils.crypto import constant_time_compare
 from jwt import InvalidTokenError
 
+from django.conf import settings
 from django.contrib.auth import authenticate
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.db.models import F
 from django.utils import timezone
 from django.utils.encoding import force_bytes
 from oauthlib.oauth2 import FatalClientError
@@ -28,6 +31,17 @@ def get_client_id_and_secret_from_auth_header(request):
         if (len(http_authorization) == 2) and http_authorization[0] == 'Basic':
             data = base64.b64decode(force_bytes(http_authorization[1])).decode()
             return data.split(':')
+
+
+def valid_authorization_codes():
+    # authorization codes are short living, see also cleartokens command
+    min_created_at = timezone.now() - timedelta(seconds=settings.SSO_AUTHORIZATION_CODE_AGE)
+    return AuthorizationCode.objects.filter(is_valid=True, created_at__gte=min_created_at)
+
+
+def valid_refresh_tokens():
+    min_created_at = timezone.now() - timedelta(seconds=settings.SSO_REFRESH_TOKEN_AGE)
+    return RefreshToken.objects.filter(is_active=True, created_at__gte=min_created_at)
 
 
 class OIDCRequestValidator(RequestValidator):
@@ -70,8 +84,8 @@ class OIDCRequestValidator(RequestValidator):
 
     def introspect_token(self, token, token_type_hint, request, *args, **kwargs):
         try:
-            refresh_token = RefreshToken.objects.select_related("bearer_token__user").get(token=token)
-            if refresh_token.is_active and refresh_token.bearer_token.user.is_active and refresh_token.no_tokens_issued == 0:
+            refresh_token = valid_refresh_tokens().select_related("bearer_token__user").get(token=token)
+            if refresh_token.bearer_token.user.is_active and refresh_token.no_tokens_issued == 0:
                 return {'username': refresh_token.user.username, 'token_type': 'refresh_token'}
             else:
                 return None
@@ -196,8 +210,7 @@ class OIDCRequestValidator(RequestValidator):
         try:
             if not hasattr(client, 'authorization_code'):
                 # save the authorization_code for using in confirm_redirect_uri
-                client.authorization_code = AuthorizationCode.objects.get(code=request.code, client__uuid=client_id,
-                                                                          is_valid=True)
+                client.authorization_code = valid_authorization_codes().get(code=request.code, client__uuid=client_id)
             authorization_code = client.authorization_code
             request.user = authenticate(token=authorization_code)
             request.scopes = authorization_code.scopes.split()
@@ -278,19 +291,18 @@ class OIDCRequestValidator(RequestValidator):
         associated with this refresh token.
         """
         try:
-            refresh_token = RefreshToken.objects.select_related("bearer_token__user").get(token=refresh_token)
-            if not refresh_token.is_active:
-                logger.warning(f'Refresh token {refresh_token} is not active.')
+            refresh_token = valid_refresh_tokens().select_related("bearer_token__user").get(token=refresh_token)
+            if refresh_token.bearer_token.client_id != client.pk:
+                logger.warning(f'Refresh token {refresh_token.pk} was not issued to client {client}.')
                 return False
             if not refresh_token.bearer_token.user.is_active:
                 logger.warning(f'User {refresh_token.bearer_token.user} is not active.')
                 return False
-            if refresh_token.no_tokens_issued > 0:
+            # mark the token as used in one atomic update, so that concurrent requests can not use it twice
+            if RefreshToken.objects.filter(pk=refresh_token.pk, no_tokens_issued=0).update(
+                    no_tokens_issued=F('no_tokens_issued') + 1) != 1:
                 logger.warning(f'Refresh token was already used.')
                 return False
-
-            refresh_token.no_tokens_issued += 1
-            refresh_token.save()
 
             request.user = authenticate(token=refresh_token)
         except RefreshToken.DoesNotExist:
@@ -333,7 +345,8 @@ class OIDCRequestValidator(RequestValidator):
             return False
 
     def revoke_token(self, token, token_type_hint, request, *args, **kwargs):
-        RefreshToken.objects.filter(token=token).update(is_active=False)
+        # a client can only revoke its own tokens (RFC 7009 section 2.1)
+        RefreshToken.objects.filter(token=token, bearer_token__client=request.client).update(is_active=False)
 
     def finalize_id_token(self, id_token, token, token_handler, request):
         # Finalize OpenID Connect ID token & Sign or Encrypt.
@@ -366,7 +379,7 @@ class OIDCRequestValidator(RequestValidator):
         # and user to request.scopes and request.user.
         try:
             request.scopes = ()
-            authorization_code = AuthorizationCode.objects.get(code=request.code, is_valid=True)
+            authorization_code = valid_authorization_codes().get(code=request.code)
 
             if client_id:
                 if authorization_code.client.uuid == UUID(client_id):

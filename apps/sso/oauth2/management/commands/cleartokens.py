@@ -11,9 +11,9 @@ class Command(BaseCommand):
 
     def handle(self, **options):
         refresh_token_life_time = timezone.now() - timedelta(seconds=settings.SSO_REFRESH_TOKEN_AGE)
-        five_minutes_ago = timezone.now() - timedelta(0, 300)
+        authorization_code_life_time = timezone.now() - timedelta(seconds=settings.SSO_AUTHORIZATION_CODE_AGE)
         # AuthorizationCode are short living, only to create a bearer token
-        AuthorizationCode.objects.filter(created_at__lt=five_minutes_ago).delete()
+        AuthorizationCode.objects.filter(created_at__lt=authorization_code_life_time).delete()
         # BearerToken are valid for one hour, but are stored for refresh tokens.
         # Refresh Tokens are valid for REFRESH_TOKEN_LIFE_TIME days and are deleted
         # automatically when they BearerToken are deleted.
