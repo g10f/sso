@@ -2,13 +2,22 @@ import json
 from functools import cmp_to_key
 
 from django.apps import apps
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from django.views.decorators.cache import cache_page
 from smart_selects.utils import strcoll
 
 
+# field is passed to queryset.filter(), so only the chained fields must be allowed
+ALLOWED_CHAINS = {
+    ('organisations', 'OrganisationCountry'): {'association'},
+    ('organisations', 'AdminRegion'): {'organisation_country'},
+}
+
+
 @cache_page(60)
 def filterchain(request, app, model, field, value, manager=None):
+    if field not in ALLOWED_CHAINS.get((app, model), set()) or not str(value).isdigit():
+        raise Http404
     Model = apps.get_model(app, model)
     if value == '0':
         keywords = {str("%s__isnull" % field): True}

@@ -15,11 +15,12 @@
     	            return;
     	        }
     	        $.getJSON(url + "/" + val + "/", function(j) {
-    	            var options = '<option value="">' + empty_label + '</option>';
+    	            // build the options with text() and val(), so that display values are escaped
+    	            var options = [$('<option>').val('').text(empty_label)];
     	            for (var i = 0; i < j.length; i++) {
-    	                options += '<option value="' + j[i].value + '">' + j[i].display + '</option>';
+    	                options.push($('<option>').val(j[i].value).text(j[i].display));
     	            }
-    	            $(id).html(options);
+    	            $(id).empty().append(options);
     	            $(id + ' option:first').attr('selected', 'selected');
     	            if(init_value) {
     	                $(id + ' option[value="' + init_value + '"]').attr('selected', 'selected');

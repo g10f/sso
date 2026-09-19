@@ -1,7 +1,7 @@
 import sso
 from django.apps import apps
 from django.conf import settings
-from django.urls import include, path, register_converter
+from django.urls import include, path, re_path, register_converter
 from django.utils import timezone
 from django.views.decorators.cache import cache_page
 from django.views.decorators.http import last_modified
@@ -37,11 +37,12 @@ urlpatterns = [
     path('emails/', include('sso.emails.urls')),
     path('oauth2/', include('sso.oauth2.urls')),
     path('api/', include('sso.api.urls')),
-    path('chained_filter/organisations/OrganisationCountry/<slug:field>/<slug:value>/', filterchain,
-         kwargs={'app': 'organisations', 'model': 'OrganisationCountry', 'manager': 'active_objects'},
-         name='chained_filter'),
-    path('chained_filter/organisations/AdminRegion/<slug:field>/<slug:value>/', filterchain,
-         kwargs={'app': 'organisations', 'model': 'AdminRegion', 'manager': 'active_objects'}, name='chained_filter'),
+    # field is restricted to the chained_model_field of the ChainedForeignKey, because it is passed to queryset.filter()
+    re_path(r'^chained_filter/organisations/OrganisationCountry/(?P<field>association)/(?P<value>[0-9]+)/$', filterchain,
+            kwargs={'app': 'organisations', 'model': 'OrganisationCountry', 'manager': 'active_objects'},
+            name='chained_filter'),
+    re_path(r'^chained_filter/organisations/AdminRegion/(?P<field>organisation_country)/(?P<value>[0-9]+)/$', filterchain,
+            kwargs={'app': 'organisations', 'model': 'AdminRegion', 'manager': 'active_objects'}, name='chained_filter'),
 ]
 if settings.DEBUG:
     from django.conf.urls.static import static
