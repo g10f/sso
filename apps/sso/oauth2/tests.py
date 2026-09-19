@@ -1,6 +1,8 @@
 import base64
 import hashlib
 import re
+import uuid
+from datetime import timedelta
 
 from django.core import mail
 from django.core.cache import cache
@@ -11,9 +13,11 @@ from django.conf import settings
 from django.http import QueryDict, SimpleCookie
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.crypto import get_random_string
 from sso.test.client import SSOClient
 from . import crypt
+from .models import Client, RefreshToken, AuthorizationCode
 
 
 def get_query_dict(url):
@@ -574,3 +578,88 @@ class OAuth2Tests(OAuth2BaseTestCase):
         self.assertIn('error', token)
         expected = {'error': 'invalid_grant'}
         self.assertTrue(set(expected.items()).issubset(set(token.items())))
+
+
+class RefreshTokenBindingTests(OAuth2BaseTestCase):
+    client_id = '5614cdb0aa3c48d59828681bd62e1741'
+    other_client_id = 'ec4c46551416431db114a4c54d552f5b'  # another confidential client with offline_access
+
+    def get_token(self):
+        code = self.login_and_get_code(client_id=self.client_id, scope='openid profile email offline_access')
+        token_data = {
+            'grant_type': "authorization_code",
+            'redirect_uri': "http://localhost",
+            'client_secret': "geheim",
+            'client_id': self.client_id,
+            'code': code,
+        }
+        token_response = self.token_request(token_data)
+        self.assertEqual(token_response.status_code, 200)
+        self.logout()
+        return token_response.json()
+
+    def refresh_request(self, refresh_token, client_id, client_secret="geheim"):
+        token_data = {
+            'grant_type': "refresh_token",
+            'refresh_token': refresh_token,
+            'client_id': client_id,
+        }
+        if client_secret:
+            token_data['client_secret'] = client_secret
+        return self.token_request(token_data)
+
+    def test_refresh_token_of_other_confidential_client(self):
+        token = self.get_token()
+        response = self.refresh_request(token['refresh_token'], self.other_client_id)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['error'], 'invalid_grant')
+
+        # the token is not consumed by the failed request and still valid for the own client
+        response = self.refresh_request(token['refresh_token'], self.client_id)
+        self.assertEqual(response.status_code, 200)
+
+    def test_refresh_token_of_other_public_client(self):
+        token = self.get_token()
+        # public clients do not authenticate with a secret
+        native_client = Client.objects.get(uuid=self.other_client_id)
+        native_client.pk = None
+        native_client.uuid = uuid.uuid4()
+        native_client.type = 'native'
+        native_client.save()
+
+        response = self.refresh_request(token['refresh_token'], native_client.uuid.hex, client_secret=None)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['error'], 'invalid_grant')
+
+    def test_expired_refresh_token(self):
+        token = self.get_token()
+        created_at = timezone.now() - timedelta(seconds=settings.SSO_REFRESH_TOKEN_AGE + 1)
+        RefreshToken.objects.filter(token=token['refresh_token']).update(created_at=created_at)
+
+        response = self.refresh_request(token['refresh_token'], self.client_id)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['error'], 'invalid_grant')
+
+    def test_revoke_refresh_token_of_other_client(self):
+        token = self.get_token()
+        data = {'token': token['refresh_token'], 'client_id': self.other_client_id, 'client_secret': "geheim"}
+        response = self.client.post(reverse('oauth2:revoke'), data)
+        self.assertEqual(response.status_code, 200)  # RFC 7009: invalid tokens are answered with 200 too
+        self.assertTrue(RefreshToken.objects.get(token=token['refresh_token']).is_active)
+
+    def test_expired_authorization_code(self):
+        code = self.login_and_get_code(client_id=self.client_id, scope='openid profile email offline_access')
+        self.logout()
+        created_at = timezone.now() - timedelta(seconds=settings.SSO_AUTHORIZATION_CODE_AGE + 1)
+        AuthorizationCode.objects.filter(code=code).update(created_at=created_at)
+
+        token_data = {
+            'grant_type': "authorization_code",
+            'redirect_uri': "http://localhost",
+            'client_secret': "geheim",
+            'client_id': self.client_id,
+            'code': code,
+        }
+        response = self.token_request(token_data)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['error'], 'invalid_grant')
