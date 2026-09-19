@@ -3,6 +3,7 @@ import hashlib
 import re
 
 from django.core import mail
+from django.core.cache import cache
 from time import sleep
 from urllib.parse import urlsplit
 
@@ -34,6 +35,8 @@ class OAuth2BaseTestCase(TestCase):
     _state = 'eyJub25jZSI6Ik1sSllaUlc3VWdGdyIsInByb3ZpZGVyIjoyLCJuZXh0IjoiLyJ9'
 
     def setUp(self):
+        # signing keys are cached, but the keys in the database are rolled back after each test
+        cache.clear()
         self.client = SSOClient()
 
     def logout(self):
