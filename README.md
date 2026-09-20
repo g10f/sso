@@ -9,7 +9,7 @@ data through a JSON-LD / Hydra REST API.
 It is a [Django](https://www.djangoproject.com/) application and is distributed as a
 Docker image (`ghcr.io/g10f/sso`) and a Helm chart.
 
-- **Version:** 5.4.4
+- **Version:** 5.4.8
 - **Runtime:** Python 3.12+ (the official image is built on Python 3.14), Django 5.2,
   PostgreSQL with PostGIS
 - **License:** BSD-style, see [LICENSE](LICENSE)
@@ -265,9 +265,17 @@ The API entry point is `/api/` and follows the JSON-LD / Hydra conventions. High
 the entries below list the notable changes per minor release. See the git
 history for the full list of patch releases.
 
-### 5.4 (current, 5.4.4)
+### 5.4 (current, 5.4.8)
 - security fix: the `chained_filter` endpoint is restricted to the chained fields,
   closing an unauthenticated data-exposure hole
+- security fix: refresh tokens are bound to the client they were issued to, and
+  authorization codes expire after `SSO_AUTHORIZATION_CODE_AGE`
+- security fix: stored XSS in the admin through `mark_safe` on user-supplied data
+- security fix: the login throttle can no longer be bypassed with a spoofed
+  `X-Forwarded-For` or a random query string, and accounts behind a shared IP no
+  longer throttle each other
+- security fix: an OAuth2 error raised before the request was validated is no
+  longer reported to an unregistered `redirect_uri` (open redirect)
 - standard-conform OpenID Connect UserInfo endpoint
 - `is_primary` flag for organisation membership when a user belongs to more than one
 - Instagram page for organisations (Google+ removed)
