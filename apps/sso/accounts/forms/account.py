@@ -593,8 +593,8 @@ class UserProfileForm(mixins.UserRolesMixin, mixins.UserNoteMixin, forms.Form):
         self.create_note_if_required(current_user, cd, activate, extend_validity, removed_orgs)
 
         if make_member:
-            dwbn_member_profile = RoleProfile.objects.get_by_natural_key(uuid=settings.SSO_DEFAULT_MEMBER_PROFILE_UUID)
-            self.user.role_profiles.add(dwbn_member_profile)
+            member_profile = RoleProfile.objects.get_by_natural_key(uuid=settings.SSO_DEFAULT_MEMBER_PROFILE_UUID)
+            self.user.role_profiles.add(member_profile)
 
         if extend_validity or make_member:
             # enable brand specific modification
