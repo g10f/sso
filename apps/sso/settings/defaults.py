@@ -240,6 +240,7 @@ TEMPLATES = [
 ]
 
 MIDDLEWARE = [
+    'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'sso.oauth2.middleware.SsoSessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -334,6 +335,18 @@ CSRF_COOKIE_HTTPONLY = os.getenv('CSRF_COOKIE_HTTPONLY', 'True').lower() in ('tr
 if not (RUNNING_DEVSERVER or RUNNING_TEST):
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
+
+# SecurityMiddleware gives us X-Content-Type-Options and Referrer-Policy. HSTS and
+# the http->https redirect stay off: they belong to the proxy that terminates tls,
+# and SECURE_SSL_REDIRECT would loop because the request reaches us as http.
+# same-origin, django's default. no-referrer (which keycloak sends) is not an
+# option here: it makes the browser send "Origin: null" on form posts, which
+# CsrfViewMiddleware rejects, and it would silently disable the referer check
+# that guards the cookie authenticated api in api/views/generic.py.
+SECURE_REFERRER_POLICY = 'same-origin'
+# django defaults this to same-origin, which would cut window.opener for the
+# clients that open the login in a popup (display=popup).
+SECURE_CROSS_ORIGIN_OPENER_POLICY = None
 
 # silence RemovedInDjango60Warning
 filterwarnings("ignore", "The FORMS_URLFIELD_ASSUME_HTTPS transitional setting is deprecated.")
