@@ -43,6 +43,12 @@ RUN chown -R $USERNAME: /opt/g10f
 USER $USERNAME
 RUN ./manage.py collectstatic
 ENTRYPOINT ["./docker-entrypoint.sh"]
+# Which peers gunicorn accepts X-Forwarded-* from. The default stays "*", because
+# the proxy address is not known in advance (in kubernetes the health probes come
+# from the node, the ingress from a pod ip). As an environment variable rather
+# than a command line flag it survives an args override in the helm chart, and a
+# deployment that does know its proxy can pin it to an address or network.
+ENV FORWARDED_ALLOW_IPS="*"
 # Start gunicorn
-CMD ["gunicorn", "sso.wsgi:application", "-b", "0.0.0.0:8000", "--forwarded-allow-ips", "*"]
+CMD ["gunicorn", "sso.wsgi:application", "-b", "0.0.0.0:8000"]
 EXPOSE 8000
