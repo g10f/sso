@@ -10,6 +10,7 @@ from oauthlib.common import urlencode, urlencoded, quote
 from oauthlib.oauth2.rfc6749.utils import scope_to_list
 
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth.decorators import permission_required, login_required
 from django.http import HttpResponseRedirect, HttpResponse, QueryDict
@@ -34,7 +35,7 @@ from sso.utils.http import get_request_param
 from sso.utils.url import get_base_url
 from .crypt import loads_jwt
 from .keys import get_public_keys, get_certs, get_certs_jwks
-from .models import Client
+from .models import Client, check_redirect_uri
 from .oidc_server import oidc_server
 
 logger = logging.getLogger(__name__)
@@ -297,6 +298,26 @@ def validate_and_redirect_to_login(request, two_factor, uri, http_method='GET', 
     return redirect_to_login(request, two_factor=two_factor)
 
 
+def get_registered_redirect_uri(request):
+    """
+    Return the request's redirect_uri only if it is registered for the given
+    client_id, otherwise None. Used to avoid an open redirect when an OAuth2Error
+    is raised before oauthlib has validated the request (e.g. TwoFactorRequiredError,
+    which is raised in should_show_login_form before redirect_uri validation).
+    """
+    client_id = get_request_param(request, 'client_id')
+    redirect_uri = get_request_param(request, 'redirect_uri')
+    if not client_id or not redirect_uri:
+        return None
+    try:
+        client = Client.objects.get(uuid=client_id, is_active=True)
+    except (Client.DoesNotExist, ValidationError, ValueError):
+        return None
+    if check_redirect_uri(client, redirect_uri):
+        return redirect_uri
+    return None
+
+
 @revision_exempt
 @never_cache
 @xframe_options_exempt
@@ -323,10 +344,15 @@ def authorize(request):
         error_uri = reverse('oauth2:oauth2_error')
         return HttpResponseRedirect(e.in_uri(error_uri))
     except oauth2.OAuth2Error as e:
-        # Less grave errors will be reported back to client
-        logger.warning(f'OAuth2Error, redirecting to error page. {e}')
-        redirect_uri = get_request_param(request, 'redirect_uri', reverse('oauth2:oauth2_error'))
-        return HttpOAuth2ResponseRedirect(e.in_uri(redirect_uri))
+        # Less grave errors are reported back to the client, but only to a
+        # redirect_uri that is actually registered for the client. Otherwise an
+        # error raised before oauthlib validated the request (e.g.
+        # TwoFactorRequiredError) could be abused for an open redirect.
+        logger.warning(f'OAuth2Error, redirecting. {e}')
+        redirect_uri = get_registered_redirect_uri(request)
+        if redirect_uri is not None:
+            return HttpOAuth2ResponseRedirect(e.in_uri(redirect_uri))
+        return HttpResponseRedirect(e.in_uri(reverse('oauth2:oauth2_error')))
 
 
 def token(request):

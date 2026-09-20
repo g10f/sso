@@ -1,5 +1,6 @@
 import base64
 import hashlib
+import json
 import re
 import uuid
 from datetime import timedelta
@@ -10,6 +11,7 @@ from time import sleep
 from urllib.parse import urlsplit
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.http import QueryDict, SimpleCookie
 from django.test import TestCase
 from django.urls import reverse
@@ -663,3 +665,44 @@ class RefreshTokenBindingTests(OAuth2BaseTestCase):
         response = self.token_request(token_data)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['error'], 'invalid_grant')
+
+
+class AuthorizeOpenRedirectTests(OAuth2BaseTestCase):
+    """
+    TwoFactorRequiredError is raised before oauthlib has validated the request,
+    so the error must not be reported to an arbitrary redirect_uri.
+    """
+    _acr_claims = json.dumps({'id_token': {'acr': {'values': ['2']}}})
+
+    def authorize(self, redirect_uri):
+        self.client.login(username='GunnarScherf', password='gsf')
+        authorize_data = {
+            'scope': "openid profile email",
+            'state': self._state,
+            'redirect_uri': redirect_uri,
+            'response_type': "code",
+            'client_id': self._client_id,
+            'claims': self._acr_claims,
+        }
+        return self.client.get(reverse('oauth2:authorize'), data=authorize_data)
+
+    def test_two_factor_required_no_open_redirect(self):
+        # the user has no confirmed 2 factor device, which raises TwoFactorRequiredError
+        self.assertFalse(get_user_model().objects.get(username='GunnarScherf').device_set.filter(confirmed=True).exists())
+
+        response = self.authorize("https://evil.example/steal")
+        self.assertEqual(response.status_code, 302)
+        location = response['Location']
+        self.assertNotIn('evil.example', location)
+        self.assertEqual(urlsplit(location)[2], reverse('oauth2:oauth2_error'))
+        self.assertEqual(get_query_dict(location)['error'], 'two_factor_required')
+
+    def test_two_factor_required_registered_redirect_uri(self):
+        # a registered redirect_uri still gets the error reported back
+        response = self.authorize("http://localhost")
+        self.assertEqual(response.status_code, 302)
+        location = response['Location']
+        self.assertTrue(location.startswith("http://localhost"))
+        query_dict = get_query_dict(location)
+        self.assertEqual(query_dict['error'], 'two_factor_required')
+        self.assertEqual(query_dict['state'], self._state)
