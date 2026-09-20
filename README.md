@@ -170,6 +170,7 @@ loaded if present and can override anything.
 | `SECRET_KEY` | *(random per start)* | Django secret key – **set this in production** |
 | `DEBUG` | `False` | Django debug mode |
 | `ALLOWED_HOSTS` | `''` | Comma-separated additional allowed hosts |
+| `FORWARDED_ALLOW_IPS` | `*` | Peers gunicorn accepts `X-Forwarded-Proto`/`-Ssl` from, which determine whether `request.is_secure()` is true. Pin it to the proxy address or network wherever that is known. |
 | `SSO_DOMAIN` | `localhost:8000` | Public domain of the service |
 | `SSO_USE_HTTPS` | `True` | Whether the service is served over HTTPS |
 | `SSO_SITE_NAME` | `G10F` | Displayed site name |
