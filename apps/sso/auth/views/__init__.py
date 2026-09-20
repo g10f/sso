@@ -57,7 +57,8 @@ class LoginView(FormView):
     @method_decorator(revision_exempt)
     @method_decorator(sensitive_post_parameters())
     @method_decorator(never_cache)
-    @method_decorator(throttle(duration=settings.SSO_THROTTLING_DURATION, max_calls=settings.SSO_THROTTLING_MAX_CALLS))
+    @method_decorator(throttle(duration=settings.SSO_THROTTLING_DURATION, max_calls=settings.SSO_THROTTLING_MAX_CALLS,
+                               key_fields=['username']))
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
 

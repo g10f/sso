@@ -10,4 +10,5 @@ urlpatterns = [
     re_path(r'^response/$', throttle(response=HttpResponse('Response', status=401))(index), name='test_response'),
     re_path(r'^response/callable/$', throttle(response=lambda request: HttpResponse('Request Response', status=401))(index),
             name='test_response_callable'),
+    re_path(r'^key-fields/$', throttle(key_fields=['username'])(index), name='test_key_fields'),
 ]
