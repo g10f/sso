@@ -14,7 +14,7 @@ from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.db import models
 from django.urls import reverse
-from django.utils.safestring import mark_safe
+from django.utils.html import format_html
 from django.utils.timezone import localtime, now
 from django.utils.translation import pgettext_lazy, gettext_lazy as _
 from l10n.models import Country
@@ -394,16 +394,14 @@ class Organisation(AbstractBaseModel):
         else:
             ""
 
-    @mark_safe
     def google_maps_link(self):
-        return '<a href="%s">%s</a>' % (self.google_maps_url, self.get_coordinates_type_display())
+        return format_html('<a href="{}">{}</a>', self.google_maps_url, self.get_coordinates_type_display())
 
     google_maps_link.short_description = _('Maps')
 
-    @mark_safe
     def homepage_link(self):
         if self.homepage:
-            return '<a href="%s">%s</a>' % (self.homepage, self.homepage)
+            return format_html('<a href="{}">{}</a>', self.homepage, self.homepage)
         else:
             return ''
 

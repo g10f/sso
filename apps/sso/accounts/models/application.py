@@ -6,7 +6,7 @@ from django.conf import settings
 from django.contrib.auth.models import Group
 from django.core.validators import validate_slug
 from django.db import models
-from django.utils.safestring import mark_safe
+from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from sso.models import AbstractBaseModel, AbstractBaseModelManager
 
@@ -58,10 +58,9 @@ class Application(models.Model):
         verbose_name = _("application")
         verbose_name_plural = _("applications")
 
-    @mark_safe
     def link(self):
         if self.url:
-            return '<a href="%s">%s</a>' % (self.url, self.url)
+            return format_html('<a href="{}">{}</a>', self.url, self.url)
         else:
             return ''
 

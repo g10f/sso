@@ -15,7 +15,7 @@ from django.db.models import Q
 from django.template.response import TemplateResponse
 from django.urls import reverse
 from django.utils.encoding import force_str
-from django.utils.safestring import mark_safe
+from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from reversion.admin import VersionAdmin
 from sso.organisations.models import Organisation, AdminRegion
@@ -36,10 +36,9 @@ class OrganisationChangeAdmin(admin.ModelAdmin):
     readonly_fields = ['uuid']
     list_filter = ('status', 'last_modified')
 
-    @mark_safe
     def user_link(self, obj):
         url = reverse('admin:accounts_user_change', args=(obj.user.pk,), current_app=self.admin_site.name)
-        return '<a href="%s">%s</a>' % (url, obj.user)
+        return format_html('<a href="{}">{}</a>', url, obj.user)
 
     user_link.short_description = _('user')
     user_link.admin_order_field = 'user'
@@ -52,21 +51,19 @@ class UserNoteAdmin(admin.ModelAdmin):
     ordering = ['-last_modified']
     list_select_related = ('user',)
 
-    @mark_safe
     def user_link(self, obj):
         url = reverse('admin:accounts_user_change', args=(obj.user.pk,), current_app=self.admin_site.name)
-        return '<a href="%s">%s</a>' % (url, obj.user)
+        return format_html('<a href="{}">{}</a>', url, obj.user)
 
     user_link.short_description = _('user')
     user_link.admin_order_field = 'user'
 
-    @mark_safe
     def created_by_user_link(self, obj):
         if obj.created_by_user is None:
             return ""
         url = reverse('admin:accounts_user_change', args=(obj.created_by_user.pk,),
                       current_app=self.admin_site.name)
-        return '<a href="%s">%s</a>' % (url, obj.created_by_user)
+        return format_html('<a href="{}">{}</a>', url, obj.created_by_user)
 
     created_by_user_link.short_description = _('created by')
     created_by_user_link.admin_order_field = 'created_by_user'
@@ -80,10 +77,9 @@ class UserEmailAdmin(admin.ModelAdmin):
     list_filter = ('confirmed', 'primary')
     list_select_related = ('user',)
 
-    @mark_safe
     def user_link(self, obj):
         url = reverse('admin:accounts_user_change', args=(obj.user.pk,), current_app=self.admin_site.name)
-        return '<a href="%s">%s</a>' % (url, obj.user)
+        return format_html('<a href="{}">{}</a>', url, obj.user)
 
     user_link.short_description = _('user')
     user_link.admin_order_field = 'user'
@@ -101,11 +97,10 @@ class OneTimeMessageAdmin(admin.ModelAdmin):
           'classes': ['wide']}),
     ]
 
-    @mark_safe
     def message_link(self, obj):
         if obj.uuid:
             url = reverse('accounts:view_message', args=[obj.uuid.hex])
-            return '<div class="field-box"><a class="deletelink" href="%s">%s</a></div>' % (url, obj.title)
+            return format_html('<div class="field-box"><a class="deletelink" href="{}">{}</a></div>', url, obj.title)
         else:
             return ''
 
@@ -524,23 +519,21 @@ class UserAdmin(VersionAdmin, AdminImageMixin, DjangoUserAdmin):
 
         return super().save_form(request, form, change)
 
-    @mark_safe
     def get_last_modified_by_user(self, obj):
         if obj.last_modified_by_user:
             url = reverse('admin:accounts_user_change', args=(obj.last_modified_by_user.pk,),
                           current_app=self.admin_site.name)
-            return '<a href="%s">%s</a>' % (url, obj.last_modified_by_user)
+            return format_html('<a href="{}">{}</a>', url, obj.last_modified_by_user)
         else:
             raise ObjectDoesNotExist()
 
     get_last_modified_by_user.short_description = _('last modified by')
 
-    @mark_safe
     def get_created_by_user(self, obj):
         if obj.created_by_user:
             url = reverse('admin:accounts_user_change', args=(obj.created_by_user.pk,),
                           current_app=self.admin_site.name)
-            return '<a href="%s">%s</a>' % (url, obj.created_by_user)
+            return format_html('<a href="{}">{}</a>', url, obj.created_by_user)
         else:
             raise ObjectDoesNotExist()
 

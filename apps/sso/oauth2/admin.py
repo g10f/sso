@@ -5,7 +5,7 @@ from reversion.admin import VersionAdmin
 from django import forms
 from django.contrib import admin
 from django.urls import reverse
-from django.utils.safestring import mark_safe
+from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from sso.oauth2.models import CONFIDENTIAL_CLIENTS, CLIENT_RESPONSE_TYPES, get_clients_by_response_type
 
@@ -56,18 +56,16 @@ class BearerTokenAdmin(admin.ModelAdmin):
     list_select_related = ('user', 'client')
     date_hierarchy = 'created_at'
 
-    @mark_safe
     def user_link(self, obj):
         url = reverse('admin:accounts_user_change', args=(obj.user.pk,), current_app=self.admin_site.name)
-        return '<a href="%s">%s</a>' % (url, obj.user)
+        return format_html('<a href="{}">{}</a>', url, obj.user)
 
     user_link.short_description = _('user')
     user_link.admin_order_field = 'user'
 
-    @mark_safe
     def client_link(self, obj):
         url = reverse('admin:oauth2_client_change', args=(obj.client.pk,), current_app=self.admin_site.name)
-        return '<a href="%s">%s</a>' % (url, obj.client)
+        return format_html('<a href="{}">{}</a>', url, obj.client)
 
     client_link.short_description = _('client')
     client_link.admin_order_field = 'client'
@@ -81,18 +79,16 @@ class AuthorizationCodeAdmin(admin.ModelAdmin):
     list_select_related = ('user', 'client')
     date_hierarchy = 'created_at'
 
-    @mark_safe
     def user_link(self, obj):
         url = reverse('admin:accounts_user_change', args=(obj.user.pk,), current_app=self.admin_site.name)
-        return '<a href="%s">%s</a>' % (url, obj.user)
+        return format_html('<a href="{}">{}</a>', url, obj.user)
 
     user_link.short_description = _('user')
     user_link.admin_order_field = 'user'
 
-    @mark_safe
     def client_link(self, obj):
         url = reverse('admin:oauth2_client_change', args=(obj.client.pk,), current_app=self.admin_site.name)
-        return '<a href="%s">%s</a>' % (url, obj.client)
+        return format_html('<a href="{}">{}</a>', url, obj.client)
 
     client_link.short_description = _('client')
     client_link.admin_order_field = 'client'
@@ -108,10 +104,9 @@ class RefreshTokenAdmin(admin.ModelAdmin):
     list_select_related = ('bearer_token__user', 'bearer_token__client')
     date_hierarchy = 'created_at'
 
-    @mark_safe
     def bearer_token_link(self, obj):
         url = reverse('admin:oauth2_bearertoken_change', args=(obj.bearer_token.pk,), current_app=self.admin_site.name)
-        return '<a href="%s">%s</a>' % (url, obj.bearer_token)
+        return format_html('<a href="{}">{}</a>', url, obj.bearer_token)
 
     bearer_token_link.short_description = _('bearer token')
     bearer_token_link.admin_order_field = 'bearer_token'
