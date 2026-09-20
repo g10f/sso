@@ -97,6 +97,9 @@ SSO_RECAPTCHA_EXPIRATION_TIME = 120
 SSO_RECAPTCHA_ENABLED = os.getenv("SSO_RECAPTCHA_ENABLED", 'True').lower() in ('true', '1', 't')
 SSO_THROTTLING_DURATION = int(os.getenv('SSO_THROTTLING_DURATION', '30'))
 SSO_THROTTLING_MAX_CALLS = int(os.getenv('SSO_THROTTLING_MAX_CALLS', '5'))
+# number of trusted reverse proxies in front of the app; used to derive the real
+# client IP for throttling so X-Forwarded-For cannot be spoofed. None = ipware default.
+SSO_THROTTLE_PROXY_COUNT = int(os.getenv('SSO_THROTTLE_PROXY_COUNT')) if os.getenv('SSO_THROTTLE_PROXY_COUNT') else None
 SSO_DEFAULT_THEME = os.getenv("SSO_DEFAULT_THEME", 'auto')
 SSO_ENABLE_PLAUSIBLE = os.getenv('SSO_ENABLE_PLAUSIBLE', 'False').lower() in ('true', '1', 't')
 # Celery settings see https://www.cloudamqp.com/docs/celery.html
