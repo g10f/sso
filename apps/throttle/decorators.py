@@ -51,6 +51,24 @@ def throttle(method='POST', duration=15, max_calls=1, response=None, key_fields=
                 # X-Forwarded-For to get a fresh counter for every request.
                 client_ip, _ = get_client_ip(request, proxy_count=settings.SSO_THROTTLE_PROXY_COUNT)
                 remote_addr = client_ip or request.META.get('REMOTE_ADDR')
+                # Temporary aid for choosing SSO_THROTTLE_PROXY_COUNT: when
+                # SSO_THROTTLE_PROXY_DEBUG is on, log the raw X-Forwarded-For and
+                # the client IP ipware resolves for each candidate proxy_count.
+                # Call from OUTSIDE without setting X-Forwarded-For yourself: the
+                # smallest proxy_count whose resolved IP is your real public IP
+                # is the value to configure. Turn this off in production.
+                if getattr(settings, 'SSO_THROTTLE_PROXY_DEBUG', False):
+                    xff = request.META.get('HTTP_X_FORWARDED_FOR')
+                    resolved = {
+                        pc: get_client_ip(request, proxy_count=pc)[0]
+                        for pc in (None, 0, 1, 2, 3)
+                    }
+                    logger.warning(
+                        'throttle proxy-debug path=%s REMOTE_ADDR=%s '
+                        'X-Forwarded-For=%r configured_proxy_count=%s resolved=%s',
+                        request.path, request.META.get('REMOTE_ADDR'), xff,
+                        settings.SSO_THROTTLE_PROXY_COUNT, resolved,
+                    )
                 # Key on the path only, never the query string, otherwise an
                 # attacker can append ?x=<random> to bypass the throttle.
                 # NB: reliable throttling across workers needs a shared cache

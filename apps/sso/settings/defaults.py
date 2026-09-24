@@ -100,6 +100,10 @@ SSO_THROTTLING_MAX_CALLS = int(os.getenv('SSO_THROTTLING_MAX_CALLS', '5'))
 # number of trusted reverse proxies in front of the app; used to derive the real
 # client IP for throttling so X-Forwarded-For cannot be spoofed. None = ipware default.
 SSO_THROTTLE_PROXY_COUNT = int(os.getenv('SSO_THROTTLE_PROXY_COUNT')) if os.getenv('SSO_THROTTLE_PROXY_COUNT') else None
+# Temporary: log X-Forwarded-For and the ipware-resolved client IP per
+# proxy_count in the throttle decorator, to help determine SSO_THROTTLE_PROXY_COUNT.
+# Turn off in production once the value is known.
+SSO_THROTTLE_PROXY_DEBUG = os.getenv('SSO_THROTTLE_PROXY_DEBUG', 'False').lower() in ('true', '1', 't')
 SSO_DEFAULT_THEME = os.getenv("SSO_DEFAULT_THEME", 'auto')
 SSO_ENABLE_PLAUSIBLE = os.getenv('SSO_ENABLE_PLAUSIBLE', 'False').lower() in ('true', '1', 't')
 # Celery settings see https://www.cloudamqp.com/docs/celery.html
