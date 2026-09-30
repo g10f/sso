@@ -13,9 +13,10 @@ class UserInfoTests(OAuth2BaseTestCase):
         authorization = self.get_authorization(scope=scope)
         return self.client.get(reverse('oauth2:userinfo'), HTTP_AUTHORIZATION=authorization, **extra)
 
-    def test_discovery_points_to_userinfo(self):
+    def test_discovery_points_to_v2_users_me(self):
+        # temporary fix, see OpenidConfigurationView
         configuration = self.client.get(reverse('openid-configuration')).json()
-        self.assertTrue(configuration['userinfo_endpoint'].endswith(reverse('oauth2:userinfo')))
+        self.assertTrue(configuration['userinfo_endpoint'].endswith(reverse('api:v2_users_me')))
 
     def test_standard_claims(self):
         user = get_user_model().objects.get(username='GunnarScherf')
