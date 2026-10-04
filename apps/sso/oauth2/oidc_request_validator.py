@@ -51,8 +51,8 @@ class OIDCRequestValidator(RequestValidator):
         else:
             try:
                 request.client = Client.objects.get(uuid=client_id, is_active=True)
-            except ValidationError as e:
-                raise FatalClientError(e)
+            except (ValidationError, ObjectDoesNotExist):
+                raise FatalClientError(description='Invalid client_id.')
         return request.client
 
     def is_pkce_required(self, client_id, request):

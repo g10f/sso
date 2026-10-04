@@ -581,6 +581,22 @@ class OAuth2Tests(OAuth2BaseTestCase):
         expected = {'error': 'invalid_grant'}
         self.assertTrue(set(expected.items()).issubset(set(token.items())))
 
+    def test_token_unknown_client_no_server_error(self):
+        # Regression: a syntactically valid but unknown client_id must return a
+        # proper OAuth2 error response, not raise Client.DoesNotExist -> HTTP 500
+        # (which also triggered an admin email per request). See _get_client.
+        token_data = {
+            'grant_type': "password",
+            'client_id': "00000000000000000000000000000000",
+            'username': "never-bound@nonexistent.invalid",
+            'password': "x",
+        }
+        token_response = self.token_request(token_data)
+        self.assertNotEqual(token_response.status_code, 500)
+        self.assertEqual(token_response.status_code, 400)
+        self.assertIn('application/json', token_response['Content-Type'])
+        self.assertIn('error', token_response.json())
+
 
 class RefreshTokenBindingTests(OAuth2BaseTestCase):
     client_id = '5614cdb0aa3c48d59828681bd62e1741'
