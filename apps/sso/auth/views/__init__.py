@@ -8,6 +8,7 @@ from django.contrib.auth import REDIRECT_FIELD_NAME, logout as auth_logout
 from django.contrib.auth import get_user_model, BACKEND_SESSION_KEY
 from django.contrib.sites.shortcuts import get_current_site
 from django.core import signing
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
@@ -151,6 +152,11 @@ class TokenView(FormView):
             message = self.error_messages['signature_expired']
             messages.add_message(self.request, level=messages.ERROR, message=message, fail_silently=True)
             # redirect to login page with correct next url
+            return redirect(get_safe_login_redirect_url(self.request))
+        except (signing.BadSignature, ObjectDoesNotExist) as e:
+            # tampered/invalid token or unknown user: do not raise a server error,
+            # just send the user back to the login page
+            logger.info(e)
             return redirect(get_safe_login_redirect_url(self.request))
 
         return super().dispatch(*args, **kwargs)
