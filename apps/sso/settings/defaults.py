@@ -104,6 +104,9 @@ SSO_THROTTLE_PROXY_COUNT = int(os.getenv('SSO_THROTTLE_PROXY_COUNT')) if os.gete
 # proxy_count in the throttle decorator, to help determine SSO_THROTTLE_PROXY_COUNT.
 # Turn off in production once the value is known.
 SSO_THROTTLE_PROXY_DEBUG = os.getenv('SSO_THROTTLE_PROXY_DEBUG', 'False').lower() in ('true', '1', 't')
+# Temporary, until all clients are adapted: point userinfo_endpoint in the OpenID Connect discovery
+# document to api:v2_users_me (includes organisations) instead of the standard oauth2:userinfo endpoint.
+SSO_LEGACY_USERINFO_ENDPOINT = os.getenv('SSO_LEGACY_USERINFO_ENDPOINT', 'False').lower() in ('true', '1', 't')
 SSO_DEFAULT_THEME = os.getenv("SSO_DEFAULT_THEME", 'auto')
 SSO_ENABLE_PLAUSIBLE = os.getenv('SSO_ENABLE_PLAUSIBLE', 'False').lower() in ('true', '1', 't')
 # Celery settings see https://www.cloudamqp.com/docs/celery.html

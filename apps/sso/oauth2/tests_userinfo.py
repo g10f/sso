@@ -3,6 +3,7 @@ import os
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
+from django.test import override_settings
 from django.urls import reverse
 from sso.oauth2.tests import OAuth2BaseTestCase
 
@@ -16,6 +17,11 @@ class UserInfoTests(OAuth2BaseTestCase):
     def test_discovery_points_to_userinfo(self):
         configuration = self.client.get(reverse('openid-configuration')).json()
         self.assertTrue(configuration['userinfo_endpoint'].endswith(reverse('oauth2:userinfo')))
+
+    @override_settings(SSO_LEGACY_USERINFO_ENDPOINT=True)
+    def test_discovery_points_to_v2_users_me_in_legacy_mode(self):
+        configuration = self.client.get(reverse('openid-configuration')).json()
+        self.assertTrue(configuration['userinfo_endpoint'].endswith(reverse('api:v2_users_me')))
 
     def test_standard_claims(self):
         user = get_user_model().objects.get(username='GunnarScherf')

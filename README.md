@@ -228,6 +228,7 @@ loaded if present and can override anything.
 | `SSO_THROTTLING_MAX_CALLS` | `5` | Max login attempts per window |
 | `SSO_THROTTLE_PROXY_COUNT` | *(unset)* | Number of trusted reverse proxies in front of the app. Used to derive the real client IP for throttling so `X-Forwarded-For` cannot be spoofed to get a fresh counter per request. Set it to match your proxy chain (e.g. `1` for a single nginx). Must be exact: too low lets clients behind one proxy share a counter, too high lets an attacker spoof the client IP. Unset falls back to ipware's default parsing. |
 | `SSO_THROTTLE_PROXY_DEBUG` | `False` | Temporary diagnostic aid for choosing `SSO_THROTTLE_PROXY_COUNT`. When enabled, the throttle decorator logs the raw `X-Forwarded-For`, `REMOTE_ADDR` and the client IP ipware resolves for each candidate proxy count. Call a throttled endpoint from outside without sending your own `X-Forwarded-For`; the smallest proxy count whose resolved IP is your real public IP is the value to configure. Turn off in production. |
+| `SSO_LEGACY_USERINFO_ENDPOINT` | `False` | Temporary, until all clients are adapted: when enabled, `userinfo_endpoint` in the OpenID Connect discovery document points to the v2 users API (`/api/v2/users/me/`, includes organisations) instead of the standard userinfo endpoint. |
 | `SSO_RECAPTCHA_ENABLED` | `True` | Enable reCAPTCHA on registration |
 | `RECAPTCHA_PUBLIC_KEY` / `RECAPTCHA_PRIVATE_KEY` | *(Google test keys)* | reCAPTCHA keys – set your own |
 | `SSO_2FA_HELP_URL` | `''` | External 2FA help page |

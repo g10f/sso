@@ -130,11 +130,16 @@ class OpenidConfigurationView(PreflightMixin, View):
         http://openid.net/specs/openid-connect-discovery-1_0.html#ProviderConfig
         """
         base_uri = get_base_url(request)  # 'http://10.0.2.2:8000'  # for android local client test
+        if settings.SSO_LEGACY_USERINFO_ENDPOINT:
+            # temporary, until all clients use the standard userinfo endpoint
+            userinfo_endpoint = reverse('api:v2_users_me')
+        else:
+            userinfo_endpoint = reverse('oauth2:userinfo')
         configuration = {
             "issuer": base_uri,
             "authorization_endpoint": '%s%s' % (base_uri, reverse('oauth2:authorize')),
             "token_endpoint": '%s%s' % (base_uri, reverse('oauth2:token')),
-            "userinfo_endpoint": '%s%s' % (base_uri, reverse('oauth2:userinfo')),
+            "userinfo_endpoint": '%s%s' % (base_uri, userinfo_endpoint),
             "revocation_endpoint": '%s%s' % (base_uri, reverse('oauth2:revoke')),
             "jwks_uri": '%s%s' % (base_uri, reverse('oauth2:jwks')),
             "scopes_supported":
