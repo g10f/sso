@@ -4,6 +4,14 @@ on:
   - push
   - delete
 
+# A single "git push --follow-tags" fires two push events (branch + tag), which
+# would otherwise start two sync runs in parallel that race to create the same
+# tag on the mirror ("cannot lock ref ... reference already exists"). Serialize
+# them so the second run runs after the first and finds everything already synced.
+concurrency:
+  group: gitlab-sync
+  cancel-in-progress: false
+
 jobs:
   sync:
     runs-on: ubuntu-latest
