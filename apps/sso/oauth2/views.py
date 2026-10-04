@@ -217,12 +217,15 @@ class SessionView(TemplateView):
 def session_init(request):
     client_id = request.GET.get('client_id')
     origin = request.GET.get('origin')
-    client = get_object_or_404(Client, uuid=client_id)
+    try:
+        client = Client.objects.get(uuid=client_id)
+    except (Client.DoesNotExist, ValidationError, ValueError):
+        raise Http404()
 
     for redirect_uri in client.redirect_uris.split():
         if same_origin(redirect_uri, origin):
             return HttpResponse(status=204)
-    return Http404()
+    raise Http404()
 
 
 def redirect_to_login(request, redirect_field_name=REDIRECT_FIELD_NAME, two_factor=False):  # @ReservedAssignment

@@ -627,6 +627,22 @@ class OAuth2Tests(OAuth2BaseTestCase):
         self.assertIn('application/json', token_response['Content-Type'])
         self.assertIn('error', token_response.json())
 
+    def test_session_init_foreign_origin_returns_404(self):
+        # Regression: session_init returned (instead of raised) Http404, which
+        # crashed LocaleMiddleware with AttributeError -> HTTP 500 + admin email.
+        url = reverse('oauth2:session_init')
+        client = Client.objects.get(uuid=self._client_id)
+        origin = client.redirect_uris.split()[0]
+        response = self.client.get(url, {'client_id': self._client_id, 'origin': origin})
+        self.assertEqual(response.status_code, 204)
+
+        for params in [{'client_id': self._client_id, 'origin': 'https://evil.example'},
+                       {'client_id': self._client_id},
+                       {'client_id': 'not-a-uuid', 'origin': origin},
+                       {}]:
+            response = self.client.get(url, params)
+            self.assertEqual(response.status_code, 404, params)
+
 
 class RefreshTokenBindingTests(OAuth2BaseTestCase):
     client_id = '5614cdb0aa3c48d59828681bd62e1741'
