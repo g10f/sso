@@ -15,8 +15,12 @@ jobs:
       - name: Get Version
         id: version
         run: |
-          set -x
-          echo "VERSION=$(python apps/version.py)" >> $GITHUB_OUTPUT
+          VERSION=$(python apps/version.py)
+          if [ "$VERSION" != "$GITHUB_REF_NAME" ]; then
+            echo "::error::tag $GITHUB_REF_NAME does not match __version__ $VERSION"
+            exit 1
+          fi
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
