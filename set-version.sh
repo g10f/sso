@@ -142,8 +142,12 @@ for theme_dir in ../sso-*-theme; do
   if [ ! -d "$theme_dir" ]; then
     continue  # no theme repository checked out
   fi
-  name=${theme_dir#../sso-}  # ../sso-dwbn-theme -> dwbn-theme
-  name=${name%-theme}        # dwbn-theme -> dwbn
+  if [ -f "$theme_dir/.skip-release" ]; then
+    echo "skipped $theme_dir (.skip-release present)"
+    continue  # theme opted out of release bumps
+  fi
+  name=${theme_dir#../sso-}  # ../sso-<name>-theme -> <name>-theme
+  name=${name%-theme}        # <name>-theme -> <name>
   update_theme "$theme_dir" "sso_${name}_theme"
 done
 

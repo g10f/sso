@@ -48,7 +48,7 @@ def create_self_signed_cert(cert_dir, cn, serial=int(uuid.uuid4().hex, 16)):
 
 
 def main():
-    create_self_signed_cert("../certs", "sso.kagyu.net")
+    create_self_signed_cert("../certs", "sso.example.com")
 
 
 if __name__ == "__main__":
