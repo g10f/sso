@@ -323,7 +323,9 @@ class OIDCRequestValidator(RequestValidator):
             data = loads_jwt(access_token, options={'verify_signature': False})
             return data['scope'].split()
         except Exception as e:
-            logger.error('confirm_scopes Error: %s' % e)
+            # best-effort scope lookup in the refresh-token flow; a bad/expired
+            # refresh token is client input, not a server fault
+            logger.warning('confirm_scopes Error: %s' % e)
         return []
 
     def validate_user(self, username, password, client, request, *args, **kwargs):

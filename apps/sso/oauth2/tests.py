@@ -597,6 +597,20 @@ class OAuth2Tests(OAuth2BaseTestCase):
         self.assertTrue(missing)
         self.assertTrue(all(r.levelno < logging.ERROR for r in missing))
 
+    def test_get_original_scopes_unknown_refresh_token_logs_warning(self):
+        # Regression: an unknown/invalid refresh token is client input, not a
+        # server fault. get_original_scopes must return [] and log at WARNING
+        # (not ERROR, which would send an admin email).
+        from sso.oauth2.oidc_request_validator import OIDCRequestValidator
+        logger_name = 'sso.oauth2.oidc_request_validator'
+        validator = OIDCRequestValidator()
+        with self.assertLogs(logger_name, level='WARNING') as cm:
+            scopes = validator.get_original_scopes('does-not-exist', None)
+        self.assertEqual(scopes, [])
+        recs = [r for r in cm.records if 'confirm_scopes' in r.getMessage()]
+        self.assertTrue(recs)
+        self.assertTrue(all(r.levelno < logging.ERROR for r in recs))
+
     def test_token_unknown_client_no_server_error(self):
         # Regression: a syntactically valid but unknown client_id must return a
         # proper OAuth2 error response, not raise Client.DoesNotExist -> HTTP 500

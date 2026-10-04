@@ -113,7 +113,9 @@ class PasswordResetForm(DjangoPasswordResetForm):
         # Make sure that no email is sent to a user that actually has
         # a password marked as unusable
         if not user.has_usable_password():
-            logger.error("user has unusable password")
+            # expected for SSO/external or deactivated accounts; triggerable via the
+            # public password-reset form, so log at warning to avoid admin-mail spam
+            logger.warning("user has unusable password")
         expiration_date = now() + datetime.timedelta(seconds=settings.PASSWORD_RESET_TIMEOUT)
         c = {
             'first_name': user.first_name,

@@ -145,7 +145,8 @@ class User(AbstractBaseUser, PermissionsMixin):
                 from_email = force_str(from_email)
             return send_mail(subject, message, recipient_list, from_email=from_email, **kwargs)
         else:
-            logger.error('User %s has no primary_email', self.username)
+            # data condition (user without a primary email), not a server fault
+            logger.warning('User %s has no primary_email', self.username)
         return 0
 
     def primary_email(self):
