@@ -214,7 +214,13 @@ class U2FDevice(Device):
 
     @classmethod
     def register_complete(cls, name, response_data, state_data, user):
-        state = signing.loads(state_data, salt=user.uuid.hex)
+        try:
+            state = signing.loads(state_data, salt=user.uuid.hex)
+        except signing.BadSignature as e:
+            # tampered/invalid registration state: raise a clean domain error
+            # instead of letting BadSignature bubble up to an HTTP 500
+            logger.info(e)
+            raise ValidationError(_('The registration could not be completed. Please try again.'))
         logger.debug(f"Response: {response_data}")
         response = json.loads(response_data)
         auth_data = cls.fido2_server.register_complete(state, response=response)

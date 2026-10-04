@@ -24,6 +24,7 @@ from sso.auth.forms import EmailAuthenticationForm, AuthenticationTokenForm
 from sso.auth.models import Device
 from sso.auth.utils import get_safe_login_redirect_url, get_request_param, get_device_classes_for_user
 from sso.middleware import revision_exempt
+from jwt import InvalidTokenError
 from sso.oauth2.crypt import loads_jwt
 from sso.oauth2.models import allowed_hosts, post_logout_redirect_uris, Client
 from sso.oauth2.models import get_oauth2_cancel_url
@@ -247,14 +248,18 @@ def logout(request, next_page=None, template_name='sso_auth/logged_out.html', re
     if redirect_uri:
         id_token = get_request_param(request, OIDC_ID_TOKEN_HINT)
         if id_token:
-            # token maybe expired
-            data = loads_jwt(id_token, options={"verify_exp": False, "verify_aud": False})
-            if user.is_anonymous or user.uuid == UUID(data['sub']):
-                client = Client.objects.get(uuid=data['aud'])
-                if redirect_uri in client.post_logout_redirect_uris.split():
-                    # allow unsafe schemes
-                    redirect_to = redirect_uri
-                    allowed_schemes = None
+            try:
+                # token maybe expired
+                data = loads_jwt(id_token, options={"verify_exp": False, "verify_aud": False})
+                if user.is_anonymous or user.uuid == UUID(data['sub']):
+                    client = Client.objects.get(uuid=data['aud'])
+                    if redirect_uri in client.post_logout_redirect_uris.split():
+                        # allow unsafe schemes
+                        redirect_to = redirect_uri
+                        allowed_schemes = None
+            except (InvalidTokenError, ValueError, KeyError, ObjectDoesNotExist) as e:
+                # invalid/tampered id_token_hint: ignore it and keep safe schemes only
+                logger.info(e)
         else:
             # if no OIDC_ID_TOKEN_HINT is there, allow only safe schemes
             if redirect_uri in post_logout_redirect_uris():

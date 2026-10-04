@@ -5,7 +5,9 @@ from django.conf import settings
 from django.contrib.auth import REDIRECT_FIELD_NAME
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.sites.shortcuts import get_current_site
+from django.core.exceptions import ValidationError
 from django.urls import reverse_lazy, reverse
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import FormView, UpdateView
 from sso.auth.forms.profile import TOTPDeviceForm, ProfileForm, AddU2FForm, DeviceUpdateForm
 from sso.auth.models import U2FDevice, Device, Profile
@@ -65,7 +67,14 @@ class AddU2FView(RedirectViewMixin, FormView):
         response_data = form.cleaned_data.get('u2f_response')
         state_data = form.cleaned_data.get('state')
         user = self.request.user
-        device = U2FDevice.register_complete(name, response_data, state_data, user)
+        try:
+            device = U2FDevice.register_complete(name, response_data, state_data, user)
+        except (ValidationError, ValueError) as e:
+            # tampered/invalid registration state or payload: re-render the form instead of a 500
+            logger.info(e)
+            form.add_error(None, e if isinstance(e, ValidationError) else
+                           _('The registration could not be completed. Please try again.'))
+            return self.form_invalid(form)
         if not hasattr(user, 'sso_auth_profile'):
             Profile.objects.create(user=user, default_device_id=device.device_id, is_otp_enabled=True)
 
