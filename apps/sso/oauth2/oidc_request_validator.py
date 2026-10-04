@@ -183,7 +183,10 @@ class OIDCRequestValidator(RequestValidator):
                     request.user = user
                     return True
                 else:
-                    logger.error(
+                    # client misconfiguration (a client_credentials client without an
+                    # associated user): authentication fails below. Log at warning so it
+                    # does not trigger an admin email (mail_admins filters on ERROR).
+                    logger.warning(
                         "missing user for client %s in authenticate_client with grant_type 'client_credentials'",
                         request.client)
             else:

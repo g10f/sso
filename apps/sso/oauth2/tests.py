@@ -1,6 +1,7 @@
 import base64
 import hashlib
 import json
+import logging
 import re
 import uuid
 from datetime import timedelta
@@ -580,6 +581,21 @@ class OAuth2Tests(OAuth2BaseTestCase):
         self.assertIn('error', token)
         expected = {'error': 'invalid_grant'}
         self.assertTrue(set(expected.items()).issubset(set(token.items())))
+
+    def test_client_credentials_missing_user_logs_warning_not_error(self):
+        # Regression: a client_credentials client without an associated user is a
+        # client misconfiguration. It must fail authentication and be logged at
+        # WARNING (not ERROR, which would trigger an admin email per request).
+        # The default "Test Client" (self._client_id) has no user bound.
+        logger_name = 'sso.oauth2.oidc_request_validator'
+        with self.assertLogs(logger_name, level='WARNING') as cm:
+            token_response = self.token_request_with_client_credentials(scope="openid")
+        self.assertNotEqual(token_response.status_code, 200)
+        self.assertIn('error', token_response.json())
+        # the "missing user" message is present and none of the records is ERROR+
+        missing = [r for r in cm.records if 'missing user for client' in r.getMessage()]
+        self.assertTrue(missing)
+        self.assertTrue(all(r.levelno < logging.ERROR for r in missing))
 
     def test_token_unknown_client_no_server_error(self):
         # Regression: a syntactically valid but unknown client_id must return a
