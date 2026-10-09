@@ -1,11 +1,13 @@
 import logging
 
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.core.paginator import Paginator
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.http import HttpResponse, Http404
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_str
+from django.utils.functional import cached_property
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.vary import vary_on_headers
@@ -19,6 +21,19 @@ from sso.utils.http import parse_json
 from sso.utils.url import update_url, get_base_url
 
 logger = logging.getLogger(__name__)
+
+
+class DistinctPkPaginator(Paginator):
+    """
+    Paginator for distinct querysets that counts the distinct primary keys only.
+
+    The default count of a distinct queryset wraps a SELECT DISTINCT over all model
+    columns, which is needlessly expensive and is also run for out-of-range pages.
+    """
+
+    @cached_property
+    def count(self):
+        return self.object_list.order_by().values('pk').distinct().count()
 
 
 def is_authenticated(request, obj=None):
