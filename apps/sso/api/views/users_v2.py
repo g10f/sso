@@ -22,7 +22,7 @@ from sso.accounts.models import UserAddress, UserPhoneNumber, User, UserEmail, A
     UserAssociatedSystem, RoleProfile
 from sso.api.decorators import condition, api_user_passes_test
 from sso.api.response import JsonHttpResponse
-from sso.api.views.generic import JsonListView, JsonDetailView
+from sso.api.views.generic import DistinctPkPaginator, JsonListView, JsonDetailView
 from sso.auth.utils import is_recent_auth_time
 from sso.models import update_object_from_dict, map_dict2dict
 from sso.organisations.models import Organisation
@@ -625,6 +625,8 @@ class MyGlobalNavigationView(GlobalNavigationView):
 
 
 class UserList(UserMixin, JsonListView):
+    paginator_class = DistinctPkPaginator
+
     @classmethod
     def read_permission(cls, request, obj):
         user = request.user
