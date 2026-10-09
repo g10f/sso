@@ -23,6 +23,9 @@ class SSOSeleniumTests(StaticLiveServerTestCase):
         super().setUpClass()
         chrome_options = Options()
         chrome_options.add_argument("--disable-search-engine-choice-screen")
+        if os.environ.get('SELENIUM_HEADLESS', 'False').lower() in ('true', '1', 't'):
+            chrome_options.add_argument("--headless=new")
+            chrome_options.add_argument("--window-size=1920,1080")
         cls.selenium = WebDriver(options=chrome_options)
         cls.selenium.implicitly_wait(1)
 

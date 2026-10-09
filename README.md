@@ -9,7 +9,7 @@ data through a JSON-LD / Hydra REST API.
 It is a [Django](https://www.djangoproject.com/) application and is distributed as a
 Docker image (`ghcr.io/g10f/sso`) and a Helm chart.
 
-- **Version:** 5.4.8
+- **Version:** 5.4.18
 - **Runtime:** Python 3.12+ (the official image is built on Python 3.14), Django 5.2,
   PostgreSQL with PostGIS
 - **License:** BSD-style, see [LICENSE](LICENSE)
@@ -140,6 +140,13 @@ cd apps
 ./manage.py test
 ```
 
+To run the Selenium tests without a visible browser window (e.g. in CI or over SSH),
+set `SELENIUM_HEADLESS=True` (or `1`/`t`). Chrome then starts in headless mode with a 1920×1080 window:
+
+```bash
+SELENIUM_HEADLESS=1 ./manage.py test
+```
+
 ## Management commands
 
 | Command | Description |
@@ -266,10 +273,21 @@ The API entry point is `/api/` and follows the JSON-LD / Hydra conventions. High
 
 ## Changelog
 
-the entries below list the notable changes per minor release. See the git
+The entries below list the notable changes per minor release. See the git
 history for the full list of patch releases.
 
-### 5.4 (current, 5.4.8)
+### 5.4 (current, 5.4.18)
+- Django 5.2.18
+- unknown `client_id`, invalid auth tokens, an invalid `id_token_hint` on logout
+  and tampered WebAuthn state now return a proper error / redirect instead of HTTP 500
+- client and data conditions (e.g. `client_credentials` without a user) are logged
+  at warning instead of error level, so they no longer trigger admin error e-mails
+- `SSO_LEGACY_USERINFO_ENDPOINT` to point the discovery `userinfo_endpoint` at the
+  v2 users API while clients are migrated
+- `SSO_THROTTLE_PROXY_COUNT` documented, optional `SSO_THROTTLE_PROXY_DEBUG` logging
+- `X-Content-Type-Options: nosniff` and a `Referrer-Policy` header via Django's
+  `SecurityMiddleware`
+- `FORWARDED_ALLOW_IPS` configurable; unused gunicorn config removed
 - security fix: the `chained_filter` endpoint is restricted to the chained fields,
   closing an unauthenticated data-exposure hole
 - security fix: refresh tokens are bound to the client they were issued to, and
