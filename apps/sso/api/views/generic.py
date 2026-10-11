@@ -1,11 +1,14 @@
 import logging
 
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.core.paginator import Paginator
 from django.db import transaction
+from django.db.models import QuerySet
 from django.forms.models import model_to_dict
 from django.http import HttpResponse, Http404
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_str
+from django.utils.functional import cached_property
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.vary import vary_on_headers
@@ -19,6 +22,28 @@ from sso.utils.http import parse_json
 from sso.utils.url import update_url, get_base_url
 
 logger = logging.getLogger(__name__)
+
+
+class DistinctPkPaginator(Paginator):
+    """
+    Paginator for distinct querysets that counts the distinct primary keys only.
+
+    The default count of a distinct queryset wraps a SELECT DISTINCT over all model
+    columns, which is needlessly expensive. The count is still run for every page,
+    including out-of-range pages, but it only deduplicates the primary keys.
+
+    Lists, non-distinct querysets, DISTINCT ON and combined (union, ...) querysets
+    fall back to the default count.
+    """
+
+    @cached_property
+    def count(self):
+        if not isinstance(self.object_list, QuerySet):
+            return super().count
+        query = self.object_list.query
+        if not query.distinct or query.distinct_fields or query.combinator:
+            return super().count
+        return self.object_list.order_by().values('pk').distinct().count()
 
 
 def is_authenticated(request, obj=None):
@@ -244,6 +269,7 @@ class JsonDetailView(JSONResponseMixin, PreflightMixin, PermissionMixin, BaseDet
 
 
 class JsonListView(JSONResponseMixin, PermissionMixin, BaseListView):
+    paginator_class = DistinctPkPaginator
     paginate_by = 100
     max_per_page = 1000
 
