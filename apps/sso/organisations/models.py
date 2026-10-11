@@ -1,5 +1,6 @@
 import logging
 import re
+import time
 
 from pytz import timezone, common_timezones, UnknownTimeZoneError
 from sorl import thumbnail
@@ -106,8 +107,18 @@ def default_association():
         return Association.objects.first().pk
 
 
+_association_count = (0.0, None)  # (expires, count), per process
+
+
 def multiple_associations():
-    count = cache.get_or_set('association__count', Association.objects.count)
+    # Organisation.__str__ calls this for every organisation in a list (e.g. ~900 centers in the user
+    # list filter), so keep the value in the process instead of one cache round trip per call.
+    global _association_count
+    expires, count = _association_count
+    now_ = time.monotonic()
+    if count is None or now_ >= expires:
+        count = cache.get_or_set('association__count', Association.objects.count)
+        _association_count = (now_ + 60, count)
     return count > 1
 
 

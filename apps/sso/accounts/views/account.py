@@ -183,12 +183,14 @@ class UserList(ListView):
         application_role_filter = ApplicationRoleFilter().get(self, application_roles)
         role_profile_filter = RoleProfileFilter().get(self, role_profiles)
 
+        # count() instead of len(qs): don't load all (~900) centers just to know whether there is more than one;
+        # the options themselves are only loaded when the filters cache fragment is rendered
         filters = []
         if len(countries) > 1:
             filters += [country_filter]
-        if len(admin_regions) > 1:
+        if admin_regions.count() > 1:
             filters += [admin_region_filter]
-        if len(centers) > 1:
+        if centers.count() > 1:
             filters += [center_filter]
 
         filters += [role_profile_filter, application_role_filter]
