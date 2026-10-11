@@ -204,7 +204,9 @@ class UserList(ListView):
             "app_role": "" if self.app_role is None else self.app_role.id,
             "is_active": "" if self.is_active is None else self.is_active.pk,
         }
-        filters_cache_key = hash(json.dumps(cache_dict, sort_keys=True))
+        # not hash(): str hashes are randomized per process, so each gunicorn worker would have its own key.
+        # The {% cache %} tag hashes the key with md5 itself.
+        filters_cache_key = json.dumps(cache_dict, sort_keys=True)
         return filters, filters_cache_key
 
     def get_context_data(self, **kwargs):

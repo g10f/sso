@@ -1,3 +1,5 @@
+import json
+
 from django.urls import reverse
 from django.test import TestCase
 from sso.organisations.models import OrganisationCountry
@@ -22,6 +24,18 @@ class AccountsTest(TestCase):
 
         response = self.client.get(reverse('accounts:app_admin_user_list'), data={'country': 99999})
         self.assertEqual(response.status_code, 200)
+
+    def test_user_list_filters_cache_key_is_stable_across_processes(self):
+        # hash() of a str differs per process, so the {% cache %} key must not be built with it
+        result = self.client.login(username='GlobalAdmin', password='secret007')
+        self.assertEqual(result, True)
+
+        response = self.client.get(reverse('accounts:user_list'), data={'q': 'admin'})
+        self.assertEqual(response.status_code, 200)
+
+        filters_cache_key = response.context['filters_cache_key']
+        self.assertIsInstance(filters_cache_key, str)
+        self.assertEqual(json.loads(filters_cache_key)['q'], 'admin')
 
     def test_app_admin_update_user(self):
         result = self.client.login(username='ApplicationAdmin', password='gsf')
