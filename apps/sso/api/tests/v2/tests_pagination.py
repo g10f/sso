@@ -48,3 +48,26 @@ class DistinctPkPaginatorTests(OAuth2BaseTestCase):
         self.assertTrue(count_queries)
         for sql in count_queries:
             self.assertNotIn('"accounts_user"."password"', sql)
+
+    def test_count_of_list_falls_back_to_len(self):
+        self.assertEqual(DistinctPkPaginator(list(range(5)), 2).count, 5)
+
+    def test_count_of_non_distinct_queryset_counts_all_rows(self):
+        qs = User.objects.filter(useremail__email__icontains='@g10f.de').order_by('username')
+
+        self.assertEqual(DistinctPkPaginator(qs, 2).count, Paginator(qs, 2).count)
+        self.assertEqual(DistinctPkPaginator(qs, 2).count, len(qs))
+
+    def test_organisation_list_counts_primary_keys_only(self):
+        organisations_url = expand(self.client.get(reverse('api:home')).json()['organisations'])
+        authorization = self.get_authorization(client_id="1811f02ed81b43b5bee1afe031e6198e",
+                                               username="CountryAdmin", scope="users")
+
+        with CaptureQueriesContext(connection) as queries:
+            response = self.client.get(organisations_url, {'per_page': 2}, HTTP_AUTHORIZATION=authorization)
+
+        self.assertEqual(response.status_code, 200)
+        count_queries = [query['sql'] for query in queries if 'COUNT(' in query['sql']]
+        self.assertTrue(count_queries)
+        for sql in count_queries:
+            self.assertNotIn('"organisations_organisation"."name"', sql)
