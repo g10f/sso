@@ -417,7 +417,7 @@ def _update_standard_user(request, user, template='accounts/application/update_u
                 changed_data_list.append("\"extended validity\"")
 
             make_member = "_make_member" in request.POST
-            if extend_validity:
+            if make_member:
                 changed_data_list.append("\"made to member\"")
 
             user = form.save(extend_validity, activate=activate, remove_org=remove_org, make_member=make_member)
