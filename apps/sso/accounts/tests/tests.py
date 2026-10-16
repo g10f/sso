@@ -1,8 +1,13 @@
 import json
+from datetime import timedelta
 
+from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.urls import reverse
-from django.test import TestCase
-from sso.organisations.models import OrganisationCountry
+from django.test import TestCase, override_settings
+from django.utils.timezone import now
+from sso.accounts.models import OrganisationChange
+from sso.organisations.models import Organisation, OrganisationCountry
 from sso.test.client import SSOClient
 
 
@@ -48,6 +53,33 @@ class AccountsTest(TestCase):
 
         response = self.client.get(reverse('accounts:app_admin_update_user', kwargs={'uuid': 'a8992f0348634f76b0dac2de4e4c83ee'}))
         self.assertEqual(response.status_code, 200)
+
+
+@override_settings(SSO_VALIDATION_PERIOD_IS_ACTIVE=True, SSO_VALIDATION_PERIOD_IS_ACTIVE_FOR_ALL=True)
+class OrganisationChangeValidityTest(TestCase):
+    fixtures = ['roles.json', 'test_l10n_data.json', 'app_roles.json', 'test_organisation_data.json', 'test_app_roles.json', 'test_user_data.json']
+
+    def setUp(self):
+        self.user = get_user_model().objects.get(username='CenterAdmin')
+        self.admin = get_user_model().objects.get(username='GlobalAdmin')
+        self.organisation = Organisation.objects.exclude(pk__in=self.user.organisations.all()).first()
+
+    def _verify_change(self, valid_until):
+        self.user.valid_until = valid_until
+        self.user.save()
+        organisation_change = OrganisationChange.objects.create(user=self.user, organisation=self.organisation)
+        organisation_change.verify(self.admin)
+        self.user.refresh_from_db()
+
+    def test_accepted_organisation_change_restarts_validity(self):
+        self._verify_change(now() + timedelta(days=14))
+        expected = now() + timedelta(days=settings.SSO_VALIDATION_PERIOD_DAYS)
+        self.assertAlmostEqual(self.user.valid_until, expected, delta=timedelta(minutes=1))
+
+    def test_accepted_organisation_change_does_not_shorten_validity(self):
+        valid_until = now() + timedelta(days=settings.SSO_VALIDATION_PERIOD_DAYS + 100)
+        self._verify_change(valid_until)
+        self.assertEqual(self.user.valid_until, valid_until)
 
 
 class AdminMailLogLevelTests(TestCase):

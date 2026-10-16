@@ -138,8 +138,11 @@ class OrganisationChange(AbstractBaseModel):
 
         # check if organisation uses user activation
         if is_validation_period_active(self.organisation):
-            if self.user.valid_until is None:
-                self.user.valid_until = now() + datetime.timedelta(days=settings.SSO_VALIDATION_PERIOD_DAYS)
+            # the admin of the new organisation verified the user, so the validation period starts again,
+            # but a longer validity is not shortened
+            valid_until = now() + datetime.timedelta(days=settings.SSO_VALIDATION_PERIOD_DAYS)
+            if self.user.valid_until is None or self.user.valid_until < valid_until:
+                self.user.valid_until = valid_until
         else:
             self.user.valid_until = None
         # save changes and update last_modified field!
