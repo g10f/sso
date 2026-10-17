@@ -9,18 +9,23 @@ from datetime import timedelta
 from django.core import mail
 from django.core.cache import cache
 from time import sleep
-from urllib.parse import urlsplit
+from urllib.parse import urlencode, urlsplit
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.management import call_command
+from django.forms import modelform_factory
 from django.http import QueryDict, SimpleCookie
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.crypto import get_random_string
+from sso.accounts.forms import ClientForm
+from sso.auth.models import Device
 from sso.test.client import SSOClient
 from . import crypt
-from .models import Client, RefreshToken, AuthorizationCode
+from .admin import ClientAdminForm
+from .models import Client, RefreshToken, AuthorizationCode, DeviceCode
 
 
 def get_query_dict(url):
@@ -567,6 +572,7 @@ class OAuth2Tests(OAuth2BaseTestCase):
         token_response = self.token_request(token_data)
         self.assertEqual(token_response.status_code, 400)
 
+    @override_settings(SSO_DEVICE_AUTHORIZATION_GRANT=False)
     def test_discovery_grant_types_supported(self):
         response = self.client.get(reverse('openid-configuration'))
         self.assertEqual(response.json()['grant_types_supported'],
@@ -848,3 +854,320 @@ class AuthorizeOpenRedirectTests(OAuth2BaseTestCase):
         query_dict = get_query_dict(location)
         self.assertEqual(query_dict['error'], 'two_factor_required')
         self.assertEqual(query_dict['state'], self._state)
+
+
+@override_settings(SSO_DEVICE_AUTHORIZATION_GRANT=True)
+class DeviceCodeGrantTests(OAuth2BaseTestCase):
+    # the 'Test Client - TV (device flow)' fixture: type=native, no client_secret
+    _tv_client_id = "3f6a9b6b1a8940e6a3f0a2f7f3f2e1a1"
+
+    def device_authorization_request(self, client_id=None, scope="openid profile email"):
+        # RFC 8628's device_authorization endpoint requires application/x-www-form-urlencoded,
+        # unlike token/ -- Django's test client defaults to multipart, so this needs encoding explicitly.
+        data = {'client_id': client_id if client_id else self._tv_client_id}
+        if scope is not None:
+            data['scope'] = scope
+        return self.client.post(reverse('oauth2:device_authorization'), data=urlencode(data),
+                                content_type='application/x-www-form-urlencoded')
+
+    def poll_token(self, device_code, client_id=None):
+        return self.client.post(reverse('oauth2:token'), {
+            'grant_type': 'urn:ietf:params:oauth:grant-type:device_code',
+            'client_id': client_id if client_id else self._tv_client_id,
+            'device_code': device_code,
+        })
+
+    def test_device_authorization_returns_user_code(self):
+        response = self.device_authorization_request()
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('application/json', response['Content-Type'])
+        data = response.json()
+        self.assertIn('device_code', data)
+        self.assertIn('user_code', data)
+        self.assertIn('verification_uri', data)
+        self.assertIn('expires_in', data)
+        self.assertIn('interval', data)
+
+        device_code_obj = DeviceCode.objects.get(device_code=data['device_code'])
+        self.assertEqual(device_code_obj.user_code, data['user_code'])
+        self.assertEqual(device_code_obj.status, DeviceCode.STATUS_PENDING)
+        self.assertEqual(device_code_obj.client.client_id, self._tv_client_id)
+
+    def test_device_authorization_unknown_client_is_rejected(self):
+        response = self.device_authorization_request(client_id="0" * 32)
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.json()["error"], "invalid_client")
+        self.assertEqual(DeviceCode.objects.count(), 0)
+
+    def test_device_authorization_non_native_client_is_rejected(self):
+        # implicit flow client, not confidential but also not allowed to use the device grant
+        response = self.device_authorization_request(client_id="92d7d9d71d5d41caa652080c19aaa6d8")
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['error'], 'unauthorized_client')
+        self.assertEqual(DeviceCode.objects.count(), 0)
+
+    def test_device_authorization_client_without_opt_in_is_rejected(self):
+        Client.objects.filter(uuid=self._tv_client_id).update(device_authorization_grant=False)
+        response = self.device_authorization_request()
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['error'], 'unauthorized_client')
+        self.assertEqual(DeviceCode.objects.count(), 0)
+
+    def test_token_client_without_opt_in_is_rejected(self):
+        # the opt-in was removed after the device code was issued
+        data = self.device_authorization_request().json()
+        Client.objects.filter(uuid=self._tv_client_id).update(device_authorization_grant=False)
+        token_response = self.poll_token(data['device_code'])
+        self.assertEqual(token_response.status_code, 400)
+        self.assertEqual(token_response.json()['error'], 'unauthorized_client')
+
+    def test_admin_form_opt_in_only_for_native_clients(self):
+        fields = ['name', 'type', 'client_secret', 'scopes', 'device_authorization_grant']
+        form_class = modelform_factory(Client, form=ClientAdminForm, fields=fields)
+
+        client = Client.objects.get(uuid=self._client_id)  # a confidential 'web' client
+        data = {field: getattr(client, field) for field in fields}
+        data['device_authorization_grant'] = True
+        form = form_class(data=data, instance=client)
+        self.assertFalse(form.is_valid())
+        self.assertIn('device_authorization_grant', form.errors)
+
+        client = Client.objects.get(uuid=self._tv_client_id)  # a public 'native' client
+        data = {field: getattr(client, field) for field in fields}
+        form = form_class(data=data, instance=client)
+        self.assertTrue(form.is_valid(), form.errors)
+
+    def selfservice_client_form(self, client_type, device_authorization_grant=True, redirect_uris=''):
+        tv_client = Client.objects.get(uuid=self._tv_client_id)
+        data = {
+            'application': tv_client.application.pk,
+            'uuid': str(uuid.uuid4()),
+            'name': 'device client',
+            'type': client_type,
+            'client_secret': 'secret' if client_type in ['web', 'service'] else '',
+            'scopes': ['openid'],
+            'redirect_uris': redirect_uris,
+            'is_active': True,
+        }
+        if device_authorization_grant:
+            data['device_authorization_grant'] = 'on'
+        return ClientForm(data=data, initial={}, user=get_user_model().objects.get(username='GunnarScherf'))
+
+    def test_selfservice_native_client_with_device_grant_needs_no_redirect_uri(self):
+        form = self.selfservice_client_form('native')
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertTrue(form.cleaned_data['device_authorization_grant'])
+
+        form = self.selfservice_client_form('native', device_authorization_grant=False)
+        self.assertFalse(form.is_valid())
+        self.assertIn('redirect_uris', form.errors)
+
+    def test_selfservice_device_grant_only_for_native_clients(self):
+        form = self.selfservice_client_form('web', redirect_uris='https://example.com/')
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertFalse(form.cleaned_data['device_authorization_grant'])
+
+    def test_cleartokens_deletes_expired_device_codes(self):
+        data = self.device_authorization_request().json()
+        expired = self.device_authorization_request().json()
+        DeviceCode.objects.filter(device_code=expired['device_code']).update(expires_at=timezone.now() - timedelta(seconds=1))
+        call_command('cleartokens')
+        self.assertEqual(list(DeviceCode.objects.values_list('device_code', flat=True)), [data['device_code']])
+
+    def test_device_authorization_scope_not_allowed_for_client_is_rejected(self):
+        response = self.device_authorization_request(scope="openid profile role")
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['error'], 'invalid_scope')
+        self.assertEqual(DeviceCode.objects.count(), 0)
+
+    def test_token_without_device_code_is_invalid_request(self):
+        response = self.client.post(reverse('oauth2:token'), {
+            'grant_type': 'urn:ietf:params:oauth:grant-type:device_code',
+            'client_id': self._tv_client_id,
+        })
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['error'], 'invalid_request')
+
+    def test_token_with_dashed_client_id(self):
+        data = self.device_authorization_request().json()
+        token_response = self.poll_token(data['device_code'], client_id=str(uuid.UUID(self._tv_client_id)))
+        self.assertEqual(token_response.status_code, 400)
+        self.assertEqual(token_response.json()['error'], 'authorization_pending')
+
+    def test_token_is_authorization_pending_before_approval(self):
+        data = self.device_authorization_request().json()
+        token_response = self.poll_token(data['device_code'])
+        self.assertEqual(token_response.status_code, 400)
+        self.assertEqual(token_response.json()['error'], 'authorization_pending')
+
+    def test_token_slow_down_on_rapid_polling(self):
+        data = self.device_authorization_request().json()
+        first_poll = self.poll_token(data['device_code'])
+        self.assertEqual(first_poll.json()['error'], 'authorization_pending')
+        second_poll = self.poll_token(data['device_code'])
+        self.assertEqual(second_poll.json()['error'], 'slow_down')
+
+    def test_full_flow_approve_then_get_token(self):
+        data = self.device_authorization_request(scope="openid profile email offline_access").json()
+
+        self.client.login(username='GunnarScherf', password='gsf')
+        approve_response = self.client.post(reverse('oauth2:device'), {
+            'user_code': data['user_code'],
+            'approve': '1',
+        })
+        self.assertEqual(approve_response.status_code, 200)
+        self.logout()
+
+        token_response = self.poll_token(data['device_code'])
+        self.assertEqual(token_response.status_code, 200)
+        token = token_response.json()
+        self.assertIn('access_token', token)
+        self.assertIn('refresh_token', token)
+        self.assertIn('id_token', token)
+
+        # device codes are single-use: the row is gone, and polling again fails
+        self.assertFalse(DeviceCode.objects.filter(device_code=data['device_code']).exists())
+        second_poll = self.poll_token(data['device_code'])
+        self.assertEqual(second_poll.status_code, 400)
+        self.assertEqual(second_poll.json()['error'], 'invalid_grant')
+
+    def approve(self, user_code):
+        return self.client.post(reverse('oauth2:device'), {'user_code': user_code, 'approve': '1'})
+
+    def test_token_acr_with_otp_device(self):
+        # the OTP device the user signed in with is kept for the acr claim, like for the authorization code
+        data = self.device_authorization_request().json()
+        user = get_user_model().objects.get(username='GunnarScherf')
+        otp_device = Device.objects.create(user=user, name='test', confirmed=True)
+        DeviceCode.objects.filter(device_code=data['device_code']).update(
+            user=user, otp_device=otp_device, status=DeviceCode.STATUS_APPROVED)
+        token = self.poll_token(data['device_code']).json()
+        self.assertEqual(crypt.loads_jwt(token['access_token'])['acr'], '2')
+        self.assertEqual(crypt.loads_jwt(token['id_token'])['acr'], '2')
+
+    def test_dashed_client_id_keeps_aud(self):
+        # like for the authorization code: the aud claim of the id_token is the client_id as sent
+        dashed_client_id = str(uuid.UUID(self._tv_client_id))
+        data = self.device_authorization_request(client_id=dashed_client_id).json()
+        self.client.login(username='GunnarScherf', password='gsf')
+        self.approve(data['user_code'])
+        self.logout()
+        token_response = self.poll_token(data['device_code'], client_id=dashed_client_id)
+        self.assertEqual(token_response.status_code, 200)
+        self.assertEqual(crypt.loads_jwt(token_response.json()['id_token'])['aud'], dashed_client_id)
+
+    def test_token_acr_without_otp_device(self):
+        data = self.device_authorization_request().json()
+        self.client.login(username='GunnarScherf', password='gsf')
+        self.approve(data['user_code'])
+        self.logout()
+        token = self.poll_token(data['device_code']).json()
+        self.assertEqual(crypt.loads_jwt(token['access_token'])['acr'], '1')
+
+    def test_user_code_input_is_normalized(self):
+        data = self.device_authorization_request().json()
+        self.client.login(username='GunnarScherf', password='gsf')
+        typed = ' ' + data['user_code'].replace('-', ' ').lower() + ' '
+        response = self.approve(typed)
+        self.assertContains(response, "You're signed in")
+        self.assertEqual(DeviceCode.objects.get(device_code=data['device_code']).status, DeviceCode.STATUS_APPROVED)
+
+    def test_code_can_only_be_confirmed_once(self):
+        data = self.device_authorization_request().json()
+        self.client.login(username='GunnarScherf', password='gsf')
+        self.approve(data['user_code'])
+        response = self.approve(data['user_code'])
+        self.assertContains(response, 'not valid')
+        response = self.client.post(reverse('oauth2:device'), {'user_code': data['user_code'], 'deny': '1'})
+        self.assertContains(response, 'not valid')
+        self.assertEqual(DeviceCode.objects.get(device_code=data['device_code']).status, DeviceCode.STATUS_APPROVED)
+
+    def test_device_page_rejects_code_of_client_without_opt_in(self):
+        data = self.device_authorization_request().json()
+        Client.objects.filter(uuid=self._tv_client_id).update(device_authorization_grant=False)
+        self.client.login(username='GunnarScherf', password='gsf')
+        response = self.approve(data['user_code'])
+        self.assertContains(response, 'not valid')
+        self.assertEqual(DeviceCode.objects.get(device_code=data['device_code']).status, DeviceCode.STATUS_PENDING)
+
+    def test_deny_blocks_the_token(self):
+        data = self.device_authorization_request().json()
+
+        self.client.login(username='GunnarScherf', password='gsf')
+        deny_response = self.client.post(reverse('oauth2:device'), {
+            'user_code': data['user_code'],
+            'deny': '1',
+        })
+        self.assertEqual(deny_response.status_code, 200)
+        self.logout()
+
+        token_response = self.poll_token(data['device_code'])
+        self.assertEqual(token_response.status_code, 400)
+        self.assertEqual(token_response.json()['error'], 'access_denied')
+
+    def test_expired_device_code_is_rejected(self):
+        data = self.device_authorization_request().json()
+        DeviceCode.objects.filter(device_code=data['device_code']).update(
+            expires_at=timezone.now() - timedelta(seconds=1))
+
+        token_response = self.poll_token(data['device_code'])
+        self.assertEqual(token_response.status_code, 400)
+        self.assertEqual(token_response.json()['error'], 'expired_token')
+
+    def test_device_page_rejects_unknown_user_code(self):
+        self.client.login(username='GunnarScherf', password='gsf')
+        response = self.client.get(reverse('oauth2:device'), {'user_code': 'ZZZZ-ZZZZ'})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'not valid')
+
+
+@override_settings(SSO_DEVICE_AUTHORIZATION_GRANT=False)
+class DeviceCodeGrantDisabledTests(OAuth2BaseTestCase):
+    # the device authorization grant is behind the feature flag SSO_DEVICE_AUTHORIZATION_GRANT (default False)
+    _tv_client_id = "3f6a9b6b1a8940e6a3f0a2f7f3f2e1a1"
+
+    def test_device_authorization_endpoint_not_found(self):
+        response = self.client.post(reverse('oauth2:device_authorization'),
+                                    data=urlencode({'client_id': self._tv_client_id}),
+                                    content_type='application/x-www-form-urlencoded')
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(DeviceCode.objects.count(), 0)
+
+    def test_device_page_not_found(self):
+        # also for anonymous users, so there is no redirect to the login page
+        response = self.client.get(reverse('oauth2:device'))
+        self.assertEqual(response.status_code, 404)
+        self.client.login(username='GunnarScherf', password='gsf')
+        response = self.client.get(reverse('oauth2:device'), {'user_code': 'ABCD-EFGH'})
+        self.assertEqual(response.status_code, 404)
+
+    def test_token_unsupported_grant_type(self):
+        # a device code from the time the flag was enabled must not be redeemable
+        user = get_user_model().objects.get(username='GunnarScherf')
+        DeviceCode.objects.create(client=Client.objects.get(uuid=self._tv_client_id), user=user,
+                                  device_code='device-code', user_code='ABCD-EFGH', scopes='openid',
+                                  status=DeviceCode.STATUS_APPROVED,
+                                  expires_at=timezone.now() + timedelta(minutes=5))
+        response = self.client.post(reverse('oauth2:token'), {
+            'grant_type': 'urn:ietf:params:oauth:grant-type:device_code',
+            'client_id': self._tv_client_id,
+            'device_code': 'device-code',
+        })
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['error'], 'unsupported_grant_type')
+
+    def test_selfservice_client_form_has_no_device_grant_field(self):
+        form = ClientForm(initial={}, user=get_user_model().objects.get(username='GunnarScherf'))
+        self.assertNotIn('device_authorization_grant', form.fields)
+
+    def test_discovery(self):
+        response = self.client.get(reverse('openid-configuration'))
+        self.assertNotIn('device_authorization_endpoint', response.json())
+        self.assertEqual(response.json()['grant_types_supported'],
+                         ['authorization_code', 'implicit', 'refresh_token', 'client_credentials', 'password'])
+        cache.clear()  # the discovery document is cached
+        with self.settings(SSO_DEVICE_AUTHORIZATION_GRANT=True):
+            response = self.client.get(reverse('openid-configuration'))
+            self.assertTrue(response.json()['device_authorization_endpoint'].endswith(
+                reverse('oauth2:device_authorization')))
+            self.assertIn('urn:ietf:params:oauth:grant-type:device_code', response.json()['grant_types_supported'])

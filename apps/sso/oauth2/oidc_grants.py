@@ -5,8 +5,11 @@ from oauthlib.oauth2 import InvalidRequestError
 from oauthlib.oauth2 import RefreshTokenGrant as OAuth2RefreshTokenGrant
 from oauthlib.oauth2.rfc6749 import errors
 from oauthlib.oauth2.rfc6749.grant_types import AuthorizationCodeGrant as OAuth2AuthorizationCodeGrant
+from oauthlib.oauth2.rfc8628.grant_types.device_code import DeviceCodeGrant as OAuth2DeviceCodeGrant
 from oauthlib.openid import RequestValidator
 from oauthlib.openid.connect.core.grant_types import GrantTypeBase
+
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -141,3 +144,53 @@ class HybridGrantEx(GrantTypeBase):
             if not request.nonce:
                 raise InvalidRequestError(request=request, description='Request is missing mandatory nonce parameter.')
         return request_info
+
+
+class OAuth2DeviceCodeGrantEx(OAuth2DeviceCodeGrant):
+    """
+    RFC 8628 Device Authorization Grant, for public clients with no keyboard (TVs) or no
+    browser to redirect through (CLIs).
+
+    oauthlib's DeviceCodeGrant authenticates the client and validates grant type and scopes,
+    but does not check the device_code itself: no lookup, no polling semantics
+    (authorization_pending / slow_down / expired_token / access_denied) and no handoff from
+    the verification page. This is delegated to OIDCRequestValidator.validate_device_code().
+    """
+    def validate_token_request(self, request):
+        # feature flag, see views.device_authorization_grant_required
+        if not settings.SSO_DEVICE_AUTHORIZATION_GRANT:
+            raise errors.UnsupportedGrantTypeError(request=request)
+        super().validate_token_request(request)
+
+        if not getattr(request, 'device_code', None):
+            raise errors.InvalidRequestError(description='Missing device_code parameter.', request=request)
+        device_code = self.request_validator.validate_device_code(request.client_id, request.device_code, request)
+
+        # the scopes and user approved on the verification page
+        request.user = device_code.user
+        request.scopes = device_code.scopes.split()
+
+    def create_token_response(self, request, token_handler):
+        headers = self._get_default_headers()
+        try:
+            self.validate_token_request(request)
+        except errors.OAuth2Error as e:
+            logger.debug('Client error during device_code token request: %r.', e)
+            headers.update(e.headers)
+            return headers, e.json, e.status_code
+
+        # custom extension of original oauthlib: we only deliver refresh_tokens with scope 'offline_access'
+        token = token_handler.create_token(request, refresh_token='offline_access' in request.scopes)
+        for modifier in self._token_modifiers:
+            token = modifier(token, token_handler, request)
+        self.request_validator.save_token(token, request)
+
+        headers.update(self._create_cors_headers(request))
+        return headers, json.dumps(token), 200
+
+
+class DeviceCodeGrantEx(GrantTypeBase):
+    def __init__(self, request_validator=None, **kwargs):
+        # overwrite with custom proxy_target
+        self.proxy_target = OAuth2DeviceCodeGrantEx(request_validator=request_validator, **kwargs)
+        self.register_token_modifier(self.add_id_token)

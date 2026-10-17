@@ -1,4 +1,5 @@
 import logging
+import secrets
 from urllib.parse import urlparse, urlsplit, urlunsplit
 
 from django.conf import settings
@@ -9,6 +10,7 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
 from django.http import QueryDict
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.utils.encoding import force_str
 from django.utils.safestring import mark_safe
@@ -110,6 +112,8 @@ CLIENT_RESPONSE_TYPES = {
 }
 
 CONFIDENTIAL_CLIENTS = ['web', 'service', 'trusted']
+
+DEVICE_CODE_GRANT_TYPE = 'urn:ietf:params:oauth:grant-type:device_code'
 
 CLIENT_ID_FORMAT_HEX = 'hex'
 CLIENT_ID_FORMAT_DASHED = 'dashed'
@@ -221,6 +225,10 @@ class Client(AbstractBaseModel):
     force_using_pkce = models.BooleanField(
         _('force using PKCE'), default=False,
         help_text=mark_safe(_('Enforce Proof Key for Code Exchange <a href="https://tools.ietf.org/html/rfc7636">https://tools.ietf.org/html/rfc7636</a>')))
+    device_authorization_grant = models.BooleanField(
+        _('device authorization grant'), default=False,
+        help_text=mark_safe(_('Allow the <a href="https://datatracker.ietf.org/doc/html/rfc8628">device authorization '
+                              'grant (RFC 8628)</a> for public clients without a browser or keyboard, e.g. TVs or CLIs.')))
     client_id_format = models.CharField(
         _('client ID format'), max_length=10, choices=CLIENT_ID_FORMATS, blank=True, editable=False,
         help_text=_('Format of the client ID in the last request of the client. Recorded to find the clients that '
@@ -339,6 +347,66 @@ class AuthorizationCode(models.Model):
 
     def __str__(self):
         return self.code
+
+
+def generate_user_code():
+    # unambiguous alphabet (no 0/O, 1/I) since this is read off a TV screen and typed on another device
+    alphabet = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789'
+    code = ''.join(secrets.choice(alphabet) for _ in range(8))
+    return format_user_code(code)
+
+
+def format_user_code(code):
+    return f'{code[:4]}-{code[4:]}'
+
+
+def normalize_user_code(value):
+    # ignore case, spaces and dashes when the user types the code (RFC 8628 section 6.1)
+    code = ''.join(c for c in value.upper() if c.isalnum())
+    return format_user_code(code) if len(code) == 8 else code
+
+
+class DeviceCode(models.Model):
+    """
+    OAuth2 Device Authorization Grant (RFC 8628) pending/approved device code.
+
+    Created by the device_authorization view once oauthlib's DeviceAuthorizationEndpoint
+    has minted a device_code/user_code pair (it returns them but does not persist them).
+    Updated by the `device` verification view once the user has logged in and confirmed
+    the code on a second screen. The token endpoint (DeviceCodeGrantEx, via
+    OIDCRequestValidator.validate_device_code) polls this table.
+    """
+    STATUS_PENDING = 'pending'
+    STATUS_APPROVED = 'approved'
+    STATUS_DENIED = 'denied'
+    STATUS_CHOICES = [
+        (STATUS_PENDING, _('pending')),
+        (STATUS_APPROVED, _('approved')),
+        (STATUS_DENIED, _('denied')),
+    ]
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name=_('client'))
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name=_('user'),
+                             null=True, blank=True)
+    # the OTP device the user signed in with when confirming the code, for the acr claim (see AuthorizationCode)
+    otp_device = models.ForeignKey(Device, null=True, blank=True, on_delete=models.SET_NULL)
+    device_code = models.CharField(_('device code'), max_length=100, unique=True)
+    user_code = models.CharField(_('user code'), max_length=16, unique=True)
+    scopes = models.CharField(_('scopes'), max_length=2047, blank=True)
+    status = models.CharField(_('status'), max_length=10, choices=STATUS_CHOICES, default=STATUS_PENDING)
+    created_at = models.DateTimeField(_('created at'), auto_now_add=True)
+    expires_at = models.DateTimeField(_('expires at'))
+    last_polled_at = models.DateTimeField(_('last polled at'), null=True, blank=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        get_latest_by = 'created_at'
+
+    def __str__(self):
+        return self.user_code
+
+    @property
+    def is_expired(self):
+        return timezone.now() >= self.expires_at
 
 
 class BearerToken(models.Model):

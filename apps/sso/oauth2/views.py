@@ -1,5 +1,7 @@
 import json
 import logging
+from functools import wraps
+from datetime import timedelta
 from urllib.parse import urlparse, urlunparse, urlsplit, urlunsplit
 
 from jwt import InvalidTokenError
@@ -17,9 +19,11 @@ from django.http import HttpResponseRedirect, HttpResponse, QueryDict
 from django.http.response import HttpResponseRedirectBase, Http404
 from django.shortcuts import render, get_object_or_404, resolve_url
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.crypto import salted_hmac
 from django.utils.decorators import method_decorator
 from django.utils.encoding import iri_to_uri, force_str
+from django.utils.translation import gettext as _
 from django.views import View
 from django.views.decorators.cache import never_cache, cache_page, cache_control
 from django.views.decorators.clickjacking import xframe_options_exempt
@@ -35,8 +39,8 @@ from sso.utils.http import get_request_param
 from sso.utils.url import get_base_url
 from .crypt import loads_jwt
 from .keys import get_public_keys, get_certs, get_certs_jwks
-from .models import Client, check_redirect_uri
-from .oidc_server import oidc_server
+from .models import Client, DeviceCode, DEVICE_CODE_GRANT_TYPE, check_redirect_uri, normalize_user_code
+from .oidc_server import oidc_server, oidc_request_validator, device_authorization_endpoint
 
 logger = logging.getLogger(__name__)
 
@@ -165,6 +169,9 @@ class OpenidConfigurationView(PreflightMixin, View):
             # "certs_uri": '%s%s' % (base_uri, reverse('oauth2:certs')),
             "profile_uri": '%s%s' % (base_uri, reverse('accounts:profile')),
         }
+        if settings.SSO_DEVICE_AUTHORIZATION_GRANT:
+            configuration['device_authorization_endpoint'] = '%s%s' % (base_uri, reverse('oauth2:device_authorization'))
+            configuration['grant_types_supported'].append(DEVICE_CODE_GRANT_TYPE)
         if settings.SSO_SERVICE_DOCUMENTATION:
             configuration['service_documentation'] = settings.SSO_SERVICE_DOCUMENTATION
         return JsonHttpResponse(configuration, request, allow_jsonp=True, public_cors=True)
@@ -389,6 +396,69 @@ class TokenView(PreflightMixin, View):
     def post(self, request, *args, **kwargs):
         return token(request)
 
+
+def device_authorization_grant_required(view_func):
+    # the device authorization grant is behind the feature flag SSO_DEVICE_AUTHORIZATION_GRANT
+    @wraps(view_func)
+    def wrapper(request, *args, **kwargs):
+        if not settings.SSO_DEVICE_AUTHORIZATION_GRANT:
+            raise Http404
+        return view_func(request, *args, **kwargs)
+    return wrapper
+
+
+@device_authorization_grant_required
+@revision_exempt
+@csrf_exempt
+def device_authorization(request):
+    """
+    RFC 8628 device_authorization endpoint. oauthlib's DeviceAuthorizationEndpoint
+    (device_authorization_endpoint, see oidc_server.py) mints the device_code/user_code
+    pair but does not persist them itself -- we do that here once it returns a 200,
+    so DeviceCodeGrantEx / OIDCRequestValidator.validate_device_code have a DeviceCode
+    row to poll from the token endpoint.
+    """
+    uri, http_method, body, headers = extract_params(request)
+    oauth_request = Request(uri, http_method=http_method, body=body, headers=headers)
+    try:
+        resp_headers, data, status = device_authorization_endpoint.create_device_authorization_response(
+            uri, http_method=http_method, body=body, headers=headers)
+    except oauth2.OAuth2Error as e:
+        # e.g. FatalClientError from OIDCRequestValidator._get_client for an unknown client_id
+        return HttpResponse(content=e.json, status=e.status_code, content_type='application/json')
+
+    if status == 200:
+        try:
+            client = Client.objects.get(uuid=oauth_request.client_id, is_active=True)
+        except (Client.DoesNotExist, ValueError, ValidationError):
+            error = oauth2.InvalidClientError(request=oauth_request)
+            return HttpResponse(content=error.json, status=error.status_code, content_type='application/json')
+
+        if not oidc_request_validator.validate_grant_type(
+                oauth_request.client_id, DEVICE_CODE_GRANT_TYPE, client, oauth_request):
+            error = oauth2.UnauthorizedClientError(request=oauth_request)
+            return HttpResponse(content=error.json, status=error.status_code, content_type='application/json')
+
+        scopes = scope_to_list(oauth_request.scope) or client.scopes.split()
+        # oauthlib's DeviceAuthorizationEndpoint does not validate the requested scopes itself
+        if not oidc_request_validator.validate_scopes(oauth_request.client_id, scopes, client, oauth_request):
+            error = oauth2.InvalidScopeError(request=oauth_request)
+            return HttpResponse(content=error.json, status=error.status_code, content_type='application/json')
+
+        DeviceCode.objects.create(
+            client=client,
+            device_code=data['device_code'],
+            user_code=data['user_code'],
+            scopes=' '.join(scopes),
+            expires_at=timezone.now() + timedelta(seconds=data['expires_in']),
+        )
+
+    response = HttpResponse(content=json.dumps(data), status=status, content_type='application/json')
+    for k, v in resp_headers.items():
+        response[k] = v
+    return response
+
+
 @revision_exempt
 @csrf_exempt
 def revoke(request):
@@ -453,6 +523,58 @@ def approval(request):
     return render(request, 'oauth2/approval.html', context={'state': state, 'code': code})
 
 
+@device_authorization_grant_required
+@never_cache
+@login_required
+def device(request):
+    """
+    RFC 8628 verification_uri: the second-screen page a user opens (from the TV's
+    prompt, or via verification_uri_complete's ?user_code=... if scanned/tapped) to
+    confirm or deny the code shown on their TV.
+    """
+    user_code = normalize_user_code(request.POST.get('user_code') or request.GET.get('user_code') or '')
+    invalid_code = _('This code is not valid. Please check the code shown on your device.')
+    error = None
+    device_code_obj = None
+
+    if user_code:
+        try:
+            device_code_obj = DeviceCode.objects.select_related('client').get(
+                user_code=user_code, status=DeviceCode.STATUS_PENDING)
+            client = device_code_obj.client
+            if device_code_obj.is_expired:
+                device_code_obj = None
+                error = _('This code has expired. Please start again on your device.')
+            elif not (client.is_active and oidc_request_validator.validate_grant_type(
+                    client.client_id, DEVICE_CODE_GRANT_TYPE, client, None)):
+                # the client was deactivated or lost the device authorization grant after the code was issued
+                device_code_obj = None
+                error = invalid_code
+        except DeviceCode.DoesNotExist:
+            error = invalid_code
+
+    if request.method == 'POST' and device_code_obj:
+        # only a pending code can be confirmed or denied, a concurrent request that changed it first wins
+        pending_code = DeviceCode.objects.filter(pk=device_code_obj.pk, status=DeviceCode.STATUS_PENDING)
+        if 'approve' in request.POST:
+            if pending_code.update(user=request.user, otp_device=getattr(request.user, 'otp_device', None),
+                                   status=DeviceCode.STATUS_APPROVED):
+                return render(request, 'oauth2/device.html', {'approved': True, 'client': device_code_obj.client})
+            device_code_obj = None
+            error = invalid_code
+        elif 'deny' in request.POST:
+            if pending_code.update(status=DeviceCode.STATUS_DENIED):
+                return render(request, 'oauth2/device.html', {'denied': True})
+            device_code_obj = None
+            error = invalid_code
+
+    return render(request, 'oauth2/device.html', {
+        'user_code': user_code,
+        'device_code': device_code_obj,
+        'error': error,
+    })
+
+
 @permission_required("oauth2.change_client")
 def client_details(request, object_id):
     client = get_object_or_404(Client, pk=object_id)
@@ -462,6 +584,7 @@ def client_details(request, object_id):
         "client_id": client.uuid.hex,
         "scopes": client.scopes,
         "force_using_pkce": client.force_using_pkce,
+        "device_authorization_grant": client.device_authorization_grant,
         "redirect_uris": [uri for uri in client.redirect_uris.split()],
         "post_logout_redirect_uris": [uri for uri in client.post_logout_redirect_uris.split()],
         "type": client.type,

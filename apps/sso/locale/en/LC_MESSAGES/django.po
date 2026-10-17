@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-08 21:47+0200\n"
+"POT-Creation-Date: 2026-10-17 16:51+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -971,22 +971,6 @@ msgid "A user account at %(site_name)s was created for you"
 msgstr ""
 
 #, python-format
-msgid "model %(change.content_type)s has been changed %(change.user)s "
-msgstr ""
-
-msgid "Date/time"
-msgstr ""
-
-msgid "User"
-msgstr ""
-
-msgid "Object id"
-msgstr ""
-
-msgid "Object repr"
-msgstr ""
-
-#, python-format
 msgid ""
 "Your change on %(site_name)s to %(organisation_name)s has been accepted."
 msgstr ""
@@ -1563,6 +1547,9 @@ msgstr ""
 msgid "is otp enabled"
 msgstr ""
 
+msgid "The registration could not be completed. Please try again."
+msgstr ""
+
 msgid ""
 "Please press the button below. You may be prompted to allow the site "
 "permission to access your security key."
@@ -1996,6 +1983,15 @@ msgstr ""
 msgid "Implicit flow (deprecated)"
 msgstr ""
 
+msgid "without dashes"
+msgstr ""
+
+msgid "with dashes"
+msgstr ""
+
+msgid "other"
+msgstr ""
+
 msgid "List"
 msgstr ""
 
@@ -2053,6 +2049,23 @@ msgid ""
 "rfc7636\">https://tools.ietf.org/html/rfc7636</a>"
 msgstr ""
 
+msgid "device authorization grant"
+msgstr ""
+
+msgid ""
+"Allow the <a href=\"https://datatracker.ietf.org/doc/html/rfc8628\">device "
+"authorization grant (RFC 8628)</a> for public clients without a browser or "
+"keyboard, e.g. TVs or CLIs."
+msgstr ""
+
+msgid "client ID format"
+msgstr ""
+
+msgid ""
+"Format of the client ID in the last request of the client. Recorded to find "
+"the clients that are configured with the client ID with dashes."
+msgstr ""
+
 msgid "Roles type"
 msgstr ""
 
@@ -2083,6 +2096,21 @@ msgstr ""
 msgid "Nonce"
 msgstr ""
 
+msgid "pending"
+msgstr ""
+
+msgid "device code"
+msgstr ""
+
+msgid "user code"
+msgstr ""
+
+msgid "expires at"
+msgstr ""
+
+msgid "last polled at"
+msgstr ""
+
 msgid "access token"
 msgstr ""
 
@@ -2101,6 +2129,29 @@ msgstr ""
 msgid "Please copy the code and enter it in to your application: "
 msgstr ""
 
+msgid "Device sign-in"
+msgstr ""
+
+#, python-format
+msgid "You're signed in. You can go back to %(name)s now."
+msgstr ""
+
+msgid "You've denied this sign-in request. You can close this page."
+msgstr ""
+
+#, python-format
+msgid "Sign in to %(name)s on your device?"
+msgstr ""
+
+msgid "Confirm"
+msgstr ""
+
+msgid "Deny"
+msgstr ""
+
+msgid "Enter the code shown on your device."
+msgstr ""
+
 msgid "OAuth2 error"
 msgstr ""
 
@@ -2109,6 +2160,12 @@ msgstr ""
 
 #, python-format
 msgid "There's been an OAuth 2 error: %(error)s"
+msgstr ""
+
+msgid "This code is not valid. Please check the code shown on your device."
+msgstr ""
+
+msgid "This code has expired. Please start again on your device."
 msgstr ""
 
 msgid "Countries"
@@ -2811,9 +2868,6 @@ msgstr ""
 msgid ""
 "If you registered a new account with the email <b>%(email)s</b>, please "
 "confirm your registration."
-msgstr ""
-
-msgid "Confirm"
 msgstr ""
 
 msgid "Confirm Registration failed"

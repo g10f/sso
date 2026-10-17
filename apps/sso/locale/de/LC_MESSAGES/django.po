@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-08 21:47+0200\n"
+"POT-Creation-Date: 2026-10-17 16:51+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1026,22 +1026,6 @@ msgid "A user account at %(site_name)s was created for you"
 msgstr "Ein Benutzerkonto auf %(site_name)s wurde für Dich angelegt"
 
 #, python-format
-msgid "model %(change.content_type)s has been changed %(change.user)s "
-msgstr ""
-
-msgid "Date/time"
-msgstr ""
-
-msgid "User"
-msgstr "Anwender"
-
-msgid "Object id"
-msgstr ""
-
-msgid "Object repr"
-msgstr ""
-
-#, python-format
 msgid ""
 "Your change on %(site_name)s to %(organisation_name)s has been accepted."
 msgstr ""
@@ -1669,6 +1653,11 @@ msgstr ""
 msgid "is otp enabled"
 msgstr ""
 
+msgid "The registration could not be completed. Please try again."
+msgstr ""
+"Die Registrierung konnte nicht abgeschlossen werden. Bitte versuche es "
+"erneut."
+
 msgid ""
 "Please press the button below. You may be prompted to allow the site "
 "permission to access your security key."
@@ -2134,6 +2123,15 @@ msgstr "Vertrauenswürdiger Client"
 msgid "Implicit flow (deprecated)"
 msgstr ""
 
+msgid "without dashes"
+msgstr "ohne Bindestriche"
+
+msgid "with dashes"
+msgstr "mit Bindestrichen"
+
+msgid "other"
+msgstr "andere"
+
 msgid "List"
 msgstr "Liste"
 
@@ -2196,6 +2194,30 @@ msgid ""
 "rfc7636\">https://tools.ietf.org/html/rfc7636</a>"
 msgstr ""
 
+msgid "device authorization grant"
+msgstr "Device Authorization Grant"
+
+msgid ""
+"Allow the <a href=\"https://datatracker.ietf.org/doc/html/rfc8628\">device "
+"authorization grant (RFC 8628)</a> for public clients without a browser or "
+"keyboard, e.g. TVs or CLIs."
+msgstr ""
+"Erlaubt den <a "
+"href=\"https://datatracker.ietf.org/doc/html/rfc8628\">Device Authorization "
+"Grant (RFC 8628)</a> für öffentliche Clients ohne Browser oder Tastatur, z. "
+"B. Fernseher oder Kommandozeilenprogramme."
+
+msgid "client ID format"
+msgstr "Client-ID-Format"
+
+msgid ""
+"Format of the client ID in the last request of the client. Recorded to find "
+"the clients that are configured with the client ID with dashes."
+msgstr ""
+"Format der Client-ID in der letzten Anfrage des Clients. Wird erfasst, um "
+"die Clients zu finden, die mit der Client-ID mit Bindestrichen konfiguriert "
+"sind."
+
 msgid "Roles type"
 msgstr "Rollen Typ"
 
@@ -2230,6 +2252,21 @@ msgstr ""
 msgid "Nonce"
 msgstr ""
 
+msgid "pending"
+msgstr "ausstehend"
+
+msgid "device code"
+msgstr "Gerätecode"
+
+msgid "user code"
+msgstr "Benutzercode"
+
+msgid "expires at"
+msgstr "läuft ab am"
+
+msgid "last polled at"
+msgstr "zuletzt abgefragt am"
+
 msgid "access token"
 msgstr "Zugriffstoken"
 
@@ -2248,6 +2285,29 @@ msgstr "Autorisations Code"
 msgid "Please copy the code and enter it in to your application: "
 msgstr "Bitte kopiere den Code und gib ihn in Deiner Anwendung ein: "
 
+msgid "Device sign-in"
+msgstr "Anmeldung auf einem Gerät"
+
+#, python-format
+msgid "You're signed in. You can go back to %(name)s now."
+msgstr "Du bist angemeldet. Du kannst jetzt zu %(name)s zurückkehren."
+
+msgid "You've denied this sign-in request. You can close this page."
+msgstr "Du hast diese Anmeldung abgelehnt. Du kannst diese Seite schließen."
+
+#, python-format
+msgid "Sign in to %(name)s on your device?"
+msgstr "Auf Deinem Gerät bei %(name)s anmelden?"
+
+msgid "Confirm"
+msgstr "Bestätigen"
+
+msgid "Deny"
+msgstr "Ablehnen"
+
+msgid "Enter the code shown on your device."
+msgstr "Gib den Code ein, der auf Deinem Gerät angezeigt wird."
+
 msgid "OAuth2 error"
 msgstr ""
 
@@ -2257,6 +2317,16 @@ msgstr ""
 #, python-format
 msgid "There's been an OAuth 2 error: %(error)s"
 msgstr ""
+
+msgid "This code is not valid. Please check the code shown on your device."
+msgstr ""
+"Dieser Code ist ungültig. Bitte prüfe den Code, der auf Deinem Gerät "
+"angezeigt wird."
+
+msgid "This code has expired. Please start again on your device."
+msgstr ""
+"Dieser Code ist abgelaufen. Bitte starte die Anmeldung auf Deinem Gerät "
+"erneut."
 
 msgid "Countries"
 msgstr "Länder"
@@ -3007,9 +3077,6 @@ msgstr ""
 "Wenn Du einen neues Konto mit der  E-Mail Adresse <b>%(email)s</b> "
 "registriert hast, dann bestätige bitte Deine Registrierung."
 
-msgid "Confirm"
-msgstr "Bestätigen"
-
 msgid "Confirm Registration failed"
 msgstr "Bestätigung der Registrierung fehlgeschlagen"
 
@@ -3256,3 +3323,5 @@ msgstr ""
 msgid "The {name} \"{obj}\" was created successfully."
 msgstr "{name} \"{obj}\" wurde erfolgreich angelegt."
 
+#~ msgid "User"
+#~ msgstr "Anwender"

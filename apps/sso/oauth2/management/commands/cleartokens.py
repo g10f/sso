@@ -3,7 +3,7 @@ from datetime import timedelta
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.utils import timezone
-from ...models import AuthorizationCode, BearerToken
+from ...models import AuthorizationCode, BearerToken, DeviceCode
 
 
 class Command(BaseCommand):
@@ -18,3 +18,5 @@ class Command(BaseCommand):
         # Refresh Tokens are valid for REFRESH_TOKEN_LIFE_TIME days and are deleted
         # automatically when they BearerToken are deleted.
         BearerToken.objects.filter(created_at__lt=refresh_token_life_time).delete()
+        # DeviceCode are short living and deleted when a token is issued, but remain if the device stopped polling
+        DeviceCode.objects.filter(expires_at__lt=timezone.now()).delete()

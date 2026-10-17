@@ -2,6 +2,7 @@ import logging
 import uuid
 
 from django import forms
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
@@ -117,7 +118,8 @@ class ClientForm(BaseForm):
 
     class Meta:
         model = Client
-        fields = ('application', 'uuid', 'client_secret', 'name', 'type', 'redirect_uris', 'post_logout_redirect_uris', 'notes', 'is_active', 'scopes', 'roles_type')
+        fields = ('application', 'uuid', 'client_secret', 'name', 'type', 'redirect_uris', 'post_logout_redirect_uris', 'notes', 'is_active', 'scopes', 'roles_type',
+                  'device_authorization_grant')
         widgets = {
             'application': bootstrap.HiddenInput(),
             'name': bootstrap.TextInput(attrs={'size': 50}),
@@ -126,7 +128,8 @@ class ClientForm(BaseForm):
             'redirect_uris': bootstrap.Textarea(attrs={'rows': '3'}),
             'post_logout_redirect_uris': bootstrap.Textarea(attrs={'rows': '3'}),
             'is_active': bootstrap.CheckboxInput(),
-            'roles_type': bootstrap.Select()
+            'roles_type': bootstrap.Select(),
+            'device_authorization_grant': bootstrap.CheckboxInput(),
         }
 
     def __init__(self, *args, **kwargs):
@@ -139,6 +142,9 @@ class ClientForm(BaseForm):
             kwargs['initial']['can_access_all_users'] = instance.has_access_to_all_users
 
         super().__init__(*args, **kwargs)
+        if not settings.SSO_DEVICE_AUTHORIZATION_GRANT:
+            # feature flag for the device authorization grant
+            del self.fields['device_authorization_grant']
 
     def clean_scopes(self):
         scopes = self.cleaned_data['scopes']
@@ -152,10 +158,16 @@ class ClientForm(BaseForm):
         if client_type in ['web', 'service']:
             if not client_secret:
                 self.add_error('client_secret', ValidationError("A client secret is required for this client type."))
+        device_authorization_grant = cleaned_data.get("device_authorization_grant", False)
         if client_type == "native":
             cleaned_data['client_secret'] = ''
+        elif device_authorization_grant:
+            # only public clients may use the device authorization grant
+            cleaned_data['device_authorization_grant'] = False
+            device_authorization_grant = False
         if client_type in ['web', 'native']:
-            if not redirect_uris:
+            # a device client signs in on a second screen and needs no redirect uri
+            if not redirect_uris and not device_authorization_grant:
                 self.add_error('redirect_uris', ValidationError("A redirect uri is required for this client type."))
         return self.cleaned_data
 

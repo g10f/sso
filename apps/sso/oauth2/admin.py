@@ -7,7 +7,7 @@ from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
-from sso.oauth2.models import CONFIDENTIAL_CLIENTS, CLIENT_RESPONSE_TYPES, get_clients_by_response_type
+from sso.oauth2.models import CONFIDENTIAL_CLIENTS, CLIENT_RESPONSE_TYPES, CLIENT_TYPES, get_clients_by_response_type
 
 logger = logging.getLogger(__name__)
 
@@ -19,10 +19,15 @@ class ClientAdminForm(forms.ModelForm):
         client_secret = cleaned_data.get("client_secret")
         user = cleaned_data.get("user")
         force_using_pkce = cleaned_data.get("force_using_pkce")
+        device_authorization_grant = cleaned_data.get("device_authorization_grant")
 
         if force_using_pkce and 'code' not in CLIENT_RESPONSE_TYPES[client_type]:
             clients = ', '.join(get_clients_by_response_type('code'))
             self.add_error('force_using_pkce', 'PKCE can only be used for "%s".' % clients)
+
+        if device_authorization_grant and client_type != 'native':
+            self.add_error('device_authorization_grant',
+                           'The device authorization grant can only be used for "%s".' % dict(CLIENT_TYPES)['native'])
 
         if client_type and client_secret:
             # Only do something if both fields are valid so far.
@@ -39,9 +44,9 @@ class ClientAdminForm(forms.ModelForm):
 class ClientAdmin(VersionAdmin):
     list_display = ('name', 'uuid', 'application', 'type', 'client_id_format', 'user', 'is_active', 'last_modified')
     list_filter = ('is_active', 'type', 'client_id_format', 'is_trustworthy', 'application')
-    fields = ('application', 'type', 'name', 'uuid', 'client_secret', 'redirect_uris', 'post_logout_redirect_uris',
-              'scopes', 'roles_type', 'user', 'notes', 'is_active', 'last_modified', 'is_trustworthy', 'force_using_pkce',
-              'client_id_format')
+    fields = ('application', 'type', 'device_authorization_grant', 'name', 'uuid', 'client_secret', 'redirect_uris',
+              'post_logout_redirect_uris', 'scopes', 'roles_type', 'user', 'notes', 'is_active', 'last_modified',
+              'is_trustworthy', 'force_using_pkce', 'client_id_format')
     readonly_fields = ('last_modified', 'client_id_format')
     list_select_related = ('application', 'user')
     form = ClientAdminForm
@@ -111,3 +116,29 @@ class RefreshTokenAdmin(admin.ModelAdmin):
 
     bearer_token_link.short_description = _('bearer token')
     bearer_token_link.admin_order_field = 'bearer_token'
+
+
+class DeviceCodeAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user_code', 'client_link', 'user_link', 'status', 'created_at', 'expires_at')
+    list_filter = ('status', 'client__application', 'client')
+    search_fields = ('user_code', 'user__username', 'user__first_name', 'user__last_name', 'user__uuid', 'user__useremail__email')
+    raw_id_fields = ("user",)
+    readonly_fields = ('device_code', 'created_at', 'last_polled_at')
+    list_select_related = ('user', 'client')
+    date_hierarchy = 'created_at'
+
+    def user_link(self, obj):
+        if not obj.user:
+            return ''
+        url = reverse('admin:accounts_user_change', args=(obj.user.pk,), current_app=self.admin_site.name)
+        return format_html('<a href="{}">{}</a>', url, obj.user)
+
+    user_link.short_description = _('user')
+    user_link.admin_order_field = 'user'
+
+    def client_link(self, obj):
+        url = reverse('admin:oauth2_client_change', args=(obj.client.pk,), current_app=self.admin_site.name)
+        return format_html('<a href="{}">{}</a>', url, obj.client)
+
+    client_link.short_description = _('client')
+    client_link.admin_order_field = 'client'

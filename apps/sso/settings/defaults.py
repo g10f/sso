@@ -76,6 +76,8 @@ SSO_TEST_USER_EXTRA_ATTRIBUTES = []
 SSO_USER_RECOVERY_PERIOD_MINUTES = 60 * 24 * 30  # 30 days
 SSO_ACCESS_TOKEN_AGE = 60 * 60  # 1 hour
 SSO_AUTHORIZATION_CODE_AGE = 60 * 5  # 5 minutes
+SSO_DEVICE_CODE_AGE = 60 * 10  # 10 minutes, RFC 8628 device_code/user_code lifetime
+SSO_DEVICE_CODE_INTERVAL = 5  # seconds a device must wait between token polls
 SSO_REFRESH_TOKEN_AGE = int(os.getenv('SSO_REFRESH_TOKEN_AGE', 60 * 60 * 24 * 90))  # default 90 days
 SSO_ID_TOKEN_AGE = 60 * 5  # 5 minutes
 SSO_LOGIN_MAX_AGE = int(os.getenv('SSO_LOGIN_MAX_AGE', '300'))
@@ -107,6 +109,8 @@ SSO_THROTTLE_PROXY_DEBUG = os.getenv('SSO_THROTTLE_PROXY_DEBUG', 'False').lower(
 # Temporary, until all clients are adapted: point userinfo_endpoint in the OpenID Connect discovery
 # document to api:v2_users_me (includes organisations) instead of the standard oauth2:userinfo endpoint.
 SSO_LEGACY_USERINFO_ENDPOINT = os.getenv('SSO_LEGACY_USERINFO_ENDPOINT', 'False').lower() in ('true', '1', 't')
+# feature flag for the OAuth2 Device Authorization Grant (RFC 8628), disabled by default while it is being completed
+SSO_DEVICE_AUTHORIZATION_GRANT = os.getenv('SSO_DEVICE_AUTHORIZATION_GRANT', 'False').lower() in ('true', '1', 't')
 SSO_DEFAULT_THEME = os.getenv("SSO_DEFAULT_THEME", 'auto')
 SSO_ENABLE_PLAUSIBLE = os.getenv('SSO_ENABLE_PLAUSIBLE', 'False').lower() in ('true', '1', 't')
 # Celery settings see https://www.cloudamqp.com/docs/celery.html

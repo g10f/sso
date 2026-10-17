@@ -122,12 +122,14 @@ function showTab(selector) {
                 $(".oidc-client [name='post_logout_redirect_uris']").parent().parent().addClass('hidden')
                 $(".oidc-client [name='can_access_all_users']").parent().parent().removeClass('hidden')
                 $(".oidc-client [name='client_secret']").parent().parent().removeClass('hidden')
+                $(".oidc-client [name='device_authorization_grant']").parent().parent().addClass('hidden')
                 break;
             case "web":
                 $(".oidc-client [name='redirect_uris']").parent().parent().removeClass('hidden')
                 $(".oidc-client [name='post_logout_redirect_uris']").parent().parent().removeClass('hidden')
                 $(".oidc-client [name='can_access_all_users']").parent().parent().addClass('hidden')
                 $(".oidc-client [name='client_secret']").parent().parent().removeClass('hidden')
+                $(".oidc-client [name='device_authorization_grant']").parent().parent().addClass('hidden')
                 break;
             case "native":
             case "javascript":
@@ -135,6 +137,7 @@ function showTab(selector) {
                 $(".oidc-client [name='post_logout_redirect_uris']").parent().parent().removeClass('hidden')
                 $(".oidc-client [name='can_access_all_users']").parent().parent().addClass('hidden')
                 $(".oidc-client [name='client_secret']").parent().parent().addClass('hidden')
+                $(".oidc-client [name='device_authorization_grant']").parent().parent().toggleClass('hidden', type !== 'native')
                 break;
         }
     }
