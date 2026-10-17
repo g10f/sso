@@ -9,7 +9,7 @@ data through a JSON-LD / Hydra REST API.
 It is a [Django](https://www.djangoproject.com/) application and is distributed as a
 Docker image (`ghcr.io/g10f/sso`) and a Helm chart.
 
-- **Version:** 5.4.18
+- **Version:** 5.5.0
 - **Runtime:** Python 3.12+ (the official image is built on Python 3.14), Django 5.2,
   PostgreSQL with PostGIS
 - **License:** BSD-style, see [LICENSE](LICENSE)
@@ -276,8 +276,25 @@ The API entry point is `/api/` and follows the JSON-LD / Hydra conventions. High
 The entries below list the notable changes per minor release. See the git
 history for the full list of patch releases.
 
-### 5.4 (current, 5.4.18)
+### 5.5 (current, 5.5.0)
+- oauthlib 4.0.0
+- an unknown or inactive `client_id` now returns the error code `invalid_client`
+  (previously `"error": null`); the token endpoint answers with HTTP 401 instead of
+  400, the same as for a wrong client secret
+- a `client_id` sent in another notation of the same UUID (e.g. with dashes) is
+  still accepted, oauthlib 4 alone would reject it with `server_error`
+- a PKCE `code_verifier` or `code_challenge` with non-ASCII characters is rejected
+  with `invalid_grant` instead of failing with HTTP 500
+
+### 5.4
 - Django 5.2.18
+- accepting an organisation change extends the account validity: for organisations
+  with an active validation period, `valid_until` is set to today plus
+  `SSO_VALIDATION_PERIOD_DAYS` (365 days by default), because the admin of the new
+  organisation has just verified the user
+- faster user list: the users list API counts distinct primary keys for pagination,
+  and the filters of the user list are cached across workers and no longer load all
+  organisations on every request
 - unknown `client_id`, invalid auth tokens, an invalid `id_token_hint` on logout
   and tampered WebAuthn state now return a proper error / redirect instead of HTTP 500
 - client and data conditions (e.g. `client_credentials` without a user) are logged
