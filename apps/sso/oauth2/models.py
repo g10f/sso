@@ -111,6 +111,23 @@ CLIENT_RESPONSE_TYPES = {
 
 CONFIDENTIAL_CLIENTS = ['web', 'service', 'trusted']
 
+CLIENT_ID_FORMAT_HEX = 'hex'
+CLIENT_ID_FORMAT_DASHED = 'dashed'
+CLIENT_ID_FORMAT_OTHER = 'other'
+CLIENT_ID_FORMATS = [
+    (CLIENT_ID_FORMAT_HEX, _('without dashes')),
+    (CLIENT_ID_FORMAT_DASHED, _('with dashes')),
+    (CLIENT_ID_FORMAT_OTHER, _('other')),
+]
+
+
+def get_client_id_format(client_id, client):
+    if client_id == client.uuid.hex:
+        return CLIENT_ID_FORMAT_HEX
+    elif client_id == str(client.uuid):
+        return CLIENT_ID_FORMAT_DASHED
+    return CLIENT_ID_FORMAT_OTHER
+
 
 def get_clients_by_response_type(response_type):
     clients = []
@@ -204,6 +221,10 @@ class Client(AbstractBaseModel):
     force_using_pkce = models.BooleanField(
         _('force using PKCE'), default=False,
         help_text=mark_safe(_('Enforce Proof Key for Code Exchange <a href="https://tools.ietf.org/html/rfc7636">https://tools.ietf.org/html/rfc7636</a>')))
+    client_id_format = models.CharField(
+        _('client ID format'), max_length=10, choices=CLIENT_ID_FORMATS, blank=True, editable=False,
+        help_text=_('Format of the client ID in the last request of the client. Recorded to find the clients that '
+                    'are configured with the client ID with dashes.'))
     roles_type = models.CharField(_('Roles type'), max_length=255, choices=ROLES_CHOICES, blank=True,
                                   help_text=_('Type of the roles claim in the id_token and access token. Can be a space delimited string (default), list or list with '
                                               'organisation prefixed to the role like "organisation-role".'))

@@ -589,6 +589,19 @@ class OAuth2Tests(OAuth2BaseTestCase):
         id_token = crypt.loads_jwt(token_response.json()['id_token'])
         self.assertEqual(id_token['aud'], str(uuid.UUID(self._client_id)))
 
+    def test_client_id_format_is_recorded(self):
+        client = Client.objects.get(uuid=self._client_id)
+        self.assertEqual(client.client_id_format, '')
+        last_modified = client.last_modified
+        for client_id, client_id_format in ((str(uuid.UUID(self._client_id)), 'dashed'),
+                                            (self._client_id.upper(), 'other'),
+                                            (self._client_id, 'hex')):
+            self.login_and_get_code(client_id=client_id)
+            client.refresh_from_db()
+            self.assertEqual(client.client_id_format, client_id_format)
+            self.logout()
+        self.assertEqual(client.last_modified, last_modified)
+
     def test_public_client_with_dashed_client_id(self):
         # e.g. kubelogin: a public client without client secret, configured with the dashed client_id
         client_id = '5614cdb0aa3c48d59828681bd62e1741'

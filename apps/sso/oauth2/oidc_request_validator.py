@@ -17,7 +17,7 @@ from oauthlib.openid.connect.core.request_validator import RequestValidator
 from . import userinfo
 from .crypt import loads_jwt
 from .models import BearerToken, RefreshToken, AuthorizationCode, Client, check_redirect_uri, CONFIDENTIAL_CLIENTS, \
-    CLIENT_RESPONSE_TYPES
+    CLIENT_RESPONSE_TYPES, get_client_id_format
 from .oidc_token import get_idtoken_finalizer
 from ..api.response import same_origin
 
@@ -55,7 +55,17 @@ class OIDCRequestValidator(RequestValidator):
                 # InvalidClientError is a FatalClientError (never redirected to the client) with error code
                 # 'invalid_client'; a plain FatalClientError has no error code ("error": null).
                 raise InvalidClientError(description='Invalid client_id.')
+            self._record_client_id_format(client_id, request.client)
         return request.client
+
+    @staticmethod
+    def _record_client_id_format(client_id, client):
+        # Record whether the client sends its client_id with or without dashes, to find the clients configured
+        # with the dashed format. Only written when it changes, and with update() to keep last_modified.
+        client_id_format = get_client_id_format(client_id, client)
+        if client.client_id_format != client_id_format:
+            Client.objects.filter(pk=client.pk).update(client_id_format=client_id_format)
+            client.client_id_format = client_id_format
 
     @staticmethod
     def _normalize_client_id(client, request):
