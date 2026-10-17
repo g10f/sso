@@ -893,6 +893,17 @@ class DeviceCodeGrantTests(OAuth2BaseTestCase):
         self.assertEqual(device_code_obj.status, DeviceCode.STATUS_PENDING)
         self.assertEqual(device_code_obj.client.client_id, self._tv_client_id)
 
+    def test_device_authorization_with_charset_in_content_type(self):
+        response = self.client.post(reverse('oauth2:device_authorization'),
+                                    data=urlencode({'client_id': self._tv_client_id, 'scope': 'openid'}),
+                                    content_type='application/x-www-form-urlencoded; charset=utf-8')
+        self.assertEqual(response.status_code, 200)
+
+    def test_device_authorization_without_content_type_is_rejected(self):
+        response = self.client.generic('POST', reverse('oauth2:device_authorization'), data=b'', content_type='')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['error'], 'invalid_request')
+
     def test_device_authorization_unknown_client_is_rejected(self):
         response = self.device_authorization_request(client_id="0" * 32)
         self.assertEqual(response.status_code, 401)

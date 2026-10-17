@@ -419,6 +419,10 @@ def device_authorization(request):
     row to poll from the token endpoint.
     """
     uri, http_method, body, headers = extract_params(request)
+    # oauthlib compares headers["Content-Type"] with "application/x-www-form-urlencoded": a missing
+    # header raises KeyError (500) and a parameter like "; charset=utf-8" is rejected, so pass the
+    # media type only
+    headers = {**headers, 'Content-Type': request.content_type}
     oauth_request = Request(uri, http_method=http_method, body=body, headers=headers)
     try:
         resp_headers, data, status = device_authorization_endpoint.create_device_authorization_response(
