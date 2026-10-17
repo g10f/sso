@@ -567,6 +567,11 @@ class OAuth2Tests(OAuth2BaseTestCase):
         token_response = self.token_request(token_data)
         self.assertEqual(token_response.status_code, 400)
 
+    def test_discovery_grant_types_supported(self):
+        response = self.client.get(reverse('openid-configuration'))
+        self.assertEqual(response.json()['grant_types_supported'],
+                         ['authorization_code', 'implicit', 'refresh_token', 'client_credentials', 'password'])
+
     def test_get_token_with_dashed_client_id(self):
         # Regression: oauthlib 4 raises server_error if request.client_id differs from client.client_id
         # (uuid.hex), but clients may send the client_id in the dashed UUID format.

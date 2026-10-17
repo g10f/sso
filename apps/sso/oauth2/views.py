@@ -146,6 +146,9 @@ class OpenidConfigurationView(PreflightMixin, View):
                 ['openid', 'profile', 'email', 'role', 'offline_access', 'address', 'phone', 'users', 'picture'],
             "response_types_supported":
                 ["code", "token", "id_token token", "id_token"],
+            # if omitted, clients must assume ["authorization_code", "implicit"]
+            "grant_types_supported":
+                ["authorization_code", "implicit", "refresh_token", "client_credentials", "password"],
             "id_token_signing_alg_values_supported":
                 ["RS256"],
             "token_endpoint_auth_methods_supported":
