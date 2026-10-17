@@ -655,9 +655,9 @@ class OAuth2Tests(OAuth2BaseTestCase):
         }
         token_response = self.token_request(token_data)
         self.assertNotEqual(token_response.status_code, 500)
-        self.assertEqual(token_response.status_code, 400)
+        self.assertEqual(token_response.status_code, 401)
         self.assertIn('application/json', token_response['Content-Type'])
-        self.assertIn('error', token_response.json())
+        self.assertEqual(token_response.json()['error'], 'invalid_client')
 
     def test_session_init_foreign_origin_returns_404(self):
         # Regression: session_init returned (instead of raised) Http404, which

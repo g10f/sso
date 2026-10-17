@@ -12,7 +12,7 @@ from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db.models import F
 from django.utils import timezone
 from django.utils.encoding import force_bytes
-from oauthlib.oauth2 import FatalClientError
+from oauthlib.oauth2 import InvalidClientError
 from oauthlib.openid.connect.core.request_validator import RequestValidator
 from . import userinfo
 from .crypt import loads_jwt
@@ -52,7 +52,9 @@ class OIDCRequestValidator(RequestValidator):
             try:
                 request.client = Client.objects.get(uuid=client_id, is_active=True)
             except (ValidationError, ObjectDoesNotExist):
-                raise FatalClientError(description='Invalid client_id.')
+                # InvalidClientError is a FatalClientError (never redirected to the client) with error code
+                # 'invalid_client'; a plain FatalClientError has no error code ("error": null).
+                raise InvalidClientError(description='Invalid client_id.')
         return request.client
 
     def is_pkce_required(self, client_id, request):
