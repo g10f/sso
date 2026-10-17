@@ -9,7 +9,7 @@ data through a JSON-LD / Hydra REST API.
 It is a [Django](https://www.djangoproject.com/) application and is distributed as a
 Docker image (`ghcr.io/g10f/sso`) and a Helm chart.
 
-- **Version:** 5.5.1
+- **Version:** 5.6.0
 - **Runtime:** Python 3.12+ (the official image is built on Python 3.14), Django 5.2,
   PostgreSQL with PostGIS
 - **License:** BSD-style, see [LICENSE](LICENSE)
@@ -19,7 +19,8 @@ Docker image (`ghcr.io/g10f/sso`) and a Helm chart.
 - **OpenID Connect Provider** with discovery (`/.well-known/openid-configuration`),
   JWKS, UserInfo, token introspection (RFC 7662) and revocation (RFC 7009) endpoints.
 - **OAuth2 grants:** authorization code (with PKCE, RFC 7636), implicit, hybrid,
-  client credentials and refresh token.
+  client credentials and refresh token; device authorization grant (RFC 8628) behind
+  the feature flag `SSO_DEVICE_AUTHORIZATION_GRANT`.
 - **Signing key rotation** – RSA signing keys are created and rotated automatically
   (`manage.py rotate_signing_keys`).
 - **Multi-factor authentication:** TOTP (authenticator apps) and WebAuthn / FIDO2
@@ -277,7 +278,20 @@ The API entry point is `/api/` and follows the JSON-LD / Hydra conventions. High
 The entries below list the notable changes per minor release. See the git
 history for the full list of patch releases.
 
-### 5.5 (current, 5.5.1)
+### 5.6 (current, 5.6.0)
+- OAuth2 Device Authorization Grant (RFC 8628) for clients without a browser or
+  keyboard (TVs, CLIs), contributed in PR #32. Disabled by default: enable it with
+  `SSO_DEVICE_AUTHORIZATION_GRANT` and per client with "device authorization grant"
+  (admin and self-service, public `native` clients only). Expired device codes are
+  deleted by `cleartokens`.
+- the format of the `client_id` a client sends (with or without dashes) is recorded
+  per client and shown in the client admin, to find the clients that use the dashed
+  notation
+- database migrations `oauth2.0008_client_client_id_format` and
+  `oauth2.0009_devicecode` (new client fields and the device code table): before a
+  rollback to 5.5 run `manage.py migrate oauth2 0007`
+
+### 5.5 (5.5.1)
 - oauthlib 4.0.0
 - an unknown or inactive `client_id` now returns the error code `invalid_client`
   (previously `"error": null`); the token endpoint answers with HTTP 401 instead of
