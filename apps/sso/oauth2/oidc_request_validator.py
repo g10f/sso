@@ -57,6 +57,15 @@ class OIDCRequestValidator(RequestValidator):
                 raise InvalidClientError(description='Invalid client_id.')
         return request.client
 
+    @staticmethod
+    def _normalize_client_id(client, request):
+        # oauthlib >= 4 raises ServerError if request.client_id differs from client.client_id, so a client_id
+        # sent in another notation of the same UUID (e.g. with dashes) is normalized. The client_id as sent is
+        # kept for the aud claim of the id_token, see finalize_id_token.
+        if not hasattr(request, 'sent_client_id'):
+            request.sent_client_id = request.client_id
+        request.client_id = client.client_id
+
     def is_pkce_required(self, client_id, request):
         client = self._get_client(client_id, request)
         return client.force_using_pkce
@@ -172,10 +181,8 @@ class OIDCRequestValidator(RequestValidator):
         try:
             # 1. check the client_id
             client = self._get_client(request.client_id, request)
-            # oauthlib >= 4 raises ServerError if request.client_id differs from client.client_id,
-            # see oauthlib 4.0.0 oauth2/rfc6749/grant_types/base.py:197 (validate_client_confidential).
-            # Normalize e.g. a dashed UUID.
-            request.client_id = client.client_id
+            # see oauthlib 4.0.0 oauth2/rfc6749/grant_types/base.py:197 (validate_client_confidential)
+            self._normalize_client_id(client, request)
             # 2. check client_secret
             if not constant_time_compare(client.client_secret, request.client_secret):
                 raise ObjectDoesNotExist('client_secret does not match')
@@ -210,10 +217,8 @@ class OIDCRequestValidator(RequestValidator):
         if client.type in CONFIDENTIAL_CLIENTS:
             return False
         else:
-            # oauthlib >= 4 raises ServerError if request.client_id differs from client.client_id,
-            # see oauthlib 4.0.0 oauth2/rfc6749/grant_types/base.py:217 (validate_client_public).
-            # Normalize e.g. a dashed UUID.
-            request.client_id = client.client_id
+            # see oauthlib 4.0.0 oauth2/rfc6749/grant_types/base.py:217 (validate_client_public)
+            self._normalize_client_id(client, request)
             return True
 
     def validate_code(self, client_id, code, client, request, *args, **kwargs):
@@ -363,6 +368,9 @@ class OIDCRequestValidator(RequestValidator):
         RefreshToken.objects.filter(token=token, bearer_token__client=request.client).update(is_active=False)
 
     def finalize_id_token(self, id_token, token, token_handler, request):
+        # oauthlib sets aud to request.client_id. Keep the client_id as sent by the client (see
+        # _normalize_client_id), clients compare aud with their configured client_id.
+        id_token['aud'] = getattr(request, 'sent_client_id', id_token['aud'])
         # Finalize OpenID Connect ID token & Sign or Encrypt.
         return get_idtoken_finalizer()(id_token, token, token_handler, request)
 

@@ -585,6 +585,36 @@ class OAuth2Tests(OAuth2BaseTestCase):
         }
         token_response = self.token_request(token_data)
         self.assertEqual(token_response.status_code, 200)
+        # clients compare the aud claim of the id_token with their client_id as configured
+        id_token = crypt.loads_jwt(token_response.json()['id_token'])
+        self.assertEqual(id_token['aud'], str(uuid.UUID(self._client_id)))
+
+    def test_public_client_with_dashed_client_id(self):
+        # e.g. kubelogin: a public client without client secret, configured with the dashed client_id
+        client_id = '5614cdb0aa3c48d59828681bd62e1741'
+        Client.objects.filter(uuid=client_id).update(type='native', client_secret='')
+        dashed_client_id = str(uuid.UUID(client_id))
+        code = self.login_and_get_code(client_id=dashed_client_id)
+        data = {'grant_type': "authorization_code", 'redirect_uri': "http://localhost", 'client_id': dashed_client_id,
+                'code': code}
+        token_response = self.client.post(reverse('oauth2:token'), data)
+        self.assertEqual(token_response.status_code, 200)
+        self.assertEqual(crypt.loads_jwt(token_response.json()['id_token'])['aud'], dashed_client_id)
+
+    def test_refresh_token_with_dashed_client_id(self):
+        client_id = '5614cdb0aa3c48d59828681bd62e1741'
+        dashed_client_id = str(uuid.UUID(client_id))
+        code = self.login_and_get_code(client_id=dashed_client_id, scope='openid profile email offline_access')
+        data = {'grant_type': "authorization_code", 'redirect_uri': "http://localhost", 'client_secret': "geheim",
+                'client_id': dashed_client_id, 'code': code}
+        token = self.client.post(reverse('oauth2:token'), data).json()  # client_secret_post
+        self.assertEqual(crypt.loads_jwt(token['id_token'])['aud'], dashed_client_id)
+
+        data = {'grant_type': "refresh_token", 'client_secret': "geheim", 'client_id': dashed_client_id,
+                'refresh_token': token['refresh_token']}
+        token_response = self.client.post(reverse('oauth2:token'), data)
+        self.assertEqual(token_response.status_code, 200)
+        self.assertEqual(crypt.loads_jwt(token_response.json()['id_token'])['aud'], dashed_client_id)
 
     def test_get_token_failure(self):
         code = self.login_and_get_code()

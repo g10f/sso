@@ -9,7 +9,7 @@ data through a JSON-LD / Hydra REST API.
 It is a [Django](https://www.djangoproject.com/) application and is distributed as a
 Docker image (`ghcr.io/g10f/sso`) and a Helm chart.
 
-- **Version:** 5.5.0
+- **Version:** 5.5.1
 - **Runtime:** Python 3.12+ (the official image is built on Python 3.14), Django 5.2,
   PostgreSQL with PostGIS
 - **License:** BSD-style, see [LICENSE](LICENSE)
@@ -276,13 +276,16 @@ The API entry point is `/api/` and follows the JSON-LD / Hydra conventions. High
 The entries below list the notable changes per minor release. See the git
 history for the full list of patch releases.
 
-### 5.5 (current, 5.5.0)
+### 5.5 (current, 5.5.1)
 - oauthlib 4.0.0
 - an unknown or inactive `client_id` now returns the error code `invalid_client`
   (previously `"error": null`); the token endpoint answers with HTTP 401 instead of
   400, the same as for a wrong client secret
 - a `client_id` sent in another notation of the same UUID (e.g. with dashes) is
   still accepted, oauthlib 4 alone would reject it with `server_error`
+- 5.5.1: the `aud` claim of the id_token is again the `client_id` as sent by the
+  client; 5.5.0 removed the dashes, so clients configured with a dashed `client_id`
+  (e.g. kubelogin) rejected the id_token
 - a PKCE `code_verifier` or `code_challenge` with non-ASCII characters is rejected
   with `invalid_grant` instead of failing with HTTP 500
 
