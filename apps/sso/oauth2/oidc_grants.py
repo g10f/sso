@@ -11,6 +11,15 @@ from oauthlib.openid.connect.core.grant_types import GrantTypeBase
 logger = logging.getLogger(__name__)
 
 
+def ascii_only_code_challenge_method(method):
+    # oauthlib >= 4 compares code_verifier and code_challenge with hmac.compare_digest, which raises
+    # TypeError for non-ASCII strings. RFC 7636 only allows ASCII characters for both, so reject
+    # anything else as a failed verification instead of ending in a 500.
+    def wrapper(verifier, challenge):
+        return verifier.isascii() and challenge.isascii() and method(verifier, challenge)
+    return wrapper
+
+
 class OAuth2RefreshTokenGrantEx(OAuth2RefreshTokenGrant):
     def create_authorization_response(self, request, token_handler):
         raise NotImplementedError('Refresh grant does not implement authorizaation response ')
@@ -39,6 +48,9 @@ class OAuth2RefreshTokenGrantEx(OAuth2RefreshTokenGrant):
 
 
 class OAuth2AuthorizationCodeGrantEx(OAuth2AuthorizationCodeGrant):
+    _code_challenge_methods = {name: ascii_only_code_challenge_method(method)
+                               for name, method in OAuth2AuthorizationCodeGrant._code_challenge_methods.items()}
+
     def __init__(self, request_validator=None, **kwargs):
         super().__init__(request_validator, **kwargs)
         self.register_code_modifier(self.add_session_state)

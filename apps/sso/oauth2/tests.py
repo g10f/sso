@@ -549,6 +549,38 @@ class OAuth2Tests(OAuth2BaseTestCase):
         self.assertEqual('invalid_request', query_dict['error'])
         self.assertEqual('Code challenge required.', query_dict['error_description'])
 
+    def test_pkce_non_ascii_code_verifier(self):
+        # Regression: oauthlib 4 compares with hmac.compare_digest, which raises TypeError for non-ASCII
+        # strings. A malformed code_verifier must be rejected with 400, not end in a 500.
+        # (with S256 the verifier is hashed first, so only the plain method is affected)
+        client_id = '5614cdb0aa3c48d59828681bd62e1741'
+        code = self.login_and_get_code(client_id=client_id, scope='openid profile email',
+                                       code_challenge=get_random_string(43), code_challenge_method='plain')
+        token_data = {
+            'grant_type': "authorization_code",
+            'redirect_uri': "http://localhost",
+            'client_secret': "geheim",
+            'client_id': client_id,
+            'code': code,
+            'code_verifier': 'ä' * 43,
+        }
+        token_response = self.token_request(token_data)
+        self.assertEqual(token_response.status_code, 400)
+
+    def test_get_token_with_dashed_client_id(self):
+        # Regression: oauthlib 4 raises server_error if request.client_id differs from client.client_id
+        # (uuid.hex), but clients may send the client_id in the dashed UUID format.
+        code = self.login_and_get_code()
+        token_data = {
+            'grant_type': "authorization_code",
+            'redirect_uri': "http://localhost",
+            'client_secret': "geheim",
+            'client_id': str(uuid.UUID(self._client_id)),
+            'code': code
+        }
+        token_response = self.token_request(token_data)
+        self.assertEqual(token_response.status_code, 200)
+
     def test_get_token_failure(self):
         code = self.login_and_get_code()
         token_data = {

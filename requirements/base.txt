@@ -9,7 +9,7 @@ fido2
 geopy
 gunicorn
 kombu
-oauthlib==v3.3.1
+oauthlib==4.0.0
 pillow
 pillow-heif
 psycopg[pool]

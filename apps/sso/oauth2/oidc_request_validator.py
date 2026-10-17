@@ -170,6 +170,10 @@ class OIDCRequestValidator(RequestValidator):
         try:
             # 1. check the client_id
             client = self._get_client(request.client_id, request)
+            # oauthlib >= 4 raises ServerError if request.client_id differs from client.client_id,
+            # see oauthlib 4.0.0 oauth2/rfc6749/grant_types/base.py:197 (validate_client_confidential).
+            # Normalize e.g. a dashed UUID.
+            request.client_id = client.client_id
             # 2. check client_secret
             if not constant_time_compare(client.client_secret, request.client_secret):
                 raise ObjectDoesNotExist('client_secret does not match')
@@ -204,7 +208,10 @@ class OIDCRequestValidator(RequestValidator):
         if client.type in CONFIDENTIAL_CLIENTS:
             return False
         else:
-            request.client_id = client_id
+            # oauthlib >= 4 raises ServerError if request.client_id differs from client.client_id,
+            # see oauthlib 4.0.0 oauth2/rfc6749/grant_types/base.py:217 (validate_client_public).
+            # Normalize e.g. a dashed UUID.
+            request.client_id = client.client_id
             return True
 
     def validate_code(self, client_id, code, client, request, *args, **kwargs):
