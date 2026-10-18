@@ -273,6 +273,20 @@ The API entry point is `/api/` and follows the JSON-LD / Hydra conventions. High
   `jwks`, `introspect`, `revoke`) plus discovery at
   `/.well-known/openid-configuration`.
 
+## Release
+
+A release is a git tag `X.Y.Z`. It is created with `git release` (a small release script):
+
+    git release patch        # or minor, major, X.Y.Z
+
+It writes the new version to `apps/sso/__init__.py`, commits it as `release X.Y.Z`, creates the tag
+and pushes both. The CI checks that the tag matches `__version__`, builds the image
+`ghcr.io/g10f/sso:X.Y.Z` (and `latest`) natively for amd64 and arm64 and deploys it. A push without
+a tag does not start the CI.
+
+Afterwards `git release` runs `./post-release.sh X.Y.Z`, which sets the new version in the checked
+out `../sso-*-theme` repositories (not committed). Commit them once the CI has built the image.
+
 ## Changelog
 
 The entries below list the notable changes per minor release. See the git

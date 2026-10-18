@@ -2,7 +2,7 @@ name: ci
 
 on:
   push:
-    # releases are driven by version tags created by set-version.sh (e.g. 5.4.4)
+    # releases are driven by version tags created by git release (e.g. 5.4.4)
     tags:
       - '[0-9]+.[0-9]+.[0-9]+'
 env:
