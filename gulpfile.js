@@ -18,14 +18,18 @@ function copyJavaScriptFiles() {
         './node_modules/bootstrap/dist/js/bootstrap.bundle.min.js.map',
         './node_modules/jquery/dist/jquery.min.js',
         './node_modules/select2/dist/js/select2.min.js'
-    ]).pipe(gulp.dest('./apps/sso/static/js/vendor'))
+    // encoding: false keeps the files as buffers; gulp 5 otherwise reads them as
+    // UTF-8 strings, which corrupts any non-text bytes (e.g. the font binaries below).
+    ], {encoding: false}).pipe(gulp.dest('./apps/sso/static/js/vendor'))
 }
 
 function copyFontFiles() {
+    // encoding: false: the woff/woff2 fonts are binary and must be copied as buffers,
+    // not decoded as UTF-8 (see copyJavaScriptFiles).
     return gulp.src([
         './node_modules/bootstrap-icons/font/*.css',
         './node_modules/bootstrap-icons/font/**//fonts/*.*'
-    ]).pipe(gulp.dest('./apps/sso/static/font'))
+    ], {encoding: false}).pipe(gulp.dest('./apps/sso/static/font'))
 }
 
 function copyCropperFiles() {
