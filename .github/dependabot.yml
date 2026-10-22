@@ -18,6 +18,11 @@ updates:
         update-types:
           - "minor"
           - "patch"
+    ignore:
+      # Django stays on the current LTS release; the switch to the next LTS is done deliberately
+      - dependency-name: "django"
+        update-types:
+          - "version-update:semver-major"
 
   # Maintain the base image in the Dockerfile. Only patch updates (3.14.x): a new Python minor version
   # is switched to deliberately, together with recompiling the requirements.

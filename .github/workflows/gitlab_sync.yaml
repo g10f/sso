@@ -16,6 +16,9 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     name: Git Repo Sync
+    # Runs started by Dependabot get no access to the repository secrets, so the sync would fail.
+    # Its branches don't need to be mirrored; merged updates are synced with the push to main.
+    if: github.actor != 'dependabot[bot]'
     steps:
     - uses: actions/checkout@v7
       with:
