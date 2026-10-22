@@ -13,6 +13,6 @@
     "gulp-rename": "*",
     "gulp-sass": "*",
     "gulp-sourcemaps": "*",
-    "sass": "*"
+    "sass": "^1.106.1"
   }
 }
