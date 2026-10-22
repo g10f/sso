@@ -74,8 +74,8 @@ cd apps
 ./manage.py runserver
 ```
 
-With SSL (via `runserver_plus` from `django-extensions`; install
-`requirements-dev.txt` for `django-extensions`, `Werkzeug` and `pyOpenSSL`):
+With SSL (via `runserver_plus` from `django-extensions`; `requirements/dev.txt` contains
+`django-extensions`, `Werkzeug` and `pyOpenSSL`):
 
 ```python
 # apps/sso/settings/local_settings.py
@@ -103,36 +103,42 @@ helm delete my-sso          # to uninstall
 
 ## Prepare a development environment
 
-1. Install Python 3.12+.
-2. Create a virtualenv: `python3 -m venv venv`
-3. Activate it: `source venv/bin/activate`
-4. Update pip: `pip install -U pip`
-5. Install requirements: `pip install -r requirements.txt`
-   (use `requirements-dev.txt` for the test/dev tooling).
-6. Install PostgreSQL and PostGIS: `sudo apt install postgresql postgis`
-7. Enable the required extensions on `template1`:
+1. Install Python 3.14.
+2. Create a virtualenv: `python3 -m venv .venv`
+3. Activate it: `source .venv/bin/activate`
+4. Install the requirements incl. the dev and test tools: `pip install -r requirements/dev.txt`
+5. Install PostgreSQL and PostGIS: `sudo apt install postgresql postgis`
+6. Enable the required extensions on `template1`:
    ```bash
    sudo -u postgres psql -c "CREATE EXTENSION IF NOT EXISTS citext;" template1
    sudo -u postgres psql -c "CREATE EXTENSION IF NOT EXISTS postgis;" template1
    ```
-8. Create the database user and database:
+7. Create the database user and database:
    ```bash
    sudo -u postgres psql -c "CREATE USER sso CREATEDB PASSWORD 'sso'"
    sudo -u postgres psql -c 'CREATE DATABASE sso OWNER sso'
    ```
-9. Change into the app directory: `cd apps`
-10. Create the tables: `./manage.py migrate`
-11. Create a superuser: `./manage.py createsuperuser`
-12. Start the development server: `./manage.py runserver`
+8. Change into the app directory: `cd apps`
+9. Create the tables: `./manage.py migrate`
+10. Create a superuser: `./manage.py createsuperuser`
+11. Start the development server: `./manage.py runserver`
+
+## Python dependencies
+
+The direct dependencies are listed in `requirements/base.in`. `requirements/base.txt` (installed in the
+Docker image) and `requirements/dev.txt` (the same versions plus the dev and test tools) are generated from
+it with [pip-tools](https://github.com/jazzband/pip-tools), with every package pinned. After changing
+`base.in`, or to update the packages, run from the repo root:
+
+```bash
+pip-compile requirements/base.in      # add --upgrade or --upgrade-package <name>
+pip-compile requirements/dev.in
+pip-sync requirements/dev.txt
+```
 
 ## Running the tests
 
-The test tooling (Selenium, locust, etc.) is listed in `requirements-dev.txt`:
-
-```bash
-pip install -r requirements-dev.txt
-```
-
+The test tooling (Selenium, locust, etc.) is part of `requirements/dev.txt`.
 For the Selenium tests you also need a matching `chromedriver` on your `PATH`
 (see `chrome-driver.sh`). Run the suite with:
 

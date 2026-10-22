@@ -6,8 +6,7 @@ RUN set -ex \
     && apt-get update && apt-get install -y --no-install-recommends build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt /requirements.txt
-COPY requirements /requirements
+COPY requirements/base.txt /requirements.txt
 RUN python3 -m venv /venv \
     && /venv/bin/pip install --no-cache-dir -r /requirements.txt
 

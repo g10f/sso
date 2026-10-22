@@ -1,0 +1,13 @@
+# Local development: the app packages in the same versions as in the Docker image, plus the dev and test tools.
+# Compile base.txt first, then: pip-compile requirements/dev.in
+-r base.in
+-c base.txt
+pip-tools
+django-extensions
+locust
+pyquery
+selenium
+uritemplate
+Werkzeug
+pyOpenSSL
+requests_oauthlib

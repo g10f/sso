@@ -1,0 +1,3 @@
+# Options for pip-compile, read from the current directory: run pip-compile from the repo root.
+[tool.pip-tools]
+strip-extras = true

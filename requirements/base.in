@@ -1,0 +1,25 @@
+# Direct dependencies of the app. base.txt is generated from this file with all
+# transitive dependencies pinned: pip-compile requirements/base.in
+celery
+cryptography
+django==5.2.18
+django-formtools
+django-ipware
+django-reversion
+django-recaptcha
+fido2
+geopy
+gunicorn
+kombu
+oauthlib==4.0.0
+pillow
+pillow-heif
+psycopg[pool]
+pyjwt
+pymemcache
+pytz
+pyotp
+qrcode
+requests
+sorl-thumbnail
+whitenoise

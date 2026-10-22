@@ -1,9 +1,0 @@
--r requirements/base.txt
-django-extensions
-locust
-pyquery
-selenium
-uritemplate
-Werkzeug
-pyOpenSSL
-requests_oauthlib

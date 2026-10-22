@@ -5,3 +5,28 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+
+  # Maintain the Python packages: Dependabot updates requirements/*.in where a version is pinned there
+  # and recompiles base.txt/dev.txt with pip-compile.
+  - package-ecosystem: "pip"
+    directory: "/requirements"
+    schedule:
+      interval: "weekly"
+    groups:
+      # minor and patch updates in one PR per week, major updates one PR each
+      python-minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
+
+  # Maintain the base image in the Dockerfile. Only patch updates (3.14.x): a new Python minor version
+  # is switched to deliberately, together with recompiling the requirements.
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    ignore:
+      - dependency-name: "python"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
