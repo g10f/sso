@@ -22,5 +22,4 @@ if  [ "$DJANGO_CREATE_SUPERUSER" = "on" ] || [ "$DJANGO_LOAD_INITIAL_DATA" = "on
   fi
 fi
 
-# shellcheck disable=SC2068
-exec $@
+exec "$@"

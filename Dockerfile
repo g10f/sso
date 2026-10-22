@@ -1,27 +1,31 @@
-FROM python:3.14.7-slim
+# Build stage: installs the Python packages into /venv. All packages come as wheels with their libraries
+# included; build-essential is only there for a package that has no wheel for the platform.
+FROM python:3.14.9-slim AS build
 
-# Install packages needed to run your application (not build deps):
-ENV RUN_DEPS="libexpat1 libjpeg62-turbo libpq5 media-types postgresql-client procps zlib1g libproj25 gdal-bin"
-ENV BUILD_DEPS="build-essential curl git libexpat1-dev libjpeg62-turbo-dev libpq-dev zlib1g-dev libproj-dev"
 RUN set -ex \
-    && apt-get update && apt-get install -y --no-install-recommends $RUN_DEPS \
+    && apt-get update && apt-get install -y --no-install-recommends build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /opt/g10f/sso
+COPY requirements.txt /requirements.txt
+COPY requirements /requirements
+RUN python3 -m venv /venv \
+    && /venv/bin/pip install --no-cache-dir -r /requirements.txt
+
+
+FROM python:3.14.9-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1
-ENV VIRTUAL_ENV='/venv'
+ENV PYTHONUNBUFFERED=1
+ENV VIRTUAL_ENV=/venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-COPY requirements.txt .
-COPY requirements requirements
+# Runtime packages: libpq5 for psycopg, gdal-bin for GeoDjango (pulls in libgdal, libgeos and libproj),
+# media-types for the mimetypes module, postgresql-client and procps for working in the container
 RUN set -ex \
-    && apt-get update && apt-get install -y --no-install-recommends $BUILD_DEPS \
-    && python3 -m venv ${VIRTUAL_ENV} \
-    && pip install -U pip wheel \
-    && pip install --no-cache-dir -r requirements.txt \
-    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false $BUILD_DEPS \
+    && apt-get update && apt-get install -y --no-install-recommends gdal-bin libpq5 media-types postgresql-client procps \
     && rm -rf /var/lib/apt/lists/*
+
+COPY --from=build /venv /venv
 
 ARG USERNAME=worker
 ARG USER_UID=1000
@@ -30,18 +34,16 @@ ARG USER_GID=$USER_UID
 # Create the user
 RUN groupadd --gid $USER_GID $USERNAME && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME
 
-# create media dir
-RUN mkdir -p /opt/g10f/sso/htdocs/media
-RUN chown $USERNAME:$USERNAME /opt/g10f/sso/htdocs/media
+# The venv and the code belong to root. The user only writes the media files and, with collectstatic
+# (also in the theme images), the static files.
+RUN mkdir -p /opt/g10f/sso/htdocs/media /opt/g10f/sso/htdocs/static \
+    && chown $USERNAME:$USERNAME /opt/g10f/sso/htdocs/media /opt/g10f/sso/htdocs/static
 
 WORKDIR /opt/g10f/sso/apps
 COPY apps .
 
-RUN chown -R $USERNAME: $VIRTUAL_ENV
-RUN chown -R $USERNAME: /opt/g10f
-
 USER $USERNAME
-RUN ./manage.py collectstatic
+RUN ./manage.py collectstatic --noinput
 ENTRYPOINT ["./docker-entrypoint.sh"]
 # Which peers gunicorn accepts X-Forwarded-* from. The default stays "*", because
 # the proxy address is not known in advance (in kubernetes the health probes come
