@@ -861,21 +861,21 @@ class DeviceCodeGrantTests(OAuth2BaseTestCase):
     # the 'Test Client - TV (device flow)' fixture: type=native, no client_secret
     _tv_client_id = "3f6a9b6b1a8940e6a3f0a2f7f3f2e1a1"
 
-    def device_authorization_request(self, client_id=None, scope="openid profile email"):
+    def device_authorization_request(self, client_id=None, scope="openid profile email", **extra):
         # RFC 8628's device_authorization endpoint requires application/x-www-form-urlencoded,
         # unlike token/ -- Django's test client defaults to multipart, so this needs encoding explicitly.
         data = {'client_id': client_id if client_id else self._tv_client_id}
         if scope is not None:
             data['scope'] = scope
         return self.client.post(reverse('oauth2:device_authorization'), data=urlencode(data),
-                                content_type='application/x-www-form-urlencoded')
+                                content_type='application/x-www-form-urlencoded', **extra)
 
-    def poll_token(self, device_code, client_id=None):
+    def poll_token(self, device_code, client_id=None, **extra):
         return self.client.post(reverse('oauth2:token'), {
             'grant_type': 'urn:ietf:params:oauth:grant-type:device_code',
             'client_id': client_id if client_id else self._tv_client_id,
             'device_code': device_code,
-        })
+        }, **extra)
 
     def test_device_authorization_returns_user_code(self):
         response = self.device_authorization_request()
@@ -923,6 +923,43 @@ class DeviceCodeGrantTests(OAuth2BaseTestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['error'], 'unauthorized_client')
         self.assertEqual(DeviceCode.objects.count(), 0)
+
+    def test_device_authorization_cors_for_opted_in_client(self):
+        response = self.device_authorization_request(HTTP_ORIGIN='https://example.com')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Access-Control-Allow-Origin'], '*')
+
+    def test_device_authorization_cors_for_file_origin(self):
+        # packaged Tizen apps send Origin: file:// on POST
+        response = self.device_authorization_request(HTTP_ORIGIN='file://')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Access-Control-Allow-Origin'], '*')
+
+    def test_device_authorization_has_no_cors_header_without_origin(self):
+        response = self.device_authorization_request()
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.has_header('Access-Control-Allow-Origin'))
+
+    def test_device_authorization_has_no_cors_header_for_unknown_client(self):
+        response = self.device_authorization_request(client_id="0" * 32, HTTP_ORIGIN='https://example.com')
+        self.assertEqual(response.status_code, 401)
+        self.assertFalse(response.has_header('Access-Control-Allow-Origin'))
+
+    def test_device_authorization_has_no_cors_header_without_opt_in(self):
+        Client.objects.filter(uuid=self._tv_client_id).update(device_authorization_grant=False)
+        response = self.device_authorization_request(HTTP_ORIGIN='https://example.com')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['error'], 'unauthorized_client')
+        self.assertFalse(response.has_header('Access-Control-Allow-Origin'))
+
+    def test_device_authorization_preflight(self):
+        response = self.client.options(
+            reverse('oauth2:device_authorization'),
+            HTTP_ORIGIN='https://example.com',
+            HTTP_ACCESS_CONTROL_REQUEST_METHOD='POST')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Access-Control-Allow-Origin'], '*')
+        self.assertIn('POST', response['Access-Control-Allow-Methods'])
 
     def test_token_client_without_opt_in_is_rejected(self):
         # the opt-in was removed after the device code was issued
@@ -1010,6 +1047,39 @@ class DeviceCodeGrantTests(OAuth2BaseTestCase):
         token_response = self.poll_token(data['device_code'])
         self.assertEqual(token_response.status_code, 400)
         self.assertEqual(token_response.json()['error'], 'authorization_pending')
+
+    def test_token_cors_on_authorization_pending(self):
+        data = self.device_authorization_request().json()
+        token_response = self.poll_token(data['device_code'], HTTP_ORIGIN='file://')
+        self.assertEqual(token_response.status_code, 400)
+        self.assertEqual(token_response.json()['error'], 'authorization_pending')
+        self.assertEqual(token_response['Access-Control-Allow-Origin'], '*')
+
+    def test_token_cors_on_success(self):
+        data = self.device_authorization_request().json()
+        self.client.login(username='GunnarScherf', password='gsf')
+        self.approve(data['user_code'])
+        self.logout()
+        token_response = self.poll_token(data['device_code'], HTTP_ORIGIN='https://example.com')
+        self.assertEqual(token_response.status_code, 200)
+        self.assertEqual(token_response['Access-Control-Allow-Origin'], '*')
+
+    def test_token_has_no_cors_header_without_opt_in(self):
+        data = self.device_authorization_request().json()
+        Client.objects.filter(uuid=self._tv_client_id).update(device_authorization_grant=False)
+        token_response = self.poll_token(data['device_code'], HTTP_ORIGIN='https://example.com')
+        self.assertEqual(token_response.status_code, 400)
+        self.assertEqual(token_response.json()['error'], 'unauthorized_client')
+        self.assertFalse(token_response.has_header('Access-Control-Allow-Origin'))
+
+    def test_token_has_no_wildcard_cors_for_other_grants(self):
+        response = self.client.post(reverse('oauth2:token'), {
+            'grant_type': 'authorization_code',
+            'client_id': self._client_id,
+            'code': 'invalid',
+            'redirect_uri': 'http://localhost',
+        }, HTTP_ORIGIN='https://example.com')
+        self.assertNotEqual(response.get('Access-Control-Allow-Origin'), '*')
 
     def test_token_slow_down_on_rapid_polling(self):
         data = self.device_authorization_request().json()

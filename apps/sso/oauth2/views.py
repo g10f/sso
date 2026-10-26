@@ -373,6 +373,22 @@ def authorize(request):
         return HttpResponseRedirect(e.in_uri(reverse('oauth2:oauth2_error')))
 
 
+def _active_client(client_id):
+    try:
+        return Client.objects.get(uuid=client_id, is_active=True)
+    except (Client.DoesNotExist, TypeError, ValueError, ValidationError):
+        return None
+
+
+def _add_device_grant_cors(request, response, client=None):
+    # public clients, no cookies and no client secret, so every origin is allowed.
+    # gated on the per-client device_authorization_grant opt-in: a packaged TV app
+    # (Tizen) sends Origin: file://, which is not https and never a redirect_uri
+    if client is not None and client.device_authorization_grant:
+        add_cors_header(request.META.get('HTTP_ORIGIN'), None, response, public_cors=True)
+    return response
+
+
 def token(request):
     uri, http_method, body, headers = extract_params(request)
     credentials = {}
@@ -381,6 +397,13 @@ def token(request):
 
     for k, v in headers.items():
         response[k] = v
+
+    # oauthlib's CORS headers are only set on a successful token response, only for
+    # https origins that match a redirect_uri. device_code polling is a public client
+    # with no redirect_uri, and authorization_pending / slow_down are 400s
+    if (settings.SSO_DEVICE_AUTHORIZATION_GRANT
+            and request.POST.get('grant_type') == DEVICE_CODE_GRANT_TYPE):
+        _add_device_grant_cors(request, response, _active_client(request.POST.get('client_id')))
 
     return response
 
@@ -407,9 +430,6 @@ def device_authorization_grant_required(view_func):
     return wrapper
 
 
-@device_authorization_grant_required
-@revision_exempt
-@csrf_exempt
 def device_authorization(request):
     """
     RFC 8628 device_authorization endpoint. oauthlib's DeviceAuthorizationEndpoint
@@ -424,6 +444,7 @@ def device_authorization(request):
     # media type only
     headers = {**headers, 'Content-Type': request.content_type}
     oauth_request = Request(uri, http_method=http_method, body=body, headers=headers)
+    client = None
     try:
         resp_headers, data, status = device_authorization_endpoint.create_device_authorization_response(
             uri, http_method=http_method, body=body, headers=headers)
@@ -441,13 +462,17 @@ def device_authorization(request):
         if not oidc_request_validator.validate_grant_type(
                 oauth_request.client_id, DEVICE_CODE_GRANT_TYPE, client, oauth_request):
             error = oauth2.UnauthorizedClientError(request=oauth_request)
-            return HttpResponse(content=error.json, status=error.status_code, content_type='application/json')
+            return _add_device_grant_cors(
+                request, HttpResponse(content=error.json, status=error.status_code, content_type='application/json'),
+                client)
 
         scopes = scope_to_list(oauth_request.scope) or client.scopes.split()
         # oauthlib's DeviceAuthorizationEndpoint does not validate the requested scopes itself
         if not oidc_request_validator.validate_scopes(oauth_request.client_id, scopes, client, oauth_request):
             error = oauth2.InvalidScopeError(request=oauth_request)
-            return HttpResponse(content=error.json, status=error.status_code, content_type='application/json')
+            return _add_device_grant_cors(
+                request, HttpResponse(content=error.json, status=error.status_code, content_type='application/json'),
+                client)
 
         DeviceCode.objects.create(
             client=client,
@@ -460,7 +485,20 @@ def device_authorization(request):
     response = HttpResponse(content=json.dumps(data), status=status, content_type='application/json')
     for k, v in resp_headers.items():
         response[k] = v
-    return response
+    return _add_device_grant_cors(request, response, client)
+
+
+class DeviceAuthorizationView(PreflightMixin, View):
+    http_method_names = ['post', 'options']
+
+    @method_decorator(device_authorization_grant_required)
+    @method_decorator(revision_exempt)
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return device_authorization(request)
 
 
 @revision_exempt

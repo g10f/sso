@@ -5,7 +5,7 @@ app_name = 'oauth2'
 
 urlpatterns = [
     path('authorize/', views.authorize, name='authorize'),
-    path('device_authorization/', views.device_authorization, name='device_authorization'),
+    path('device_authorization/', views.DeviceAuthorizationView.as_view(), name='device_authorization'),
     path('device/', views.device, name='device'),
     path('revoke/', views.revoke, name='revoke'),
     path('certs/', views.CertsView.as_view(), name='certs'),
