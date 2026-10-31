@@ -857,6 +857,33 @@ class AuthorizeOpenRedirectTests(OAuth2BaseTestCase):
 
 
 @override_settings(SSO_DEVICE_AUTHORIZATION_GRANT=True)
+class NulByteTests(OAuth2BaseTestCase):
+    # a NUL byte must not reach PostgreSQL: DataError, HTTP 500 and an admin email
+    _nul = 'a\x00b'
+
+    def assertInvalidRequest(self, response):
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['error'], 'invalid_request')
+
+    def test_token_parameters(self):
+        client = {'client_id': self._client_id, 'client_secret': 'geheim'}
+        for data in ({'grant_type': 'authorization_code', 'code': self._nul, 'redirect_uri': 'http://localhost/'},
+                     {'grant_type': 'refresh_token', 'refresh_token': self._nul},
+                     {'grant_type': 'password', 'username': self._nul, 'password': 'secret'},
+                     {'grant_type': 'urn:ietf:params:oauth:grant-type:device_code', 'device_code': self._nul}):
+            with self.subTest(grant_type=data['grant_type']):
+                self.assertInvalidRequest(self.client.post(reverse('oauth2:token'), {**client, **data}))
+
+    def test_revoke_and_introspect(self):
+        data = {'client_id': self._client_id, 'client_secret': 'geheim', 'token': self._nul}
+        self.assertInvalidRequest(self.client.post(reverse('oauth2:revoke'), data))
+        self.assertInvalidRequest(self.client.post(reverse('oauth2:introspect'), data))
+
+    def test_authorize(self):
+        self.assertInvalidRequest(self.client.get(reverse('oauth2:authorize'), {'client_id': self._client_id,
+                                                                                 'nonce': self._nul}))
+
+
 class DeviceCodeGrantTests(OAuth2BaseTestCase):
     # the 'Test Client - TV (device flow)' fixture: type=native, no client_secret
     _tv_client_id = "3f6a9b6b1a8940e6a3f0a2f7f3f2e1a1"
@@ -1037,6 +1064,20 @@ class DeviceCodeGrantTests(OAuth2BaseTestCase):
         })
         self.assertEqual(response.status_code, 200)
         self.assertEqual(crypt.loads_jwt(response.json()['access_token'])['scope'], 'openid')
+
+    def test_token_with_approved_code_without_scopes_is_invalid_grant(self):
+        # no fallback to the scope of the token request or the default scopes of the client
+        data = self.device_authorization_request().json()
+        DeviceCode.objects.filter(device_code=data['device_code']).update(
+            scopes='', user=get_user_model().objects.get(username='GunnarScherf'), status=DeviceCode.STATUS_APPROVED)
+        response = self.client.post(reverse('oauth2:token'), {
+            'grant_type': 'urn:ietf:params:oauth:grant-type:device_code',
+            'client_id': self._tv_client_id,
+            'device_code': data['device_code'],
+            'scope': 'openid',
+        })
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['error'], 'invalid_grant')
 
     def test_token_with_dashed_client_id(self):
         data = self.device_authorization_request().json()

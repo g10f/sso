@@ -333,6 +333,10 @@ class OIDCRequestValidator(RequestValidator):
         deleted = DeviceCode.objects.filter(pk=device_code_obj.pk, status=DeviceCode.STATUS_APPROVED).delete()[0]
         if not deleted:
             return None
+        if not device_code_obj.scopes:
+            # oauthlib would fall back to the scope of the token request or the default scopes of the client,
+            # which were not approved
+            return None
         # used for the acr claim, see OAuth2Backend for the authorization code
         device_code_obj.user.otp_device = device_code_obj.otp_device
         # the scopes and user approved on the verification page

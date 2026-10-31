@@ -336,6 +336,21 @@ def get_registered_redirect_uri(request):
     return None
 
 
+def reject_nul_bytes(view_func):
+    # RFC 6749 only allows printable characters in codes and tokens. PostgreSQL raises a DataError for a
+    # NUL byte in a text field, which would end in a HTTP 500 and an admin email on attacker input.
+    @wraps(view_func)
+    def wrapper(request, *args, **kwargs):
+        for params in (request.GET, request.POST):
+            for key, values in params.lists():
+                if any('\x00' in value for value in [key, *values]):
+                    error = oauth2.InvalidRequestError(description='NUL bytes are not allowed.')
+                    return HttpResponse(content=error.json, status=error.status_code, content_type='application/json')
+        return view_func(request, *args, **kwargs)
+    return wrapper
+
+
+@reject_nul_bytes
 @revision_exempt
 @never_cache
 @xframe_options_exempt
@@ -373,6 +388,7 @@ def authorize(request):
         return HttpResponseRedirect(e.in_uri(reverse('oauth2:oauth2_error')))
 
 
+@reject_nul_bytes
 def token(request):
     uri, http_method, body, headers = extract_params(request)
     credentials = {}
@@ -454,6 +470,7 @@ def device_authorization(request):
     return response
 
 
+@reject_nul_bytes
 @revision_exempt
 @csrf_exempt
 def revoke(request):
@@ -466,6 +483,7 @@ def revoke(request):
     return response
 
 
+@reject_nul_bytes
 @revision_exempt
 @never_cache
 def introspect(request):
