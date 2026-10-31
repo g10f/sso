@@ -1,6 +1,6 @@
 # Build stage: installs the Python packages into /venv. All packages come as wheels with their libraries
 # included; build-essential is only there for a package that has no wheel for the platform.
-FROM python:3.14.9-slim AS build
+FROM python:3.14.10-slim AS build
 
 RUN set -ex \
     && apt-get update && apt-get install -y --no-install-recommends build-essential \
@@ -11,7 +11,7 @@ RUN python3 -m venv /venv \
     && /venv/bin/pip install --no-cache-dir -r /requirements.txt
 
 
-FROM python:3.14.9-slim
+FROM python:3.14.10-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
