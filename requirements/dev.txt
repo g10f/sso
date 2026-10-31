@@ -166,7 +166,7 @@ markupsafe==3.0.4
     #   werkzeug
 msgpack==1.2.3
     # via locust
-oauthlib==4.0.0
+oauthlib==4.0.1
     # via
     #   -c requirements/base.txt
     #   -r requirements/base.in

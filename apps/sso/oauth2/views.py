@@ -419,10 +419,6 @@ def device_authorization(request):
     row to poll from the token endpoint.
     """
     uri, http_method, body, headers = extract_params(request)
-    # oauthlib compares headers["Content-Type"] with "application/x-www-form-urlencoded": a missing
-    # header raises KeyError (500) and a parameter like "; charset=utf-8" is rejected, so pass the
-    # media type only
-    headers = {**headers, 'Content-Type': request.content_type}
     oauth_request = Request(uri, http_method=http_method, body=body, headers=headers)
     try:
         resp_headers, data, status = device_authorization_endpoint.create_device_authorization_response(
@@ -443,17 +439,12 @@ def device_authorization(request):
             error = oauth2.UnauthorizedClientError(request=oauth_request)
             return HttpResponse(content=error.json, status=error.status_code, content_type='application/json')
 
-        scopes = scope_to_list(oauth_request.scope) or client.scopes.split()
-        # oauthlib's DeviceAuthorizationEndpoint does not validate the requested scopes itself
-        if not oidc_request_validator.validate_scopes(oauth_request.client_id, scopes, client, oauth_request):
-            error = oauth2.InvalidScopeError(request=oauth_request)
-            return HttpResponse(content=error.json, status=error.status_code, content_type='application/json')
-
         DeviceCode.objects.create(
             client=client,
             device_code=data['device_code'],
             user_code=data['user_code'],
-            scopes=' '.join(scopes),
+            # the validated scopes: the requested ones or the default scopes of the client
+            scopes=data.get('scope', ''),
             expires_at=timezone.now() + timedelta(seconds=data['expires_in']),
         )
 

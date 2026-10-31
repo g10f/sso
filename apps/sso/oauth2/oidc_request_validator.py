@@ -14,12 +14,7 @@ from django.utils import timezone
 from django.utils.encoding import force_bytes
 from oauthlib.oauth2 import InvalidClientError
 from oauthlib.oauth2.rfc6749 import errors
-from oauthlib.oauth2.rfc8628.errors import (
-    AccessDenied as DeviceAccessDeniedError,
-    AuthorizationPendingError as DeviceAuthorizationPendingError,
-    ExpiredTokenError as DeviceExpiredTokenError,
-    SlowDownError as DeviceSlowDownError,
-)
+from oauthlib.oauth2.rfc8628.grant_types import DeviceCodeGrant
 from oauthlib.openid.connect.core.request_validator import RequestValidator
 from . import userinfo
 from .crypt import loads_jwt
@@ -297,49 +292,53 @@ class OIDCRequestValidator(RequestValidator):
         # has been acquired.
         AuthorizationCode.objects.filter(code=code, is_valid=True).update(is_valid=False)
 
-    # Device Authorization Grant (RFC 8628), called from DeviceCodeGrantEx.create_token_response
-    def validate_device_code(self, client_id, device_code, request, *args, **kwargs):
+    # Device Authorization Grant (RFC 8628), called from oauthlib's DeviceCodeGrant.validate_token_request
+    def validate_device_code(self, client_id, code, request, *args, **kwargs):
         """
-        Look up a DeviceCode by its device_code and apply the RFC 8628 3.5 polling
-        state machine: unknown/mismatched code -> invalid_grant, expired -> expired_token,
-        denied -> access_denied, still pending -> authorization_pending (or slow_down if
-        polled again before `interval` seconds have passed). Returns the DeviceCode once
-        the verification page ("device" view) has approved it. The approved code is deleted
-        here, before the token is issued, so that it can only be redeemed once.
+        Look up a DeviceCode by its device_code and return its RFC 8628 3.5 polling status,
+        which oauthlib maps to the error response: None for an unknown/mismatched code
+        (invalid_grant), expired (expired_token), denied (access_denied), pending
+        (authorization_pending) or slow_down if polled again before `interval` seconds have
+        passed. Once the verification page ("device" view) has approved the code, request.user
+        and request.scopes are set to what was approved. The approved code is deleted here,
+        before the token is issued, so that it can only be redeemed once.
         """
         try:
             device_code_obj = DeviceCode.objects.select_related('client', 'user', 'otp_device').get(
-                device_code=device_code)
+                device_code=code)
         except DeviceCode.DoesNotExist:
-            raise errors.InvalidGrantError(request=request)
+            return None
 
         if device_code_obj.client.client_id != client_id:
-            raise errors.InvalidGrantError(request=request)
+            return None
 
         if device_code_obj.is_expired:
             device_code_obj.delete()
-            raise DeviceExpiredTokenError(request=request)
+            return DeviceCodeGrant.DEVICE_CODE_EXPIRED
 
         if device_code_obj.status == DeviceCode.STATUS_DENIED:
             device_code_obj.delete()
-            raise DeviceAccessDeniedError(request=request)
+            return DeviceCodeGrant.DEVICE_CODE_DENIED
 
         if device_code_obj.status == DeviceCode.STATUS_PENDING:
             interval = getattr(settings, 'SSO_DEVICE_CODE_INTERVAL', 5)
             now = timezone.now()
             if device_code_obj.last_polled_at and (now - device_code_obj.last_polled_at).total_seconds() < interval:
-                raise DeviceSlowDownError(request=request)
+                return DeviceCodeGrant.DEVICE_CODE_SLOW_DOWN
             device_code_obj.last_polled_at = now
             device_code_obj.save(update_fields=['last_polled_at'])
-            raise DeviceAuthorizationPendingError(request=request)
+            return DeviceCodeGrant.DEVICE_CODE_PENDING
 
         # approved: device codes are single-use, a concurrent request that deleted it first wins
         deleted = DeviceCode.objects.filter(pk=device_code_obj.pk, status=DeviceCode.STATUS_APPROVED).delete()[0]
         if not deleted:
-            raise errors.InvalidGrantError(request=request)
+            return None
         # used for the acr claim, see OAuth2Backend for the authorization code
         device_code_obj.user.otp_device = device_code_obj.otp_device
-        return device_code_obj
+        # the scopes and user approved on the verification page
+        request.user = device_code_obj.user
+        request.scopes = device_code_obj.scopes.split()
+        return DeviceCodeGrant.DEVICE_CODE_AUTHORIZED
 
     # Protected resource request
     def validate_bearer_token(self, token, scopes, request):

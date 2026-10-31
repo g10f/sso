@@ -151,24 +151,15 @@ class OAuth2DeviceCodeGrantEx(OAuth2DeviceCodeGrant):
     RFC 8628 Device Authorization Grant, for public clients with no keyboard (TVs) or no
     browser to redirect through (CLIs).
 
-    oauthlib's DeviceCodeGrant authenticates the client and validates grant type and scopes,
-    but does not check the device_code itself: no lookup, no polling semantics
-    (authorization_pending / slow_down / expired_token / access_denied) and no handoff from
-    the verification page. This is delegated to OIDCRequestValidator.validate_device_code().
+    oauthlib's DeviceCodeGrant authenticates the client and validates grant type, device_code
+    and scopes. The lookup, the polling status and the handoff from the verification page are
+    in OIDCRequestValidator.validate_device_code().
     """
     def validate_token_request(self, request):
         # feature flag, see views.device_authorization_grant_required
         if not settings.SSO_DEVICE_AUTHORIZATION_GRANT:
             raise errors.UnsupportedGrantTypeError(request=request)
         super().validate_token_request(request)
-
-        if not getattr(request, 'device_code', None):
-            raise errors.InvalidRequestError(description='Missing device_code parameter.', request=request)
-        device_code = self.request_validator.validate_device_code(request.client_id, request.device_code, request)
-
-        # the scopes and user approved on the verification page
-        request.user = device_code.user
-        request.scopes = device_code.scopes.split()
 
     def create_token_response(self, request, token_handler):
         headers = self._get_default_headers()

@@ -985,6 +985,12 @@ class DeviceCodeGrantTests(OAuth2BaseTestCase):
         call_command('cleartokens')
         self.assertEqual(list(DeviceCode.objects.values_list('device_code', flat=True)), [data['device_code']])
 
+    def test_device_authorization_without_scope_uses_the_scopes_of_the_client(self):
+        data = self.device_authorization_request(scope=None).json()
+        client = Client.objects.get(uuid=self._tv_client_id)
+        self.assertEqual(DeviceCode.objects.get(device_code=data['device_code']).scopes.split(), client.scopes.split())
+        self.assertEqual(data['scope'].split(), client.scopes.split())
+
     def test_device_authorization_scope_not_allowed_for_client_is_rejected(self):
         response = self.device_authorization_request(scope="openid profile role")
         self.assertEqual(response.status_code, 400)
@@ -998,6 +1004,39 @@ class DeviceCodeGrantTests(OAuth2BaseTestCase):
         })
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json()['error'], 'invalid_request')
+
+    def test_token_with_unknown_device_code_is_invalid_grant(self):
+        # CVE-2026-49272: a valid client_id alone must not be enough to get a token
+        response = self.poll_token('unknown')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['error'], 'invalid_grant')
+        self.assertNotIn('access_token', response.json())
+
+    def test_token_with_device_code_of_other_client_is_invalid_grant(self):
+        data = self.device_authorization_request().json()
+        other_client = Client.objects.exclude(uuid=self._tv_client_id).first()
+        DeviceCode.objects.filter(device_code=data['device_code']).update(
+            client=other_client, user=get_user_model().objects.get(username='GunnarScherf'),
+            status=DeviceCode.STATUS_APPROVED)
+        response = self.poll_token(data['device_code'])
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json()['error'], 'invalid_grant')
+        self.assertTrue(DeviceCode.objects.filter(device_code=data['device_code']).exists())
+
+    def test_token_has_the_approved_scopes(self):
+        # the scopes come from the approval, not from the token request
+        data = self.device_authorization_request(scope="openid").json()
+        self.client.login(username='GunnarScherf', password='gsf')
+        self.approve(data['user_code'])
+        self.logout()
+        response = self.client.post(reverse('oauth2:token'), {
+            'grant_type': 'urn:ietf:params:oauth:grant-type:device_code',
+            'client_id': self._tv_client_id,
+            'device_code': data['device_code'],
+            'scope': 'openid profile email',
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(crypt.loads_jwt(response.json()['access_token'])['scope'], 'openid')
 
     def test_token_with_dashed_client_id(self):
         data = self.device_authorization_request().json()
