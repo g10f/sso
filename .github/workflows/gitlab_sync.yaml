@@ -23,7 +23,7 @@ jobs:
     - uses: actions/checkout@v7
       with:
         fetch-depth: 0
-    - uses: wangchucheng/git-repo-sync@v0.1.0
+    - uses: wangchucheng/git-repo-sync@63782025e80e84c48b25a1ee6bb9a22a3bd570d3  # v0.1.0, pinned to a commit: it receives secrets
       with:
         target-url: ${{ secrets.GITLAB_TARGET_URL }}
         target-username: ${{ secrets.GITLAB_TARGET_USERNAME }}
