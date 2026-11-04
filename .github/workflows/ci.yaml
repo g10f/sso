@@ -118,52 +118,25 @@ jobs:
       - name: Inspect image
         run: docker buildx imagetools inspect ${{ env.IMAGE }}:${{ steps.meta.outputs.version }}
 
+  # Starts the deploy workflow named in the secret DEPLOY_WORKFLOW (owner/repo/workflow file), which deploys the
+  # image. DEPLOY_TOKEN can only start that workflow; the result is shown there under Actions.
+  # Both are secrets, so their values are masked in the log. Without them (e.g. in a fork) nothing is deployed.
   deploy:
     needs: merge
     runs-on: ubuntu-latest
-    # one deploy of the host at a time, a second one waits until the first is finished
-    concurrency:
-      group: deploy-g10f-sso
-      cancel-in-progress: false
     steps:
-      - uses: actions/checkout@v7
-        with:
-          repository: g10f/deployment
-          ref: main
-          token: ${{ secrets.PAT }}
-
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v6
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: eu-central-1
-
-      - run: |
-          curl "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb"
-          sudo dpkg -i session-manager-plugin.deb
-
-      - name: Install SSH key
-        uses: shimataro/ssh-key-action@87a8f067114a8ce263df83e9ed5c849953548bc3  # v2.8.1, pinned to a commit: it receives secrets
-        with:
-          key: ${{ secrets.SSH_KEY }}
-          known_hosts: ${{ secrets.KNOWN_HOSTS }}
-          config: |
-            Host g10f-sso
-              ProxyCommand sh -c "aws ssm start-session --region eu-central-1 --target ${{ secrets.INSTANCE_ID }} --document-name AWS-StartSSHSession --parameters 'portNumber=%p'"
-              User ubuntu
-              IdentityFile ~/.ssh/id_rsa
-
-      - uses: actions/setup-python@v7
-        with:
-          python-version: '3.13'
-          cache: pip
-      # No --diff: the logs of a public repo are public, and a diff can show secrets (it once showed SECRET_KEY).
-      - run: |
-          pip install -r requirements.txt
-          ansible-playbook deploy.yml -l g10f-sso -t update -e version="$VERSION"
+      - name: Start the deploy
         env:
-          # deploy exactly the image of this release instead of the version in the inventory (latest)
+          GH_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+          DEPLOY_WORKFLOW: ${{ secrets.DEPLOY_WORKFLOW }}
           VERSION: ${{ github.ref_name }}
-          ANSIBLE_VAULT_IDENTITY_LIST: vault-password-file.sh
-          ANSIBLE_VAULT_PASSWORD: ${{ secrets.ANSIBLE_VAULT_PASSWORD }}
+        run: |
+          if [ -z "$DEPLOY_WORKFLOW" ]; then
+            echo "No deploy configured (secret DEPLOY_WORKFLOW is not set), nothing to do."
+            exit 0
+          fi
+          repo="${DEPLOY_WORKFLOW%/*}"
+          workflow="${DEPLOY_WORKFLOW##*/}"
+          gh api -X POST "repos/$repo/actions/workflows/$workflow/dispatches" \
+            -f ref=main -f "inputs[image]=$IMAGE" -f "inputs[version]=$VERSION"
+          echo "Deploy of $IMAGE:$VERSION started."

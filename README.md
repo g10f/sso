@@ -287,8 +287,10 @@ A release is a git tag `X.Y.Z`. It is created with `git release` (a small releas
 
 It writes the new version to `apps/sso/__init__.py`, commits it as `release X.Y.Z`, creates the tag
 and pushes both. The CI checks that the tag matches `__version__`, builds the image
-`ghcr.io/g10f/sso:X.Y.Z` (and `latest`) natively for amd64 and arm64 and deploys it. A push without
-a tag does not start the CI.
+`ghcr.io/g10f/sso:X.Y.Z` (and `latest`) natively for amd64 and arm64 and starts the deploy: if the secret
+`DEPLOY_WORKFLOW` (`owner/repo/workflow-file`) is set, it starts that workflow with the inputs `image`
+and `version`, using the secret `DEPLOY_TOKEN`. Without it, e.g. in a fork, nothing is deployed. A push
+without a tag does not start the CI.
 
 Afterwards `git release` runs `./post-release.sh X.Y.Z`, which sets the new version in the checked
 out `../sso-*-theme` repositories (not committed). Commit them once the CI has built the image.
