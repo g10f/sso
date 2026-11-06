@@ -299,8 +299,11 @@ INSTALLED_APPS = [
     'sso.access_requests',
     'sso.components'
 ]
-if os.getenv('SSO_THEME') is not None:
-    INSTALLED_APPS.insert(0, os.getenv('SSO_THEME'))
+# The package of the theme that builds on this image (Dockerfile of the theme: ENV SSO_THEME=<package>).
+# Its templates and static files come first; its __version__ is shown as the version of the site.
+SSO_THEME = os.getenv('SSO_THEME')
+if SSO_THEME:
+    INSTALLED_APPS.insert(0, SSO_THEME)
 
 if RUNNING_DEVSERVER_PLUS:
     INSTALLED_APPS = INSTALLED_APPS + ['django_extensions']
