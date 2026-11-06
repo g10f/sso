@@ -6,9 +6,13 @@ from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.test import tag
 from django.urls import reverse
 
 
+# The tag is inherited by all Selenium test classes, so "test --exclude-tag selenium" runs
+# everything that doesn't need a browser (used by the CI).
+@tag('selenium')
 class SSOSeleniumTests(StaticLiveServerTestCase):
     # fixtures = ['user_data.json']
 
