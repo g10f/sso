@@ -14,7 +14,7 @@ kombu
 oauthlib==4.0.1
 pillow
 pillow-heif
-psycopg[pool]
+psycopg[c,pool]
 pyjwt
 pymemcache
 pytz

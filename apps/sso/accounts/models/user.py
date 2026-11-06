@@ -86,7 +86,10 @@ class User(AbstractBaseUser, PermissionsMixin):
                                     help_text=_('Designates whether this user should be treated as active. Unselect this instead of deleting accounts.'))
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
     uuid = models.UUIDField(unique=True, default=uuid.uuid4, editable=True)
-    organisations = models.ManyToManyField(Organisation, verbose_name=_('organisations'), through=Membership, blank=(not settings.SSO_ORGANISATION_REQUIRED))
+    # blank=True regardless of SSO_ORGANISATION_REQUIRED: a model option that depends on a setting makes the
+    # migrations differ between deployments. The forms that edit the organisations declare the field themselves
+    # with required=settings.SSO_ORGANISATION_REQUIRED, so the setting is enforced there.
+    organisations = models.ManyToManyField(Organisation, verbose_name=_('organisations'), through=Membership, blank=True)
     admin_regions = models.ManyToManyField(AdminRegion, verbose_name=_('admin regions'), blank=True)
     admin_organisation_countries = models.ManyToManyField(OrganisationCountry, verbose_name=_('admin countries'), blank=True)
     admin_associations = models.ManyToManyField(Association, verbose_name=_('admin associations'), blank=True)

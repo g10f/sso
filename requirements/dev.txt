@@ -8,7 +8,7 @@ amqp==5.4.1
     # via
     #   -c base.txt
     #   kombu
-asgiref==3.12.1
+asgiref==3.13.0
     # via
     #   -c base.txt
     #   django
@@ -32,7 +32,7 @@ celery==5.6.3
     # via
     #   -c base.txt
     #   -r base.in
-certifi==2026.10.19
+certifi==2026.10.23
     # via
     #   -c base.txt
     #   geventhttpclient
@@ -201,10 +201,14 @@ prompt-toolkit==3.0.53
     #   click-repl
 psutil==7.2.2
     # via locust
-psycopg==3.3.6
+psycopg==3.3.8
     # via
     #   -c base.txt
     #   -r base.in
+psycopg-c==3.3.8
+    # via
+    #   -c base.txt
+    #   psycopg
 psycopg-pool==3.3.3
     # via
     #   -c base.txt
@@ -288,7 +292,7 @@ sorl-thumbnail==13.4.0
     #   -r base.in
 sortedcontainers==2.4.0
     # via trio
-sqlparse==0.6.0
+sqlparse==0.6.1
     # via
     #   -c base.txt
     #   django
