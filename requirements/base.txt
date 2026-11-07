@@ -4,13 +4,13 @@
 #
 #    pip-compile --strip-extras base.in
 #
-amqp==5.4.1
+amqp==5.4.2
     # via kombu
 asgiref==3.13.0
     # via django
-billiard==4.3.1
+billiard==4.3.2
     # via celery
-celery==5.6.3
+celery==5.7.0
     # via -r base.in
 certifi==2026.10.23
     # via requests
@@ -59,14 +59,12 @@ gunicorn==26.2.0
     # via -r base.in
 idna==3.20
     # via requests
-kombu==5.6.2
+kombu==5.7.0
     # via
     #   -r base.in
     #   celery
 oauthlib==4.0.1
     # via -r base.in
-packaging==26.3
-    # via kombu
 pillow==13.0.0
     # via
     #   -r base.in
@@ -89,11 +87,11 @@ pymemcache==4.0.0
     # via -r base.in
 pyotp==2.10.0
     # via -r base.in
-python-dateutil==3.0.0
+python-dateutil==2.9.0.post0
     # via celery
 python-ipware==4.1.1
     # via django-ipware
-pytz==2026.5
+pytz==2026.6
     # via -r base.in
 qrcode==8.2
     # via -r base.in
@@ -109,10 +107,6 @@ typing-extensions==4.16.0
     # via
     #   click-repl
     #   psycopg-pool
-tzdata==2026.5
-    # via
-    #   kombu
-    #   python-dateutil
 tzlocal==5.4.5
     # via celery
 urllib3==2.8.0
@@ -122,7 +116,7 @@ vine==5.1.0
     #   amqp
     #   celery
     #   kombu
-wcwidth==0.9.3
+wcwidth==0.9.4
     # via prompt-toolkit
 whitenoise==6.12.0
     # via -r base.in
