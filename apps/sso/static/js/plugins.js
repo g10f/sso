@@ -183,12 +183,16 @@ function showTab(selector) {
             });
         });
         // oidc client configuration page
+        // Only the visible field may be changed. Next to it Django renders the hidden field
+        // "initial-client_secret" and compares the two on save: if both get the new value, the form
+        // counts as unchanged and the new secret is not saved.
+        const clientSecretInput = "input:not([type='hidden'])";
         $("button.client-secret-delete").click(function () {
-            $(this).siblings("input").val('');
+            $(this).siblings(clientSecretInput).val('');
         });
         $("button.client-secret-renew").click(function () {
             const url = $(this).data('url');
-            const input = $(this).siblings("input");
+            const input = $(this).siblings(clientSecretInput);
             $.get(url, function (data) {
                 input.val(data);
             });
