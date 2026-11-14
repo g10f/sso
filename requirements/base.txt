@@ -47,7 +47,7 @@ django-ipware==8.0.0
     # via -r base.in
 django-recaptcha==4.1.0
     # via -r base.in
-django-reversion==6.4.0
+django-reversion==6.5.1
     # via -r base.in
 fido2==2.2.1
     # via -r base.in
