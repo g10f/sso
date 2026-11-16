@@ -345,6 +345,7 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = False
 SESSION_ENGINE = 'sso.sessions.backends.jwt_cookies'
 CSRF_COOKIE_HTTPONLY = os.getenv('CSRF_COOKIE_HTTPONLY', 'True').lower() in ('true', '1', 't')
+CSRF_FAILURE_VIEW = 'sso.auth.views.csrf.csrf_failure'
 
 if not (RUNNING_DEVSERVER or RUNNING_TEST):
     SESSION_COOKIE_SECURE = True
