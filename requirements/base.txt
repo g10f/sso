@@ -47,7 +47,7 @@ django-ipware==8.0.0
     # via -r base.in
 django-recaptcha==4.1.0
     # via -r base.in
-django-reversion==6.4.0
+django-reversion==6.5.2
     # via -r base.in
 fido2==2.2.1
     # via -r base.in
@@ -73,9 +73,9 @@ pillow-heif==1.8.1
     # via -r base.in
 prompt-toolkit==3.0.53
     # via click-repl
-psycopg==3.3.8
+psycopg==3.3.9
     # via -r base.in
-psycopg-c==3.3.8
+psycopg-c==3.3.9
     # via psycopg
 psycopg-pool==3.3.3
     # via psycopg
@@ -85,7 +85,7 @@ pyjwt==2.15.1
     # via -r base.in
 pymemcache==4.0.0
     # via -r base.in
-pyotp==2.10.0
+pyotp==2.12.0
     # via -r base.in
 python-dateutil==2.9.0.post0
     # via celery
@@ -99,7 +99,7 @@ requests==2.34.2
     # via -r base.in
 six==1.17.0
     # via python-dateutil
-sorl-thumbnail==13.4.0
+sorl-thumbnail==13.5.0
     # via -r base.in
 sqlparse==0.6.1
     # via django
