@@ -1,6 +1,11 @@
+import time
+from unittest import mock
+from urllib.parse import urlencode
+
 from django.core import signing
 from django.test import TestCase
 from django.urls import reverse
+from django.utils.html import escape
 
 from sso.auth.models import U2FDevice
 from sso.auth.views import SALT
@@ -59,3 +64,65 @@ class U2FRegisterCompleteTests(TestCase):
         user = get_user_model()(username='u2ftest')
         with self.assertRaises(ValidationError):
             U2FDevice.register_complete('dev', '{}', 'tampered-state', user)
+
+
+class LoginCsrfFailureTests(TestCase):
+    """A login form submitted twice: the first POST logs in and rotates the CSRF token, the second
+    one carries the old token. sso.auth.views.csrf.csrf_failure sends the logged-in user on instead
+    of showing a 403, and keeps the next parameter on the 403 page otherwise."""
+    fixtures = ['roles.json', 'test_l10n_data.json', 'test_organisation_data.json', 'app_roles.json',
+                'test_app_roles.json', 'test_user_data.json']
+    next_url = '/accounts/me/?foo=bar'
+
+    def setUp(self):
+        from sso.test.client import SSOClient
+        self.client = SSOClient(enforce_csrf_checks=True)
+        self.login_url = '%s?%s' % (reverse('auth:login'), urlencode({'next': self.next_url}))
+
+    def post_login(self, token, password='gsf'):
+        return self.client.post(self.login_url, {
+            'username': 'GunnarScherf', 'password': password, 'csrfmiddlewaretoken': token})
+
+    def test_second_submit_after_login_continues(self):
+        self.client.get(self.login_url)
+        token = self.client.cookies['csrftoken'].value
+        first = self.post_login(token)
+        self.assertEqual(first.status_code, 302)
+        self.assertNotEqual(self.client.cookies['csrftoken'].value, token)  # rotated by the login
+
+        second = self.post_login(token)
+        self.assertEqual(second.status_code, 302)
+        self.assertEqual(second['Location'], first['Location'])
+
+    def test_failed_csrf_check_without_login_keeps_next(self):
+        self.client.get(self.login_url)
+        response = self.post_login('x' * 32)
+        self.assertEqual(response.status_code, 403)
+        self.assertContains(response, 'CSRF verification failed', status_code=403)
+        self.assertContains(response, 'href="%s"' % escape(self.login_url), status_code=403)
+
+    def test_missing_cookie_is_explained(self):
+        response = self.post_login('x' * 32)
+        self.assertContains(response, 'requires a CSRF cookie', status_code=403)
+
+    def test_logged_in_user_gets_403_outside_the_login(self):
+        self.client.get(self.login_url)
+        self.post_login(self.client.cookies['csrftoken'].value)
+        response = self.client.post(reverse('accounts:profile'), {'csrfmiddlewaretoken': 'x' * 32})
+        self.assertEqual(response.status_code, 403)
+
+    def test_stale_login_form_of_an_older_session_gets_403(self):
+        # e.g. a login form requested with prompt=login must not be skipped by an old session
+        from sso.auth.views.csrf import DOUBLE_SUBMIT_MAX_SECONDS
+        self.client.get(self.login_url)
+        token = self.client.cookies['csrftoken'].value
+        self.post_login(token)
+        later = time.time() + DOUBLE_SUBMIT_MAX_SECONDS + 1
+        with mock.patch('sso.auth.views.csrf.time.time', return_value=later):
+            response = self.post_login(token)
+        self.assertEqual(response.status_code, 403)
+
+    def test_login_form_is_submitted_once(self):
+        response = self.client.get(self.login_url)
+        self.assertContains(response, 'data-single-submit')
+        self.assertContains(response, 'single_submit')

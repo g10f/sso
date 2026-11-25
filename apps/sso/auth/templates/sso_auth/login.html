@@ -2,7 +2,7 @@
 {% load i18n %}
 
 {% block content %}
-  <form class="sign-in-form" method="post" id="login-form">
+  <form class="sign-in-form" method="post" id="login-form" data-single-submit>
     {% block form-signin-heading %}
       <h1 class="text-center">{% blocktranslate %}{{ brand }} Login{% endblocktranslate %}</h1>
     {% endblock %}

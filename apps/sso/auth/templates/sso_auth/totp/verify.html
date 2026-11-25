@@ -2,7 +2,7 @@
 {% load i18n %}
 
 {% block verify-token-form %}
-  <form class="d-grid gap-2" method="post">
+  <form class="d-grid gap-2" method="post" data-single-submit>
     <input type="submit" class="hidden"/> {# to enable submit when pressing enter in the edit field #}
     {% include 'include/_form_boilerplate.html' %}
     <div class="text-center">{{ device_cls.login_text }}</div>

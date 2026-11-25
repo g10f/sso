@@ -41,6 +41,21 @@ OIDC_STATE = 'state'
 logger = logging.getLogger(__name__)
 
 
+def get_login_success_url(request, user, mfa_check=True):
+    """
+    Where a successful login continues: the safe next url without prompt=login (the login was
+    done here), or first the page of a required action.
+    """
+    success_url = remove_value_from_url_param(get_safe_login_redirect_url(request), 'prompt', 'login')
+    display = request.GET.get('display')
+    query_string = {REDIRECT_FIELD_NAME: success_url}
+    if mfa_check and user.is_mfa_required and display not in ['popup']:
+        return "%s?%s" % (reverse('auth:mfa-detail'), urlencode(query_string))
+    if user.is_picture_required and display not in ['popup']:
+        return "%s?%s" % (reverse('accounts:profile'), urlencode(query_string))
+    return success_url
+
+
 def get_token_url(user_id, expiry, redirect_url, backend, display, device_id):
     user_data = signing.dumps({'user_id': user_id, 'backend': backend, 'expiry': expiry}, salt=SALT)
     query_string = {REDIRECT_FIELD_NAME: redirect_url}
@@ -102,18 +117,7 @@ class LoginView(FormView):
                 return self.render_to_response(self.get_context_data(form=form))
 
         else:
-            # remove the prompt login param, cause login was done here
-            success_url = remove_value_from_url_param(redirect_url, 'prompt', 'login')
-
-            # add required action
-            query_string = {REDIRECT_FIELD_NAME: success_url}
-            if user.is_mfa_required and display not in ['popup']:
-                self.success_url = "%s?%s" % (reverse('auth:mfa-detail'), urlencode(query_string))
-            elif user.is_picture_required and display not in ['popup']:
-                self.success_url = "%s?%s" % (reverse('accounts:profile'), urlencode(query_string))
-            else:
-                self.success_url = success_url
-
+            self.success_url = get_login_success_url(self.request, user)
             user._auth_session_expiry = expiry  # used to update the session in auth_login
             auth_login(self.request, user)
 
@@ -213,22 +217,11 @@ class TokenView(FormView):
         return initial
 
     def form_valid(self, form):
-        display = self.request.GET.get('display')
-        redirect_url = get_safe_login_redirect_url(self.request)
         user = form.user
         user._auth_device_id = form.device.id
         user._auth_session_expiry = self.expiry
         auth_login(self.request, form.user)
-        # remove the prompt login param, cause login was done here
-        success_url = remove_value_from_url_param(redirect_url, 'prompt', 'login')
-
-        # add required action
-        query_string = {REDIRECT_FIELD_NAME: success_url}
-        if user.is_picture_required and display not in ['popup']:
-            self.success_url = "%s?%s" % (reverse('accounts:profile'), urlencode(query_string))
-        else:
-            self.success_url = success_url
-
+        self.success_url = get_login_success_url(self.request, user, mfa_check=False)
         return super().form_valid(form)
 
 
