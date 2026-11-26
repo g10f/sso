@@ -366,7 +366,7 @@ class TOTPDevice(Device):
 
             valid_window = settings.SSO_TOTP_TOLERANCE
             for i in range(-valid_window, valid_window + 1):
-                if strings_equal(token, totp.at(for_time, i)):
+                if strings_equal(token, totp.at(for_time, counter_offset=i)):
                     if self.last_t >= timecode + i:
                         # new last_t must be greate then the last
                         logger.warning(f'timecode {timecode + i} already used. user {self.user}, device {self.uuid}')
